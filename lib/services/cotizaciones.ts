@@ -21,14 +21,12 @@ interface StockQuote {
   timestamp: Date;
 }
 
-interface ExchangeRateCache {
-  [key: string]: {
-    rate: number;
-    timestamp: number;
-  };
+interface CacheEntry {
+  data: any;
+  timestamp: number;
 }
 
-const cache: ExchangeRateCache = {};
+const cache: Record<string, CacheEntry> = {};
 const CACHE_TTL = parseInt(process.env.EXCHANGE_RATE_CACHE_TTL || '300') * 1000;
 
 class CotizacionesService {
@@ -44,7 +42,7 @@ class CotizacionesService {
     return `${source}:${from}:${to}`;
   }
 
-  private getFromCache(key: string): number | null {
+  private getFromCache<T>(key: string): T | null {
     const cached = cache[key];
     if (!cached) return null;
 
@@ -54,22 +52,22 @@ class CotizacionesService {
       return null;
     }
 
-    return cached.rate;
+    return cached.data as T;
   }
 
-  private setCache(key: string, rate: number): void {
+  private setCache<T>(key: string, data: T): void {
     cache[key] = {
-      rate,
+      data,
       timestamp: Date.now(),
     };
   }
 
   async getDolarQuotes(): Promise<Record<string, DolarQuote>> {
     const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
-    const cached = this.getFromCache(cacheKey);
+    const cached = this.getFromCache<Record<string, DolarQuote>>(cacheKey);
 
     if (cached) {
-      return JSON.parse(String(cached));
+      return cached;
     }
 
     try {
@@ -110,7 +108,7 @@ class CotizacionesService {
         },
       };
 
-      this.setCache(cacheKey, JSON.parse(JSON.stringify(quotes)) as any);
+      this.setCache(cacheKey, quotes);
       return quotes;
     } catch (error) {
       console.error('Error fetching dolar quotes:', error);
@@ -120,10 +118,10 @@ class CotizacionesService {
 
   async getCryptoQuote(symbol: string): Promise<CryptoQuote> {
     const cacheKey = this.getCacheKey('coingecko', symbol, 'USD');
-    const cached = this.getFromCache(cacheKey);
+    const cached = this.getFromCache<CryptoQuote>(cacheKey);
 
     if (cached) {
-      return JSON.parse(String(cached));
+      return cached;
     }
 
     const coinIdMap: Record<string, string> = {
@@ -161,7 +159,7 @@ class CotizacionesService {
         timestamp: new Date(),
       };
 
-      this.setCache(cacheKey, JSON.parse(JSON.stringify(quote)) as any);
+      this.setCache(cacheKey, quote);
       return quote;
     } catch (error) {
       console.error(`Error fetching crypto quote for ${symbol}:`, error);
@@ -176,7 +174,7 @@ class CotizacionesService {
     if (from === to) return 1;
 
     const cacheKey = this.getCacheKey('auto', from, to);
-    const cached = this.getFromCache(cacheKey);
+    const cached = this.getFromCache<number>(cacheKey);
     if (cached) return cached;
 
     if (from === 'USD' && to === 'ARS') {

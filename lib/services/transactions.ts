@@ -161,7 +161,7 @@ class TransactionsService {
         `
         *,
         category:categories(name, icon),
-        account:accounts(name, currency)
+        account:accounts!transactions_account_id_fkey(name, currency)
       `
       )
       .eq('user_id', userId)
@@ -208,7 +208,7 @@ class TransactionsService {
         `
         *,
         category:categories(name, icon),
-        account:accounts(name, currency)
+        account:accounts!transactions_account_id_fkey(name, currency)
       `
       )
       .eq('id', id)

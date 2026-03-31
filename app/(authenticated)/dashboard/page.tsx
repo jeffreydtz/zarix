@@ -24,11 +24,16 @@ export default async function DashboardPage() {
       accountsService.getTotalBalance(user.id).catch(() => ({ totalUSD: 0, totalARSBlue: 0 })),
       transactionsService.list(user.id, { limit: 5 }).catch(() => []),
       cotizacionesService.getAllQuotes().catch(() => ({
-        dolar: {},
+        dolar: {
+          blue: { type: 'blue' as const, buy: 0, sell: 0, timestamp: new Date() },
+          oficial: { type: 'oficial' as const, buy: 0, sell: 0, timestamp: new Date() },
+          mep: { type: 'mep' as const, buy: 0, sell: 0, timestamp: new Date() },
+          ccl: { type: 'ccl' as const, buy: 0, sell: 0, timestamp: new Date() },
+        },
         crypto: {
-          btc: { priceUSD: 0, change24h: 0 },
-          eth: { priceUSD: 0, change24h: 0 },
-          usdt: { priceUSD: 1 },
+          btc: { symbol: 'BTC', priceUSD: 0, priceARS: 0, change24h: 0, timestamp: new Date() },
+          eth: { symbol: 'ETH', priceUSD: 0, priceARS: 0, change24h: 0, timestamp: new Date() },
+          usdt: { symbol: 'USDT', priceUSD: 1, priceARS: 0, change24h: 0, timestamp: new Date() },
         },
         timestamp: new Date().toISOString(),
       })),
