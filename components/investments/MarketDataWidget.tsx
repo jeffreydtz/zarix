@@ -101,7 +101,6 @@ function CryptoRow({ coin, index }: { coin: CryptoQuote; index: number }) {
 
 function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
   const isArg = stock.currency === 'ARS';
-  const marketFlag = isArg ? '🇦🇷' : '🇺🇸';
   const priceStr = isArg
     ? `$${stock.price.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS`
     : `$${stock.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -113,7 +112,6 @@ function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
       transition={{ delay: index * 0.05 }}
       className="flex items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50 last:border-0"
     >
-      <div className="text-base shrink-0">{marketFlag}</div>
       <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xs font-bold text-blue-700 dark:text-blue-300 shrink-0">
         {stock.ticker.replace('.BA', '').slice(0, 3)}
       </div>

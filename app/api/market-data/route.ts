@@ -32,38 +32,61 @@ interface CryptoQuote {
   image: string;
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function fetchYahooChartQuote(symbol: string): Promise<StockQuote | null> {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1d&interval=1d`;
-  const res = await fetch(url, {
-    headers: YAHOO_HEADERS,
-    next: { revalidate: 300 },
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  const meta = data?.chart?.result?.[0]?.meta;
-  if (!meta?.regularMarketPrice) return null;
 
-  const price = Number(meta.regularMarketPrice || 0);
-  const prev = Number(meta.chartPreviousClose || meta.previousClose || 0);
-  const change = price - prev;
-  const changePct = prev > 0 ? (change / prev) * 100 : 0;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: YAHOO_HEADERS,
+        cache: 'no-store',
+      });
 
-  return {
-    ticker: symbol,
-    name: meta.symbol || symbol,
-    price,
-    change,
-    changePct,
-    currency: meta.currency || (symbol.endsWith('.BA') ? 'ARS' : 'USD'),
-  };
+      if (!res.ok) {
+        // Retry on temporary errors/rate limits
+        if (res.status === 429 || res.status >= 500) {
+          await sleep(150 * (attempt + 1));
+          continue;
+        }
+        return null;
+      }
+
+      const data = await res.json();
+      const meta = data?.chart?.result?.[0]?.meta;
+      if (!meta?.regularMarketPrice) return null;
+
+      const price = Number(meta.regularMarketPrice || 0);
+      const prev = Number(meta.chartPreviousClose || meta.previousClose || 0);
+      const change = price - prev;
+      const changePct = prev > 0 ? (change / prev) * 100 : 0;
+
+      return {
+        ticker: symbol,
+        name: meta.symbol || symbol,
+        price,
+        change,
+        changePct,
+        currency: meta.currency || (symbol.endsWith('.BA') ? 'ARS' : 'USD'),
+      };
+    } catch {
+      await sleep(150 * (attempt + 1));
+    }
+  }
+
+  return null;
 }
 
 async function fetchYahooQuotesWithFallback(tickers: string[]): Promise<StockQuote[]> {
-  const results = await Promise.allSettled(tickers.map((t) => fetchYahooChartQuote(t)));
-  return results
-    .filter((r): r is PromiseFulfilledResult<StockQuote | null> => r.status === 'fulfilled')
-    .map((r) => r.value)
-    .filter((q): q is StockQuote => q !== null);
+  // Sequential fetch avoids Yahoo temporary throttling that can leave only 1 symbol loaded.
+  const results: StockQuote[] = [];
+  for (const ticker of tickers) {
+    const quote = await fetchYahooChartQuote(ticker);
+    if (quote) results.push(quote);
+    await sleep(80);
+  }
+  return results;
 }
 
 async function fetchCryptoTop5(): Promise<CryptoQuote[]> {
