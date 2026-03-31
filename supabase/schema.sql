@@ -62,11 +62,7 @@ CREATE TABLE accounts (
   last_4_digits TEXT CHECK (length(last_4_digits) = 4),
   
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
-  CONSTRAINT positive_balance_if_not_debt CHECK (
-    is_debt = TRUE OR balance >= 0
-  )
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_accounts_user ON accounts(user_id, is_active, sort_order);
