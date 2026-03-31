@@ -120,6 +120,14 @@ ALTER TABLE accounts
   ADD COLUMN IF NOT EXISTS last_4_digits TEXT CHECK (length(last_4_digits) = 4);
 ```
 
+**⚠️ Para tarjetas bi-moneda (ej: Visa que acepta ARS y USD):**
+
+```sql
+ALTER TABLE accounts 
+  ADD COLUMN IF NOT EXISTS is_multicurrency BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS secondary_currency TEXT;
+```
+
 **⚠️ Para permitir saldos negativos (recomendado):**
 
 Por defecto, las cuentas no pueden quedar en negativo. Si querés permitirlo (más realista), ejecutá:
