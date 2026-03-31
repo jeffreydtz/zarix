@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.local' });
 const https = require('https');
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
