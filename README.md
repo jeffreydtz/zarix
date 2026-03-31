@@ -895,6 +895,110 @@ El bot automáticamente:
 
 ---
 
+## 📥 Importar y Exportar Datos
+
+### Exportar tus datos
+
+Andá a **Configuración** → sección **Exportar / Importar**:
+
+| Formato | Uso | Contenido |
+|---------|-----|-----------|
+| **CSV** | Para abrir en Excel/Sheets | Transacciones con fecha, monto, cuenta, categoría |
+| **JSON** | Para programadores | Mismos datos en formato JSON |
+| **Backup completo** | Respaldo total | Cuentas, transacciones, categorías, presupuestos, inversiones |
+
+### Importar transacciones
+
+#### Formato CSV (Excel)
+
+1. Creá un archivo `.csv` con estas columnas (el orden no importa):
+
+```csv
+Fecha,Tipo,Monto,Moneda,Cuenta,Categoría,Descripción,Notas
+01/03/2026,Gasto,5000,ARS,Efectivo ARS,Comida,Almuerzo,
+05/03/2026,Gasto,1500,ARS,Mercado Pago,Transporte,Uber,
+10/03/2026,Ingreso,850000,ARS,BBVA,Sueldo,Sueldo marzo,
+```
+
+**Columnas obligatorias:**
+- `Fecha` (formato: `DD/MM/YYYY` o `YYYY-MM-DD`)
+- `Monto` (número positivo, el tipo define si es gasto o ingreso)
+
+**Columnas opcionales:**
+- `Tipo`: `Gasto`, `Ingreso`, `Transferencia` (por defecto: Gasto)
+- `Moneda`: `ARS`, `USD` (por defecto: ARS)
+- `Cuenta`: Nombre exacto de tu cuenta (debe existir)
+- `Categoría`: Nombre de categoría (si existe, se asigna)
+- `Descripción`: Texto libre
+- `Notas`: Texto adicional
+
+**Tips para Excel:**
+1. Guardá como "CSV UTF-8" para que no se rompan los acentos
+2. No uses separador de miles (escribí `5000`, no `5.000`)
+3. Usá coma o punto para decimales (`1500.50` o `1500,50`)
+
+#### Formato JSON
+
+```json
+[
+  {
+    "date": "2026-03-01",
+    "type": "expense",
+    "amount": 5000,
+    "currency": "ARS",
+    "account": "Efectivo ARS",
+    "category": "Comida",
+    "description": "Almuerzo"
+  },
+  {
+    "date": "2026-03-10",
+    "type": "income",
+    "amount": 850000,
+    "currency": "ARS",
+    "account": "BBVA",
+    "category": "Sueldo",
+    "description": "Sueldo marzo"
+  }
+]
+```
+
+**Valores para `type`:**
+- `expense` = Gasto
+- `income` = Ingreso
+- `transfer` = Transferencia
+
+#### Restaurar desde backup
+
+Si exportaste un "Backup completo", podés usar el mismo archivo JSON para importar. El sistema detecta automáticamente si es un backup y extrae las transacciones.
+
+### Errores comunes al importar
+
+| Error | Solución |
+|-------|----------|
+| "Cuenta no encontrada" | Creá la cuenta primero, o usá el nombre exacto |
+| "No transactions found" | Verificá que el CSV tenga header y datos |
+| Caracteres rotos (ñ, á) | Guardá el CSV como "UTF-8" en Excel |
+| Fechas incorrectas | Usá formato `DD/MM/YYYY` o `YYYY-MM-DD` |
+
+### Migrar desde otras apps
+
+#### Desde Excel personal
+1. Asegurate de tener columnas: Fecha, Monto, Descripción
+2. Agregá columna "Tipo" con "Gasto" o "Ingreso"
+3. Agregá columna "Cuenta" con el nombre de tu cuenta en Zarix
+4. Guardá como CSV UTF-8
+
+#### Desde apps de finanzas (Money Manager, Wallet, etc.)
+1. Exportá desde la app en formato CSV
+2. Abrí en Excel y renombrá las columnas:
+   - "Date" → "Fecha"
+   - "Amount" → "Monto"
+   - "Category" → "Categoría"
+   - "Account" → "Cuenta"
+3. Guardá como CSV UTF-8 y subí a Zarix
+
+---
+
 ## 🔄 Funcionalidades Pendientes (Roadmap)
 
 ### V2 — Próximos Pasos

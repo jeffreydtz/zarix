@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ExportImport() {
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [importResult, setImportResult] = useState<{
     success: boolean;
     imported?: number;
@@ -154,9 +155,120 @@ export default function ExportImport() {
 
         {/* Import Section */}
         <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
-          <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
-            Importar transacciones
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Importar transacciones
+            </h3>
+            <button
+              onClick={() => setShowGuide(!showGuide)}
+              className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+            >
+              {showGuide ? '▲ Ocultar guía' : '▼ Ver guía de formato'}
+            </button>
+          </div>
+
+          {/* Import Guide */}
+          <AnimatePresence>
+            {showGuide && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4 overflow-hidden"
+              >
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 text-sm space-y-4">
+                  
+                  {/* CSV Format */}
+                  <div>
+                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                      📊 Formato CSV (Excel)
+                    </h4>
+                    <p className="text-slate-600 dark:text-slate-400 mb-2">
+                      Creá un archivo con estas columnas. El orden no importa:
+                    </p>
+                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-xs overflow-x-auto">
+                      <div className="text-slate-500">Fecha,Tipo,Monto,Moneda,Cuenta,Categoría,Descripción</div>
+                      <div>01/03/2026,Gasto,5000,ARS,Efectivo ARS,Comida,Almuerzo</div>
+                      <div>05/03/2026,Gasto,1500,ARS,Mercado Pago,Transporte,Uber</div>
+                      <div>10/03/2026,Ingreso,850000,ARS,BBVA,Sueldo,Sueldo marzo</div>
+                    </div>
+                  </div>
+
+                  {/* Column mapping */}
+                  <div>
+                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                      🔗 Mapeo de columnas
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                        <span className="font-medium">Fecha *</span>
+                        <span className="text-slate-500">DD/MM/YYYY o YYYY-MM-DD</span>
+                      </div>
+                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                        <span className="font-medium">Monto *</span>
+                        <span className="text-slate-500">Número positivo (ej: 5000)</span>
+                      </div>
+                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                        <span className="font-medium">Tipo</span>
+                        <span className="text-slate-500">Gasto, Ingreso, Transferencia</span>
+                      </div>
+                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                        <span className="font-medium">Moneda</span>
+                        <span className="text-slate-500">ARS, USD (default: ARS)</span>
+                      </div>
+                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                        <span className="font-medium">Cuenta</span>
+                        <span className="text-slate-500">Nombre exacto de tu cuenta</span>
+                      </div>
+                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                        <span className="font-medium">Categoría</span>
+                        <span className="text-slate-500">Nombre de categoría existente</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-2">* Campos obligatorios</p>
+                  </div>
+
+                  {/* JSON Format */}
+                  <div>
+                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                      📄 Formato JSON
+                    </h4>
+                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-xs overflow-x-auto">
+                      <pre>{`[
+  {
+    "date": "2026-03-01",
+    "type": "expense",
+    "amount": 5000,
+    "currency": "ARS",
+    "account": "Efectivo ARS",
+    "category": "Comida",
+    "description": "Almuerzo"
+  }
+]`}</pre>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-2">
+                      Valores de type: <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">expense</code>, <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">income</code>, <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">transfer</code>
+                    </p>
+                  </div>
+
+                  {/* Tips */}
+                  <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded border border-amber-200 dark:border-amber-800">
+                    <h4 className="font-semibold text-amber-800 dark:text-amber-300 mb-2">
+                      💡 Tips importantes
+                    </h4>
+                    <ul className="text-xs text-amber-700 dark:text-amber-400 space-y-1 list-disc list-inside">
+                      <li>La <strong>Cuenta</strong> debe existir en Zarix antes de importar</li>
+                      <li>En Excel, guardá como <strong>&quot;CSV UTF-8&quot;</strong> para los acentos</li>
+                      <li>No uses separador de miles (escribí 5000, no 5.000)</li>
+                      <li>Si la cuenta no se encuentra, se busca una con la misma moneda</li>
+                      <li>Las categorías que no existan se ignoran (se importa sin categoría)</li>
+                    </ul>
+                  </div>
+
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
           <input
             type="file"
@@ -182,7 +294,7 @@ export default function ExportImport() {
           </label>
 
           <p className="text-xs text-slate-500 mt-2">
-            El CSV debe tener columnas: Fecha, Tipo, Monto, Moneda, Cuenta, Categoría (opcional), Descripción (opcional)
+            Aceptamos archivos .csv (Excel) y .json
           </p>
         </div>
 
