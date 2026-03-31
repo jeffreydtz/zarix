@@ -1,0 +1,227 @@
+interface DolarQuote {
+  type: 'blue' | 'oficial' | 'mep' | 'ccl';
+  buy: number;
+  sell: number;
+  timestamp: Date;
+}
+
+interface CryptoQuote {
+  symbol: string;
+  priceUSD: number;
+  priceARS: number;
+  change24h: number;
+  timestamp: Date;
+}
+
+interface StockQuote {
+  ticker: string;
+  price: number;
+  currency: string;
+  change: number;
+  timestamp: Date;
+}
+
+interface ExchangeRateCache {
+  [key: string]: {
+    rate: number;
+    timestamp: number;
+  };
+}
+
+const cache: ExchangeRateCache = {};
+const CACHE_TTL = parseInt(process.env.EXCHANGE_RATE_CACHE_TTL || '300') * 1000;
+
+class CotizacionesService {
+  private criptoyaBaseURL: string;
+  private coingeckoBaseURL: string;
+
+  constructor() {
+    this.criptoyaBaseURL = process.env.CRIPTOYA_API_URL || 'https://criptoya.com/api';
+    this.coingeckoBaseURL = process.env.COINGECKO_API_URL || 'https://api.coingecko.com/api/v3';
+  }
+
+  private getCacheKey(source: string, from: string, to: string): string {
+    return `${source}:${from}:${to}`;
+  }
+
+  private getFromCache(key: string): number | null {
+    const cached = cache[key];
+    if (!cached) return null;
+
+    const now = Date.now();
+    if (now - cached.timestamp > CACHE_TTL) {
+      delete cache[key];
+      return null;
+    }
+
+    return cached.rate;
+  }
+
+  private setCache(key: string, rate: number): void {
+    cache[key] = {
+      rate,
+      timestamp: Date.now(),
+    };
+  }
+
+  async getDolarQuotes(): Promise<Record<string, DolarQuote>> {
+    const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
+    const cached = this.getFromCache(cacheKey);
+
+    if (cached) {
+      return JSON.parse(String(cached));
+    }
+
+    try {
+      const response = await fetch(`${this.criptoyaBaseURL}/dolar`, {
+        next: { revalidate: 300 },
+      });
+
+      if (!response.ok) {
+        throw new Error(`CriptoYa API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      const quotes: Record<string, DolarQuote> = {
+        blue: {
+          type: 'blue',
+          buy: data.blue?.ask || data.blue || 0,
+          sell: data.blue?.bid || data.blue || 0,
+          timestamp: new Date(),
+        },
+        oficial: {
+          type: 'oficial',
+          buy: data.oficial?.ask || data.oficial || 0,
+          sell: data.oficial?.bid || data.oficial || 0,
+          timestamp: new Date(),
+        },
+        mep: {
+          type: 'mep',
+          buy: data.mep?.al30?.['24hs']?.price || 0,
+          sell: data.mep?.al30?.['24hs']?.price || 0,
+          timestamp: new Date(),
+        },
+        ccl: {
+          type: 'ccl',
+          buy: data.ccl?.al30?.['24hs']?.price || 0,
+          sell: data.ccl?.al30?.['24hs']?.price || 0,
+          timestamp: new Date(),
+        },
+      };
+
+      this.setCache(cacheKey, JSON.parse(JSON.stringify(quotes)) as any);
+      return quotes;
+    } catch (error) {
+      console.error('Error fetching dolar quotes:', error);
+      throw error;
+    }
+  }
+
+  async getCryptoQuote(symbol: string): Promise<CryptoQuote> {
+    const cacheKey = this.getCacheKey('coingecko', symbol, 'USD');
+    const cached = this.getFromCache(cacheKey);
+
+    if (cached) {
+      return JSON.parse(String(cached));
+    }
+
+    const coinIdMap: Record<string, string> = {
+      BTC: 'bitcoin',
+      ETH: 'ethereum',
+      USDT: 'tether',
+      USDC: 'usd-coin',
+      DAI: 'dai',
+    };
+
+    const coinId = coinIdMap[symbol.toUpperCase()] || symbol.toLowerCase();
+
+    try {
+      const response = await fetch(
+        `${this.coingeckoBaseURL}/simple/price?ids=${coinId}&vs_currencies=usd,ars&include_24hr_change=true`,
+        { next: { revalidate: 60 } }
+      );
+
+      if (!response.ok) {
+        throw new Error(`CoinGecko API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const coinData = data[coinId];
+
+      if (!coinData) {
+        throw new Error(`Crypto ${symbol} not found`);
+      }
+
+      const quote: CryptoQuote = {
+        symbol: symbol.toUpperCase(),
+        priceUSD: coinData.usd || 0,
+        priceARS: coinData.ars || 0,
+        change24h: coinData.usd_24h_change || 0,
+        timestamp: new Date(),
+      };
+
+      this.setCache(cacheKey, JSON.parse(JSON.stringify(quote)) as any);
+      return quote;
+    } catch (error) {
+      console.error(`Error fetching crypto quote for ${symbol}:`, error);
+      throw error;
+    }
+  }
+
+  async getExchangeRate(
+    from: string,
+    to: string = 'ARS'
+  ): Promise<number> {
+    if (from === to) return 1;
+
+    const cacheKey = this.getCacheKey('auto', from, to);
+    const cached = this.getFromCache(cacheKey);
+    if (cached) return cached;
+
+    if (from === 'USD' && to === 'ARS') {
+      const dolar = await this.getDolarQuotes();
+      const rate = dolar.blue.sell;
+      this.setCache(cacheKey, rate);
+      return rate;
+    }
+
+    if (from === 'ARS' && to === 'USD') {
+      const dolar = await this.getDolarQuotes();
+      const rate = 1 / dolar.blue.buy;
+      this.setCache(cacheKey, rate);
+      return rate;
+    }
+
+    if (['BTC', 'ETH', 'USDT'].includes(from) && to === 'USD') {
+      const crypto = await this.getCryptoQuote(from);
+      this.setCache(cacheKey, crypto.priceUSD);
+      return crypto.priceUSD;
+    }
+
+    if (['BTC', 'ETH', 'USDT'].includes(from) && to === 'ARS') {
+      const crypto = await this.getCryptoQuote(from);
+      this.setCache(cacheKey, crypto.priceARS);
+      return crypto.priceARS;
+    }
+
+    throw new Error(`Exchange rate ${from}→${to} not supported`);
+  }
+
+  async getAllQuotes() {
+    const [dolar, btc, eth, usdt] = await Promise.all([
+      this.getDolarQuotes(),
+      this.getCryptoQuote('BTC'),
+      this.getCryptoQuote('ETH'),
+      this.getCryptoQuote('USDT'),
+    ]);
+
+    return {
+      dolar,
+      crypto: { btc, eth, usdt },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+export const cotizacionesService = new CotizacionesService();
