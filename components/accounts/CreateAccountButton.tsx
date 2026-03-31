@@ -40,7 +40,6 @@ export default function CreateAccountButton() {
   const [creditLimit, setCreditLimit] = useState('');
   const [closingDay, setClosingDay] = useState('');
   const [dueDay, setDueDay] = useState('');
-  const [last4Digits, setLast4Digits] = useState('');
   const [isMulticurrency, setIsMulticurrency] = useState(false);
   const [secondaryCurrency, setSecondaryCurrency] = useState('USD');
 
@@ -76,7 +75,6 @@ export default function CreateAccountButton() {
         payload.creditLimit = parseFloat(creditLimit);
         if (closingDay) payload.closingDay = parseInt(closingDay);
         if (dueDay) payload.dueDay = parseInt(dueDay);
-        if (last4Digits) payload.last4Digits = last4Digits;
         if (isMulticurrency) {
           payload.isMulticurrency = true;
           payload.secondaryCurrency = secondaryCurrency;
@@ -100,7 +98,8 @@ export default function CreateAccountButton() {
       setCreditLimit('');
       setClosingDay('');
       setDueDay('');
-      setLast4Digits('');
+      setIsMulticurrency(false);
+      setSecondaryCurrency('USD');
       setIsOpen(false);
       window.location.reload();
     } catch (error) {
@@ -304,20 +303,6 @@ export default function CreateAccountButton() {
                                 className="input"
                               />
                             </div>
-                          </div>
-
-                          <div>
-                            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                              Ultimos 4 digitos
-                            </label>
-                            <input
-                              type="text"
-                              maxLength={4}
-                              value={last4Digits}
-                              onChange={(e) => setLast4Digits(e.target.value.replace(/\D/g, ''))}
-                              placeholder="1234"
-                              className="input font-mono"
-                            />
                           </div>
 
                           <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-amber-200 dark:border-amber-700">
