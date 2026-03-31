@@ -6,6 +6,7 @@ import MonthlyBarChart from '@/components/analysis/MonthlyBarChart';
 import CashFlowChart from '@/components/analysis/CashFlowChart';
 import TopExpenses from '@/components/analysis/TopExpenses';
 import AccountBreakdownChart from '@/components/analysis/AccountBreakdownChart';
+import ProjectionsWidget from '@/components/analysis/ProjectionsWidget';
 
 export default async function AnalysisPage() {
   try {
@@ -173,6 +174,10 @@ export default async function AnalysisPage() {
               )}
             </div>
           </div>
+
+          {/* Projections */}
+          <ProjectionsWidget />
+
         </div>
       </div>
     );

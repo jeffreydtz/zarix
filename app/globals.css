@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
   --background: 255 255 255;
   --foreground: 15 23 42;
   --card: 255 255 255;
@@ -24,6 +25,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: 15 23 42;
   --foreground: 241 245 249;
   --card: 30 41 59;
@@ -54,7 +56,16 @@ body {
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme transitions — applied after hydration to avoid flash */
+.theme-ready body,
+.theme-ready *,
+.theme-ready *::before,
+.theme-ready *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
 }
 
 html {
