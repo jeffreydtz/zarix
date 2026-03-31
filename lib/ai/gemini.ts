@@ -15,18 +15,6 @@ export interface GeminiChatOptions {
 }
 
 class GeminiClient {
-  private liteModel;
-  private fullModel;
-
-  constructor() {
-    this.liteModel = genAI.getGenerativeModel({
-      model: GEMINI_LITE_MODEL,
-    });
-    this.fullModel = genAI.getGenerativeModel({
-      model: GEMINI_FULL_MODEL,
-    });
-  }
-
   async chat(
     message: string,
     options: GeminiChatOptions = {}
@@ -38,11 +26,15 @@ class GeminiClient {
       maxTokens = 2048,
     } = options;
 
-    const model = tier === 'lite' ? this.liteModel : this.fullModel;
+    const modelName = tier === 'lite' ? GEMINI_LITE_MODEL : GEMINI_FULL_MODEL;
+    
+    const model = genAI.getGenerativeModel({
+      model: modelName,
+      systemInstruction: systemInstruction,
+    });
 
     const chat = model.startChat({
       history,
-      systemInstruction,
       generationConfig: {
         maxOutputTokens: maxTokens,
         temperature: 0.7,
@@ -65,9 +57,13 @@ class GeminiClient {
       maxTokens = 2048,
     } = options;
 
-    const chat = this.fullModel.startChat({
+    const model = genAI.getGenerativeModel({
+      model: GEMINI_FULL_MODEL,
+      systemInstruction: systemInstruction,
+    });
+
+    const chat = model.startChat({
       history,
-      systemInstruction,
       generationConfig: {
         maxOutputTokens: maxTokens,
         temperature: 0.7,
