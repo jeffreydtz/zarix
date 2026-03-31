@@ -32,32 +32,6 @@ interface CryptoQuote {
   image: string;
 }
 
-async function fetchYahooQuotes(tickers: string[]): Promise<StockQuote[]> {
-  const symbols = tickers.join(',');
-  const url = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${symbols}&fields=regularMarketPrice,regularMarketChange,regularMarketChangePercent,shortName,currency`;
-
-  const res = await fetch(url, {
-    headers: YAHOO_HEADERS,
-    next: { revalidate: 300 },
-  });
-
-  if (!res.ok) throw new Error(`Yahoo quote fetch failed: ${res.status}`);
-
-  const data = await res.json();
-  const quotes = data?.quoteResponse?.result || [];
-
-  return quotes
-    .filter((q: any) => Number.isFinite(q.regularMarketPrice) && q.regularMarketPrice > 0)
-    .map((q: any) => ({
-    ticker: q.symbol,
-    name: q.shortName || q.symbol,
-    price: q.regularMarketPrice ?? 0,
-    change: q.regularMarketChange ?? 0,
-    changePct: q.regularMarketChangePercent ?? 0,
-    currency: q.currency || 'USD',
-  }));
-}
-
 async function fetchYahooChartQuote(symbol: string): Promise<StockQuote | null> {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1d&interval=1d`;
   const res = await fetch(url, {
@@ -85,18 +59,11 @@ async function fetchYahooChartQuote(symbol: string): Promise<StockQuote | null> 
 }
 
 async function fetchYahooQuotesWithFallback(tickers: string[]): Promise<StockQuote[]> {
-  try {
-    const primary = await fetchYahooQuotes(tickers);
-    const found = new Set(primary.map((q) => q.ticker));
-    const missing = tickers.filter((t) => !found.has(t));
-    if (missing.length === 0) return primary;
-
-    const fallback = await Promise.all(missing.map((t) => fetchYahooChartQuote(t)));
-    return [...primary, ...fallback.filter((q): q is StockQuote => q !== null)];
-  } catch {
-    const fallback = await Promise.all(tickers.map((t) => fetchYahooChartQuote(t)));
-    return fallback.filter((q): q is StockQuote => q !== null);
-  }
+  const results = await Promise.allSettled(tickers.map((t) => fetchYahooChartQuote(t)));
+  return results
+    .filter((r): r is PromiseFulfilledResult<StockQuote | null> => r.status === 'fulfilled')
+    .map((r) => r.value)
+    .filter((q): q is StockQuote => q !== null);
 }
 
 async function fetchCryptoTop5(): Promise<CryptoQuote[]> {

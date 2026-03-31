@@ -52,17 +52,17 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
       className="card"
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
-          Cotizaciones
-        </h3>
-        <div className="text-right">
-          <span className="block text-xs text-slate-400 dark:text-slate-500">En vivo</span>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+            Cotizaciones
+          </h3>
           {lastUpdated && (
-            <span className="block text-[11px] text-slate-400 dark:text-slate-500">
-              Actualizado {lastUpdated}
-            </span>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Dolar actualizado: <span className="font-medium text-slate-700 dark:text-slate-300">{lastUpdated}</span>
+            </p>
           )}
         </div>
+        <span className="text-xs text-slate-400 dark:text-slate-500">En vivo</span>
       </div>
       
       <motion.div 

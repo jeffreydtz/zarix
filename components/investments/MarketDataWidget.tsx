@@ -226,15 +226,27 @@ export default function MarketDataWidget() {
         </MarketSection>
 
         <MarketSection title="USA · Top Acciones" icon="🇺🇸" loading={loading}>
-          {(data?.usStocks || []).map((stock, i) => (
-            <StockRow key={stock.ticker} stock={stock} index={i} />
-          ))}
+          {(data?.usStocks || []).length > 0 ? (
+            (data?.usStocks || []).map((stock, i) => (
+              <StockRow key={stock.ticker} stock={stock} index={i} />
+            ))
+          ) : (
+            <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
+              Sin datos de USA en este momento.
+            </div>
+          )}
         </MarketSection>
 
         <MarketSection title="Argentina · Merval" icon="🇦🇷" loading={loading}>
-          {(data?.argStocks || []).map((stock, i) => (
-            <StockRow key={stock.ticker} stock={stock} index={i} />
-          ))}
+          {(data?.argStocks || []).length > 0 ? (
+            (data?.argStocks || []).map((stock, i) => (
+              <StockRow key={stock.ticker} stock={stock} index={i} />
+            ))
+          ) : (
+            <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
+              Sin datos de Merval en este momento.
+            </div>
+          )}
         </MarketSection>
       </div>
     </div>
