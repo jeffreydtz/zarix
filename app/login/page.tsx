@@ -2,22 +2,31 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const supabase = createClient();
+    
+    // Verificar si ya está logueado
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         router.push('/dashboard');
       }
     });
-  }, [router]);
+
+    // Mostrar error si viene del callback
+    const error = searchParams.get('error');
+    if (error) {
+      setMessage(`❌ Error: ${decodeURIComponent(error)}`);
+    }
+  }, [router, searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
