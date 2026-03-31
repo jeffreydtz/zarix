@@ -4,6 +4,7 @@ import { investmentsService } from '@/lib/services/investments';
 import { accountsService } from '@/lib/services/accounts';
 import PortfolioSummary from '@/components/investments/PortfolioSummary';
 import InvestmentsList from '@/components/investments/InvestmentsList';
+import MarketDataWidget from '@/components/investments/MarketDataWidget';
 
 const INVESTMENT_LABELS: Record<string, string> = {
   plazo_fijo: 'Plazo Fijo',
@@ -92,6 +93,9 @@ export default async function InvestmentsPage() {
             totalPnLPercent={portfolio.totalPnLPercent}
             byType={portfolio.byType}
           />
+
+          {/* Live market data */}
+          <MarketDataWidget />
 
           {upcomingMaturities.length > 0 && (
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-amber-200 dark:border-amber-700/50 shadow-sm">
