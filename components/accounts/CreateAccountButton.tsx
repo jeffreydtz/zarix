@@ -1,39 +1,75 @@
 'use client';
 
 import { useState } from 'react';
-import { ACCOUNT_PRESETS } from '@/types/database';
+
+const ICONS = [
+  '💳', '🏦', '💰', '💵', '💸', '🪙', 
+  '📱', '🏧', '💎', '🎯', '🔐', '📊',
+  '💼', '🏠', '🚗', '✈️', '🎓', '⚡'
+];
+
+const ACCOUNT_TYPES = [
+  { value: 'bank', label: '🏦 Banco', color: '#3B82F6' },
+  { value: 'cash', label: '💵 Efectivo', color: '#10B981' },
+  { value: 'investment', label: '📈 Inversión', color: '#8B5CF6' },
+  { value: 'savings', label: '🏦 Caja de Ahorro', color: '#06B6D4' },
+  { value: 'credit', label: '💳 Tarjeta', color: '#F59E0B' },
+  { value: 'crypto', label: '₿ Crypto', color: '#EF4444' },
+  { value: 'other', label: '🔁 Otro', color: '#6B7280' },
+];
+
+const CURRENCIES = [
+  { value: 'ARS', label: 'ARS ($)', flag: '🇦🇷' },
+  { value: 'USD', label: 'USD ($)', flag: '🇺🇸' },
+  { value: 'BTC', label: 'BTC (₿)', flag: '₿' },
+  { value: 'ETH', label: 'ETH (Ξ)', flag: 'Ξ' },
+  { value: 'USDT', label: 'USDT', flag: '₮' },
+];
 
 export default function CreateAccountButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
-  const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
+  const [selectedIcon, setSelectedIcon] = useState('💳');
+  const [selectedType, setSelectedType] = useState('bank');
+  const [selectedCurrency, setSelectedCurrency] = useState('ARS');
   const [initialBalance, setInitialBalance] = useState('');
+  const [isDebt, setIsDebt] = useState(false);
+
+  const selectedTypeData = ACCOUNT_TYPES.find(t => t.value === selectedType);
 
   const handleCreate = async () => {
-    if (!selectedPreset && selectedPreset !== 0) return;
+    if (!name.trim()) {
+      alert('El nombre es requerido');
+      return;
+    }
 
     setLoading(true);
 
     try {
-      const preset = ACCOUNT_PRESETS[selectedPreset];
-
       const response = await fetch('/api/accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name || preset.name,
-          type: preset.type,
-          currency: preset.currency,
-          icon: preset.icon,
-          color: preset.color,
-          isDebt: preset.is_debt,
+          name: name.trim(),
+          type: selectedType,
+          currency: selectedCurrency,
+          icon: selectedIcon,
+          color: selectedTypeData?.color || '#3B82F6',
+          isDebt,
           initialBalance: parseFloat(initialBalance) || 0,
         }),
       });
 
       if (!response.ok) throw new Error('Error creating account');
 
+      setName('');
+      setSelectedIcon('💳');
+      setSelectedType('bank');
+      setSelectedCurrency('ARS');
+      setInitialBalance('');
+      setIsDebt(false);
+      setIsOpen(false);
       window.location.reload();
     } catch (error) {
       console.error('Error:', error);
@@ -51,7 +87,7 @@ export default function CreateAccountButton() {
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Nueva Cuenta</h2>
               <button
@@ -64,70 +100,112 @@ export default function CreateAccountButton() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  Seleccioná un tipo de cuenta
-                </label>
+                <label className="block text-sm font-medium mb-2">Nombre</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ej: Banco Galicia, Mercado Pago, Billetera"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Tipo</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {ACCOUNT_PRESETS.map((preset, index) => (
+                  {ACCOUNT_TYPES.map((type) => (
                     <button
-                      key={index}
-                      onClick={() => setSelectedPreset(index)}
+                      key={type.value}
+                      type="button"
+                      onClick={() => setSelectedType(type.value)}
                       className={`p-3 rounded-lg border-2 transition-all text-left ${
-                        selectedPreset === index
+                        selectedType === type.value
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">{preset.icon}</span>
-                        <div>
-                          <div className="font-medium text-sm">{preset.name}</div>
-                          <div className="text-xs text-gray-500">{preset.currency}</div>
-                        </div>
-                      </div>
+                      <div className="font-medium text-sm">{type.label}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {selectedPreset !== null && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Nombre (opcional, usar preset por defecto)
-                    </label>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder={ACCOUNT_PRESETS[selectedPreset].name}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                    />
-                  </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Ícono</label>
+                <div className="grid grid-cols-6 gap-2">
+                  {ICONS.map((icon) => (
+                    <button
+                      key={icon}
+                      type="button"
+                      onClick={() => setSelectedIcon(icon)}
+                      className={`p-3 text-2xl rounded-lg border-2 transition-all ${
+                        selectedIcon === icon
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Saldo inicial
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={initialBalance}
-                      onChange={(e) => setInitialBalance(e.target.value)}
-                      placeholder="0.00"
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                    />
-                  </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Moneda</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {CURRENCIES.map((currency) => (
+                    <button
+                      key={currency.value}
+                      type="button"
+                      onClick={() => setSelectedCurrency(currency.value)}
+                      className={`p-3 rounded-lg border-2 transition-all ${
+                        selectedCurrency === currency.value
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="text-lg">{currency.flag}</div>
+                      <div className="text-xs font-medium">{currency.value}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                  <button
-                    onClick={handleCreate}
-                    disabled={loading}
-                    className="w-full btn btn-primary py-3 disabled:opacity-50"
-                  >
-                    {loading ? 'Creando...' : 'Crear Cuenta'}
-                  </button>
-                </>
-              )}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Saldo inicial
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={initialBalance}
+                  onChange={(e) => setInitialBalance(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isDebt"
+                  checked={isDebt}
+                  onChange={(e) => setIsDebt(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="isDebt" className="text-sm font-medium">
+                  Es una deuda (mostrar saldo negativo)
+                </label>
+              </div>
+
+              <button
+                onClick={handleCreate}
+                disabled={loading || !name.trim()}
+                className="w-full btn btn-primary py-3 disabled:opacity-50"
+              >
+                {loading ? 'Creando...' : 'Crear Cuenta'}
+              </button>
             </div>
           </div>
         </div>
