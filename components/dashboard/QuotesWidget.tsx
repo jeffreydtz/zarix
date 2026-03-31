@@ -19,6 +19,7 @@ interface QuotesWidgetProps {
       eth: { priceUSD: number; change24h: number };
       usdt: { priceUSD: number };
     };
+    timestamp?: string;
   };
 }
 
@@ -36,6 +37,13 @@ const item = {
 };
 
 function QuotesWidget({ quotes }: QuotesWidgetProps) {
+  const lastUpdated = quotes.timestamp
+    ? new Date(quotes.timestamp).toLocaleTimeString('es-AR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : null;
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -47,9 +55,14 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
         <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
           Cotizaciones
         </h3>
-        <span className="text-xs text-slate-400 dark:text-slate-500">
-          En vivo
-        </span>
+        <div className="text-right">
+          <span className="block text-xs text-slate-400 dark:text-slate-500">En vivo</span>
+          {lastUpdated && (
+            <span className="block text-[11px] text-slate-400 dark:text-slate-500">
+              Actualizado {lastUpdated}
+            </span>
+          )}
+        </div>
       </div>
       
       <motion.div 

@@ -1,3 +1,5 @@
+import { createServiceClientSync } from '@/lib/supabase/server';
+
 interface DolarQuote {
   type: 'blue' | 'oficial' | 'mep' | 'ccl';
   buy: number;
@@ -62,6 +64,74 @@ class CotizacionesService {
     };
   }
 
+  private async saveLatestDolarQuotes(quotes: Record<string, DolarQuote>): Promise<void> {
+    try {
+      const supabase = createServiceClientSync();
+      const nowIso = new Date().toISOString();
+
+      const rows = Object.values(quotes).map((q) => ({
+        source: q.type,
+        from_currency: 'USD',
+        to_currency: 'ARS',
+        rate: q.sell || q.buy || 0,
+        timestamp: nowIso,
+      }));
+
+      await supabase.from('exchange_rates').insert(rows);
+    } catch (error) {
+      console.error('Error saving dollar quotes:', error);
+    }
+  }
+
+  private async getLatestDolarQuotesFromDB(): Promise<Record<string, DolarQuote> | null> {
+    try {
+      const supabase = createServiceClientSync();
+      const sources = ['blue', 'oficial', 'mep', 'ccl'];
+
+      const queries = await Promise.all(
+        sources.map(async (source) => {
+          const { data } = await supabase
+            .from('exchange_rates')
+            .select('rate, timestamp')
+            .eq('source', source)
+            .eq('from_currency', 'USD')
+            .eq('to_currency', 'ARS')
+            .order('timestamp', { ascending: false })
+            .limit(1)
+            .single();
+
+          return { source, data };
+        })
+      );
+
+      const hasAny = queries.some((q) => q.data?.rate);
+      if (!hasAny) return null;
+
+      const result: Record<string, DolarQuote> = {
+        blue: { type: 'blue', buy: 0, sell: 0, timestamp: new Date() },
+        oficial: { type: 'oficial', buy: 0, sell: 0, timestamp: new Date() },
+        mep: { type: 'mep', buy: 0, sell: 0, timestamp: new Date() },
+        ccl: { type: 'ccl', buy: 0, sell: 0, timestamp: new Date() },
+      };
+
+      for (const q of queries) {
+        if (q.data?.rate) {
+          result[q.source] = {
+            type: q.source as DolarQuote['type'],
+            buy: Number(q.data.rate),
+            sell: Number(q.data.rate),
+            timestamp: new Date(q.data.timestamp),
+          };
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error reading latest dollar quotes from DB:', error);
+      return null;
+    }
+  }
+
   async getDolarQuotes(): Promise<Record<string, DolarQuote>> {
     const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
     const cached = this.getFromCache<Record<string, DolarQuote>>(cacheKey);
@@ -109,9 +179,15 @@ class CotizacionesService {
       };
 
       this.setCache(cacheKey, quotes);
+      this.saveLatestDolarQuotes(quotes);
       return quotes;
     } catch (error) {
       console.error('Error fetching dolar quotes:', error);
+      const fallbackFromDb = await this.getLatestDolarQuotesFromDB();
+      if (fallbackFromDb) {
+        this.setCache(cacheKey, fallbackFromDb);
+        return fallbackFromDb;
+      }
       throw error;
     }
   }
@@ -272,7 +348,7 @@ class CotizacionesService {
     return {
       dolar,
       crypto: { btc, eth, usdt },
-      timestamp: new Date().toISOString(),
+      timestamp: dolar.blue.timestamp.toISOString(),
     };
   }
 }
