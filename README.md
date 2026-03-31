@@ -1,3 +1,86 @@
+# Zarix
+
+Zarix es una app de finanzas personales pensada para uso individual en Argentina.
+Te permite registrar gastos e ingresos, ver saldos, seguir inversiones y consultar mercado desde web y Telegram.
+
+## Que hace el proyecto
+
+- Centraliza tus cuentas (efectivo, banco, tarjetas, billeteras, inversiones).
+- Registra movimientos (gasto, ingreso, transferencia, ajuste).
+- Muestra patrimonio liquido y patrimonio total (incluyendo inversiones).
+- Integra bot de Telegram para cargar movimientos en lenguaje natural.
+- Soporta multiples monedas (ARS, USD, USDT, BTC, ETH).
+- Incluye cotizaciones (dolar y crypto) y datos de mercado (USA y Merval).
+- Permite importar y exportar datos (CSV/JSON/backup).
+
+## Funcionalidad basica
+
+### 1) Cuentas
+- Crear, editar y eliminar cuentas.
+- Tarjetas de credito con limite, cierre y vencimiento.
+- Soporte para tarjetas bi-moneda.
+- Permite saldos negativos.
+
+### 2) Movimientos
+- Alta de gastos, ingresos y transferencias.
+- Edicion y eliminacion de movimientos desde la web.
+- Categorizacion automatica en el bot (ej: comida -> Alimentos).
+
+### 3) Dashboard
+- Resumen de patrimonio.
+- Cuentas destacadas.
+- Ultimos movimientos.
+- Cotizaciones clave.
+
+### 4) Inversiones
+- Registro de posiciones.
+- P&L (ganancia/perdida) en monto y porcentaje.
+- Actualizacion de precios para crypto, USA y Merval.
+
+### 5) Telegram + IA
+- Comandos basicos (`/cuentas`, `/cotizaciones`, `/resumen`).
+- Carga por texto natural.
+- Parseo de fotos de tickets con confirmacion antes de guardar.
+
+### 6) Import / Export
+- Export de transacciones en CSV o JSON.
+- Backup completo en JSON.
+- Import de CSV/JSON con mapeo de cuenta/categoria.
+
+## FAQs
+
+### Como arranco rapido?
+1. Crear cuenta en la web.
+2. Crear al menos una cuenta en ARS.
+3. Cargar movimientos manualmente o por Telegram.
+4. Revisar dashboard y analisis.
+
+### Que formato de importacion soporta?
+- CSV y JSON.
+- En CSV, lo minimo recomendado: `Fecha`, `Monto`, `Tipo`, `Cuenta`, `Moneda`.
+- Si `Cuenta` no coincide exacto, intenta mapear por moneda.
+
+### Puedo usarlo solo desde iPhone?
+Si. Es PWA y se puede instalar en pantalla de inicio.
+
+### Necesito pagar algo para usarlo?
+La arquitectura esta pensada para funcionar en tiers gratuitos.
+
+### Que pasa si cargo una foto de ticket?
+El bot intenta extraer monto/comercio/categoria, te propone el registro y espera confirmacion.
+
+### Soporta acciones de USA y Merval?
+Si. Hay consulta y actualizacion de precios para activos de USA, Merval y CEDEARs.
+
+### Donde configuro el bot de Telegram?
+En la configuracion del proyecto (variables de entorno y webhook) segun tu deploy.
+
+### Puedo recuperar mis datos?
+Si. Tenes export JSON y backup completo para restauracion/migracion.
+
+---
+
+Si queres, en un siguiente paso te dejo una version "README corto + README tecnico" para separar uso diario de documentacion interna.
 # 💰 Zarix
 
 **Aplicación financiera personal optimizada para el mercado argentino.**
