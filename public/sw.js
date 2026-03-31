@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zarix-v1';
+const CACHE_NAME = 'zarix-v2';
 const STATIC_ASSETS = [
   '/',
   '/dashboard',
@@ -8,14 +8,25 @@ const STATIC_ASSETS = [
   '/analysis',
   '/settings',
   '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/favicon.ico',
+  '/apple-touch-icon.png',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.all(
+        STATIC_ASSETS.map(async (asset) => {
+          try {
+            await cache.add(asset);
+          } catch (error) {
+            // Avoid install failure if one asset is missing/unavailable
+            console.warn('[SW] Could not cache asset:', asset);
+          }
+        })
+      );
     })
   );
   self.skipWaiting();
