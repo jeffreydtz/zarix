@@ -41,6 +41,8 @@ export default function CreateAccountButton() {
   const [closingDay, setClosingDay] = useState('');
   const [dueDay, setDueDay] = useState('');
   const [last4Digits, setLast4Digits] = useState('');
+  const [isMulticurrency, setIsMulticurrency] = useState(false);
+  const [secondaryCurrency, setSecondaryCurrency] = useState('USD');
 
   const selectedTypeData = ACCOUNT_TYPES.find(t => t.value === selectedType);
   const isCreditCard = selectedType === 'credit_card';
@@ -75,6 +77,10 @@ export default function CreateAccountButton() {
         if (closingDay) payload.closingDay = parseInt(closingDay);
         if (dueDay) payload.dueDay = parseInt(dueDay);
         if (last4Digits) payload.last4Digits = last4Digits;
+        if (isMulticurrency) {
+          payload.isMulticurrency = true;
+          payload.secondaryCurrency = secondaryCurrency;
+        }
       }
 
       const response = await fetch('/api/accounts', {
@@ -313,6 +319,43 @@ export default function CreateAccountButton() {
                               className="input font-mono"
                             />
                           </div>
+
+                          <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-amber-200 dark:border-amber-700">
+                            <input
+                              type="checkbox"
+                              id="isMulticurrency"
+                              checked={isMulticurrency}
+                              onChange={(e) => setIsMulticurrency(e.target.checked)}
+                              className="w-5 h-5 text-amber-600 rounded-lg focus:ring-2 focus:ring-amber-500"
+                            />
+                            <div className="flex-1">
+                              <label htmlFor="isMulticurrency" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Tarjeta bi-moneda
+                              </label>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Acepta gastos en otra moneda sin convertir
+                              </p>
+                            </div>
+                          </div>
+
+                          {isMulticurrency && (
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                Segunda moneda
+                              </label>
+                              <select
+                                value={secondaryCurrency}
+                                onChange={(e) => setSecondaryCurrency(e.target.value)}
+                                className="input"
+                              >
+                                {CURRENCIES.filter(c => c.value !== selectedCurrency).map((currency) => (
+                                  <option key={currency.value} value={currency.value}>
+                                    {currency.flag} {currency.value}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </motion.div>

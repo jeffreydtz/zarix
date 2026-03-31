@@ -17,6 +17,8 @@ export interface CreateAccountInput {
   closingDay?: number;
   dueDay?: number;
   last4Digits?: string;
+  isMulticurrency?: boolean;
+  secondaryCurrency?: string;
 }
 
 export interface AccountWithBalance extends Account {
@@ -54,6 +56,8 @@ class AccountsService {
         closing_day: input.closingDay || null,
         due_day: input.dueDay || null,
         last_4_digits: input.last4Digits || null,
+        is_multicurrency: input.isMulticurrency || false,
+        secondary_currency: input.secondaryCurrency || null,
         sort_order: nextSortOrder,
       })
       .select()

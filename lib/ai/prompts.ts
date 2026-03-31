@@ -77,14 +77,28 @@ REGLAS DE PARSEO DE CUENTAS (MUY IMPORTANTE):
 - Si no encontrás match, pasá el nombre tal cual - el sistema buscará similitudes
 
 REGLAS DE PARSEO DE MONTOS:
-- "gasté 5000 en el super" → gasto $5000 ARS, categoría Comida, cuenta por defecto
+- "gasté 5000 en el super" → gasto $5000 ARS, categoría Comida/Alimentos, cuenta por defecto
 - "me depositaron 800 lucas" → ingreso $800.000 ARS (lucas = miles), categoría Sueldo
 - "pagué netflix 15 dólares con la visa" → gasto $15 USD, categoría Suscripciones, cuenta Visa
 - "compré 100 dólares a 1250" → transferencia de ARS a USD con tipo de cambio
 - "transferí 50k de MP a BBVA" → transferencia entre cuentas propias
 - Si no especifica cuenta, usar la primera activa de la moneda correspondiente
-- Si no especifica categoría, inferir del contexto (super→Comida, uber→Transporte, etc)
 - Reconocer abreviaturas: "lucas" = miles, "palo" = millón, "verdes" = USD, "k" = mil
+
+REGLAS DE CATEGORIZACIÓN AUTOMÁTICA (MUY IMPORTANTE):
+Cuando el usuario mencione comida/bebida, SIEMPRE usar categoría "Alimentos" o "Comida":
+- Comidas: hamburguesa, pizza, asado, milanesa, empanadas, sushi, pasta, ensalada, pollo, carne, pescado, sandwich, tostado, medialunas, facturas, helado, postre
+- Bebidas: café, cerveza, vino, gaseosa, agua, mate, jugo
+- Lugares: super, supermercado, almacén, kiosco, verdulería, carnicería, panadería, restaurante, bar, café, delivery, rappi, pedidosya, mcdonalds, burger king, mostaza, kentucky
+- Si dice "comiendo", "almorzando", "cenando", "desayunando", "merendando" → categoría Alimentos/Comida
+
+Otras categorías automáticas:
+- uber, cabify, taxi, remis, subte, tren, bondi, nafta, estacionamiento → Transporte
+- netflix, spotify, disney, hbo, youtube, prime, flow → Suscripciones  
+- luz, gas, agua, internet, teléfono, celular, expensas → Servicios
+- farmacia, médico, dentista, psicólogo, obra social → Salud
+- ropa, zapatillas, shopping → Indumentaria
+- alquiler, inmobiliaria → Hogar
 
 CREACIÓN DE CUENTAS:
 - Si el usuario dice "crear cuenta X" o "quiero crear la cuenta X", usar action "create_account"
@@ -121,10 +135,38 @@ Mensaje: "gasté 400 pesos comiendo hamburguesa pagué con efectivo"
     "amount": 400,
     "currency": "ARS",
     "account": "efectivo",
-    "category": "Comida",
+    "category": "Alimentos",
     "description": "hamburguesa"
   },
-  "response": "Anotado, $400 en hamburguesa."
+  "response": "Anotado, $400 en hamburguesa (Alimentos)."
+}
+
+Mensaje: "gasté 1500 en el super"
+{
+  "action": "create_transaction",
+  "transaction": {
+    "type": "expense",
+    "amount": 1500,
+    "currency": "ARS",
+    "account": null,
+    "category": "Alimentos",
+    "description": "supermercado"
+  },
+  "response": "Anotado, $1500 en el super."
+}
+
+Mensaje: "uber 800 pesos"
+{
+  "action": "create_transaction",
+  "transaction": {
+    "type": "expense",
+    "amount": 800,
+    "currency": "ARS",
+    "account": null,
+    "category": "Transporte",
+    "description": "uber"
+  },
+  "response": "Anotado, $800 en Uber."
 }
 
 Mensaje: "crear cuenta efectivo"

@@ -825,6 +825,9 @@ El bot automáticamente:
 - Balance en tiempo real
 - Conversión automática a moneda base (ARS o USD)
 - **Tarjetas de crédito**: límite, día de cierre, día de vencimiento, últimos 4 dígitos
+- **Tarjetas bi-moneda**: soporte para tarjetas que aceptan ARS y USD
+  - Si marcás una tarjeta como bi-moneda, el bot NO convierte gastos en la segunda moneda
+  - Si la tarjeta NO es bi-moneda y gastás en USD, convierte automáticamente a ARS al dólar oficial
 - **Indicadores visuales**: utilización de crédito, disponible vs usado
 - **Inversiones separadas**: no afectan el saldo del día a día
 

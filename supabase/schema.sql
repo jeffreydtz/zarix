@@ -61,6 +61,10 @@ CREATE TABLE accounts (
   due_day INTEGER CHECK (due_day >= 1 AND due_day <= 31),
   last_4_digits TEXT CHECK (length(last_4_digits) = 4),
   
+  -- Soporte para tarjetas bi-moneda (ej: Visa que acepta ARS y USD)
+  is_multicurrency BOOLEAN DEFAULT FALSE,
+  secondary_currency TEXT, -- ej: 'USD' si la principal es ARS
+  
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

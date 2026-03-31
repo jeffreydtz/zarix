@@ -245,6 +245,7 @@ bot.on(message('text'), async (ctx) => {
 
       let accountId = '';
       let accountName = '';
+      let selectedAccount: any = null;
       
       if (txData.account) {
         const fuzzyResult = await accountsService.findByNameFuzzy(user.id, txData.account);
@@ -252,9 +253,11 @@ bot.on(message('text'), async (ctx) => {
         if (fuzzyResult.confidence === 'exact' || fuzzyResult.confidence === 'high') {
           accountId = fuzzyResult.account!.id;
           accountName = fuzzyResult.account!.name;
+          selectedAccount = fuzzyResult.account;
         } else if (fuzzyResult.confidence === 'medium' && fuzzyResult.account) {
           accountId = fuzzyResult.account.id;
           accountName = fuzzyResult.account.name;
+          selectedAccount = fuzzyResult.account;
         } else if (fuzzyResult.confidence === 'low' && fuzzyResult.suggestions && fuzzyResult.suggestions.length > 0) {
           const suggestionList = fuzzyResult.suggestions
             .map(s => `• ${s.icon || '💳'} ${s.name}`)
@@ -288,6 +291,29 @@ bot.on(message('text'), async (ctx) => {
         }
         accountId = defaultAccount.id;
         accountName = defaultAccount.name;
+        selectedAccount = defaultAccount;
+      }
+
+      let finalCurrency = txData.currency;
+      let finalAmount = txData.amount;
+      let conversionNote = '';
+
+      if (selectedAccount && txData.currency !== selectedAccount.currency) {
+        const isMulticurrency = selectedAccount.is_multicurrency && 
+          (selectedAccount.secondary_currency === txData.currency || selectedAccount.currency === txData.currency);
+        
+        if (!isMulticurrency && selectedAccount.type === 'credit_card') {
+          try {
+            const rate = await cotizacionesService.getExchangeRate(txData.currency, selectedAccount.currency);
+            if (rate > 0) {
+              finalAmount = txData.amount * rate;
+              finalCurrency = selectedAccount.currency;
+              conversionNote = ` (${txData.amount} ${txData.currency} × $${rate.toFixed(2)} = $${finalAmount.toFixed(2)} ${finalCurrency})`;
+            }
+          } catch (e) {
+            console.log('Could not get exchange rate, using original currency');
+          }
+        }
       }
 
       let categoryId: string | undefined;
@@ -317,15 +343,19 @@ bot.on(message('text'), async (ctx) => {
           type: txData.type,
           accountId,
           destinationAccountId,
-          amount: txData.amount,
-          currency: txData.currency,
+          amount: finalAmount,
+          currency: finalCurrency,
           categoryId,
           description: txData.description,
         });
 
-        const responseWithAccount = parsedResponse.response.includes(accountName) 
+        let responseWithAccount = parsedResponse.response.includes(accountName) 
           ? parsedResponse.response 
           : `${parsedResponse.response} (desde ${accountName})`;
+        
+        if (conversionNote) {
+          responseWithAccount += conversionNote;
+        }
 
         return ctx.reply(responseWithAccount);
       } catch (txError: any) {

@@ -108,6 +108,8 @@ export interface Account {
   closing_day: number | null;
   due_day: number | null;
   last_4_digits: string | null;
+  is_multicurrency: boolean;
+  secondary_currency: string | null;
   sort_order: number;
   is_active: boolean;
   created_at: string;
