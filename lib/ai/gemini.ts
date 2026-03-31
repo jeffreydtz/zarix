@@ -31,6 +31,9 @@ class GeminiClient {
     const model = genAI.getGenerativeModel({
       model: modelName,
       systemInstruction: systemInstruction,
+      generationConfig: {
+        responseMimeType: 'application/json',
+      },
     });
 
     const chat = model.startChat({
@@ -60,6 +63,9 @@ class GeminiClient {
     const model = genAI.getGenerativeModel({
       model: GEMINI_FULL_MODEL,
       systemInstruction: systemInstruction,
+      generationConfig: {
+        responseMimeType: 'application/json',
+      },
     });
 
     const chat = model.startChat({

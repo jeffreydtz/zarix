@@ -191,6 +191,21 @@ bot.on(message('text'), async (ctx) => {
 
   const userMessage = ctx.message.text;
 
+  const offTopicKeywords = [
+    'chiste', 'poema', 'canción', 'receta', 'clima', 'tiempo',
+    'horóscopo', 'partido', 'fútbol', 'película', 'serie',
+    'traduci', 'traducir', 'código', 'programar', 'html', 'javascript',
+  ];
+
+  const lowerMessage = userMessage.toLowerCase();
+  const isOffTopic = offTopicKeywords.some(keyword => lowerMessage.includes(keyword));
+
+  if (isOffTopic) {
+    return ctx.reply(
+      'Solo ayudo con finanzas personales. ¿Necesitás registrar un gasto, consultar saldos o analizar tus gastos?'
+    );
+  }
+
   try {
     const financialContext = await getFinancialContext(user.id);
 
@@ -204,6 +219,8 @@ bot.on(message('text'), async (ctx) => {
       maxTokens: 1024,
     });
 
+    console.log('[BOT] AI Response:', aiResponse.substring(0, 200));
+
     let parsedResponse: {
       action: string;
       transaction?: any;
@@ -211,13 +228,20 @@ bot.on(message('text'), async (ctx) => {
     };
 
     try {
-      parsedResponse = JSON.parse(aiResponse);
-    } catch {
+      const cleaned = aiResponse.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
+      parsedResponse = JSON.parse(cleaned);
+      console.log('[BOT] Parsed action:', parsedResponse.action);
+    } catch (parseError) {
+      console.error('[BOT] JSON parse error:', parseError);
       return ctx.reply(aiResponse);
     }
 
     if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
       const txData = parsedResponse.transaction;
+
+      if (!txData.amount || txData.amount <= 0) {
+        return ctx.reply(parsedResponse.response || 'No pude entender el monto. ¿Podés ser más específico?');
+      }
 
       let accountId = '';
       if (txData.account) {
@@ -233,7 +257,7 @@ bot.on(message('text'), async (ctx) => {
         );
         if (!defaultAccount) {
           return ctx.reply(
-            'No encontré la cuenta. ¿Podés especificar cuál usar?'
+            parsedResponse.response || 'No encontré la cuenta. ¿Podés especificar cuál usar?'
           );
         }
         accountId = defaultAccount.id;
@@ -275,9 +299,18 @@ bot.on(message('text'), async (ctx) => {
     }
 
     ctx.reply(parsedResponse.response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Bot error:', error);
-    ctx.reply('Hubo un error procesando tu mensaje. Probá de nuevo.');
+    
+    if (error.message?.includes('404') || error.message?.includes('not found')) {
+      return ctx.reply('El servicio de IA no está disponible temporalmente. Probá de nuevo en unos minutos.');
+    }
+    
+    if (error.message?.includes('account')) {
+      return ctx.reply('No encontré esa cuenta. Usá /cuentas para ver cuáles tenés disponibles.');
+    }
+    
+    ctx.reply('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
   }
 });
 
@@ -317,13 +350,18 @@ bot.on(message('photo'), async (ctx) => {
     };
 
     try {
-      parsedResponse = JSON.parse(aiResponse);
+      const cleaned = aiResponse.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
+      parsedResponse = JSON.parse(cleaned);
     } catch {
       return ctx.reply(aiResponse);
     }
 
     if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
       const txData = parsedResponse.transaction;
+
+      if (!txData.amount || txData.amount <= 0) {
+        return ctx.reply(parsedResponse.response || 'No pude leer bien el monto del ticket. ¿Me lo decís vos?');
+      }
 
       let accountId = '';
       const defaultAccount = financialContext.accounts.find(
