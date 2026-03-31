@@ -311,22 +311,43 @@ bot.on(message('text'), async (ctx) => {
         }
       }
 
-      await transactionsService.create({
-        userId: user.id,
-        type: txData.type,
-        accountId,
-        destinationAccountId,
-        amount: txData.amount,
-        currency: txData.currency,
-        categoryId,
-        description: txData.description,
-      });
+      try {
+        await transactionsService.create({
+          userId: user.id,
+          type: txData.type,
+          accountId,
+          destinationAccountId,
+          amount: txData.amount,
+          currency: txData.currency,
+          categoryId,
+          description: txData.description,
+        });
 
-      const responseWithAccount = parsedResponse.response.includes(accountName) 
-        ? parsedResponse.response 
-        : `${parsedResponse.response} (desde ${accountName})`;
+        const responseWithAccount = parsedResponse.response.includes(accountName) 
+          ? parsedResponse.response 
+          : `${parsedResponse.response} (desde ${accountName})`;
 
-      return ctx.reply(responseWithAccount);
+        return ctx.reply(responseWithAccount);
+      } catch (txError: any) {
+        console.error('Transaction error:', txError);
+        
+        if (txError.code === '23514' && txError.message?.includes('positive_balance')) {
+          const account = financialContext.accounts.find(a => a.id === accountId);
+          const currentBalance = account?.balance || 0;
+          
+          return ctx.reply(
+            `No pude registrar el gasto porque tu cuenta "${accountName}" quedaría en negativo.\n\n` +
+            `Saldo actual: $${currentBalance.toLocaleString('es-AR')}\n` +
+            `Gasto: $${txData.amount.toLocaleString('es-AR')}\n\n` +
+            `Opciones:\n` +
+            `• Usá otra cuenta con más saldo\n` +
+            `• Agregá fondos a esta cuenta primero\n` +
+            `• Usá una tarjeta de crédito para este gasto`
+          );
+        }
+        
+        return ctx.reply('Hubo un error al registrar la transacción. ¿Podés intentar de nuevo?');
+      }
     }
 
     if (parsedResponse.action === 'create_account' && parsedResponse.transaction) {

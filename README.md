@@ -120,6 +120,14 @@ ALTER TABLE accounts
   ADD COLUMN IF NOT EXISTS last_4_digits TEXT CHECK (length(last_4_digits) = 4);
 ```
 
+**⚠️ Para permitir saldos negativos (recomendado):**
+
+Por defecto, las cuentas no pueden quedar en negativo. Si querés permitirlo (más realista), ejecutá:
+
+```sql
+ALTER TABLE accounts DROP CONSTRAINT IF EXISTS positive_balance_if_not_debt;
+```
+
 #### 2.3 Obtener API Keys
 
 1. `Settings` → `API` (en el sidebar)
