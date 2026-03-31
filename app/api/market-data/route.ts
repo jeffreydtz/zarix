@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 300;
 
 const US_TICKERS = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'GOOGL'];
-const ARG_TICKERS = ['GGAL.BA', 'YPF.BA', 'PAMP.BA', 'BMA.BA', 'TXAR.BA'];
+const ARG_TICKERS = ['GGAL.BA', 'YPFD.BA', 'PAMP.BA', 'BMA.BA', 'TXAR.BA'];
 
 const YAHOO_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -105,7 +105,7 @@ export async function GET() {
     { crypto, usStocks, argStocks, fetchedAt: new Date().toISOString() },
     {
       headers: {
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
       },
     }
   );
