@@ -40,14 +40,23 @@ export async function GET(request: NextRequest) {
   let updated = 0;
   let errors = 0;
 
-  // Group crypto by ticker to avoid duplicate API calls
+  // Group tickers to avoid duplicate API calls
   const cryptoTickers = new Set<string>();
+  const usTickers = new Set<string>();
+  const argTickers = new Set<string>();
+  const cedearTickers = new Set<string>();
   const priceCache: Record<string, number> = {};
 
   for (const inv of investments) {
     if (inv.type === 'crypto' && inv.ticker) {
       const mappedTicker = CRYPTO_TICKER_MAP[inv.ticker.toUpperCase()] || inv.ticker.toUpperCase();
       cryptoTickers.add(mappedTicker);
+    } else if ((inv.type === 'stock_us' || inv.type === 'etf') && inv.ticker) {
+      usTickers.add(inv.ticker.toUpperCase());
+    } else if (inv.type === 'stock_arg' && inv.ticker) {
+      argTickers.add(inv.ticker.toUpperCase());
+    } else if (inv.type === 'cedear' && inv.ticker) {
+      cedearTickers.add(inv.ticker.toUpperCase());
     }
   }
 
@@ -58,6 +67,36 @@ export async function GET(request: NextRequest) {
       priceCache[ticker] = quote.priceUSD;
     } catch (e) {
       console.error(`Error fetching price for ${ticker}:`, e);
+    }
+  }
+
+  // Fetch US stock/ETF prices
+  for (const ticker of usTickers) {
+    try {
+      const quote = await cotizacionesService.getStockQuote(ticker, 'us');
+      priceCache[`US:${ticker}`] = quote.price;
+    } catch (e) {
+      console.error(`Error fetching US stock price for ${ticker}:`, e);
+    }
+  }
+
+  // Fetch Argentina stock prices (MERVAL)
+  for (const ticker of argTickers) {
+    try {
+      const quote = await cotizacionesService.getStockQuote(ticker, 'arg');
+      priceCache[`ARG:${ticker}`] = quote.price;
+    } catch (e) {
+      console.error(`Error fetching ARG stock price for ${ticker}:`, e);
+    }
+  }
+
+  // Fetch CEDEAR prices (usually .BA)
+  for (const ticker of cedearTickers) {
+    try {
+      const quote = await cotizacionesService.getStockQuote(ticker, 'cedear');
+      priceCache[`CEDEAR:${ticker}`] = quote.price;
+    } catch (e) {
+      console.error(`Error fetching CEDEAR price for ${ticker}:`, e);
     }
   }
 
@@ -78,6 +117,12 @@ export async function GET(request: NextRequest) {
     if (inv.type === 'crypto' && inv.ticker) {
       const mappedTicker = CRYPTO_TICKER_MAP[inv.ticker.toUpperCase()] || inv.ticker.toUpperCase();
       newPrice = priceCache[mappedTicker] || null;
+    } else if ((inv.type === 'stock_us' || inv.type === 'etf') && inv.ticker) {
+      newPrice = priceCache[`US:${inv.ticker.toUpperCase()}`] || null;
+    } else if (inv.type === 'stock_arg' && inv.ticker) {
+      newPrice = priceCache[`ARG:${inv.ticker.toUpperCase()}`] || null;
+    } else if (inv.type === 'cedear' && inv.ticker) {
+      newPrice = priceCache[`CEDEAR:${inv.ticker.toUpperCase()}`] || null;
     }
 
     if (newPrice !== null) {

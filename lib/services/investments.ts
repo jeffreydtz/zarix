@@ -66,10 +66,21 @@ class InvestmentsService {
       investments.map(async (inv) => {
         let currentPrice = inv.current_price || inv.purchase_price;
 
-        if (inv.type === 'crypto' && inv.ticker) {
+        if (inv.ticker) {
           try {
-            const quote = await cotizacionesService.getCryptoQuote(inv.ticker);
-            currentPrice = quote.priceUSD;
+            if (inv.type === 'crypto') {
+              const quote = await cotizacionesService.getCryptoQuote(inv.ticker);
+              currentPrice = quote.priceUSD;
+            } else if (inv.type === 'stock_us' || inv.type === 'etf') {
+              const quote = await cotizacionesService.getStockQuote(inv.ticker, 'us');
+              currentPrice = quote.price;
+            } else if (inv.type === 'stock_arg') {
+              const quote = await cotizacionesService.getStockQuote(inv.ticker, 'arg');
+              currentPrice = quote.price;
+            } else if (inv.type === 'cedear') {
+              const quote = await cotizacionesService.getStockQuote(inv.ticker, 'cedear');
+              currentPrice = quote.price;
+            }
 
             await supabase
               .from('investments')

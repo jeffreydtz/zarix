@@ -167,6 +167,61 @@ class CotizacionesService {
     }
   }
 
+  async getStockQuote(
+    ticker: string,
+    market: 'us' | 'arg' | 'cedear' = 'us'
+  ): Promise<StockQuote> {
+    const normalizedTicker = ticker.trim().toUpperCase();
+    const cacheKey = this.getCacheKey('yahoo', normalizedTicker, market);
+    const cached = this.getFromCache<StockQuote>(cacheKey);
+    if (cached) return cached;
+
+    const yahooSymbol =
+      market === 'us'
+        ? normalizedTicker
+        : normalizedTicker.endsWith('.BA')
+          ? normalizedTicker
+          : `${normalizedTicker}.BA`;
+
+    try {
+      const response = await fetch(
+        `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=1d&interval=1d`,
+        { next: { revalidate: 300 } }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Yahoo API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const result = data?.chart?.result?.[0];
+      const meta = result?.meta;
+
+      const price = Number(meta?.regularMarketPrice || 0);
+      const prevClose = Number(meta?.chartPreviousClose || meta?.previousClose || 0);
+      const currency = String(meta?.currency || (market === 'us' ? 'USD' : 'ARS'));
+      const change = prevClose > 0 ? ((price - prevClose) / prevClose) * 100 : 0;
+
+      if (!price) {
+        throw new Error(`No price for ${yahooSymbol}`);
+      }
+
+      const quote: StockQuote = {
+        ticker: normalizedTicker,
+        price,
+        currency,
+        change,
+        timestamp: new Date(),
+      };
+
+      this.setCache(cacheKey, quote);
+      return quote;
+    } catch (error) {
+      console.error(`Error fetching stock quote for ${ticker}:`, error);
+      throw error;
+    }
+  }
+
   async getExchangeRate(
     from: string,
     to: string = 'ARS'
