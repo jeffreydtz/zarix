@@ -294,6 +294,7 @@ git push -u origin main
 5. Framework Preset: `Next.js` (detecta automático)
 6. Root Directory: `./` (default)
 
+
 #### 8.2 Configurar Environment Variables
 
 **ANTES de deployar**, agregá las mismas variables de `.env.local` en Vercel:
