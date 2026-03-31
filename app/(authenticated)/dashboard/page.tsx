@@ -20,14 +20,15 @@ export default async function DashboardPage() {
       redirect('/login');
     }
 
-    const [accounts, totalBalance, recentTransactions, quotes] = await Promise.all([
+    const [accounts, balances, recentTransactions, quotes] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
-      accountsService.getTotalBalance(user.id).catch(() => ({ 
-        totalUSD: 0, 
+      accountsService.getTotalBalanceWithInvestments(user.id).catch(() => ({ 
+        liquidUSD: 0,
+        liquidARSBlue: 0,
+        investmentsUSD: 0,
+        investmentsARSBlue: 0,
+        totalUSD: 0,
         totalARSBlue: 0,
-        totalCreditUsed: 0,
-        totalCreditLimit: 0,
-        creditUtilization: 0,
       })),
       transactionsService.list(user.id, { limit: 5 }).catch(() => []),
       cotizacionesService.getAllQuotes().catch(() => ({
@@ -46,12 +47,25 @@ export default async function DashboardPage() {
       })),
     ]);
 
+    const totalBalance = await accountsService.getTotalBalance(user.id).catch(() => ({
+      totalUSD: 0, 
+      totalARSBlue: 0,
+      totalCreditUsed: 0,
+      totalCreditLimit: 0,
+      creditUtilization: 0,
+      accountCount: 0,
+    }));
+
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto p-4 space-y-6">
           <BalanceHeader
-            totalUSD={totalBalance.totalUSD}
-            totalARSBlue={totalBalance.totalARSBlue}
+            liquidUSD={balances.liquidUSD}
+            liquidARSBlue={balances.liquidARSBlue}
+            investmentsUSD={balances.investmentsUSD}
+            investmentsARSBlue={balances.investmentsARSBlue}
+            totalUSD={balances.totalUSD}
+            totalARSBlue={balances.totalARSBlue}
             totalCreditUsed={totalBalance.totalCreditUsed}
             totalCreditLimit={totalBalance.totalCreditLimit}
             creditUtilization={totalBalance.creditUtilization}

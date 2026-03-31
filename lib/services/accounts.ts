@@ -229,6 +229,73 @@ class AccountsService {
     };
   }
 
+  async getTotalBalanceWithInvestments(userId: string) {
+    const supabase = createServiceClientSync();
+
+    const { data: allAccounts, error } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true);
+
+    if (error) throw error;
+
+    const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
+    
+    if (blueRate === 0) {
+      throw new Error('Exchange rate not available');
+    }
+
+    let liquidUSD = 0;
+    let liquidARSBlue = 0;
+    let investmentsUSD = 0;
+    let investmentsARSBlue = 0;
+
+    for (const account of allAccounts) {
+      if (!account.include_in_total) continue;
+
+      const balance = Number(account.balance);
+      const isInvestment = account.type === 'investment';
+
+      let balanceUSD = 0;
+      let balanceARSBlue = 0;
+
+      if (account.currency === 'ARS') {
+        balanceUSD = balance / blueRate;
+        balanceARSBlue = balance;
+      } else if (account.currency === 'USD') {
+        balanceUSD = balance;
+        balanceARSBlue = balance * blueRate;
+      } else {
+        const rateToUSD = await cotizacionesService.getExchangeRate(
+          account.currency,
+          'USD'
+        );
+        if (rateToUSD > 0) {
+          balanceUSD = balance * rateToUSD;
+          balanceARSBlue = balanceUSD * blueRate;
+        }
+      }
+
+      if (isInvestment) {
+        investmentsUSD += balanceUSD;
+        investmentsARSBlue += balanceARSBlue;
+      } else {
+        liquidUSD += balanceUSD;
+        liquidARSBlue += balanceARSBlue;
+      }
+    }
+
+    return {
+      liquidUSD: Math.round(liquidUSD * 100) / 100,
+      liquidARSBlue: Math.round(liquidARSBlue * 100) / 100,
+      investmentsUSD: Math.round(investmentsUSD * 100) / 100,
+      investmentsARSBlue: Math.round(investmentsARSBlue * 100) / 100,
+      totalUSD: Math.round((liquidUSD + investmentsUSD) * 100) / 100,
+      totalARSBlue: Math.round((liquidARSBlue + investmentsARSBlue) * 100) / 100,
+    };
+  }
+
   async findByName(userId: string, name: string): Promise<Account | null> {
     const supabase = createServiceClientSync();
 
