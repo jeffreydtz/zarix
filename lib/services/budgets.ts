@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/server';
+import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Budget, BudgetStatus } from '@/types/database';
 
 export interface CreateBudgetInput {
@@ -13,7 +13,7 @@ export interface CreateBudgetInput {
 
 class BudgetsService {
   async create(input: CreateBudgetInput): Promise<Budget> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('budgets')
@@ -34,7 +34,7 @@ class BudgetsService {
   }
 
   async list(userId: string, month?: string): Promise<Budget[]> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     let query = supabase
       .from('budgets')
@@ -53,7 +53,7 @@ class BudgetsService {
   }
 
   async getStatus(userId: string, month: Date): Promise<BudgetStatus[]> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const monthStr = month.toISOString().split('T')[0].substring(0, 7) + '-01';
 
@@ -67,7 +67,7 @@ class BudgetsService {
   }
 
   async checkAndSendAlerts(userId: string, categoryId: string, month: string): Promise<void> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const budgetStatus = await this.getStatus(userId, new Date(month));
     const status = budgetStatus.find((s) => s.category_id === categoryId);
@@ -107,7 +107,7 @@ class BudgetsService {
     userId: string,
     updates: Partial<CreateBudgetInput>
   ): Promise<Budget> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('budgets')
@@ -122,7 +122,7 @@ class BudgetsService {
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { error } = await supabase
       .from('budgets')

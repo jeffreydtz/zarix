@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/server';
+import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import type { Investment } from '@/types/database';
 
@@ -25,7 +25,7 @@ export interface InvestmentWithPnL extends Investment {
 
 class InvestmentsService {
   async create(input: CreateInvestmentInput): Promise<Investment> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('investments')
@@ -51,7 +51,7 @@ class InvestmentsService {
   }
 
   async list(userId: string): Promise<InvestmentWithPnL[]> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data: investments, error } = await supabase
       .from('investments')
@@ -105,7 +105,7 @@ class InvestmentsService {
   }
 
   async getById(id: string, userId: string): Promise<Investment> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('investments')
@@ -123,7 +123,7 @@ class InvestmentsService {
     userId: string,
     updates: Partial<CreateInvestmentInput>
   ): Promise<Investment> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('investments')
@@ -138,7 +138,7 @@ class InvestmentsService {
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { error } = await supabase
       .from('investments')

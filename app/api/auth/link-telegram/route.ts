@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,8 +21,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    const serviceSupabase = await createServiceClient();
     
     const { error } = await supabase.rpc('link_telegram_to_user', {
       p_user_id: user.id,

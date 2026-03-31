@@ -5,7 +5,7 @@ import { buildBotSystemPrompt } from '@/lib/ai/prompts';
 import { transactionsService } from '@/lib/services/transactions';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createServiceClientSync } from '@/lib/supabase/server';
 import type { FinancialContext } from '@/lib/ai/prompts';
 
 interface BotContext extends Context {
@@ -15,7 +15,7 @@ interface BotContext extends Context {
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
 
 async function getUserFromTelegramId(telegramChatId: number) {
-  const supabase = await createServiceClient();
+  const supabase = createServiceClientSync();
 
   const { data: user, error } = await supabase
     .from('users')
@@ -28,7 +28,7 @@ async function getUserFromTelegramId(telegramChatId: number) {
 }
 
 async function linkUserToTelegram(userId: string, telegramChatId: number, username?: string) {
-  const supabase = await createServiceClient();
+  const supabase = createServiceClientSync();
 
   const { error } = await supabase
     .from('users')
@@ -42,7 +42,7 @@ async function linkUserToTelegram(userId: string, telegramChatId: number, userna
 }
 
 async function getFinancialContext(userId: string): Promise<FinancialContext> {
-  const supabase = await createServiceClient();
+  const supabase = createServiceClientSync();
 
   const [userResult, accounts, categories, monthSummary] = await Promise.all([
     supabase.from('users').select('*').eq('id', userId).single(),

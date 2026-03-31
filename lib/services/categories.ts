@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/server';
+import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Category } from '@/types/database';
 
 export interface CreateCategoryInput {
@@ -11,7 +11,7 @@ export interface CreateCategoryInput {
 
 class CategoriesService {
   async list(userId: string): Promise<Category[]> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('categories')
@@ -24,7 +24,7 @@ class CategoriesService {
   }
 
   async create(input: CreateCategoryInput): Promise<Category> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('categories')
@@ -44,7 +44,7 @@ class CategoriesService {
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data: category } = await supabase
       .from('categories')

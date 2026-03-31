@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/server';
+import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import type { Account } from '@/types/database';
 
@@ -22,7 +22,7 @@ export interface AccountWithBalance extends Account {
 
 class AccountsService {
   async create(input: CreateAccountInput): Promise<Account> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data: accounts } = await supabase
       .from('accounts')
@@ -56,7 +56,7 @@ class AccountsService {
   }
 
   async list(userId: string): Promise<AccountWithBalance[]> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data: accounts, error } = await supabase
       .from('accounts')
@@ -96,7 +96,7 @@ class AccountsService {
   }
 
   async getById(id: string, userId: string): Promise<Account> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('accounts')
@@ -114,7 +114,7 @@ class AccountsService {
     userId: string,
     updates: Partial<CreateAccountInput>
   ): Promise<Account> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('accounts')
@@ -129,7 +129,7 @@ class AccountsService {
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data: transactions } = await supabase
       .from('transactions')
@@ -151,7 +151,7 @@ class AccountsService {
   }
 
   async getTotalBalance(userId: string) {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('accounts')
@@ -196,7 +196,7 @@ class AccountsService {
   }
 
   async findByName(userId: string, name: string): Promise<Account | null> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('accounts')

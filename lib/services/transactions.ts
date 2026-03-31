@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/server';
+import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import type { Transaction, Account } from '@/types/database';
 
@@ -30,7 +30,7 @@ export interface TransactionWithCategory extends Transaction {
 
 class TransactionsService {
   async create(input: CreateTransactionInput): Promise<Transaction> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const account = await supabase
       .from('accounts')
@@ -153,7 +153,7 @@ class TransactionsService {
       offset?: number;
     } = {}
   ): Promise<TransactionWithCategory[]> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     let query = supabase
       .from('transactions')
@@ -200,7 +200,7 @@ class TransactionsService {
   }
 
   async getById(id: string, userId: string): Promise<TransactionWithCategory> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('transactions')
@@ -220,7 +220,7 @@ class TransactionsService {
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const { error } = await supabase
       .from('transactions')
@@ -232,7 +232,7 @@ class TransactionsService {
   }
 
   async getMonthSummary(userId: string, month: Date) {
-    const supabase = await createServiceClient();
+    const supabase = createServiceClientSync();
 
     const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
     const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59);
