@@ -54,6 +54,13 @@ CREATE TABLE accounts (
   min_balance NUMERIC(20, 8),
   sort_order INTEGER DEFAULT 0,
   is_active BOOLEAN DEFAULT TRUE,
+  
+  -- Campos específicos para tarjetas de crédito
+  credit_limit NUMERIC(20, 8),
+  closing_day INTEGER CHECK (closing_day >= 1 AND closing_day <= 31),
+  due_day INTEGER CHECK (due_day >= 1 AND due_day <= 31),
+  last_4_digits TEXT CHECK (length(last_4_digits) = 4),
+  
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   

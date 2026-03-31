@@ -7,6 +7,7 @@ import AccountCards from '@/components/dashboard/AccountCards';
 import QuotesWidget from '@/components/dashboard/QuotesWidget';
 import RecentTransactions from '@/components/dashboard/RecentTransactions';
 import BalanceHeader from '@/components/dashboard/BalanceHeader';
+import CreditCardsWidget from '@/components/dashboard/CreditCardsWidget';
 
 export default async function DashboardPage() {
   try {
@@ -21,7 +22,13 @@ export default async function DashboardPage() {
 
     const [accounts, totalBalance, recentTransactions, quotes] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
-      accountsService.getTotalBalance(user.id).catch(() => ({ totalUSD: 0, totalARSBlue: 0 })),
+      accountsService.getTotalBalance(user.id).catch(() => ({ 
+        totalUSD: 0, 
+        totalARSBlue: 0,
+        totalCreditUsed: 0,
+        totalCreditLimit: 0,
+        creditUtilization: 0,
+      })),
       transactionsService.list(user.id, { limit: 5 }).catch(() => []),
       cotizacionesService.getAllQuotes().catch(() => ({
         dolar: {
@@ -45,9 +52,14 @@ export default async function DashboardPage() {
           <BalanceHeader
             totalUSD={totalBalance.totalUSD}
             totalARSBlue={totalBalance.totalARSBlue}
+            totalCreditUsed={totalBalance.totalCreditUsed}
+            totalCreditLimit={totalBalance.totalCreditLimit}
+            creditUtilization={totalBalance.creditUtilization}
           />
 
           <QuotesWidget quotes={quotes} />
+
+          <CreditCardsWidget accounts={accounts} />
 
           <AccountCards accounts={accounts} />
 

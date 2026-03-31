@@ -12,9 +12,9 @@ const ACCOUNT_TYPES = [
   { value: 'bank', label: '🏦 Banco', color: '#3B82F6' },
   { value: 'cash', label: '💵 Efectivo', color: '#10B981' },
   { value: 'investment', label: '📈 Inversión', color: '#8B5CF6' },
-  { value: 'savings', label: '🏦 Caja de Ahorro', color: '#06B6D4' },
-  { value: 'credit', label: '💳 Tarjeta', color: '#F59E0B' },
+  { value: 'credit_card', label: '💳 Tarjeta de Crédito', color: '#F59E0B' },
   { value: 'crypto', label: '₿ Crypto', color: '#EF4444' },
+  { value: 'digital_wallet', label: '📱 Billetera Digital', color: '#06B6D4' },
   { value: 'other', label: '🔁 Otro', color: '#6B7280' },
 ];
 
@@ -35,8 +35,15 @@ export default function CreateAccountButton() {
   const [selectedCurrency, setSelectedCurrency] = useState('ARS');
   const [initialBalance, setInitialBalance] = useState('');
   const [isDebt, setIsDebt] = useState(false);
+  
+  // Campos específicos para tarjetas de crédito
+  const [creditLimit, setCreditLimit] = useState('');
+  const [closingDay, setClosingDay] = useState('');
+  const [dueDay, setDueDay] = useState('');
+  const [last4Digits, setLast4Digits] = useState('');
 
   const selectedTypeData = ACCOUNT_TYPES.find(t => t.value === selectedType);
+  const isCreditCard = selectedType === 'credit_card';
 
   const handleCreate = async () => {
     if (!name.trim()) {
@@ -44,21 +51,36 @@ export default function CreateAccountButton() {
       return;
     }
 
+    if (isCreditCard && !creditLimit) {
+      alert('El límite de crédito es requerido para tarjetas');
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const payload: any = {
+        name: name.trim(),
+        type: selectedType,
+        currency: selectedCurrency,
+        icon: selectedIcon,
+        color: selectedTypeData?.color || '#3B82F6',
+        isDebt: isCreditCard || isDebt,
+        initialBalance: parseFloat(initialBalance) || 0,
+        includeInTotal: !isCreditCard,
+      };
+
+      if (isCreditCard) {
+        payload.creditLimit = parseFloat(creditLimit);
+        if (closingDay) payload.closingDay = parseInt(closingDay);
+        if (dueDay) payload.dueDay = parseInt(dueDay);
+        if (last4Digits) payload.last4Digits = last4Digits;
+      }
+
       const response = await fetch('/api/accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          type: selectedType,
-          currency: selectedCurrency,
-          icon: selectedIcon,
-          color: selectedTypeData?.color || '#3B82F6',
-          isDebt,
-          initialBalance: parseFloat(initialBalance) || 0,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) throw new Error('Error creating account');
@@ -69,6 +91,10 @@ export default function CreateAccountButton() {
       setSelectedCurrency('ARS');
       setInitialBalance('');
       setIsDebt(false);
+      setCreditLimit('');
+      setClosingDay('');
+      setDueDay('');
+      setLast4Digits('');
       setIsOpen(false);
       window.location.reload();
     } catch (error) {
@@ -186,18 +212,84 @@ export default function CreateAccountButton() {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="isDebt"
-                  checked={isDebt}
-                  onChange={(e) => setIsDebt(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
-                <label htmlFor="isDebt" className="text-sm font-medium">
-                  Es una deuda (mostrar saldo negativo)
-                </label>
-              </div>
+              {isCreditCard && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Límite de crédito *
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={creditLimit}
+                      onChange={(e) => setCreditLimit(e.target.value)}
+                      placeholder="Ej: 100000"
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Día de cierre (opcional)
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={closingDay}
+                        onChange={(e) => setClosingDay(e.target.value)}
+                        placeholder="Ej: 15"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Día de vencimiento
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={dueDay}
+                        onChange={(e) => setDueDay(e.target.value)}
+                        placeholder="Ej: 25"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Últimos 4 dígitos (opcional)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={4}
+                      value={last4Digits}
+                      onChange={(e) => setLast4Digits(e.target.value.replace(/\D/g, ''))}
+                      placeholder="1234"
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    />
+                  </div>
+                </>
+              )}
+
+              {!isCreditCard && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="isDebt"
+                    checked={isDebt}
+                    onChange={(e) => setIsDebt(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <label htmlFor="isDebt" className="text-sm font-medium">
+                    Es una deuda (mostrar saldo negativo)
+                  </label>
+                </div>
+              )}
 
               <button
                 onClick={handleCreate}

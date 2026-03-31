@@ -48,6 +48,10 @@ export async function POST(req: NextRequest) {
       isDebt: body.isDebt || false,
       includeInTotal: body.includeInTotal !== undefined ? body.includeInTotal : true,
       minBalance: body.minBalance,
+      creditLimit: body.creditLimit,
+      closingDay: body.closingDay,
+      dueDay: body.dueDay,
+      last4Digits: body.last4Digits,
     });
 
     return NextResponse.json(account, { status: 201 });

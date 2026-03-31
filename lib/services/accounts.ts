@@ -13,6 +13,10 @@ export interface CreateAccountInput {
   isDebt?: boolean;
   includeInTotal?: boolean;
   minBalance?: number;
+  creditLimit?: number;
+  closingDay?: number;
+  dueDay?: number;
+  last4Digits?: string;
 }
 
 export interface AccountWithBalance extends Account {
@@ -46,6 +50,10 @@ class AccountsService {
         is_debt: input.isDebt || false,
         include_in_total: input.includeInTotal !== undefined ? input.includeInTotal : true,
         min_balance: input.minBalance || null,
+        credit_limit: input.creditLimit || null,
+        closing_day: input.closingDay || null,
+        due_day: input.dueDay || null,
+        last_4_digits: input.last4Digits || null,
         sort_order: nextSortOrder,
       })
       .select()
@@ -55,15 +63,20 @@ class AccountsService {
     return data;
   }
 
-  async list(userId: string): Promise<AccountWithBalance[]> {
+  async list(userId: string, options?: { includeInvestments?: boolean }): Promise<AccountWithBalance[]> {
     const supabase = createServiceClientSync();
 
-    const { data: accounts, error } = await supabase
+    let query = supabase
       .from('accounts')
       .select('*')
       .eq('user_id', userId)
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true });
+      .eq('is_active', true);
+
+    if (!options?.includeInvestments) {
+      query = query.neq('type', 'investment');
+    }
+
+    const { data: accounts, error } = await query.order('sort_order', { ascending: true });
 
     if (error) throw error;
 
@@ -161,7 +174,8 @@ class AccountsService {
       .from('accounts')
       .select('*')
       .eq('user_id', userId)
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .neq('type', 'investment');
 
     if (error) throw error;
 
@@ -173,11 +187,18 @@ class AccountsService {
 
     let totalUSD = 0;
     let totalARSBlue = 0;
+    let totalCreditUsed = 0;
+    let totalCreditLimit = 0;
 
     for (const account of data) {
       if (!account.include_in_total) continue;
 
       const balance = Number(account.balance);
+
+      if (account.type === 'credit_card') {
+        totalCreditUsed += Math.abs(balance);
+        totalCreditLimit += Number(account.credit_limit || 0);
+      }
 
       if (account.currency === 'ARS') {
         totalUSD += balance / blueRate;
@@ -202,6 +223,9 @@ class AccountsService {
       totalUSD: Math.round(totalUSD * 100) / 100,
       totalARSBlue: Math.round(totalARSBlue * 100) / 100,
       accountCount: data.length,
+      totalCreditUsed: Math.round(totalCreditUsed * 100) / 100,
+      totalCreditLimit: Math.round(totalCreditLimit * 100) / 100,
+      creditUtilization: totalCreditLimit > 0 ? Math.round((totalCreditUsed / totalCreditLimit) * 100 * 100) / 100 : 0,
     };
   }
 

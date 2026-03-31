@@ -104,6 +104,10 @@ export interface Account {
   is_debt: boolean;
   include_in_total: boolean;
   min_balance: number | null;
+  credit_limit: number | null;
+  closing_day: number | null;
+  due_day: number | null;
+  last_4_digits: string | null;
   sort_order: number;
   is_active: boolean;
   created_at: string;

@@ -157,6 +157,34 @@ export default function AccountsList({ accounts }: AccountsListProps) {
               ⚠️ Saldo por debajo del mínimo (${account.min_balance.toFixed(2)})
             </div>
           )}
+
+          {account.type === 'credit_card' && account.credit_limit && (
+            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-500">Límite:</span>
+                  <div className="font-semibold">${account.credit_limit.toLocaleString('es-AR')}</div>
+                </div>
+                {account.closing_day && (
+                  <div>
+                    <span className="text-gray-500">Cierre:</span>
+                    <div className="font-semibold">Día {account.closing_day}</div>
+                  </div>
+                )}
+                {account.due_day && (
+                  <div>
+                    <span className="text-gray-500">Vencimiento:</span>
+                    <div className="font-semibold">Día {account.due_day}</div>
+                  </div>
+                )}
+              </div>
+              {account.last_4_digits && (
+                <div className="text-xs text-gray-400 mt-2">
+                  •••• {account.last_4_digits}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       ))}
     </div>
