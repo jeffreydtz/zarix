@@ -54,21 +54,28 @@ async function fetchYahooChartQuote(symbol: string): Promise<StockQuote | null> 
       }
 
       const data = await res.json();
-      const meta = data?.chart?.result?.[0]?.meta;
-      if (!meta?.regularMarketPrice) return null;
+      const result = data?.chart?.result?.[0];
+      const meta = result?.meta;
+      const quote = result?.indicators?.quote?.[0];
 
-      const price = Number(meta.regularMarketPrice || 0);
-      const prev = Number(meta.chartPreviousClose || meta.previousClose || 0);
+      // Yahoo no siempre envía regularMarketPrice (depende del horario/mercado).
+      // Fallback robusto: regularMarketPrice -> close[-1] -> previousClose.
+      const closes: number[] = Array.isArray(quote?.close) ? quote.close.filter((v: any) => Number.isFinite(v)) : [];
+      const lastClose = closes.length > 0 ? Number(closes[closes.length - 1]) : 0;
+      const price = Number(meta?.regularMarketPrice || lastClose || meta?.previousClose || meta?.chartPreviousClose || 0);
+      if (!price || !Number.isFinite(price)) return null;
+
+      const prev = Number(meta?.chartPreviousClose || meta?.previousClose || lastClose || 0);
       const change = price - prev;
       const changePct = prev > 0 ? (change / prev) * 100 : 0;
 
       return {
         ticker: symbol,
-        name: meta.symbol || symbol,
+        name: meta?.symbol || symbol,
         price,
         change,
         changePct,
-        currency: meta.currency || (symbol.endsWith('.BA') ? 'ARS' : 'USD'),
+        currency: meta?.currency || (symbol.endsWith('.BA') ? 'ARS' : 'USD'),
       };
     } catch {
       await sleep(150 * (attempt + 1));
