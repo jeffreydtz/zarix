@@ -108,6 +108,18 @@ npm install
 - ✅ Row Level Security (RLS) en todas las tablas
 - ✅ Categorías del sistema pre-cargadas
 
+**🔄 Si ya tenés datos y estás actualizando:**
+
+Si ya ejecutaste el schema antes y querés agregar los campos de tarjetas de crédito, ejecutá esto por separado en el SQL Editor:
+
+```sql
+ALTER TABLE accounts 
+  ADD COLUMN IF NOT EXISTS credit_limit NUMERIC(20, 8),
+  ADD COLUMN IF NOT EXISTS closing_day INTEGER CHECK (closing_day >= 1 AND closing_day <= 31),
+  ADD COLUMN IF NOT EXISTS due_day INTEGER CHECK (due_day >= 1 AND due_day <= 31),
+  ADD COLUMN IF NOT EXISTS last_4_digits TEXT CHECK (length(last_4_digits) = 4);
+```
+
 #### 2.3 Obtener API Keys
 
 1. `Settings` → `API` (en el sidebar)
@@ -749,13 +761,64 @@ estoy gastando más de lo normal?
 
 ---
 
+## 💳 Tarjetas de Crédito
+
+Zarix tiene soporte completo para tarjetas de crédito con tracking de límites, fechas y utilización.
+
+### Crear una Tarjeta
+
+1. Andá a **Cuentas** → **+ Nueva Cuenta**
+2. Seleccioná el tipo **💳 Tarjeta de Crédito**
+3. Completá:
+   - **Nombre**: Ej: Visa Galicia, Naranja X
+   - **Límite de crédito**: Ej: 500000 (obligatorio)
+   - **Día de cierre**: Ej: 15 (opcional)
+   - **Día de vencimiento**: Ej: 25 (opcional)
+   - **Últimos 4 dígitos**: Ej: 1234 (opcional)
+   - **Saldo inicial**: Ej: -25000 (negativo = consumido)
+
+### Características
+
+- **Exclusión del patrimonio total**: Las tarjetas se muestran por separado del saldo general
+- **Widget dedicado en Dashboard**: Resumen visual con barra de utilización
+- **Semáforo de uso**:
+  - 🟢 Verde: < 50% utilizado
+  - 🟡 Amarillo: 50-80% utilizado
+  - 🔴 Rojo: > 80% utilizado
+- **Indicadores útiles**:
+  - Crédito usado
+  - Crédito disponible
+  - Porcentaje de utilización
+  - Días de cierre y vencimiento
+
+### Registrar Gastos con Tarjeta
+
+Desde el bot de Telegram:
+
+```
+gasté 15 lucas con la visa en el super
+pagué 8500 con naranja en la farmacia
+compré ropa con mastercard, 35 mil
+```
+
+El bot automáticamente:
+- Descuenta del saldo de la tarjeta
+- Actualiza la utilización
+- Categoriza el gasto
+
+---
+
 ## 📱 Funcionalidades Actuales (MVP)
 
 ### ✅ Cuentas
-- Crear múltiples cuentas (efectivo, banco, billetera digital, tarjeta, crypto)
+- CRUD completo de cuentas (crear, editar, eliminar)
+- Soporta múltiples tipos: efectivo, banco, tarjetas de crédito, crypto, billeteras digitales
 - Soporta ARS, USD, BTC, ETH, USDT
 - Balance en tiempo real
-- Conversión a moneda base (ARS o USD)
+- Conversión automática a moneda base (ARS o USD)
+- **Tarjetas de crédito**: límite, día de cierre, día de vencimiento, últimos 4 dígitos
+- **Indicadores visuales**: utilización de crédito, disponible vs usado
+- **Inversiones separadas**: no afectan el saldo del día a día
 
 ### ✅ Transacciones
 - Gastos, ingresos, transferencias
@@ -764,12 +827,20 @@ estoy gastando más de lo normal?
 - Cuotas (soporte básico)
 - Gastos recurrentes (soporte básico)
 
+### ✅ Categorías
+- CRUD completo de categorías
+- Categorías del sistema (no editables)
+- Categorías personalizadas
+- Organización por tipo (ingreso/gasto)
+- Iconos personalizables
+
 ### ✅ Presupuestos
 - Presupuestos mensuales por categoría
 - Alertas cuando llegás al 80% y 100%
 - Rollover opcional (sobra del mes pasa al siguiente)
 
 ### ✅ Inversiones
+- Vista separada del flujo principal
 - Acciones/CEDEARs
 - Crypto (BTC, ETH, USDT)
 - Plazos fijos
@@ -778,6 +849,7 @@ estoy gastando más de lo normal?
 - Cauciones
 - Cálculo de P&L (ganancia/pérdida)
 - Actualización de precios on-demand
+- **Cuentas investment**: trackean el patrimonio invertido sin molestar en el día a día
 
 ### ✅ Cotizaciones
 - Dólar: Blue, Oficial, MEP, CCL
@@ -792,11 +864,12 @@ estoy gastando más de lo normal?
 - Dual-tier (Lite para registros, Full para análisis)
 
 ### ✅ Dashboard Web (PWA)
-- Home con resumen de patrimonio
+- Home con resumen de patrimonio (excluyendo inversiones)
+- Widget de tarjetas de crédito con barras de progreso
 - Charts (pie chart de gastos por categoría)
 - Listado de transacciones con filtros
-- Gestión de cuentas
-- Portafolio de inversiones
+- Gestión de cuentas y categorías
+- Portafolio de inversiones (vista separada)
 - Análisis y estadísticas
 - Instalable como app nativa
 - Responsive (mobile-first)
@@ -845,6 +918,11 @@ estoy gastando más de lo normal?
   - Por ahora solo creás, no editás
 
 #### 🎯 Prioridad Media (2-3 meses)
+
+- [ ] **Resumen inteligente de tarjetas**
+  - Cálculo automático del monto a pagar según fecha de cierre
+  - Notificación días antes del vencimiento
+  - Detalle de consumos del período
 
 - [ ] **Análisis IA mensual automático**
   - Día 1 de cada mes: análisis profundo con Gemini Flash

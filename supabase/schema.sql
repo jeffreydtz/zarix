@@ -677,3 +677,11 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 --    - Exchange rates cache (1 por día × 365 × 2 años) ≈ 0.5MB
 --    - Resto de tablas: < 5MB
 --    TOTAL estimado: < 10MB (98% de margen del tier gratuito)
+--
+-- 5. MIGRACIÓN TARJETAS DE CRÉDITO:
+--    Si ya tenés datos en accounts, ejecutá esto en Supabase SQL Editor:
+--    ALTER TABLE accounts 
+--      ADD COLUMN IF NOT EXISTS credit_limit NUMERIC(20, 8),
+--      ADD COLUMN IF NOT EXISTS closing_day INTEGER CHECK (closing_day >= 1 AND closing_day <= 31),
+--      ADD COLUMN IF NOT EXISTS due_day INTEGER CHECK (due_day >= 1 AND due_day <= 31),
+--      ADD COLUMN IF NOT EXISTS last_4_digits TEXT CHECK (length(last_4_digits) = 4);
