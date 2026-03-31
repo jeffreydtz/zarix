@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
@@ -54,13 +55,20 @@ export default function Navigation() {
 
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
-            <motion.span
-              className="text-xl"
+            <motion.div
+              className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm"
               whileHover={{ rotate: [0, -10, 10, 0] }}
               transition={{ duration: 0.4 }}
             >
-              💰
-            </motion.span>
+              <Image
+                src="/Zarix%20Logo.png"
+                alt="Zarix"
+                width={28}
+                height={28}
+                className="w-7 h-7 object-cover"
+                priority
+              />
+            </motion.div>
             <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Zarix
             </span>

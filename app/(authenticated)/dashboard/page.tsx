@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
@@ -60,6 +61,23 @@ export default async function DashboardPage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800">
+              <Image
+                src="/Zarix%20Logo.png"
+                alt="Zarix Logo"
+                width={44}
+                height={44}
+                className="w-11 h-11 object-cover"
+                priority
+              />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Zarix</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Tu resumen financiero de hoy</p>
+            </div>
+          </div>
+
           <BalanceHeader
             liquidUSD={balances.liquidUSD}
             liquidARSBlue={balances.liquidARSBlue}
