@@ -2,8 +2,8 @@ import { GoogleGenerativeAI, Content } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-const GEMINI_LITE_MODEL = process.env.GEMINI_MODEL_LITE || 'gemini-2.0-flash-lite-exp';
-const GEMINI_FULL_MODEL = process.env.GEMINI_MODEL_FULL || 'gemini-2.0-flash-exp';
+const GEMINI_LITE_MODEL = process.env.GEMINI_MODEL_LITE || 'gemini-2.5-flash-lite';
+const GEMINI_FULL_MODEL = process.env.GEMINI_MODEL_FULL || 'gemini-2.5-flash';
 
 export type GeminiTier = 'lite' | 'full';
 

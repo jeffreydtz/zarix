@@ -224,8 +224,8 @@ TELEGRAM_BOT_USERNAME=tu_zarix_bot
 # GOOGLE GEMINI API
 # ============================================================================
 GEMINI_API_KEY=AIzaSyC...tu-api-key
-GEMINI_MODEL_LITE=gemini-2.0-flash-lite-exp
-GEMINI_MODEL_FULL=gemini-2.0-flash-exp
+GEMINI_MODEL_LITE=gemini-2.5-flash-lite
+GEMINI_MODEL_FULL=gemini-2.5-flash
 
 # ============================================================================
 # APIS DE COTIZACIONES (dejar default)
@@ -322,8 +322,8 @@ TELEGRAM_BOT_TOKEN=123456789:ABC...
 TELEGRAM_WEBHOOK_SECRET=tu-secret-random
 TELEGRAM_BOT_USERNAME=tu_zarix_bot
 GEMINI_API_KEY=AIzaSy...
-GEMINI_MODEL_LITE=gemini-2.0-flash-lite-exp
-GEMINI_MODEL_FULL=gemini-2.0-flash-exp
+GEMINI_MODEL_LITE=gemini-2.5-flash-lite
+GEMINI_MODEL_FULL=gemini-2.5-flash
 CRIPTOYA_API_URL=https://criptoya.com/api
 COINGECKO_API_URL=https://api.coingecko.com/api/v3
 TZ=America/Argentina/Buenos_Aires
