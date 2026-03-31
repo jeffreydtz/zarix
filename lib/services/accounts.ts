@@ -311,6 +311,145 @@ class AccountsService {
     if (error || !data) return null;
     return { ...data, balance: Number(data.balance) };
   }
+
+  async findByNameFuzzy(userId: string, searchName: string): Promise<{
+    account: Account | null;
+    confidence: 'exact' | 'high' | 'medium' | 'low' | 'none';
+    suggestions?: Account[];
+  }> {
+    const supabase = createServiceClientSync();
+
+    const { data: accounts, error } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true);
+
+    if (error || !accounts || accounts.length === 0) {
+      return { account: null, confidence: 'none' };
+    }
+
+    const normalizedSearch = this.normalizeAccountName(searchName);
+
+    const scored = accounts.map(acc => {
+      const normalizedName = this.normalizeAccountName(acc.name);
+      const score = this.calculateSimilarity(normalizedSearch, normalizedName);
+      return { account: { ...acc, balance: Number(acc.balance) }, score };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+
+    const best = scored[0];
+
+    if (best.score >= 0.9) {
+      return { account: best.account, confidence: 'exact' };
+    }
+
+    if (best.score >= 0.6) {
+      return { account: best.account, confidence: 'high' };
+    }
+
+    if (best.score >= 0.4) {
+      return { account: best.account, confidence: 'medium' };
+    }
+
+    if (best.score >= 0.25) {
+      const suggestions = scored.filter(s => s.score >= 0.2).slice(0, 3).map(s => s.account);
+      return { account: null, confidence: 'low', suggestions };
+    }
+
+    return { account: null, confidence: 'none' };
+  }
+
+  private normalizeAccountName(name: string): string {
+    const synonyms: Record<string, string[]> = {
+      'efectivo': ['cash', 'plata', 'billetera', 'bolsillo'],
+      'banco': ['bank', 'cuenta bancaria', 'caja de ahorro', 'cuenta corriente'],
+      'tarjeta': ['card', 'visa', 'mastercard', 'amex', 'credito', 'debito'],
+      'mercadopago': ['mp', 'mercado pago', 'meli'],
+      'brubank': ['bru', 'brubank'],
+      'uala': ['ualá'],
+      'galicia': ['galicia', 'banco galicia'],
+      'santander': ['santander', 'rio'],
+      'bbva': ['bbva', 'frances'],
+      'macro': ['macro', 'banco macro'],
+      'cripto': ['crypto', 'bitcoin', 'btc', 'eth', 'usdt'],
+    };
+
+    let normalized = name.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim();
+
+    for (const [canonical, variants] of Object.entries(synonyms)) {
+      for (const variant of variants) {
+        if (normalized.includes(variant)) {
+          normalized = normalized.replace(variant, canonical);
+        }
+      }
+    }
+
+    const stopWords = ['de', 'la', 'el', 'los', 'las', 'mi', 'mis', 'cuenta', 'pesos', 'dolares', 'ars', 'usd'];
+    normalized = normalized.split(' ').filter(w => !stopWords.includes(w)).join(' ');
+
+    return normalized.trim();
+  }
+
+  private calculateSimilarity(str1: string, str2: string): number {
+    if (str1 === str2) return 1;
+
+    if (str1.includes(str2) || str2.includes(str1)) {
+      return 0.85;
+    }
+
+    const words1 = str1.split(' ').filter(w => w.length > 0);
+    const words2 = str2.split(' ').filter(w => w.length > 0);
+
+    let wordMatches = 0;
+    for (const w1 of words1) {
+      for (const w2 of words2) {
+        if (w1 === w2 || w1.includes(w2) || w2.includes(w1)) {
+          wordMatches++;
+          break;
+        }
+      }
+    }
+
+    const wordScore = wordMatches / Math.max(words1.length, words2.length);
+
+    const maxLen = Math.max(str1.length, str2.length);
+    const distance = this.levenshteinDistance(str1, str2);
+    const levenScore = 1 - (distance / maxLen);
+
+    return Math.max(wordScore * 0.6 + levenScore * 0.4, wordScore, levenScore * 0.8);
+  }
+
+  private levenshteinDistance(str1: string, str2: string): number {
+    const m = str1.length;
+    const n = str2.length;
+
+    if (m === 0) return n;
+    if (n === 0) return m;
+
+    const dp: number[][] = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+
+    for (let i = 0; i <= m; i++) dp[i][0] = i;
+    for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        dp[i][j] = Math.min(
+          dp[i - 1][j] + 1,
+          dp[i][j - 1] + 1,
+          dp[i - 1][j - 1] + cost
+        );
+      }
+    }
+
+    return dp[m][n];
+  }
 }
 
 export const accountsService = new AccountsService();

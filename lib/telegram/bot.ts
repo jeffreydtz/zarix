@@ -244,10 +244,36 @@ bot.on(message('text'), async (ctx) => {
       }
 
       let accountId = '';
+      let accountName = '';
+      
       if (txData.account) {
-        const account = await accountsService.findByName(user.id, txData.account);
-        if (account) {
-          accountId = account.id;
+        const fuzzyResult = await accountsService.findByNameFuzzy(user.id, txData.account);
+        
+        if (fuzzyResult.confidence === 'exact' || fuzzyResult.confidence === 'high') {
+          accountId = fuzzyResult.account!.id;
+          accountName = fuzzyResult.account!.name;
+        } else if (fuzzyResult.confidence === 'medium' && fuzzyResult.account) {
+          accountId = fuzzyResult.account.id;
+          accountName = fuzzyResult.account.name;
+        } else if (fuzzyResult.confidence === 'low' && fuzzyResult.suggestions && fuzzyResult.suggestions.length > 0) {
+          const suggestionList = fuzzyResult.suggestions
+            .map(s => `• ${s.icon || '💳'} ${s.name}`)
+            .join('\n');
+          
+          return ctx.reply(
+            `No encontré "${txData.account}" exactamente. ¿Quisiste decir alguna de estas?\n\n${suggestionList}\n\n` +
+            `Respondé con el nombre exacto o decime "crear ${txData.account}" si querés crear una cuenta nueva.`
+          );
+        } else {
+          const accountsList = financialContext.accounts
+            .slice(0, 5)
+            .map(a => `• ${a.icon || '💳'} ${a.name}`)
+            .join('\n');
+          
+          return ctx.reply(
+            `No encontré la cuenta "${txData.account}". Tus cuentas son:\n\n${accountsList}\n\n` +
+            `¿Querés crear la cuenta "${txData.account}"? Respondé "crear ${txData.account}" o usá una de las existentes.`
+          );
         }
       }
 
@@ -257,10 +283,11 @@ bot.on(message('text'), async (ctx) => {
         );
         if (!defaultAccount) {
           return ctx.reply(
-            parsedResponse.response || 'No encontré la cuenta. ¿Podés especificar cuál usar?'
+            `No tenés cuentas en ${txData.currency}. ¿Querés crear una? Decime "crear cuenta ${txData.currency.toLowerCase()}".`
           );
         }
         accountId = defaultAccount.id;
+        accountName = defaultAccount.name;
       }
 
       let categoryId: string | undefined;
@@ -275,12 +302,12 @@ bot.on(message('text'), async (ctx) => {
 
       let destinationAccountId: string | undefined;
       if (txData.destinationAccount) {
-        const destAccount = await accountsService.findByName(
+        const destResult = await accountsService.findByNameFuzzy(
           user.id,
           txData.destinationAccount
         );
-        if (destAccount) {
-          destinationAccountId = destAccount.id;
+        if (destResult.account) {
+          destinationAccountId = destResult.account.id;
         }
       }
 
@@ -295,7 +322,30 @@ bot.on(message('text'), async (ctx) => {
         description: txData.description,
       });
 
-      return ctx.reply(parsedResponse.response);
+      const responseWithAccount = parsedResponse.response.includes(accountName) 
+        ? parsedResponse.response 
+        : `${parsedResponse.response} (desde ${accountName})`;
+
+      return ctx.reply(responseWithAccount);
+    }
+
+    if (parsedResponse.action === 'create_account' && parsedResponse.transaction) {
+      const accData = parsedResponse.transaction;
+      
+      try {
+        await accountsService.create({
+          userId: user.id,
+          name: accData.account || accData.name,
+          type: accData.type || 'cash',
+          currency: accData.currency || 'ARS',
+          initialBalance: 0,
+          icon: accData.type === 'bank' ? '🏦' : '💵',
+        });
+        
+        return ctx.reply(`Listo! Creé la cuenta "${accData.account || accData.name}". Ahora podés usarla para registrar gastos.`);
+      } catch (error) {
+        return ctx.reply('No pude crear la cuenta. ¿Podés intentar de nuevo?');
+      }
     }
 
     ctx.reply(parsedResponse.response);
