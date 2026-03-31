@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -24,7 +25,7 @@ function LoginForm() {
 
     const error = searchParams.get('error');
     if (error) {
-      setMessage(`❌ Error: ${decodeURIComponent(error)}`);
+      setMessage(`Error: ${decodeURIComponent(error)}`);
     }
   }, [router, searchParams]);
 
@@ -44,7 +45,7 @@ function LoginForm() {
 
       router.push('/dashboard');
     } catch (error: any) {
-      setMessage(`❌ Error: ${error.message}`);
+      setMessage(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -66,50 +67,79 @@ function LoginForm() {
 
       if (error) throw error;
 
-      setMessage('✅ Te enviamos un link mágico a tu email. Revisá tu casilla.');
+      setMessage('success:Te enviamos un link a tu email. Revisá tu casilla.');
     } catch (error: any) {
-      setMessage(`❌ Error: ${error.message}`);
+      setMessage(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
+  const isError = message.startsWith('Error:');
+  const isSuccess = message.startsWith('success:');
+  const displayMessage = message.replace('success:', '').replace('Error: ', '');
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">💰 Zarix</h1>
-          <p className="text-gray-600 dark:text-gray-400">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700"
+      >
+        <motion.div 
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <motion.div
+            animate={{ rotate: [0, -5, 5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            className="text-6xl mb-4"
+          >
+            💰
+          </motion.div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Zarix
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400">
             Tus finanzas personales en un solo lugar
           </p>
-        </div>
+        </motion.div>
 
-        <div className="flex gap-2 mb-6">
-          <button
+        <div className="flex gap-2 mb-6 p-1 bg-slate-100 dark:bg-slate-700 rounded-xl">
+          <motion.button
+            whileTap={{ scale: 0.97 }}
             onClick={() => setMode('password')}
-            className={`flex-1 py-2 rounded-lg transition-all ${
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
               mode === 'password'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
             }`}
           >
-            🔑 Contraseña
-          </button>
-          <button
+            Contrasena
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
             onClick={() => setMode('magiclink')}
-            className={`flex-1 py-2 rounded-lg transition-all ${
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
               mode === 'magiclink'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
             }`}
           >
-            ✉️ Magic Link
-          </button>
+            Magic Link
+          </motion.button>
         </div>
 
         <form onSubmit={mode === 'password' ? handlePasswordLogin : handleMagicLink} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Email
             </label>
             <input
@@ -119,57 +149,95 @@ function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@email.com"
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="input"
             />
-          </div>
+          </motion.div>
 
-          {mode === 'password' && (
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
-                Contraseña
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            {mode === 'password' && (
+              <motion.div
+                key="password-field"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Contrasena
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Minimo 6 caracteres"
+                  required
+                  className="input"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <button
+          <motion.button
             type="submit"
             disabled={loading}
-            className="w-full btn btn-primary py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            whileTap={{ scale: 0.97 }}
+            className="w-full btn btn-primary py-3.5 text-lg mt-2"
           >
-            {loading 
-              ? 'Cargando...' 
-              : mode === 'password' 
-                ? 'Ingresar' 
-                : 'Enviar link mágico'}
-          </button>
+            {loading ? (
+              <motion.span
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                Cargando...
+              </motion.span>
+            ) : mode === 'password' ? (
+              'Ingresar'
+            ) : (
+              'Enviar link'
+            )}
+          </motion.button>
         </form>
 
-        {message && (
-          <div
-            className={`mt-4 p-4 rounded-lg text-sm ${
-              message.startsWith('✅')
-                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-            }`}
-          >
-            {message}
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`mt-4 p-4 rounded-xl text-sm font-medium ${
+                isSuccess
+                  ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800'
+                  : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 border border-red-200 dark:border-red-800'
+              }`}
+            >
+              <span className="mr-2">{isSuccess ? '✓' : '!'}</span>
+              {displayMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <div className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p className="mb-2">🇦🇷 Optimizado para Argentina</p>
-          <p>💵 Blue • MEP • CCL • Crypto • Inversiones</p>
-        </div>
-      </div>
+        <motion.div 
+          className="mt-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-2">
+            <span className="text-lg">🇦🇷</span>
+            <span>Optimizado para Argentina</span>
+          </div>
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+            <span>Blue</span>
+            <span className="text-slate-300">•</span>
+            <span>MEP</span>
+            <span className="text-slate-300">•</span>
+            <span>CCL</span>
+            <span className="text-slate-300">•</span>
+            <span>Crypto</span>
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
@@ -177,8 +245,14 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-2xl">Cargando...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="text-6xl"
+        >
+          💰
+        </motion.div>
       </div>
     }>
       <LoginForm />

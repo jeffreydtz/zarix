@@ -18,10 +18,15 @@ export default async function AccountsPage() {
     const accounts = await accountsService.list(user.id).catch(() => []);
 
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-4xl mx-auto p-4 space-y-6">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+        <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Cuentas</h1>
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Cuentas</h1>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                Administra tus cuentas y tarjetas
+              </p>
+            </div>
             <CreateAccountButton />
           </div>
 
