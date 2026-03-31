@@ -10,7 +10,8 @@
     "db:push": "supabase db push",
     "db:reset": "supabase db reset",
     "telegram:webhook": "node scripts/setup-telegram-webhook.js",
-    "test:bot": "tsx lib/telegram/test-bot.ts"
+    "test:bot": "tsx lib/telegram/test-bot.ts",
+    "set-password": "node scripts/set-password.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.19.0",
