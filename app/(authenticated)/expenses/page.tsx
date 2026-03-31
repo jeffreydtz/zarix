@@ -38,8 +38,12 @@ export default async function ExpensesPage({
         type: searchParams.type,
         startDate: searchParams.startDate,
         endDate: searchParams.endDate,
+        search: searchParams.search,
+        minAmount: searchParams.minAmount ? parseFloat(searchParams.minAmount) : undefined,
+        maxAmount: searchParams.maxAmount ? parseFloat(searchParams.maxAmount) : undefined,
       })
       .catch(() => []);
+
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">

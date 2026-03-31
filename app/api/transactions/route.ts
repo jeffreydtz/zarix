@@ -14,6 +14,8 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
+    const minAmountParam = searchParams.get('minAmount');
+    const maxAmountParam = searchParams.get('maxAmount');
 
     const transactions = await transactionsService.list(user.id, {
       accountId: searchParams.get('accountId') || undefined,
@@ -21,7 +23,10 @@ export async function GET(req: NextRequest) {
       type: searchParams.get('type') || undefined,
       startDate: searchParams.get('startDate') || undefined,
       endDate: searchParams.get('endDate') || undefined,
-      limit: parseInt(searchParams.get('limit') || '50'),
+      search: searchParams.get('search') || undefined,
+      minAmount: minAmountParam ? parseFloat(minAmountParam) : undefined,
+      maxAmount: maxAmountParam ? parseFloat(maxAmountParam) : undefined,
+      limit: parseInt(searchParams.get('limit') || '100'),
       offset: parseInt(searchParams.get('offset') || '0'),
     });
 
@@ -34,6 +39,7 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
 
 export async function POST(req: NextRequest) {
   try {

@@ -4,6 +4,18 @@
     {
       "path": "/api/cron/monthly-summary",
       "schedule": "0 9 1 * *"
+    },
+    {
+      "path": "/api/cron/recurring",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/maturity-alerts",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/update-prices",
+      "schedule": "0 10 * * *"
     }
   ]
 }

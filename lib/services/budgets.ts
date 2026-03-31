@@ -1,5 +1,6 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Budget, BudgetStatus } from '@/types/database';
+import { Telegraf } from 'telegraf';
 
 export interface CreateBudgetInput {
   userId: string;
@@ -10,6 +11,8 @@ export interface CreateBudgetInput {
   rolloverEnabled?: boolean;
   alertAtPercent?: number;
 }
+
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN || 'placeholder');
 
 class BudgetsService {
   async create(input: CreateBudgetInput): Promise<Budget> {
@@ -38,7 +41,7 @@ class BudgetsService {
 
     let query = supabase
       .from('budgets')
-      .select('*')
+      .select('*, category:categories(name, icon, type)')
       .eq('user_id', userId)
       .order('month', { ascending: false });
 
@@ -66,7 +69,7 @@ class BudgetsService {
     return data;
   }
 
-  async checkAndSendAlerts(userId: string, categoryId: string, month: string): Promise<void> {
+  async checkAndSendAlerts(userId: string, categoryId: string | null, month: string): Promise<void> {
     const supabase = createServiceClientSync();
 
     const budgetStatus = await this.getStatus(userId, new Date(month));
@@ -74,17 +77,8 @@ class BudgetsService {
 
     if (!status) return;
 
-    const { data: existingAlerts } = await supabase
-      .from('budget_alerts')
-      .select('*')
-      .eq('budget_id', categoryId)
-      .gte('percent_reached', Math.floor(status.percent_used));
-
-    if (existingAlerts && existingAlerts.length > 0) {
-      return;
-    }
-
-    const budget = await supabase
+    // Get the budget record to find the budget ID and alert threshold
+    const { data: budget } = await supabase
       .from('budgets')
       .select('*')
       .eq('user_id', userId)
@@ -92,26 +86,88 @@ class BudgetsService {
       .eq('month', month)
       .single();
 
-    if (budget.error || !budget.data) return;
+    if (!budget) return;
 
-    if (status.percent_used >= budget.data.alert_at_percent) {
-      await supabase.from('budget_alerts').insert({
-        budget_id: budget.data.id,
-        percent_reached: Math.floor(status.percent_used),
+    const percentUsed = Number(status.percent_used);
+    const alertThreshold = budget.alert_at_percent;
+
+    // Check if we already sent an alert at this level
+    const alertLevels = [100, alertThreshold].filter((l, i, a) => a.indexOf(l) === i);
+    
+    for (const alertLevel of alertLevels) {
+      if (percentUsed >= alertLevel) {
+        const { data: existingAlerts } = await supabase
+          .from('budget_alerts')
+          .select('*')
+          .eq('budget_id', budget.id)
+          .gte('percent_reached', alertLevel)
+          .order('sent_at', { ascending: false })
+          .limit(1);
+
+        const alertAlreadySent = existingAlerts && existingAlerts.length > 0;
+        
+        if (!alertAlreadySent) {
+          // Save alert record
+          await supabase.from('budget_alerts').insert({
+            budget_id: budget.id,
+            percent_reached: Math.floor(percentUsed),
+          });
+
+          // Send Telegram notification
+          await this.sendBudgetAlert(userId, status, alertLevel);
+        }
+      }
+    }
+  }
+
+  private async sendBudgetAlert(
+    userId: string,
+    status: BudgetStatus,
+    alertLevel: number
+  ): Promise<void> {
+    const supabase = createServiceClientSync();
+
+    const { data: user } = await supabase
+      .from('users')
+      .select('telegram_chat_id')
+      .eq('id', userId)
+      .single();
+
+    if (!user?.telegram_chat_id) return;
+
+    const isOver = alertLevel >= 100;
+    const emoji = isOver ? '🔴' : '⚠️';
+    const title = isOver ? 'PRESUPUESTO SUPERADO' : 'ALERTA DE PRESUPUESTO';
+
+    const message = 
+      `${emoji} *${title}*\n\n` +
+      `Categoría: *${status.category_name}*\n` +
+      `Presupuesto: $${Number(status.budget_amount).toLocaleString('es-AR')}\n` +
+      `Gastado: $${Number(status.spent_amount).toLocaleString('es-AR')} (${Math.floor(Number(status.percent_used))}%)\n` +
+      `Restante: $${Number(status.remaining_amount).toLocaleString('es-AR')}\n\n` +
+      (isOver 
+        ? `¡Superaste el límite! Revisá tus gastos de ${status.category_name.toLowerCase()} este mes.`
+        : `Llegaste al ${alertLevel}% de tu presupuesto en ${status.category_name.toLowerCase()}.`);
+
+    try {
+      await bot.telegram.sendMessage(user.telegram_chat_id, message, {
+        parse_mode: 'Markdown',
       });
+    } catch (e) {
+      console.error('Error sending budget alert via Telegram:', e);
     }
   }
 
   async update(
     id: string,
     userId: string,
-    updates: Partial<CreateBudgetInput>
+    updates: Record<string, any>
   ): Promise<Budget> {
     const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
       .from('budgets')
-      .update(updates as any)
+      .update(updates)
       .eq('id', id)
       .eq('user_id', userId)
       .select()
@@ -131,6 +187,24 @@ class BudgetsService {
       .eq('user_id', userId);
 
     if (error) throw error;
+  }
+
+  async checkAllBudgetsForUser(userId: string): Promise<void> {
+    const supabase = createServiceClientSync();
+    const now = new Date();
+    const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+
+    const { data: budgets } = await supabase
+      .from('budgets')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('month', monthStr);
+
+    if (!budgets) return;
+
+    for (const budget of budgets) {
+      await this.checkAndSendAlerts(userId, budget.category_id, monthStr);
+    }
   }
 }
 

@@ -12,10 +12,13 @@ export default function Navigation() {
     { href: '/dashboard', label: 'Inicio', icon: '🏠' },
     { href: '/expenses', label: 'Movimientos', icon: '💸' },
     { href: '/accounts', label: 'Cuentas', icon: '🏦' },
+    { href: '/budgets', label: 'Presupuestos', icon: '🎯' },
+    { href: '/recurring', label: 'Recurrentes', icon: '🔄' },
     { href: '/categories', label: 'Categorías', icon: '🏷️' },
     { href: '/analysis', label: 'Análisis', icon: '📊' },
     { href: '/settings', label: 'Config', icon: '⚙️' },
   ];
+
 
   const secondaryLinks = [
     { href: '/investments', label: 'Inversiones', icon: '📈' },

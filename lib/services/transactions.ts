@@ -149,6 +149,9 @@ class TransactionsService {
       type?: string;
       startDate?: string;
       endDate?: string;
+      search?: string;
+      minAmount?: number;
+      maxAmount?: number;
       limit?: number;
       offset?: number;
     } = {}
@@ -184,13 +187,26 @@ class TransactionsService {
     }
 
     if (options.endDate) {
-      query = query.lte('transaction_date', options.endDate);
+      // End of the day for the endDate
+      query = query.lte('transaction_date', options.endDate + 'T23:59:59');
     }
 
-    query = query.limit(options.limit || 50);
+    if (options.search) {
+      query = query.ilike('description', `%${options.search}%`);
+    }
+
+    if (options.minAmount !== undefined) {
+      query = query.gte('amount', options.minAmount);
+    }
+
+    if (options.maxAmount !== undefined) {
+      query = query.lte('amount', options.maxAmount);
+    }
+
+    query = query.limit(options.limit || 100);
 
     if (options.offset) {
-      query = query.range(options.offset, options.offset + (options.limit || 50) - 1);
+      query = query.range(options.offset, options.offset + (options.limit || 100) - 1);
     }
 
     const { data, error } = await query;
@@ -198,6 +214,7 @@ class TransactionsService {
     if (error) throw error;
     return data as TransactionWithCategory[];
   }
+
 
   async getById(id: string, userId: string): Promise<TransactionWithCategory> {
     const supabase = createServiceClientSync();

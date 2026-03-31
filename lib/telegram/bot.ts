@@ -308,6 +308,118 @@ Si no es un ticket/factura o no podés extraer información:
   }
 });
 
+bot.on(message('voice'), async (ctx) => {
+  const user = await getUserFromTelegramId(ctx.chat.id);
+  if (!user) {
+    return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
+  }
+
+  try {
+    await ctx.reply('🎤 Transcribiendo audio...');
+
+    const voice = ctx.message.voice;
+    const fileLink = await ctx.telegram.getFileLink(voice.file_id);
+
+    // Download OGG audio
+    const audioResponse = await fetch(fileLink.href);
+    const audioBuffer = await audioResponse.arrayBuffer();
+    const audioBase64 = Buffer.from(audioBuffer).toString('base64');
+
+    // Transcribe with Gemini (supports OGG/opus natively)
+    const transcriptResult = await geminiClient.chatWithImage(
+      `Transcribí exactamente este mensaje de voz en español. 
+      El usuario está hablando sobre sus finanzas personales.
+      Solo devolvé el texto transcripto, sin explicaciones ni formato JSON.
+      Si no podés transcribir, devolvé "ERROR".`,
+      audioBase64,
+      'audio/ogg',
+      { maxTokens: 512 }
+    );
+
+    // Clean JSON wrapper if Gemini returns it
+    let transcribed = transcriptResult.trim();
+    try {
+      const parsed = JSON.parse(transcribed);
+      transcribed = parsed.text || parsed.transcript || parsed.response || transcribed;
+    } catch {
+      // not JSON, use as-is
+    }
+
+    if (!transcribed || transcribed === 'ERROR' || transcribed.length < 3) {
+      return ctx.reply('No pude entender el audio. ¿Podés escribirme el gasto?');
+    }
+
+    await ctx.reply(`🎤 Escuché: _"${transcribed}"_`, { parse_mode: 'Markdown' });
+
+    // Process as natural language text
+    const financialContext = await getFinancialContext(user.id);
+    const systemPrompt = buildBotSystemPrompt(financialContext);
+    const tier = geminiClient.getTierForRequest(transcribed, false);
+
+    const aiResponse = await geminiClient.chat(transcribed, {
+      tier,
+      systemInstruction: systemPrompt,
+      maxTokens: 1024,
+    });
+
+    let parsedResponse: { action: string; transaction?: any; response: string };
+    try {
+      const cleaned = aiResponse.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
+      parsedResponse = JSON.parse(cleaned);
+    } catch {
+      return ctx.reply(aiResponse);
+    }
+
+    if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
+      const txData = parsedResponse.transaction;
+      if (!txData.amount || txData.amount <= 0) {
+        return ctx.reply(parsedResponse.response || 'No pude entender el monto del audio.');
+      }
+
+      let accountId = '';
+      if (txData.account) {
+        const fuzzyResult = await accountsService.findByNameFuzzy(user.id, txData.account);
+        if (fuzzyResult.account) accountId = fuzzyResult.account.id;
+      }
+      if (!accountId) {
+        const defaultAccount = financialContext.accounts.find(
+          (a) => a.currency === (txData.currency || 'ARS') && a.type !== 'credit_card'
+        );
+        if (defaultAccount) accountId = defaultAccount.id;
+      }
+
+      if (!accountId) {
+        return ctx.reply(parsedResponse.response || 'No encontré una cuenta para este gasto.');
+      }
+
+      let categoryId: string | undefined;
+      if (txData.category) {
+        const cat = financialContext.categories.find(
+          (c) => c.name.toLowerCase() === txData.category.toLowerCase()
+        );
+        if (cat) categoryId = cat.id;
+      }
+
+      await transactionsService.create({
+        userId: user.id,
+        type: txData.type || 'expense',
+        accountId,
+        amount: txData.amount,
+        currency: txData.currency || 'ARS',
+        categoryId,
+        description: txData.description || transcribed,
+      });
+
+      return ctx.reply(`✅ ${parsedResponse.response}`);
+    }
+
+    ctx.reply(parsedResponse.response);
+  } catch (error) {
+    console.error('Voice processing error:', error);
+    ctx.reply('No pude procesar el audio. ¿Podés escribirme el gasto?');
+  }
+});
+
 bot.on(message('text'), async (ctx) => {
   const user = await getUserFromTelegramId(ctx.chat.id);
   if (!user) {

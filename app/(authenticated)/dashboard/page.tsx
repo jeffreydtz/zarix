@@ -8,6 +8,7 @@ import QuotesWidget from '@/components/dashboard/QuotesWidget';
 import RecentTransactions from '@/components/dashboard/RecentTransactions';
 import BalanceHeader from '@/components/dashboard/BalanceHeader';
 import CreditCardsWidget from '@/components/dashboard/CreditCardsWidget';
+import AnomaliesWidget from '@/components/dashboard/AnomaliesWidget';
 
 export default async function DashboardPage() {
   try {
