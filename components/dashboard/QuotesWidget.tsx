@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
@@ -34,7 +35,7 @@ const item = {
   show: { opacity: 1, scale: 1 },
 };
 
-export default function QuotesWidget({ quotes }: QuotesWidgetProps) {
+function QuotesWidget({ quotes }: QuotesWidgetProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -138,3 +139,5 @@ export default function QuotesWidget({ quotes }: QuotesWidgetProps) {
     </motion.div>
   );
 }
+
+export default memo(QuotesWidget);

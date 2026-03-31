@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -10,7 +11,7 @@ interface RecentTransactionsProps {
   transactions: TransactionWithCategory[];
 }
 
-export default function RecentTransactions({ transactions }: RecentTransactionsProps) {
+function RecentTransactions({ transactions }: RecentTransactionsProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -105,3 +106,5 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
     </motion.div>
   );
 }
+
+export default memo(RecentTransactions);

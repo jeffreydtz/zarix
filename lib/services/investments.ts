@@ -62,33 +62,40 @@ class InvestmentsService {
 
     if (error) throw error;
 
+    const now = Date.now();
+    const quoteCache = new Map<string, number>();
+    const updates: Array<{ id: string; price: number }> = [];
+
     const investmentsWithPnL: InvestmentWithPnL[] = await Promise.all(
       investments.map(async (inv) => {
-        let currentPrice = inv.current_price || inv.purchase_price;
+        let currentPrice = Number(inv.current_price || inv.purchase_price);
+        const lastUpdatedAt = inv.current_price_updated_at ? new Date(inv.current_price_updated_at).getTime() : 0;
+        const isStale = !lastUpdatedAt || now - lastUpdatedAt > 15 * 60 * 1000;
 
-        if (inv.ticker) {
+        if (inv.ticker && isStale) {
           try {
-            if (inv.type === 'crypto') {
+            const cacheKey = `${inv.type}:${inv.ticker.toUpperCase()}`;
+            if (quoteCache.has(cacheKey)) {
+              currentPrice = quoteCache.get(cacheKey)!;
+            } else if (inv.type === 'crypto') {
               const quote = await cotizacionesService.getCryptoQuote(inv.ticker);
               currentPrice = quote.priceUSD;
+              quoteCache.set(cacheKey, currentPrice);
             } else if (inv.type === 'stock_us' || inv.type === 'etf') {
               const quote = await cotizacionesService.getStockQuote(inv.ticker, 'us');
               currentPrice = quote.price;
+              quoteCache.set(cacheKey, currentPrice);
             } else if (inv.type === 'stock_arg') {
               const quote = await cotizacionesService.getStockQuote(inv.ticker, 'arg');
               currentPrice = quote.price;
+              quoteCache.set(cacheKey, currentPrice);
             } else if (inv.type === 'cedear') {
               const quote = await cotizacionesService.getStockQuote(inv.ticker, 'cedear');
               currentPrice = quote.price;
+              quoteCache.set(cacheKey, currentPrice);
             }
 
-            await supabase
-              .from('investments')
-              .update({
-                current_price: currentPrice,
-                current_price_updated_at: new Date().toISOString(),
-              })
-              .eq('id', inv.id);
+            updates.push({ id: inv.id, price: currentPrice });
           } catch (error) {
             console.error(`Error updating price for ${inv.ticker}:`, error);
           }
@@ -111,6 +118,21 @@ class InvestmentsService {
         };
       })
     );
+
+    if (updates.length > 0) {
+      const nowIso = new Date().toISOString();
+      await Promise.all(
+        updates.map((u) =>
+          supabase
+            .from('investments')
+            .update({
+              current_price: u.price,
+              current_price_updated_at: nowIso,
+            })
+            .eq('id', u.id)
+        )
+      );
+    }
 
     return investmentsWithPnL;
   }

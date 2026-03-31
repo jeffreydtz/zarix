@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { AccountWithBalance } from '@/lib/services/accounts';
 import Link from 'next/link';
@@ -8,7 +9,7 @@ interface AccountCardsProps {
   accounts: AccountWithBalance[];
 }
 
-export default function AccountCards({ accounts }: AccountCardsProps) {
+function AccountCards({ accounts }: AccountCardsProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -120,3 +121,5 @@ export default function AccountCards({ accounts }: AccountCardsProps) {
     </motion.div>
   );
 }
+
+export default memo(AccountCards);

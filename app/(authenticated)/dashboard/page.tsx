@@ -1,15 +1,27 @@
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
-import AccountCards from '@/components/dashboard/AccountCards';
-import QuotesWidget from '@/components/dashboard/QuotesWidget';
-import RecentTransactions from '@/components/dashboard/RecentTransactions';
 import BalanceHeader from '@/components/dashboard/BalanceHeader';
-import CreditCardsWidget from '@/components/dashboard/CreditCardsWidget';
-import AnomaliesWidget from '@/components/dashboard/AnomaliesWidget';
+
+const QuotesWidget = dynamic(() => import('@/components/dashboard/QuotesWidget'), {
+  loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+});
+const CreditCardsWidget = dynamic(() => import('@/components/dashboard/CreditCardsWidget'), {
+  loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+});
+const AccountCards = dynamic(() => import('@/components/dashboard/AccountCards'), {
+  loading: () => <div className="h-32 animate-pulse bg-slate-100 dark:bg-slate-800 rounded-2xl" />,
+});
+const RecentTransactions = dynamic(() => import('@/components/dashboard/RecentTransactions'), {
+  loading: () => <div className="card h-64 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+});
+const AnomaliesWidget = dynamic(() => import('@/components/dashboard/AnomaliesWidget'), {
+  loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+});
 
 export default async function DashboardPage() {
   try {
@@ -49,26 +61,22 @@ export default async function DashboardPage() {
       })),
     ]);
 
-    const totalBalance = await accountsService.getTotalBalance(user.id).catch(() => ({
-      totalUSD: 0, 
-      totalARSBlue: 0,
-      totalCreditUsed: 0,
-      totalCreditLimit: 0,
-      creditUtilization: 0,
-      accountCount: 0,
-    }));
+    const creditCards = accounts.filter((a) => a.type === 'credit_card');
+    const totalCreditUsed = creditCards.reduce((sum, a) => sum + Math.abs(Number(a.balance || 0)), 0);
+    const totalCreditLimit = creditCards.reduce((sum, a) => sum + Number(a.credit_limit || 0), 0);
+    const creditUtilization = totalCreditLimit > 0 ? (totalCreditUsed / totalCreditLimit) * 100 : 0;
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800 flex items-center justify-center">
               <Image
-                src="/Zarix%20Logo.png"
+                src="/icons/icon-192.png"
                 alt="Zarix Logo"
-                width={44}
-                height={44}
-                className="w-11 h-11 object-cover"
+                width={36}
+                height={36}
+                className="w-9 h-9 object-contain"
                 priority
               />
             </div>
@@ -85,9 +93,9 @@ export default async function DashboardPage() {
             investmentsARSBlue={balances.investmentsARSBlue}
             totalUSD={balances.totalUSD}
             totalARSBlue={balances.totalARSBlue}
-            totalCreditUsed={totalBalance.totalCreditUsed}
-            totalCreditLimit={totalBalance.totalCreditLimit}
-            creditUtilization={totalBalance.creditUtilization}
+            totalCreditUsed={totalCreditUsed}
+            totalCreditLimit={totalCreditLimit}
+            creditUtilization={creditUtilization}
           />
 
           <QuotesWidget quotes={quotes} />

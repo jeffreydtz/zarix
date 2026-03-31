@@ -84,44 +84,49 @@ class AnalyticsService {
   
   async getMonthlyTrend(userId: string, months: number = 6): Promise<MonthlyData[]> {
     const supabase = createServiceClientSync();
-    const result: MonthlyData[] = [];
-    
     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    
+
+    const now = new Date();
+    const startRange = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+    const endRange = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+    const { data: transactions } = await supabase
+      .from('transactions')
+      .select('type, amount_in_account_currency, transaction_date')
+      .eq('user_id', userId)
+      .gte('transaction_date', startRange.toISOString())
+      .lte('transaction_date', endRange.toISOString());
+
+    const bucket = new Map<string, { expenses: number; income: number }>();
     for (let i = months - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setMonth(date.getMonth() - i);
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      
-      const startDate = new Date(year, month, 1);
-      const endDate = new Date(year, month + 1, 0, 23, 59, 59);
-      
-      const { data: transactions } = await supabase
-        .from('transactions')
-        .select('type, amount_in_account_currency')
-        .eq('user_id', userId)
-        .gte('transaction_date', startDate.toISOString())
-        .lte('transaction_date', endDate.toISOString());
-      
-      let expenses = 0;
-      let income = 0;
-      
-      (transactions || []).forEach(t => {
-        const amount = Number(t.amount_in_account_currency);
-        if (t.type === 'expense') expenses += amount;
-        else if (t.type === 'income') income += amount;
-      });
-      
-      result.push({
-        month: `${year}-${String(month + 1).padStart(2, '0')}`,
-        monthLabel: `${monthNames[month]} ${year.toString().slice(2)}`,
-        expenses,
-        income,
-        balance: income - expenses
-      });
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      bucket.set(key, { expenses: 0, income: 0 });
     }
-    
+
+    (transactions || []).forEach((t) => {
+      const d = new Date(t.transaction_date);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const entry = bucket.get(key);
+      if (!entry) return;
+      const amount = Number(t.amount_in_account_currency);
+      if (t.type === 'expense') entry.expenses += amount;
+      else if (t.type === 'income') entry.income += amount;
+    });
+
+    const result: MonthlyData[] = [];
+    bucket.forEach((v, key) => {
+      const [year, monthStr] = key.split('-');
+      const month = Number(monthStr) - 1;
+      result.push({
+        month: key,
+        monthLabel: `${monthNames[month]} ${year.slice(2)}`,
+        expenses: v.expenses,
+        income: v.income,
+        balance: v.income - v.expenses,
+      });
+    });
+
     return result;
   }
   

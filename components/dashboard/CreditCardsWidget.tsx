@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { AccountWithBalance } from '@/lib/services/accounts';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -9,7 +10,7 @@ interface CreditCardsWidgetProps {
   accounts: AccountWithBalance[];
 }
 
-export default function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
+function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
   const creditCards = accounts.filter(acc => acc.type === 'credit_card' && acc.credit_limit);
 
   if (creditCards.length === 0) return null;
@@ -116,3 +117,5 @@ export default function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) 
     </motion.div>
   );
 }
+
+export default memo(CreditCardsWidget);

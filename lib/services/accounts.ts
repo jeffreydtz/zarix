@@ -27,6 +27,32 @@ export interface AccountWithBalance extends Account {
 }
 
 class AccountsService {
+  private async buildUsdRates(currencies: string[], blueRate: number): Promise<Record<string, number>> {
+    const uniqueCurrencies = Array.from(new Set(currencies.map((c) => c.toUpperCase())));
+    const rates: Record<string, number> = {
+      USD: 1,
+      ARS: blueRate > 0 ? 1 / blueRate : 0,
+    };
+
+    const dynamicCurrencies = uniqueCurrencies.filter((c) => c !== 'USD' && c !== 'ARS');
+    const dynamicRates = await Promise.all(
+      dynamicCurrencies.map(async (currency) => {
+        try {
+          const rate = await cotizacionesService.getExchangeRate(currency, 'USD');
+          return [currency, rate] as const;
+        } catch {
+          return [currency, 0] as const;
+        }
+      })
+    );
+
+    for (const [currency, rate] of dynamicRates) {
+      rates[currency] = rate;
+    }
+
+    return rates;
+  }
+
   async create(input: CreateAccountInput): Promise<Account> {
     const supabase = createServiceClientSync();
 
@@ -189,6 +215,11 @@ class AccountsService {
       throw new Error('Exchange rate not available');
     }
 
+    const usdRates = await this.buildUsdRates(
+      data.map((a) => a.currency),
+      blueRate
+    );
+
     let totalUSD = 0;
     let totalARSBlue = 0;
     let totalCreditUsed = 0;
@@ -204,22 +235,11 @@ class AccountsService {
         totalCreditLimit += Number(account.credit_limit || 0);
       }
 
-      if (account.currency === 'ARS') {
-        totalUSD += balance / blueRate;
-        totalARSBlue += balance;
-      } else if (account.currency === 'USD') {
-        totalUSD += balance;
-        totalARSBlue += balance * blueRate;
-      } else {
-        const rateToUSD = await cotizacionesService.getExchangeRate(
-          account.currency,
-          'USD'
-        );
-        if (rateToUSD > 0) {
-          const balanceUSD = balance * rateToUSD;
-          totalUSD += balanceUSD;
-          totalARSBlue += balanceUSD * blueRate;
-        }
+      const rateToUSD = usdRates[account.currency.toUpperCase()] ?? 0;
+      if (rateToUSD > 0) {
+        const balanceUSD = balance * rateToUSD;
+        totalUSD += balanceUSD;
+        totalARSBlue += balanceUSD * blueRate;
       }
     }
 
@@ -250,6 +270,11 @@ class AccountsService {
       throw new Error('Exchange rate not available');
     }
 
+    const usdRates = await this.buildUsdRates(
+      allAccounts.map((a) => a.currency),
+      blueRate
+    );
+
     let liquidUSD = 0;
     let liquidARSBlue = 0;
     let investmentsUSD = 0;
@@ -264,21 +289,10 @@ class AccountsService {
       let balanceUSD = 0;
       let balanceARSBlue = 0;
 
-      if (account.currency === 'ARS') {
-        balanceUSD = balance / blueRate;
-        balanceARSBlue = balance;
-      } else if (account.currency === 'USD') {
-        balanceUSD = balance;
-        balanceARSBlue = balance * blueRate;
-      } else {
-        const rateToUSD = await cotizacionesService.getExchangeRate(
-          account.currency,
-          'USD'
-        );
-        if (rateToUSD > 0) {
-          balanceUSD = balance * rateToUSD;
-          balanceARSBlue = balanceUSD * blueRate;
-        }
+      const rateToUSD = usdRates[account.currency.toUpperCase()] ?? 0;
+      if (rateToUSD > 0) {
+        balanceUSD = balance * rateToUSD;
+        balanceARSBlue = balanceUSD * blueRate;
       }
 
       if (isInvestment) {
