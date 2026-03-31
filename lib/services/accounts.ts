@@ -68,6 +68,10 @@ class AccountsService {
     if (error) throw error;
 
     const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
+    
+    if (blueRate === 0) {
+      throw new Error('Exchange rate not available');
+    }
 
     const accountsWithConversion = accounts.map((account) => {
       let balanceUSD = 0;
@@ -162,6 +166,10 @@ class AccountsService {
     if (error) throw error;
 
     const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
+    
+    if (blueRate === 0) {
+      throw new Error('Exchange rate not available');
+    }
 
     let totalUSD = 0;
     let totalARSBlue = 0;
@@ -182,9 +190,11 @@ class AccountsService {
           account.currency,
           'USD'
         );
-        const balanceUSD = balance * rateToUSD;
-        totalUSD += balanceUSD;
-        totalARSBlue += balanceUSD * blueRate;
+        if (rateToUSD > 0) {
+          const balanceUSD = balance * rateToUSD;
+          totalUSD += balanceUSD;
+          totalARSBlue += balanceUSD * blueRate;
+        }
       }
     }
 

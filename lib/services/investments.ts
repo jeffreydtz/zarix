@@ -86,7 +86,7 @@ class InvestmentsService {
         const currentValue = Number(inv.quantity) * currentPrice;
         const purchaseValue = Number(inv.quantity) * Number(inv.purchase_price);
         const profitLoss = currentValue - purchaseValue;
-        const profitLossPercent = (profitLoss / purchaseValue) * 100;
+        const profitLossPercent = purchaseValue > 0 ? (profitLoss / purchaseValue) * 100 : 0;
 
         return {
           ...inv,
@@ -158,7 +158,7 @@ class InvestmentsService {
       0
     );
     const totalPnL = totalCurrentValue - totalPurchaseValue;
-    const totalPnLPercent = (totalPnL / totalPurchaseValue) * 100;
+    const totalPnLPercent = totalPurchaseValue > 0 ? (totalPnL / totalPurchaseValue) * 100 : 0;
 
     const byType = investments.reduce((acc, inv) => {
       if (!acc[inv.type]) {
