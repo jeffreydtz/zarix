@@ -181,6 +181,133 @@ También podés hablarme natural:
   ctx.reply(message, { parse_mode: 'Markdown' });
 });
 
+bot.on(message('photo'), async (ctx) => {
+  const user = await getUserFromTelegramId(ctx.chat.id);
+  if (!user) {
+    return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
+  }
+
+  try {
+    await ctx.reply('📷 Analizando la imagen...');
+    
+    const photo = ctx.message.photo[ctx.message.photo.length - 1];
+    const fileLink = await ctx.telegram.getFileLink(photo.file_id);
+    
+    const response = await fetch(fileLink.href);
+    const arrayBuffer = await response.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    
+    const financialContext = await getFinancialContext(user.id);
+    
+    const prompt = `Analizá esta imagen de un ticket, factura o comprobante de compra.
+
+Extraé la siguiente información:
+- Monto total (el más grande/final)
+- Comercio/tienda
+- Fecha (si aparece)
+- Categoría sugerida (basándote en el comercio: supermercado=Comida, farmacia=Salud, etc.)
+- Moneda (ARS por defecto, USD si dice dólares o $US)
+
+CUENTAS DEL USUARIO:
+${financialContext.accounts.map(a => `- ${a.icon} ${a.name} (${a.currency})`).join('\n')}
+
+CATEGORÍAS DISPONIBLES:
+${financialContext.categories.filter(c => c.type === 'expense').map(c => `- ${c.icon} ${c.name}`).join('\n')}
+
+Respondé en JSON:
+{
+  "found": true/false,
+  "amount": número,
+  "currency": "ARS" o "USD",
+  "merchant": "nombre del comercio",
+  "date": "YYYY-MM-DD" o null,
+  "category": "nombre de categoría sugerida",
+  "suggestedAccount": "nombre de cuenta sugerida",
+  "confidence": "high" | "medium" | "low",
+  "description": "descripción corta para la transacción"
+}
+
+Si no es un ticket/factura o no podés extraer información:
+{
+  "found": false,
+  "message": "razón"
+}`;
+
+    const result = await geminiClient.chatWithImage(
+      prompt,
+      base64,
+      'image/jpeg',
+      { maxTokens: 1024 }
+    );
+
+    let parsed;
+    try {
+      const cleaned = result.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
+      parsed = JSON.parse(cleaned);
+    } catch (e) {
+      return ctx.reply('No pude analizar la imagen. ¿Es un ticket o comprobante de compra?');
+    }
+
+    if (!parsed.found) {
+      return ctx.reply(parsed.message || 'No encontré información de gasto en la imagen. ¿Es un ticket de compra?');
+    }
+
+    let account = financialContext.accounts.find(
+      a => a.name.toLowerCase() === parsed.suggestedAccount?.toLowerCase()
+    );
+    if (!account) {
+      account = financialContext.accounts.find(
+        a => a.currency === parsed.currency && a.type !== 'credit_card'
+      );
+    }
+
+    if (!account) {
+      return ctx.reply(`Encontré un gasto de $${parsed.amount} pero no tenés cuentas en ${parsed.currency}. ¿Querés crear una?`);
+    }
+
+    let category = financialContext.categories.find(
+      c => c.name.toLowerCase() === parsed.category?.toLowerCase()
+    );
+
+    const confidenceEmoji = parsed.confidence === 'high' ? '✅' : parsed.confidence === 'medium' ? '⚠️' : '❓';
+
+    const confirmMessage = `${confidenceEmoji} *Encontré este gasto:*
+
+💰 Monto: $${parsed.amount.toLocaleString('es-AR')} ${parsed.currency}
+🏪 Comercio: ${parsed.merchant || 'No detectado'}
+📅 Fecha: ${parsed.date || 'Hoy'}
+🏷️ Categoría: ${category?.icon || '❓'} ${parsed.category || 'Sin categoría'}
+💳 Cuenta: ${account.icon} ${account.name}
+
+¿Lo registro? Respondé *sí* para confirmar o corregime los datos.`;
+
+    const pendingKey = `pending_photo_${ctx.chat.id}`;
+    const pendingData = {
+      amount: parsed.amount,
+      currency: parsed.currency,
+      accountId: account.id,
+      accountName: account.name,
+      categoryId: category?.id,
+      categoryName: parsed.category,
+      description: parsed.description || parsed.merchant,
+      date: parsed.date,
+      userId: user.id
+    };
+    
+    (global as any)[pendingKey] = pendingData;
+    
+    setTimeout(() => {
+      delete (global as any)[pendingKey];
+    }, 5 * 60 * 1000);
+
+    return ctx.reply(confirmMessage, { parse_mode: 'Markdown' });
+
+  } catch (error) {
+    console.error('Photo processing error:', error);
+    return ctx.reply('Hubo un error procesando la imagen. ¿Podés intentar con otra foto o escribirme el gasto?');
+  }
+});
+
 bot.on(message('text'), async (ctx) => {
   const user = await getUserFromTelegramId(ctx.chat.id);
   if (!user) {
@@ -190,6 +317,39 @@ bot.on(message('text'), async (ctx) => {
   }
 
   const userMessage = ctx.message.text;
+  
+  const pendingKey = `pending_photo_${ctx.chat.id}`;
+  const pendingData = (global as any)[pendingKey];
+  
+  if (pendingData && ['sí', 'si', 'ok', 'dale', 'confirmar', 'yes'].includes(userMessage.toLowerCase().trim())) {
+    try {
+      await transactionsService.create({
+        userId: pendingData.userId,
+        type: 'expense',
+        accountId: pendingData.accountId,
+        amount: pendingData.amount,
+        currency: pendingData.currency,
+        categoryId: pendingData.categoryId,
+        description: pendingData.description,
+        transactionDate: pendingData.date || new Date().toISOString(),
+      });
+      
+      delete (global as any)[pendingKey];
+      
+      return ctx.reply(
+        `✅ Listo! Registré $${pendingData.amount.toLocaleString('es-AR')} ${pendingData.currency} en ${pendingData.accountName}` +
+        (pendingData.categoryName ? ` (${pendingData.categoryName})` : '')
+      );
+    } catch (error) {
+      console.error('Error saving photo transaction:', error);
+      return ctx.reply('Hubo un error guardando el gasto. ¿Podés intentar de nuevo?');
+    }
+  }
+  
+  if (pendingData && ['no', 'cancelar', 'cancel'].includes(userMessage.toLowerCase().trim())) {
+    delete (global as any)[pendingKey];
+    return ctx.reply('Ok, cancelado. Podés mandarme otra foto o escribirme el gasto.');
+  }
 
   const offTopicKeywords = [
     'chiste', 'poema', 'canción', 'receta', 'clima', 'tiempo',

@@ -1,3 +1,9 @@
 {
-  "regions": ["gru1"]
+  "regions": ["gru1"],
+  "crons": [
+    {
+      "path": "/api/cron/monthly-summary",
+      "schedule": "0 9 1 * *"
+    }
+  ]
 }
