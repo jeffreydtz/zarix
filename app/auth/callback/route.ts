@@ -1,23 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
-  const { searchParams, origin } = new URL(req.url);
-  const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/dashboard';
+  const requestUrl = new URL(req.url);
+  const code = requestUrl.searchParams.get('code');
+  const origin = requestUrl.origin;
+
+  console.log('🔍 Auth callback received:', { code: code?.substring(0, 10), origin });
 
   if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+    try {
+      const supabase = await createClient();
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      
+      if (error) {
+        console.error('❌ Error exchanging code:', error);
+        return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
+      }
+
+      console.log('✅ Session created for user:', data.user?.email);
+      
+      // Redirect to dashboard
+      return NextResponse.redirect(`${origin}/dashboard`);
+    } catch (err: any) {
+      console.error('❌ Unexpected error:', err);
+      return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(err.message)}`);
     }
-    
-    // Si hay error, redirigir a login con mensaje
-    return NextResponse.redirect(`${origin}/login?error=${error.message}`);
   }
 
-  // Si no hay code, redirigir a login
-  return NextResponse.redirect(`${origin}/login`);
+  // No code provided
+  console.warn('⚠️ No code in callback');
+  return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent('No authorization code provided')}`);
 }
