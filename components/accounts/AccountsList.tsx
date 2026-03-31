@@ -1,12 +1,65 @@
 'use client';
 
 import type { AccountWithBalance } from '@/lib/services/accounts';
+import { useState } from 'react';
 
 interface AccountsListProps {
   accounts: AccountWithBalance[];
 }
 
 export default function AccountsList({ accounts }: AccountsListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleEdit = (account: AccountWithBalance) => {
+    setEditingId(account.id);
+    setEditName(account.name);
+  };
+
+  const handleSave = async (id: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/accounts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName }),
+      });
+
+      if (!response.ok) throw new Error('Error updating account');
+
+      window.location.reload();
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al actualizar la cuenta');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`¿Estás seguro de eliminar la cuenta "${name}"?`)) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/accounts/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Error deleting account');
+      }
+
+      window.location.reload();
+    } catch (error: any) {
+      console.error('Error:', error);
+      alert(error.message || 'Error al eliminar la cuenta');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (accounts.length === 0) {
     return (
       <div className="card text-center py-12">
@@ -19,9 +72,9 @@ export default function AccountsList({ accounts }: AccountsListProps) {
   return (
     <div className="space-y-4">
       {accounts.map((account) => (
-        <div key={account.id} className="card hover:shadow-md transition-shadow cursor-pointer">
+        <div key={account.id} className="card hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1">
               <div
                 className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
                 style={{ backgroundColor: account.color }}
@@ -29,25 +82,73 @@ export default function AccountsList({ accounts }: AccountsListProps) {
                 {account.icon || '💳'}
               </div>
 
-              <div>
-                <div className="font-semibold text-lg">{account.name}</div>
+              <div className="flex-1">
+                {editingId === account.id ? (
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="font-semibold text-lg px-2 py-1 border rounded dark:bg-gray-700"
+                    autoFocus
+                  />
+                ) : (
+                  <div className="font-semibold text-lg">{account.name}</div>
+                )}
                 <div className="text-sm text-gray-500">
                   {account.type.replace('_', ' ')} • {account.currency}
                 </div>
               </div>
             </div>
 
-            <div className="text-right">
-              <div className="text-xl font-bold">
-                {account.is_debt && '-'}
-                ${account.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-              </div>
-              <div className="text-sm text-gray-500">{account.currency}</div>
-              {account.currency !== 'ARS' && (
-                <div className="text-xs text-gray-400 mt-1">
-                  ≈ ${account.balance_ars_blue?.toLocaleString('es-AR') || 0} ARS
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <div className="text-xl font-bold">
+                  {account.is_debt && '-'}
+                  ${account.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                 </div>
-              )}
+                <div className="text-sm text-gray-500">{account.currency}</div>
+                {account.currency !== 'ARS' && (
+                  <div className="text-xs text-gray-400 mt-1">
+                    ≈ ${account.balance_ars_blue?.toLocaleString('es-AR') || 0} ARS
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                {editingId === account.id ? (
+                  <>
+                    <button
+                      onClick={() => handleSave(account.id)}
+                      disabled={loading}
+                      className="text-green-600 hover:text-green-700 px-3 py-1 disabled:opacity-50"
+                    >
+                      ✓
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      disabled={loading}
+                      className="text-gray-600 hover:text-gray-700 px-3 py-1 disabled:opacity-50"
+                    >
+                      ✕
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleEdit(account)}
+                      className="text-blue-600 hover:text-blue-700 px-3 py-1"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDelete(account.id, account.name)}
+                      className="text-red-600 hover:text-red-700 px-3 py-1"
+                    >
+                      🗑️
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 

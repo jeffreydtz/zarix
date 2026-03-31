@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { accountsService } from '@/lib/services/accounts';
+import { categoriesService } from '@/lib/services/categories';
 
 export async function GET(
   req: NextRequest,
@@ -16,10 +16,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const account = await accountsService.getById(params.id, user.id);
-    return NextResponse.json(account);
+    const category = await categoriesService.getById(params.id, user.id);
+    return NextResponse.json(category);
   } catch (error) {
-    console.error('Account GET error:', error);
+    console.error('Category GET error:', error);
     return NextResponse.json(
       { error: 'Not found' },
       { status: 404 }
@@ -43,10 +43,10 @@ export async function PATCH(
 
     const body = await req.json();
 
-    const account = await accountsService.update(params.id, user.id, body);
-    return NextResponse.json(account);
+    const category = await categoriesService.update(params.id, user.id, body);
+    return NextResponse.json(category);
   } catch (error) {
-    console.error('Account PATCH error:', error);
+    console.error('Category PATCH error:', error);
     return NextResponse.json(
       { error: 'Internal error' },
       { status: 500 }
@@ -70,10 +70,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await accountsService.delete(params.id, user.id);
+    await categoriesService.delete(params.id, user.id);
     return NextResponse.json({ ok: true }, { status: 204 });
   } catch (error: any) {
-    console.error('Account DELETE error:', error);
+    console.error('Category DELETE error:', error);
     return NextResponse.json(
       { error: error.message || 'Internal error' },
       { status: 500 }

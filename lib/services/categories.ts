@@ -43,6 +43,49 @@ class CategoriesService {
     return data;
   }
 
+  async getById(id: string, userId: string): Promise<Category> {
+    const supabase = createServiceClientSync();
+
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('id', id)
+      .or(`user_id.eq.${userId},is_system.eq.true`)
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  async update(
+    id: string,
+    userId: string,
+    updates: Partial<CreateCategoryInput>
+  ): Promise<Category> {
+    const supabase = createServiceClientSync();
+
+    const { data: category } = await supabase
+      .from('categories')
+      .select('is_system')
+      .eq('id', id)
+      .single();
+
+    if (category?.is_system) {
+      throw new Error('Cannot update system category');
+    }
+
+    const { data, error } = await supabase
+      .from('categories')
+      .update(updates as any)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
   async delete(id: string, userId: string): Promise<void> {
     const supabase = createServiceClientSync();
 

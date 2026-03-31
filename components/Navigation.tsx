@@ -10,6 +10,7 @@ export default function Navigation() {
     { href: '/dashboard', label: 'Inicio', icon: '🏠' },
     { href: '/expenses', label: 'Movimientos', icon: '💸' },
     { href: '/accounts', label: 'Cuentas', icon: '🏦' },
+    { href: '/categories', label: 'Categorías', icon: '🏷️' },
     { href: '/investments', label: 'Inversiones', icon: '📈' },
     { href: '/analysis', label: 'Análisis', icon: '📊' },
     { href: '/settings', label: 'Config', icon: '⚙️' },
