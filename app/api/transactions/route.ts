@@ -54,6 +54,13 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
+    if (!body.accountId) {
+      return NextResponse.json(
+        { error: 'La cuenta es obligatoria para crear movimientos manuales' },
+        { status: 400 }
+      );
+    }
+
     const transaction = await transactionsService.create({
       userId: user.id,
       type: body.type,

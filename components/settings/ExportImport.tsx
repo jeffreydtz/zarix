@@ -14,6 +14,13 @@ export default function ExportImport() {
     errors?: string[];
     message?: string;
   } | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [reviewStep, setReviewStep] = useState(false);
+  const [unresolvedAccounts, setUnresolvedAccounts] = useState<string[]>([]);
+  const [availableAccounts, setAvailableAccounts] = useState<Array<{ id: string; name: string; currency: string }>>([]);
+  const [resolutions, setResolutions] = useState<
+    Record<string, { action: 'none' | 'map' | 'keep_name'; accountId?: string }>
+  >({});
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,10 +96,12 @@ export default function ExportImport() {
 
     setImporting(true);
     setImportResult(null);
+    setSelectedFile(file);
 
     try {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('mode', 'preview');
 
       const response = await fetch('/api/import/transactions', {
         method: 'POST',
@@ -104,12 +113,19 @@ export default function ExportImport() {
       if (!response.ok) {
         setImportResult({ success: false, message: result.error });
       } else {
-        setImportResult({
-          success: true,
-          imported: result.imported,
-          skipped: result.skipped,
-          errors: result.errors,
-        });
+        const unresolved = (result.unresolvedAccounts || []) as string[];
+        setUnresolvedAccounts(unresolved);
+        setAvailableAccounts(result.accounts || []);
+        setResolutions(
+          Object.fromEntries(
+            unresolved.map((name: string) => [name, { action: 'none' as const }])
+          )
+        );
+        setReviewStep(unresolved.length > 0);
+
+        if (unresolved.length === 0) {
+          await handleConfirmImport(file, {});
+        }
       }
     } catch (error) {
       setImportResult({ success: false, message: 'Error importando archivo' });
@@ -118,6 +134,45 @@ export default function ExportImport() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    }
+  };
+
+  const handleConfirmImport = async (
+    fileArg?: File,
+    resolutionsArg?: Record<string, { action: 'none' | 'map' | 'keep_name'; accountId?: string }>
+  ) => {
+    const file = fileArg || selectedFile;
+    if (!file) return;
+
+    setImporting(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('mode', 'import');
+      formData.append('resolutions', JSON.stringify(resolutionsArg || resolutions));
+
+      const response = await fetch('/api/import/transactions', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        setImportResult({ success: false, message: result.error });
+      } else {
+        setImportResult({
+          success: true,
+          imported: result.imported,
+          skipped: result.skipped,
+          errors: result.errors,
+        });
+        setReviewStep(false);
+        setUnresolvedAccounts([]);
+      }
+    } catch (error) {
+      setImportResult({ success: false, message: 'Error confirmando importación' });
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -308,6 +363,82 @@ export default function ExportImport() {
           <p className="text-xs text-slate-500 mt-2">
             Aceptamos archivos .csv (Excel) y .json
           </p>
+
+          {reviewStep && unresolvedAccounts.length > 0 && (
+            <div className="mt-4 p-4 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
+              <h4 className="font-semibold text-amber-800 dark:text-amber-300 mb-2">
+                Cuentas no reconocidas (import masivo)
+              </h4>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
+                Elegí para cada cuenta: asignar una existente, dejar sin cuenta o guardar el nombre original.
+              </p>
+              <div className="space-y-3">
+                {unresolvedAccounts.map((name) => {
+                  const current = resolutions[name] || { action: 'none' as const };
+                  return (
+                    <div key={name} className="p-3 rounded bg-white dark:bg-slate-800 border border-amber-100 dark:border-amber-700/50">
+                      <div className="text-sm font-medium mb-2">{name}</div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <select
+                          className="input"
+                          value={current.action}
+                          onChange={(e) =>
+                            setResolutions((prev) => ({
+                              ...prev,
+                              [name]: { ...prev[name], action: e.target.value as 'none' | 'map' | 'keep_name' },
+                            }))
+                          }
+                        >
+                          <option value="none">Dejar sin cuenta</option>
+                          <option value="map">Asignar a cuenta existente</option>
+                          <option value="keep_name">Guardar nombre original en notas</option>
+                        </select>
+
+                        {current.action === 'map' && (
+                          <select
+                            className="input md:col-span-2"
+                            value={current.accountId || ''}
+                            onChange={(e) =>
+                              setResolutions((prev) => ({
+                                ...prev,
+                                [name]: { ...prev[name], accountId: e.target.value },
+                              }))
+                            }
+                          >
+                            <option value="">Seleccionar cuenta...</option>
+                            {availableAccounts.map((a) => (
+                              <option key={a.id} value={a.id}>
+                                {a.name} ({a.currency})
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => handleConfirmImport()}
+                  disabled={importing}
+                  className="btn btn-primary"
+                >
+                  {importing ? 'Importando...' : 'Confirmar importación'}
+                </button>
+                <button
+                  onClick={() => {
+                    setReviewStep(false);
+                    setUnresolvedAccounts([]);
+                    setSelectedFile(null);
+                  }}
+                  className="btn"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Import Result */}

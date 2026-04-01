@@ -13,6 +13,13 @@ interface ImportedTransaction {
   notes?: string;
 }
 
+type UnresolvedAction = 'none' | 'map' | 'keep_name';
+
+interface UnresolvedResolution {
+  action: UnresolvedAction;
+  accountId?: string;
+}
+
 function parseCSV(csvText: string): ImportedTransaction[] {
   const lines = csvText.trim().split('\n');
   if (lines.length < 2) return [];
@@ -110,6 +117,7 @@ export async function POST(request: NextRequest) {
     }
 
     const formData = await request.formData();
+    const mode = (formData.get('mode') as string) || 'import';
     const file = formData.get('file') as File;
     
     if (!file) {
@@ -169,22 +177,72 @@ export async function POST(request: NextRequest) {
     
     const accountMap = new Map((accounts || []).map(a => [a.name.toLowerCase(), a]));
     const categoryMap = new Map((categories || []).map(c => [c.name.toLowerCase(), c]));
+
+    const unresolvedAccountNames = Array.from(
+      new Set(
+        transactions
+          .map((t) => t.account?.trim())
+          .filter((name): name is string => Boolean(name && !accountMap.has(name.toLowerCase())))
+      )
+    );
+
+    if (mode === 'preview') {
+      return NextResponse.json({
+        success: true,
+        total: transactions.length,
+        unresolvedAccounts: unresolvedAccountNames,
+        accounts: (accounts || []).map((a) => ({ id: a.id, name: a.name, currency: a.currency })),
+      });
+    }
+
+    let resolutions: Record<string, UnresolvedResolution> = {};
+    try {
+      const rawResolutions = formData.get('resolutions') as string | null;
+      resolutions = rawResolutions ? JSON.parse(rawResolutions) : {};
+    } catch {
+      resolutions = {};
+    }
     
     let imported = 0;
     let skipped = 0;
     const errors: string[] = [];
     
     for (const tx of transactions) {
-      let account = accountMap.get(tx.account.toLowerCase());
+      const rawAccountName = (tx.account || '').trim();
+      const hasAccountInFile = rawAccountName.length > 0;
+      let account = hasAccountInFile ? accountMap.get(rawAccountName.toLowerCase()) : undefined;
       
-      if (!account) {
-        account = Array.from(accountMap.values()).find(a => a.currency === tx.currency);
-      }
-      
-      if (!account) {
-        skipped++;
-        errors.push(`Línea con cuenta "${tx.account}" no encontrada`);
-        continue;
+      let accountId: string | null = null;
+      let description = tx.description || null;
+      let notes = tx.notes || null;
+
+      if (account) {
+        accountId = account.id;
+      } else {
+        const fallbackByCurrency = Array.from(accountMap.values()).find(a => a.currency === tx.currency);
+        const resolution = hasAccountInFile ? (resolutions[rawAccountName] || null) : null;
+
+        if (resolution?.action === 'map' && resolution.accountId) {
+          accountId = resolution.accountId;
+        } else if (resolution?.action === 'keep_name') {
+          if (rawAccountName) {
+            const annotation = `Cuenta original importada: ${rawAccountName}`;
+            notes = notes ? `${notes} | ${annotation}` : annotation;
+          }
+          accountId = null;
+        } else if (resolution?.action === 'none') {
+          accountId = null;
+        } else if (!hasAccountInFile && fallbackByCurrency) {
+          // Solo autoasignamos por moneda cuando el archivo no trae cuenta.
+          accountId = fallbackByCurrency.id;
+        } else if (!hasAccountInFile) {
+          // Si no hay cuenta en el archivo y no hay fallback por moneda, permitimos sin cuenta.
+          accountId = null;
+        } else {
+          skipped++;
+          errors.push(`Cuenta "${rawAccountName}" no resuelta (definí acción en revisión)`); 
+          continue;
+        }
       }
       
       const category = tx.category ? categoryMap.get(tx.category.toLowerCase()) : null;
@@ -193,13 +251,13 @@ export async function POST(request: NextRequest) {
         await serviceSupabase.from('transactions').insert({
           user_id: user.id,
           type: tx.type,
-          account_id: account.id,
+          account_id: accountId,
           amount: tx.amount,
           currency: tx.currency,
           amount_in_account_currency: tx.amount,
           category_id: category?.id || null,
-          description: tx.description || null,
-          notes: tx.notes || null,
+          description,
+          notes,
           transaction_date: tx.date,
         });
         

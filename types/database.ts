@@ -120,7 +120,7 @@ export interface Transaction {
   id: string;
   user_id: string;
   type: TransactionType;
-  account_id: string;
+  account_id: string | null;
   destination_account_id: string | null;
   amount: number;
   currency: string;

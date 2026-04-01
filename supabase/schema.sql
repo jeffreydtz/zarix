@@ -105,7 +105,7 @@ CREATE TABLE transactions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   type transaction_type NOT NULL,
-  account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
+  account_id UUID REFERENCES accounts(id) ON DELETE RESTRICT,
   destination_account_id UUID REFERENCES accounts(id) ON DELETE RESTRICT,
   amount NUMERIC(20, 8) NOT NULL,
   currency TEXT NOT NULL,

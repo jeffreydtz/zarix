@@ -24,7 +24,7 @@ export default function EditTransactionModal({
     type: transaction.type,
     amount: transaction.amount.toString(),
     currency: transaction.currency,
-    account_id: transaction.account_id,
+    account_id: transaction.account_id || '',
     category_id: transaction.category_id || '',
     description: transaction.description || '',
     transaction_date: transaction.transaction_date.split('T')[0],

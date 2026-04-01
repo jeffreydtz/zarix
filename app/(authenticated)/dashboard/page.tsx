@@ -23,6 +23,9 @@ const RecentTransactions = dynamic(() => import('@/components/dashboard/RecentTr
 const AnomaliesWidget = dynamic(() => import('@/components/dashboard/AnomaliesWidget'), {
   loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
 });
+const SpendingAnalyzer = dynamic(() => import('@/components/dashboard/SpendingAnalyzer'), {
+  loading: () => <div className="card h-80 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+});
 
 export default async function DashboardPage() {
   try {
@@ -106,6 +109,8 @@ export default async function DashboardPage() {
           <AccountCards accounts={accounts} />
 
           <RecentTransactions transactions={recentTransactions} />
+
+          <SpendingAnalyzer />
 
           <AnomaliesWidget />
 

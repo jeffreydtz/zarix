@@ -11,6 +11,7 @@ export interface QueuedTransaction {
   payload: {
     type: string;
     accountId: string;
+    destinationAccountId?: string;
     amount: number;
     currency: string;
     categoryId: string | null;

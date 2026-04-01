@@ -14,20 +14,23 @@ export default function CreateTransactionButton({
 }: CreateTransactionButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [type, setType] = useState<'expense' | 'income'>('expense');
+  const [type, setType] = useState<'expense' | 'income' | 'transfer'>('expense');
   const [amount, setAmount] = useState('');
   const [accountId, setAccountId] = useState('');
+  const [destinationAccountId, setDestinationAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
 
   const { isOnline, enqueue } = useOfflineQueue();
 
   const filteredCategories = categories.filter((c) => c.type === type || c.type === 'both');
+  const destinationAccounts = accounts.filter((a) => a.id !== accountId);
 
   const resetForm = () => {
     setType('expense');
     setAmount('');
     setAccountId('');
+    setDestinationAccountId('');
     setCategoryId('');
     setDescription('');
   };
@@ -39,6 +42,8 @@ export default function CreateTransactionButton({
 
   const handleCreate = async () => {
     if (!amount || !accountId) return;
+    if (type === 'transfer' && !destinationAccountId) return;
+    if (type === 'transfer' && destinationAccountId === accountId) return;
     setLoading(true);
 
     const account = accounts.find((a) => a.id === accountId);
@@ -50,10 +55,11 @@ export default function CreateTransactionButton({
     const payload = {
       type,
       accountId,
+      destinationAccountId: type === 'transfer' ? destinationAccountId : undefined,
       amount: parseFloat(amount),
       currency: account.currency,
-      categoryId: categoryId || null,
-      description,
+      categoryId: type === 'transfer' ? null : (categoryId || null),
+      description: description || (type === 'transfer' ? 'Transferencia entre cuentas' : ''),
       transactionDate: new Date().toISOString(),
     };
 
@@ -139,6 +145,16 @@ export default function CreateTransactionButton({
                   >
                     💰 Ingreso
                   </button>
+                  <button
+                    onClick={() => setType('transfer')}
+                    className={`flex-1 py-2 rounded-lg ${
+                      type === 'transfer'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 dark:bg-gray-700'
+                    }`}
+                  >
+                    🔄 Transfer
+                  </button>
                 </div>
               </div>
 
@@ -172,19 +188,39 @@ export default function CreateTransactionButton({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Categoría</label>
-                <select
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                >
-                  <option value="">Sin categoría</option>
-                  {filteredCategories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.icon} {cat.name}
-                    </option>
-                  ))}
-                </select>
+                {type === 'transfer' ? (
+                  <>
+                    <label className="block text-sm font-medium mb-2">Cuenta destino</label>
+                    <select
+                      value={destinationAccountId}
+                      onChange={(e) => setDestinationAccountId(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    >
+                      <option value="">Seleccioná cuenta destino</option>
+                      {destinationAccounts.map((acc) => (
+                        <option key={acc.id} value={acc.id}>
+                          {acc.name} ({acc.currency})
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                ) : (
+                  <>
+                    <label className="block text-sm font-medium mb-2">Categoría</label>
+                    <select
+                      value={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    >
+                      <option value="">Sin categoría</option>
+                      {filteredCategories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.icon} {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
               </div>
 
               <div>
@@ -193,14 +229,19 @@ export default function CreateTransactionButton({
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="ej: Compra en supermercado"
+                  placeholder={type === 'transfer' ? 'ej: Paso a cuenta ahorro' : 'ej: Compra en supermercado'}
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                 />
               </div>
 
               <button
                 onClick={handleCreate}
-                disabled={loading || !amount || !accountId}
+                disabled={
+                  loading ||
+                  !amount ||
+                  !accountId ||
+                  (type === 'transfer' && (!destinationAccountId || destinationAccountId === accountId))
+                }
                 className="w-full btn btn-primary py-3 disabled:opacity-50"
               >
                 {loading

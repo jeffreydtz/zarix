@@ -43,6 +43,13 @@ export async function PATCH(
 
     const body = await req.json();
 
+    if (!body.account_id) {
+      return NextResponse.json(
+        { error: 'La cuenta es obligatoria para editar movimientos desde la app' },
+        { status: 400 }
+      );
+    }
+
     const serviceClient = createServiceClientSync();
 
     const { data, error } = await serviceClient
