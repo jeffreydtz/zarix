@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { CategoryIcon } from '@/lib/category-icons';
 
 type RangeType = 'day' | 'week' | 'month' | 'year' | 'custom';
 type AnalyzerMode = 'expense' | 'income';
@@ -30,6 +31,7 @@ const COLORS = [
   '#F59E0B', '#EF4444', '#3B82F6', '#10B981', '#8B5CF6',
   '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1',
 ];
+const MAX_PIE_SLICES = 12;
 
 function toInputDate(date: Date) {
   const y = date.getFullYear();
@@ -180,6 +182,23 @@ export default function SpendingAnalyzer() {
     return [...filteredItems].sort((a, b) => Number(b.amount_in_account_currency) - Number(a.amount_in_account_currency))[0];
   }, [filteredItems]);
   const variationPct = prevTotal > 0 ? ((total - prevTotal) / prevTotal) * 100 : 0;
+  const displaySlices = useMemo(() => {
+    if (slices.length <= MAX_PIE_SLICES) return slices;
+    const head = slices.slice(0, MAX_PIE_SLICES - 1);
+    const tail = slices.slice(MAX_PIE_SLICES - 1);
+    const tailAmount = tail.reduce((sum, s) => sum + s.amount, 0);
+    const tailPercent = tail.reduce((sum, s) => sum + s.percent, 0);
+    return [
+      ...head,
+      {
+        name: 'Otros',
+        icon: '🧩',
+        amount: tailAmount,
+        percent: tailPercent,
+        color: '#94A3B8',
+      },
+    ];
+  }, [slices]);
 
   const movePeriod = (direction: -1 | 1) => {
     if (range === 'custom') return;
@@ -285,30 +304,30 @@ export default function SpendingAnalyzer() {
         <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">{error}</div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="relative bg-slate-900 dark:bg-slate-800 rounded-2xl p-4">
-            {slices.length === 0 ? (
+          <div className="relative bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+            {displaySlices.length === 0 ? (
               <div className="h-64 flex items-center justify-center text-slate-400">Sin gastos en este período</div>
             ) : (
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={slices}
+                      data={displaySlices}
                       dataKey="amount"
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      innerRadius={65}
-                      outerRadius={105}
-                      paddingAngle={2}
+                      innerRadius={60}
+                      outerRadius={92}
+                      paddingAngle={1.5}
                     >
-                      {slices.map((s) => (
+                      {displaySlices.map((s) => (
                         <Cell key={s.name} fill={s.color} />
                       ))}
                     </Pie>
                     <Tooltip
                       formatter={(v: number) => `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`}
-                      contentStyle={{ background: '#0f172a', border: 'none', borderRadius: 8, color: '#fff' }}
+                      contentStyle={{ borderRadius: 8 }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -317,7 +336,7 @@ export default function SpendingAnalyzer() {
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
                 <div className="text-sm text-slate-400">Total</div>
-                <div className="text-3xl font-bold text-white">${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
+                <div className="text-3xl font-bold text-slate-800 dark:text-slate-100">${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
               </div>
             </div>
           </div>
@@ -338,10 +357,12 @@ export default function SpendingAnalyzer() {
               </div>
             </div>
 
-            {slices.slice(0, 8).map((s) => (
+            {displaySlices.slice(0, 8).map((s) => (
               <div key={s.name} className="flex items-center justify-between p-3 rounded-xl bg-slate-100 dark:bg-slate-800">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-lg">{s.icon}</span>
+                  <span className="text-lg inline-flex items-center justify-center">
+                    <CategoryIcon icon={s.icon} className="w-4 h-4" />
+                  </span>
                   <span className="font-medium text-slate-700 dark:text-slate-200 truncate">{s.name}</span>
                 </div>
                 <div className="text-right">
@@ -350,7 +371,7 @@ export default function SpendingAnalyzer() {
                 </div>
               </div>
             ))}
-            {slices.length === 0 && (
+            {displaySlices.length === 0 && (
               <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm text-slate-500">No hay categorías para mostrar.</div>
             )}
           </div>
