@@ -20,6 +20,51 @@ interface UnresolvedResolution {
   accountId?: string;
 }
 
+function parseImportDate(dateStr: string): Date | null {
+  const raw = (dateStr || '').trim();
+  if (!raw) return null;
+
+  // New import standard: MM-DD-YYYY (also supports MM/DD/YYYY)
+  const mdYMatch = raw.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
+  if (mdYMatch) {
+    const month = Number(mdYMatch[1]);
+    const day = Number(mdYMatch[2]);
+    const yearRaw = Number(mdYMatch[3]);
+    const year = yearRaw < 100 ? 2000 + yearRaw : yearRaw;
+
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+
+    const parsed = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+    if (Number.isNaN(parsed.getTime())) return null;
+    return parsed;
+  }
+
+  // Keep ISO compatibility for JSON imports.
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed;
+}
+
+function parseImportAmount(amountValue: unknown): number | null {
+  const raw = String(amountValue ?? '').trim();
+  if (!raw) return null;
+
+  // Allow currency symbols/spaces, keep only number punctuation/sign.
+  const cleaned = raw.replace(/[^\d.,\-]/g, '');
+  if (!cleaned) return null;
+
+  // Import standard: decimal separator must be dot and no thousands separator.
+  // Valid examples: 100.00, 1000, -250.75
+  // Invalid examples: 1,000.50, 100,00, 1.000,50
+  const dotDecimalPattern = /^-?\d+(?:\.\d+)?$/;
+  if (!dotDecimalPattern.test(cleaned)) return null;
+
+  const parsed = Number(cleaned);
+  if (!Number.isFinite(parsed)) return null;
+
+  return Math.abs(parsed);
+}
+
 function parseCSV(csvText: string): ImportedTransaction[] {
   const lines = csvText.trim().split('\n');
   if (lines.length < 2) return [];
@@ -68,29 +113,12 @@ function parseCSV(csvText: string): ImportedTransaction[] {
     if (['ingreso', 'income'].includes(rawType)) type = 'income';
     else if (['transferencia', 'transfer'].includes(rawType)) type = 'transfer';
     
-    const amountStr = getValue(amountIdx).replace(/[^\d.,\-]/g, '').replace(',', '.');
-    const amount = Math.abs(parseFloat(amountStr));
+    const amount = parseImportAmount(getValue(amountIdx));
     
-    if (isNaN(amount) || amount === 0) continue;
+    if (amount === null || amount === 0) continue;
     
-    let dateStr = getValue(dateIdx);
-    let parsedDate: Date;
-    
-    if (dateStr.includes('/')) {
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-        if (parts[2].length === 2) parts[2] = '20' + parts[2];
-        parsedDate = new Date(`${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`);
-      } else {
-        parsedDate = new Date();
-      }
-    } else {
-      parsedDate = new Date(dateStr);
-    }
-    
-    if (isNaN(parsedDate.getTime())) {
-      parsedDate = new Date();
-    }
+    const parsedDate = parseImportDate(getValue(dateIdx));
+    if (!parsedDate) continue;
     
     transactions.push({
       date: parsedDate.toISOString(),
@@ -132,9 +160,9 @@ export async function POST(request: NextRequest) {
       const json = JSON.parse(text);
       if (Array.isArray(json)) {
         transactions = json.map(tx => ({
-          date: tx.date || tx.transaction_date || new Date().toISOString(),
+          date: parseImportDate(tx.date || tx.transaction_date || '')?.toISOString() || new Date().toISOString(),
           type: tx.type || 'expense',
-          amount: Math.abs(parseFloat(tx.amount) || 0),
+          amount: parseImportAmount(tx.amount) || 0,
           currency: tx.currency || 'ARS',
           account: tx.account || tx.accountName || '',
           category: tx.category || tx.categoryName,
@@ -143,9 +171,9 @@ export async function POST(request: NextRequest) {
         }));
       } else if (json.data?.transactions) {
         transactions = json.data.transactions.map((tx: any) => ({
-          date: tx.transaction_date || new Date().toISOString(),
+          date: parseImportDate(tx.transaction_date || '')?.toISOString() || new Date().toISOString(),
           type: tx.type || 'expense',
-          amount: Math.abs(parseFloat(tx.amount) || 0),
+          amount: parseImportAmount(tx.amount) || 0,
           currency: tx.currency || 'ARS',
           account: '',
           category: undefined,
