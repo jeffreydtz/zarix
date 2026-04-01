@@ -19,10 +19,69 @@ export default function TransactionsList({
   categories = [] 
 }: TransactionsListProps) {
   const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkCategoryId, setBulkCategoryId] = useState('');
+  const [bulkAccountId, setBulkAccountId] = useState('');
+  const [applyingBulk, setApplyingBulk] = useState(false);
 
   const handleSave = () => {
     setEditingTx(null);
     window.location.reload();
+  };
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => (prev.length === transactions.length ? [] : transactions.map((t) => t.id)));
+  };
+
+  const applyBulk = async () => {
+    if (selectedIds.length === 0) {
+      alert('Seleccioná al menos un movimiento');
+      return;
+    }
+
+    const payload: {
+      transactionIds: string[];
+      categoryId?: string | null;
+      accountId?: string;
+    } = { transactionIds: selectedIds };
+
+    if (bulkCategoryId) {
+      payload.categoryId = bulkCategoryId === 'uncategorized' ? null : bulkCategoryId;
+    }
+    if (bulkAccountId) {
+      payload.accountId = bulkAccountId;
+    }
+
+    if (!payload.categoryId && !payload.accountId && payload.categoryId !== null) {
+      alert('Elegí una categoría y/o cuenta para aplicar');
+      return;
+    }
+
+    setApplyingBulk(true);
+    try {
+      const response = await fetch('/api/transactions/bulk', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'No se pudo aplicar el cambio masivo');
+      }
+
+      window.location.reload();
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || 'Error en edición masiva');
+    } finally {
+      setApplyingBulk(false);
+    }
   };
 
   if (transactions.length === 0) {
@@ -49,6 +108,74 @@ export default function TransactionsList({
 
   return (
     <>
+      <div className="card mb-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectionMode((v) => !v);
+              setSelectedIds([]);
+            }}
+            className={`px-3 py-1.5 rounded-lg text-sm border ${
+              selectionMode
+                ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+            }`}
+          >
+            {selectionMode ? 'Salir selección masiva' : 'Edición masiva'}
+          </button>
+
+          {selectionMode && (
+            <>
+              <button
+                type="button"
+                onClick={toggleSelectAll}
+                className="px-3 py-1.5 rounded-lg text-sm border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"
+              >
+                {selectedIds.length === transactions.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
+              </button>
+              <span className="text-xs text-slate-500">Seleccionados: {selectedIds.length}</span>
+            </>
+          )}
+        </div>
+
+        {selectionMode && (
+          <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
+            <select
+              value={bulkCategoryId}
+              onChange={(e) => setBulkCategoryId(e.target.value)}
+              className="input"
+            >
+              <option value="">Asignar categoría (opcional)</option>
+              <option value="uncategorized">Sin categoría</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.icon} {cat.name}
+                </option>
+              ))}
+            </select>
+
+            <select value={bulkAccountId} onChange={(e) => setBulkAccountId(e.target.value)} className="input">
+              <option value="">Asignar cuenta (opcional)</option>
+              {accounts.map((acc) => (
+                <option key={acc.id} value={acc.id}>
+                  {acc.name} ({acc.currency})
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={applyBulk}
+              disabled={applyingBulk || selectedIds.length === 0}
+              className="btn btn-primary disabled:opacity-50"
+            >
+              {applyingBulk ? 'Aplicando...' : 'Aplicar cambios masivos'}
+            </button>
+          </div>
+        )}
+      </div>
+
       <motion.div 
         initial="hidden"
         animate="show"
@@ -66,11 +193,23 @@ export default function TransactionsList({
               show: { opacity: 1, y: 0 }
             }}
             whileHover={{ scale: 1.01 }}
-            onClick={() => setEditingTx(tx)}
-            className="card hover:shadow-lg transition-all cursor-pointer group"
+            onClick={() => {
+              if (selectionMode) return;
+              setEditingTx(tx);
+            }}
+            className={`card hover:shadow-lg transition-all group ${selectionMode ? '' : 'cursor-pointer'}`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
+                {selectionMode && (
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(tx.id)}
+                    onChange={() => toggleSelection(tx.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-4 h-4"
+                  />
+                )}
                 <motion.div 
                   className="text-3xl w-12 h-12 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700"
                   whileHover={{ scale: 1.1 }}

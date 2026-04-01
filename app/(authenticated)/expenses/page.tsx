@@ -54,6 +54,9 @@ export default async function ExpensesPage({
               <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
                 Toca un movimiento para editarlo
               </p>
+              <div className="mt-2 inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+                Traídos: {transactions.length}
+              </div>
             </div>
             <CreateTransactionButton accounts={accounts || []} categories={categories || []} />
           </div>
