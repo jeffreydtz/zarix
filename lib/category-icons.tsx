@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Car,
   ShoppingCart,
-  House,
+  Home,
   Utensils,
   HeartPulse,
   GraduationCap,
@@ -59,7 +59,7 @@ export const LUCIDE_ICON_OPTIONS = [
 const LUCIDE_MAP: Record<string, LucideIcon> = {
   car: Car,
   'shopping-cart': ShoppingCart,
-  house: House,
+  house: Home,
   utensils: Utensils,
   'heart-pulse': HeartPulse,
   'graduation-cap': GraduationCap,
