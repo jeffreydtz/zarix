@@ -46,6 +46,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [deletingAll, setDeletingAll] = useState(false);
 
   const updateParams = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -72,6 +73,33 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
 
   const handleReset = () => {
     router.push('/expenses');
+  };
+
+  const handleDeleteAll = async () => {
+    const firstConfirm = confirm(
+      'Vas a eliminar TODOS tus movimientos (gastos, ingresos y transferencias). Esta acción no se puede deshacer. ¿Continuar?'
+    );
+    if (!firstConfirm) return;
+
+    const secondConfirm = confirm('Confirmá nuevamente para eliminar todo el historial de movimientos.');
+    if (!secondConfirm) return;
+
+    setDeletingAll(true);
+    try {
+      const response = await fetch('/api/transactions', { method: 'DELETE' });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'No se pudieron eliminar los movimientos');
+      }
+      router.push('/expenses');
+      router.refresh();
+      alert('Se eliminaron todos tus movimientos.');
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || 'Error al eliminar movimientos');
+    } finally {
+      setDeletingAll(false);
+    }
   };
 
   const hasActiveFilters =
@@ -147,20 +175,32 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
 
       {/* Toggle advanced */}
       <div className="px-4 pb-3 flex items-center justify-between">
-        <button
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className="text-xs text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1"
-        >
-          {showAdvanced ? '▲' : '▼'} Filtros avanzados
-        </button>
-        {hasActiveFilters && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={handleReset}
-            className="text-xs text-slate-500 hover:text-red-500 font-medium flex items-center gap-1 transition-colors"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="text-xs text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1"
           >
-            ✕ Limpiar filtros
+            {showAdvanced ? '▲' : '▼'} Filtros avanzados
           </button>
-        )}
+          <button
+            onClick={handleDeleteAll}
+            disabled={deletingAll}
+            className="text-xs text-red-600 hover:text-red-700 font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
+            title="Eliminar todos los movimientos"
+          >
+            🗑️ {deletingAll ? 'Eliminando...' : 'Eliminar todos'}
+          </button>
+        </div>
+        <div>
+          {hasActiveFilters && (
+            <button
+              onClick={handleReset}
+              className="text-xs text-slate-500 hover:text-red-500 font-medium flex items-center gap-1 transition-colors"
+            >
+              ✕ Limpiar filtros
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Advanced filters */}
