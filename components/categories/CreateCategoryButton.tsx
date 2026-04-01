@@ -60,8 +60,8 @@ export default function CreateCategoryButton() {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-4 sm:py-8 z-50 overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Nueva Categoría</h2>
               <button
@@ -137,7 +137,8 @@ export default function CreateCategoryButton() {
                     Ícono estilo iOS
                   </button>
                 </div>
-                <div className="grid grid-cols-6 gap-2">
+                <div className="max-h-72 overflow-y-auto pr-1">
+                  <div className="grid grid-cols-6 gap-2">
                   {iconMode === 'emoji' &&
                     EMOJI_ICONS.map((icon) => (
                       <button
@@ -171,6 +172,7 @@ export default function CreateCategoryButton() {
                         </button>
                       );
                     })}
+                  </div>
                 </div>
               </div>
 

@@ -147,7 +147,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                   Ícono
                 </button>
               </div>
-              <div className="grid grid-cols-6 gap-1">
+              <div className="grid grid-cols-6 gap-1 max-h-44 overflow-y-auto pr-1">
                 {editIconMode === 'emoji' &&
                   EMOJI_ICONS.map((icon) => (
                     <button
