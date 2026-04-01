@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CategoryIcon, getOptionTextIcon } from '@/lib/category-icons';
 
 interface RecurringRule {
   id: string;
@@ -240,7 +241,7 @@ export default function RecurringPage() {
                     >
                       <option value="">Sin categoría</option>
                       {categories.filter((c: any) => c.type === form.type).map((c: any) => (
-                        <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                        <option key={c.id} value={c.id}>{getOptionTextIcon(c.icon)} {c.name}</option>
                       ))}
                     </select>
                   </div>
@@ -367,7 +368,10 @@ function RuleCard({
           </span>
           {rule.category && (
             <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full shrink-0">
-              {rule.category.icon} {rule.category.name}
+              <span className="inline-flex items-center gap-1">
+                <CategoryIcon icon={rule.category.icon} className="w-3 h-3" />
+                {rule.category.name}
+              </span>
             </span>
           )}
         </div>

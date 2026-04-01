@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { CategoryIcon } from '@/lib/category-icons';
 
 interface BudgetWithStatus {
   id: string;
@@ -86,7 +87,7 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${getProgressBg(realPercent)}`}>
-            {categoryIcon}
+            <CategoryIcon icon={categoryIcon} className="w-5 h-5" />
           </div>
           <div>
             <div className="font-bold text-slate-800 dark:text-slate-100">{categoryName}</div>

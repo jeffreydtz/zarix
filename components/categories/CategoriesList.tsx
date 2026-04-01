@@ -2,18 +2,23 @@
 
 import type { Category } from '@/types/database';
 import { useState } from 'react';
+import {
+  CategoryIcon,
+  EMOJI_ICONS,
+  LUCIDE_ICON_OPTIONS,
+  iconValueFromLucideName,
+} from '@/lib/category-icons';
 
 interface CategoriesListProps {
   categories: Category[];
 }
-
-const ICONS = ['🍔', '🏠', '🚗', '💊', '🎓', '🎮', '👕', '✈️', '💰', '🎯', '📱', '⚡'];
 
 export default function CategoriesList({ categories }: CategoriesListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editIcon, setEditIcon] = useState('');
   const [editType, setEditType] = useState<'expense' | 'income'>('expense');
+  const [editIconMode, setEditIconMode] = useState<'emoji' | 'symbol'>('emoji');
   const [loading, setLoading] = useState(false);
 
   const userCategories = categories.filter((c) => !c.is_system);
@@ -24,6 +29,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
     setEditName(category.name);
     setEditIcon(category.icon || '🎯');
     setEditType(category.type);
+    setEditIconMode((category.icon || '').startsWith('lucide:') ? 'symbol' : 'emoji');
   };
 
   const handleSave = async (id: string) => {
@@ -116,21 +122,67 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4 flex-1">
           {editingId === category.id ? (
-            <div className="grid grid-cols-6 gap-1">
-              {ICONS.map((icon) => (
+            <div className="space-y-2">
+              <div className="flex gap-2">
                 <button
-                  key={icon}
-                  onClick={() => setEditIcon(icon)}
-                  className={`text-xl p-1 rounded ${
-                    editIcon === icon ? 'bg-blue-100 dark:bg-blue-900' : ''
+                  type="button"
+                  onClick={() => setEditIconMode('emoji')}
+                  className={`px-2 py-1 rounded text-xs border ${
+                    editIconMode === 'emoji'
+                      ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                      : 'border-gray-200 dark:border-gray-700'
                   }`}
                 >
-                  {icon}
+                  Emoji
                 </button>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => setEditIconMode('symbol')}
+                  className={`px-2 py-1 rounded text-xs border ${
+                    editIconMode === 'symbol'
+                      ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                      : 'border-gray-200 dark:border-gray-700'
+                  }`}
+                >
+                  Ícono
+                </button>
+              </div>
+              <div className="grid grid-cols-6 gap-1">
+                {editIconMode === 'emoji' &&
+                  EMOJI_ICONS.map((icon) => (
+                    <button
+                      type="button"
+                      key={icon}
+                      onClick={() => setEditIcon(icon)}
+                      className={`text-xl p-1 rounded ${
+                        editIcon === icon ? 'bg-blue-100 dark:bg-blue-900' : ''
+                      }`}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                {editIconMode === 'symbol' &&
+                  LUCIDE_ICON_OPTIONS.map((name) => {
+                    const value = iconValueFromLucideName(name);
+                    return (
+                      <button
+                        type="button"
+                        key={value}
+                        onClick={() => setEditIcon(value)}
+                        className={`p-2 rounded flex items-center justify-center ${
+                          editIcon === value ? 'bg-blue-100 dark:bg-blue-900' : ''
+                        }`}
+                      >
+                        <CategoryIcon icon={value} className="w-4 h-4" />
+                      </button>
+                    );
+                  })}
+              </div>
             </div>
           ) : (
-            <div className="text-3xl">{category.icon || '🎯'}</div>
+            <div className="text-3xl">
+              <CategoryIcon icon={category.icon || '🎯'} className="w-7 h-7" />
+            </div>
           )}
 
           <div className="flex-1">

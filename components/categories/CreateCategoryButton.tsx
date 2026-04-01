@@ -1,8 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-
-const ICONS = ['🍔', '🏠', '🚗', '💊', '🎓', '🎮', '👕', '✈️', '💰', '🎯', '📱', '⚡'];
+import {
+  CategoryIcon,
+  EMOJI_ICONS,
+  LUCIDE_ICON_OPTIONS,
+  iconValueFromLucideName,
+} from '@/lib/category-icons';
 
 export default function CreateCategoryButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +14,7 @@ export default function CreateCategoryButton() {
   const [name, setName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('🎯');
   const [type, setType] = useState<'expense' | 'income'>('expense');
+  const [iconMode, setIconMode] = useState<'emoji' | 'symbol'>('emoji');
 
   const handleCreate = async () => {
     if (!name.trim()) {
@@ -108,20 +113,64 @@ export default function CreateCategoryButton() {
 
               <div>
                 <label className="block text-sm font-medium mb-2">Ícono</label>
+                <div className="flex gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setIconMode('emoji')}
+                    className={`px-3 py-1.5 rounded-lg text-sm border ${
+                      iconMode === 'emoji'
+                        ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                        : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                  >
+                    Emoji
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIconMode('symbol')}
+                    className={`px-3 py-1.5 rounded-lg text-sm border ${
+                      iconMode === 'symbol'
+                        ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                        : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                  >
+                    Ícono estilo iOS
+                  </button>
+                </div>
                 <div className="grid grid-cols-6 gap-2">
-                  {ICONS.map((icon) => (
-                    <button
-                      key={icon}
-                      onClick={() => setSelectedIcon(icon)}
-                      className={`p-3 text-2xl rounded-lg border-2 transition-all ${
-                        selectedIcon === icon
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      {icon}
-                    </button>
-                  ))}
+                  {iconMode === 'emoji' &&
+                    EMOJI_ICONS.map((icon) => (
+                      <button
+                        type="button"
+                        key={icon}
+                        onClick={() => setSelectedIcon(icon)}
+                        className={`p-3 text-2xl rounded-lg border-2 transition-all ${
+                          selectedIcon === icon
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        {icon}
+                      </button>
+                    ))}
+                  {iconMode === 'symbol' &&
+                    LUCIDE_ICON_OPTIONS.map((name) => {
+                      const value = iconValueFromLucideName(name);
+                      return (
+                        <button
+                          type="button"
+                          key={value}
+                          onClick={() => setSelectedIcon(value)}
+                          className={`p-3 rounded-lg border-2 transition-all flex items-center justify-center ${
+                            selectedIcon === value
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          }`}
+                        >
+                          <CategoryIcon icon={value} className="w-5 h-5" />
+                        </button>
+                      );
+                    })}
                 </div>
               </div>
 
