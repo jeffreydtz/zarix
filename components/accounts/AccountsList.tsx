@@ -28,12 +28,15 @@ export default function AccountsList({ accounts }: AccountsListProps) {
         body: JSON.stringify({ name: editName }),
       });
 
-      if (!response.ok) throw new Error('Error updating account');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al actualizar la cuenta');
+      }
 
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Error al actualizar la cuenta');
+      alert(error.message || 'Error al actualizar la cuenta');
     } finally {
       setLoading(false);
     }

@@ -26,9 +26,9 @@ export async function PUT(
 
     const budget = await budgetsService.update(params.id, user.id, updates);
     return NextResponse.json(budget);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Budget PUT error:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Error al actualizar el presupuesto' }, { status: 500 });
   }
 }
 
@@ -48,8 +48,8 @@ export async function DELETE(
 
     await budgetsService.delete(params.id, user.id);
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Budget DELETE error:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Error al eliminar el presupuesto' }, { status: 500 });
   }
 }

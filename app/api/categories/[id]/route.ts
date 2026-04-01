@@ -18,10 +18,10 @@ export async function GET(
 
     const category = await categoriesService.getById(params.id, user.id);
     return NextResponse.json(category);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Category GET error:', error);
     return NextResponse.json(
-      { error: 'Not found' },
+      { error: error.message || 'Categoría no encontrada' },
       { status: 404 }
     );
   }
@@ -45,10 +45,10 @@ export async function PATCH(
 
     const category = await categoriesService.update(params.id, user.id, body);
     return NextResponse.json(category);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Category PATCH error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al actualizar la categoría' },
       { status: 500 }
     );
   }
@@ -71,11 +71,11 @@ export async function DELETE(
     }
 
     await categoriesService.delete(params.id, user.id);
-    return NextResponse.json({ ok: true }, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error: any) {
     console.error('Category DELETE error:', error);
     return NextResponse.json(
-      { error: error.message || 'Internal error' },
+      { error: error.message || 'Error al eliminar la categoría' },
       { status: 500 }
     );
   }

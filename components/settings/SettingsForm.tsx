@@ -25,12 +25,15 @@ export default function SettingsForm({ user }: SettingsFormProps) {
         body: JSON.stringify({ telegramChatId: parseInt(telegramChatId) }),
       });
 
-      if (!response.ok) throw new Error('Error linking Telegram');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al vincular Telegram');
+      }
 
       setMessage('✅ Telegram vinculado correctamente');
       setTimeout(() => window.location.reload(), 1500);
-    } catch (error) {
-      setMessage('❌ Error al vincular Telegram');
+    } catch (error: any) {
+      setMessage(`❌ ${error.message || 'Error al vincular Telegram'}`);
     } finally {
       setLoading(false);
     }

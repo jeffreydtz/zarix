@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
 
     const investments = await investmentsService.list(user.id);
     return NextResponse.json(investments);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Investments GET error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al obtener las inversiones' },
       { status: 500 }
     );
   }
@@ -53,10 +53,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(investment, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Investments POST error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al registrar la inversión' },
       { status: 500 }
     );
   }

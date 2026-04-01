@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
 
     const categories = await categoriesService.list(user.id);
     return NextResponse.json(categories);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Categories GET error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al obtener las categorías' },
       { status: 500 }
     );
   }
@@ -46,10 +46,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(category, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Categories POST error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al crear la categoría' },
       { status: 500 }
     );
   }

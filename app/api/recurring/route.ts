@@ -16,9 +16,9 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error;
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Recurring GET error:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Error al obtener las reglas recurrentes' }, { status: 500 });
   }
 }
 
@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
     return NextResponse.json(data, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Recurring POST error:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Error al crear la regla recurrente' }, { status: 500 });
   }
 }

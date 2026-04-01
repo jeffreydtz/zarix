@@ -21,6 +21,10 @@ export default function ExportImport() {
     setExporting(true);
     try {
       const response = await fetch('/api/export/transactions?format=csv');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al exportar CSV');
+      }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -28,8 +32,8 @@ export default function ExportImport() {
       a.download = `zarix-transactions-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Error exportando. Intentá de nuevo.');
+    } catch (error: any) {
+      alert(error.message || 'Error exportando. Intentá de nuevo.');
     } finally {
       setExporting(false);
     }
@@ -39,6 +43,10 @@ export default function ExportImport() {
     setExporting(true);
     try {
       const response = await fetch('/api/export/transactions?format=json');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al exportar JSON');
+      }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -46,8 +54,8 @@ export default function ExportImport() {
       a.download = `zarix-transactions-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Error exportando. Intentá de nuevo.');
+    } catch (error: any) {
+      alert(error.message || 'Error exportando. Intentá de nuevo.');
     } finally {
       setExporting(false);
     }
@@ -57,6 +65,10 @@ export default function ExportImport() {
     setExporting(true);
     try {
       const response = await fetch('/api/export/backup');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al crear el backup');
+      }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -64,8 +76,8 @@ export default function ExportImport() {
       a.download = `zarix-backup-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Error creando backup. Intentá de nuevo.');
+    } catch (error: any) {
+      alert(error.message || 'Error creando backup. Intentá de nuevo.');
     } finally {
       setExporting(false);
     }

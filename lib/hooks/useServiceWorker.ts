@@ -4,15 +4,24 @@ import { useEffect } from 'react';
 
 export function useServiceWorker() {
   useEffect(() => {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered:', registration);
-        })
-        .catch((error) => {
-          console.error('SW registration failed:', error);
-        });
-    }
+    if (!('serviceWorker' in navigator) || process.env.NODE_ENV !== 'production') return;
+
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        // Register a Background Sync tag when the connection restores
+        const requestSync = () => {
+          if ('sync' in registration) {
+            (registration.sync as { register: (tag: string) => Promise<void> })
+              .register('zarix-sync')
+              .catch(() => {});
+          }
+        };
+        window.addEventListener('online', requestSync);
+        return () => window.removeEventListener('online', requestSync);
+      })
+      .catch((error) => {
+        console.error('[SW] Registration failed:', error);
+      });
   }, []);
 }

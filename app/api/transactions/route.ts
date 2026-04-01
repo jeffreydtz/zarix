@@ -31,10 +31,10 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(transactions);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Transactions GET error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al obtener los movimientos' },
       { status: 500 }
     );
   }
@@ -70,10 +70,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(transaction, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Transactions POST error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al crear el movimiento' },
       { status: 500 }
     );
   }

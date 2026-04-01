@@ -36,12 +36,15 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
         }),
       });
 
-      if (!response.ok) throw new Error('Error updating category');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al actualizar la categoría');
+      }
 
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Error al actualizar la categoría');
+      alert(error.message || 'Error al actualizar la categoría');
     } finally {
       setLoading(false);
     }

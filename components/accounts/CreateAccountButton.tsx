@@ -87,7 +87,10 @@ export default function CreateAccountButton() {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error('Error creating account');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al crear la cuenta');
+      }
 
       setName('');
       setSelectedIcon('💳');
@@ -102,9 +105,9 @@ export default function CreateAccountButton() {
       setSecondaryCurrency('USD');
       setIsOpen(false);
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Error al crear la cuenta');
+      alert(error.message || 'Error al crear la cuenta');
     } finally {
       setLoading(false);
     }

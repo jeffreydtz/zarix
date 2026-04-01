@@ -17,10 +17,10 @@ export async function GET(req: NextRequest) {
 
     const portfolio = await investmentsService.getPortfolioSummary(user.id);
     return NextResponse.json(portfolio);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Portfolio GET error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al calcular el portfolio' },
       { status: 500 }
     );
   }

@@ -21,10 +21,10 @@ export async function GET(req: NextRequest) {
 
     const status = await budgetsService.getStatus(user.id, month);
     return NextResponse.json(status);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Budget status error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al calcular el estado de los presupuestos' },
       { status: 500 }
     );
   }

@@ -52,12 +52,16 @@ export default function CreateBudgetModal({
         }),
       });
 
-      if (!res.ok) throw new Error('Error creando presupuesto');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al crear el presupuesto');
+      }
 
       onCreated();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
+      alert(error.message || 'Error al crear el presupuesto');
     } finally {
       setLoading(false);
     }

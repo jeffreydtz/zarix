@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
 
     const accounts = await accountsService.list(user.id);
     return NextResponse.json(accounts);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Accounts GET error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al obtener las cuentas' },
       { status: 500 }
     );
   }
@@ -55,10 +55,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(account, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Accounts POST error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al crear la cuenta' },
       { status: 500 }
     );
   }

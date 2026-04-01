@@ -18,10 +18,10 @@ export async function GET(req: NextRequest) {
 
     const budgets = await budgetsService.list(user.id, month);
     return NextResponse.json(budgets);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Budgets GET error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al obtener los presupuestos' },
       { status: 500 }
     );
   }
@@ -51,10 +51,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(budget, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Budgets POST error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al crear el presupuesto' },
       { status: 500 }
     );
   }

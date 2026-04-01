@@ -55,9 +55,14 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
     setDeleting(true);
     try {
       const res = await fetch(`/api/budgets/${budget.id}`, { method: 'DELETE' });
-      if (res.ok) onDelete(budget.id);
-    } catch (e) {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al eliminar el presupuesto');
+      }
+      onDelete(budget.id);
+    } catch (e: any) {
       console.error('Delete error:', e);
+      alert(e.message || 'Error al eliminar el presupuesto');
     } finally {
       setDeleting(false);
     }

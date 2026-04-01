@@ -28,9 +28,9 @@ export async function PUT(
 
     if (error) throw error;
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Recurring PUT error:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Error al actualizar la regla recurrente' }, { status: 500 });
   }
 }
 
@@ -51,8 +51,8 @@ export async function DELETE(
 
     if (error) throw error;
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Recurring DELETE error:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Error al eliminar la regla recurrente' }, { status: 500 });
   }
 }

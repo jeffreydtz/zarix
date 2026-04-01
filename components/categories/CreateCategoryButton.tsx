@@ -30,16 +30,19 @@ export default function CreateCategoryButton() {
         }),
       });
 
-      if (!response.ok) throw new Error('Error creating category');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al crear la categoría');
+      }
 
       setName('');
       setSelectedIcon('🎯');
       setType('expense');
       setIsOpen(false);
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Error al crear la categoría');
+      alert(error.message || 'Error al crear la categoría');
     } finally {
       setLoading(false);
     }

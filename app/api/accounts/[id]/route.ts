@@ -18,10 +18,10 @@ export async function GET(
 
     const account = await accountsService.getById(params.id, user.id);
     return NextResponse.json(account);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Account GET error:', error);
     return NextResponse.json(
-      { error: 'Not found' },
+      { error: error.message || 'Cuenta no encontrada' },
       { status: 404 }
     );
   }
@@ -45,10 +45,10 @@ export async function PATCH(
 
     const account = await accountsService.update(params.id, user.id, body);
     return NextResponse.json(account);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Account PATCH error:', error);
     return NextResponse.json(
-      { error: 'Internal error' },
+      { error: error.message || 'Error al actualizar la cuenta' },
       { status: 500 }
     );
   }
@@ -71,11 +71,11 @@ export async function DELETE(
     }
 
     await accountsService.delete(params.id, user.id);
-    return NextResponse.json({ ok: true }, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error: any) {
     console.error('Account DELETE error:', error);
     return NextResponse.json(
-      { error: error.message || 'Internal error' },
+      { error: error.message || 'Error al eliminar la cuenta' },
       { status: 500 }
     );
   }

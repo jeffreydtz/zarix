@@ -72,12 +72,15 @@ export default function EditTransactionModal({
         method: 'DELETE',
       });
 
-      if (!response.ok) throw new Error('Error deleting');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al eliminar el movimiento');
+      }
 
       onSave();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Error al eliminar');
+      alert(error.message || 'Error al eliminar el movimiento');
     } finally {
       setLoading(false);
     }
