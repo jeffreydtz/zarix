@@ -1,7 +1,7 @@
 'use client';
 
 import type { Category } from '@/types/database';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   CategoryIcon,
   EMOJI_ICONS,
@@ -13,7 +13,10 @@ interface CategoriesListProps {
   categories: Category[];
 }
 
+type TypeFilter = 'all' | 'expense' | 'income';
+
 export default function CategoriesList({ categories }: CategoriesListProps) {
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editIcon, setEditIcon] = useState('');
@@ -21,8 +24,17 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
   const [editIconMode, setEditIconMode] = useState<'emoji' | 'symbol'>('emoji');
   const [loading, setLoading] = useState(false);
 
-  const userCategories = categories.filter((c) => !c.is_system);
-  const systemCategories = categories.filter((c) => c.is_system);
+  const userCategories = useMemo(() => {
+    const mine = categories.filter((c) => !c.is_system);
+    if (typeFilter === 'all') return mine;
+    return mine.filter((c) => c.type === typeFilter);
+  }, [categories, typeFilter]);
+
+  const systemCategories = useMemo(() => {
+    const sys = categories.filter((c) => c.is_system);
+    if (typeFilter === 'all') return sys;
+    return sys.filter((c) => c.type === typeFilter);
+  }, [categories, typeFilter]);
 
   const handleEdit = (category: Category) => {
     setEditingId(category.id);
@@ -268,8 +280,34 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
     </div>
   );
 
+  const hasAnyFiltered = userCategories.length > 0 || systemCategories.length > 0;
+
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap gap-2 items-center">
+        <span className="text-sm text-gray-500 dark:text-gray-400 mr-1">Mostrar:</span>
+        {(
+          [
+            { id: 'all' as const, label: 'Todas' },
+            { id: 'expense' as const, label: '📤 Gastos (egresos)' },
+            { id: 'income' as const, label: '📥 Ingresos' },
+          ] as const
+        ).map((opt) => (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => setTypeFilter(opt.id)}
+            className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+              typeFilter === opt.id
+                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 border-transparent'
+                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
       {userCategories.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold mb-3">Mis Categorías</h2>
@@ -288,10 +326,22 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
         </div>
       )}
 
-      {userCategories.length === 0 && systemCategories.length === 0 && (
+      {!hasAnyFiltered && (
         <div className="card text-center py-12">
-          <p className="text-gray-500 mb-4">No hay categorías todavía</p>
-          <p className="text-sm text-gray-400">Creá tu primera categoría personalizada</p>
+          <p className="text-gray-500 mb-4">
+            {categories.length === 0
+              ? 'No hay categorías todavía'
+              : typeFilter === 'all'
+                ? 'No hay categorías todavía'
+                : typeFilter === 'expense'
+                  ? 'No hay categorías de gasto en este filtro'
+                  : 'No hay categorías de ingreso en este filtro'}
+          </p>
+          <p className="text-sm text-gray-400">
+            {categories.length === 0
+              ? 'Creá tu primera categoría personalizada'
+              : 'Cambiá el filtro o creá una categoría de este tipo'}
+          </p>
         </div>
       )}
     </div>
