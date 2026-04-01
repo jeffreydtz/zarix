@@ -13,6 +13,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editIcon, setEditIcon] = useState('');
+  const [editType, setEditType] = useState<'expense' | 'income'>('expense');
   const [loading, setLoading] = useState(false);
 
   const userCategories = categories.filter((c) => !c.is_system);
@@ -22,6 +23,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
     setEditingId(category.id);
     setEditName(category.name);
     setEditIcon(category.icon || '🎯');
+    setEditType(category.type);
   };
 
   const handleSave = async (id: string) => {
@@ -33,6 +35,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
         body: JSON.stringify({ 
           name: editName,
           icon: editIcon,
+          type: editType,
         }),
       });
 
@@ -97,13 +100,23 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
 
           <div className="flex-1">
             {editingId === category.id ? (
-              <input
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                className="font-semibold px-2 py-1 border rounded dark:bg-gray-700 w-full"
-                autoFocus
-              />
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="font-semibold px-2 py-1 border rounded dark:bg-gray-700 w-full"
+                  autoFocus
+                />
+                <select
+                  value={editType}
+                  onChange={(e) => setEditType(e.target.value as 'expense' | 'income')}
+                  className="px-2 py-1 border rounded dark:bg-gray-700 text-sm"
+                >
+                  <option value="expense">📤 Gasto</option>
+                  <option value="income">📥 Ingreso</option>
+                </select>
+              </div>
             ) : (
               <div>
                 <div className="font-semibold">{category.name}</div>
@@ -139,15 +152,15 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
               <>
                 <button
                   onClick={() => handleEdit(category)}
-                  className="text-blue-600 hover:text-blue-700 px-3 py-1"
+                  className="text-blue-600 hover:text-blue-700 px-3 py-1 text-sm font-medium"
                 >
-                  ✏️
+                  Editar
                 </button>
                 <button
                   onClick={() => handleDelete(category.id, category.name)}
-                  className="text-red-600 hover:text-red-700 px-3 py-1"
+                  className="text-red-600 hover:text-red-700 px-3 py-1 text-sm font-medium"
                 >
-                  🗑️
+                  Eliminar
                 </button>
               </>
             )}

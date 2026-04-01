@@ -5,6 +5,7 @@ import { accountsService } from '@/lib/services/accounts';
 import PortfolioSummary from '@/components/investments/PortfolioSummary';
 import InvestmentsList from '@/components/investments/InvestmentsList';
 import MarketDataWidget from '@/components/investments/MarketDataWidget';
+import InvestmentAccountsList from '@/components/investments/InvestmentAccountsList';
 
 const INVESTMENT_LABELS: Record<string, string> = {
   plazo_fijo: 'Plazo Fijo',
@@ -59,32 +60,7 @@ export default async function InvestmentsPage() {
           <h1 className="text-3xl font-bold">📈 Inversiones</h1>
 
           {investmentAccounts.length > 0 && (
-            <div className="card">
-              <h2 className="text-lg font-semibold mb-4">Cuentas de Inversión</h2>
-              <div className="space-y-3">
-                {investmentAccounts.map((account: any) => (
-                  <div key={account.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{account.icon || '📈'}</span>
-                      <div>
-                        <div className="font-semibold">{account.name}</div>
-                        <div className="text-sm text-gray-500">{account.currency}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold">
-                        ${account.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                      </div>
-                      {account.balance_ars_blue && account.currency !== 'ARS' && (
-                        <div className="text-xs text-gray-400">
-                          ≈ ${account.balance_ars_blue.toLocaleString('es-AR')} ARS
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <InvestmentAccountsList accounts={investmentAccounts as any} />
           )}
 
           <PortfolioSummary
