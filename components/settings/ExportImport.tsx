@@ -255,10 +255,31 @@ export default function ExportImport() {
                     </p>
                     <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-xs overflow-x-auto">
                       <div className="text-slate-500">Fecha,Tipo,Monto,Moneda,Cuenta,Categoría,Descripción</div>
-                      <div>01/03/2026,Gasto,5000,ARS,Efectivo ARS,Comida,Almuerzo</div>
-                      <div>05/03/2026,Gasto,1500,ARS,Mercado Pago,Transporte,Uber</div>
-                      <div>10/03/2026,Ingreso,850000,ARS,BBVA,Sueldo,Sueldo marzo</div>
+                      <div>03-01-2026,Gasto,5000,ARS,Efectivo ARS,Comida,Almuerzo</div>
+                      <div>03-05-2026,Gasto,1500,ARS,Mercado Pago,Transporte,Uber</div>
+                      <div>03-10-2026,Ingreso,850000,ARS,BBVA,Sueldo,Sueldo marzo</div>
                     </div>
+                  </div>
+
+                  {/* CSV transferencias entre cuentas */}
+                  <div>
+                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                      🔁 CSV transferencias (origen → destino)
+                    </h4>
+                    <p className="text-slate-600 dark:text-slate-400 mb-2">
+                      Si el archivo incluye columnas de cuenta <strong>origen</strong> y <strong>destino</strong>, Zarix lo toma como transferencia real (con <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">destination_account_id</code>). Separador: coma o punto y coma.
+                    </p>
+                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Inglés (ejemplo de encabezados)</p>
+                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto mb-3">
+                      Date and time,Outgoing,Incoming,Amount in outgoing currency,Outgoing currency,Amount in incoming currency,Incoming currency,Comment
+                    </div>
+                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Español (equivalente)</p>
+                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto">
+                      Fecha y hora,Origen,Destino,Monto en moneda origen,Moneda origen,Monto en moneda destino,Moneda destino,Comentario
+                    </div>
+                    <p className="text-xs text-slate-500 mt-2">
+                      <strong>Origen</strong> y <strong>Destino</strong> deben coincidir con el nombre de tus cuentas. Montos: solo dígitos y punto decimal (sin miles). Fecha: <strong>MM-DD-YYYY</strong> o ISO. Los montos en destino son opcionales; si hay cruce de monedas, se agregan al comentario.
+                    </p>
                   </div>
 
                   {/* Column mapping */}
@@ -269,11 +290,11 @@ export default function ExportImport() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Fecha *</span>
-                        <span className="text-slate-500">DD/MM/YYYY o YYYY-MM-DD</span>
+                        <span className="text-slate-500">MM-DD-YYYY o ISO</span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Monto *</span>
-                        <span className="text-slate-500">Número positivo (ej: 5000)</span>
+                        <span className="text-slate-500">1000 o 1000.50 (punto decimal, sin miles)</span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Tipo</span>
@@ -314,7 +335,7 @@ export default function ExportImport() {
 ]`}</pre>
                     </div>
                     <p className="text-xs text-slate-500 mt-2">
-                      Valores de type: <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">expense</code>, <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">income</code>, <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">transfer</code>
+                      Valores de type: <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">expense</code>, <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">income</code>. Para transferencias entre cuentas usá el <strong>CSV de transferencias</strong> (Origen/Destino), no <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">transfer</code> en el CSV simple.
                     </p>
                   </div>
 
