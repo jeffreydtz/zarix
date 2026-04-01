@@ -222,6 +222,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                   className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                 >
                   <option value="">Todas las categorías</option>
+                  <option value="uncategorized">Sin categoría</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
                   ))}
@@ -306,6 +307,12 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-full">
               💰 Max ${searchParams.get('maxAmount')}
               <button onClick={() => updateParams({ maxAmount: '' })} className="hover:text-red-500 ml-0.5">✕</button>
+            </span>
+          )}
+          {searchParams.get('categoryId') === 'uncategorized' && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-full">
+              🏷️ Sin categoría
+              <button onClick={() => updateParams({ categoryId: '' })} className="hover:text-red-500 ml-0.5">✕</button>
             </span>
           )}
         </div>

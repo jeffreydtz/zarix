@@ -175,7 +175,11 @@ class TransactionsService {
     }
 
     if (options.categoryId) {
-      query = query.eq('category_id', options.categoryId);
+      if (options.categoryId === 'uncategorized') {
+        query = query.is('category_id', null);
+      } else {
+        query = query.eq('category_id', options.categoryId);
+      }
     }
 
     if (options.type) {
