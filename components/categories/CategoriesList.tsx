@@ -76,6 +76,41 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
     }
   };
 
+  const handleDuplicateSystemCategory = async (category: Category) => {
+    setLoading(true);
+    try {
+      const createCategory = async (name: string) =>
+        fetch('/api/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            icon: category.icon || '🎯',
+            type: category.type,
+          }),
+        });
+
+      let response = await createCategory(category.name);
+
+      // If user already has one with same name/type, fallback to a personalized name.
+      if (!response.ok) {
+        response = await createCategory(`${category.name} (mía)`);
+      }
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'No se pudo duplicar la categoría');
+      }
+
+      window.location.reload();
+    } catch (error: any) {
+      console.error('Error:', error);
+      alert(error.message || 'Error al duplicar la categoría');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderCategory = (category: Category, isSystem: boolean) => (
     <div key={category.id} className="card hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
@@ -164,6 +199,17 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                 </button>
               </>
             )}
+          </div>
+        )}
+        {isSystem && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleDuplicateSystemCategory(category)}
+              disabled={loading}
+              className="text-emerald-600 hover:text-emerald-700 px-3 py-1 text-sm font-medium disabled:opacity-50"
+            >
+              Duplicar a mis categorías
+            </button>
           </div>
         )}
       </div>
