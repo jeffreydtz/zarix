@@ -130,32 +130,64 @@ function findColumnIndex(headers: string[], matchers: RegExp[]): number {
   return -1;
 }
 
-function parseImportDate(dateStr: string): Date | null {
-  const raw = (dateStr || '').trim();
+/** Fecha solo-calendario (sin hora) → mediodía UTC; evita correr un día al mostrar en UTC−3 u otras zonas. */
+function calendarDateToUtcNoon(y: number, m: number, d: number): Date {
+  return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+}
+
+function parseImportDate(dateStr: string | number | undefined | null): Date | null {
+  const raw = String(dateStr ?? '').trim();
   if (!raw) return null;
 
-  const isoTry = new Date(raw);
-  if (!Number.isNaN(isoTry.getTime())) return isoTry;
+  // YYYY-MM-DD sin hora (común en Excel export y CSV)
+  const isoDateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoDateOnly) {
+    const y = Number(isoDateOnly[1]);
+    const m = Number(isoDateOnly[2]);
+    const d = Number(isoDateOnly[3]);
+    if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+      return calendarDateToUtcNoon(y, m, d);
+    }
+  }
+
+  // ISO con hora (T o espacio) — respetar el instante (JSON export, Airtable, etc.)
+  if (/^\d{4}-\d{2}-\d{2}[T\s]\d/.test(raw)) {
+    const parsed = new Date(raw);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
 
   const datePart = raw.split(/\s+/)[0] ?? raw;
 
-  const mdYMatch = datePart.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
-  if (mdYMatch) {
-    const month = Number(mdYMatch[1]);
-    const day = Number(mdYMatch[2]);
-    const yearRaw = Number(mdYMatch[3]);
+  // DD/MM/YYYY o MM/DD/YYYY (export es-AR suele ser 15/1/2024)
+  const slashMatch = datePart.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
+  if (slashMatch) {
+    const A = Number(slashMatch[1]);
+    const B = Number(slashMatch[2]);
+    const yearRaw = Number(slashMatch[3]);
     const year = yearRaw < 100 ? 2000 + yearRaw : yearRaw;
 
-    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+    let month: number;
+    let day: number;
+    if (A > 12) {
+      day = A;
+      month = B;
+    } else if (B > 12) {
+      month = A;
+      day = B;
+    } else {
+      // Ambiguo (ej. 1/2/2024): prioridad DD/MM (Latinoamérica)
+      day = A;
+      month = B;
+    }
 
-    const parsed = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
-    if (Number.isNaN(parsed.getTime())) return null;
-    return parsed;
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+    return calendarDateToUtcNoon(year, month, day);
   }
 
-  const parsed = new Date(datePart);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return parsed;
+  const fallback = new Date(raw);
+  if (!Number.isNaN(fallback.getTime())) return fallback;
+
+  return null;
 }
 
 function parseImportAmount(amountValue: unknown): number | null {

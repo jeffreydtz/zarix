@@ -308,7 +308,7 @@ export default function ExportImport() {
                       Fecha y hora,Origen,Destino,Monto en moneda origen,Moneda origen,Monto en moneda destino,Moneda destino,Comentario
                     </div>
                     <p className="text-xs text-slate-500 mt-2">
-                      <strong>Origen</strong> y <strong>Destino</strong> deben coincidir con el nombre de tus cuentas. Montos: solo dígitos y punto decimal (sin miles). Fecha: <strong>MM-DD-YYYY</strong> o ISO. Los montos en destino son opcionales; si hay cruce de monedas, se agregan al comentario.
+                      <strong>Origen</strong> y <strong>Destino</strong> deben coincidir con el nombre de tus cuentas. Montos: solo dígitos y punto decimal (sin miles). Fecha: <strong>DD/MM/YYYY</strong>, <strong>YYYY-MM-DD</strong> o ISO con hora. Los montos en destino son opcionales; si hay cruce de monedas, se agregan al comentario.
                     </p>
                   </div>
 
@@ -320,7 +320,9 @@ export default function ExportImport() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Fecha *</span>
-                        <span className="text-slate-500">MM-DD-YYYY, DD-MM-YYYY o ISO</span>
+                        <span className="text-slate-500">
+                          <strong>YYYY-MM-DD</strong> (recomendado), <strong>DD/MM/YYYY</strong> o ISO con hora. Sin hora, se toma el día calendario (no se corre por zona horaria).
+                        </span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Monto *</span>
