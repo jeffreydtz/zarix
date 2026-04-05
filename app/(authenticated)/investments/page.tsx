@@ -37,9 +37,10 @@ export default async function InvestmentsPage() {
         totalPnLPercent: 0,
         byType: [],
       })),
-      accountsService.list(user.id, { includeInvestments: true }).then(accs => 
-        accs.filter(acc => acc.type === 'investment')
-      ).catch(() => []),
+      accountsService
+        .list(user.id)
+        .then((accs) => accs.filter((acc) => acc.type === 'investment'))
+        .catch(() => []),
       (async () => {
         const { data } = await supabase
           .from('investments')

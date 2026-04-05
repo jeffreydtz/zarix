@@ -93,6 +93,10 @@ class AccountsService {
     return data;
   }
 
+  /**
+   * Lista cuentas activas del usuario, incluyendo tipo `investment` (brokers, etc.) por defecto.
+   * Pasá `includeInvestments: false` solo si necesitás ocultar esas cuentas.
+   */
   async list(userId: string, options?: { includeInvestments?: boolean }): Promise<AccountWithBalance[]> {
     const supabase = createServiceClientSync();
 
@@ -102,7 +106,7 @@ class AccountsService {
       .eq('user_id', userId)
       .eq('is_active', true);
 
-    if (!options?.includeInvestments) {
+    if (options?.includeInvestments === false) {
       query = query.neq('type', 'investment');
     }
 
