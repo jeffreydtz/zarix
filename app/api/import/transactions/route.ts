@@ -135,9 +135,52 @@ function calendarDateToUtcNoon(y: number, m: number, d: number): Date {
   return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
 }
 
-function parseImportDate(dateStr: string | number | undefined | null): Date | null {
+/** Cuando día y mes son ambiguos (≤12), elegir orden (Argentina vs EE.UU.). */
+type ImportDateAmbiguousOrder = 'dmy' | 'mdy';
+
+interface ParseImportDateOpts {
+  ambiguousOrder?: ImportDateAmbiguousOrder;
+}
+
+/**
+ * Número serial de Excel (días; 1 ≈ 1900-01-01) → fecha calendario en UTC mediodía.
+ * Evita que una celda numérica se interprete como milisegundos en `new Date(n)`.
+ */
+function excelSerialToUtcCalendarDate(serial: number): Date | null {
+  const whole = Math.floor(serial);
+  if (whole < 1 || whole > 1000000) return null;
+  const ms = (whole - 25569) * 86400 * 1000;
+  const d = new Date(ms);
+  if (Number.isNaN(d.getTime())) return null;
+  return calendarDateToUtcNoon(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+}
+
+function parseImportDate(
+  dateStr: string | number | undefined | null,
+  opts?: ParseImportDateOpts
+): Date | null {
+  const ambiguousOrder = opts?.ambiguousOrder ?? 'dmy';
+
+  if (typeof dateStr === 'number' && Number.isFinite(dateStr)) {
+    const n = dateStr;
+    if (n > 20000 && n < 80000) {
+      const fromExcel = excelSerialToUtcCalendarDate(n);
+      if (fromExcel) return fromExcel;
+    }
+    return null;
+  }
+
   const raw = String(dateStr ?? '').trim();
   if (!raw) return null;
+
+  // Serial Excel como texto (p. ej. "45321")
+  if (/^\d{5,6}$/.test(raw)) {
+    const n = Number(raw);
+    if (n > 20000 && n < 80000) {
+      const fromExcel = excelSerialToUtcCalendarDate(n);
+      if (fromExcel) return fromExcel;
+    }
+  }
 
   // YYYY-MM-DD sin hora (común en Excel export y CSV)
   const isoDateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -158,7 +201,7 @@ function parseImportDate(dateStr: string | number | undefined | null): Date | nu
 
   const datePart = raw.split(/\s+/)[0] ?? raw;
 
-  // DD/MM/YYYY o MM/DD/YYYY (export es-AR suele ser 15/1/2024)
+  // DD/MM/YYYY o MM/DD/YYYY (export es-AR suele ser 15/1/2024; EE.UU. suele ser 2/4/2025 = 4 feb)
   const slashMatch = datePart.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
   if (slashMatch) {
     const A = Number(slashMatch[1]);
@@ -175,9 +218,14 @@ function parseImportDate(dateStr: string | number | undefined | null): Date | nu
       month = A;
       day = B;
     } else {
-      // Ambiguo (ej. 1/2/2024): prioridad DD/MM (Latinoamérica)
-      day = A;
-      month = B;
+      // Ambiguo (ej. 02/04/2025): DD/MM → 2 abr; MM/DD (EE.UU.) → 4 feb
+      if (ambiguousOrder === 'mdy') {
+        month = A;
+        day = B;
+      } else {
+        day = A;
+        month = B;
+      }
     }
 
     if (month < 1 || month > 12 || day < 1 || day > 31) return null;
@@ -224,7 +272,11 @@ function parseImportAmount(amountValue: unknown): number | null {
   return null;
 }
 
-function parseStandardCSV(headers: string[], rows: string[][]): ImportedTransaction[] {
+function parseStandardCSV(
+  headers: string[],
+  rows: string[][],
+  parseOpts: ParseImportDateOpts
+): ImportedTransaction[] {
   const h = headers.map(normalizeHeader);
 
   const dateIdx = h.findIndex((x) => ['fecha', 'date'].includes(x));
@@ -257,7 +309,7 @@ function parseStandardCSV(headers: string[], rows: string[][]): ImportedTransact
     const amount = parseImportAmount(getValue(row, amountIdx));
     if (amount === null || amount === 0) continue;
 
-    const parsedDate = parseImportDate(getValue(row, dateIdx));
+    const parsedDate = parseImportDate(getValue(row, dateIdx), parseOpts);
     if (!parsedDate) continue;
 
     transactions.push({
@@ -275,7 +327,11 @@ function parseStandardCSV(headers: string[], rows: string[][]): ImportedTransact
   return transactions;
 }
 
-function tryParseTransferCSV(headers: string[], rows: string[][]): ImportedTransferRow[] | null {
+function tryParseTransferCSV(
+  headers: string[],
+  rows: string[][],
+  parseOpts: ParseImportDateOpts
+): ImportedTransferRow[] | null {
   const dateIdx = findColumnIndex(headers, [
     /^fecha y hora$/,
     /^fecha_hora$/,
@@ -359,7 +415,7 @@ function tryParseTransferCSV(headers: string[], rows: string[][]): ImportedTrans
       continue;
     }
 
-    const parsedDate = parseImportDate(getValue(row, dateIdx));
+    const parsedDate = parseImportDate(getValue(row, dateIdx), parseOpts);
     if (!parsedDate) continue;
 
     let amountIncoming: number | undefined;
@@ -393,7 +449,8 @@ function tryParseTransferCSV(headers: string[], rows: string[][]): ImportedTrans
 
 function parseUnifiedFromGrid(
   headers: string[],
-  rows: string[][]
+  rows: string[][],
+  parseOpts: ParseImportDateOpts
 ):
   | { kind: 'standard'; transactions: ImportedTransaction[] }
   | { kind: 'transfer'; transfers: ImportedTransferRow[] } {
@@ -401,12 +458,12 @@ function parseUnifiedFromGrid(
     return { kind: 'standard', transactions: [] };
   }
 
-  const transferRows = tryParseTransferCSV(headers, rows);
+  const transferRows = tryParseTransferCSV(headers, rows, parseOpts);
   if (transferRows !== null) {
     return { kind: 'transfer', transfers: transferRows };
   }
 
-  return { kind: 'standard', transactions: parseStandardCSV(headers, rows) };
+  return { kind: 'standard', transactions: parseStandardCSV(headers, rows, parseOpts) };
 }
 
 /** Formato Airtable / export multi-hoja: Date and time, Category, Account, Amount in account currency, Account currency, Comment… */
@@ -420,7 +477,8 @@ function inferTxTypeFromSheetName(sheetName: string): 'expense' | 'income' | nul
 function tryParseAirtableExpenseIncome(
   headers: string[],
   rows: string[][],
-  sheetName: string
+  sheetName: string,
+  parseOpts: ParseImportDateOpts
 ): ImportedTransaction[] | null {
   const amountInAcctIdx = findColumnIndex(headers, [/^amount in account currency$/i]);
   const currencyAcctIdx = findColumnIndex(headers, [/^account currency$/i]);
@@ -455,7 +513,7 @@ function tryParseAirtableExpenseIncome(
     idx >= 0 && idx < row.length ? row[idx] : '';
 
   for (const row of rows) {
-    const parsedDate = parseImportDate(getValue(row, dateIdx));
+    const parsedDate = parseImportDate(getValue(row, dateIdx), parseOpts);
     if (!parsedDate) continue;
 
     const acctAmt = parseImportAmount(getValue(row, amountInAcctIdx));
@@ -514,9 +572,19 @@ function tryParseAirtableExpenseIncome(
 function sheetCellToString(v: unknown): string {
   if (v === null || v === undefined) return '';
   if (typeof v === 'number' && Number.isFinite(v)) {
+    if (v > 20000 && v < 80000) {
+      const cal = excelSerialToUtcCalendarDate(v);
+      if (cal) {
+        const y = cal.getUTCFullYear();
+        const m = String(cal.getUTCMonth() + 1).padStart(2, '0');
+        const d = String(cal.getUTCDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+    }
     return String(v);
   }
   if (v instanceof Date) {
+    if (Number.isNaN(v.getTime())) return '';
     const y = v.getFullYear();
     const m = String(v.getMonth() + 1).padStart(2, '0');
     const d = String(v.getDate()).padStart(2, '0');
@@ -546,7 +614,7 @@ interface ParsedImport {
   transfers: ImportedTransferRow[];
 }
 
-function parseXlsxWorkbook(buffer: ArrayBuffer): ParsedImport {
+function parseXlsxWorkbook(buffer: ArrayBuffer, parseOpts: ParseImportDateOpts): ParsedImport {
   const out: ParsedImport = { transactions: [], transfers: [] };
   const wb = XLSX.read(buffer, { type: 'array', cellDates: true });
 
@@ -570,20 +638,20 @@ function parseXlsxWorkbook(buffer: ArrayBuffer): ParsedImport {
     const headers = nonEmpty[headerIdx].map((h) => String(h));
     const dataRows = nonEmpty.slice(headerIdx + 1);
 
-    const transferRows = tryParseTransferCSV(headers, dataRows);
+    const transferRows = tryParseTransferCSV(headers, dataRows, parseOpts);
     if (transferRows !== null) {
       out.transfers.push(...transferRows);
       continue;
     }
 
-    const airtable = tryParseAirtableExpenseIncome(headers, dataRows, sheetName);
+    const airtable = tryParseAirtableExpenseIncome(headers, dataRows, sheetName, parseOpts);
     if (airtable !== null) {
       out.transactions.push(...airtable);
       continue;
     }
 
     try {
-      const unified = parseUnifiedFromGrid(headers, dataRows);
+      const unified = parseUnifiedFromGrid(headers, dataRows, parseOpts);
       if (unified.kind === 'transfer') {
         out.transfers.push(...unified.transfers);
       } else {
@@ -597,11 +665,14 @@ function parseXlsxWorkbook(buffer: ArrayBuffer): ParsedImport {
   return out;
 }
 
-function parseCSVUnified(text: string):
+function parseCSVUnified(
+  text: string,
+  parseOpts: ParseImportDateOpts
+):
   | { kind: 'standard'; transactions: ImportedTransaction[] }
   | { kind: 'transfer'; transfers: ImportedTransferRow[] } {
   const { headers, rows } = parseCSVFile(text);
-  return parseUnifiedFromGrid(headers, rows);
+  return parseUnifiedFromGrid(headers, rows, parseOpts);
 }
 
 function collectUnresolvedAccountNames(
@@ -730,6 +801,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    const rawDateFmt = (formData.get('dateFormat') as string) || 'dmy';
+    const ambiguousOrder: ImportDateAmbiguousOrder = rawDateFmt === 'mdy' ? 'mdy' : 'dmy';
+    const dateParseOpts: ParseImportDateOpts = { ambiguousOrder };
+
     const lowerName = file.name.toLowerCase();
 
     let combined: ParsedImport;
@@ -752,7 +827,7 @@ export async function POST(request: NextRequest) {
                   : undefined;
             return {
               date:
-                parseImportDate(tx.date || tx.transaction_date || '')?.toISOString() ||
+                parseImportDate(tx.date || tx.transaction_date || '', dateParseOpts)?.toISOString() ||
                 new Date().toISOString(),
               type: tx.type || 'expense',
               amount: amt,
@@ -770,7 +845,7 @@ export async function POST(request: NextRequest) {
           transfers: [],
           transactions: json.data.transactions.map((tx: any) => ({
             date:
-              parseImportDate(tx.transaction_date || '')?.toISOString() ||
+              parseImportDate(tx.transaction_date || '', dateParseOpts)?.toISOString() ||
               new Date().toISOString(),
             type: tx.type || 'expense',
             amount: parseImportAmount(tx.amount) || 0,
@@ -786,10 +861,10 @@ export async function POST(request: NextRequest) {
       }
     } else if (lowerName.endsWith('.xlsx') || lowerName.endsWith('.xls')) {
       const buffer = await file.arrayBuffer();
-      combined = parseXlsxWorkbook(buffer);
+      combined = parseXlsxWorkbook(buffer, dateParseOpts);
     } else {
       const text = await file.text();
-      const parsed = parseCSVUnified(text);
+      const parsed = parseCSVUnified(text, dateParseOpts);
       combined =
         parsed.kind === 'transfer'
           ? { transactions: [], transfers: parsed.transfers }

@@ -25,6 +25,8 @@ export default function ExportImport() {
   const [resolutions, setResolutions] = useState<
     Record<string, { action: 'none' | 'map' | 'keep_name'; accountId?: string }>
   >({});
+  /** Fechas tipo 02/04/2025: DD/MM (Argentina) vs MM/DD (EE.UU.); debe coincidir en vista previa y confirmación. */
+  const [importDateFormat, setImportDateFormat] = useState<'dmy' | 'mdy'>('dmy');
 
   const sortedImportAccounts = useMemo(
     () =>
@@ -136,6 +138,7 @@ export default function ExportImport() {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('mode', 'preview');
+      formData.append('dateFormat', importDateFormat);
 
       const response = await fetch('/api/import/transactions', {
         method: 'POST',
@@ -183,6 +186,7 @@ export default function ExportImport() {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('mode', 'import');
+      formData.append('dateFormat', importDateFormat);
       formData.append('resolutions', JSON.stringify(resolutionsArg || resolutions));
 
       const response = await fetch('/api/import/transactions', {
@@ -351,7 +355,7 @@ export default function ExportImport() {
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Fecha *</span>
                         <span className="text-slate-500">
-                          <strong>YYYY-MM-DD</strong> (recomendado), <strong>DD/MM/YYYY</strong> o ISO con hora. Sin hora, se toma el día calendario (no se corre por zona horaria).
+                          <strong>YYYY-MM-DD</strong> (recomendado), <strong>DD/MM/AAAA</strong> o <strong>MM/DD/AAAA</strong> (elegí el orden arriba del import), o ISO con hora. Sin hora, día calendario fijo.
                         </span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
@@ -447,6 +451,24 @@ export default function ExportImport() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          <div className="mb-3 space-y-1">
+            <label htmlFor="import-date-format" className="text-xs font-medium text-slate-600 dark:text-slate-400">
+              Orden de fecha con barras (ej. 02/04/2025)
+            </label>
+            <select
+              id="import-date-format"
+              value={importDateFormat}
+              onChange={(e) => setImportDateFormat(e.target.value as 'dmy' | 'mdy')}
+              className="input text-sm max-w-md"
+            >
+              <option value="dmy">Día primero — DD/MM/AAAA (Argentina, Europa)</option>
+              <option value="mdy">Mes primero — MM/DD/AAAA (EE.UU., algunos bancos)</option>
+            </select>
+            <p className="text-[11px] text-slate-500">
+              Si un movimiento aparece con el mes y el día intercambiados (p. ej. 4 de febrero como 2 de abril), probá la otra opción o usá <strong>AAAA-MM-DD</strong> en el archivo.
+            </p>
+          </div>
           
           <input
             type="file"
