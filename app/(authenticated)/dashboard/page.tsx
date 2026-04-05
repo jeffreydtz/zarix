@@ -26,6 +26,7 @@ const AnomaliesWidget = dynamic(() => import('@/components/dashboard/AnomaliesWi
   loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
 });
 const SpendingAnalyzer = dynamic(() => import('@/components/dashboard/SpendingAnalyzer'), {
+  ssr: false,
   loading: () => <div className="card h-80 animate-pulse bg-slate-100 dark:bg-slate-800" />,
 });
 

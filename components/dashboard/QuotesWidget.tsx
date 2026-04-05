@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
@@ -37,12 +37,20 @@ const item = {
 };
 
 function QuotesWidget({ quotes }: QuotesWidgetProps) {
-  const lastUpdated = quotes.timestamp
-    ? new Date(quotes.timestamp).toLocaleTimeString('es-AR', {
+  /** Solo en cliente: toLocaleTimeString difiere entre Node (SSR) y el navegador → hidratación #425 */
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  useEffect(() => {
+    if (!quotes.timestamp) {
+      setLastUpdated(null);
+      return;
+    }
+    setLastUpdated(
+      new Date(quotes.timestamp).toLocaleTimeString('es-AR', {
         hour: '2-digit',
         minute: '2-digit',
       })
-    : null;
+    );
+  }, [quotes.timestamp]);
 
   return (
     <motion.div 
