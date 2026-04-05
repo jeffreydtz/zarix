@@ -244,14 +244,38 @@ export default function ExportImport() {
                 className="mb-4 overflow-hidden"
               >
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 text-sm space-y-4">
-                  
+
+                  {/* Excel multi-hoja / Airtable */}
+                  <div>
+                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                      📗 Excel (.xlsx / .xls) con varias hojas
+                    </h4>
+                    <p className="text-slate-600 dark:text-slate-400 mb-2">
+                      Podés subir un libro con hojas <strong>Expenses</strong>, <strong>Income</strong> y <strong>Transfers</strong>. Se ignoran filas de título (p. ej. &quot;expenses list&quot;) hasta la fila de encabezados. En un solo archivo se importan <strong>gastos, ingresos y transferencias</strong>.
+                    </p>
+                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Gastos e ingresos — columnas típicas (inglés, como Airtable)
+                    </p>
+                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto leading-relaxed">
+                      Date and time, Category, Account, Amount in default currency, Default currency, Amount in account currency, Account currency, Transaction amount in transaction currency, Transaction currency, Tags, Comment
+                    </div>
+                    <ul className="text-xs text-slate-600 dark:text-slate-400 mt-2 space-y-1 list-disc list-inside">
+                      <li>
+                        <strong>USD / moneda extranjera:</strong> si hay <strong>Transaction amount</strong> y <strong>Transaction currency</strong> (p. ej. 105,22 y USD), el movimiento se registra en esa moneda. El importe en <strong>Amount in account currency</strong> (p. ej. ARS) se usa como equivalente en cuenta. Si esas columnas van vacías, se usa solo el monto en moneda de cuenta.
+                      </li>
+                      <li>
+                        La hoja <strong>Income</strong> usa las mismas columnas; el tipo de movimiento se toma del nombre de la hoja.
+                      </li>
+                    </ul>
+                  </div>
+
                   {/* CSV Format */}
                   <div>
                     <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
-                      📊 Formato CSV (Excel)
+                      📊 CSV simple (Gasto / Ingreso por fila)
                     </h4>
                     <p className="text-slate-600 dark:text-slate-400 mb-2">
-                      Creá un archivo con estas columnas. El orden no importa:
+                      Creá un archivo con estas columnas. El orden no importa (coma o punto y coma):
                     </p>
                     <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-xs overflow-x-auto">
                       <div className="text-slate-500">Fecha,Tipo,Monto,Moneda,Cuenta,Categoría,Descripción</div>
@@ -285,20 +309,20 @@ export default function ExportImport() {
                   {/* Column mapping */}
                   <div>
                     <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
-                      🔗 Mapeo de columnas
+                      🔗 Mapeo de columnas (CSV simple)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Fecha *</span>
-                        <span className="text-slate-500">MM-DD-YYYY o ISO</span>
+                        <span className="text-slate-500">MM-DD-YYYY, DD-MM-YYYY o ISO</span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Monto *</span>
-                        <span className="text-slate-500">1000 o 1000.50 (punto decimal, sin miles)</span>
+                        <span className="text-slate-500">1000 o 1000.50 (punto o coma decimal)</span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Tipo</span>
-                        <span className="text-slate-500">Gasto, Ingreso, Transferencia</span>
+                        <span className="text-slate-500">Gasto, Ingreso (no transferencias)</span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Moneda</span>
@@ -306,14 +330,33 @@ export default function ExportImport() {
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Cuenta</span>
-                        <span className="text-slate-500">Nombre exacto de tu cuenta</span>
+                        <span className="text-slate-500">Igual al nombre en Zarix (sin importar mayúsculas)</span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Categoría</span>
-                        <span className="text-slate-500">Nombre de categoría existente</span>
+                        <span className="text-slate-500">Opcional; si no existe, sin categoría</span>
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">* Campos obligatorios</p>
+                    <p className="text-xs text-slate-500 mt-2">* Campos obligatorios en CSV simple</p>
+                  </div>
+
+                  {/* Cuentas no encontradas */}
+                  <div>
+                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                      🏦 Cuentas que no coinciden
+                    </h4>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                      Si el nombre de cuenta del archivo no existe en Zarix, podés elegir por cada una:
+                    </p>
+                    <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                      <li><strong>Asignar a cuenta existente:</strong> mapeá el nombre importado a una cuenta que ya tenés.</li>
+                      <li><strong>Dejar sin cuenta:</strong> se importa el movimiento sin <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">account_id</code> (podés editarlo después).</li>
+                      <li><strong>Guardar nombre original en notas:</strong> se anota el texto de la cuenta en las notas del movimiento.</li>
+                      <li>Si no hay nombre de cuenta pero sí moneda, a veces se sugiere una cuenta con esa moneda (solo como ayuda).</li>
+                    </ul>
+                    <p className="text-xs text-slate-500 mt-2">
+                      Las <strong>transferencias</strong> exigen resolver origen y destino; si falta una cuenta, esa fila se omite.
+                    </p>
                   </div>
 
                   {/* JSON Format */}
@@ -326,16 +369,20 @@ export default function ExportImport() {
   {
     "date": "2026-03-01",
     "type": "expense",
-    "amount": 5000,
-    "currency": "ARS",
-    "account": "Efectivo ARS",
+    "amount": 105.22,
+    "currency": "USD",
+    "amount_in_account_currency": 147160.84,
+    "account": "Tarjeta USD",
     "category": "Comida",
-    "description": "Almuerzo"
+    "description": "Compra exterior"
   }
 ]`}</pre>
                     </div>
                     <p className="text-xs text-slate-500 mt-2">
-                      Valores de type: <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">expense</code>, <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">income</code>. Para transferencias entre cuentas usá el <strong>CSV de transferencias</strong> (Origen/Destino), no <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">transfer</code> en el CSV simple.
+                      <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">amount_in_account_currency</code> es opcional: sirve cuando el monto principal está en una moneda y querés guardar el equivalente en moneda de cuenta (como en Excel con USD + ARS).
+                    </p>
+                    <p className="text-xs text-slate-500 mt-2">
+                      Valores de type: <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">expense</code>, <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">income</code>. Para transferencias entre cuentas usá el <strong>CSV o hoja Transfers</strong> con Origen/Destino, no <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">transfer</code> en el CSV simple.
                     </p>
                   </div>
 
@@ -345,11 +392,11 @@ export default function ExportImport() {
                       💡 Tips importantes
                     </h4>
                     <ul className="text-xs text-amber-700 dark:text-amber-400 space-y-1 list-disc list-inside">
-                      <li>La <strong>Cuenta</strong> debe existir en Zarix antes de importar</li>
-                      <li>En Excel, guardá como <strong>&quot;CSV UTF-8&quot;</strong> para los acentos</li>
-                      <li>No uses separador de miles (escribí 5000, no 5.000)</li>
-                      <li>Si la cuenta no se encuentra, se busca una con la misma moneda</li>
-                      <li>Las categorías que no existan se ignoran (se importa sin categoría)</li>
+                      <li>Los <strong>nombres de cuenta</strong> deben coincidir con Zarix (o usá la pantalla de revisión para mapearlos)</li>
+                      <li>Archivos <strong>.xlsx</strong>: se leen directo; para <strong>.csv</strong> conviene exportar como <strong>CSV UTF-8</strong> para acentos</li>
+                      <li>Evitá separador de miles en montos (usá 5000 o 5000.50; también aceptamos 5.000,50 con coma decimal)</li>
+                      <li><strong>Categorías</strong> inexistentes se omiten (el movimiento igual se importa)</li>
+                      <li>Import grande: el límite práctico es el tamaño del archivo y el tiempo del servidor (podés partir en varios archivos si falla)</li>
                     </ul>
                   </div>
 
@@ -361,7 +408,7 @@ export default function ExportImport() {
           <input
             type="file"
             ref={fileInputRef}
-            accept=".csv,.json"
+            accept=".csv,.json,.xlsx,.xls"
             onChange={handleImport}
             className="hidden"
             id="import-file"
@@ -378,11 +425,11 @@ export default function ExportImport() {
             `}
           >
             <span>📥</span>
-            <span>{importing ? 'Importando...' : 'Seleccionar archivo CSV o JSON'}</span>
+            <span>{importing ? 'Importando...' : 'Seleccionar CSV, Excel (.xlsx) o JSON'}</span>
           </label>
 
           <p className="text-xs text-slate-500 mt-2">
-            Aceptamos archivos .csv (Excel) y .json
+              Aceptamos .csv, .xlsx / .xls y .json (mismas columnas que el CSV de ejemplo)
           </p>
 
           {reviewStep && unresolvedAccounts.length > 0 && (

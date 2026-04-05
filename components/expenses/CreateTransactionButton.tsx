@@ -7,15 +7,25 @@ import { formatAccountSelectLabel } from '@/lib/format-account-select';
 interface CreateTransactionButtonProps {
   accounts: Array<{ id: string; name: string; currency: string; balance: number }>;
   categories: Array<{ id: string; name: string; icon: string; type: string }>;
+  /** Solo transferencia (p. ej. desde Cuentas): sin selector Gasto/Ingreso */
+  mode?: 'default' | 'transfer-only';
+  triggerLabel?: string;
+  triggerClassName?: string;
 }
 
 export default function CreateTransactionButton({
   accounts,
   categories,
+  mode = 'default',
+  triggerLabel,
+  triggerClassName,
 }: CreateTransactionButtonProps) {
+  const transferOnly = mode === 'transfer-only';
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [type, setType] = useState<'expense' | 'income' | 'transfer'>('expense');
+  const [type, setType] = useState<'expense' | 'income' | 'transfer'>(
+    transferOnly ? 'transfer' : 'expense'
+  );
   const [amount, setAmount] = useState('');
   const [accountId, setAccountId] = useState('');
   const [destinationAccountId, setDestinationAccountId] = useState('');
@@ -28,7 +38,7 @@ export default function CreateTransactionButton({
   const destinationAccounts = accounts.filter((a) => a.id !== accountId);
 
   const resetForm = () => {
-    setType('expense');
+    setType(transferOnly ? 'transfer' : 'expense');
     setAmount('');
     setAccountId('');
     setDestinationAccountId('');
@@ -93,10 +103,20 @@ export default function CreateTransactionButton({
     }
   };
 
+  const canTransfer = accounts.length >= 2;
+  const openButtonLabel = triggerLabel ?? (transferOnly ? 'Transferir entre cuentas' : '+ Nuevo Movimiento');
+  const openButtonClass = triggerClassName ?? 'btn btn-primary';
+
   return (
     <>
-      <button onClick={() => setIsOpen(true)} className="btn btn-primary">
-        + Nuevo Movimiento
+      <button
+        type="button"
+        onClick={() => canTransfer && setIsOpen(true)}
+        disabled={transferOnly && !canTransfer}
+        title={transferOnly && !canTransfer ? 'Creá al menos dos cuentas para transferir' : undefined}
+        className={`${openButtonClass}${transferOnly && !canTransfer ? ' opacity-50 cursor-not-allowed' : ''}`}
+      >
+        {openButtonLabel}
       </button>
 
       {isOpen && (
@@ -107,7 +127,9 @@ export default function CreateTransactionButton({
           <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold">Nuevo Movimiento</h2>
+                <h2 className="text-2xl font-bold">
+                  {transferOnly ? 'Transferencia entre cuentas' : 'Nuevo Movimiento'}
+                </h2>
                 {!isOnline && (
                   <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
                     Sin conexión — se guardará localmente
@@ -123,41 +145,46 @@ export default function CreateTransactionButton({
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Tipo</label>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setType('expense')}
-                    className={`flex-1 py-2 rounded-lg ${
-                      type === 'expense'
-                        ? 'bg-red-500 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
-                  >
-                    💸 Gasto
-                  </button>
-                  <button
-                    onClick={() => setType('income')}
-                    className={`flex-1 py-2 rounded-lg ${
-                      type === 'income'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
-                  >
-                    💰 Ingreso
-                  </button>
-                  <button
-                    onClick={() => setType('transfer')}
-                    className={`flex-1 py-2 rounded-lg ${
-                      type === 'transfer'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
-                  >
-                    🔄 Transfer
-                  </button>
+              {!transferOnly && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">Tipo</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setType('expense')}
+                      className={`flex-1 py-2 rounded-lg ${
+                        type === 'expense'
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
+                    >
+                      💸 Gasto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setType('income')}
+                      className={`flex-1 py-2 rounded-lg ${
+                        type === 'income'
+                          ? 'bg-green-500 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
+                    >
+                      💰 Ingreso
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setType('transfer')}
+                      className={`flex-1 py-2 rounded-lg ${
+                        type === 'transfer'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
+                    >
+                      🔄 Transfer
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium mb-2">Monto</label>
@@ -173,7 +200,9 @@ export default function CreateTransactionButton({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Cuenta</label>
+                <label className="block text-sm font-medium mb-2">
+                  {type === 'transfer' ? 'Cuenta origen' : 'Cuenta'}
+                </label>
                 <select
                   value={accountId}
                   onChange={(e) => setAccountId(e.target.value)}
@@ -248,7 +277,9 @@ export default function CreateTransactionButton({
                 {loading
                   ? 'Guardando...'
                   : isOnline
-                  ? 'Crear Movimiento'
+                  ? transferOnly
+                    ? 'Transferir'
+                    : 'Crear Movimiento'
                   : 'Guardar Offline'}
               </button>
             </div>

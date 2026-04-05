@@ -11,7 +11,8 @@
     "db:reset": "supabase db reset",
     "telegram:webhook": "node scripts/setup-telegram-webhook.js",
     "test:bot": "tsx lib/telegram/test-bot.ts",
-    "set-password": "node scripts/set-password.js"
+    "set-password": "node scripts/set-password.js",
+    "compare:import": "tsx scripts/compare-import-with-export.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.19.0",
@@ -30,6 +31,7 @@
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.3.0",
     "telegraf": "^4.16.3",
+    "xlsx": "^0.18.5",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"
   },

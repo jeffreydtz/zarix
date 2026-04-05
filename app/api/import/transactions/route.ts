@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import * as XLSX from 'xlsx';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
@@ -12,6 +13,8 @@ interface ImportedTransaction {
   category?: string;
   description?: string;
   notes?: string;
+  /** Si el monto en moneda de transacción (ej. USD) difiere del de cuenta (ej. ARS), va el equivalente en moneda de cuenta */
+  amountInAccountCurrency?: number;
 }
 
 interface ImportedTransferRow {
@@ -81,6 +84,14 @@ function normalizeHeader(h: string): string {
   return h.replace(/"/g, '').trim().toLowerCase();
 }
 
+/** Códigos ISO típicos ARS, USD, EUR (3 letras) */
+function normalizeCurrencyCode(raw: string): string | null {
+  const t = raw.replace(/[^A-Za-z]/g, '').toUpperCase();
+  if (t.length === 3) return t;
+  if (t.length > 3) return t.slice(0, 3);
+  return null;
+}
+
 function findColumnIndex(headers: string[], matchers: RegExp[]): number {
   const normalized = headers.map(normalizeHeader);
   for (let i = 0; i < normalized.length; i++) {
@@ -119,6 +130,10 @@ function parseImportDate(dateStr: string): Date | null {
 }
 
 function parseImportAmount(amountValue: unknown): number | null {
+  if (typeof amountValue === 'number' && Number.isFinite(amountValue)) {
+    return Math.abs(amountValue);
+  }
+
   const raw = String(amountValue ?? '').trim();
   if (!raw) return null;
 
@@ -126,12 +141,26 @@ function parseImportAmount(amountValue: unknown): number | null {
   if (!cleaned) return null;
 
   const dotDecimalPattern = /^-?\d+(?:\.\d+)?$/;
-  if (!dotDecimalPattern.test(cleaned)) return null;
+  if (dotDecimalPattern.test(cleaned)) {
+    const parsed = Number(cleaned);
+    if (!Number.isFinite(parsed)) return null;
+    return Math.abs(parsed);
+  }
 
-  const parsed = Number(cleaned);
-  if (!Number.isFinite(parsed)) return null;
+  const commaAsDecimal = /^-?\d{1,3}(?:\.\d{3})*,\d+$/;
+  if (commaAsDecimal.test(cleaned)) {
+    const normalized = cleaned.replace(/\./g, '').replace(',', '.');
+    const parsed = Number(normalized);
+    if (Number.isFinite(parsed)) return Math.abs(parsed);
+  }
 
-  return Math.abs(parsed);
+  const simpleCommaDecimal = /^-?\d+,\d+$/;
+  if (simpleCommaDecimal.test(cleaned)) {
+    const parsed = Number(cleaned.replace(',', '.'));
+    if (Number.isFinite(parsed)) return Math.abs(parsed);
+  }
+
+  return null;
 }
 
 function parseStandardCSV(headers: string[], rows: string[][]): ImportedTransaction[] {
@@ -301,10 +330,12 @@ function tryParseTransferCSV(headers: string[], rows: string[][]): ImportedTrans
   return out;
 }
 
-function parseCSVUnified(text: string):
+function parseUnifiedFromGrid(
+  headers: string[],
+  rows: string[][]
+):
   | { kind: 'standard'; transactions: ImportedTransaction[] }
   | { kind: 'transfer'; transfers: ImportedTransferRow[] } {
-  const { headers, rows } = parseCSVFile(text);
   if (headers.length === 0) {
     return { kind: 'standard', transactions: [] };
   }
@@ -315,6 +346,201 @@ function parseCSVUnified(text: string):
   }
 
   return { kind: 'standard', transactions: parseStandardCSV(headers, rows) };
+}
+
+/** Formato Airtable / export multi-hoja: Date and time, Category, Account, Amount in account currency, Account currency, Comment… */
+function inferTxTypeFromSheetName(sheetName: string): 'expense' | 'income' | null {
+  const n = sheetName.toLowerCase();
+  if (n.includes('expense')) return 'expense';
+  if (n.includes('income')) return 'income';
+  return null;
+}
+
+function tryParseAirtableExpenseIncome(
+  headers: string[],
+  rows: string[][],
+  sheetName: string
+): ImportedTransaction[] | null {
+  const amountInAcctIdx = findColumnIndex(headers, [/^amount in account currency$/i]);
+  const currencyAcctIdx = findColumnIndex(headers, [/^account currency$/i]);
+  const accountIdx = findColumnIndex(headers, [/^account$/i]);
+  const dateIdx = findColumnIndex(headers, [
+    /^date and time$/i,
+    /^fecha y hora$/i,
+    /^fecha$/i,
+  ]);
+  const txAmtIdx = findColumnIndex(headers, [
+    /^transaction amount in transaction currency$/i,
+    /^monto en moneda de transacción$/i,
+    /^monto transacción$/i,
+  ]);
+  const txCurIdx = findColumnIndex(headers, [
+    /^transaction currency$/i,
+    /^moneda de transacción$/i,
+  ]);
+
+  if (amountInAcctIdx < 0 || currencyAcctIdx < 0 || accountIdx < 0 || dateIdx < 0) {
+    return null;
+  }
+
+  const categoryIdx = findColumnIndex(headers, [/^category$/i, /^categoría$/i]);
+  const commentIdx = findColumnIndex(headers, [/^comment$/i, /^comentario$/i]);
+  const tagsIdx = findColumnIndex(headers, [/^tags$/i]);
+
+  const txType = inferTxTypeFromSheetName(sheetName) ?? 'expense';
+
+  const out: ImportedTransaction[] = [];
+  const getValue = (row: string[], idx: number) =>
+    idx >= 0 && idx < row.length ? row[idx] : '';
+
+  for (const row of rows) {
+    const parsedDate = parseImportDate(getValue(row, dateIdx));
+    if (!parsedDate) continue;
+
+    const acctAmt = parseImportAmount(getValue(row, amountInAcctIdx));
+    const acctCurRaw = getValue(row, currencyAcctIdx).trim();
+    const acctCode = normalizeCurrencyCode(acctCurRaw);
+    const acctCurNorm = acctCode || acctCurRaw.toUpperCase() || 'ARS';
+
+    const txAmt = txAmtIdx >= 0 ? parseImportAmount(getValue(row, txAmtIdx)) : null;
+    const txCurNorm = txCurIdx >= 0 ? normalizeCurrencyCode(getValue(row, txCurIdx).trim()) : null;
+
+    const useTxnCurrency =
+      txAmt !== null && txAmt > 0 && txCurNorm !== null;
+
+    let amount: number;
+    let currency: string;
+    let amountInAccountCurrency: number | undefined;
+    let notes: string | undefined;
+
+    if (useTxnCurrency) {
+      amount = txAmt;
+      currency = txCurNorm;
+      if (acctAmt !== null && acctAmt > 0) {
+        amountInAccountCurrency = acctAmt;
+        if (acctCode && acctCode !== txCurNorm) {
+          notes = `Equiv. importe en cuenta (${acctCode}): ${acctAmt}`;
+        }
+      }
+    } else {
+      if (acctAmt === null || acctAmt === 0) continue;
+      amount = acctAmt;
+      currency = acctCurNorm;
+    }
+
+    const account = getValue(row, accountIdx).trim();
+    const category = categoryIdx >= 0 ? getValue(row, categoryIdx).trim() : '';
+    const comment = commentIdx >= 0 ? getValue(row, commentIdx).trim() : '';
+    const tags = tagsIdx >= 0 ? getValue(row, tagsIdx).trim() : '';
+    const description = [comment, tags].filter(Boolean).join(' ').trim() || undefined;
+
+    out.push({
+      date: parsedDate.toISOString(),
+      type: txType,
+      amount,
+      currency,
+      account,
+      category: category || undefined,
+      description,
+      notes,
+      amountInAccountCurrency,
+    });
+  }
+
+  return out;
+}
+
+function sheetCellToString(v: unknown): string {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'number' && Number.isFinite(v)) {
+    return String(v);
+  }
+  if (v instanceof Date) {
+    const y = v.getFullYear();
+    const m = String(v.getMonth() + 1).padStart(2, '0');
+    const d = String(v.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return String(v).trim();
+}
+
+/** Salta filas tipo "expenses list" hasta la fila de encabezados reales */
+function findHeaderRowIndex(rows: string[][]): number {
+  for (let i = 0; i < Math.min(rows.length, 15); i++) {
+    const h0 = normalizeHeader(rows[i][0] || '');
+    if (
+      h0 === 'date and time' ||
+      h0 === 'fecha' ||
+      h0 === 'date' ||
+      (h0.includes('fecha') && h0.length < 24)
+    ) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+interface ParsedImport {
+  transactions: ImportedTransaction[];
+  transfers: ImportedTransferRow[];
+}
+
+function parseXlsxWorkbook(buffer: ArrayBuffer): ParsedImport {
+  const out: ParsedImport = { transactions: [], transfers: [] };
+  const wb = XLSX.read(buffer, { type: 'array', cellDates: true });
+
+  for (const sheetName of wb.SheetNames) {
+    const sheet = wb.Sheets[sheetName];
+    const matrix = XLSX.utils.sheet_to_json<(string | number | Date | null | undefined)[]>(sheet, {
+      header: 1,
+      defval: '',
+      raw: false,
+    }) as unknown[][];
+
+    const asStrings = matrix.map((row) =>
+      (Array.isArray(row) ? row : []).map((cell) => sheetCellToString(cell))
+    );
+    const nonEmpty = asStrings.filter((r) => r.some((c) => c.length > 0));
+    if (nonEmpty.length < 2) continue;
+
+    let headerIdx = findHeaderRowIndex(nonEmpty);
+    if (headerIdx < 0) headerIdx = 0;
+
+    const headers = nonEmpty[headerIdx].map((h) => String(h));
+    const dataRows = nonEmpty.slice(headerIdx + 1);
+
+    const transferRows = tryParseTransferCSV(headers, dataRows);
+    if (transferRows !== null) {
+      out.transfers.push(...transferRows);
+      continue;
+    }
+
+    const airtable = tryParseAirtableExpenseIncome(headers, dataRows, sheetName);
+    if (airtable !== null) {
+      out.transactions.push(...airtable);
+      continue;
+    }
+
+    try {
+      const unified = parseUnifiedFromGrid(headers, dataRows);
+      if (unified.kind === 'transfer') {
+        out.transfers.push(...unified.transfers);
+      } else {
+        out.transactions.push(...unified.transactions);
+      }
+    } catch {
+      /* hoja no reconocida */
+    }
+  }
+
+  return out;
+}
+
+function parseCSVUnified(text: string):
+  | { kind: 'standard'; transactions: ImportedTransaction[] }
+  | { kind: 'transfer'; transfers: ImportedTransferRow[] } {
+  const { headers, rows } = parseCSVFile(text);
+  return parseUnifiedFromGrid(headers, rows);
 }
 
 function collectUnresolvedAccountNames(
@@ -407,33 +633,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const text = await file.text();
+    const lowerName = file.name.toLowerCase();
 
-    let parsed:
-      | { kind: 'standard'; transactions: ImportedTransaction[] }
-      | { kind: 'transfer'; transfers: ImportedTransferRow[] };
+    let combined: ParsedImport;
 
-    if (file.name.endsWith('.json')) {
+    if (lowerName.endsWith('.json')) {
+      const text = await file.text();
       const json = JSON.parse(text);
       if (Array.isArray(json)) {
-        parsed = {
-          kind: 'standard',
-          transactions: json.map((tx: any) => ({
-            date:
-              parseImportDate(tx.date || tx.transaction_date || '')?.toISOString() ||
-              new Date().toISOString(),
-            type: tx.type || 'expense',
-            amount: parseImportAmount(tx.amount) || 0,
-            currency: tx.currency || 'ARS',
-            account: tx.account || tx.accountName || '',
-            category: tx.category || tx.categoryName,
-            description: tx.description,
-            notes: tx.notes,
-          })),
+        combined = {
+          transfers: [],
+          transactions: json.map((tx: any) => {
+            const amt = parseImportAmount(tx.amount) || 0;
+            const amtAcct =
+              typeof tx.amount_in_account_currency === 'number' &&
+              Number.isFinite(tx.amount_in_account_currency)
+                ? Math.abs(tx.amount_in_account_currency)
+                : typeof tx.amountInAccountCurrency === 'number' &&
+                    Number.isFinite(tx.amountInAccountCurrency)
+                  ? Math.abs(tx.amountInAccountCurrency)
+                  : undefined;
+            return {
+              date:
+                parseImportDate(tx.date || tx.transaction_date || '')?.toISOString() ||
+                new Date().toISOString(),
+              type: tx.type || 'expense',
+              amount: amt,
+              currency: tx.currency || 'ARS',
+              account: tx.account || tx.accountName || '',
+              category: tx.category || tx.categoryName,
+              description: tx.description,
+              notes: tx.notes,
+              amountInAccountCurrency: amtAcct,
+            };
+          }),
         };
       } else if (json.data?.transactions) {
-        parsed = {
-          kind: 'standard',
+        combined = {
+          transfers: [],
           transactions: json.data.transactions.map((tx: any) => ({
             date:
               parseImportDate(tx.transaction_date || '')?.toISOString() ||
@@ -450,12 +687,19 @@ export async function POST(request: NextRequest) {
       } else {
         return NextResponse.json({ error: 'Invalid JSON format' }, { status: 400 });
       }
+    } else if (lowerName.endsWith('.xlsx') || lowerName.endsWith('.xls')) {
+      const buffer = await file.arrayBuffer();
+      combined = parseXlsxWorkbook(buffer);
     } else {
-      parsed = parseCSVUnified(text);
+      const text = await file.text();
+      const parsed = parseCSVUnified(text);
+      combined =
+        parsed.kind === 'transfer'
+          ? { transactions: [], transfers: parsed.transfers }
+          : { transactions: parsed.transactions, transfers: [] };
     }
 
-    const totalCount =
-      parsed.kind === 'transfer' ? parsed.transfers.length : parsed.transactions.length;
+    const totalCount = combined.transactions.length + combined.transfers.length;
 
     if (totalCount === 0) {
       return NextResponse.json({ error: 'No transactions found in file' }, { status: 400 });
@@ -476,16 +720,24 @@ export async function POST(request: NextRequest) {
     const accountMap = new Map((accounts || []).map((a) => [a.name.toLowerCase(), a]));
     const categoryMap = new Map((categories || []).map((c) => [c.name.toLowerCase(), c]));
 
-    const unresolvedAccountNames =
-      parsed.kind === 'transfer'
-        ? collectUnresolvedForTransfers(accountMap, parsed.transfers)
-        : collectUnresolvedAccountNames(accountMap, parsed.transactions);
+    const unresolvedTransfers = collectUnresolvedForTransfers(accountMap, combined.transfers);
+    const unresolvedStandard = collectUnresolvedAccountNames(accountMap, combined.transactions);
+    const unresolvedAccountNames = Array.from(
+      new Set([...unresolvedTransfers, ...unresolvedStandard])
+    );
+
+    const importKindPreview =
+      combined.transfers.length > 0 && combined.transactions.length > 0
+        ? 'mixed'
+        : combined.transfers.length > 0
+          ? 'transfer'
+          : 'standard';
 
     if (mode === 'preview') {
       return NextResponse.json({
         success: true,
         total: totalCount,
-        importKind: parsed.kind,
+        importKind: importKindPreview,
         unresolvedAccounts: unresolvedAccountNames,
         accounts: (accounts || []).map((a) => ({ id: a.id, name: a.name, currency: a.currency })),
       });
@@ -503,80 +755,69 @@ export async function POST(request: NextRequest) {
     let skipped = 0;
     const errors: string[] = [];
 
-    if (parsed.kind === 'transfer') {
-      for (const tr of parsed.transfers) {
-        const outRes = resolveAccountId(
-          tr.outgoingName,
-          accountMap,
-          resolutions,
-          tr.currencyOutgoing,
-          false
+    for (const tr of combined.transfers) {
+      const outRes = resolveAccountId(
+        tr.outgoingName,
+        accountMap,
+        resolutions,
+        tr.currencyOutgoing,
+        false
+      );
+      const inRes = resolveAccountId(
+        tr.incomingName,
+        accountMap,
+        resolutions,
+        tr.currencyIncoming || tr.currencyOutgoing,
+        false
+      );
+
+      if (outRes.skipReason || !outRes.accountId) {
+        skipped++;
+        errors.push(
+          `Transferencia: origen "${tr.outgoingName}" — ${outRes.skipReason || 'sin cuenta'}`
         );
-        const inRes = resolveAccountId(
-          tr.incomingName,
-          accountMap,
-          resolutions,
-          tr.currencyIncoming || tr.currencyOutgoing,
-          false
+        continue;
+      }
+      if (inRes.skipReason || !inRes.accountId) {
+        skipped++;
+        errors.push(
+          `Transferencia: destino "${tr.incomingName}" — ${inRes.skipReason || 'sin cuenta'}`
         );
-
-        if (outRes.skipReason || !outRes.accountId) {
-          skipped++;
-          errors.push(
-            `Transferencia: origen "${tr.outgoingName}" — ${outRes.skipReason || 'sin cuenta'}`
-          );
-          continue;
-        }
-        if (inRes.skipReason || !inRes.accountId) {
-          skipped++;
-          errors.push(
-            `Transferencia: destino "${tr.incomingName}" — ${inRes.skipReason || 'sin cuenta'}`
-          );
-          continue;
-        }
-
-        if (outRes.accountId === inRes.accountId) {
-          skipped++;
-          errors.push(`Transferencia: origen y destino son la misma cuenta`);
-          continue;
-        }
-
-        let description = tr.comment || 'Transferencia importada';
-        if (tr.amountIncoming && tr.currencyIncoming && tr.currencyIncoming !== tr.currencyOutgoing) {
-          description += ` (${tr.amountIncoming} ${tr.currencyIncoming} en destino)`;
-        }
-
-        try {
-          await transactionsService.create({
-            userId: user.id,
-            type: 'transfer',
-            accountId: outRes.accountId,
-            destinationAccountId: inRes.accountId,
-            amount: tr.amountOutgoing,
-            currency: tr.currencyOutgoing,
-            description,
-            transactionDate: tr.date,
-          });
-          imported++;
-        } catch (e: any) {
-          skipped++;
-          errors.push(
-            `Error transferencia ${tr.outgoingName}→${tr.incomingName}: ${e?.message || e}`
-          );
-        }
+        continue;
       }
 
-      return NextResponse.json({
-        success: true,
-        imported,
-        skipped,
-        total: totalCount,
-        importKind: 'transfer',
-        errors: errors.slice(0, 10),
-      });
+      if (outRes.accountId === inRes.accountId) {
+        skipped++;
+        errors.push(`Transferencia: origen y destino son la misma cuenta`);
+        continue;
+      }
+
+      let description = tr.comment || 'Transferencia importada';
+      if (tr.amountIncoming && tr.currencyIncoming && tr.currencyIncoming !== tr.currencyOutgoing) {
+        description += ` (${tr.amountIncoming} ${tr.currencyIncoming} en destino)`;
+      }
+
+      try {
+        await transactionsService.create({
+          userId: user.id,
+          type: 'transfer',
+          accountId: outRes.accountId,
+          destinationAccountId: inRes.accountId,
+          amount: tr.amountOutgoing,
+          currency: tr.currencyOutgoing,
+          description,
+          transactionDate: tr.date,
+        });
+        imported++;
+      } catch (e: any) {
+        skipped++;
+        errors.push(
+          `Error transferencia ${tr.outgoingName}→${tr.incomingName}: ${e?.message || e}`
+        );
+      }
     }
 
-    for (const tx of parsed.transactions) {
+    for (const tx of combined.transactions) {
       const rawAccountName = (tx.account || '').trim();
       const hasAccountInFile = rawAccountName.length > 0;
       let account = hasAccountInFile ? accountMap.get(rawAccountName.toLowerCase()) : undefined;
@@ -631,7 +872,7 @@ export async function POST(request: NextRequest) {
           account_id: accountId,
           amount: tx.amount,
           currency: tx.currency,
-          amount_in_account_currency: tx.amount,
+          amount_in_account_currency: tx.amountInAccountCurrency ?? tx.amount,
           category_id: category?.id || null,
           description,
           notes,
@@ -650,7 +891,7 @@ export async function POST(request: NextRequest) {
       imported,
       skipped,
       total: totalCount,
-      importKind: 'standard',
+      importKind: importKindPreview,
       errors: errors.slice(0, 10),
     });
   } catch (error) {

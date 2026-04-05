@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
         amountInAccountCurrency: tx.amount_in_account_currency,
         exchangeRate: tx.exchange_rate,
         account: tx.account?.name || '',
+        destinationAccount: tx.destination_account?.name || '',
         category: tx.category?.name || '',
         description: tx.description || '',
         notes: tx.notes || '',

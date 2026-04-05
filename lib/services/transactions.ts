@@ -26,6 +26,10 @@ export interface TransactionWithCategory extends Transaction {
     name: string;
     currency: string;
   };
+  destination_account?: {
+    name: string;
+    currency: string;
+  } | null;
 }
 
 class TransactionsService {
@@ -164,7 +168,8 @@ class TransactionsService {
         `
         *,
         category:categories(name, icon),
-        account:accounts!transactions_account_id_fkey(name, currency)
+        account:accounts!transactions_account_id_fkey(name, currency),
+        destination_account:accounts!transactions_destination_account_id_fkey(name, currency)
       `
       )
       .eq('user_id', userId)
@@ -229,7 +234,8 @@ class TransactionsService {
         `
         *,
         category:categories(name, icon),
-        account:accounts!transactions_account_id_fkey(name, currency)
+        account:accounts!transactions_account_id_fkey(name, currency),
+        destination_account:accounts!transactions_destination_account_id_fkey(name, currency)
       `
       )
       .eq('id', id)

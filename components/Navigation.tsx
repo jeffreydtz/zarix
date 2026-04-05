@@ -10,12 +10,12 @@ import ThemeToggle from '@/components/ui/ThemeToggle';
 const PRIMARY_LINKS = [
   { href: '/dashboard',   label: 'Inicio',       icon: '🏠' },
   { href: '/expenses',    label: 'Movimientos',  icon: '💸' },
-  { href: '/analysis',   label: 'Análisis',     icon: '📊' },
+  { href: '/accounts',    label: 'Cuentas',      icon: '🏦' },
   { href: '/investments', label: 'Inversiones',  icon: '📈' },
 ];
 
 const MORE_LINKS = [
-  { href: '/accounts',   label: 'Cuentas',      icon: '🏦' },
+  { href: '/analysis',   label: 'Análisis',     icon: '📊' },
   { href: '/budgets',    label: 'Presupuestos',  icon: '🎯' },
   { href: '/recurring',  label: 'Recurrentes',  icon: '🔄' },
   { href: '/categories', label: 'Categorías',   icon: '🏷️' },
