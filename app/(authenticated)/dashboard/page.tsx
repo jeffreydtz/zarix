@@ -124,16 +124,16 @@ export default async function DashboardPage() {
 
           <QuotesWidget quotes={quotes} />
 
+          <SpendingAnalyzer
+            initialTransactions={analyzerInitialTxs}
+            initialTransactionsTruncated={analyzerTruncated}
+          />
+
           <CreditCardsWidget accounts={accounts} />
 
           <AccountCards accounts={accounts} />
 
           <RecentTransactions transactions={recentTransactions} />
-
-          <SpendingAnalyzer
-            initialTransactions={analyzerInitialTxs}
-            initialTransactionsTruncated={analyzerTruncated}
-          />
 
           <AnomaliesWidget />
 

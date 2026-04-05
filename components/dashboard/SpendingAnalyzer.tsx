@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { CategoryIcon } from '@/lib/category-icons';
@@ -66,19 +66,32 @@ function getRange(range: RangeType, customFrom: string, customTo: string, anchor
   } else if (range === 'year') {
     start = `${anchorDate.getFullYear()}-01-01`;
   } else {
-    start = customFrom || end;
-    return { startDate: start, endDate: customTo || end };
+    let s = customFrom || end;
+    let e = customTo || end;
+    if (s > e) {
+      const t = s;
+      s = e;
+      e = t;
+    }
+    return { startDate: s, endDate: e };
   }
 
   return { startDate: start, endDate: end };
 }
 
-function txDay(tx: TxItem): string {
-  return tx.transaction_date.slice(0, 10);
+/** Día calendario local (no el prefijo UTC del ISO), alineado con los rangos del analizador. */
+function txLocalCalendarDay(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 function txInDateRange(tx: TxItem, start: string, end: string): boolean {
-  const d = txDay(tx);
+  const d = txLocalCalendarDay(tx.transaction_date);
+  if (!d) return false;
   return d >= start && d <= end;
 }
 
@@ -91,14 +104,24 @@ function filterPoolForPeriod(
   return pool.filter((t) => t.type === mode && txInDateRange(t, startDate, endDate));
 }
 
+function parseYmdLocal(ymd: string): Date {
+  if (!ymd || ymd.length < 10) return new Date(NaN);
+  const y = Number(ymd.slice(0, 4));
+  const m = Number(ymd.slice(5, 7));
+  const d = Number(ymd.slice(8, 10));
+  if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return new Date(NaN);
+  return new Date(y, m - 1, d);
+}
+
 function computePrevTotalFromPool(
   pool: TxItem[],
   mode: AnalyzerMode,
   startDate: string,
   endDate: string
 ): number {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = parseYmdLocal(startDate);
+  const end = parseYmdLocal(endDate);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 0;
   const days = Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86400000) + 1);
   const prevEnd = addDays(start, -1);
   const prevStart = addDays(prevEnd, -(days - 1));
@@ -107,7 +130,12 @@ function computePrevTotalFromPool(
   return pool
     .filter((t) => t.type === mode)
     .filter((t) => txInDateRange(t, ps, pe))
-    .reduce((sum, t) => sum + Number(t.amount_in_account_currency || 0), 0);
+    .reduce((sum, t) => sum + Math.abs(Number(t.amount_in_account_currency || 0)), 0);
+}
+
+/** Monto para gráficos: siempre positivo para gasto/ingreso. */
+function txDisplayAmount(tx: TxItem): number {
+  return Math.abs(Number(tx.amount_in_account_currency ?? tx.amount ?? 0));
 }
 
 export interface SpendingAnalyzerProps {
@@ -139,18 +167,34 @@ export default function SpendingAnalyzer({
   );
 
   const periodLabel = useMemo(() => {
-    if (startDate === endDate) return new Date(startDate).toLocaleDateString('es-AR');
-    return `${new Date(startDate).toLocaleDateString('es-AR')} - ${new Date(endDate).toLocaleDateString('es-AR')}`;
+    const a = parseYmdLocal(startDate);
+    const b = parseYmdLocal(endDate);
+    if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return '';
+    if (startDate === endDate) return a.toLocaleDateString('es-AR');
+    return `${a.toLocaleDateString('es-AR')} — ${b.toLocaleDateString('es-AR')}`;
   }, [startDate, endDate]);
 
-  const availableAccounts = useMemo(
-    () => Array.from(new Set(items.map((i) => i.account?.name).filter(Boolean))) as string[],
-    [items]
-  );
-  const availableCategories = useMemo(
-    () => Array.from(new Set(items.map((i) => i.category?.name).filter(Boolean))) as string[],
-    [items]
-  );
+  const availableAccounts = useMemo(() => {
+    const arr = Array.from(new Set(items.map((i) => i.account?.name).filter(Boolean))) as string[];
+    return arr.sort((x, y) => x.localeCompare(y, 'es', { sensitivity: 'base' }));
+  }, [items]);
+
+  const availableCategories = useMemo(() => {
+    const arr = Array.from(new Set(items.map((i) => i.category?.name).filter(Boolean))) as string[];
+    return arr.sort((x, y) => x.localeCompare(y, 'es', { sensitivity: 'base' }));
+  }, [items]);
+
+  useEffect(() => {
+    if (accountFilter !== 'all' && !availableAccounts.includes(accountFilter)) {
+      setAccountFilter('all');
+    }
+  }, [accountFilter, availableAccounts]);
+
+  useEffect(() => {
+    if (categoryFilter !== 'all' && !availableCategories.includes(categoryFilter)) {
+      setCategoryFilter('all');
+    }
+  }, [categoryFilter, availableCategories]);
 
   useEffect(() => {
     let cancelled = false;
@@ -188,7 +232,7 @@ export default function SpendingAnalyzer({
         const prevRes = await fetch(prevUrl, { cache: 'no-store' });
         const prevData = prevRes.ok ? await prevRes.json() : [];
         const prevAmount = Array.isArray(prevData)
-          ? prevData.reduce((sum, t) => sum + Number(t.amount_in_account_currency || 0), 0)
+          ? prevData.reduce((sum, t) => sum + Math.abs(Number(t.amount_in_account_currency || 0)), 0)
           : 0;
         if (!cancelled) setPrevTotal(prevAmount);
       } catch (e: unknown) {
@@ -219,8 +263,8 @@ export default function SpendingAnalyzer({
     for (const tx of filteredItems) {
       const name = tx.category?.name || 'Sin categoría';
       const icon = tx.category?.icon || '🔁';
-      const amount = Number(tx.amount_in_account_currency || 0);
-      if (!amount) continue;
+      const amount = txDisplayAmount(tx);
+      if (!Number.isFinite(amount) || amount === 0) continue;
       totalAmount += amount;
       const prev = map.get(name) || { icon, amount: 0 };
       prev.amount += amount;
@@ -244,9 +288,10 @@ export default function SpendingAnalyzer({
   const avgTicket = txCount > 0 ? total / txCount : 0;
   const maxTx = useMemo(() => {
     if (filteredItems.length === 0) return null;
-    return [...filteredItems].sort((a, b) => Number(b.amount_in_account_currency) - Number(a.amount_in_account_currency))[0];
+    return [...filteredItems].sort((a, b) => txDisplayAmount(b) - txDisplayAmount(a))[0];
   }, [filteredItems]);
-  const variationPct = prevTotal > 0 ? ((total - prevTotal) / prevTotal) * 100 : 0;
+  const variationPct =
+    prevTotal > 0 && Number.isFinite(total) ? ((total - prevTotal) / prevTotal) * 100 : null;
   const displaySlices = useMemo(() => {
     if (slices.length <= MAX_PIE_SLICES) return slices;
     const head = slices.slice(0, MAX_PIE_SLICES - 1);
@@ -265,15 +310,17 @@ export default function SpendingAnalyzer({
     ];
   }, [slices]);
 
-  const movePeriod = (direction: -1 | 1) => {
+  const movePeriod = useCallback((direction: -1 | 1) => {
     if (range === 'custom') return;
-    const d = new Date(anchorDate);
-    if (range === 'day') d.setDate(d.getDate() + direction);
-    else if (range === 'week') d.setDate(d.getDate() + direction * 7);
-    else if (range === 'month') d.setMonth(d.getMonth() + direction);
-    else if (range === 'year') d.setFullYear(d.getFullYear() + direction);
-    setAnchorDate(d);
-  };
+    setAnchorDate((prev) => {
+      const d = new Date(prev);
+      if (range === 'day') d.setDate(d.getDate() + direction);
+      else if (range === 'week') d.setDate(d.getDate() + direction * 7);
+      else if (range === 'month') d.setMonth(d.getMonth() + direction);
+      else if (range === 'year') d.setFullYear(d.getFullYear() + direction);
+      return d;
+    });
+  }, [range]);
 
   return (
     <motion.div
@@ -364,8 +411,22 @@ export default function SpendingAnalyzer({
         </div>
         <div className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs">
           <div className="text-slate-500">Vs período anterior</div>
-          <div className={`font-semibold ${variationPct >= 0 ? 'text-red-500' : 'text-green-500'}`}>
-            {prevTotal > 0 ? `${variationPct >= 0 ? '+' : ''}${variationPct.toFixed(1)}%` : 'N/D'}
+          <div
+            className={`font-semibold ${
+              variationPct === null
+                ? 'text-slate-500 dark:text-slate-400'
+                : mode === 'expense'
+                  ? variationPct >= 0
+                    ? 'text-red-500'
+                    : 'text-green-500'
+                  : variationPct >= 0
+                    ? 'text-green-500'
+                    : 'text-red-500'
+            }`}
+          >
+            {variationPct === null
+              ? 'N/D'
+              : `${variationPct >= 0 ? '+' : ''}${variationPct.toFixed(1)}%`}
           </div>
         </div>
       </div>
@@ -378,10 +439,14 @@ export default function SpendingAnalyzer({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="relative bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
             {displaySlices.length === 0 ? (
-              <div className="h-64 flex items-center justify-center text-slate-400">Sin gastos en este período</div>
+              <div className="h-64 flex items-center justify-center text-center px-4 text-slate-400 text-sm">
+                {mode === 'expense'
+                  ? 'No hay gastos en este período con los filtros actuales.'
+                  : 'No hay ingresos en este período con los filtros actuales.'}
+              </div>
             ) : (
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="h-64 min-h-[256px] w-full min-w-0">
+                <ResponsiveContainer width="100%" height="100%" minHeight={256}>
                   <PieChart>
                     <Pie
                       data={displaySlices}
@@ -392,13 +457,18 @@ export default function SpendingAnalyzer({
                       innerRadius={60}
                       outerRadius={92}
                       paddingAngle={1.5}
+                      isAnimationActive={false}
                     >
-                      {displaySlices.map((s) => (
-                        <Cell key={s.name} fill={s.color} />
+                      {displaySlices.map((s, i) => (
+                        <Cell key={`${s.name}-${i}`} fill={s.color} />
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(v: number) => `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`}
+                      formatter={(v: number | string) =>
+                        typeof v === 'number'
+                          ? `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
+                          : String(v)
+                      }
                       contentStyle={{ borderRadius: 8 }}
                     />
                   </PieChart>
@@ -424,13 +494,19 @@ export default function SpendingAnalyzer({
               <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs">
                 <div className="text-slate-500">Ticket máximo</div>
                 <div className="font-semibold text-slate-700 dark:text-slate-200">
-                  ${Number(maxTx?.amount_in_account_currency || 0).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                  $
+                  {maxTx
+                    ? txDisplayAmount(maxTx).toLocaleString('es-AR', { maximumFractionDigits: 0 })
+                    : '0'}
                 </div>
               </div>
             </div>
 
-            {displaySlices.slice(0, 8).map((s) => (
-              <div key={s.name} className="flex items-center justify-between p-3 rounded-xl bg-slate-100 dark:bg-slate-800">
+            {displaySlices.slice(0, 8).map((s, idx) => (
+              <div
+                key={`${s.name}-${idx}`}
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-100 dark:bg-slate-800"
+              >
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-lg inline-flex items-center justify-center">
                     <CategoryIcon icon={s.icon} className="w-4 h-4" />
