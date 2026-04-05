@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { ImportSkippedDetail } from '@/types/import';
 
 export default function ExportImport() {
   const [exporting, setExporting] = useState(false);
@@ -11,9 +12,12 @@ export default function ExportImport() {
     success: boolean;
     imported?: number;
     skipped?: number;
+    skippedDetails?: ImportSkippedDetail[];
+    skippedDetailsTruncated?: boolean;
     errors?: string[];
     message?: string;
   } | null>(null);
+  const [copyReportDone, setCopyReportDone] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [reviewStep, setReviewStep] = useState(false);
   const [unresolvedAccounts, setUnresolvedAccounts] = useState<string[]>([]);
@@ -164,6 +168,8 @@ export default function ExportImport() {
           success: true,
           imported: result.imported,
           skipped: result.skipped,
+          skippedDetails: result.skippedDetails,
+          skippedDetailsTruncated: result.skippedDetailsTruncated,
           errors: result.errors,
         });
         setReviewStep(false);
@@ -526,19 +532,91 @@ export default function ExportImport() {
             }`}
           >
             {importResult.success ? (
-              <div>
+              <div className="space-y-3">
                 <p className="font-medium text-green-700 dark:text-green-400">
                   ✅ Importación completada
                 </p>
-                <p className="text-sm text-green-600 dark:text-green-500 mt-1">
+                <p className="text-sm text-green-600 dark:text-green-500">
                   {importResult.imported} transacciones importadas
-                  {importResult.skipped && importResult.skipped > 0 && `, ${importResult.skipped} omitidas`}
+                  {importResult.skipped != null && importResult.skipped > 0 && (
+                    <span className="text-amber-700 dark:text-amber-300">
+                      {`, ${importResult.skipped} omitidas`}
+                    </span>
+                  )}
                 </p>
-                {importResult.errors && importResult.errors.length > 0 && (
+
+                {importResult.skipped != null && importResult.skipped > 0 && (
+                  <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/30 p-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                      <p className="font-medium text-amber-900 dark:text-amber-200">
+                        Filas omitidas — por qué y cómo corregirlas
+                      </p>
+                      {(importResult.skippedDetails?.length ?? 0) > 0 && (
+                        <button
+                          type="button"
+                          className="text-xs px-2 py-1 rounded-md border border-amber-300 dark:border-amber-600 text-amber-900 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                          onClick={() => {
+                            const lines = importResult.skippedDetails!.map((d) => {
+                              const ctx = d.context ? `\n  Contexto: ${d.context}` : '';
+                              return `${d.title}\n  Por qué: ${d.reason}\n  Qué hacer: ${d.suggestion}${ctx}`;
+                            });
+                            const head =
+                              importResult.skippedDetailsTruncated === true
+                                ? `Informe parcial (${lines.length} de ${importResult.skipped} omitidas).\n\n`
+                                : '';
+                            void navigator.clipboard.writeText(head + lines.join('\n\n'));
+                            setCopyReportDone(true);
+                            setTimeout(() => setCopyReportDone(false), 2500);
+                          }}
+                        >
+                          {copyReportDone ? 'Copiado' : 'Copiar informe al portapapeles'}
+                        </button>
+                      )}
+                    </div>
+                    {importResult.skippedDetailsTruncated === true && (
+                      <p className="text-xs text-amber-800 dark:text-amber-400 mb-2">
+                        Se listan las primeras omisiones con detalle; el total omitido es mayor.
+                      </p>
+                    )}
+                    {importResult.skippedDetails && importResult.skippedDetails.length > 0 ? (
+                      <ul className="space-y-3 text-amber-950 dark:text-amber-100">
+                        {importResult.skippedDetails.map((d, i) => (
+                          <li
+                            key={i}
+                            className="border-l-2 border-amber-400 dark:border-amber-600 pl-3"
+                          >
+                            <div className="font-medium text-amber-950 dark:text-amber-50">{d.title}</div>
+                            <div className="text-xs mt-1 text-amber-900/90 dark:text-amber-200/90">
+                              <span className="text-amber-700 dark:text-amber-400">Motivo:</span> {d.reason}
+                            </div>
+                            <div className="text-xs mt-1 text-amber-900/90 dark:text-amber-200/90">
+                              <span className="text-amber-700 dark:text-amber-400">Cómo evitarlo:</span>{' '}
+                              {d.suggestion}
+                            </div>
+                            {d.context && (
+                              <div className="text-[11px] mt-1 text-amber-800/80 dark:text-amber-300/80 font-mono">
+                                {d.context}
+                              </div>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-xs text-amber-800 dark:text-amber-400">
+                        No hay detalle por fila (revisá la consola del servidor o reintentá). Total omitidas:{' '}
+                        {importResult.skipped}.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {importResult.errors && importResult.errors.length > 0 && !importResult.skippedDetails?.length && (
                   <div className="mt-2 text-xs text-amber-600 dark:text-amber-400">
                     <p className="font-medium">Advertencias:</p>
                     <ul className="list-disc list-inside">
-                      {importResult.errors.map((e, i) => <li key={i}>{e}</li>)}
+                      {importResult.errors.map((e, i) => (
+                        <li key={i}>{e}</li>
+                      ))}
                     </ul>
                   </div>
                 )}

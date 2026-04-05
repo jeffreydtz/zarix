@@ -3,6 +3,9 @@ import * as XLSX from 'xlsx';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
+import type { ImportSkippedDetail } from '@/types/import';
+
+const MAX_SKIPPED_DETAILS = 250;
 
 interface ImportedTransaction {
   date: string;
@@ -642,6 +645,32 @@ function resolveAccountId(
   };
 }
 
+function formatTxContext(tx: ImportedTransaction): string {
+  const parts = [
+    tx.date ? `Fecha: ${String(tx.date).slice(0, 10)}` : null,
+    tx.amount != null ? `Monto: ${tx.amount} ${tx.currency}` : null,
+    tx.description ? `Desc.: ${tx.description}` : null,
+  ].filter(Boolean);
+  return parts.join(' · ');
+}
+
+function formatTransferContext(tr: ImportedTransferRow): string {
+  const parts = [
+    tr.date ? `Fecha: ${String(tr.date).slice(0, 10)}` : null,
+    `Monto: ${tr.amountOutgoing} ${tr.currencyOutgoing}`,
+    tr.comment ? `Nota: ${tr.comment}` : null,
+  ].filter(Boolean);
+  return parts.join(' · ');
+}
+
+function suggestionForUnresolvedTransferName(rawName: string, side: 'origen' | 'destino'): string {
+  const n = rawName.trim();
+  if (!n) {
+    return `Completá la columna de ${side} en el archivo. El nombre debe coincidir con una cuenta activa en Zarix (pestaña Cuentas), salvo tildes/mayúsculas.`;
+  }
+  return `Creá en Zarix una cuenta llamada como en el archivo o, si ya existe con otro nombre, en la pantalla de revisión del import asigná "${n}" a la cuenta correcta.`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -781,7 +810,14 @@ export async function POST(request: NextRequest) {
 
     let imported = 0;
     let skipped = 0;
-    const errors: string[] = [];
+    const skippedDetails: ImportSkippedDetail[] = [];
+
+    const pushSkip = (detail: ImportSkippedDetail) => {
+      skipped++;
+      if (skippedDetails.length < MAX_SKIPPED_DETAILS) {
+        skippedDetails.push(detail);
+      }
+    };
 
     for (const tr of combined.transfers) {
       const outRes = resolveAccountId(
@@ -800,23 +836,42 @@ export async function POST(request: NextRequest) {
       );
 
       if (outRes.skipReason || !outRes.accountId) {
-        skipped++;
-        errors.push(
-          `Transferencia: origen "${tr.outgoingName}" — ${outRes.skipReason || 'sin cuenta'}`
-        );
+        const raw = tr.outgoingName?.trim() || '';
+        pushSkip({
+          title: `Transferencia omitida — origen "${raw || '(vacío)'}"`,
+          reason:
+            outRes.skipReason ||
+            (!outRes.accountId
+              ? 'No hay cuenta de origen válida (p. ej. nombre vacío o sin mapear).'
+              : 'No se pudo determinar la cuenta de origen.'),
+          suggestion: suggestionForUnresolvedTransferName(tr.outgoingName, 'origen'),
+          context: formatTransferContext(tr),
+        });
         continue;
       }
       if (inRes.skipReason || !inRes.accountId) {
-        skipped++;
-        errors.push(
-          `Transferencia: destino "${tr.incomingName}" — ${inRes.skipReason || 'sin cuenta'}`
-        );
+        const raw = tr.incomingName?.trim() || '';
+        pushSkip({
+          title: `Transferencia omitida — destino "${raw || '(vacío)'}"`,
+          reason:
+            inRes.skipReason ||
+            (!inRes.accountId
+              ? 'No hay cuenta de destino válida.'
+              : 'No se pudo determinar la cuenta de destino.'),
+          suggestion: suggestionForUnresolvedTransferName(tr.incomingName, 'destino'),
+          context: formatTransferContext(tr),
+        });
         continue;
       }
 
       if (outRes.accountId === inRes.accountId) {
-        skipped++;
-        errors.push(`Transferencia: origen y destino son la misma cuenta`);
+        pushSkip({
+          title: 'Transferencia omitida — origen y destino iguales',
+          reason: 'Origen y destino apuntan a la misma cuenta en Zarix; una transferencia requiere dos cuentas distintas.',
+          suggestion:
+            'Corregí el archivo: dos columnas distintas con nombres de cuentas diferentes, o dividí en dos movimientos (egreso en una cuenta e ingreso manual en la otra).',
+          context: formatTransferContext(tr),
+        });
         continue;
       }
 
@@ -837,11 +892,15 @@ export async function POST(request: NextRequest) {
           transactionDate: tr.date,
         });
         imported++;
-      } catch (e: any) {
-        skipped++;
-        errors.push(
-          `Error transferencia ${tr.outgoingName}→${tr.incomingName}: ${e?.message || e}`
-        );
+      } catch (e: unknown) {
+        const errMsg = e instanceof Error ? e.message : String(e);
+        pushSkip({
+          title: `Transferencia omitida — ${tr.outgoingName} → ${tr.incomingName}`,
+          reason: `Error al crear el movimiento: ${errMsg}`,
+          suggestion:
+            'Revisá monedas, montos y que ambas cuentas existan. Si el error menciona validación, ajustá el archivo y reintentá.',
+          context: formatTransferContext(tr),
+        });
       }
     }
 
@@ -877,8 +936,14 @@ export async function POST(request: NextRequest) {
         } else if (!hasAccountInFile) {
           accountId = null;
         } else {
-          skipped++;
-          errors.push(`Cuenta "${rawAccountName}" no resuelta (definí acción en revisión)`);
+          pushSkip({
+            title: `Movimiento omitido — cuenta "${rawAccountName}"`,
+            reason:
+              'Ese nombre no coincide con ninguna cuenta en Zarix y no elegiste una acción en la pantalla de revisión (mapear, sin cuenta o nota).',
+            suggestion:
+              'Volvé a importar el archivo: en el paso de cuentas no reconocidas, asigná esta fila a una cuenta existente, o renombrá el texto en el CSV para que coincida con el nombre en Zarix (tildes no importan).',
+            context: formatTxContext(tx),
+          });
           continue;
         }
       }
@@ -889,14 +954,18 @@ export async function POST(request: NextRequest) {
 
       try {
         if (tx.type === 'transfer') {
-          skipped++;
-          errors.push(
-            'Las transferencias entre cuentas usá el CSV de transferencias (Origen/Destino).'
-          );
+          pushSkip({
+            title: 'Movimiento omitido — tipo transferencia en archivo de movimientos',
+            reason:
+              'Esta fila está marcada como transferencia; el import masivo de gastos/ingresos no crea transferencias entre cuentas.',
+            suggestion:
+              'Usá el formato de transferencias (columnas Origen y Destino) en otro CSV/Excel, o cambiá el tipo a Gasto/Ingreso si corresponde a un solo lado.',
+            context: formatTxContext(tx),
+          });
           continue;
         }
 
-        await serviceSupabase.from('transactions').insert({
+        const { error: insertError } = await serviceSupabase.from('transactions').insert({
           user_id: user.id,
           type: tx.type,
           account_id: accountId,
@@ -909,12 +978,32 @@ export async function POST(request: NextRequest) {
           transaction_date: tx.date,
         });
 
+        if (insertError) {
+          pushSkip({
+            title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
+            reason: `Error al guardar: ${insertError.message}${insertError.code ? ` (${insertError.code})` : ''}`,
+            suggestion:
+              'Revisá fecha (formato válido), monto numérico, moneda y que el tipo (gasto/ingreso) sea coherente. Si falta cuenta y la base lo exige, asigná cuenta en el archivo o en la revisión.',
+            context: formatTxContext(tx),
+          });
+          continue;
+        }
+
         imported++;
-      } catch (e) {
-        skipped++;
-        errors.push(`Error importando transacción: ${tx.description || tx.amount}`);
+      } catch (e: unknown) {
+        const errMsg = e instanceof Error ? e.message : String(e);
+        pushSkip({
+          title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
+          reason: `Error inesperado: ${errMsg}`,
+          suggestion:
+            'Verificá el formato del archivo y reintentá. Si persiste, exportá un CSV de ejemplo desde Zarix y compará columnas.',
+          context: formatTxContext(tx),
+        });
       }
     }
+
+    const truncated = skipped > skippedDetails.length;
+    const errorsLegacy = skippedDetails.map((d) => `${d.title}: ${d.reason}`);
 
     return NextResponse.json({
       success: true,
@@ -922,7 +1011,10 @@ export async function POST(request: NextRequest) {
       skipped,
       total: totalCount,
       importKind: importKindPreview,
-      errors: errors.slice(0, 10),
+      /** @deprecated Preferir skippedDetails */
+      errors: errorsLegacy,
+      skippedDetails,
+      skippedDetailsTruncated: truncated,
     });
   } catch (error) {
     console.error('Import error:', error);
