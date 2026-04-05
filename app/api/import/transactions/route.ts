@@ -638,7 +638,8 @@ function resolveAccountId(
   accountMap: Map<string, { id: string; name: string; currency: string }>,
   resolutions: Record<string, UnresolvedResolution>,
   currency: string,
-  allowCurrencyFallback = true
+  allowCurrencyFallback = true,
+  validAccountIds?: Set<string>
 ): { accountId: string | null; notesAppend: string | null; skipReason: string | null } {
   const trimmed = rawName.trim();
   if (!trimmed) {
@@ -654,6 +655,13 @@ function resolveAccountId(
   const fallbackByCurrency = Array.from(accountMap.values()).find((a) => a.currency === currency);
 
   if (resolution?.action === 'map' && resolution.accountId) {
+    if (validAccountIds && !validAccountIds.has(resolution.accountId)) {
+      return {
+        accountId: null,
+        notesAppend: null,
+        skipReason: 'La cuenta elegida en el mapeo ya no existe o está desactivada',
+      };
+    }
     return { accountId: resolution.accountId, notesAppend: null, skipReason: null };
   }
   if (resolution?.action === 'keep_name') {
@@ -796,10 +804,15 @@ export async function POST(request: NextRequest) {
 
     const serviceSupabase = createServiceClientSync();
 
-    const { data: accounts } = await serviceSupabase
+    const { data: accountsRaw } = await serviceSupabase
       .from('accounts')
       .select('id, name, currency')
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .eq('is_active', true);
+
+    const accounts = [...(accountsRaw || [])].sort((a, b) =>
+      a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+    );
 
     const { data: categories } = await serviceSupabase
       .from('categories')
@@ -807,6 +820,7 @@ export async function POST(request: NextRequest) {
       .or(`user_id.eq.${user.id},is_system.eq.true`);
 
     const accountMap = buildImportLookupMap(accounts || []);
+    const validAccountIds = new Set(accounts.map((a) => a.id));
     const categoryMap = buildImportLookupMap(categories || []);
 
     const unresolvedTransfers = collectUnresolvedForTransfers(accountMap, combined.transfers);
@@ -857,14 +871,16 @@ export async function POST(request: NextRequest) {
         accountMap,
         resolutions,
         tr.currencyOutgoing,
-        false
+        false,
+        validAccountIds
       );
       const inRes = resolveAccountId(
         tr.incomingName,
         accountMap,
         resolutions,
         tr.currencyIncoming || tr.currencyOutgoing,
-        false
+        false,
+        validAccountIds
       );
 
       if (outRes.skipReason || !outRes.accountId) {
@@ -954,6 +970,17 @@ export async function POST(request: NextRequest) {
         const resolution = hasAccountInFile ? resolutions[rawAccountName] || null : null;
 
         if (resolution?.action === 'map' && resolution.accountId) {
+          if (!validAccountIds.has(resolution.accountId)) {
+            pushSkip({
+              title: `Movimiento omitido — cuenta "${rawAccountName}"`,
+              reason:
+                'El mapeo apunta a una cuenta que ya no existe o fue desactivada; actualizá la revisión del import.',
+              suggestion:
+                'Volvé a previsualizar el archivo para refrescar la lista de cuentas y elegí otra cuenta, o creá la cuenta en Zarix antes de importar.',
+              context: formatTxContext(tx),
+            });
+            continue;
+          }
           accountId = resolution.accountId;
         } else if (resolution?.action === 'keep_name') {
           if (rawAccountName) {

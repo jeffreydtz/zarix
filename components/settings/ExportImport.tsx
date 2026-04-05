@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ImportSkippedDetail } from '@/types/import';
 
@@ -25,7 +25,37 @@ export default function ExportImport() {
   const [resolutions, setResolutions] = useState<
     Record<string, { action: 'none' | 'map' | 'keep_name'; accountId?: string }>
   >({});
-  
+
+  const sortedImportAccounts = useMemo(
+    () =>
+      [...availableAccounts].sort((a, b) =>
+        a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+      ),
+    [availableAccounts]
+  );
+
+  const importAccountIdSet = useMemo(
+    () => new Set(availableAccounts.map((a) => a.id)),
+    [availableAccounts]
+  );
+
+  /** Si una cuenta mapeada fue eliminada/desactivada, no dejar un id huérfano en el estado. */
+  useEffect(() => {
+    if (!reviewStep || unresolvedAccounts.length === 0) return;
+    setResolutions((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      for (const name of unresolvedAccounts) {
+        const r = next[name];
+        if (r?.action === 'map' && r.accountId && !importAccountIdSet.has(r.accountId)) {
+          next[name] = { action: 'none', accountId: undefined };
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [reviewStep, unresolvedAccounts, importAccountIdSet]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportCSV = async () => {
@@ -478,7 +508,11 @@ export default function ExportImport() {
                         {current.action === 'map' && (
                           <select
                             className="input md:col-span-2"
-                            value={current.accountId || ''}
+                            value={
+                              current.accountId && importAccountIdSet.has(current.accountId)
+                                ? current.accountId
+                                : ''
+                            }
                             onChange={(e) =>
                               setResolutions((prev) => ({
                                 ...prev,
@@ -487,7 +521,7 @@ export default function ExportImport() {
                             }
                           >
                             <option value="">Seleccionar cuenta...</option>
-                            {availableAccounts.map((a) => (
+                            {sortedImportAccounts.map((a) => (
                               <option key={a.id} value={a.id}>
                                 {a.name} ({a.currency})
                               </option>
