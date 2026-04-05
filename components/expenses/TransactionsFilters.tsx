@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatAccountSelectLabel } from '@/lib/format-account-select';
 
 interface TransactionsFiltersProps {
-  accounts: Array<{ id: string; name: string; currency: string }>;
+  accounts: Array<{ id: string; name: string; currency: string; balance: number }>;
   categories: Array<{ id: string; name: string; icon: string; type: string }>;
 }
 
@@ -151,7 +152,9 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           >
             <option value="">Todas las cuentas</option>
             {accounts.map((acc) => (
-              <option key={acc.id} value={acc.id}>{acc.name}</option>
+              <option key={acc.id} value={acc.id}>
+                {formatAccountSelectLabel(acc)}
+              </option>
             ))}
           </select>
         </div>

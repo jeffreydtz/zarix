@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
+import { formatAccountSelectLabel } from '@/lib/format-account-select';
 import EditTransactionModal from './EditTransactionModal';
 
 interface TransactionsListProps {
   transactions: TransactionWithCategory[];
-  accounts?: Array<{ id: string; name: string; currency: string }>;
+  accounts?: Array<{ id: string; name: string; currency: string; balance: number }>;
   categories?: Array<{ id: string; name: string; type: string; icon: string }>;
 }
 
@@ -159,7 +160,7 @@ export default function TransactionsList({
               <option value="">Asignar cuenta (opcional)</option>
               {accounts.map((acc) => (
                 <option key={acc.id} value={acc.id}>
-                  {acc.name} ({acc.currency})
+                  {formatAccountSelectLabel(acc)}
                 </option>
               ))}
             </select>

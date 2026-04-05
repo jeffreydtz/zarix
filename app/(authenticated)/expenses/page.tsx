@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
 import TransactionsFilters from '@/components/expenses/TransactionsFilters';
@@ -20,11 +21,7 @@ export default async function ExpensesPage({
       redirect('/login');
     }
 
-    const { data: accounts } = await supabase
-      .from('accounts')
-      .select('id, name, currency')
-      .eq('user_id', user.id)
-      .eq('is_active', true);
+    const accounts = await accountsService.list(user.id).catch(() => []);
 
     const { data: categories } = await supabase
       .from('categories')

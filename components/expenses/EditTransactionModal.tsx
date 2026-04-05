@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
+import { formatAccountSelectLabel } from '@/lib/format-account-select';
 
 interface EditTransactionModalProps {
   transaction: TransactionWithCategory;
-  accounts: Array<{ id: string; name: string; currency: string }>;
+  accounts: Array<{ id: string; name: string; currency: string; balance: number }>;
   categories: Array<{ id: string; name: string; type: string; icon: string }>;
   onClose: () => void;
   onSave: () => void;
@@ -184,7 +185,7 @@ export default function EditTransactionModal({
             >
               {accounts.map((acc) => (
                 <option key={acc.id} value={acc.id}>
-                  {acc.name} ({acc.currency})
+                  {formatAccountSelectLabel(acc)}
                 </option>
               ))}
             </select>

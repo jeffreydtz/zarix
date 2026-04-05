@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useOfflineQueue } from '@/lib/hooks/useOfflineQueue';
+import { formatAccountSelectLabel } from '@/lib/format-account-select';
 
 interface CreateTransactionButtonProps {
-  accounts: Array<{ id: string; name: string; currency: string }>;
+  accounts: Array<{ id: string; name: string; currency: string; balance: number }>;
   categories: Array<{ id: string; name: string; icon: string; type: string }>;
 }
 
@@ -181,7 +182,7 @@ export default function CreateTransactionButton({
                   <option value="">Seleccioná una cuenta</option>
                   {accounts.map((acc) => (
                     <option key={acc.id} value={acc.id}>
-                      {acc.name} ({acc.currency})
+                      {formatAccountSelectLabel(acc)}
                     </option>
                   ))}
                 </select>
@@ -199,7 +200,7 @@ export default function CreateTransactionButton({
                       <option value="">Seleccioná cuenta destino</option>
                       {destinationAccounts.map((acc) => (
                         <option key={acc.id} value={acc.id}>
-                          {acc.name} ({acc.currency})
+                          {formatAccountSelectLabel(acc)}
                         </option>
                       ))}
                     </select>

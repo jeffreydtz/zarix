@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useOfflineQueue } from '@/lib/hooks/useOfflineQueue';
+import { formatAccountSelectLabel } from '@/lib/format-account-select';
 
 interface Account {
   id: string;
   name: string;
   currency: string;
+  balance: number;
 }
 
 interface Category {
@@ -241,7 +243,7 @@ export default function FloatingAddButton() {
                     <option value="">Seleccioná una cuenta</option>
                     {accounts.map((acc) => (
                       <option key={acc.id} value={acc.id}>
-                        {acc.name} ({acc.currency})
+                        {formatAccountSelectLabel(acc)}
                       </option>
                     ))}
                   </select>
