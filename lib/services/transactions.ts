@@ -15,6 +15,12 @@ export interface CreateTransactionInput {
   tags?: string[];
   transactionDate?: string;
   installments?: number;
+  /**
+   * Solo transferencias entre monedas distintas: reemplaza la cotización del mercado.
+   * - Monto en origen: unidades de moneda destino por 1 unidad de moneda origen (equivale a `getExchangeRate(origen, destino)`).
+   * - Monto en destino: unidades de moneda origen por 1 unidad de moneda destino (equivale a `getExchangeRate(destino, origen)`).
+   */
+  exchangeRateOverride?: number | null;
 }
 
 export interface TransactionWithCategory extends Transaction {
@@ -46,10 +52,12 @@ class TransactionsService {
       throw new Error('Account not found');
     }
 
+    const isTransfer = input.type === 'transfer' && Boolean(input.destinationAccountId);
+
     let exchangeRate = 1;
     let amountInAccountCurrency = input.amount;
 
-    if (input.currency !== account.data.currency) {
+    if (!isTransfer && input.currency !== account.data.currency) {
       exchangeRate = await cotizacionesService.getExchangeRate(
         input.currency,
         account.data.currency
@@ -93,12 +101,39 @@ class TransactionsService {
         throw new Error('Destination account not found');
       }
 
-      let transferExchangeRate = 1;
-      if (input.currency !== destAccount.data.currency) {
-        transferExchangeRate = await cotizacionesService.getExchangeRate(
-          input.currency,
-          destAccount.data.currency
+      const srcCur = account.data.currency.trim().toUpperCase();
+      const dstCur = destAccount.data.currency.trim().toUpperCase();
+      const inCur = input.currency.trim().toUpperCase();
+      if (srcCur !== dstCur && inCur !== srcCur && inCur !== dstCur) {
+        throw new Error(
+          'En transferencias entre monedas distintas, el monto debe estar en la moneda de la cuenta origen o de la cuenta destino.'
         );
+      }
+
+      const override =
+        input.exchangeRateOverride != null &&
+        Number.isFinite(input.exchangeRateOverride) &&
+        input.exchangeRateOverride > 0
+          ? input.exchangeRateOverride
+          : null;
+
+      let transferAmountInSource: number;
+      let transferExchangeRate: number;
+
+      if (srcCur === dstCur) {
+        transferAmountInSource = input.amount;
+        transferExchangeRate = 1;
+      } else if (inCur === srcCur) {
+        transferAmountInSource = input.amount;
+        transferExchangeRate =
+          override ??
+          (await cotizacionesService.getExchangeRate(input.currency, destAccount.data.currency));
+      } else {
+        transferExchangeRate = 1;
+        transferAmountInSource =
+          input.amount *
+          (override ??
+            (await cotizacionesService.getExchangeRate(input.currency, account.data.currency)));
       }
 
       const { data, error } = await supabase
@@ -110,7 +145,7 @@ class TransactionsService {
           destination_account_id: input.destinationAccountId,
           amount: input.amount,
           currency: input.currency,
-          amount_in_account_currency: amountInAccountCurrency,
+          amount_in_account_currency: transferAmountInSource,
           exchange_rate: transferExchangeRate !== 1 ? transferExchangeRate : null,
           description: input.description || 'Transferencia entre cuentas',
           transaction_date: input.transactionDate || new Date().toISOString(),

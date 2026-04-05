@@ -17,6 +17,7 @@ export interface QueuedTransaction {
     categoryId: string | null;
     description: string;
     transactionDate: string;
+    exchangeRateOverride?: number;
   };
   createdAt: number;
 }
