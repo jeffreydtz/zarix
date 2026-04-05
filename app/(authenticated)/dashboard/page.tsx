@@ -40,6 +40,7 @@ function mapToAnalyzerTx(tx: TransactionWithCategory): SpendingAnalyzerTxItem {
     category: tx.category ?? null,
     account: tx.account ?? null,
     transaction_date: tx.transaction_date,
+    description: tx.description ?? null,
   };
 }
 

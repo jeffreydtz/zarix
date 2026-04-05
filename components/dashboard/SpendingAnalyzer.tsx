@@ -18,6 +18,7 @@ export interface SpendingAnalyzerTxItem {
   category?: { name: string; icon: string } | null;
   account?: { name: string; currency: string } | null;
   transaction_date: string;
+  description?: string | null;
 }
 
 type TxItem = SpendingAnalyzerTxItem;
@@ -113,29 +114,67 @@ function parseYmdLocal(ymd: string): Date {
   return new Date(y, m - 1, d);
 }
 
+function prevPeriodBounds(startDate: string, endDate: string): { ps: string; pe: string } | null {
+  const start = parseYmdLocal(startDate);
+  const end = parseYmdLocal(endDate);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return null;
+  const days = Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86400000) + 1);
+  const prevEnd = addDays(start, -1);
+  const prevStart = addDays(prevEnd, -(days - 1));
+  return { ps: toInputDate(prevStart), pe: toInputDate(prevEnd) };
+}
+
+function txMatchesAccountAndCurrency(
+  tx: TxItem,
+  accountFilter: string,
+  currencyFilter: string
+): boolean {
+  if (accountFilter !== 'all' && tx.account?.name !== accountFilter) return false;
+  const cur = (tx.account?.currency || tx.currency || 'ARS').toUpperCase();
+  if (currencyFilter !== 'all' && cur !== currencyFilter) return false;
+  return true;
+}
+
+function sumPoolForPeriodFiltered(
+  pool: TxItem[],
+  mode: AnalyzerMode,
+  startDate: string,
+  endDate: string,
+  accountFilter: string,
+  currencyFilter: string
+): number {
+  return pool
+    .filter((t) => t.type === mode && txInDateRange(t, startDate, endDate))
+    .filter((t) => txMatchesAccountAndCurrency(t, accountFilter, currencyFilter))
+    .reduce((sum, t) => sum + Math.abs(Number(t.amount_in_account_currency || 0)), 0);
+}
+
 function computePrevTotalFromPool(
   pool: TxItem[],
   mode: AnalyzerMode,
   startDate: string,
-  endDate: string
+  endDate: string,
+  accountFilter: string,
+  currencyFilter: string
 ): number {
-  const start = parseYmdLocal(startDate);
-  const end = parseYmdLocal(endDate);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 0;
-  const days = Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86400000) + 1);
-  const prevEnd = addDays(start, -1);
-  const prevStart = addDays(prevEnd, -(days - 1));
-  const ps = toInputDate(prevStart);
-  const pe = toInputDate(prevEnd);
-  return pool
-    .filter((t) => t.type === mode)
-    .filter((t) => txInDateRange(t, ps, pe))
-    .reduce((sum, t) => sum + Math.abs(Number(t.amount_in_account_currency || 0)), 0);
+  const bounds = prevPeriodBounds(startDate, endDate);
+  if (!bounds) return 0;
+  return sumPoolForPeriodFiltered(pool, mode, bounds.ps, bounds.pe, accountFilter, currencyFilter);
 }
 
 /** Monto para gráficos: siempre positivo para gasto/ingreso. */
 function txDisplayAmount(tx: TxItem): number {
   return Math.abs(Number(tx.amount_in_account_currency ?? tx.amount ?? 0));
+}
+
+function categoryLabel(tx: TxItem): string {
+  return tx.category?.name || 'Sin categoría';
+}
+
+function formatTxRowDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 export interface SpendingAnalyzerProps {
@@ -157,9 +196,12 @@ export default function SpendingAnalyzer({
   const [loading, setLoading] = useState(() => initialTransactions === undefined);
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<TxItem[]>([]);
-  const [prevTotal, setPrevTotal] = useState(0);
+  /** Período anterior (solo ruta fetch sin pool inicial). */
+  const [prevPeriodItems, setPrevPeriodItems] = useState<TxItem[]>([]);
   const [accountFilter, setAccountFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  /** 'all' = todas las monedas (general). */
+  const [currencyFilter, setCurrencyFilter] = useState<string>('all');
+  const [detailCategory, setDetailCategory] = useState<string | null>(null);
 
   const { startDate, endDate } = useMemo(
     () => getRange(range, customFrom, customTo, anchorDate),
@@ -179,9 +221,13 @@ export default function SpendingAnalyzer({
     return arr.sort((x, y) => x.localeCompare(y, 'es', { sensitivity: 'base' }));
   }, [items]);
 
-  const availableCategories = useMemo(() => {
-    const arr = Array.from(new Set(items.map((i) => i.category?.name).filter(Boolean))) as string[];
-    return arr.sort((x, y) => x.localeCompare(y, 'es', { sensitivity: 'base' }));
+  const availableCurrencies = useMemo(() => {
+    const set = new Set<string>();
+    for (const i of items) {
+      const c = (i.account?.currency || i.currency || 'ARS').toUpperCase();
+      if (c) set.add(c);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [items]);
 
   useEffect(() => {
@@ -191,10 +237,10 @@ export default function SpendingAnalyzer({
   }, [accountFilter, availableAccounts]);
 
   useEffect(() => {
-    if (categoryFilter !== 'all' && !availableCategories.includes(categoryFilter)) {
-      setCategoryFilter('all');
+    if (currencyFilter !== 'all' && !availableCurrencies.includes(currencyFilter)) {
+      setCurrencyFilter('all');
     }
-  }, [categoryFilter, availableCategories]);
+  }, [currencyFilter, availableCurrencies]);
 
   useEffect(() => {
     let cancelled = false;
@@ -202,10 +248,9 @@ export default function SpendingAnalyzer({
     if (initialTransactions !== undefined) {
       setError(null);
       const filtered = filterPoolForPeriod(initialTransactions, mode, startDate, endDate);
-      const prevAmount = computePrevTotalFromPool(initialTransactions, mode, startDate, endDate);
       if (!cancelled) {
         setItems(filtered);
-        setPrevTotal(prevAmount);
+        setPrevPeriodItems([]);
         setLoading(false);
       }
       return () => {
@@ -223,18 +268,19 @@ export default function SpendingAnalyzer({
         const data = await res.json();
         if (!cancelled) setItems(Array.isArray(data) ? data : []);
 
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const days = Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86400000) + 1);
-        const prevEnd = addDays(start, -1);
-        const prevStart = addDays(prevEnd, -(days - 1));
-        const prevUrl = `/api/transactions?type=${mode}&startDate=${encodeURIComponent(toInputDate(prevStart))}&endDate=${encodeURIComponent(toInputDate(prevEnd))}&limit=2000`;
-        const prevRes = await fetch(prevUrl, { cache: 'no-store' });
-        const prevData = prevRes.ok ? await prevRes.json() : [];
-        const prevAmount = Array.isArray(prevData)
-          ? prevData.reduce((sum, t) => sum + Math.abs(Number(t.amount_in_account_currency || 0)), 0)
-          : 0;
-        if (!cancelled) setPrevTotal(prevAmount);
+        const start = parseYmdLocal(startDate);
+        const end = parseYmdLocal(endDate);
+        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+          if (!cancelled) setPrevPeriodItems([]);
+        } else {
+          const days = Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86400000) + 1);
+          const prevEnd = addDays(start, -1);
+          const prevStart = addDays(prevEnd, -(days - 1));
+          const prevUrl = `/api/transactions?type=${mode}&startDate=${encodeURIComponent(toInputDate(prevStart))}&endDate=${encodeURIComponent(toInputDate(prevEnd))}&limit=2000`;
+          const prevRes = await fetch(prevUrl, { cache: 'no-store' });
+          const prevData = prevRes.ok ? await prevRes.json() : [];
+          if (!cancelled) setPrevPeriodItems(Array.isArray(prevData) ? prevData : []);
+        }
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : 'Error cargando datos';
         if (!cancelled) setError(msg);
@@ -249,12 +295,32 @@ export default function SpendingAnalyzer({
   }, [startDate, endDate, mode, initialTransactions]);
 
   const filteredItems = useMemo(() => {
-    return items.filter((tx) => {
-      const byAccount = accountFilter === 'all' || tx.account?.name === accountFilter;
-      const byCategory = categoryFilter === 'all' || tx.category?.name === categoryFilter;
-      return byAccount && byCategory;
-    });
-  }, [items, accountFilter, categoryFilter]);
+    return items.filter((tx) => txMatchesAccountAndCurrency(tx, accountFilter, currencyFilter));
+  }, [items, accountFilter, currencyFilter]);
+
+  const prevTotal = useMemo(() => {
+    if (initialTransactions !== undefined) {
+      return computePrevTotalFromPool(
+        initialTransactions,
+        mode,
+        startDate,
+        endDate,
+        accountFilter,
+        currencyFilter
+      );
+    }
+    return prevPeriodItems
+      .filter((t) => txMatchesAccountAndCurrency(t, accountFilter, currencyFilter))
+      .reduce((sum, t) => sum + Math.abs(Number(t.amount_in_account_currency || 0)), 0);
+  }, [
+    initialTransactions,
+    mode,
+    startDate,
+    endDate,
+    accountFilter,
+    currencyFilter,
+    prevPeriodItems,
+  ]);
 
   const { total, slices } = useMemo(() => {
     const map = new Map<string, { icon: string; amount: number }>();
@@ -310,6 +376,35 @@ export default function SpendingAnalyzer({
     ];
   }, [slices]);
 
+  const tailCategoryNames = useMemo(() => {
+    if (slices.length <= MAX_PIE_SLICES) return new Set<string>();
+    return new Set(slices.slice(MAX_PIE_SLICES - 1).map((s) => s.name));
+  }, [slices]);
+
+  const detailTransactions = useMemo(() => {
+    if (!detailCategory) return [];
+    const list =
+      detailCategory === '__others__'
+        ? filteredItems.filter((tx) => tailCategoryNames.has(categoryLabel(tx)))
+        : filteredItems.filter((tx) => categoryLabel(tx) === detailCategory);
+    return [...list].sort(
+      (a, b) => new Date(b.transaction_date).getTime() - new Date(a.transaction_date).getTime()
+    );
+  }, [detailCategory, filteredItems, tailCategoryNames]);
+
+  useEffect(() => {
+    if (!detailCategory) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDetailCategory(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [detailCategory]);
+
+  const openCategoryDetail = useCallback((sliceName: string) => {
+    setDetailCategory(sliceName === 'Otros' ? '__others__' : sliceName);
+  }, []);
+
   const movePeriod = useCallback((direction: -1 | 1) => {
     if (range === 'custom') return;
     setAnchorDate((prev) => {
@@ -331,6 +426,10 @@ export default function SpendingAnalyzer({
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Analizador de gastos</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-xl">
+            Vista general: se suman <strong>todas las cuentas</strong>. Filtrá por moneda o cuenta solo si lo necesitás. Tocá una
+            categoría para ver los movimientos del período.
+          </p>
           {initialTransactionsTruncated && (
             <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
               Se muestran los últimos movimientos cargados; períodos muy antiguos pueden estar incompletos.
@@ -392,19 +491,33 @@ export default function SpendingAnalyzer({
         </div>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-        <select value={accountFilter} onChange={(e) => setAccountFilter(e.target.value)} className="input">
-          <option value="all">Todas las cuentas</option>
-          {availableAccounts.map((a) => (
-            <option key={a} value={a}>{a}</option>
-          ))}
-        </select>
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="input">
-          <option value="all">Todas las categorías</option>
-          {availableCategories.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+        <label className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">Moneda (opcional)</span>
+          <select
+            value={currencyFilter}
+            onChange={(e) => setCurrencyFilter(e.target.value)}
+            className="input"
+          >
+            <option value="all">Todas las monedas</option>
+            {availableCurrencies.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">Cuenta (opcional)</span>
+          <select value={accountFilter} onChange={(e) => setAccountFilter(e.target.value)} className="input">
+            <option value="all">Todas las cuentas</option>
+            {availableAccounts.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs">
           <div className="text-slate-500">Movimientos</div>
           <div className="font-semibold text-slate-700 dark:text-slate-200">{txCount}</div>
@@ -458,6 +571,11 @@ export default function SpendingAnalyzer({
                       outerRadius={92}
                       paddingAngle={1.5}
                       isAnimationActive={false}
+                      cursor="pointer"
+                      onClick={(_, index) => {
+                        const s = displaySlices[index];
+                        if (s) openCategoryDetail(s.name);
+                      }}
                     >
                       {displaySlices.map((s, i) => (
                         <Cell key={`${s.name}-${i}`} fill={s.color} />
@@ -476,9 +594,16 @@ export default function SpendingAnalyzer({
               </div>
             )}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-center">
+              <div className="text-center px-2">
                 <div className="text-sm text-slate-400">Total</div>
-                <div className="text-3xl font-bold text-slate-800 dark:text-slate-100">${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
+                <div className="text-3xl font-bold text-slate-800 dark:text-slate-100">
+                  ${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1 max-w-[160px] mx-auto leading-tight">
+                  {currencyFilter === 'all'
+                    ? 'Montos en la moneda de cada cuenta'
+                    : `Solo movimientos en ${currencyFilter}`}
+                </div>
               </div>
             </div>
           </div>
@@ -503,9 +628,11 @@ export default function SpendingAnalyzer({
             </div>
 
             {displaySlices.slice(0, 8).map((s, idx) => (
-              <div
+              <button
+                type="button"
                 key={`${s.name}-${idx}`}
-                className="flex items-center justify-between p-3 rounded-xl bg-slate-100 dark:bg-slate-800"
+                onClick={() => openCategoryDetail(s.name)}
+                className="w-full text-left flex items-center justify-between p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-colors cursor-pointer border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-lg inline-flex items-center justify-center">
@@ -517,10 +644,65 @@ export default function SpendingAnalyzer({
                   <div className="text-sm font-semibold text-slate-700 dark:text-slate-200">{s.percent.toFixed(0)}%</div>
                   <div className="text-sm text-slate-500">${s.amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
                 </div>
-              </div>
+              </button>
             ))}
             {displaySlices.length === 0 && (
               <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm text-slate-500">No hay categorías para mostrar.</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {detailCategory && (
+        <div
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50"
+          role="presentation"
+          onClick={() => setDetailCategory(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="analyzer-detail-title"
+            className="bg-white dark:bg-slate-900 w-full sm:max-w-lg max-h-[88vh] overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
+              <h4 id="analyzer-detail-title" className="font-semibold text-slate-800 dark:text-slate-100 pr-2">
+                {detailCategory === '__others__' ? 'Otros (varias categorías)' : detailCategory}
+              </h4>
+              <button
+                type="button"
+                className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                onClick={() => setDetailCategory(null)}
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-xs text-slate-500 px-4 pb-2">{periodLabel}</p>
+            <ul className="overflow-y-auto max-h-[min(60vh,480px)] px-4 pb-4 space-y-3">
+              {detailTransactions.map((tx) => (
+                <li
+                  key={tx.id}
+                  className="flex justify-between gap-3 text-sm border-b border-slate-100 dark:border-slate-800 pb-3 last:border-0"
+                >
+                  <div className="min-w-0">
+                    <div className="text-slate-500 text-xs">{formatTxRowDate(tx.transaction_date)}</div>
+                    <div className="text-slate-800 dark:text-slate-200 truncate">
+                      {tx.description?.trim() || 'Sin descripción'}
+                    </div>
+                    <div className="text-xs text-slate-400 truncate">
+                      {tx.account?.name ?? 'Sin cuenta'} · {(tx.account?.currency || tx.currency || '—').toUpperCase()}
+                    </div>
+                  </div>
+                  <div className="font-semibold text-slate-700 dark:text-slate-200 shrink-0 tabular-nums">
+                    ${txDisplayAmount(tx).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {detailTransactions.length === 0 && (
+              <p className="text-sm text-slate-500 px-4 pb-4">No hay movimientos en esta categoría para el período y filtros actuales.</p>
             )}
           </div>
         </div>
