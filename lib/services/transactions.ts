@@ -258,6 +258,53 @@ class TransactionsService {
     if (error) throw error;
   }
 
+  /**
+   * Lleva el saldo de la cuenta a `targetBalance` (moneda de la cuenta) con un movimiento `adjustment`.
+   * Respeta el trigger de saldos: amount > 0, delta puede ser negativo en amount_in_account_currency.
+   */
+  async createBalanceAdjustment(
+    userId: string,
+    accountId: string,
+    targetBalance: number
+  ): Promise<void> {
+    const supabase = createServiceClientSync();
+
+    const { data: account, error: accErr } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('id', accountId)
+      .eq('user_id', userId)
+      .single();
+
+    if (accErr || !account) {
+      throw new Error('Cuenta no encontrada');
+    }
+
+    const current = Number(account.balance);
+    const target = Number(targetBalance);
+    if (!Number.isFinite(target)) {
+      throw new Error('Saldo inválido');
+    }
+
+    const delta = target - current;
+    if (Math.abs(delta) < 1e-8) {
+      return;
+    }
+
+    const { error: insErr } = await supabase.from('transactions').insert({
+      user_id: userId,
+      type: 'adjustment',
+      account_id: accountId,
+      amount: Math.abs(delta),
+      currency: account.currency,
+      amount_in_account_currency: delta,
+      description: 'Ajuste de saldo (edición de cuenta)',
+      transaction_date: new Date().toISOString(),
+    });
+
+    if (insErr) throw insErr;
+  }
+
   async getMonthSummary(userId: string, month: Date) {
     const supabase = createServiceClientSync();
 

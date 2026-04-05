@@ -13,16 +13,28 @@ export default function AccountsList({ accounts }: AccountsListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [balanceModal, setBalanceModal] = useState<{
+    open: boolean;
+    account: AccountWithBalance | null;
+    step: 'ask' | 'input';
+  }>({ open: false, account: null, step: 'ask' });
+  const [targetBalanceInput, setTargetBalanceInput] = useState('');
+  const [adjustLoading, setAdjustLoading] = useState(false);
 
   const handleEdit = (account: AccountWithBalance) => {
     setEditingId(account.id);
     setEditName(account.name);
   };
 
-  const handleSave = async (id: string) => {
+  const closeBalanceModal = () => {
+    setBalanceModal({ open: false, account: null, step: 'ask' });
+    setTargetBalanceInput('');
+  };
+
+  const handleSave = async (account: AccountWithBalance) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/accounts/${id}`, {
+      const response = await fetch(`/api/accounts/${account.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: editName }),
@@ -33,12 +45,55 @@ export default function AccountsList({ accounts }: AccountsListProps) {
         throw new Error(data.error || 'Error al actualizar la cuenta');
       }
 
-      window.location.reload();
-    } catch (error: any) {
+      setEditingId(null);
+      setBalanceModal({
+        open: true,
+        account: { ...account, name: editName },
+        step: 'ask',
+      });
+      setTargetBalanceInput(String(Number(account.balance).toFixed(2)));
+    } catch (error: unknown) {
       console.error('Error:', error);
-      alert(error.message || 'Error al actualizar la cuenta');
+      alert(error instanceof Error ? error.message : 'Error al actualizar la cuenta');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBalanceModalNo = () => {
+    closeBalanceModal();
+    window.location.reload();
+  };
+
+  const handleBalanceModalYes = () => {
+    setBalanceModal((m) => (m.account ? { ...m, step: 'input' } : m));
+  };
+
+  const handleApplyBalance = async () => {
+    const acc = balanceModal.account;
+    if (!acc) return;
+    const target = parseFloat(targetBalanceInput.replace(',', '.'));
+    if (!Number.isFinite(target)) {
+      alert('Ingresá un saldo válido');
+      return;
+    }
+    setAdjustLoading(true);
+    try {
+      const response = await fetch(`/api/accounts/${acc.id}/adjust-balance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetBalance: target }),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al ajustar saldo');
+      }
+      closeBalanceModal();
+      window.location.reload();
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : 'Error al ajustar saldo');
+    } finally {
+      setAdjustLoading(false);
     }
   };
 
@@ -162,7 +217,7 @@ export default function AccountsList({ accounts }: AccountsListProps) {
                     <>
                       <motion.button
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => handleSave(account.id)}
+                        onClick={() => handleSave(account)}
                         disabled={loading}
                         className="p-2 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 disabled:opacity-50"
                       >
@@ -248,6 +303,100 @@ export default function AccountsList({ accounts }: AccountsListProps) {
             )}
           </motion.div>
         ))}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {balanceModal.open && balanceModal.account && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            onClick={(e) => {
+              if (e.target === e.currentTarget && balanceModal.step === 'ask') handleBalanceModalNo();
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 dark:border-slate-700"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {balanceModal.step === 'ask' ? (
+                <>
+                  <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">
+                    ¿Ajustar el saldo también?
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                    La cuenta <strong>{balanceModal.account.name}</strong> ya está guardada. Si el saldo
+                    que ves en el banco es distinto al de Zarix, podés corregirlo ahora. Se creará un{' '}
+                    <strong>movimiento de ajuste</strong> por la diferencia (el patrimonio total se
+                    actualiza igual que con cualquier otro movimiento).
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2 justify-end">
+                    <button
+                      type="button"
+                      onClick={handleBalanceModalNo}
+                      className="btn btn-secondary px-4 py-2 rounded-xl"
+                    >
+                      No, listo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleBalanceModalYes}
+                      className="btn btn-primary px-4 py-2 rounded-xl"
+                    >
+                      Sí, ajustar saldo
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">
+                    Nuevo saldo ({balanceModal.account.currency})
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                    Saldo actual en Zarix:{' '}
+                    <strong>
+                      {Number(balanceModal.account.balance).toLocaleString('es-AR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </strong>
+                  </p>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={targetBalanceInput}
+                    onChange={(e) => setTargetBalanceInput(e.target.value)}
+                    className="input w-full mb-4 font-mono"
+                    placeholder="0,00"
+                    autoFocus
+                  />
+                  <div className="flex flex-col sm:flex-row gap-2 justify-end">
+                    <button
+                      type="button"
+                      onClick={handleBalanceModalNo}
+                      className="btn btn-secondary px-4 py-2 rounded-xl"
+                      disabled={adjustLoading}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleApplyBalance}
+                      disabled={adjustLoading}
+                      className="btn btn-primary px-4 py-2 rounded-xl"
+                    >
+                      {adjustLoading ? 'Aplicando…' : 'Aplicar ajuste'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </motion.div>
   );

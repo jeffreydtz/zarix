@@ -42,8 +42,9 @@ export async function PATCH(
     }
 
     const body = await req.json();
+    const { balance: _b, user_id: _u, id: _i, ...safe } = body as Record<string, unknown>;
 
-    const account = await accountsService.update(params.id, user.id, body);
+    const account = await accountsService.update(params.id, user.id, safe);
     return NextResponse.json(account);
   } catch (error: any) {
     console.error('Account PATCH error:', error);

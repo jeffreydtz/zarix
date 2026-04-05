@@ -111,29 +111,29 @@ class AccountsService {
     if (error) throw error;
 
     const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
-    
+
     if (blueRate === 0) {
       throw new Error('Exchange rate not available');
     }
 
+    const usdRates = await this.buildUsdRates(
+      accounts.map((a) => a.currency),
+      blueRate
+    );
+
     const accountsWithConversion = accounts.map((account) => {
+      const balance = Number(account.balance);
+      const rateToUSD = usdRates[account.currency.toUpperCase()] ?? 0;
       let balanceUSD = 0;
       let balanceARSBlue = 0;
-
-      if (account.currency === 'ARS') {
-        balanceUSD = account.balance / blueRate;
-        balanceARSBlue = account.balance;
-      } else if (account.currency === 'USD') {
-        balanceUSD = account.balance;
-        balanceARSBlue = account.balance * blueRate;
-      } else {
-        balanceUSD = account.balance;
-        balanceARSBlue = account.balance * blueRate;
+      if (rateToUSD > 0) {
+        balanceUSD = balance * rateToUSD;
+        balanceARSBlue = balanceUSD * blueRate;
       }
 
       return {
         ...account,
-        balance: Number(account.balance),
+        balance,
         balance_usd: balanceUSD,
         balance_ars_blue: balanceARSBlue,
       };

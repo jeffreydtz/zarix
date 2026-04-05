@@ -8,7 +8,8 @@ import { CategoryIcon } from '@/lib/category-icons';
 type RangeType = 'day' | 'week' | 'month' | 'year' | 'custom';
 type AnalyzerMode = 'expense' | 'income';
 
-interface TxItem {
+/** Shape aligned with API `/api/transactions` rows; safe to pass from RSC. */
+export interface SpendingAnalyzerTxItem {
   id: string;
   type: 'expense' | 'income' | 'transfer' | 'adjustment';
   amount: number;
@@ -18,6 +19,8 @@ interface TxItem {
   account?: { name: string; currency: string } | null;
   transaction_date: string;
 }
+
+type TxItem = SpendingAnalyzerTxItem;
 
 interface CategorySlice {
   name: string;
@@ -70,13 +73,60 @@ function getRange(range: RangeType, customFrom: string, customTo: string, anchor
   return { startDate: start, endDate: end };
 }
 
-export default function SpendingAnalyzer() {
+function txDay(tx: TxItem): string {
+  return tx.transaction_date.slice(0, 10);
+}
+
+function txInDateRange(tx: TxItem, start: string, end: string): boolean {
+  const d = txDay(tx);
+  return d >= start && d <= end;
+}
+
+function filterPoolForPeriod(
+  pool: TxItem[],
+  mode: AnalyzerMode,
+  startDate: string,
+  endDate: string
+): TxItem[] {
+  return pool.filter((t) => t.type === mode && txInDateRange(t, startDate, endDate));
+}
+
+function computePrevTotalFromPool(
+  pool: TxItem[],
+  mode: AnalyzerMode,
+  startDate: string,
+  endDate: string
+): number {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const days = Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86400000) + 1);
+  const prevEnd = addDays(start, -1);
+  const prevStart = addDays(prevEnd, -(days - 1));
+  const ps = toInputDate(prevStart);
+  const pe = toInputDate(prevEnd);
+  return pool
+    .filter((t) => t.type === mode)
+    .filter((t) => txInDateRange(t, ps, pe))
+    .reduce((sum, t) => sum + Number(t.amount_in_account_currency || 0), 0);
+}
+
+export interface SpendingAnalyzerProps {
+  /** Preloaded movements (e.g. from dashboard RSC); avoids client fetch on first paint. */
+  initialTransactions?: SpendingAnalyzerTxItem[];
+  /** True when the server hit the fetch limit — older rows may be missing from the pool. */
+  initialTransactionsTruncated?: boolean;
+}
+
+export default function SpendingAnalyzer({
+  initialTransactions,
+  initialTransactionsTruncated = false,
+}: SpendingAnalyzerProps = {}) {
   const [mode, setMode] = useState<AnalyzerMode>('expense');
   const [range, setRange] = useState<RangeType>('week');
   const [anchorDate, setAnchorDate] = useState(new Date());
   const [customFrom, setCustomFrom] = useState(toInputDate(new Date()));
   const [customTo, setCustomTo] = useState(toInputDate(new Date()));
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => initialTransactions === undefined);
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<TxItem[]>([]);
   const [prevTotal, setPrevTotal] = useState(0);
@@ -104,6 +154,21 @@ export default function SpendingAnalyzer() {
 
   useEffect(() => {
     let cancelled = false;
+
+    if (initialTransactions !== undefined) {
+      setError(null);
+      const filtered = filterPoolForPeriod(initialTransactions, mode, startDate, endDate);
+      const prevAmount = computePrevTotalFromPool(initialTransactions, mode, startDate, endDate);
+      if (!cancelled) {
+        setItems(filtered);
+        setPrevTotal(prevAmount);
+        setLoading(false);
+      }
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const load = async () => {
       setLoading(true);
       setError(null);
@@ -114,7 +179,6 @@ export default function SpendingAnalyzer() {
         const data = await res.json();
         if (!cancelled) setItems(Array.isArray(data) ? data : []);
 
-        // Previous period comparison
         const start = new Date(startDate);
         const end = new Date(endDate);
         const days = Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86400000) + 1);
@@ -127,8 +191,9 @@ export default function SpendingAnalyzer() {
           ? prevData.reduce((sum, t) => sum + Number(t.amount_in_account_currency || 0), 0)
           : 0;
         if (!cancelled) setPrevTotal(prevAmount);
-      } catch (e: any) {
-        if (!cancelled) setError(e.message || 'Error cargando datos');
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : 'Error cargando datos';
+        if (!cancelled) setError(msg);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -137,7 +202,7 @@ export default function SpendingAnalyzer() {
     return () => {
       cancelled = true;
     };
-  }, [startDate, endDate, mode]);
+  }, [startDate, endDate, mode, initialTransactions]);
 
   const filteredItems = useMemo(() => {
     return items.filter((tx) => {
@@ -217,7 +282,14 @@ export default function SpendingAnalyzer() {
       className="card"
     >
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Analizador de gastos</h3>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Analizador de gastos</h3>
+          {initialTransactionsTruncated && (
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+              Se muestran los últimos movimientos cargados; períodos muy antiguos pueden estar incompletos.
+            </p>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           {range !== 'custom' && (
             <>
