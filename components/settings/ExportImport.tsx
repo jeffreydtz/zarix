@@ -330,11 +330,16 @@ export default function ExportImport() {
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Cuenta</span>
-                        <span className="text-slate-500">Igual al nombre en Zarix (sin importar mayúsculas)</span>
+                        <span className="text-slate-500">
+                          Igual al nombre en Zarix (mayúsculas y tildes no importan)
+                        </span>
                       </div>
                       <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
                         <span className="font-medium">Categoría</span>
-                        <span className="text-slate-500">Opcional; si no existe, sin categoría</span>
+                        <span className="text-slate-500">
+                          Opcional; debe coincidir con una categoría tuya o del sistema (misma regla de
+                          tildes); si no hay match, sin categoría
+                        </span>
                       </div>
                     </div>
                     <p className="text-xs text-slate-500 mt-2">* Campos obligatorios en CSV simple</p>

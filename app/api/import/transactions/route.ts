@@ -84,6 +84,32 @@ function normalizeHeader(h: string): string {
   return h.replace(/"/g, '').trim().toLowerCase();
 }
 
+/**
+ * Clave estable para emparejar nombres en import (cuentas/categorías):
+ * minúsculas, espacios colapsados e insensible a tildes y otros diacríticos
+ * (ej. "Categoría" = "Categoria" = "CATEGORÍA").
+ */
+function normalizeImportMatchKey(s: string): string {
+  return s
+    .trim()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+}
+
+/** Primera entrada gana si dos nombres colisionan tras normalizar (caso raro). */
+function buildImportLookupMap<T extends { name: string }>(items: T[]): Map<string, T> {
+  const map = new Map<string, T>();
+  for (const item of items) {
+    const key = normalizeImportMatchKey(item.name);
+    if (!map.has(key)) {
+      map.set(key, item);
+    }
+  }
+  return map;
+}
+
 /** Códigos ISO típicos ARS, USD, EUR (3 letras) */
 function normalizeCurrencyCode(raw: string): string | null {
   const t = raw.replace(/[^A-Za-z]/g, '').toUpperCase();
@@ -551,7 +577,9 @@ function collectUnresolvedAccountNames(
     new Set(
       transactions
         .map((t) => t.account?.trim())
-        .filter((name): name is string => Boolean(name && !accountMap.has(name.toLowerCase())))
+        .filter((name): name is string =>
+          Boolean(name && !accountMap.has(normalizeImportMatchKey(name)))
+        )
     )
   );
 }
@@ -564,8 +592,8 @@ function collectUnresolvedForTransfers(
   for (const t of transfers) {
     const o = t.outgoingName.trim();
     const i = t.incomingName.trim();
-    if (o && !accountMap.has(o.toLowerCase())) names.add(o);
-    if (i && !accountMap.has(i.toLowerCase())) names.add(i);
+    if (o && !accountMap.has(normalizeImportMatchKey(o))) names.add(o);
+    if (i && !accountMap.has(normalizeImportMatchKey(i))) names.add(i);
   }
   return Array.from(names);
 }
@@ -582,7 +610,7 @@ function resolveAccountId(
     return { accountId: null, notesAppend: null, skipReason: 'Sin nombre de cuenta' };
   }
 
-  const found = accountMap.get(trimmed.toLowerCase());
+  const found = accountMap.get(normalizeImportMatchKey(trimmed));
   if (found) {
     return { accountId: found.id, notesAppend: null, skipReason: null };
   }
@@ -717,8 +745,8 @@ export async function POST(request: NextRequest) {
       .select('id, name')
       .or(`user_id.eq.${user.id},is_system.eq.true`);
 
-    const accountMap = new Map((accounts || []).map((a) => [a.name.toLowerCase(), a]));
-    const categoryMap = new Map((categories || []).map((c) => [c.name.toLowerCase(), c]));
+    const accountMap = buildImportLookupMap(accounts || []);
+    const categoryMap = buildImportLookupMap(categories || []);
 
     const unresolvedTransfers = collectUnresolvedForTransfers(accountMap, combined.transfers);
     const unresolvedStandard = collectUnresolvedAccountNames(accountMap, combined.transactions);
@@ -820,7 +848,7 @@ export async function POST(request: NextRequest) {
     for (const tx of combined.transactions) {
       const rawAccountName = (tx.account || '').trim();
       const hasAccountInFile = rawAccountName.length > 0;
-      let account = hasAccountInFile ? accountMap.get(rawAccountName.toLowerCase()) : undefined;
+      let account = hasAccountInFile ? accountMap.get(normalizeImportMatchKey(rawAccountName)) : undefined;
 
       let accountId: string | null = null;
       let description = tx.description || null;
@@ -855,7 +883,9 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      const category = tx.category ? categoryMap.get(tx.category.toLowerCase()) : null;
+      const category = tx.category
+        ? categoryMap.get(normalizeImportMatchKey(tx.category))
+        : null;
 
       try {
         if (tx.type === 'transfer') {
