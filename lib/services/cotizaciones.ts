@@ -322,13 +322,14 @@ class CotizacionesService {
       return rate;
     }
 
-    if (['BTC', 'ETH', 'USDT'].includes(from) && to === 'USD') {
+    const cryptoSymbols = new Set(['BTC', 'ETH', 'USDT', 'USDC', 'DAI']);
+    if (cryptoSymbols.has(from) && to === 'USD') {
       const crypto = await this.getCryptoQuote(from);
       this.setCache(cacheKey, crypto.priceUSD);
       return crypto.priceUSD;
     }
 
-    if (['BTC', 'ETH', 'USDT'].includes(from) && to === 'ARS') {
+    if (cryptoSymbols.has(from) && to === 'ARS') {
       const crypto = await this.getCryptoQuote(from);
       this.setCache(cacheKey, crypto.priceARS);
       return crypto.priceARS;

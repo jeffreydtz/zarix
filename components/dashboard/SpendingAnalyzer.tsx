@@ -124,15 +124,45 @@ function prevPeriodBounds(startDate: string, endDate: string): { ps: string; pe:
   return { ps: toInputDate(prevStart), pe: toInputDate(prevEnd) };
 }
 
+const STABLE_OR_USD = new Set(['USD', 'USDT', 'USDC', 'DAI', 'BUSD']);
+
+function normalizeAccountCur(currency: string | undefined): string {
+  return (currency?.trim() || 'ARS').toUpperCase();
+}
+
 function txMatchesAccountAndCurrency(
   tx: TxItem,
   accountFilter: string,
   currencyFilter: string
 ): boolean {
   if (accountFilter !== 'all' && tx.account?.name !== accountFilter) return false;
-  const cur = (tx.account?.currency || tx.currency || 'ARS').toUpperCase();
+  const cur = normalizeAccountCur(tx.account?.currency || tx.currency);
   if (currencyFilter !== 'all' && cur !== currencyFilter) return false;
   return true;
+}
+
+/**
+ * Convierte el monto de la transacción a ARS equivalente (dólar blue) cuando la vista mezcla monedas.
+ * Alineado con el patrimonio: USD/stablecoins × cotización; ARS tal cual; BTC/ETH si hay precio ARS.
+ */
+function txAmountInArsBlue(
+  tx: TxItem,
+  usdToArsBlue: number,
+  cryptoPriceArs?: { btc?: number; eth?: number }
+): number {
+  const raw = Math.abs(Number(tx.amount_in_account_currency ?? tx.amount ?? 0));
+  const cur = normalizeAccountCur(tx.account?.currency || tx.currency);
+  if (cur === 'ARS') return raw;
+  if (usdToArsBlue > 0 && (cur === 'USD' || STABLE_OR_USD.has(cur))) {
+    return raw * usdToArsBlue;
+  }
+  if (cur === 'BTC' && cryptoPriceArs?.btc && cryptoPriceArs.btc > 0) {
+    return raw * cryptoPriceArs.btc;
+  }
+  if (cur === 'ETH' && cryptoPriceArs?.eth && cryptoPriceArs.eth > 0) {
+    return raw * cryptoPriceArs.eth;
+  }
+  return raw;
 }
 
 function sumPoolForPeriodFiltered(
@@ -141,12 +171,21 @@ function sumPoolForPeriodFiltered(
   startDate: string,
   endDate: string,
   accountFilter: string,
-  currencyFilter: string
+  currencyFilter: string,
+  convertToArsBlue: boolean,
+  usdToArsBlue: number,
+  cryptoPriceArs?: { btc?: number; eth?: number }
 ): number {
   return pool
     .filter((t) => t.type === mode && txInDateRange(t, startDate, endDate))
     .filter((t) => txMatchesAccountAndCurrency(t, accountFilter, currencyFilter))
-    .reduce((sum, t) => sum + Math.abs(Number(t.amount_in_account_currency || 0)), 0);
+    .reduce((sum, t) => {
+      const amt =
+        convertToArsBlue && usdToArsBlue > 0
+          ? txAmountInArsBlue(t, usdToArsBlue, cryptoPriceArs)
+          : Math.abs(Number(t.amount_in_account_currency || 0));
+      return sum + amt;
+    }, 0);
 }
 
 function computePrevTotalFromPool(
@@ -155,16 +194,41 @@ function computePrevTotalFromPool(
   startDate: string,
   endDate: string,
   accountFilter: string,
-  currencyFilter: string
+  currencyFilter: string,
+  convertToArsBlue: boolean,
+  usdToArsBlue: number,
+  cryptoPriceArs?: { btc?: number; eth?: number }
 ): number {
   const bounds = prevPeriodBounds(startDate, endDate);
   if (!bounds) return 0;
-  return sumPoolForPeriodFiltered(pool, mode, bounds.ps, bounds.pe, accountFilter, currencyFilter);
+  return sumPoolForPeriodFiltered(
+    pool,
+    mode,
+    bounds.ps,
+    bounds.pe,
+    accountFilter,
+    currencyFilter,
+    convertToArsBlue,
+    usdToArsBlue,
+    cryptoPriceArs
+  );
 }
 
 /** Monto para gráficos: siempre positivo para gasto/ingreso. */
 function txDisplayAmount(tx: TxItem): number {
   return Math.abs(Number(tx.amount_in_account_currency ?? tx.amount ?? 0));
+}
+
+function txAmountForAggregation(
+  tx: TxItem,
+  convertToArsBlue: boolean,
+  usdToArsBlue: number,
+  cryptoPriceArs?: { btc?: number; eth?: number }
+): number {
+  if (convertToArsBlue && usdToArsBlue > 0) {
+    return txAmountInArsBlue(tx, usdToArsBlue, cryptoPriceArs);
+  }
+  return txDisplayAmount(tx);
 }
 
 function categoryLabel(tx: TxItem): string {
@@ -182,11 +246,17 @@ export interface SpendingAnalyzerProps {
   initialTransactions?: SpendingAnalyzerTxItem[];
   /** True when the server hit the fetch limit — older rows may be missing from the pool. */
   initialTransactionsTruncated?: boolean;
+  /** USD→ARS (dólar blue). Con “Todas las monedas”, convierte ingresos/gastos en USD a pesos. */
+  usdToArsBlue?: number;
+  /** Precios en ARS por 1 unidad (CoinGecko/CriptoYa) para cuentas en BTC/ETH. */
+  cryptoPriceArs?: { btc?: number; eth?: number };
 }
 
 export default function SpendingAnalyzer({
   initialTransactions,
   initialTransactionsTruncated = false,
+  usdToArsBlue: usdToArsBlueProp,
+  cryptoPriceArs: cryptoPriceArsProp,
 }: SpendingAnalyzerProps = {}) {
   const [mode, setMode] = useState<AnalyzerMode>('expense');
   const [range, setRange] = useState<RangeType>('week');
@@ -202,6 +272,48 @@ export default function SpendingAnalyzer({
   /** 'all' = todas las monedas (general). */
   const [currencyFilter, setCurrencyFilter] = useState<string>('all');
   const [detailCategory, setDetailCategory] = useState<string | null>(null);
+  const [fetchedUsdArs, setFetchedUsdArs] = useState<number | null>(null);
+  const [fetchedCryptoArs, setFetchedCryptoArs] = useState<{ btc?: number; eth?: number } | undefined>();
+
+  const effectiveUsdBlue = useMemo(() => {
+    if (usdToArsBlueProp !== undefined && usdToArsBlueProp > 0) return usdToArsBlueProp;
+    return fetchedUsdArs ?? 0;
+  }, [usdToArsBlueProp, fetchedUsdArs]);
+
+  const effectiveCryptoArs = useMemo(
+    () => ({
+      btc: cryptoPriceArsProp?.btc ?? fetchedCryptoArs?.btc,
+      eth: cryptoPriceArsProp?.eth ?? fetchedCryptoArs?.eth,
+    }),
+    [cryptoPriceArsProp, fetchedCryptoArs]
+  );
+
+  /** Vista “todas las monedas”: sumar todo en ARS (dólar blue) para no mezclar USD con pesos. */
+  const convertToArsBlue = currencyFilter === 'all' && effectiveUsdBlue > 0;
+
+  useEffect(() => {
+    if (usdToArsBlueProp !== undefined && usdToArsBlueProp > 0) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/cotizaciones', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        const sell = Number(data?.dolar?.blue?.sell) || 0;
+        if (sell > 0) setFetchedUsdArs(sell);
+        setFetchedCryptoArs({
+          btc: Number(data?.crypto?.btc?.priceARS) || undefined,
+          eth: Number(data?.crypto?.eth?.priceARS) || undefined,
+        });
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [usdToArsBlueProp]);
 
   const { startDate, endDate } = useMemo(
     () => getRange(range, customFrom, customTo, anchorDate),
@@ -306,12 +418,18 @@ export default function SpendingAnalyzer({
         startDate,
         endDate,
         accountFilter,
-        currencyFilter
+        currencyFilter,
+        convertToArsBlue,
+        effectiveUsdBlue,
+        effectiveCryptoArs
       );
     }
     return prevPeriodItems
       .filter((t) => txMatchesAccountAndCurrency(t, accountFilter, currencyFilter))
-      .reduce((sum, t) => sum + Math.abs(Number(t.amount_in_account_currency || 0)), 0);
+      .reduce(
+        (sum, t) => sum + txAmountForAggregation(t, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs),
+        0
+      );
   }, [
     initialTransactions,
     mode,
@@ -320,6 +438,9 @@ export default function SpendingAnalyzer({
     accountFilter,
     currencyFilter,
     prevPeriodItems,
+    convertToArsBlue,
+    effectiveUsdBlue,
+    effectiveCryptoArs,
   ]);
 
   const { total, slices } = useMemo(() => {
@@ -329,7 +450,7 @@ export default function SpendingAnalyzer({
     for (const tx of filteredItems) {
       const name = tx.category?.name || 'Sin categoría';
       const icon = tx.category?.icon || '🔁';
-      const amount = txDisplayAmount(tx);
+      const amount = txAmountForAggregation(tx, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs);
       if (!Number.isFinite(amount) || amount === 0) continue;
       totalAmount += amount;
       const prev = map.get(name) || { icon, amount: 0 };
@@ -348,14 +469,18 @@ export default function SpendingAnalyzer({
       .sort((a, b) => b.amount - a.amount);
 
     return { total: totalAmount, slices: out };
-  }, [filteredItems]);
+  }, [filteredItems, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs]);
 
   const txCount = filteredItems.length;
   const avgTicket = txCount > 0 ? total / txCount : 0;
   const maxTx = useMemo(() => {
     if (filteredItems.length === 0) return null;
-    return [...filteredItems].sort((a, b) => txDisplayAmount(b) - txDisplayAmount(a))[0];
-  }, [filteredItems]);
+    return [...filteredItems].sort(
+      (a, b) =>
+        txAmountForAggregation(b, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs) -
+        txAmountForAggregation(a, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs)
+    )[0];
+  }, [filteredItems, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs]);
   const variationPct =
     prevTotal > 0 && Number.isFinite(total) ? ((total - prevTotal) / prevTotal) * 100 : null;
   const displaySlices = useMemo(() => {
@@ -427,8 +552,9 @@ export default function SpendingAnalyzer({
         <div>
           <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Analizador de gastos</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-xl">
-            Vista general: se suman <strong>todas las cuentas</strong>. Filtrá por moneda o cuenta solo si lo necesitás. Tocá una
-            categoría para ver los movimientos del período.
+            Vista general: se suman <strong>todas las cuentas</strong>; con “Todas las monedas” el total se expresa en{' '}
+            <strong>pesos equivalentes (dólar blue)</strong> para incluir ingresos en USD. Filtrá por moneda o cuenta si necesitás
+            ver solo una moneda. Tocá una categoría para ver los movimientos del período.
           </p>
           {initialTransactionsTruncated && (
             <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
@@ -599,10 +725,12 @@ export default function SpendingAnalyzer({
                 <div className="text-3xl font-bold text-slate-800 dark:text-slate-100">
                   ${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                 </div>
-                <div className="text-[10px] text-slate-400 mt-1 max-w-[160px] mx-auto leading-tight">
-                  {currencyFilter === 'all'
-                    ? 'Montos en la moneda de cada cuenta'
-                    : `Solo movimientos en ${currencyFilter}`}
+                <div className="text-[10px] text-slate-400 mt-1 max-w-[180px] mx-auto leading-tight">
+                  {currencyFilter === 'all' && convertToArsBlue
+                    ? 'Equivalente en ARS (dólar blue; USD y stablecoins convertidos)'
+                    : currencyFilter === 'all'
+                      ? 'Sin cotización USD: montos sin convertir a pesos'
+                      : `Solo movimientos en ${currencyFilter}`}
                 </div>
               </div>
             </div>
@@ -621,7 +749,12 @@ export default function SpendingAnalyzer({
                 <div className="font-semibold text-slate-700 dark:text-slate-200">
                   $
                   {maxTx
-                    ? txDisplayAmount(maxTx).toLocaleString('es-AR', { maximumFractionDigits: 0 })
+                    ? txAmountForAggregation(
+                        maxTx,
+                        convertToArsBlue,
+                        effectiveUsdBlue,
+                        effectiveCryptoArs
+                      ).toLocaleString('es-AR', { maximumFractionDigits: 0 })
                     : '0'}
                 </div>
               </div>

@@ -129,6 +129,11 @@ export default async function DashboardPage() {
           <SpendingAnalyzer
             initialTransactions={analyzerInitialTxs}
             initialTransactionsTruncated={analyzerTruncated}
+            usdToArsBlue={quotes.dolar.blue.sell || 0}
+            cryptoPriceArs={{
+              btc: quotes.crypto.btc.priceARS,
+              eth: quotes.crypto.eth.priceARS,
+            }}
           />
 
           <CreditCardsWidget accounts={accounts} />

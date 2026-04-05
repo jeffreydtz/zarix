@@ -2,6 +2,14 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import type { Account } from '@/types/database';
 
+/** Moneda de cuenta normalizada (trim + mayúsculas) para claves de tasas. */
+function normalizeAccountCurrency(currency: string | null | undefined): string {
+  return (currency?.trim() || 'ARS').toUpperCase();
+}
+
+/** Stablecoins tratadas como ~1 USD si la API devolvió 0 o no hay tasa. */
+const STABLECOIN_USD = new Set(['USDT', 'USDC', 'DAI', 'BUSD']);
+
 export interface CreateAccountInput {
   userId: string;
   name: string;
@@ -27,8 +35,17 @@ export interface AccountWithBalance extends Account {
 }
 
 class AccountsService {
+  private getRateToUsd(usdRates: Record<string, number>, currency: string | null | undefined): number {
+    const c = normalizeAccountCurrency(currency);
+    const r = usdRates[c];
+    if (r !== undefined && r > 0) return r;
+    if (c === 'USD') return 1;
+    if (STABLECOIN_USD.has(c)) return 1;
+    return 0;
+  }
+
   private async buildUsdRates(currencies: string[], blueRate: number): Promise<Record<string, number>> {
-    const uniqueCurrencies = Array.from(new Set(currencies.map((c) => c.toUpperCase())));
+    const uniqueCurrencies = Array.from(new Set(currencies.map((c) => normalizeAccountCurrency(c))));
     const rates: Record<string, number> = {
       USD: 1,
       ARS: blueRate > 0 ? 1 / blueRate : 0,
@@ -47,7 +64,11 @@ class AccountsService {
     );
 
     for (const [currency, rate] of dynamicRates) {
-      rates[currency] = rate;
+      let effective = rate;
+      if ((!effective || effective <= 0) && STABLECOIN_USD.has(currency)) {
+        effective = 1;
+      }
+      rates[currency] = effective;
     }
 
     return rates;
@@ -127,7 +148,7 @@ class AccountsService {
 
     const accountsWithConversion = accounts.map((account) => {
       const balance = Number(account.balance);
-      const rateToUSD = usdRates[account.currency.toUpperCase()] ?? 0;
+      const rateToUSD = this.getRateToUsd(usdRates, account.currency);
       let balanceUSD = 0;
       let balanceARSBlue = 0;
       if (rateToUSD > 0) {
@@ -239,7 +260,7 @@ class AccountsService {
         totalCreditLimit += Number(account.credit_limit || 0);
       }
 
-      const rateToUSD = usdRates[account.currency.toUpperCase()] ?? 0;
+      const rateToUSD = this.getRateToUsd(usdRates, account.currency);
       if (rateToUSD > 0) {
         const balanceUSD = balance * rateToUSD;
         totalUSD += balanceUSD;
@@ -293,7 +314,7 @@ class AccountsService {
       let balanceUSD = 0;
       let balanceARSBlue = 0;
 
-      const rateToUSD = usdRates[account.currency.toUpperCase()] ?? 0;
+      const rateToUSD = this.getRateToUsd(usdRates, account.currency);
       if (rateToUSD > 0) {
         balanceUSD = balance * rateToUSD;
         balanceARSBlue = balanceUSD * blueRate;

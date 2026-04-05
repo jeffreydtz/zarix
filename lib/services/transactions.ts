@@ -173,7 +173,8 @@ class TransactionsService {
       `
       )
       .eq('user_id', userId)
-      .order('transaction_date', { ascending: false });
+      .order('transaction_date', { ascending: false })
+      .order('id', { ascending: false });
 
     if (options.accountId) {
       query = query.eq('account_id', options.accountId);

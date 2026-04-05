@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -12,6 +12,18 @@ interface RecentTransactionsProps {
 }
 
 function RecentTransactions({ transactions }: RecentTransactionsProps) {
+  /** Más reciente primero; desempate por id para orden estable. */
+  const sorted = useMemo(
+    () =>
+      [...transactions].sort((a, b) => {
+        const ta = new Date(a.transaction_date).getTime();
+        const tb = new Date(b.transaction_date).getTime();
+        if (tb !== ta) return tb - ta;
+        return b.id.localeCompare(a.id);
+      }),
+    [transactions]
+  );
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -31,7 +43,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
         </Link>
       </div>
 
-      {transactions.length === 0 ? (
+      {sorted.length === 0 ? (
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -53,7 +65,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
         </motion.div>
       ) : (
         <div className="space-y-2">
-          {transactions.map((tx, index) => (
+          {sorted.map((tx, index) => (
             <motion.div
               key={tx.id}
               initial={{ opacity: 0, x: -20 }}
