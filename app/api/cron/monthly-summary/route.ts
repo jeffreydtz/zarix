@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { accountsService } from '@/lib/services/accounts';
 import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
 import { geminiClient } from '@/lib/ai/gemini';
 import { Telegraf } from 'telegraf';
@@ -35,7 +36,8 @@ async function getMonthData(userId: string, year: number, month: number) {
     .eq('user_id', userId)
     .gte('transaction_date', startDate.toISOString())
     .lte('transaction_date', endDate.toISOString());
-  txQ = await applyArchivedAccountsTransactionFilter(txQ, userId);
+  const activeIds = await accountsService.getActiveAccountIds(userId);
+  txQ = applyArchivedAccountsTransactionFilter(txQ, activeIds);
   const { data: transactions } = await txQ;
 
   return transactions || [];

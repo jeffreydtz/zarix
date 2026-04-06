@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { accountsService } from '@/lib/services/accounts';
 import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +23,8 @@ export async function GET(req: NextRequest) {
       .eq('user_id', user.id)
       .eq('type', 'expense')
       .gte('transaction_date', fourMonthsAgo.toISOString());
-    txQ = await applyArchivedAccountsTransactionFilter(txQ, user.id);
+    const activeIds = await accountsService.getActiveAccountIds(user.id);
+    txQ = applyArchivedAccountsTransactionFilter(txQ, activeIds);
     const { data: transactions } = await txQ;
 
     if (!transactions || transactions.length === 0) {

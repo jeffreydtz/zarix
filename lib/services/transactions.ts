@@ -4,26 +4,34 @@ import { accountsService } from './accounts';
 import { cotizacionesService } from './cotizaciones';
 import type { Transaction, Account } from '@/types/database';
 
-/** PostgREST: UUIDs con guiones en filtros `.or()` deben ir entre comillas o el parser rompe la query. */
-function postgrestUuidFilterValue(id: string): string {
-  return `"${id}"`;
+/**
+ * PostgREST interpreta guiones en UUID como operadores si van sin comillas en `in.(...)`.
+ * El `.in()` del cliente solo añade comillas para `,` y `()`, no para `-`.
+ * @see https://postgrest.org/en/stable/references/api/tables_views.html#reserved-characters
+ */
+function postgrestQuotedUuidList(ids: string[]): string {
+  return ids.map((id) => `"${id.replace(/"/g, '\\"')}"`).join(',');
+}
+
+function postgrestEqUuid(id: string): string {
+  return `"${id.replace(/"/g, '\\"')}"`;
 }
 
 /**
  * Listados globales: excluye movimientos que tocan cuentas archivadas.
- * Usar en queries directas a `transactions` (analytics, APIs) además de `list()`.
+ * Debe ser **síncrona** y devolver el builder: `PostgrestBuilder` es thenable; si se devuelve
+ * desde una función `async`, la promesa lo aplana y ejecuta la query (bug: `n.eq is not a function`).
+ *
+ * Llamá antes: `const activeIds = await accountsService.getActiveAccountIds(userId);`
  */
-export async function applyArchivedAccountsTransactionFilter(query: any, userId: string) {
-  const activeIds = await accountsService.getActiveAccountIds(userId);
+export function applyArchivedAccountsTransactionFilter(query: any, activeIds: string[]) {
   if (activeIds.length === 0) {
     return query.eq('id', '00000000-0000-0000-0000-000000000000');
   }
-  const idsQuoted = activeIds.map(postgrestUuidFilterValue).join(',');
+  const inList = postgrestQuotedUuidList(activeIds);
   return query
-    .in('account_id', activeIds)
-    .or(
-      `destination_account_id.is.null,destination_account_id.in.(${idsQuoted})`
-    );
+    .filter('account_id', 'in', `(${inList})`)
+    .or(`destination_account_id.is.null,destination_account_id.in.(${inList})`);
 }
 
 /** Misma regla que transferencias: cotización de mercado entre moneda del comprobante y moneda de la cuenta. */
@@ -258,11 +266,12 @@ class TransactionsService {
 
     const globalOnly = !options.accountId && !options.involveAccountId;
     if (globalOnly) {
-      query = await applyArchivedAccountsTransactionFilter(query, userId);
+      const activeIds = await accountsService.getActiveAccountIds(userId);
+      query = applyArchivedAccountsTransactionFilter(query, activeIds);
     }
 
     if (options.involveAccountId) {
-      const id = postgrestUuidFilterValue(options.involveAccountId);
+      const id = postgrestEqUuid(options.involveAccountId);
       query = query.or(`account_id.eq.${id},destination_account_id.eq.${id}`);
     } else if (options.accountId) {
       query = query.eq('account_id', options.accountId);

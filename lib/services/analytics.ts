@@ -1,4 +1,5 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { accountsService } from '@/lib/services/accounts';
 import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
 
 export interface CategoryBreakdown {
@@ -55,7 +56,8 @@ class AnalyticsService {
       .eq('type', type)
       .gte('transaction_date', startDate.toISOString())
       .lte('transaction_date', endDate.toISOString());
-    q = await applyArchivedAccountsTransactionFilter(q, userId);
+    const activeIds = await accountsService.getActiveAccountIds(userId);
+    q = applyArchivedAccountsTransactionFilter(q, activeIds);
     const { data: transactions } = await q;
 
     if (!transactions) return [];
@@ -99,7 +101,8 @@ class AnalyticsService {
       .eq('user_id', userId)
       .gte('transaction_date', startRange.toISOString())
       .lte('transaction_date', endRange.toISOString());
-    qMonth = await applyArchivedAccountsTransactionFilter(qMonth, userId);
+    const activeIdsMonth = await accountsService.getActiveAccountIds(userId);
+    qMonth = applyArchivedAccountsTransactionFilter(qMonth, activeIdsMonth);
     const { data: transactions } = await qMonth;
 
     const bucket = new Map<string, { expenses: number; income: number }>();
@@ -151,7 +154,8 @@ class AnalyticsService {
       .eq('user_id', userId)
       .gte('transaction_date', startDate.toISOString())
       .lte('transaction_date', endDate.toISOString());
-    qDay = await applyArchivedAccountsTransactionFilter(qDay, userId);
+    const activeIdsDay = await accountsService.getActiveAccountIds(userId);
+    qDay = applyArchivedAccountsTransactionFilter(qDay, activeIdsDay);
     const { data: transactions } = await qDay;
 
     const dailyMap = new Map<string, { expenses: number; income: number }>();
@@ -200,7 +204,8 @@ class AnalyticsService {
       .eq('type', 'expense')
       .gte('transaction_date', startDate.toISOString())
       .lte('transaction_date', endDate.toISOString());
-    qAcc = await applyArchivedAccountsTransactionFilter(qAcc, userId);
+    const activeIdsAcc = await accountsService.getActiveAccountIds(userId);
+    qAcc = applyArchivedAccountsTransactionFilter(qAcc, activeIdsAcc);
     const { data: transactions } = await qAcc;
 
     if (!transactions) return [];
@@ -244,7 +249,8 @@ class AnalyticsService {
       .eq('type', 'expense')
       .gte('transaction_date', startDate.toISOString())
       .lte('transaction_date', endDate.toISOString());
-    qTop = await applyArchivedAccountsTransactionFilter(qTop, userId);
+    const activeIdsTop = await accountsService.getActiveAccountIds(userId);
+    qTop = applyArchivedAccountsTransactionFilter(qTop, activeIdsTop);
     qTop = qTop
       .order('amount_in_account_currency', { ascending: false })
       .limit(limit);
