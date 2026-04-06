@@ -1,4 +1,5 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { YAHOO_FINANCE_HEADERS } from '@/lib/yahoo-finance-headers';
 
 interface DolarQuote {
   type: 'blue' | 'oficial' | 'mep' | 'ccl';
@@ -31,13 +32,21 @@ interface CacheEntry {
 const cache: Record<string, CacheEntry> = {};
 const CACHE_TTL = parseInt(process.env.EXCHANGE_RATE_CACHE_TTL || '300') * 1000;
 
+interface DolarApiRow {
+  casa: string;
+  compra: number;
+  venta: number;
+}
+
 class CotizacionesService {
   private criptoyaBaseURL: string;
   private coingeckoBaseURL: string;
+  private dolarApiBaseURL: string;
 
   constructor() {
     this.criptoyaBaseURL = process.env.CRIPTOYA_API_URL || 'https://criptoya.com/api';
     this.coingeckoBaseURL = process.env.COINGECKO_API_URL || 'https://api.coingecko.com/api/v3';
+    this.dolarApiBaseURL = process.env.DOLARAPI_URL || 'https://dolarapi.com/v1';
   }
 
   private getCacheKey(source: string, from: string, to: string): string {
@@ -132,6 +141,65 @@ class CotizacionesService {
     }
   }
 
+  /** Respaldo sin API key: https://dolarapi.com/v1/dolares */
+  private async fetchDolarQuotesFromDolarApi(): Promise<Record<string, DolarQuote>> {
+    const response = await fetch(`${this.dolarApiBaseURL}/dolares`, {
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!response.ok) {
+      throw new Error(`DolarApi error: ${response.status}`);
+    }
+
+    const rows = (await response.json()) as unknown;
+    if (!Array.isArray(rows)) {
+      throw new Error('DolarApi: respuesta inválida');
+    }
+
+    const byCasa = new Map<string, DolarApiRow>();
+    for (const r of rows) {
+      if (r && typeof r === 'object' && 'casa' in r) {
+        const row = r as DolarApiRow;
+        byCasa.set(row.casa, row);
+      }
+    }
+
+    const blue = byCasa.get('blue');
+    const oficial = byCasa.get('oficial');
+    const bolsa = byCasa.get('bolsa');
+    const ccl = byCasa.get('contadoconliqui');
+    const timestamp = new Date();
+
+    return {
+      blue: {
+        type: 'blue',
+        buy: Number(blue?.compra) || 0,
+        sell: Number(blue?.venta) || 0,
+        timestamp,
+      },
+      oficial: {
+        type: 'oficial',
+        buy: Number(oficial?.compra) || 0,
+        sell: Number(oficial?.venta) || 0,
+        timestamp,
+      },
+      mep: {
+        type: 'mep',
+        buy: Number(bolsa?.compra) || 0,
+        sell: Number(bolsa?.venta) || 0,
+        timestamp,
+      },
+      ccl: {
+        type: 'ccl',
+        buy: Number(ccl?.compra) || 0,
+        sell: Number(ccl?.venta) || 0,
+        timestamp,
+      },
+    };
+  }
+
   async getDolarQuotes(): Promise<Record<string, DolarQuote>> {
     const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
     const cached = this.getFromCache<Record<string, DolarQuote>>(cacheKey);
@@ -139,6 +207,12 @@ class CotizacionesService {
     if (cached) {
       return cached;
     }
+
+    const persistAndReturn = (quotes: Record<string, DolarQuote>) => {
+      this.setCache(cacheKey, quotes);
+      void this.saveLatestDolarQuotes(quotes);
+      return quotes;
+    };
 
     try {
       const response = await fetch(`${this.criptoyaBaseURL}/dolar`, {
@@ -178,11 +252,15 @@ class CotizacionesService {
         },
       };
 
-      this.setCache(cacheKey, quotes);
-      this.saveLatestDolarQuotes(quotes);
-      return quotes;
+      return persistAndReturn(quotes);
     } catch (error) {
-      console.error('Error fetching dolar quotes:', error);
+      console.error('Error fetching dolar quotes (CriptoYa):', error);
+      try {
+        const fromApi = await this.fetchDolarQuotesFromDolarApi();
+        return persistAndReturn(fromApi);
+      } catch (dolarApiErr) {
+        console.error('Error fetching dolar quotes (DolarApi):', dolarApiErr);
+      }
       const fallbackFromDb = await this.getLatestDolarQuotesFromDB();
       if (fallbackFromDb) {
         this.setCache(cacheKey, fallbackFromDb);
@@ -262,7 +340,7 @@ class CotizacionesService {
     try {
       const response = await fetch(
         `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=1d&interval=1d`,
-        { next: { revalidate: 300 } }
+        { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 } }
       );
 
       if (!response.ok) {
@@ -308,7 +386,7 @@ class CotizacionesService {
 
     const response = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?range=1d&interval=1d',
-      { next: { revalidate: 300 } }
+      { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 } }
     );
     if (!response.ok) {
       throw new Error(`Yahoo EURUSD error: ${response.status}`);

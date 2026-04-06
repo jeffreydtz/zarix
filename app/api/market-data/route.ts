@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { YAHOO_FINANCE_HEADERS } from '@/lib/yahoo-finance-headers';
 
 export const dynamic = 'force-dynamic';
 // Cache for 5 minutes on Vercel edge
@@ -17,11 +18,7 @@ const ARG_TICKERS = ['^MERV', 'GGAL.BA', 'YPFD.BA', 'PAMP.BA', 'BMA.BA', 'TXAR.B
 
 const YAHOO_CHART_HOSTS = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com'] as const;
 
-const YAHOO_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  Accept: 'application/json',
-  'Accept-Language': 'en-US,en;q=0.9',
-};
+const YAHOO_HEADERS = YAHOO_FINANCE_HEADERS;
 
 interface StockQuote {
   ticker: string;
