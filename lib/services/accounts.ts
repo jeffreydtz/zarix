@@ -186,8 +186,11 @@ class AccountsService {
   }
 
   /**
-   * Suma `balance_usd` / `balance_ars_blue` por cuenta según `include_in_total` y tipo.
-   * Debe usarse sobre el resultado de `list()` para que coincida con lo mostrado por fila.
+   * Patrimonio: todas las cuentas activas entran en algún bucket.
+   * - Liquidez: todo lo que NO es `type === 'investment'` (efectivo, banco, TC, crypto wallet, etc.).
+   * - Inversiones: solo cuentas `investment` (no se mezclan con líquido).
+   * - Total = liquidez + inversiones.
+   * `include_in_total` en BD no filtra estos totales.
    */
   aggregateAccountTotals(accounts: AccountWithBalance[]): AccountAggregates {
     let liquidUSD = 0;
@@ -198,8 +201,6 @@ class AccountsService {
     let totalCreditLimit = 0;
 
     for (const a of accounts) {
-      if (!a.include_in_total) continue;
-
       if (a.type === 'credit_card') {
         totalCreditUsed += Math.abs(Number(a.balance));
         totalCreditLimit += Number(a.credit_limit || 0);

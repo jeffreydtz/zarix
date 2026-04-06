@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
+import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
@@ -22,7 +23,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
       notFound();
     }
 
-    const [accounts, transactions, categoriesResult] = await Promise.all([
+    const [accounts, transactions, categoriesResult, usdToArs] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       transactionsService
         .list(user.id, { involveAccountId: account.id, limit: 500 })
@@ -31,6 +32,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
         .from('categories')
         .select('*')
         .or(`user_id.eq.${user.id},is_system.eq.true`),
+      cotizacionesService.getExchangeRate('USD', 'ARS').catch(() => null as number | null),
     ]);
 
     const categories = categoriesResult.data || [];
@@ -94,6 +96,11 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
             accounts={accounts}
             categories={categories}
             emptySubmessage="No hay movimientos que involucren esta cuenta. Podés cargar uno desde el botón de arriba o desde Movimientos."
+            viewAccountContext={{
+              accountId: account.id,
+              accountCurrency: account.currency,
+              usdToArs: usdToArs ?? undefined,
+            }}
           />
         </div>
       </div>

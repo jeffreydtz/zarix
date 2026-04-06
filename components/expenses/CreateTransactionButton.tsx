@@ -4,6 +4,10 @@ import { useState, useMemo, useEffect } from 'react';
 import { useOfflineQueue } from '@/lib/hooks/useOfflineQueue';
 import type { QueuedTransaction } from '@/lib/hooks/useOfflineQueue';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
+import {
+  calendarDateToUtcNoonIso,
+  todayLocalYmd,
+} from '@/lib/transaction-date';
 
 const STABLE_FOR_ARS = new Set(['USDT', 'USDC', 'DAI', 'BUSD']);
 
@@ -105,8 +109,14 @@ export default function CreateTransactionButton({
   const [manualExchangeRate, setManualExchangeRate] = useState('');
   const [quotesLite, setQuotesLite] = useState<QuotesLite | null>(null);
   const [quotesLoading, setQuotesLoading] = useState(false);
+  /** Día del movimiento (YYYY-MM-DD); al guardar se convierte a ISO sin desfase de zona. */
+  const [transactionDateYmd, setTransactionDateYmd] = useState(() => todayLocalYmd());
 
   const { isOnline, enqueue } = useOfflineQueue();
+
+  useEffect(() => {
+    if (isOpen) setTransactionDateYmd(todayLocalYmd());
+  }, [isOpen]);
 
   const filteredCategories = categories.filter((c) => c.type === type || c.type === 'both');
   const destinationAccounts = accounts.filter((a) => a.id !== accountId);
@@ -295,6 +305,7 @@ export default function CreateTransactionButton({
     setUseManualExchangeRate(false);
     setManualExchangeRate('');
     setAmountCurrency('ARS');
+    setTransactionDateYmd(todayLocalYmd());
   };
 
   const handleClose = () => {
@@ -341,7 +352,7 @@ export default function CreateTransactionButton({
           : amountCurrency.trim().toUpperCase(),
       categoryId: type === 'transfer' ? null : (categoryId || null),
       description: description || (type === 'transfer' ? 'Transferencia entre cuentas' : ''),
-      transactionDate: new Date().toISOString(),
+      transactionDate: calendarDateToUtcNoonIso(transactionDateYmd),
       ...(exchangeRateOverride !== undefined ? { exchangeRateOverride } : {}),
     };
 
@@ -740,6 +751,19 @@ export default function CreateTransactionButton({
                   </div>
                 </>
               )}
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Fecha</label>
+                <input
+                  type="date"
+                  value={transactionDateYmd}
+                  onChange={(e) => setTransactionDateYmd(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                />
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                  Se guarda el día que elegís (sin correr un día por zona horaria).
+                </p>
+              </div>
 
               <div>
                 <label className="block text-sm font-medium mb-2">Descripción</label>

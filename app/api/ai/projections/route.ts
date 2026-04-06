@@ -62,10 +62,9 @@ export async function GET(req: NextRequest) {
     // Get current account balances for total patrimony
     const { data: accounts } = await supabase
       .from('accounts')
-      .select('balance, currency, include_in_total, is_debt')
+      .select('balance, currency, is_debt')
       .eq('user_id', user.id)
-      .eq('is_active', true)
-      .eq('include_in_total', true);
+      .eq('is_active', true);
 
     const currentARS = (accounts || [])
       .filter(a => a.currency === 'ARS' && !a.is_debt)

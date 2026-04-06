@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
+import {
+  calendarDateToUtcNoonIso,
+  isoToLocalDateInputValue,
+} from '@/lib/transaction-date';
 
 interface EditTransactionModalProps {
   transaction: TransactionWithCategory;
@@ -28,7 +32,7 @@ export default function EditTransactionModal({
     account_id: transaction.account_id || '',
     category_id: transaction.category_id || '',
     description: transaction.description || '',
-    transaction_date: transaction.transaction_date.split('T')[0],
+    transaction_date: isoToLocalDateInputValue(transaction.transaction_date),
     notes: transaction.notes || '',
   });
 
@@ -47,6 +51,7 @@ export default function EditTransactionModal({
         body: JSON.stringify({
           ...formData,
           amount: parseFloat(formData.amount),
+          transaction_date: calendarDateToUtcNoonIso(formData.transaction_date),
         }),
       });
 

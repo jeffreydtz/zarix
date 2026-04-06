@@ -6,7 +6,57 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
+import {
+  aggregateOriginalByCurrency,
+  impactInAccountCurrency,
+  sumImpactInAccountCurrency,
+} from '@/lib/transaction-account-impact';
 import EditTransactionModal from './EditTransactionModal';
+
+function fmtMoney(n: number, currency: string) {
+  const abs = Math.abs(n).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const sign = n < 0 ? '-' : n > 0 ? '+' : '';
+  return `${sign}$${abs} ${currency}`;
+}
+
+/** Línea secundaria: monto original si no coincide con la moneda de la cuenta vista. */
+function secondaryOriginalLine(
+  tx: TransactionWithCategory,
+  accountId: string,
+  viewCurrency: string
+): string | null {
+  const vc = viewCurrency.trim().toUpperCase();
+  if (tx.account_id === accountId) {
+    const oc = (tx.currency || 'ARS').trim().toUpperCase();
+    if (oc !== vc) {
+      const a = Number(tx.amount);
+      if (tx.type === 'expense' || tx.type === 'transfer') {
+        return `Comprobante: ${fmtMoney(-Math.abs(a), oc)}`;
+      }
+      if (tx.type === 'income') {
+        return `Comprobante: ${fmtMoney(Math.abs(a), oc)}`;
+      }
+      if (tx.type === 'adjustment') {
+        return `Ajuste: ${fmtMoney(a, oc)}`;
+      }
+    }
+  }
+  if (tx.type === 'transfer' && tx.destination_account_id === accountId) {
+    const oc = (tx.currency || 'ARS').trim().toUpperCase();
+    const destCur = (tx.destination_account?.currency || vc).trim().toUpperCase();
+    if (oc !== destCur) {
+      return `Origen: ${fmtMoney(-Math.abs(Number(tx.amount)), oc)}`;
+    }
+  }
+  return null;
+}
+
+export interface ViewAccountContext {
+  accountId: string;
+  accountCurrency: string;
+  /** USD → ARS (blue u oficial según `cotizacionesService`) para referencia en pantalla. */
+  usdToArs?: number | null;
+}
 
 interface TransactionsListProps {
   transactions: TransactionWithCategory[];
@@ -14,6 +64,10 @@ interface TransactionsListProps {
   categories?: Array<{ id: string; name: string; type: string; icon: string }>;
   /** Texto bajo "No hay movimientos" (p. ej. en ficha de cuenta). */
   emptySubmessage?: string;
+  /**
+   * En ficha de cuenta: muestra impacto en moneda de la cuenta, desglose y total coherente con el saldo.
+   */
+  viewAccountContext?: ViewAccountContext;
 }
 
 export default function TransactionsList({ 
@@ -21,6 +75,7 @@ export default function TransactionsList({
   accounts = [], 
   categories = [],
   emptySubmessage = 'Usa el bot de Telegram para registrar gastos e ingresos',
+  viewAccountContext,
 }: TransactionsListProps) {
   const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -178,6 +233,62 @@ export default function TransactionsList({
         )}
       </div>
 
+      {viewAccountContext && transactions.length > 0 && (() => {
+        const { accountId, accountCurrency, usdToArs } = viewAccountContext;
+        const ac = accountCurrency.trim().toUpperCase();
+        const netListed = sumImpactInAccountCurrency(transactions, accountId);
+        const byOrig = aggregateOriginalByCurrency(transactions, accountId);
+        const origParts = Object.entries(byOrig)
+          .filter(([, v]) => Math.abs(v) > 1e-8)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([cur, v]) => fmtMoney(v, cur));
+        const refArs =
+          ac === 'USD' && usdToArs && usdToArs > 0
+            ? netListed * usdToArs
+            : null;
+        const refUsd =
+          ac === 'ARS' && usdToArs && usdToArs > 0
+            ? netListed / usdToArs
+            : null;
+        return (
+          <div className="card mb-3 border border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/50">
+            <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+              Resumen de movimientos listados
+            </p>
+            <p className="text-lg font-bold tabular-nums text-slate-800 dark:text-slate-100">
+              {fmtMoney(netListed, ac)}{' '}
+              <span className="text-sm font-normal text-slate-500">(impacto neto en la cuenta)</span>
+            </p>
+            {origParts.length > 0 && (
+              <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
+                <span className="text-slate-500 dark:text-slate-400">Por moneda original: </span>
+                {origParts.join(' · ')}
+              </p>
+            )}
+            {refArs != null && (
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                Referencia aprox. en ARS (cotización actual):{' '}
+                <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+                  {fmtMoney(refArs, 'ARS')}
+                </span>
+              </p>
+            )}
+            {refUsd != null && (
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                Referencia aprox. en USD:{' '}
+                <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+                  {fmtMoney(refUsd, 'USD')}
+                </span>
+              </p>
+            )}
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+              La suma usa el mismo criterio que el saldo (incluye conversiones y transferencias). Si hay más
+              movimientos fuera de esta lista, no coincidirá con el saldo actual.
+            </p>
+          </div>
+        );
+      })()}
+
       <motion.div 
         initial="hidden"
         animate="show"
@@ -187,7 +298,12 @@ export default function TransactionsList({
         }}
         className="space-y-3"
       >
-        {transactions.map((tx, index) => (
+        {transactions.map((tx) => {
+          const vac = viewAccountContext;
+          const impact = vac ? impactInAccountCurrency(tx, vac.accountId) : 0;
+          const secondary =
+            vac && secondaryOriginalLine(tx, vac.accountId, vac.accountCurrency);
+          return (
           <motion.div 
             key={tx.id} 
             variants={{
@@ -256,19 +372,42 @@ export default function TransactionsList({
 
               <div className="text-right flex items-center gap-3">
                 <div>
-                  <div
-                    className={`text-xl font-bold ${
-                      tx.type === 'income'
-                        ? 'text-green-600 dark:text-green-400'
-                        : tx.type === 'expense'
-                        ? 'text-red-500 dark:text-red-400'
-                        : 'text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
-                    ${tx.amount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                  </div>
-                  <div className="text-sm text-slate-500">{tx.currency}</div>
+                  {vac ? (
+                    <>
+                      <div
+                        className={`text-xl font-bold tabular-nums ${
+                          impact > 0
+                            ? 'text-green-600 dark:text-green-400'
+                            : impact < 0
+                              ? 'text-red-500 dark:text-red-400'
+                              : 'text-slate-600 dark:text-slate-400'
+                        }`}
+                      >
+                        {fmtMoney(impact, vac.accountCurrency.trim().toUpperCase())}
+                      </div>
+                      {secondary && (
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-[14rem] ml-auto">
+                          {secondary}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div
+                        className={`text-xl font-bold ${
+                          tx.type === 'income'
+                            ? 'text-green-600 dark:text-green-400'
+                            : tx.type === 'expense'
+                              ? 'text-red-500 dark:text-red-400'
+                              : 'text-slate-600 dark:text-slate-400'
+                        }`}
+                      >
+                        {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
+                        ${tx.amount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                      </div>
+                      <div className="text-sm text-slate-500">{tx.currency}</div>
+                    </>
+                  )}
                   {tx.installment_number && tx.installment_total && (
                     <div className="text-xs text-slate-400 mt-1">
                       Cuota {tx.installment_number}/{tx.installment_total}
@@ -285,16 +424,23 @@ export default function TransactionsList({
 
             {tx.type === 'transfer' && tx.destination_account_id && (
               <div className="mt-3 text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-xl">
-                → Transferencia a otra cuenta
+                {viewAccountContext?.accountId === tx.destination_account_id ? (
+                  <>
+                    ← Transferencia desde {tx.account?.name ?? 'otra cuenta'}
+                  </>
+                ) : (
+                  <>→ Transferencia a {tx.destination_account?.name ?? 'otra cuenta'}</>
+                )}
                 {tx.exchange_rate && tx.exchange_rate !== 1 && (
                   <span className="ml-2 text-xs">
-                    (tipo cambio: {tx.exchange_rate.toFixed(4)})
+                    (tipo cambio: {Number(tx.exchange_rate).toFixed(4)})
                   </span>
                 )}
               </div>
             )}
           </motion.div>
-        ))}
+          );
+        })}
       </motion.div>
 
       <AnimatePresence>

@@ -228,11 +228,6 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                         <span className="capitalize">{account.type.replace('_', ' ')}</span>
                         <span className="text-slate-300">•</span>
                         <span>{account.currency}</span>
-                        {!account.include_in_total && (
-                          <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-600/50 text-slate-600 dark:text-slate-300">
-                            No suma al total
-                          </span>
-                        )}
                       </div>
                     </div>
 
@@ -347,8 +342,8 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
             Totales (cotización dólar blue)
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
-            La suma usa las mismas conversiones que cada fila. Solo entran cuentas con &quot;incluir en
-            total&quot; activado.
+            Mismas conversiones que cada fila. <strong>Liquidez</strong> no incluye cuentas tipo
+            inversión; esas van aparte y el total es liquidez + inversiones.
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
@@ -381,7 +376,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
           {aggregates.totalCreditLimit > 0 && (
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600 text-sm">
               <div className="flex justify-between gap-4 text-slate-600 dark:text-slate-400">
-                <span>Tarjetas (líneas con incluir en total)</span>
+                <span>Tarjetas de crédito (líneas)</span>
                 <span className="tabular-nums">
                   ${aggregates.totalCreditUsed.toLocaleString('es-AR', { minimumFractionDigits: 0 })} / $
                   {aggregates.totalCreditLimit.toLocaleString('es-AR', { maximumFractionDigits: 0 })}

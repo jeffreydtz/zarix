@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useOfflineQueue } from '@/lib/hooks/useOfflineQueue';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
+import {
+  calendarDateToUtcNoonIso,
+  todayLocalYmd,
+} from '@/lib/transaction-date';
 
 interface Account {
   id: string;
@@ -30,12 +34,14 @@ export default function FloatingAddButton() {
   const [accountId, setAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
+  const [transactionDateYmd, setTransactionDateYmd] = useState(() => todayLocalYmd());
 
   const { isOnline, pendingCount, syncing, enqueue } = useOfflineQueue();
 
   // Fetch accounts + categories when the modal opens
   useEffect(() => {
     if (!isOpen) return;
+    setTransactionDateYmd(todayLocalYmd());
     setDataLoading(true);
     Promise.all([
       fetch('/api/accounts').then((r) => r.json()).catch(() => []),
@@ -53,6 +59,7 @@ export default function FloatingAddButton() {
     setAccountId('');
     setCategoryId('');
     setDescription('');
+    setTransactionDateYmd(todayLocalYmd());
   };
 
   const handleClose = () => {
@@ -77,7 +84,7 @@ export default function FloatingAddButton() {
       currency: account.currency,
       categoryId: categoryId || null,
       description,
-      transactionDate: new Date().toISOString(),
+      transactionDate: calendarDateToUtcNoonIso(transactionDateYmd),
     };
 
     try {
@@ -266,6 +273,18 @@ export default function FloatingAddButton() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    Fecha
+                  </label>
+                  <input
+                    type="date"
+                    value={transactionDateYmd}
+                    onChange={(e) => setTransactionDateYmd(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
 
                 {/* Description */}
