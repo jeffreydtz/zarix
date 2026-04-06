@@ -7,10 +7,9 @@ export default function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-dvh flex flex-col">
+    <div className="flex flex-col h-dvh max-h-dvh min-h-0 overflow-hidden md:h-auto md:max-h-none md:min-h-dvh md:overflow-visible">
       <OfflineReferenceWarmup />
-      <Navigation />
-      <div className="flex-1 w-full min-w-0 pb-mobile-nav">{children}</div>
+      <Navigation>{children}</Navigation>
     </div>
   );
 }

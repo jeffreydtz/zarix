@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <!-- Z Lightning Bolt - outline style matching original -->
+  <path d="M 48,62 L 285,62 L 205,175 L 265,175 L 48,315 L 268,315"
+        fill="none" stroke="#1AFF4B" stroke-width="30"
+        stroke-linecap="butt" stroke-linejoin="miter"/>
+  <!-- Dollar Coin -->
+  <circle cx="316" cy="305" r="44"
+          fill="none" stroke="#1AFF4B" stroke-width="11"/>
+  <text x="316" y="321" text-anchor="middle" fill="#1AFF4B"
+        font-size="40" font-weight="bold" font-family="Arial Black, Arial, sans-serif">$</text>
+</svg>

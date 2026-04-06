@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zarix-v5';
+const CACHE_NAME = 'zarix-v6';
 const SYNC_TAG = 'zarix-sync';
 
 const STATIC_ASSETS = [
@@ -12,8 +12,8 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/favicon.ico',
   '/apple-touch-icon.png',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  '/logo-formats/android-chrome-192x192.png',
+  '/logo-formats/android-chrome-512x512.png',
 ];
 
 // Cacheable API GET endpoints (for offline read access)

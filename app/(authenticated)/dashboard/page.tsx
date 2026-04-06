@@ -9,6 +9,7 @@ import type { SpendingAnalyzerTxItem } from '@/components/dashboard/SpendingAnal
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import BalanceHeader from '@/components/dashboard/BalanceHeader';
 import FloatingAddButton from '@/components/dashboard/FloatingAddButton';
+import { brandAsset } from '@/lib/brand';
 
 const QuotesWidget = dynamic(() => import('@/components/dashboard/QuotesWidget'), {
   loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
@@ -98,14 +99,15 @@ export default async function DashboardPage() {
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800 flex items-center justify-center p-1">
               <Image
-                src="/icons/icon-192.png"
-                alt="Zarix Logo"
-                width={36}
-                height={36}
-                className="w-9 h-9 object-contain"
+                src={brandAsset.logoSvg}
+                alt="Zarix"
+                width={40}
+                height={40}
+                className="w-10 h-10 object-contain"
                 priority
+                unoptimized
               />
             </div>
             <div>

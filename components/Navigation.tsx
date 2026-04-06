@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import { brandAsset } from '@/lib/brand';
 
 const PRIMARY_LINKS = [
   { href: '/dashboard', label: 'Inicio', icon: '🏠' },
@@ -22,7 +23,7 @@ const MORE_LINKS = [
   { href: '/settings', label: 'Config', icon: '⚙️' },
 ];
 
-export default function Navigation() {
+export default function Navigation({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
@@ -61,20 +62,21 @@ export default function Navigation() {
   return (
     <>
       {/* ——— Mobile: barra superior compacta ——— */}
-      <header className="md:hidden sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 pt-[env(safe-area-inset-top,0px)]">
+      <header className="md:hidden shrink-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 pt-[env(safe-area-inset-top,0px)]">
         <div className="flex items-center justify-between h-14 px-4">
           <Link
             href="/dashboard"
             className="flex items-center gap-2 shrink-0 min-h-[44px] min-w-[44px] -ml-2 pl-2"
           >
-            <div className="w-9 h-9 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center p-1">
               <Image
-                src="/icons/icon-192.png"
+                src={brandAsset.logoSvg}
                 alt=""
                 width={28}
                 height={28}
                 className="w-7 h-7 object-contain"
                 priority
+                unoptimized
               />
             </div>
             <span className="font-bold text-lg text-blue-600 dark:text-blue-400">Zarix</span>
@@ -93,14 +95,15 @@ export default function Navigation() {
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             <Link href="/dashboard" className="flex items-center gap-2 shrink-0 min-h-[44px]">
-              <div className="w-8 h-8 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center p-0.5">
                 <Image
-                  src="/icons/icon-192.png"
+                  src={brandAsset.logoSvg}
                   alt=""
                   width={24}
                   height={24}
                   className="w-6 h-6 object-contain"
                   priority
+                  unoptimized
                 />
               </div>
               <span className="font-bold text-lg text-blue-600 dark:text-blue-400">Zarix</span>
@@ -194,9 +197,13 @@ export default function Navigation() {
         </div>
       </motion.nav>
 
-      {/* ——— Mobile: barra inferior (thumb zone) ——— */}
+      <div className="flex-1 min-h-0 w-full min-w-0 overflow-y-auto overscroll-y-contain pb-mobile-nav md:flex-none md:overflow-visible md:pb-0 md:min-h-0">
+        {children}
+      </div>
+
+      {/* ——— Mobile: barra inferior (thumb zone); en flujo flex para que no “flote” al scrollear (iOS/PWA) ——— */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom,0px)]"
+        className="md:hidden shrink-0 w-full z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom,0px)]"
         aria-label="Navegación principal"
       >
         <div className="flex items-stretch justify-around h-14 max-w-lg mx-auto px-1">
