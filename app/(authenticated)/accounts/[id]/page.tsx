@@ -10,6 +10,7 @@ import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
+import ReconcileBalanceButton from '@/components/accounts/ReconcileBalanceButton';
 import { getAccountDisplayName, getAccountTypeLabelEs } from '@/lib/account-display-name';
 
 export default async function AccountDetailPage({ params }: { params: { id: string } }) {
@@ -101,13 +102,14 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 max-w-xl">
                 Incluye gastos, ingresos y transferencias donde esta cuenta es origen o destino.
               </p>
-              <div className="mt-4 max-w-xl">
+              <div className="mt-4 max-w-xl flex flex-col gap-2">
                 <CorrectDebtBalanceSign
                   accountId={account.id}
                   balance={balance}
                   isDebt={account.is_debt}
                   accountType={account.type}
                 />
+                <ReconcileBalanceButton accountId={account.id} />
               </div>
             </div>
             <CreateTransactionButton accounts={accounts} categories={categories} />

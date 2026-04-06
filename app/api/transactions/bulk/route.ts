@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
+import { transactionsService } from '@/lib/services/transactions';
 
 const MAX_BULK = 500;
 
@@ -102,6 +103,15 @@ export async function DELETE(req: NextRequest) {
     }
 
     const serviceClient = createServiceClientSync();
+
+    const { data: affectedRows, error: preErr } = await serviceClient
+      .from('transactions')
+      .select('account_id, destination_account_id')
+      .eq('user_id', user.id)
+      .in('id', transactionIds);
+
+    if (preErr) throw preErr;
+
     const { data, error } = await serviceClient
       .from('transactions')
       .delete()
@@ -110,6 +120,19 @@ export async function DELETE(req: NextRequest) {
       .select('id');
 
     if (error) throw error;
+
+    const accountIds = new Set<string>();
+    for (const row of affectedRows || []) {
+      if (row.account_id) accountIds.add(row.account_id);
+      if (row.destination_account_id) accountIds.add(row.destination_account_id);
+    }
+    for (const accId of accountIds) {
+      try {
+        await transactionsService.recomputeAccountBalanceFromLedger(user.id, accId);
+      } catch (e) {
+        console.error('reconcile after bulk delete', accId, e);
+      }
+    }
 
     return NextResponse.json({
       success: true,

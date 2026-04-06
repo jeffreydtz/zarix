@@ -356,6 +356,9 @@ BEGIN
         UPDATE accounts SET balance = balance - (OLD.amount * COALESCE(OLD.exchange_rate, 1))
         WHERE id = OLD.destination_account_id;
       END IF;
+    ELSIF OLD.type = 'adjustment' THEN
+      UPDATE accounts SET balance = balance - OLD.amount_in_account_currency
+      WHERE id = OLD.account_id;
     END IF;
     RETURN OLD;
   END IF;
