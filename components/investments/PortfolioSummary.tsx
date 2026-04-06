@@ -34,51 +34,55 @@ export default function PortfolioSummary({
 }: PortfolioSummaryProps) {
   return (
     <div className="space-y-4">
-      <div className="card">
-        <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-          Valor Total del Portafolio
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+        <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
+          Valor total del portafolio
         </h2>
-        <div className="text-3xl font-bold mb-2">
+        <div className="text-3xl font-bold text-slate-900 dark:text-slate-50 tabular-nums mb-2">
           USD {totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
         </div>
         <div
-          className={`text-lg ${
-            totalPnL >= 0 ? 'text-green-600' : 'text-red-600'
+          className={`text-lg font-medium tabular-nums ${
+            totalPnL >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
           }`}
         >
           {totalPnL >= 0 ? '+' : ''}
           USD {totalPnL.toLocaleString('en-US', { minimumFractionDigits: 2 })}{' '}
-          ({totalPnLPercent.toFixed(2)}%)
+          <span className="text-slate-500 dark:text-slate-400 font-normal">
+            ({totalPnLPercent.toFixed(2)}%)
+          </span>
         </div>
       </div>
 
       {byType.length > 0 && (
-        <div className="card">
-          <h3 className="text-lg font-semibold mb-4">Distribución por Tipo</h3>
-          <div className="space-y-3">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">
+            Distribución por tipo
+          </h3>
+          <div className="space-y-4">
             {byType.map((item) => {
-              const percent = (item.value / totalValue) * 100;
+              const percent = totalValue > 0 ? (item.value / totalValue) * 100 : 0;
               return (
                 <div key={item.type}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
                       {TYPE_LABELS[item.type] || item.type}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-slate-500 dark:text-slate-400 tabular-nums">
                       {percent.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-slate-100 dark:bg-slate-700/80 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-blue-500 h-2 rounded-full transition-all"
-                      style={{ width: `${percent}%` }}
+                      className="bg-blue-500 dark:bg-blue-500 h-2 rounded-full transition-all min-w-0"
+                      style={{ width: `${Math.min(100, percent)}%` }}
                     />
                   </div>
                   <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
                       {item.count} posición{item.count !== 1 ? 'es' : ''}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
                       USD {item.value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                     </span>
                   </div>

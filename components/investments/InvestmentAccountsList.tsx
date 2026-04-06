@@ -39,25 +39,30 @@ export default function InvestmentAccountsList({ accounts }: InvestmentAccountsL
   };
 
   return (
-    <div className="card">
-      <h2 className="text-lg font-semibold mb-4">Cuentas de Inversión</h2>
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+      <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Cuentas de inversión</h2>
       <div className="space-y-3">
         {accounts.map((account) => (
-          <div key={account.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+          <div
+            key={account.id}
+            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-100 dark:border-slate-600/50"
+          >
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-2xl">{account.icon || '📈'}</span>
               <div className="min-w-0">
-                <div className="font-semibold truncate">{getAccountDisplayName(account)}</div>
-                <div className="text-sm text-gray-500">{account.currency}</div>
+                <div className="font-semibold truncate text-slate-900 dark:text-slate-50">
+                  {getAccountDisplayName(account)}
+                </div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">{account.currency}</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <div className="text-lg font-bold">
+                <div className="text-lg font-bold text-slate-900 dark:text-slate-50 tabular-nums">
                   ${account.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                 </div>
                 {account.currency !== 'ARS' && Number(account.balance) !== 0 && (
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
                     {account.balance_ars_blue != null && account.balance_ars_blue !== 0 ? (
                       <>≈ ${account.balance_ars_blue.toLocaleString('es-AR')} ARS</>
                     ) : (

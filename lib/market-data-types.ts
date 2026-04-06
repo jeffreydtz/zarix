@@ -5,6 +5,8 @@ export interface StockQuote {
   change: number;
   changePct: number;
   currency: string;
+  /** INDEX = índice (^IXIC, ^MERV); EQUITY = acción */
+  instrumentType?: 'INDEX' | 'EQUITY' | string;
 }
 
 export interface CryptoQuote {

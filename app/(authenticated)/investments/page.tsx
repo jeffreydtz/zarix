@@ -56,9 +56,16 @@ export default async function InvestmentsPage() {
     ]);
 
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto p-4 space-y-6">
-          <h1 className="text-3xl font-bold">📈 Inversiones</h1>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+        <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+          <header className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50">
+              Inversiones
+            </h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
+              Portafolio, vencimientos y referencia de mercado (Nasdaq, MERVAL y cripto).
+            </p>
+          </header>
 
           {investmentAccounts.length > 0 && (
             <InvestmentAccountsList accounts={investmentAccounts as any} />
@@ -137,7 +144,10 @@ export default async function InvestmentsPage() {
             </div>
           )}
 
-          <InvestmentsList investments={portfolio.investments} />
+          <section className="space-y-3">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Posiciones</h2>
+            <InvestmentsList investments={portfolio.investments} />
+          </section>
         </div>
       </div>
     );

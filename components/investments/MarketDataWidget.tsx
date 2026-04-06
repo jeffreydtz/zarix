@@ -79,26 +79,61 @@ function CryptoRow({ coin, index }: { coin: CryptoQuote; index: number }) {
 }
 
 function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
+  const isIndex =
+    stock.instrumentType === 'INDEX' || stock.ticker.startsWith('^');
   const isArg = stock.currency === 'ARS';
-  const priceStr = isArg
-    ? `$${stock.price.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS`
-    : `$${stock.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const isPts = stock.currency === 'PTS';
+
+  let priceStr: string;
+  if (isIndex && isPts) {
+    priceStr = `${stock.price.toLocaleString('es-AR', { maximumFractionDigits: 0 })} pts`;
+  } else if (isIndex) {
+    priceStr = `${stock.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} pts`;
+  } else if (isArg) {
+    priceStr = `$${stock.price.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS`;
+  } else {
+    priceStr = `$${stock.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  const displayTicker = stock.ticker.replace('.BA', '').replace(/^\^/, '');
+  const iconLetter = isIndex
+    ? stock.ticker === '^MERV'
+      ? 'M'
+      : stock.ticker === '^IXIC'
+        ? 'N'
+        : displayTicker.slice(0, 1)
+    : displayTicker.slice(0, 3);
+
+  const iconClass = isIndex
+    ? 'rounded-lg bg-violet-100 dark:bg-violet-900/35 text-violet-800 dark:text-violet-200'
+    : 'rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
 
   return (
     <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="flex items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50 last:border-0"
+      className={`flex items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50 last:border-0 ${
+        isIndex ? 'bg-violet-50/60 dark:bg-violet-950/20 -mx-4 px-4 border-slate-200/80 dark:border-violet-900/30' : ''
+      }`}
     >
-      <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xs font-bold text-blue-700 dark:text-blue-300 shrink-0">
-        {stock.ticker.replace('.BA', '').slice(0, 3)}
+      <div
+        className={`w-7 h-7 flex items-center justify-center text-[10px] font-bold shrink-0 ${iconClass}`}
+      >
+        {iconLetter}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-sm text-slate-800 dark:text-slate-100 truncate">
-          {stock.ticker.replace('.BA', '')}
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="font-semibold text-sm text-slate-800 dark:text-slate-100 truncate">
+            {isIndex ? stock.name : displayTicker}
+          </span>
+          {isIndex && (
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400 shrink-0">
+              índice
+            </span>
+          )}
         </div>
-        <div className="text-xs text-slate-400 truncate">{stock.name}</div>
+        <div className="text-xs text-slate-400 truncate">{isIndex ? stock.ticker : stock.name}</div>
       </div>
       <div className="text-right">
         <div className="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">{priceStr}</div>
@@ -214,9 +249,14 @@ export default function MarketDataWidget() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Mercados</h2>
-        <div className="flex items-center gap-2 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+        <div>
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Mercados</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-xl">
+            Índices Nasdaq Composite y MERVAL, acciones líderes y las cinco mayores cripto por capitalización.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 sm:pb-0.5">
           {lastUpdated && (
             <span className="text-xs text-slate-400 hidden sm:inline">Respuesta API {lastUpdated}</span>
           )}
@@ -261,7 +301,7 @@ export default function MarketDataWidget() {
         </MarketSection>
 
         <MarketSection
-          title="USA · Top Acciones"
+          title="USA · Nasdaq & acciones"
           icon="🇺🇸"
           loading={loading && !data?.usStocks?.length}
           stale={st?.usStocks}
@@ -271,13 +311,13 @@ export default function MarketDataWidget() {
             (data?.usStocks || []).map((stock, i) => <StockRow key={stock.ticker} stock={stock} index={i} />)
           ) : (
             <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
-              Sin datos de USA en este momento.
+              Sin datos del mercado USA (índice Nasdaq y acciones) en este momento.
             </div>
           )}
         </MarketSection>
 
         <MarketSection
-          title="Argentina · Merval"
+          title="Argentina · MERVAL & panel"
           icon="🇦🇷"
           loading={loading && !data?.argStocks?.length}
           stale={st?.argStocks}
@@ -287,7 +327,7 @@ export default function MarketDataWidget() {
             (data?.argStocks || []).map((stock, i) => <StockRow key={stock.ticker} stock={stock} index={i} />)
           ) : (
             <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
-              Sin datos de Merval en este momento.
+              Sin datos de Argentina (índice MERVAL y acciones) en este momento.
             </div>
           )}
         </MarketSection>
