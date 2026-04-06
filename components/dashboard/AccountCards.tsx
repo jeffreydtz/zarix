@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { AccountWithBalance } from '@/lib/services/accounts';
+import { getAccountDisplayName } from '@/lib/account-display-name';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import Link from 'next/link';
 
@@ -41,7 +42,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
               key={account.id}
               href={`/accounts/${account.id}`}
               className="flex-shrink-0 w-72 snap-start block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 rounded-2xl"
-              aria-label={`Ver movimientos de ${account.name}`}
+              aria-label={`Ver movimientos de ${getAccountDisplayName(account)}`}
             >
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -68,7 +69,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
               </div>
 
               <div className="mb-2">
-                <div className="text-sm font-medium opacity-90 mb-1">{account.name}</div>
+                <div className="text-sm font-medium opacity-90 mb-1">{getAccountDisplayName(account)}</div>
                 <div className="text-3xl font-bold tracking-tight">
                   {account.is_debt
                     ? `-$${Math.abs(Number(account.balance)).toLocaleString('es-AR', {

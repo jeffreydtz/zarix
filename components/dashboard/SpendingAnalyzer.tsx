@@ -35,7 +35,7 @@ const COLORS = [
   '#F59E0B', '#EF4444', '#3B82F6', '#10B981', '#8B5CF6',
   '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1',
 ];
-const MAX_PIE_SLICES = 12;
+const MAX_PIE_SLICES = 8;
 
 function toInputDate(date: Date) {
   const y = date.getFullYear();
@@ -720,12 +720,12 @@ export default function SpendingAnalyzer({
               </div>
             )}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-center px-2">
-                <div className="text-sm text-slate-400">Total</div>
-                <div className="text-3xl font-bold text-slate-800 dark:text-slate-100">
+              <div className="text-center px-3 max-w-[min(200px,78vw)] mx-auto">
+                <div className="text-xs sm:text-sm text-slate-400">Total</div>
+                <div className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tabular-nums leading-tight">
                   ${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                 </div>
-                <div className="text-[10px] text-slate-400 mt-1 max-w-[180px] mx-auto leading-tight">
+                <div className="text-[10px] sm:text-[11px] text-slate-400 mt-1 leading-snug">
                   {currencyFilter === 'all' && convertToArsBlue
                     ? 'Equivalente en ARS (dólar blue; USD y stablecoins convertidos)'
                     : currencyFilter === 'all'

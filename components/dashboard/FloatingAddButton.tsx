@@ -7,12 +7,15 @@ import {
   calendarDateToUtcNoonIso,
   todayLocalYmd,
 } from '@/lib/transaction-date';
+import type { AccountType } from '@/types/database';
 
 interface Account {
   id: string;
   name: string;
   currency: string;
   balance: number;
+  type?: AccountType;
+  last_4_digits?: string | null;
 }
 
 interface Category {

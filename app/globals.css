@@ -277,9 +277,9 @@ summary {
   }
 }
 
-/* Espacio para barra inferior fija + notch / home indicator */
+/* Espacio para barra inferior + FAB + notch / home indicator */
 .pb-mobile-nav {
-  padding-bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(3.75rem + 5rem + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 768px) {

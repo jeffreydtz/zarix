@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { AccountWithBalance } from '@/lib/services/accounts';
+import { getAccountDisplayName } from '@/lib/account-display-name';
 
 interface InvestmentAccountsListProps {
   accounts: AccountWithBalance[];
@@ -14,7 +15,7 @@ export default function InvestmentAccountsList({ accounts }: InvestmentAccountsL
 
   const handleDelete = async (account: AccountWithBalance) => {
     const ok = window.confirm(
-      `Archivar la cuenta de inversión "${account.name}"?\n\nSe desactiva la cuenta y sus inversiones asociadas. Los movimientos no se borran; podés restaurar la cuenta desde Cuentas → Cuentas archivadas.`
+      `Archivar la cuenta de inversión "${getAccountDisplayName(account)}"?\n\nSe desactiva la cuenta y sus inversiones asociadas. Los movimientos no se borran; podés restaurar la cuenta desde Cuentas → Cuentas archivadas.`
     );
     if (!ok) return;
 
@@ -46,7 +47,7 @@ export default function InvestmentAccountsList({ accounts }: InvestmentAccountsL
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-2xl">{account.icon || '📈'}</span>
               <div className="min-w-0">
-                <div className="font-semibold truncate">{account.name}</div>
+                <div className="font-semibold truncate">{getAccountDisplayName(account)}</div>
                 <div className="text-sm text-gray-500">{account.currency}</div>
               </div>
             </div>

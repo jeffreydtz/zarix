@@ -1,34 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-
-interface StockQuote {
-  ticker: string;
-  name: string;
-  price: number;
-  change: number;
-  changePct: number;
-  currency: string;
-}
-
-interface CryptoQuote {
-  id: string;
-  symbol: string;
-  name: string;
-  price: number;
-  change24h: number;
-  marketCap: number;
-  image: string;
-}
-
-interface MarketData {
-  crypto: CryptoQuote[];
-  usStocks: StockQuote[];
-  argStocks: StockQuote[];
-  fetchedAt: string;
-}
+import type {
+  CryptoQuote,
+  MarketDataClient,
+  StockQuote,
+} from '@/lib/market-data-types';
+import { loadMarketDataFromLocal, saveMarketDataToLocal } from '@/lib/market-data-local-cache';
+import { mergeMarketWithLocalSnapshot } from '@/lib/market-data-merge-local';
 
 function ChangeBadge({ value }: { value: number }) {
   const pos = value >= 0;
@@ -82,9 +63,7 @@ function CryptoRow({ coin, index }: { coin: CryptoQuote; index: number }) {
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-sm text-slate-800 dark:text-slate-100">
-          {coin.symbol}
-        </div>
+        <div className="font-semibold text-sm text-slate-800 dark:text-slate-100">{coin.symbol}</div>
         <div className="text-xs text-slate-400 truncate">{coin.name}</div>
       </div>
       <div className="text-right">
@@ -122,13 +101,23 @@ function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
         <div className="text-xs text-slate-400 truncate">{stock.name}</div>
       </div>
       <div className="text-right">
-        <div className="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">
-          {priceStr}
-        </div>
+        <div className="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">{priceStr}</div>
         <ChangeBadge value={stock.changePct} />
       </div>
     </motion.div>
   );
+}
+
+function formatSnapshotLabel(iso?: string): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleString('es-AR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 function MarketSection({
@@ -136,74 +125,106 @@ function MarketSection({
   icon,
   children,
   loading,
+  stale,
+  snapshotAt,
 }: {
   title: string;
   icon: string;
   children: React.ReactNode;
   loading: boolean;
+  stale?: boolean;
+  snapshotAt?: string;
 }) {
+  const snap = formatSnapshotLabel(snapshotAt);
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-base">{icon}</span>
-          <span className="font-bold text-sm text-slate-800 dark:text-slate-100">{title}</span>
+      <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-base shrink-0">{icon}</span>
+          <span className="font-bold text-sm text-slate-800 dark:text-slate-100 truncate">{title}</span>
         </div>
-        <span className="text-xs text-slate-400 dark:text-slate-500">Tiempo real</span>
+        <div className="flex flex-col items-end text-right shrink-0">
+          <span
+            className={
+              stale
+                ? 'text-[10px] font-medium text-amber-600 dark:text-amber-400'
+                : 'text-xs text-slate-400 dark:text-slate-500'
+            }
+          >
+            {stale ? 'Última cotización guardada' : 'Tiempo real'}
+          </span>
+          {stale && snap && (
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 tabular-nums">{snap}</span>
+          )}
+        </div>
       </div>
       <div className="px-4 divide-y divide-slate-100 dark:divide-slate-700/50">
-        {loading
-          ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
-          : children}
+        {loading ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />) : children}
       </div>
     </div>
   );
 }
 
 export default function MarketDataWidget() {
-  const [data, setData] = useState<MarketData | null>(null);
+  const [data, setData] = useState<MarketDataClient | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async (opts?: { showLoading?: boolean }) => {
+    const local = loadMarketDataFromLocal();
+    if (opts?.showLoading) setLoading(true);
     try {
       const res = await fetch('/api/market-data', { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed');
-      const json = await res.json();
-      setData(json);
-      setError(false);
+      const json = (await res.json()) as MarketDataClient;
+      const merged = mergeMarketWithLocalSnapshot(json, local);
+      setData(merged);
+      saveMarketDataToLocal(merged);
+      setFetchError(false);
     } catch {
-      setError(true);
+      if (local) {
+        setData(local);
+        setFetchError(true);
+      } else {
+        setData(null);
+        setFetchError(true);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
+    const local = loadMarketDataFromLocal();
+    if (local) {
+      setData(local);
+      setLoading(false);
+    }
     fetchData();
-    // Refresh every 5 minutes
     const interval = setInterval(fetchData, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchData]);
 
   const lastUpdated = data?.fetchedAt
     ? new Date(data.fetchedAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
     : null;
 
+  const st = data?.stale;
+  const times = data?.sectionTimes;
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-          Mercados
-        </h2>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Mercados</h2>
+        <div className="flex items-center gap-2 shrink-0">
           {lastUpdated && (
-            <span className="text-xs text-slate-400">
-              Actualizado {lastUpdated}
-            </span>
+            <span className="text-xs text-slate-400 hidden sm:inline">Respuesta API {lastUpdated}</span>
           )}
           <button
-            onClick={fetchData}
+            type="button"
+            onClick={() => {
+              void fetchData({ showLoading: true });
+            }}
             className="text-xs text-blue-500 hover:text-blue-600 font-medium px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
           >
             ↻ Refrescar
@@ -211,25 +232,43 @@ export default function MarketDataWidget() {
         </div>
       </div>
 
-      {error && (
-        <div className="rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
-          <span>⚠️</span>
-          <span>No se pudieron cargar los datos de mercado. Intentá refrescar.</span>
+      {fetchError && (
+        <div className="rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-800 dark:text-amber-200 flex items-start gap-2">
+          <span aria-hidden>ℹ️</span>
+          <span>
+            No se pudo actualizar desde la red. Mostramos la última información guardada en este dispositivo
+            {data?.fetchedAt
+              ? ` (${formatSnapshotLabel(data.fetchedAt) ?? ''})`
+              : '.'}
+          </span>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <MarketSection title="Top Crypto" icon="₿" loading={loading}>
+        <MarketSection
+          title="Top Crypto"
+          icon="₿"
+          loading={loading && !data?.crypto?.length}
+          stale={st?.crypto}
+          snapshotAt={times?.crypto}
+        >
           {(data?.crypto || []).map((coin, i) => (
             <CryptoRow key={coin.id} coin={coin} index={i} />
           ))}
+          {!loading && !(data?.crypto || []).length && (
+            <div className="py-6 text-sm text-slate-500 dark:text-slate-400">Sin datos de crypto.</div>
+          )}
         </MarketSection>
 
-        <MarketSection title="USA · Top Acciones" icon="🇺🇸" loading={loading}>
+        <MarketSection
+          title="USA · Top Acciones"
+          icon="🇺🇸"
+          loading={loading && !data?.usStocks?.length}
+          stale={st?.usStocks}
+          snapshotAt={times?.usStocks}
+        >
           {(data?.usStocks || []).length > 0 ? (
-            (data?.usStocks || []).map((stock, i) => (
-              <StockRow key={stock.ticker} stock={stock} index={i} />
-            ))
+            (data?.usStocks || []).map((stock, i) => <StockRow key={stock.ticker} stock={stock} index={i} />)
           ) : (
             <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
               Sin datos de USA en este momento.
@@ -237,11 +276,15 @@ export default function MarketDataWidget() {
           )}
         </MarketSection>
 
-        <MarketSection title="Argentina · Merval" icon="🇦🇷" loading={loading}>
+        <MarketSection
+          title="Argentina · Merval"
+          icon="🇦🇷"
+          loading={loading && !data?.argStocks?.length}
+          stale={st?.argStocks}
+          snapshotAt={times?.argStocks}
+        >
           {(data?.argStocks || []).length > 0 ? (
-            (data?.argStocks || []).map((stock, i) => (
-              <StockRow key={stock.ticker} stock={stock} index={i} />
-            ))
+            (data?.argStocks || []).map((stock, i) => <StockRow key={stock.ticker} stock={stock} index={i} />)
           ) : (
             <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
               Sin datos de Merval en este momento.

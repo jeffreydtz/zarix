@@ -10,6 +10,7 @@ import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
+import { getAccountDisplayName, getAccountTypeLabelEs } from '@/lib/account-display-name';
 
 export default async function AccountDetailPage({ params }: { params: { id: string } }) {
   try {
@@ -42,7 +43,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
     const categories = categoriesResult.data || [];
 
     const balance = Number(account.balance);
-    const typeLabel = account.type.replace('_', ' ');
+    const typeLabel = getAccountTypeLabelEs(account.type);
     const enriched = accounts.find((a) => a.id === account.id) as AccountWithBalance | undefined;
 
     return (
@@ -65,9 +66,9 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                 </span>
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">
-                    {account.name}
+                    {getAccountDisplayName(account)}
                   </h1>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm capitalize">
+                  <p className="text-slate-500 dark:text-slate-400 text-sm">
                     {typeLabel} · {account.currency}
                   </p>
                 </div>

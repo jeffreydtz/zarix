@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createServiceClientSync } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 // Cache for 5 minutes on Vercel edge
@@ -96,6 +97,96 @@ async function fetchYahooQuotesWithFallback(tickers: string[]): Promise<StockQuo
   return results;
 }
 
+interface MarketPayloadStored {
+  crypto: CryptoQuote[];
+  usStocks: StockQuote[];
+  argStocks: StockQuote[];
+  /** ISO: última vez que cada bloque se actualizó con datos “en vivo”. */
+  sectionTimes?: {
+    crypto?: string;
+    usStocks?: string;
+    argStocks?: string;
+  };
+}
+
+async function loadCachedPayload(): Promise<MarketPayloadStored | null> {
+  try {
+    const supabase = createServiceClientSync();
+    const { data, error } = await supabase
+      .from('market_data_cache')
+      .select('payload')
+      .eq('id', 1)
+      .maybeSingle();
+    if (error || !data?.payload) return null;
+    const p = data.payload as MarketPayloadStored;
+    if (!p || typeof p !== 'object') return null;
+    return {
+      crypto: Array.isArray(p.crypto) ? p.crypto : [],
+      usStocks: Array.isArray(p.usStocks) ? p.usStocks : [],
+      argStocks: Array.isArray(p.argStocks) ? p.argStocks : [],
+      sectionTimes: p.sectionTimes,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function saveMergedPayload(payload: MarketPayloadStored): Promise<void> {
+  try {
+    const supabase = createServiceClientSync();
+    await supabase.from('market_data_cache').upsert(
+      {
+        id: 1,
+        payload,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'id' }
+    );
+  } catch {
+    /* tabla ausente o sin permisos: la UI puede usar caché local */
+  }
+}
+
+function mergeWithCache(
+  live: { crypto: CryptoQuote[]; usStocks: StockQuote[]; argStocks: StockQuote[] },
+  cached: MarketPayloadStored | null,
+  nowIso: string
+): {
+  crypto: CryptoQuote[];
+  usStocks: StockQuote[];
+  argStocks: StockQuote[];
+  stale: { crypto: boolean; usStocks: boolean; argStocks: boolean };
+  sectionTimes: NonNullable<MarketPayloadStored['sectionTimes']>;
+} {
+  const stale = { crypto: false, usStocks: false, argStocks: false };
+
+  let crypto = live.crypto;
+  if (!crypto.length && cached?.crypto?.length) {
+    crypto = cached.crypto;
+    stale.crypto = true;
+  }
+
+  let usStocks = live.usStocks;
+  if (!usStocks.length && cached?.usStocks?.length) {
+    usStocks = cached.usStocks;
+    stale.usStocks = true;
+  }
+
+  let argStocks = live.argStocks;
+  if (!argStocks.length && cached?.argStocks?.length) {
+    argStocks = cached.argStocks;
+    stale.argStocks = true;
+  }
+
+  const sectionTimes = {
+    crypto: stale.crypto ? cached?.sectionTimes?.crypto ?? nowIso : nowIso,
+    usStocks: stale.usStocks ? cached?.sectionTimes?.usStocks ?? nowIso : nowIso,
+    argStocks: stale.argStocks ? cached?.sectionTimes?.argStocks ?? nowIso : nowIso,
+  };
+
+  return { crypto, usStocks, argStocks, stale, sectionTimes };
+}
+
 async function fetchCryptoTop5(): Promise<CryptoQuote[]> {
   const url =
     'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=5&page=1&sparkline=false&price_change_percentage=24h';
@@ -121,6 +212,8 @@ async function fetchCryptoTop5(): Promise<CryptoQuote[]> {
 }
 
 export async function GET() {
+  const cached = await loadCachedPayload();
+
   const results = await Promise.allSettled([
     fetchCryptoTop5(),
     fetchYahooQuotesWithFallback(US_TICKERS),
@@ -131,8 +224,33 @@ export async function GET() {
   const usStocks = results[1].status === 'fulfilled' ? results[1].value : [];
   const argStocks = results[2].status === 'fulfilled' ? results[2].value : [];
 
+  const nowIso = new Date().toISOString();
+  const merged = mergeWithCache({ crypto, usStocks, argStocks }, cached, nowIso);
+
+  const payloadToStore: MarketPayloadStored = {
+    crypto: merged.crypto,
+    usStocks: merged.usStocks,
+    argStocks: merged.argStocks,
+    sectionTimes: merged.sectionTimes,
+  };
+
+  const hasAnyData =
+    payloadToStore.crypto.length > 0 ||
+    payloadToStore.usStocks.length > 0 ||
+    payloadToStore.argStocks.length > 0;
+  if (hasAnyData) {
+    await saveMergedPayload(payloadToStore);
+  }
+
   return NextResponse.json(
-    { crypto, usStocks, argStocks, fetchedAt: new Date().toISOString() },
+    {
+      crypto: merged.crypto,
+      usStocks: merged.usStocks,
+      argStocks: merged.argStocks,
+      fetchedAt: nowIso,
+      stale: merged.stale,
+      sectionTimes: merged.sectionTimes,
+    },
     {
       headers: {
         'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',

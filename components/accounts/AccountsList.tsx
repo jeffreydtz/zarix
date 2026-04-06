@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import type { AccountAggregates, AccountWithBalance } from '@/lib/services/accounts';
+import { getAccountDisplayName, getAccountTypeLabelEs } from '@/lib/account-display-name';
 import { useState } from 'react';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
@@ -172,7 +173,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
             whileHover={{ scale: 1.01 }}
             className="card hover:shadow-lg transition-shadow"
           >
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-row flex-wrap items-start gap-2 sm:gap-3">
               {editingId === account.id ? (
                 <>
                   <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -217,7 +218,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                 <>
                   <Link
                     href={`/accounts/${account.id}`}
-                    className="flex items-center gap-4 flex-1 min-w-0 rounded-xl -m-1 p-2 -mr-2 hover:bg-slate-50/90 dark:hover:bg-slate-700/50 transition-colors group"
+                    className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0 rounded-xl -m-1 p-2 hover:bg-slate-50/90 dark:hover:bg-slate-700/50 transition-colors group"
                   >
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
@@ -230,31 +231,35 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
 
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-lg text-slate-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                        {account.name}
+                        {getAccountDisplayName(account)}
                       </div>
                       <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 flex-wrap">
-                        <span className="capitalize">{account.type.replace('_', ' ')}</span>
+                        <span>{getAccountTypeLabelEs(account.type)}</span>
                         <span className="text-slate-300">•</span>
                         <span>{account.currency}</span>
                       </div>
                     </div>
+                  </Link>
 
-                    <div className="text-right shrink-0">
+                  <div className="flex min-w-0 flex-1 basis-[40%] sm:basis-auto sm:max-w-[min(46%,20rem)] flex-col items-end justify-start gap-0.5 text-right">
+                    <div className="min-w-0 flex flex-col items-end gap-0.5">
                       <div
-                        className={`text-xl font-bold ${account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-200'}`}
+                        className={`text-lg sm:text-xl font-bold tabular-nums flex flex-wrap items-baseline justify-end gap-x-1.5 gap-y-0 ${account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-200'}`}
                       >
                         <AnimatedNumber
                           value={account.is_debt ? Math.abs(Number(account.balance)) : Number(account.balance)}
                           prefix={account.is_debt ? '-$' : '$'}
                           decimals={2}
                         />
+                        <span className="text-sm font-medium text-slate-500 dark:text-slate-400 shrink-0">
+                          {account.currency}
+                        </span>
                       </div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400">{account.currency}</div>
                       <AccountBalanceEquivalents account={account} />
                     </div>
-                  </Link>
+                  </div>
 
-                  <div className="flex gap-1 shrink-0">
+                  <div className="flex gap-1 shrink-0 self-start pt-0.5">
                     <motion.button
                       type="button"
                       whileTap={{ scale: 0.9 }}
@@ -269,7 +274,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                       type="button"
                       title="Archivar cuenta"
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => handleDelete(account.id, account.name)}
+                      onClick={() => handleDelete(account.id, getAccountDisplayName(account))}
                       className="p-2 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
