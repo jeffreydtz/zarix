@@ -260,16 +260,24 @@ function AnalyzerTotalSummary({
   total: number;
   currencyFilter: string;
   convertToArsBlue: boolean;
-  variant: 'overlay' | 'inline';
+  variant: 'inline' | 'belowChart';
 }) {
   const amountClass =
-    variant === 'overlay'
-      ? 'text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tabular-nums leading-tight'
+    variant === 'belowChart'
+      ? 'text-lg sm:text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-100 tabular-nums leading-tight break-words [overflow-wrap:anywhere]'
       : 'text-xl font-bold text-slate-700 dark:text-slate-200 tabular-nums leading-tight';
   const showFootnote = variant === 'inline';
   return (
-    <div className="text-center px-3 max-w-[min(220px,82vw)] mx-auto">
-      <div className="text-xs sm:text-sm text-slate-400">Total</div>
+    <div
+      className={
+        variant === 'belowChart'
+          ? 'text-center px-2 w-full max-w-full mx-auto'
+          : 'text-center px-3 max-w-[min(220px,82vw)] mx-auto'
+      }
+    >
+      <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        Total
+      </div>
       <div className={amountClass}>${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
       {showFootnote && (
         <div className="text-[10px] sm:text-[11px] text-slate-400 mt-1 leading-snug">
@@ -766,51 +774,51 @@ export default function SpendingAnalyzer({
               </div>
             ) : (
               <>
-                <div className="relative h-[220px] min-h-[220px] w-full min-w-0 sm:h-64 sm:min-h-[256px]">
-                  <ResponsiveContainer width="100%" height="100%" minHeight={220}>
-                    <PieChart>
-                      <Pie
-                        data={displaySlices}
-                        dataKey="amount"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius="52%"
-                        outerRadius="80%"
-                        paddingAngle={1.5}
-                        isAnimationActive={false}
-                        cursor="pointer"
-                        onClick={(_, index) => {
-                          const s = displaySlices[index];
-                          if (s) openCategoryDetail(s.name);
-                        }}
-                      >
-                        {displaySlices.map((s, i) => (
-                          <Cell key={`${s.name}-${i}`} fill={s.color} />
-                        ))}
-                      </Pie>
-                      {chartTooltipEnabled && (
-                        <Tooltip
-                          formatter={(v: number | string) =>
-                            typeof v === 'number'
-                              ? `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
-                              : String(v)
-                          }
-                          contentStyle={{ borderRadius: 8 }}
-                        />
-                      )}
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <AnalyzerTotalSummary
-                      total={total}
-                      currencyFilter={currencyFilter}
-                      convertToArsBlue={convertToArsBlue}
-                      variant="overlay"
-                    />
+                <div className="flex flex-col items-stretch">
+                  <div className="h-[200px] min-h-[200px] w-full min-w-0 sm:h-[220px] sm:min-h-[220px]">
+                    <ResponsiveContainer width="100%" height="100%" minHeight={200}>
+                      <PieChart margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
+                        <Pie
+                          data={displaySlices}
+                          dataKey="amount"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius="58%"
+                          outerRadius="88%"
+                          paddingAngle={1.5}
+                          isAnimationActive={false}
+                          cursor="pointer"
+                          onClick={(_, index) => {
+                            const s = displaySlices[index];
+                            if (s) openCategoryDetail(s.name);
+                          }}
+                        >
+                          {displaySlices.map((s, i) => (
+                            <Cell key={`${s.name}-${i}`} fill={s.color} />
+                          ))}
+                        </Pie>
+                        {chartTooltipEnabled && (
+                          <Tooltip
+                            formatter={(v: number | string) =>
+                              typeof v === 'number'
+                                ? `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
+                                : String(v)
+                            }
+                            contentStyle={{ borderRadius: 8 }}
+                          />
+                        )}
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
+                  <AnalyzerTotalSummary
+                    total={total}
+                    currencyFilter={currencyFilter}
+                    convertToArsBlue={convertToArsBlue}
+                    variant="belowChart"
+                  />
                 </div>
-                <p className="mt-2 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400 px-1 sm:px-2">
+                <p className="mt-1.5 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400 px-1 sm:px-2">
                   {analyzerCurrencyFootnote(currencyFilter, convertToArsBlue)}
                 </p>
               </>
