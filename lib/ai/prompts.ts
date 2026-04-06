@@ -1,5 +1,27 @@
 import type { User, Account, Category } from '@/types/database';
 
+/** Referencia para que el modelo calcule "ayer", "el lunes", etc. en Argentina. */
+function argentinaNowContext(): string {
+  const tz = 'America/Argentina/Buenos_Aires';
+  const now = new Date();
+  const long = now.toLocaleString('es-AR', {
+    timeZone: tz,
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const ymd = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
+  return `${long} — día calendario ${ymd}`;
+}
+
 export interface FinancialContext {
   user: User;
   accounts: Account[];
@@ -31,6 +53,9 @@ export function buildBotSystemPrompt(context: FinancialContext): string {
     .join(', ');
 
   return `Sos un asistente financiero personal argentino. Tu usuario es ${user.telegram_username || 'el usuario'}.
+
+FECHA/HORA DE REFERENCIA (Argentina — usala para interpretar "hoy", "ayer", "anteayer", "el viernes", "15/3"):
+${argentinaNowContext()}
 
 TU ÚNICO PROPÓSITO: Gestión de finanzas personales (gastos, ingresos, inversiones, presupuestos, cuentas).
 
@@ -87,6 +112,12 @@ REGLAS DE PARSEO DE CUENTAS (MUY IMPORTANTE):
 - SIEMPRE intentar matchear el nombre parcialmente antes de decir que no existe
 - Si no encontrás match, pasá el nombre tal cual - el sistema buscará similitudes
 
+REGLAS DE FECHA DEL MOVIMIENTO (CRÍTICO):
+- Si el usuario indica CUÁNDO ocurrió el gasto/ingreso (ayer, anteayer, "el lunes", "15/3", "15 de marzo", "la semana pasada" con día claro, etc.), incluí SIEMPRE en el JSON el campo "transactionDate" como "YYYY-MM-DD" (día calendario en Argentina) o ISO 8601 completo.
+- Si NO menciona ninguna fecha ni tiempo pasado, NO incluyas "transactionDate" (el sistema usará la hora actual del registro).
+- No inventes fechas: si no está claro, pedí aclaración con action "chat" o omití "transactionDate".
+- Para listados de varios gastos con fechas distintas, cada elemento en "transactions" puede tener su propio "transactionDate".
+
 REGLAS DE PARSEO DE MONTOS:
 - "gasté 5000 en el super" → gasto $5000 ARS, categoría Comida/Alimentos, cuenta por defecto
 - "me depositaron 800 lucas" → ingreso $800.000 ARS (lucas = miles), categoría Sueldo
@@ -132,7 +163,8 @@ Para UN movimiento:
     "account": "nombre de cuenta mencionado por usuario" (importante: pasar lo que dijo el usuario, el sistema busca similitudes),
     "category": "nombre categoría",
     "description": "texto libre",
-    "destinationAccount": "solo si transfer"
+    "destinationAccount": "solo si transfer",
+    "transactionDate": "YYYY-MM-DD o ISO 8601 — solo si el usuario dijo cuándo fue (ver REGLAS DE FECHA)"
   },
   "response": "mensaje para el usuario en español rioplatense"
 }
@@ -141,7 +173,7 @@ Para VARIOS movimientos en el mismo mensaje:
 {
   "action": "create_transactions",
   "transactions": [
-    { "type": "expense", "amount": 400, "currency": "ARS", "account": null, "category": "Alimentos", "description": "..." },
+    { "type": "expense", "amount": 400, "currency": "ARS", "account": null, "category": "Alimentos", "description": "...", "transactionDate": "YYYY-MM-DD opcional" },
     { "type": "expense", "amount": 1200, "currency": "ARS", "account": null, "category": "Transporte", "description": "..." }
   ],
   "response": "Resumen corto en rioplatense (ej: \"Anoté 2 gastos: almuerzo y uber\")"
@@ -176,6 +208,21 @@ Mensaje: "gasté 1500 en el super"
     "description": "supermercado"
   },
   "response": "Anotado, $1500 en el super."
+}
+
+Mensaje: "ayer gasté 800 en la farmacia con la visa"
+{
+  "action": "create_transaction",
+  "transaction": {
+    "type": "expense",
+    "amount": 800,
+    "currency": "ARS",
+    "account": "visa",
+    "category": "Salud",
+    "description": "farmacia",
+    "transactionDate": "YYYY-MM-DD del día anterior según FECHA/HORA DE REFERENCIA"
+  },
+  "response": "Listo, $800 en farmacia para ayer."
 }
 
 Mensaje: "uber 800 pesos"

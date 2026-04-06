@@ -14,6 +14,7 @@ import {
   storedTurnsToGeminiHistory,
 } from '@/lib/services/botSessions';
 import { executeBotTransaction } from '@/lib/telegram/executeBotTransaction';
+import { parseBotTransactionDateInput } from '@/lib/transaction-date';
 
 interface BotContext extends Context {
   userId?: string;
@@ -499,7 +500,8 @@ bot.on(message('text'), async (ctx) => {
         currency: pendingData.currency,
         categoryId: pendingData.categoryId,
         description: pendingData.description,
-        transactionDate: pendingData.date || new Date().toISOString(),
+        transactionDate:
+          parseBotTransactionDateInput(pendingData.date) ?? new Date().toISOString(),
       });
       
       delete (global as any)[pendingKey];

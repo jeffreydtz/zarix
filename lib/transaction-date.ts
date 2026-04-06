@@ -30,3 +30,23 @@ export function isoToLocalDateInputValue(iso: string): string {
   if (Number.isNaN(d.getTime())) return todayLocalYmd();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
+
+/**
+ * Fecha devuelta por el bot (IA) o por parseo de ticket: `YYYY-MM-DD`, ISO completo, etc.
+ * Si no es válida, `undefined` → el caller usa la hora actual.
+ */
+export function parseBotTransactionDateInput(raw: unknown): string | undefined {
+  if (raw === null || raw === undefined) return undefined;
+  const s = typeof raw === 'string' ? raw.trim() : '';
+  if (!s) return undefined;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    return calendarDateToUtcNoonIso(s);
+  }
+
+  const d = new Date(s);
+  if (!Number.isNaN(d.getTime())) {
+    return d.toISOString();
+  }
+  return undefined;
+}

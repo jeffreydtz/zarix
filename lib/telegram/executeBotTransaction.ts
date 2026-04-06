@@ -1,4 +1,5 @@
 import type { FinancialContext } from '@/lib/ai/prompts';
+import { parseBotTransactionDateInput } from '@/lib/transaction-date';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
@@ -11,6 +12,9 @@ export type BotTxPayload = {
   category?: string;
   description?: string;
   destinationAccount?: string;
+  /** ISO o YYYY-MM-DD; el modelo también puede mandar `date` (alias). */
+  transactionDate?: string;
+  date?: string;
 };
 
 export type ExecuteBotTxResult =
@@ -147,6 +151,10 @@ export async function executeBotTransaction(
     }
   }
 
+  const resolvedDate =
+    parseBotTransactionDateInput(txData.transactionDate) ??
+    parseBotTransactionDateInput(txData.date);
+
   try {
     await transactionsService.create({
       userId,
@@ -157,6 +165,7 @@ export async function executeBotTransaction(
       currency: finalCurrency,
       categoryId,
       description: txData.description,
+      ...(resolvedDate ? { transactionDate: resolvedDate } : {}),
     });
 
     let responseWithAccount: string;
