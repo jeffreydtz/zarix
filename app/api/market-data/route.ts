@@ -4,8 +4,11 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 // Cache for 5 minutes on Vercel edge
 export const revalidate = 300;
-/** Cotizaciones Yahoo secuenciales (12 símbolos + reintentos); evita cortes en serverless. */
-export const maxDuration = 30;
+/** Paralelismo + caché rápida; Pro puede usar más tiempo si hace falta. */
+export const maxDuration = 25;
+
+/** Si la fila en DB tiene menos de esto, devolvemos sin pegarle a Yahoo/CoinGecko (evita timeout en Vercel). */
+const SERVER_CACHE_TTL_MS = 3 * 60 * 1000;
 
 /** Nasdaq Composite + blue chips (el índice va primero para que siempre destaque). */
 const US_TICKERS = ['^IXIC', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'GOOGL'];
@@ -40,8 +43,6 @@ interface CryptoQuote {
   image: string;
 }
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 function resolveCurrency(symbol: string, metaCurrency: string | undefined): string {
   if (metaCurrency && metaCurrency.length > 0) return metaCurrency;
   if (symbol === '^MERV') return 'PTS';
@@ -49,85 +50,66 @@ function resolveCurrency(symbol: string, metaCurrency: string | undefined): stri
   return 'USD';
 }
 
+/** Una petición por host, timeout corto — en serverless el tiempo total importa más que reintentos largos. */
 async function fetchYahooChartQuote(symbol: string): Promise<StockQuote | null> {
   const encoded = encodeURIComponent(symbol);
 
   for (const host of YAHOO_CHART_HOSTS) {
     const url = `https://${host}/v8/finance/chart/${encoded}?range=1d&interval=1d`;
+    try {
+      const res = await fetch(url, {
+        headers: YAHOO_HEADERS,
+        cache: 'no-store',
+        signal: AbortSignal.timeout(4500),
+      });
 
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        const res = await fetch(url, {
-          headers: YAHOO_HEADERS,
-          cache: 'no-store',
-        });
+      if (!res.ok) continue;
 
-        if (!res.ok) {
-          if (res.status === 429 || res.status >= 500) {
-            await sleep(180 * (attempt + 1));
-            continue;
-          }
-          break;
-        }
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('json')) continue;
 
-        const ct = res.headers.get('content-type') || '';
-        if (!ct.includes('json')) {
-          await sleep(180 * (attempt + 1));
-          continue;
-        }
+      const data = await res.json();
+      const result = data?.chart?.result?.[0];
+      const meta = result?.meta;
+      const quote = result?.indicators?.quote?.[0];
 
-        const data = await res.json();
-        const result = data?.chart?.result?.[0];
-        const meta = result?.meta;
-        const quote = result?.indicators?.quote?.[0];
+      const closes: number[] = Array.isArray(quote?.close) ? quote.close.filter((v: any) => Number.isFinite(v)) : [];
+      const lastClose = closes.length > 0 ? Number(closes[closes.length - 1]) : 0;
+      const price = Number(meta?.regularMarketPrice || lastClose || meta?.previousClose || meta?.chartPreviousClose || 0);
+      if (!price || !Number.isFinite(price)) continue;
 
-        // Yahoo no siempre envía regularMarketPrice (depende del horario/mercado).
-        const closes: number[] = Array.isArray(quote?.close) ? quote.close.filter((v: any) => Number.isFinite(v)) : [];
-        const lastClose = closes.length > 0 ? Number(closes[closes.length - 1]) : 0;
-        const price = Number(meta?.regularMarketPrice || lastClose || meta?.previousClose || meta?.chartPreviousClose || 0);
-        if (!price || !Number.isFinite(price)) {
-          await sleep(120 * (attempt + 1));
-          continue;
-        }
+      const prev = Number(meta?.chartPreviousClose || meta?.previousClose || lastClose || 0);
+      const change = price - prev;
+      const changePct = prev > 0 ? (change / prev) * 100 : 0;
 
-        const prev = Number(meta?.chartPreviousClose || meta?.previousClose || lastClose || 0);
-        const change = price - prev;
-        const changePct = prev > 0 ? (change / prev) * 100 : 0;
+      const instrumentType = meta?.instrumentType === 'INDEX' ? 'INDEX' : 'EQUITY';
+      const name =
+        (meta?.shortName as string | undefined) ||
+        (meta?.longName as string | undefined) ||
+        (meta?.symbol as string | undefined) ||
+        symbol;
 
-        const instrumentType = meta?.instrumentType === 'INDEX' ? 'INDEX' : 'EQUITY';
-        const name =
-          (meta?.shortName as string | undefined) ||
-          (meta?.longName as string | undefined) ||
-          (meta?.symbol as string | undefined) ||
-          symbol;
-
-        return {
-          ticker: symbol,
-          name,
-          price,
-          change,
-          changePct,
-          currency: resolveCurrency(symbol, meta?.currency as string | undefined),
-          instrumentType,
-        };
-      } catch {
-        await sleep(180 * (attempt + 1));
-      }
+      return {
+        ticker: symbol,
+        name,
+        price,
+        change,
+        changePct,
+        currency: resolveCurrency(symbol, meta?.currency as string | undefined),
+        instrumentType,
+      };
+    } catch {
+      /* timeout / red */
     }
   }
 
   return null;
 }
 
-async function fetchYahooQuotesWithFallback(tickers: string[]): Promise<StockQuote[]> {
-  // Secuencial + pausa: evita que Yahoo corte por paralelismo (p. ej. US+ARG a la vez).
-  const results: StockQuote[] = [];
-  for (const ticker of tickers) {
-    const quote = await fetchYahooChartQuote(ticker);
-    if (quote) results.push(quote);
-    await sleep(110);
-  }
-  return results;
+/** Cotizaciones en paralelo (una Promise por símbolo) para caber en el límite de Vercel. */
+async function fetchYahooQuotesParallel(tickers: string[]): Promise<StockQuote[]> {
+  const settled = await Promise.all(tickers.map((t) => fetchYahooChartQuote(t)));
+  return settled.filter((q): q is StockQuote => q !== null);
 }
 
 interface MarketPayloadStored {
@@ -142,23 +124,36 @@ interface MarketPayloadStored {
   };
 }
 
-async function loadCachedPayload(): Promise<MarketPayloadStored | null> {
+function normalizeStoredPayload(raw: unknown): MarketPayloadStored | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const p = raw as MarketPayloadStored;
+  return {
+    crypto: Array.isArray(p.crypto) ? p.crypto : [],
+    usStocks: Array.isArray(p.usStocks) ? p.usStocks : [],
+    argStocks: Array.isArray(p.argStocks) ? p.argStocks : [],
+    sectionTimes: p.sectionTimes,
+  };
+}
+
+function payloadHasAnyData(p: MarketPayloadStored): boolean {
+  return p.crypto.length > 0 || p.usStocks.length > 0 || p.argStocks.length > 0;
+}
+
+async function loadCachedRow(): Promise<{
+  payload: MarketPayloadStored;
+  updated_at: string;
+} | null> {
   try {
     const supabase = createServiceClientSync();
     const { data, error } = await supabase
       .from('market_data_cache')
-      .select('payload')
+      .select('payload, updated_at')
       .eq('id', 1)
       .maybeSingle();
-    if (error || !data?.payload) return null;
-    const p = data.payload as MarketPayloadStored;
-    if (!p || typeof p !== 'object') return null;
-    return {
-      crypto: Array.isArray(p.crypto) ? p.crypto : [],
-      usStocks: Array.isArray(p.usStocks) ? p.usStocks : [],
-      argStocks: Array.isArray(p.argStocks) ? p.argStocks : [],
-      sectionTimes: p.sectionTimes,
-    };
+    if (error || !data?.payload || !data.updated_at) return null;
+    const payload = normalizeStoredPayload(data.payload);
+    if (!payload || !payloadHasAnyData(payload)) return null;
+    return { payload, updated_at: data.updated_at as string };
   } catch {
     return null;
   }
@@ -227,9 +222,10 @@ async function fetchCryptoTop5(): Promise<CryptoQuote[]> {
   const res = await fetch(url, {
     headers: { Accept: 'application/json' },
     next: { revalidate: 300 },
+    signal: AbortSignal.timeout(5000),
   });
 
-  if (!res.ok) throw new Error(`CoinGecko fetch failed: ${res.status}`);
+  if (!res.ok) return [];
 
   const data: any[] = await res.json();
 
@@ -244,26 +240,64 @@ async function fetchCryptoTop5(): Promise<CryptoQuote[]> {
   }));
 }
 
-export async function GET() {
-  const cached = await loadCachedPayload();
+function jsonResponse(
+  body: {
+    crypto: CryptoQuote[];
+    usStocks: StockQuote[];
+    argStocks: StockQuote[];
+    fetchedAt: string;
+    stale: { crypto: boolean; usStocks: boolean; argStocks: boolean };
+    sectionTimes: NonNullable<MarketPayloadStored['sectionTimes']>;
+  },
+  opts?: { cacheHeader?: 'hit' | 'miss'; status?: number }
+) {
+  return NextResponse.json(body, {
+    status: opts?.status ?? 200,
+    headers: {
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      ...(opts?.cacheHeader ? { 'x-zarix-market-cache': opts.cacheHeader } : {}),
+    },
+  });
+}
 
-  const [cryptoResult, yahooBundle] = await Promise.allSettled([
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const forceRefresh = searchParams.get('refresh') === '1';
+
+  const cachedRow = await loadCachedRow();
+  const cachedPayload = cachedRow?.payload ?? null;
+
+  if (
+    !forceRefresh &&
+    cachedRow &&
+    Date.now() - new Date(cachedRow.updated_at).getTime() < SERVER_CACHE_TTL_MS
+  ) {
+    const st = cachedRow.payload.sectionTimes ?? {};
+    return jsonResponse(
+      {
+        crypto: cachedRow.payload.crypto,
+        usStocks: cachedRow.payload.usStocks,
+        argStocks: cachedRow.payload.argStocks,
+        fetchedAt: cachedRow.updated_at,
+        stale: { crypto: false, usStocks: false, argStocks: false },
+        sectionTimes: {
+          crypto: st.crypto ?? cachedRow.updated_at,
+          usStocks: st.usStocks ?? cachedRow.updated_at,
+          argStocks: st.argStocks ?? cachedRow.updated_at,
+        },
+      },
+      { cacheHeader: 'hit' }
+    );
+  }
+
+  const [crypto, usStocks, argStocks] = await Promise.all([
     fetchCryptoTop5(),
-    (async () => {
-      const usStocks = await fetchYahooQuotesWithFallback(US_TICKERS);
-      const argStocks = await fetchYahooQuotesWithFallback(ARG_TICKERS);
-      return { usStocks, argStocks };
-    })(),
+    fetchYahooQuotesParallel(US_TICKERS),
+    fetchYahooQuotesParallel(ARG_TICKERS),
   ]);
 
-  const crypto = cryptoResult.status === 'fulfilled' ? cryptoResult.value : [];
-  const usStocks =
-    yahooBundle.status === 'fulfilled' ? yahooBundle.value.usStocks : [];
-  const argStocks =
-    yahooBundle.status === 'fulfilled' ? yahooBundle.value.argStocks : [];
-
   const nowIso = new Date().toISOString();
-  const merged = mergeWithCache({ crypto, usStocks, argStocks }, cached, nowIso);
+  const merged = mergeWithCache({ crypto, usStocks, argStocks }, cachedPayload, nowIso);
 
   const payloadToStore: MarketPayloadStored = {
     crypto: merged.crypto,
@@ -272,15 +306,12 @@ export async function GET() {
     sectionTimes: merged.sectionTimes,
   };
 
-  const hasAnyData =
-    payloadToStore.crypto.length > 0 ||
-    payloadToStore.usStocks.length > 0 ||
-    payloadToStore.argStocks.length > 0;
+  const hasAnyData = payloadHasAnyData(payloadToStore);
   if (hasAnyData) {
-    await saveMergedPayload(payloadToStore);
+    void saveMergedPayload(payloadToStore);
   }
 
-  return NextResponse.json(
+  return jsonResponse(
     {
       crypto: merged.crypto,
       usStocks: merged.usStocks,
@@ -289,10 +320,6 @@ export async function GET() {
       stale: merged.stale,
       sectionTimes: merged.sectionTimes,
     },
-    {
-      headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
-      },
-    }
+    { cacheHeader: 'miss' }
   );
 }

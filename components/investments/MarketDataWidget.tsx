@@ -205,11 +205,12 @@ export default function MarketDataWidget() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
 
-  const fetchData = useCallback(async (opts?: { showLoading?: boolean }) => {
+  const fetchData = useCallback(async (opts?: { showLoading?: boolean; forceRefresh?: boolean }) => {
     const local = loadMarketDataFromLocal();
     if (opts?.showLoading) setLoading(true);
     try {
-      const res = await fetch('/api/market-data', { cache: 'no-store' });
+      const q = opts?.forceRefresh ? '?refresh=1' : '';
+      const res = await fetch(`/api/market-data${q}`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed');
       const json = (await res.json()) as MarketDataClient;
       const merged = mergeMarketWithLocalSnapshot(json, local);
@@ -263,7 +264,7 @@ export default function MarketDataWidget() {
           <button
             type="button"
             onClick={() => {
-              void fetchData({ showLoading: true });
+              void fetchData({ showLoading: true, forceRefresh: true });
             }}
             className="text-xs text-blue-500 hover:text-blue-600 font-medium px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
           >
