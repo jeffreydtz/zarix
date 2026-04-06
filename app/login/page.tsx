@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { translateSupabaseAuthError } from '@/lib/auth/auth-error-messages';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -66,7 +67,9 @@ function LoginForm() {
       router.push('/dashboard');
     } catch (error: unknown) {
       const err = error as { message?: string };
-      setMessage(`Error: ${err.message ?? 'Error al iniciar sesión'}`);
+      setMessage(
+        `Error: ${translateSupabaseAuthError(err.message ?? 'Error al iniciar sesión')}`
+      );
     } finally {
       setLoading(false);
     }
@@ -92,7 +95,7 @@ function LoginForm() {
       setMessage('success:Te reenviamos el correo de confirmación.');
     } catch (error: unknown) {
       const err = error as { message?: string };
-      setMessage(`Error: ${err.message ?? 'No se pudo reenviar'}`);
+      setMessage(`Error: ${translateSupabaseAuthError(err.message ?? 'No se pudo reenviar')}`);
     } finally {
       setResendLoading(false);
     }
@@ -115,8 +118,9 @@ function LoginForm() {
       if (error) throw error;
 
       setMessage('success:Te enviamos un link a tu email. Revisá tu casilla.');
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Error';
+      setMessage(`Error: ${translateSupabaseAuthError(msg)}`);
     } finally {
       setLoading(false);
     }

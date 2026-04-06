@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { translateSupabaseAuthError } from '@/lib/auth/auth-error-messages';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -67,8 +68,8 @@ function RegisterForm() {
 
       router.push('/login?registered=1');
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Error desconocido';
-      setMessage(`Error: ${msg}`);
+      const raw = error instanceof Error ? error.message : 'Error desconocido';
+      setMessage(`Error: ${translateSupabaseAuthError(raw)}`);
     } finally {
       setLoading(false);
     }

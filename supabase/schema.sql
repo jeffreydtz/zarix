@@ -441,8 +441,11 @@ ALTER TABLE bot_sessions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY users_select ON users FOR SELECT USING (auth.uid() = id);
 CREATE POLICY users_update ON users FOR UPDATE USING (auth.uid() = id);
 
--- Accounts: solo sus propias cuentas
-CREATE POLICY accounts_all ON accounts FOR ALL USING (auth.uid() = user_id);
+-- Accounts: solo sus propias cuentas (TO authenticated; anon sin política = sin acceso)
+CREATE POLICY accounts_select_own ON accounts FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY accounts_insert_own ON accounts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY accounts_update_own ON accounts FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY accounts_delete_own ON accounts FOR DELETE TO authenticated USING (auth.uid() = user_id);
 
 -- Categories: sistema (is_system=true) son visibles para todos, custom solo para owner
 CREATE POLICY categories_select ON categories FOR SELECT USING (
