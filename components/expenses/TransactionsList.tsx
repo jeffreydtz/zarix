@@ -54,7 +54,9 @@ function secondaryOriginalLine(
 export interface ViewAccountContext {
   accountId: string;
   accountCurrency: string;
-  /** USD → ARS (blue u oficial según `cotizacionesService`) para referencia en pantalla. */
+  /** Mismo criterio que transferencias / `create` — corrige filas con conversión 1:1 guardada mal. */
+  fx?: { usdToArs: number; eurArs: number };
+  /** USD → ARS (referencia en resumen); si falta, se usa `fx.usdToArs`. */
   usdToArs?: number | null;
 }
 
@@ -65,9 +67,13 @@ function AccountMovementsSummaryCard({
   transactions: TransactionWithCategory[];
   viewAccountContext: ViewAccountContext;
 }) {
-  const { accountId, accountCurrency, usdToArs } = viewAccountContext;
+  const { accountId, accountCurrency, fx, usdToArs: usdToArsLegacy } = viewAccountContext;
   const ac = accountCurrency.trim().toUpperCase();
-  const netListed = sumImpactInAccountCurrency(transactions, accountId);
+  const usdToArs = fx?.usdToArs ?? usdToArsLegacy ?? undefined;
+  const netListed = sumImpactInAccountCurrency(transactions, accountId, {
+    accountCurrency: ac,
+    fx: fx,
+  });
   const byOrig = aggregateOriginalByCurrency(transactions, accountId);
   const origParts = Object.entries(byOrig)
     .filter(([, v]) => Math.abs(v) > 1e-8)
@@ -338,7 +344,12 @@ export default function TransactionsList({
       >
         {transactions.map((tx) => {
           const vac = viewAccountContext;
-          const impact = vac ? impactInAccountCurrency(tx, vac.accountId) : 0;
+          const impact = vac
+            ? impactInAccountCurrency(tx, vac.accountId, {
+                accountCurrency: vac.accountCurrency.trim().toUpperCase(),
+                fx: vac.fx,
+              })
+            : 0;
           const secondary =
             vac && secondaryOriginalLine(tx, vac.accountId, vac.accountCurrency);
           return (

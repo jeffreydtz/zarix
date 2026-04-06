@@ -1,6 +1,22 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { normalizeCurrency } from '@/lib/transaction-exchange';
 import { cotizacionesService } from './cotizaciones';
 import type { Transaction, Account } from '@/types/database';
+
+/** Misma regla que transferencias: cotización de mercado entre moneda del comprobante y moneda de la cuenta. */
+async function computeAmountInAccountCurrencyForAccount(
+  amount: number,
+  currency: string,
+  accountCurrency: string
+): Promise<{ amountInAccountCurrency: number; exchangeRate: number }> {
+  const c = normalizeCurrency(currency);
+  const a = normalizeCurrency(accountCurrency);
+  if (c === a) {
+    return { amountInAccountCurrency: amount, exchangeRate: 1 };
+  }
+  const exchangeRate = await cotizacionesService.getExchangeRate(currency, accountCurrency);
+  return { amountInAccountCurrency: amount * exchangeRate, exchangeRate };
+}
 
 export interface CreateTransactionInput {
   userId: string;
@@ -57,12 +73,14 @@ class TransactionsService {
     let exchangeRate = 1;
     let amountInAccountCurrency = input.amount;
 
-    if (!isTransfer && input.currency !== account.data.currency) {
-      exchangeRate = await cotizacionesService.getExchangeRate(
+    if (!isTransfer) {
+      const conv = await computeAmountInAccountCurrencyForAccount(
+        input.amount,
         input.currency,
         account.data.currency
       );
-      amountInAccountCurrency = input.amount * exchangeRate;
+      amountInAccountCurrency = conv.amountInAccountCurrency;
+      exchangeRate = conv.exchangeRate;
     }
 
     if (input.installments && input.installments > 1) {
@@ -391,6 +409,25 @@ class TransactionsService {
       balance: totalIncome - totalExpenses,
       topCategories,
       transactionCount: transactions.length,
+    };
+  }
+
+  /**
+   * Al editar gasto/ingreso: mismo criterio que al crear (cotización entre moneda del comprobante y cuenta).
+   */
+  async recomputeExpenseIncomeAmountFields(
+    amount: number,
+    currency: string,
+    accountCurrency: string
+  ): Promise<{ amount_in_account_currency: number; exchange_rate: number | null }> {
+    const { amountInAccountCurrency, exchangeRate } = await computeAmountInAccountCurrencyForAccount(
+      amount,
+      currency,
+      accountCurrency
+    );
+    return {
+      amount_in_account_currency: amountInAccountCurrency,
+      exchange_rate: exchangeRate !== 1 ? exchangeRate : null,
     };
   }
 }

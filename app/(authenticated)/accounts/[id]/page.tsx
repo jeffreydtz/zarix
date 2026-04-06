@@ -25,7 +25,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
       notFound();
     }
 
-    const [accounts, transactions, categoriesResult, usdToArs] = await Promise.all([
+    const [accounts, transactions, categoriesResult, fxRates] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       transactionsService
         .list(user.id, { involveAccountId: account.id, limit: 500 })
@@ -34,7 +34,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
         .from('categories')
         .select('*')
         .or(`user_id.eq.${user.id},is_system.eq.true`),
-      cotizacionesService.getExchangeRate('USD', 'ARS').catch(() => null as number | null),
+      cotizacionesService.getTransactionsFxRates().catch(() => null),
     ]);
 
     const categories = categoriesResult.data || [];
@@ -110,7 +110,10 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
             viewAccountContext={{
               accountId: account.id,
               accountCurrency: account.currency,
-              usdToArs: usdToArs ?? undefined,
+              fx: fxRates
+                ? { usdToArs: fxRates.usdArs, eurArs: fxRates.eurArs }
+                : undefined,
+              usdToArs: fxRates?.usdArs ?? undefined,
             }}
           />
         </div>

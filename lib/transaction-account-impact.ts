@@ -1,19 +1,40 @@
 import type { TransactionWithCategory } from '@/lib/services/transactions';
+import { effectiveAmountInAccountCurrencyForMovement } from '@/lib/transaction-exchange';
+
+/** Tasas actuales (USD/EUR → ARS) para corregir conversiones 1:1 guardadas mal. */
+export type FxHints = { usdToArs: number; eurArs: number };
+
+export type ImpactOptions = {
+  accountCurrency?: string;
+  fx?: FxHints;
+};
 
 /**
- * Impacto de un movimiento sobre el saldo de una cuenta, en la **moneda de esa cuenta**
- * (coherente con `amount_in_account_currency` y con el trigger de saldos).
+ * Impacto de un movimiento sobre el saldo de una cuenta, en la **moneda de esa cuenta**.
+ * Gastos/ingresos: usa la misma lógica que al crear movimientos y transferencias (`amount * cotización`);
+ * si `fx` está presente, corrige filas con `amount_in_account_currency` ≈ monto en moneda extranjera.
  */
-export function impactInAccountCurrency(tx: TransactionWithCategory, accountId: string): number {
+export function impactInAccountCurrency(
+  tx: TransactionWithCategory,
+  accountId: string,
+  options?: ImpactOptions
+): number {
   const ain = Number(tx.amount_in_account_currency);
   const amt = Number(tx.amount);
   const er = Number(tx.exchange_rate ?? 1);
 
   if (tx.account_id === accountId) {
-    if (tx.type === 'expense') return -Math.abs(ain);
-    if (tx.type === 'income') return Math.abs(ain);
     if (tx.type === 'transfer') return -Math.abs(ain);
     if (tx.type === 'adjustment') return ain;
+    const accCur = options?.accountCurrency ?? tx.account?.currency ?? 'ARS';
+    if (tx.type === 'expense') {
+      const eff = effectiveAmountInAccountCurrencyForMovement(tx, accCur, options?.fx);
+      return -Math.abs(eff);
+    }
+    if (tx.type === 'income') {
+      const eff = effectiveAmountInAccountCurrencyForMovement(tx, accCur, options?.fx);
+      return Math.abs(eff);
+    }
   }
   if (tx.type === 'transfer' && tx.destination_account_id === accountId) {
     return Math.abs(amt * er);
@@ -58,7 +79,8 @@ export function aggregateOriginalByCurrency(
 
 export function sumImpactInAccountCurrency(
   txs: TransactionWithCategory[],
-  accountId: string
+  accountId: string,
+  options?: ImpactOptions
 ): number {
-  return txs.reduce((s, tx) => s + impactInAccountCurrency(tx, accountId), 0);
+  return txs.reduce((s, tx) => s + impactInAccountCurrency(tx, accountId, options), 0);
 }

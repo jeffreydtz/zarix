@@ -61,6 +61,30 @@ export async function PATCH(
 
     const serviceClient = createServiceClientSync();
 
+    const { data: accRow, error: accErr } = await serviceClient
+      .from('accounts')
+      .select('currency')
+      .eq('id', body.account_id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (accErr || !accRow) {
+      return NextResponse.json({ error: 'Cuenta no encontrada' }, { status: 400 });
+    }
+
+    let amountPatch: Record<string, unknown> = {};
+    if (body.type === 'expense' || body.type === 'income') {
+      const rec = await transactionsService.recomputeExpenseIncomeAmountFields(
+        Number(body.amount),
+        cur,
+        accRow.currency
+      );
+      amountPatch = {
+        amount_in_account_currency: rec.amount_in_account_currency,
+        exchange_rate: rec.exchange_rate,
+      };
+    }
+
     const { data, error } = await serviceClient
       .from('transactions')
       .update({
@@ -72,6 +96,7 @@ export async function PATCH(
         description: body.description || null,
         transaction_date: body.transaction_date,
         notes: body.notes || null,
+        ...amountPatch,
       })
       .eq('id', params.id)
       .eq('user_id', user.id)
