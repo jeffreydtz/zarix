@@ -7,9 +7,34 @@ import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import type { FinancialContext } from '@/lib/ai/prompts';
+import {
+  appendBotTurn,
+  clearBotSession,
+  getStoredTurns,
+  storedTurnsToGeminiHistory,
+} from '@/lib/services/botSessions';
+import { executeBotTransaction } from '@/lib/telegram/executeBotTransaction';
 
 interface BotContext extends Context {
   userId?: string;
+}
+
+const MAX_BATCH_TRANSACTIONS = 12;
+
+/** Mensajes largos o con varios montos: modelo full + más tokens. */
+function preferFullTierForMessage(message: string): boolean {
+  const newlines = (message.match(/\n/g) || []).length;
+  if (message.length > 400) return true;
+  if (newlines >= 2) return true;
+  if (/^\s*[-•*]\s/m.test(message) || /;\s/.test(message)) return true;
+  const nums = message.match(/\d[\d.,]*/g);
+  if (nums && nums.length >= 4) return true;
+  return false;
+}
+
+function parseModelJson(aiResponse: string): unknown {
+  const cleaned = aiResponse.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
+  return JSON.parse(cleaned);
 }
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
@@ -164,6 +189,7 @@ bot.command('help', async (ctx) => {
 /cuentas → ver saldos de todas tus cuentas
 /cotizaciones → dólar blue, MEP, BTC, ETH
 /resumen → resumen del mes actual
+/reset → borrar memoria del chat con el bot (no borra tus movimientos)
 /help → esta ayuda
 
 *LENGUAJE NATURAL:*
@@ -175,10 +201,20 @@ También podés hablarme natural:
 • "compré 100 dólares a 1250"
 • "cuánto gasté en comida este mes?"
 • "a cómo está el blue?"
+• Varios gastos en un mensaje: "500 en el súper, 200 de nafta y 80 de café"
 
 ¡Probá y te entiendo! 🚀`;
 
   ctx.reply(message, { parse_mode: 'Markdown' });
+});
+
+bot.command('reset', async (ctx) => {
+  const user = await getUserFromTelegramId(ctx.chat.id);
+  if (!user) {
+    return ctx.reply('No estás vinculado. Usá /start primero.');
+  }
+  await clearBotSession(user.id, ctx.chat.id);
+  return ctx.reply('Listo, borré el contexto de esta conversación. Tus movimientos no se tocaron.');
 });
 
 bot.on(message('photo'), async (ctx) => {
@@ -351,69 +387,89 @@ bot.on(message('voice'), async (ctx) => {
 
     await ctx.reply(`🎤 Escuché: _"${transcribed}"_`, { parse_mode: 'Markdown' });
 
-    // Process as natural language text
     const financialContext = await getFinancialContext(user.id);
     const systemPrompt = buildBotSystemPrompt(financialContext);
-    const tier = geminiClient.getTierForRequest(transcribed, false);
+    const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
+    const history = storedTurnsToGeminiHistory(storedTurns);
+    const tier = preferFullTierForMessage(transcribed)
+      ? 'full'
+      : geminiClient.getTierForRequest(transcribed, false);
 
-    const aiResponse = await geminiClient.chat(transcribed, {
-      tier,
-      systemInstruction: systemPrompt,
-      maxTokens: 1024,
-    });
-
-    let parsedResponse: { action: string; transaction?: any; response: string };
+    let aiResponse = '';
     try {
-      const cleaned = aiResponse.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
-      parsedResponse = JSON.parse(cleaned);
-    } catch {
-      return ctx.reply(aiResponse);
-    }
-
-    if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
-      const txData = parsedResponse.transaction;
-      if (!txData.amount || txData.amount <= 0) {
-        return ctx.reply(parsedResponse.response || 'No pude entender el monto del audio.');
-      }
-
-      let accountId = '';
-      if (txData.account) {
-        const fuzzyResult = await accountsService.findByNameFuzzy(user.id, txData.account);
-        if (fuzzyResult.account) accountId = fuzzyResult.account.id;
-      }
-      if (!accountId) {
-        const defaultAccount = financialContext.accounts.find(
-          (a) => a.currency === (txData.currency || 'ARS') && a.type !== 'credit_card'
-        );
-        if (defaultAccount) accountId = defaultAccount.id;
-      }
-
-      if (!accountId) {
-        return ctx.reply(parsedResponse.response || 'No encontré una cuenta para este gasto.');
-      }
-
-      let categoryId: string | undefined;
-      if (txData.category) {
-        const cat = financialContext.categories.find(
-          (c) => c.name.toLowerCase() === txData.category.toLowerCase()
-        );
-        if (cat) categoryId = cat.id;
-      }
-
-      await transactionsService.create({
-        userId: user.id,
-        type: txData.type || 'expense',
-        accountId,
-        amount: txData.amount,
-        currency: txData.currency || 'ARS',
-        categoryId,
-        description: txData.description || transcribed,
+      aiResponse = await geminiClient.chat(transcribed, {
+        tier,
+        systemInstruction: systemPrompt,
+        history,
+        maxTokens: 2048,
       });
 
-      return ctx.reply(`✅ ${parsedResponse.response}`);
-    }
+      let parsedResponse: {
+        action: string;
+        transaction?: Record<string, unknown>;
+        transactions?: Record<string, unknown>[];
+        response: string;
+      };
+      try {
+        parsedResponse = parseModelJson(aiResponse) as typeof parsedResponse;
+      } catch {
+        return ctx.reply(aiResponse);
+      }
 
-    ctx.reply(parsedResponse.response);
+      if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
+        const r = await executeBotTransaction(user.id, financialContext, parsedResponse.transaction, {
+          summaryResponse: parsedResponse.response,
+        });
+        if (r.kind === 'abort') return ctx.reply(r.reply);
+        return ctx.reply(`✅ ${r.reply}`);
+      }
+
+      if (
+        parsedResponse.action === 'create_transactions' &&
+        Array.isArray(parsedResponse.transactions)
+      ) {
+        const txs = parsedResponse.transactions
+          .filter((t) => t && typeof t.amount === 'number' && (t.amount as number) > 0)
+          .slice(0, MAX_BATCH_TRANSACTIONS);
+        if (txs.length === 0) {
+          return ctx.reply(
+            parsedResponse.response || 'No encontré montos válidos en lo que dijiste.'
+          );
+        }
+        const lines: string[] = [];
+        for (const tx of txs) {
+          const r = await executeBotTransaction(user.id, financialContext, tx, {});
+          if (r.kind === 'abort') return ctx.reply(r.reply);
+          lines.push(r.reply);
+        }
+        return ctx.reply(`✅ ${parsedResponse.response}\n\n${lines.join('\n')}`);
+      }
+
+      if (parsedResponse.action === 'create_account' && parsedResponse.transaction) {
+        const accData = parsedResponse.transaction;
+        try {
+          await accountsService.create({
+            userId: user.id,
+            name: (accData.account || accData.name) as string,
+            type: (accData.type as string) || 'cash',
+            currency: (accData.currency as string) || 'ARS',
+            initialBalance: 0,
+            icon: accData.type === 'bank' ? '🏦' : '💵',
+          });
+          return ctx.reply(
+            `Listo! Creé la cuenta "${accData.account || accData.name}". Ahora podés usarla para registrar gastos.`
+          );
+        } catch {
+          return ctx.reply('No pude crear la cuenta. ¿Podés intentar de nuevo?');
+        }
+      }
+
+      return ctx.reply(parsedResponse.response);
+    } finally {
+      if (aiResponse) {
+        await appendBotTurn(user.id, ctx.chat.id, transcribed, aiResponse).catch(() => {});
+      }
+    }
   } catch (error) {
     console.error('Voice processing error:', error);
     ctx.reply('No pude procesar el audio. ¿Podés escribirme el gasto?');
@@ -483,195 +539,94 @@ bot.on(message('text'), async (ctx) => {
 
     const systemPrompt = buildBotSystemPrompt(financialContext);
 
-    const tier = geminiClient.getTierForRequest(userMessage, false);
+    const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
+    const history = storedTurnsToGeminiHistory(storedTurns);
+    const tier = preferFullTierForMessage(userMessage)
+      ? 'full'
+      : geminiClient.getTierForRequest(userMessage, false);
 
-    const aiResponse = await geminiClient.chat(userMessage, {
-      tier,
-      systemInstruction: systemPrompt,
-      maxTokens: 1024,
-    });
-
-    console.log('[BOT] AI Response:', aiResponse.substring(0, 200));
-
-    let parsedResponse: {
-      action: string;
-      transaction?: any;
-      response: string;
-    };
-
+    let aiResponse = '';
     try {
-      const cleaned = aiResponse.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
-      parsedResponse = JSON.parse(cleaned);
-      console.log('[BOT] Parsed action:', parsedResponse.action);
-    } catch (parseError) {
-      console.error('[BOT] JSON parse error:', parseError);
-      return ctx.reply(aiResponse);
-    }
+      aiResponse = await geminiClient.chat(userMessage, {
+        tier,
+        systemInstruction: systemPrompt,
+        history,
+        maxTokens: 2048,
+      });
 
-    if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
-      const txData = parsedResponse.transaction;
+      console.log('[BOT] AI Response:', aiResponse.substring(0, 200));
 
-      if (!txData.amount || txData.amount <= 0) {
-        return ctx.reply(parsedResponse.response || 'No pude entender el monto. ¿Podés ser más específico?');
-      }
-
-      let accountId = '';
-      let accountName = '';
-      let selectedAccount: any = null;
-      
-      if (txData.account) {
-        const fuzzyResult = await accountsService.findByNameFuzzy(user.id, txData.account);
-        
-        if (fuzzyResult.confidence === 'exact' || fuzzyResult.confidence === 'high') {
-          accountId = fuzzyResult.account!.id;
-          accountName = fuzzyResult.account!.name;
-          selectedAccount = fuzzyResult.account;
-        } else if (fuzzyResult.confidence === 'medium' && fuzzyResult.account) {
-          accountId = fuzzyResult.account.id;
-          accountName = fuzzyResult.account.name;
-          selectedAccount = fuzzyResult.account;
-        } else if (fuzzyResult.confidence === 'low' && fuzzyResult.suggestions && fuzzyResult.suggestions.length > 0) {
-          const suggestionList = fuzzyResult.suggestions
-            .map(s => `• ${s.icon || '💳'} ${s.name}`)
-            .join('\n');
-          
-          return ctx.reply(
-            `No encontré "${txData.account}" exactamente. ¿Quisiste decir alguna de estas?\n\n${suggestionList}\n\n` +
-            `Respondé con el nombre exacto o decime "crear ${txData.account}" si querés crear una cuenta nueva.`
-          );
-        } else {
-          const accountsList = financialContext.accounts
-            .slice(0, 5)
-            .map(a => `• ${a.icon || '💳'} ${a.name}`)
-            .join('\n');
-          
-          return ctx.reply(
-            `No encontré la cuenta "${txData.account}". Tus cuentas son:\n\n${accountsList}\n\n` +
-            `¿Querés crear la cuenta "${txData.account}"? Respondé "crear ${txData.account}" o usá una de las existentes.`
-          );
-        }
-      }
-
-      if (!accountId) {
-        const defaultAccount = financialContext.accounts.find(
-          (a) => a.currency === txData.currency && a.type !== 'credit_card'
-        );
-        if (!defaultAccount) {
-          return ctx.reply(
-            `No tenés cuentas en ${txData.currency}. ¿Querés crear una? Decime "crear cuenta ${txData.currency.toLowerCase()}".`
-          );
-        }
-        accountId = defaultAccount.id;
-        accountName = defaultAccount.name;
-        selectedAccount = defaultAccount;
-      }
-
-      let finalCurrency = txData.currency;
-      let finalAmount = txData.amount;
-      let conversionNote = '';
-
-      if (selectedAccount && txData.currency !== selectedAccount.currency) {
-        const isMulticurrency = selectedAccount.is_multicurrency && 
-          (selectedAccount.secondary_currency === txData.currency || selectedAccount.currency === txData.currency);
-        
-        if (!isMulticurrency && selectedAccount.type === 'credit_card') {
-          try {
-            const rate = await cotizacionesService.getExchangeRate(txData.currency, selectedAccount.currency);
-            if (rate > 0) {
-              finalAmount = txData.amount * rate;
-              finalCurrency = selectedAccount.currency;
-              conversionNote = ` (${txData.amount} ${txData.currency} × $${rate.toFixed(2)} = $${finalAmount.toFixed(2)} ${finalCurrency})`;
-            }
-          } catch (e) {
-            console.log('Could not get exchange rate, using original currency');
-          }
-        }
-      }
-
-      let categoryId: string | undefined;
-      if (txData.category) {
-        const category = financialContext.categories.find(
-          (c) => c.name.toLowerCase() === txData.category.toLowerCase()
-        );
-        if (category) {
-          categoryId = category.id;
-        }
-      }
-
-      let destinationAccountId: string | undefined;
-      if (txData.destinationAccount) {
-        const destResult = await accountsService.findByNameFuzzy(
-          user.id,
-          txData.destinationAccount
-        );
-        if (destResult.account) {
-          destinationAccountId = destResult.account.id;
-        }
-      }
+      let parsedResponse: {
+        action: string;
+        transaction?: Record<string, unknown>;
+        transactions?: Record<string, unknown>[];
+        response: string;
+      };
 
       try {
-        await transactionsService.create({
-          userId: user.id,
-          type: txData.type,
-          accountId,
-          destinationAccountId,
-          amount: finalAmount,
-          currency: finalCurrency,
-          categoryId,
-          description: txData.description,
+        parsedResponse = parseModelJson(aiResponse) as typeof parsedResponse;
+        console.log('[BOT] Parsed action:', parsedResponse.action);
+      } catch (parseError) {
+        console.error('[BOT] JSON parse error:', parseError);
+        return ctx.reply(aiResponse);
+      }
+
+      if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
+        const r = await executeBotTransaction(user.id, financialContext, parsedResponse.transaction, {
+          summaryResponse: parsedResponse.response,
         });
+        if (r.kind === 'abort') return ctx.reply(r.reply);
+        return ctx.reply(r.reply);
+      }
 
-        let responseWithAccount = parsedResponse.response.includes(accountName) 
-          ? parsedResponse.response 
-          : `${parsedResponse.response} (desde ${accountName})`;
-        
-        if (conversionNote) {
-          responseWithAccount += conversionNote;
-        }
-
-        return ctx.reply(responseWithAccount);
-      } catch (txError: any) {
-        console.error('Transaction error:', txError);
-        
-        if (txError.code === '23514' && txError.message?.includes('positive_balance')) {
-          const account = financialContext.accounts.find(a => a.id === accountId);
-          const currentBalance = account?.balance || 0;
-          
+      if (
+        parsedResponse.action === 'create_transactions' &&
+        Array.isArray(parsedResponse.transactions)
+      ) {
+        const txs = parsedResponse.transactions
+          .filter((t) => t && typeof t.amount === 'number' && (t.amount as number) > 0)
+          .slice(0, MAX_BATCH_TRANSACTIONS);
+        if (txs.length === 0) {
           return ctx.reply(
-            `No pude registrar el gasto porque tu cuenta "${accountName}" quedaría en negativo.\n\n` +
-            `Saldo actual: $${currentBalance.toLocaleString('es-AR')}\n` +
-            `Gasto: $${txData.amount.toLocaleString('es-AR')}\n\n` +
-            `Opciones:\n` +
-            `• Usá otra cuenta con más saldo\n` +
-            `• Agregá fondos a esta cuenta primero\n` +
-            `• Usá una tarjeta de crédito para este gasto`
+            parsedResponse.response || 'No encontré montos válidos en tu mensaje.'
           );
         }
-        
-        return ctx.reply('Hubo un error al registrar la transacción. ¿Podés intentar de nuevo?');
+        const lines: string[] = [];
+        for (const tx of txs) {
+          const r = await executeBotTransaction(user.id, financialContext, tx, {});
+          if (r.kind === 'abort') return ctx.reply(r.reply);
+          lines.push(r.reply);
+        }
+        return ctx.reply(`✅ ${parsedResponse.response}\n\n${lines.join('\n')}`);
+      }
+
+      if (parsedResponse.action === 'create_account' && parsedResponse.transaction) {
+        const accData = parsedResponse.transaction;
+
+        try {
+          await accountsService.create({
+            userId: user.id,
+            name: (accData.account || accData.name) as string,
+            type: (accData.type as string) || 'cash',
+            currency: (accData.currency as string) || 'ARS',
+            initialBalance: 0,
+            icon: accData.type === 'bank' ? '🏦' : '💵',
+          });
+
+          return ctx.reply(
+            `Listo! Creé la cuenta "${accData.account || accData.name}". Ahora podés usarla para registrar gastos.`
+          );
+        } catch {
+          return ctx.reply('No pude crear la cuenta. ¿Podés intentar de nuevo?');
+        }
+      }
+
+      return ctx.reply(parsedResponse.response);
+    } finally {
+      if (aiResponse) {
+        await appendBotTurn(user.id, ctx.chat.id, userMessage, aiResponse).catch(() => {});
       }
     }
-
-    if (parsedResponse.action === 'create_account' && parsedResponse.transaction) {
-      const accData = parsedResponse.transaction;
-      
-      try {
-        await accountsService.create({
-          userId: user.id,
-          name: accData.account || accData.name,
-          type: accData.type || 'cash',
-          currency: accData.currency || 'ARS',
-          initialBalance: 0,
-          icon: accData.type === 'bank' ? '🏦' : '💵',
-        });
-        
-        return ctx.reply(`Listo! Creé la cuenta "${accData.account || accData.name}". Ahora podés usarla para registrar gastos.`);
-      } catch (error) {
-        return ctx.reply('No pude crear la cuenta. ¿Podés intentar de nuevo?');
-      }
-    }
-
-    ctx.reply(parsedResponse.response);
   } catch (error: any) {
     console.error('Bot error:', error);
     
@@ -684,95 +639,6 @@ bot.on(message('text'), async (ctx) => {
     }
     
     ctx.reply('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
-  }
-});
-
-bot.on(message('photo'), async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
-  if (!user) {
-    return ctx.reply('No estás vinculado. Usá /start primero.');
-  }
-
-  try {
-    const photo = ctx.message.photo[ctx.message.photo.length - 1];
-    const fileLink = await ctx.telegram.getFileLink(photo.file_id);
-
-    const imageResponse = await fetch(fileLink.href);
-    const imageBuffer = await imageResponse.arrayBuffer();
-    const imageBase64 = Buffer.from(imageBuffer).toString('base64');
-
-    const caption = ctx.message.caption || 'Analizá este ticket y registrá el gasto';
-
-    const financialContext = await getFinancialContext(user.id);
-    const systemPrompt = buildBotSystemPrompt(financialContext);
-
-    const aiResponse = await geminiClient.chatWithImage(
-      caption,
-      imageBase64,
-      'image/jpeg',
-      {
-        systemInstruction: systemPrompt,
-        maxTokens: 1024,
-      }
-    );
-
-    let parsedResponse: {
-      action: string;
-      transaction?: any;
-      response: string;
-    };
-
-    try {
-      const cleaned = aiResponse.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
-      parsedResponse = JSON.parse(cleaned);
-    } catch {
-      return ctx.reply(aiResponse);
-    }
-
-    if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
-      const txData = parsedResponse.transaction;
-
-      if (!txData.amount || txData.amount <= 0) {
-        return ctx.reply(parsedResponse.response || 'No pude leer bien el monto del ticket. ¿Me lo decís vos?');
-      }
-
-      let accountId = '';
-      const defaultAccount = financialContext.accounts.find(
-        (a) => a.currency === txData.currency && a.type !== 'credit_card'
-      );
-      if (defaultAccount) {
-        accountId = defaultAccount.id;
-      } else {
-        return ctx.reply('No encontré una cuenta para esta moneda.');
-      }
-
-      let categoryId: string | undefined;
-      if (txData.category) {
-        const category = financialContext.categories.find(
-          (c) => c.name.toLowerCase() === txData.category.toLowerCase()
-        );
-        if (category) {
-          categoryId = category.id;
-        }
-      }
-
-      await transactionsService.create({
-        userId: user.id,
-        type: txData.type,
-        accountId,
-        amount: txData.amount,
-        currency: txData.currency,
-        categoryId,
-        description: txData.description,
-      });
-
-      return ctx.reply(parsedResponse.response);
-    }
-
-    ctx.reply(parsedResponse.response);
-  } catch (error) {
-    console.error('Photo processing error:', error);
-    ctx.reply('No pude procesar la imagen. Probá con otra más clara.');
   }
 });
 
