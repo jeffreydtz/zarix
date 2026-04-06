@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
-import { YAHOO_FINANCE_HEADERS } from '@/lib/yahoo-finance-headers';
 import type { StockQuote } from '@/lib/market-data-types';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
+import { fetchYahooStockQuotesMap, orderedStockQuotesFromMap } from '@/lib/yahoo-finance-quotes';
 
 export const dynamic = 'force-dynamic';
 // Cache for 5 minutes on Vercel edge
@@ -18,10 +18,6 @@ const US_TICKERS = ['^IXIC', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'GOOGL'];
 /** MERVAL + líderes del panel (Buenos Aires). */
 const ARG_TICKERS = ['^MERV', 'GGAL.BA', 'YPFD.BA', 'PAMP.BA', 'BMA.BA', 'TXAR.BA'];
 
-const YAHOO_CHART_HOSTS = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com'] as const;
-
-const YAHOO_HEADERS = YAHOO_FINANCE_HEADERS;
-
 interface CryptoQuote {
   id: string;
   symbol: string;
@@ -32,110 +28,29 @@ interface CryptoQuote {
   image: string;
 }
 
-function resolveCurrency(symbol: string, metaCurrency: string | undefined): string {
-  if (metaCurrency && metaCurrency.length > 0) return metaCurrency;
-  if (symbol === '^MERV') return 'PTS';
-  if (symbol.endsWith('.BA')) return 'ARS';
-  return 'USD';
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-const YAHOO_RETRY_BACKOFF_MS = [0, 850, 2000] as const;
-
-/**
- * Yahoo suele responder 429 si se disparan muchas peticiones en paralelo (datacenter / serverless).
- * Reintentos con backoff, dos hosts, y pausa entre símbolos en el caller.
- */
-async function fetchYahooChartQuote(symbol: string): Promise<StockQuote | null> {
-  const encoded = encodeURIComponent(symbol);
-
-  for (let round = 0; round < YAHOO_RETRY_BACKOFF_MS.length; round++) {
-    if (YAHOO_RETRY_BACKOFF_MS[round] > 0) {
-      await sleep(YAHOO_RETRY_BACKOFF_MS[round]);
-    }
-
-    for (const host of YAHOO_CHART_HOSTS) {
-      const url = `https://${host}/v8/finance/chart/${encoded}?range=1d&interval=1d`;
-      try {
-        const res = await fetch(url, {
-          headers: YAHOO_HEADERS,
-          cache: 'no-store',
-          signal: AbortSignal.timeout(8000),
-        });
-
-        if (res.status === 429) {
-          await sleep(350);
-          continue;
-        }
-
-        if (!res.ok) continue;
-
-        const ct = res.headers.get('content-type') || '';
-        if (!ct.includes('json')) continue;
-
-        const data = await res.json();
-        if (data?.chart?.error) continue;
-
-        const result = data?.chart?.result?.[0];
-        const meta = result?.meta;
-        const quote = result?.indicators?.quote?.[0];
-
-        const closes: number[] = Array.isArray(quote?.close) ? quote.close.filter((v: any) => Number.isFinite(v)) : [];
-        const lastClose = closes.length > 0 ? Number(closes[closes.length - 1]) : 0;
-        const price = Number(meta?.regularMarketPrice || lastClose || meta?.previousClose || meta?.chartPreviousClose || 0);
-        if (!price || !Number.isFinite(price)) continue;
-
-        const prev = Number(meta?.chartPreviousClose || meta?.previousClose || lastClose || 0);
-        const change = price - prev;
-        const changePct = prev > 0 ? (change / prev) * 100 : 0;
-
-        const instrumentType = meta?.instrumentType === 'INDEX' ? 'INDEX' : 'EQUITY';
-        const name =
-          (meta?.shortName as string | undefined) ||
-          (meta?.longName as string | undefined) ||
-          (meta?.symbol as string | undefined) ||
-          symbol;
-
-        return {
-          ticker: symbol,
-          name,
-          price,
-          change,
-          changePct,
-          currency: resolveCurrency(symbol, meta?.currency as string | undefined),
-          instrumentType,
-        };
-      } catch {
-        /* timeout / red */
-      }
-    }
-  }
-
-  return null;
-}
-
-const BETWEEN_TICKERS_MS = 200;
-
 async function fetchStockQuotesSequential(
   tickers: string[],
   opts: { stooqFallback: boolean }
 ): Promise<StockQuote[]> {
-  const out: StockQuote[] = [];
-  for (let i = 0; i < tickers.length; i++) {
-    const t = tickers[i];
-    let q = await fetchYahooChartQuote(t);
-    if (!q && opts.stooqFallback) {
-      q = await fetchStooqUsQuote(t);
-    }
-    if (q) out.push(q);
-    if (i < tickers.length - 1) {
-      await sleep(BETWEEN_TICKERS_MS);
-    }
+  const yahooMap = await fetchYahooStockQuotesMap(tickers);
+  let ordered = orderedStockQuotesFromMap(tickers, yahooMap);
+
+  if (!opts.stooqFallback) return ordered;
+
+  const have = new Set(ordered.map((q) => q.ticker));
+  const extra: StockQuote[] = [];
+  for (const t of tickers) {
+    if (have.has(t)) continue;
+    const stooq = await fetchStooqUsQuote(t);
+    if (stooq) extra.push(stooq);
   }
-  return out;
+  if (extra.length === 0) return ordered;
+
+  const byTicker = new Map<string, StockQuote>();
+  for (const q of ordered) byTicker.set(q.ticker, q);
+  for (const q of extra) byTicker.set(q.ticker, q);
+  ordered = tickers.map((t) => byTicker.get(t)).filter((q): q is StockQuote => Boolean(q));
+  return ordered;
 }
 
 interface MarketPayloadStored {
