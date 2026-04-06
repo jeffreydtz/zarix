@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServiceClientSync } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
+import { getAuthCallbackUrl } from '@/lib/auth/email-redirect';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,13 +23,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = createServiceClientSync();
+    const supabase = await createClient();
 
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+        emailRedirectTo: getAuthCallbackUrl(req),
       },
     });
 
@@ -39,11 +40,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ 
-      user: data.user,
-      session: data.session,
-      message: 'Account created successfully',
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        user: data.user,
+        session: data.session,
+        needsEmailConfirmation: !data.session,
+        message: 'Account created successfully',
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(

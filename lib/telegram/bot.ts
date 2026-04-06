@@ -1,6 +1,10 @@
 import { Telegraf, Context } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { geminiClient } from '@/lib/ai/gemini';
+import {
+  getGeminiForUser,
+  getTierForRequest,
+  GeminiMissingKeyError,
+} from '@/lib/ai/gemini';
 import { buildBotSystemPrompt } from '@/lib/ai/prompts';
 import { transactionsService } from '@/lib/services/transactions';
 import { accountsService } from '@/lib/services/accounts';
@@ -38,7 +42,8 @@ function parseModelJson(aiResponse: string): unknown {
   return JSON.parse(cleaned);
 }
 
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
+const GEMINI_SETUP_MSG =
+  'No tenés configurada tu API Key de Google Gemini. Entrá a la app web → Configuración → Google Gemini y seguí el instructivo.';
 
 async function getUserFromTelegramId(telegramChatId: number) {
   const supabase = createServiceClientSync();
@@ -88,7 +93,8 @@ async function getFinancialContext(userId: string): Promise<FinancialContext> {
   };
 }
 
-bot.command('start', async (ctx) => {
+function registerBotHandlers(bot: Telegraf) {
+  bot.command('start', async (ctx) => {
   const telegramChatId = ctx.chat.id;
   const username = ctx.from?.username;
 
@@ -270,7 +276,17 @@ Si no es un ticket/factura o no podés extraer información:
   "message": "razón"
 }`;
 
-    const result = await geminiClient.chatWithImage(
+    let gPhoto;
+    try {
+      gPhoto = await getGeminiForUser(user.id);
+    } catch (e) {
+      if (e instanceof GeminiMissingKeyError) {
+        return ctx.reply(GEMINI_SETUP_MSG);
+      }
+      throw e;
+    }
+
+    const result = await gPhoto.chatWithImage(
       prompt,
       base64,
       'image/jpeg',
@@ -341,6 +357,9 @@ Si no es un ticket/factura o no podés extraer información:
 
   } catch (error) {
     console.error('Photo processing error:', error);
+    if (error instanceof GeminiMissingKeyError) {
+      return ctx.reply(GEMINI_SETUP_MSG);
+    }
     return ctx.reply('Hubo un error procesando la imagen. ¿Podés intentar con otra foto o escribirme el gasto?');
   }
 });
@@ -362,8 +381,17 @@ bot.on(message('voice'), async (ctx) => {
     const audioBuffer = await audioResponse.arrayBuffer();
     const audioBase64 = Buffer.from(audioBuffer).toString('base64');
 
-    // Transcribe with Gemini (supports OGG/opus natively)
-    const transcriptResult = await geminiClient.chatWithImage(
+    let gVoice;
+    try {
+      gVoice = await getGeminiForUser(user.id);
+    } catch (e) {
+      if (e instanceof GeminiMissingKeyError) {
+        return ctx.reply(GEMINI_SETUP_MSG);
+      }
+      throw e;
+    }
+
+    const transcriptResult = await gVoice.chatWithImage(
       `Transcribí exactamente este mensaje de voz en español. 
       El usuario está hablando sobre sus finanzas personales.
       Solo devolvé el texto transcripto, sin explicaciones ni formato JSON.
@@ -394,11 +422,11 @@ bot.on(message('voice'), async (ctx) => {
     const history = storedTurnsToGeminiHistory(storedTurns);
     const tier = preferFullTierForMessage(transcribed)
       ? 'full'
-      : geminiClient.getTierForRequest(transcribed, false);
+      : getTierForRequest(transcribed, false);
 
     let aiResponse = '';
     try {
-      aiResponse = await geminiClient.chat(transcribed, {
+      aiResponse = await gVoice.chat(transcribed, {
         tier,
         systemInstruction: systemPrompt,
         history,
@@ -473,7 +501,10 @@ bot.on(message('voice'), async (ctx) => {
     }
   } catch (error) {
     console.error('Voice processing error:', error);
-    ctx.reply('No pude procesar el audio. ¿Podés escribirme el gasto?');
+    if (error instanceof GeminiMissingKeyError) {
+      return ctx.reply(GEMINI_SETUP_MSG);
+    }
+    return ctx.reply('No pude procesar el audio. ¿Podés escribirme el gasto?');
   }
 });
 
@@ -539,17 +570,27 @@ bot.on(message('text'), async (ctx) => {
   try {
     const financialContext = await getFinancialContext(user.id);
 
+    let gText;
+    try {
+      gText = await getGeminiForUser(user.id);
+    } catch (e) {
+      if (e instanceof GeminiMissingKeyError) {
+        return ctx.reply(GEMINI_SETUP_MSG);
+      }
+      throw e;
+    }
+
     const systemPrompt = buildBotSystemPrompt(financialContext);
 
     const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
     const history = storedTurnsToGeminiHistory(storedTurns);
     const tier = preferFullTierForMessage(userMessage)
       ? 'full'
-      : geminiClient.getTierForRequest(userMessage, false);
+      : getTierForRequest(userMessage, false);
 
     let aiResponse = '';
     try {
-      aiResponse = await geminiClient.chat(userMessage, {
+      aiResponse = await gText.chat(userMessage, {
         tier,
         systemInstruction: systemPrompt,
         history,
@@ -631,7 +672,11 @@ bot.on(message('text'), async (ctx) => {
     }
   } catch (error: any) {
     console.error('Bot error:', error);
-    
+
+    if (error instanceof GeminiMissingKeyError) {
+      return ctx.reply(GEMINI_SETUP_MSG);
+    }
+
     if (error.message?.includes('404') || error.message?.includes('not found')) {
       return ctx.reply('El servicio de IA no está disponible temporalmente. Probá de nuevo en unos minutos.');
     }
@@ -643,9 +688,37 @@ bot.on(message('text'), async (ctx) => {
     ctx.reply('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
   }
 });
+}
 
-export { bot };
+const sharedToken = process.env.TELEGRAM_BOT_TOKEN;
+const sharedBot = sharedToken
+  ? (() => {
+      const t = new Telegraf(sharedToken);
+      registerBotHandlers(t);
+      return t;
+    })()
+  : null;
+
+const customBots = new Map<string, Telegraf>();
+
+function getBotForTelegramToken(token: string): Telegraf {
+  if (!customBots.has(token)) {
+    const t = new Telegraf(token);
+    registerBotHandlers(t);
+    customBots.set(token, t);
+  }
+  return customBots.get(token)!;
+}
 
 export async function handleTelegramUpdate(update: any) {
-  await bot.handleUpdate(update);
+  if (!sharedBot) {
+    console.error('TELEGRAM_BOT_TOKEN no configurado');
+    return;
+  }
+  await sharedBot.handleUpdate(update);
+}
+
+export async function handleCustomTelegramUpdate(update: any, botToken: string) {
+  const b = getBotForTelegramToken(botToken);
+  await b.handleUpdate(update);
 }

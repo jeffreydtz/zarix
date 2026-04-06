@@ -15,6 +15,9 @@ CREATE TABLE users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   telegram_chat_id BIGINT UNIQUE,
   telegram_username TEXT,
+  gemini_api_key TEXT,
+  telegram_bot_token TEXT,
+  telegram_webhook_secret TEXT,
   default_currency TEXT NOT NULL DEFAULT 'ARS',
   timezone TEXT NOT NULL DEFAULT 'America/Argentina/Buenos_Aires',
   notification_time TIME DEFAULT '22:00:00',
@@ -26,6 +29,9 @@ CREATE TABLE users (
 );
 
 CREATE INDEX idx_users_telegram ON users(telegram_chat_id) WHERE telegram_chat_id IS NOT NULL;
+
+CREATE UNIQUE INDEX idx_users_telegram_webhook_secret ON users(telegram_webhook_secret)
+  WHERE telegram_webhook_secret IS NOT NULL;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 2. ACCOUNTS (cuentas — el core de la app)
@@ -303,7 +309,8 @@ BEGIN
     NEW.id,
     'ARS',
     'America/Argentina/Buenos_Aires'
-  );
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { geminiClient } from '@/lib/ai/gemini';
+import {
+  getGeminiForUser,
+  getTierForRequest,
+  GeminiMissingKeyError,
+} from '@/lib/ai/gemini';
 import { buildBotSystemPrompt } from '@/lib/ai/prompts';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
@@ -41,9 +45,10 @@ export async function POST(req: NextRequest) {
       monthSummary,
     });
 
-    const tier = geminiClient.getTierForRequest(message, false);
+    const tier = getTierForRequest(message, false);
 
-    const response = await geminiClient.chat(message, {
+    const gemini = await getGeminiForUser(user.id);
+    const response = await gemini.chat(message, {
       tier,
       systemInstruction: systemPrompt,
       history: history || [],
@@ -52,6 +57,16 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ response, tier });
   } catch (error) {
+    if (error instanceof GeminiMissingKeyError) {
+      return NextResponse.json(
+        {
+          error:
+            'Configurá tu API Key de Google Gemini en Configuración (o la del servidor no está definida).',
+          code: 'missing_gemini_key',
+        },
+        { status: 503 }
+      );
+    }
     console.error('Chat API error:', error);
     return NextResponse.json(
       { error: 'Internal error' },

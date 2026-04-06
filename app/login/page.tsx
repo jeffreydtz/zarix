@@ -3,20 +3,23 @@
 import { Suspense, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [showResendConfirmation, setShowResendConfirmation] = useState(false);
   const [mode, setMode] = useState<'magiclink' | 'password'>('password');
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const supabase = createClient();
-    
+
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         router.push('/dashboard');
@@ -27,12 +30,19 @@ function LoginForm() {
     if (error) {
       setMessage(`Error: ${decodeURIComponent(error)}`);
     }
+
+    if (searchParams.get('registered') === '1') {
+      setMessage(
+        'success:Te enviamos un correo para confirmar tu cuenta. Revisá tu bandeja (y spam).'
+      );
+    }
   }, [router, searchParams]);
 
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    setShowResendConfirmation(false);
 
     try {
       const supabase = createClient();
@@ -41,13 +51,50 @@ function LoginForm() {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        const code = (error as { code?: string }).code;
+        const msg = error.message.toLowerCase();
+        if (
+          code === 'email_not_confirmed' ||
+          msg.includes('email not confirmed')
+        ) {
+          setShowResendConfirmation(true);
+        }
+        throw error;
+      }
 
       router.push('/dashboard');
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setMessage(`Error: ${err.message ?? 'Error al iniciar sesión'}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email.trim()) {
+      setMessage('Error: Ingresá tu email arriba para reenviar la confirmación.');
+      return;
+    }
+    setResendLoading(true);
+    setMessage('');
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+      setMessage('success:Te reenviamos el correo de confirmación.');
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setMessage(`Error: ${err.message ?? 'No se pudo reenviar'}`);
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -216,6 +263,33 @@ function LoginForm() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {mode === 'password' && showResendConfirmation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-3 text-center"
+          >
+            <button
+              type="button"
+              onClick={handleResendConfirmation}
+              disabled={resendLoading}
+              className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+            >
+              {resendLoading ? 'Enviando…' : 'Reenviar correo de confirmación'}
+            </button>
+          </motion.div>
+        )}
+
+        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+          ¿No tenés cuenta?{' '}
+          <Link
+            href="/register"
+            className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Registrate
+          </Link>
+        </p>
 
         <motion.div 
           className="mt-8 text-center"

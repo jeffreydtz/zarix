@@ -19,6 +19,8 @@ export default async function SettingsPage() {
     .eq('id', authUser.id)
     .single();
 
+  const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || '';
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 py-6 pb-24 space-y-6">
@@ -29,7 +31,15 @@ export default async function SettingsPage() {
           </p>
         </div>
 
-        {user && <SettingsForm user={user} />}
+        {user && (
+          <SettingsForm
+            user={user}
+            geminiConfigured={!!user.gemini_api_key}
+            telegramCustomMode={!!user.telegram_bot_token}
+            webhookSecret={user.telegram_webhook_secret}
+            appBaseUrl={appBaseUrl}
+          />
+        )}
         
         <ExportImport />
       </div>

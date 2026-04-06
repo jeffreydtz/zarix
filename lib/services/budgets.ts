@@ -1,6 +1,6 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Budget, BudgetStatus } from '@/types/database';
-import { Telegraf } from 'telegraf';
+import { sendTelegramDm } from '@/lib/telegram/send';
 
 export interface CreateBudgetInput {
   userId: string;
@@ -11,8 +11,6 @@ export interface CreateBudgetInput {
   rolloverEnabled?: boolean;
   alertAtPercent?: number;
 }
-
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN || 'placeholder');
 
 class BudgetsService {
   async create(input: CreateBudgetInput): Promise<Budget> {
@@ -129,7 +127,7 @@ class BudgetsService {
 
     const { data: user } = await supabase
       .from('users')
-      .select('telegram_chat_id')
+      .select('telegram_chat_id, telegram_bot_token')
       .eq('id', userId)
       .single();
 
@@ -150,8 +148,9 @@ class BudgetsService {
         : `Llegaste al ${alertLevel}% de tu presupuesto en ${status.category_name.toLowerCase()}.`);
 
     try {
-      await bot.telegram.sendMessage(user.telegram_chat_id, message, {
+      await sendTelegramDm(user.telegram_chat_id, message, {
         parse_mode: 'Markdown',
+        botToken: user.telegram_bot_token,
       });
     } catch (e) {
       console.error('Error sending budget alert via Telegram:', e);

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
-import { Telegraf } from 'telegraf';
-
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
+import { sendTelegramDm } from '@/lib/telegram/send';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -41,7 +39,7 @@ export async function GET(request: NextRequest) {
   // Get investments with maturity dates in the next 3 days
   const { data: investments, error } = await supabase
     .from('investments')
-    .select('*, user:users(telegram_chat_id)')
+    .select('*, user:users(telegram_chat_id, telegram_bot_token)')
     .eq('is_active', true)
     .not('maturity_date', 'is', null)
     .gte('maturity_date', todayStr)
@@ -97,8 +95,9 @@ export async function GET(request: NextRequest) {
       `¿Renovás o retirás? Avisame para actualizar tu portafolio.`;
 
     try {
-      await bot.telegram.sendMessage(user.telegram_chat_id, message, {
+      await sendTelegramDm(user.telegram_chat_id, message, {
         parse_mode: 'Markdown',
+        botToken: user.telegram_bot_token,
       });
       notified++;
     } catch (e) {

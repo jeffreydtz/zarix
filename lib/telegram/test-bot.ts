@@ -1,4 +1,4 @@
-import { geminiClient } from '../ai/gemini';
+import { createGeminiClient, getTierForRequest } from '../ai/gemini';
 import { buildBotSystemPrompt } from '../ai/prompts';
 import type { FinancialContext } from '../ai/prompts';
 
@@ -7,6 +7,9 @@ const mockContext: FinancialContext = {
     id: 'test-user',
     telegram_chat_id: null,
     telegram_username: null,
+    gemini_api_key: null,
+    telegram_bot_token: null,
+    telegram_webhook_secret: null,
     default_currency: 'ARS',
     timezone: 'America/Argentina/Buenos_Aires',
     notification_time: '22:00:00',
@@ -87,10 +90,16 @@ export async function testBotParsing(message: string): Promise<void> {
   const systemPrompt = buildBotSystemPrompt(mockContext);
 
   try {
-    const tier = geminiClient.getTierForRequest(message, false);
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+      console.error('❌ Definí GEMINI_API_KEY en el entorno.');
+      return;
+    }
+    const gemini = createGeminiClient(key);
+    const tier = getTierForRequest(message, false);
     console.log(`🤖 Usando tier: ${tier.toUpperCase()}\n`);
 
-    const response = await geminiClient.chat(message, {
+    const response = await gemini.chat(message, {
       tier,
       systemInstruction: systemPrompt,
       maxTokens: 1024,

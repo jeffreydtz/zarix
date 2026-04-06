@@ -82,6 +82,9 @@ export interface User {
   id: string;
   telegram_chat_id: number | null;
   telegram_username: string | null;
+  gemini_api_key: string | null;
+  telegram_bot_token: string | null;
+  telegram_webhook_secret: string | null;
   default_currency: string;
   timezone: string;
   notification_time: string;

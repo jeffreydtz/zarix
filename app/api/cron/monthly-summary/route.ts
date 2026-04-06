@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
-import { geminiClient } from '@/lib/ai/gemini';
-import { Telegraf } from 'telegraf';
-
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
+import {
+  getGeminiForUser,
+  GeminiMissingKeyError,
+} from '@/lib/ai/gemini';
+import { sendTelegramDm } from '@/lib/telegram/send';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -109,20 +110,30 @@ Las sugerencias deben ser acciones concretas para mejorar.
   let sugerencias: string[] = [];
   
   try {
-    const result = await geminiClient.chat(prompt);
+    const gemini = await getGeminiForUser(userId);
+    const result = await gemini.chat(prompt);
     const parsed = JSON.parse(result);
     insights = parsed.insights || [];
     sugerencias = parsed.sugerencias || [];
   } catch (e) {
-    insights = [
-      totalGastos > totalIngresos 
-        ? 'Gastaste más de lo que ingresaste este mes' 
-        : 'Mantuviste un balance positivo',
-      gastosDiff > 0 
-        ? `Gastaste ${gastosPercent.toFixed(0)}% más que el mes pasado`
-        : `Gastaste ${Math.abs(gastosPercent).toFixed(0)}% menos que el mes pasado`
-    ];
-    sugerencias = ['Revisá tus gastos más grandes para encontrar oportunidades de ahorro'];
+    if (e instanceof GeminiMissingKeyError) {
+      insights = [
+        totalGastos > totalIngresos
+          ? 'Gastaste más de lo que ingresaste este mes'
+          : 'Mantuviste un balance positivo',
+      ];
+      sugerencias = ['Configurá tu API Key de Gemini en Configuración para insights con IA.'];
+    } else {
+      insights = [
+        totalGastos > totalIngresos
+          ? 'Gastaste más de lo que ingresaste este mes'
+          : 'Mantuviste un balance positivo',
+        gastosDiff > 0
+          ? `Gastaste ${gastosPercent.toFixed(0)}% más que el mes pasado`
+          : `Gastaste ${Math.abs(gastosPercent).toFixed(0)}% menos que el mes pasado`,
+      ];
+      sugerencias = ['Revisá tus gastos más grandes para encontrar oportunidades de ahorro'];
+    }
   }
   
   return {
@@ -195,7 +206,7 @@ export async function GET(request: NextRequest) {
     
     const { data: users } = await supabase
       .from('users')
-      .select('id, telegram_chat_id, monthly_summary_enabled')
+      .select('id, telegram_chat_id, monthly_summary_enabled, telegram_bot_token')
       .eq('monthly_summary_enabled', true)
       .not('telegram_chat_id', 'is', null);
     
@@ -231,8 +242,9 @@ export async function GET(request: NextRequest) {
         const analysis = await analyzeMonth(currentMonthData, previousMonthData, user.id);
         const message = formatMessage(analysis, monthName);
         
-        await bot.telegram.sendMessage(user.telegram_chat_id, message, {
-          parse_mode: 'Markdown'
+        await sendTelegramDm(user.telegram_chat_id, message, {
+          parse_mode: 'Markdown',
+          botToken: user.telegram_bot_token,
         });
         
         sent++;

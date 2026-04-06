@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
-import { Telegraf } from 'telegraf';
-
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
+import { sendTelegramDm } from '@/lib/telegram/send';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -108,7 +106,7 @@ export async function GET(request: NextRequest) {
       // Send Telegram notification
       const { data: user } = await supabase
         .from('users')
-        .select('telegram_chat_id')
+        .select('telegram_chat_id, telegram_bot_token')
         .eq('id', rule.user_id)
         .single();
 
@@ -122,12 +120,12 @@ export async function GET(request: NextRequest) {
           yearly: 'anual',
         }[rule.frequency as string] || rule.frequency;
 
-        await bot.telegram.sendMessage(
+        await sendTelegramDm(
           user.telegram_chat_id,
           `🔄 *Transacción recurrente ejecutada*\n\n` +
           `${typeEmoji} ${typeLabel} ${freqLabel}: *${rule.description}*\n` +
           `💰 $${Number(rule.amount).toLocaleString('es-AR')} ${rule.currency}`,
-          { parse_mode: 'Markdown' }
+          { parse_mode: 'Markdown', botToken: user.telegram_bot_token }
         ).catch(() => {});
       }
     } catch (e) {
