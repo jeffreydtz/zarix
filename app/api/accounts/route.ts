@@ -47,11 +47,15 @@ export async function POST(req: NextRequest) {
       color: body.color,
       isDebt: body.isDebt || false,
       includeInTotal: body.includeInTotal !== undefined ? body.includeInTotal : true,
+      includeInLiquid:
+        body.includeInLiquid !== undefined ? body.includeInLiquid : true,
       minBalance: body.minBalance,
       creditLimit: body.creditLimit,
       closingDay: body.closingDay,
       dueDay: body.dueDay,
       last4Digits: body.last4Digits,
+      isMulticurrency: body.isMulticurrency,
+      secondaryCurrency: body.secondaryCurrency,
     });
 
     return NextResponse.json(account, { status: 201 });

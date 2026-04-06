@@ -2,30 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const ICONS = [
-  '💳', '🏦', '💰', '💵', '💸', '🪙', 
-  '📱', '🏧', '💎', '🎯', '🔐', '📊',
-  '💼', '🏠', '🚗', '✈️', '🎓', '⚡'
-];
-
-const ACCOUNT_TYPES = [
-  { value: 'bank', label: 'Banco', icon: '🏦', color: '#3B82F6' },
-  { value: 'cash', label: 'Efectivo', icon: '💵', color: '#10B981' },
-  { value: 'investment', label: 'Inversion', icon: '📈', color: '#8B5CF6' },
-  { value: 'credit_card', label: 'Tarjeta de Credito', icon: '💳', color: '#F59E0B' },
-  { value: 'crypto', label: 'Crypto', icon: '₿', color: '#EF4444' },
-  { value: 'digital_wallet', label: 'Billetera Digital', icon: '📱', color: '#06B6D4' },
-  { value: 'other', label: 'Otro', icon: '🔁', color: '#6B7280' },
-];
-
-const CURRENCIES = [
-  { value: 'ARS', label: 'ARS', flag: '🇦🇷' },
-  { value: 'USD', label: 'USD', flag: '🇺🇸' },
-  { value: 'BTC', label: 'BTC', flag: '₿' },
-  { value: 'ETH', label: 'ETH', flag: 'Ξ' },
-  { value: 'USDT', label: 'USDT', flag: '₮' },
-];
+import {
+  ACCOUNT_FORM_CURRENCIES,
+  ACCOUNT_FORM_ICONS,
+  ACCOUNT_FORM_TYPES,
+} from '@/components/accounts/account-form-constants';
 
 export default function CreateAccountButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,15 +17,17 @@ export default function CreateAccountButton() {
   const [selectedCurrency, setSelectedCurrency] = useState('ARS');
   const [initialBalance, setInitialBalance] = useState('');
   const [isDebt, setIsDebt] = useState(false);
-  
+  const [includeInLiquid, setIncludeInLiquid] = useState(true);
+
   const [creditLimit, setCreditLimit] = useState('');
   const [closingDay, setClosingDay] = useState('');
   const [dueDay, setDueDay] = useState('');
   const [isMulticurrency, setIsMulticurrency] = useState(false);
   const [secondaryCurrency, setSecondaryCurrency] = useState('USD');
 
-  const selectedTypeData = ACCOUNT_TYPES.find(t => t.value === selectedType);
+  const selectedTypeData = ACCOUNT_FORM_TYPES.find((t) => t.value === selectedType);
   const isCreditCard = selectedType === 'credit_card';
+  const isInvestment = selectedType === 'investment';
 
   const handleCreate = async () => {
     if (!name.trim()) {
@@ -69,6 +52,7 @@ export default function CreateAccountButton() {
         isDebt: isCreditCard || isDebt,
         initialBalance: parseFloat(initialBalance) || 0,
         includeInTotal: !isCreditCard,
+        includeInLiquid: isInvestment ? true : includeInLiquid,
       };
 
       if (isCreditCard) {
@@ -98,6 +82,7 @@ export default function CreateAccountButton() {
       setSelectedCurrency('ARS');
       setInitialBalance('');
       setIsDebt(false);
+      setIncludeInLiquid(true);
       setCreditLimit('');
       setClosingDay('');
       setDueDay('');
@@ -172,7 +157,7 @@ export default function CreateAccountButton() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Tipo</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {ACCOUNT_TYPES.map((type) => (
+                    {ACCOUNT_FORM_TYPES.map((type) => (
                       <motion.button
                         key={type.value}
                         type="button"
@@ -194,7 +179,7 @@ export default function CreateAccountButton() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Icono</label>
                   <div className="grid grid-cols-6 gap-2">
-                    {ICONS.map((icon) => (
+                    {ACCOUNT_FORM_ICONS.map((icon) => (
                       <motion.button
                         key={icon}
                         type="button"
@@ -215,7 +200,7 @@ export default function CreateAccountButton() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Moneda</label>
                   <div className="grid grid-cols-5 gap-2">
-                    {CURRENCIES.map((currency) => (
+                    {ACCOUNT_FORM_CURRENCIES.map((currency) => (
                       <motion.button
                         key={currency.value}
                         type="button"
@@ -336,7 +321,7 @@ export default function CreateAccountButton() {
                                 onChange={(e) => setSecondaryCurrency(e.target.value)}
                                 className="input"
                               >
-                                {CURRENCIES.filter(c => c.value !== selectedCurrency).map((currency) => (
+                                {ACCOUNT_FORM_CURRENCIES.filter((c) => c.value !== selectedCurrency).map((currency) => (
                                   <option key={currency.value} value={currency.value}>
                                     {currency.flag} {currency.value}
                                   </option>
@@ -366,6 +351,31 @@ export default function CreateAccountButton() {
                       <label htmlFor="isDebt" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Es una deuda (mostrar saldo negativo)
                       </label>
+                    </motion.div>
+                  )}
+
+                  {!isInvestment && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl"
+                    >
+                      <input
+                        type="checkbox"
+                        id="includeInLiquid"
+                        checked={includeInLiquid}
+                        onChange={(e) => setIncludeInLiquid(e.target.checked)}
+                        className="w-5 h-5 text-blue-600 rounded-lg focus:ring-2 focus:ring-blue-500 mt-0.5"
+                      />
+                      <div>
+                        <label htmlFor="includeInLiquid" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          Contar en patrimonio líquido
+                        </label>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          Desmarcá si no querés que sume al “liquidez” del panel (sigue en el total).
+                        </p>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

@@ -57,6 +57,7 @@ CREATE TABLE accounts (
   color TEXT DEFAULT '#3B82F6',
   is_debt BOOLEAN DEFAULT FALSE,
   include_in_total BOOLEAN DEFAULT TRUE,
+  include_in_liquid BOOLEAN NOT NULL DEFAULT TRUE,
   min_balance NUMERIC(20, 8),
   sort_order INTEGER DEFAULT 0,
   is_active BOOLEAN DEFAULT TRUE,

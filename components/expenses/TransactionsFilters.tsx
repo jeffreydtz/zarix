@@ -185,14 +185,6 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           >
             {showAdvanced ? '▲' : '▼'} Filtros avanzados
           </button>
-          <button
-            onClick={handleDeleteAll}
-            disabled={deletingAll}
-            className="text-xs text-red-600 hover:text-red-700 font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
-            title="Eliminar todos los movimientos"
-          >
-            🗑️ {deletingAll ? 'Eliminando...' : 'Eliminar todos'}
-          </button>
         </div>
         <div>
           {hasActiveFilters && (
@@ -274,6 +266,27 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                   />
                 </div>
               </div>
+
+              <details className="sm:col-span-2 md:col-span-4 mt-1 rounded-xl border border-slate-200/80 dark:border-slate-600/80 bg-slate-50/50 dark:bg-slate-800/30 px-3 py-2">
+                <summary className="text-xs text-slate-400 dark:text-slate-500 cursor-pointer select-none list-none flex items-center gap-2 [&::-webkit-details-marker]:hidden">
+                  <span className="text-slate-300 dark:text-slate-600">▸</span>
+                  Mantenimiento del historial (avanzado)
+                </summary>
+                <div className="pt-3 pb-1 border-t border-slate-200/60 dark:border-slate-600/60 mt-2">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
+                    Borra <strong>todos</strong> los movimientos de todas las cuentas. No se puede
+                    deshacer.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleDeleteAll}
+                    disabled={deletingAll}
+                    className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium py-1.5 px-2 rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50/80 dark:bg-red-950/20 transition-colors disabled:opacity-50"
+                  >
+                    {deletingAll ? 'Eliminando…' : 'Eliminar todos los movimientos'}
+                  </button>
+                </div>
+              </details>
             </div>
           </motion.div>
         )}

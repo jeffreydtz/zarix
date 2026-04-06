@@ -44,8 +44,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { balance: _b, user_id: _u, id: _i, ...safe } = body as Record<string, unknown>;
+    const body = (await req.json()) as Record<string, unknown>;
+    const { balance: _b, user_id: _u, id: _i, ...safe } = body;
 
     const account = await accountsService.update(params.id, user.id, safe);
     return NextResponse.json(account);

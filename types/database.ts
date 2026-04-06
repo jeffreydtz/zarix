@@ -106,6 +106,8 @@ export interface Account {
   color: string;
   is_debt: boolean;
   include_in_total: boolean;
+  /** Si false, no entra en patrimonio líquido; sigue en total (no aplica visualmente a tipo investment). */
+  include_in_liquid: boolean;
   min_balance: number | null;
   credit_limit: number | null;
   closing_day: number | null;

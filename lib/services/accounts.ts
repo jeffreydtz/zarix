@@ -38,6 +38,8 @@ export interface CreateAccountInput {
   color?: string;
   isDebt?: boolean;
   includeInTotal?: boolean;
+  /** Si false, no suma al patrimonio líquido (sí al total). Ignorado en agregados para type investment. */
+  includeInLiquid?: boolean;
   minBalance?: number;
   creditLimit?: number;
   closingDay?: number;
@@ -54,7 +56,7 @@ export interface AccountWithBalance extends Account {
 
 /** Totales derivados de `list()` — misma cotización que cada fila. */
 export interface AccountAggregates {
-  /** Suma en USD equivalente (cuentas no inversión, incluidas en total). */
+  /** Suma en USD equivalente (no inversión y con `include_in_liquid`). */
   liquidUSD: number;
   liquidARSBlue: number;
   investmentsUSD: number;
@@ -141,6 +143,7 @@ class AccountsService {
         color: input.color || '#3B82F6',
         is_debt: input.isDebt || false,
         include_in_total: input.includeInTotal !== undefined ? input.includeInTotal : true,
+        include_in_liquid: input.includeInLiquid !== undefined ? input.includeInLiquid : true,
         min_balance: input.minBalance || null,
         credit_limit: input.creditLimit || null,
         closing_day: input.closingDay || null,
@@ -211,21 +214,28 @@ class AccountsService {
   }
 
   /**
-   * Patrimonio: todas las cuentas activas entran en algún bucket.
-   * - Liquidez: todo lo que NO es `type === 'investment'` (efectivo, banco, TC, crypto wallet, etc.).
-   * - Inversiones: solo cuentas `investment` (no se mezclan con líquido).
-   * - Total = liquidez + inversiones.
-   * `include_in_total` en BD no filtra estos totales.
+   * Patrimonio mostrado en el panel: solo cuentas con `include_in_total !== false`
+   * (alineado a la vista SQL y a “Incluir en totales” en la app). Esas cuentas siguen
+   * activas en la lista; no es lo mismo que archivar (`is_active`).
+   *
+   * Dentro de ese conjunto:
+   * - Liquidez: no `investment` y `include_in_liquid !== false`.
+   * - No líquido: no inversión y sin liquidez; suma al total.
+   * - Inversiones: `type === 'investment'`.
    */
   aggregateAccountTotals(accounts: AccountWithBalance[]): AccountAggregates {
     let liquidUSD = 0;
     let liquidARSBlue = 0;
+    let nonLiquidUSD = 0;
+    let nonLiquidARSBlue = 0;
     let investmentsUSD = 0;
     let investmentsARSBlue = 0;
     let totalCreditUsed = 0;
     let totalCreditLimit = 0;
 
     for (const a of accounts) {
+      if (a.include_in_total === false) continue;
+
       if (a.type === 'credit_card') {
         totalCreditUsed += Math.abs(Number(a.balance));
         totalCreditLimit += Number(a.credit_limit || 0);
@@ -238,13 +248,19 @@ class AccountsService {
         investmentsUSD += usd;
         investmentsARSBlue += ars;
       } else {
-        liquidUSD += usd;
-        liquidARSBlue += ars;
+        const inLiquid = a.include_in_liquid !== false;
+        if (inLiquid) {
+          liquidUSD += usd;
+          liquidARSBlue += ars;
+        } else {
+          nonLiquidUSD += usd;
+          nonLiquidARSBlue += ars;
+        }
       }
     }
 
-    const totalUSD = liquidUSD + investmentsUSD;
-    const totalARSBlue = liquidARSBlue + investmentsARSBlue;
+    const totalUSD = liquidUSD + nonLiquidUSD + investmentsUSD;
+    const totalARSBlue = liquidARSBlue + nonLiquidARSBlue + investmentsARSBlue;
 
     return {
       liquidUSD: roundMoney(liquidUSD),
@@ -360,16 +376,63 @@ class AccountsService {
     return { before, after };
   }
 
-  async update(
-    id: string,
-    userId: string,
-    updates: Partial<CreateAccountInput>
-  ): Promise<Account> {
+  private static readonly ACCOUNT_PATCH_COLUMNS = new Set([
+    'name',
+    'type',
+    'currency',
+    'icon',
+    'color',
+    'is_debt',
+    'include_in_total',
+    'include_in_liquid',
+    'min_balance',
+    'credit_limit',
+    'closing_day',
+    'due_day',
+    'last_4_digits',
+    'is_multicurrency',
+    'secondary_currency',
+    'sort_order',
+    'is_active',
+  ]);
+
+  private static readonly ACCOUNT_PATCH_CAMEL_TO_SNAKE: Record<string, string> = {
+    isDebt: 'is_debt',
+    includeInTotal: 'include_in_total',
+    includeInLiquid: 'include_in_liquid',
+    minBalance: 'min_balance',
+    creditLimit: 'credit_limit',
+    closingDay: 'closing_day',
+    dueDay: 'due_day',
+    last4Digits: 'last_4_digits',
+    isMulticurrency: 'is_multicurrency',
+    secondaryCurrency: 'secondary_currency',
+  };
+
+  /** Solo columnas permitidas; acepta camelCase o snake_case. */
+  sanitizeAccountPatch(body: Record<string, unknown>): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(body)) {
+      if (value === undefined) continue;
+      const col =
+        AccountsService.ACCOUNT_PATCH_CAMEL_TO_SNAKE[key] ??
+        (AccountsService.ACCOUNT_PATCH_COLUMNS.has(key) ? key : null);
+      if (!col) continue;
+      out[col] = value;
+    }
+    return out;
+  }
+
+  async update(id: string, userId: string, updates: Record<string, unknown>): Promise<Account> {
     const supabase = createServiceClientSync();
+    const row = this.sanitizeAccountPatch(updates);
+    if (Object.keys(row).length === 0) {
+      throw new Error('No hay cambios válidos');
+    }
 
     const { data, error } = await supabase
       .from('accounts')
-      .update(updates as any)
+      .update(row as any)
       .eq('id', id)
       .eq('user_id', userId)
       .select()
