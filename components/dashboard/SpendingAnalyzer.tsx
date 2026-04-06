@@ -241,6 +241,36 @@ function formatTxRowDate(iso: string): string {
   return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+function AnalyzerTotalSummary({
+  total,
+  currencyFilter,
+  convertToArsBlue,
+  variant,
+}: {
+  total: number;
+  currencyFilter: string;
+  convertToArsBlue: boolean;
+  variant: 'overlay' | 'inline';
+}) {
+  const amountClass =
+    variant === 'overlay'
+      ? 'text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tabular-nums leading-tight'
+      : 'text-xl font-bold text-slate-700 dark:text-slate-200 tabular-nums leading-tight';
+  return (
+    <div className="text-center px-3 max-w-[min(200px,78vw)] mx-auto">
+      <div className="text-xs sm:text-sm text-slate-400">Total</div>
+      <div className={amountClass}>${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
+      <div className="text-[10px] sm:text-[11px] text-slate-400 mt-1 leading-snug">
+        {currencyFilter === 'all' && convertToArsBlue
+          ? 'Equivalente en ARS (dólar blue; USD y stablecoins convertidos)'
+          : currencyFilter === 'all'
+            ? 'Sin cotización USD: montos sin convertir a pesos'
+            : `Solo movimientos en ${currencyFilter}`}
+      </div>
+    </div>
+  );
+}
+
 export interface SpendingAnalyzerProps {
   /** Preloaded movements (e.g. from dashboard RSC); avoids client fetch on first paint. */
   initialTransactions?: SpendingAnalyzerTxItem[];
@@ -678,62 +708,65 @@ export default function SpendingAnalyzer({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="relative bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
             {displaySlices.length === 0 ? (
-              <div className="h-64 flex items-center justify-center text-center px-4 text-slate-400 text-sm">
-                {mode === 'expense'
-                  ? 'No hay gastos en este período con los filtros actuales.'
-                  : 'No hay ingresos en este período con los filtros actuales.'}
+              <div className="min-h-[256px] flex flex-col items-center justify-center gap-4 text-center px-2 py-4 sm:py-0">
+                <p className="text-slate-400 dark:text-slate-500 text-sm leading-relaxed">
+                  {mode === 'expense'
+                    ? 'No hay gastos en este período con los filtros actuales.'
+                    : 'No hay ingresos en este período con los filtros actuales.'}
+                </p>
+                <AnalyzerTotalSummary
+                  total={total}
+                  currencyFilter={currencyFilter}
+                  convertToArsBlue={convertToArsBlue}
+                  variant="inline"
+                />
               </div>
             ) : (
-              <div className="h-64 min-h-[256px] w-full min-w-0">
-                <ResponsiveContainer width="100%" height="100%" minHeight={256}>
-                  <PieChart>
-                    <Pie
-                      data={displaySlices}
-                      dataKey="amount"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={92}
-                      paddingAngle={1.5}
-                      isAnimationActive={false}
-                      cursor="pointer"
-                      onClick={(_, index) => {
-                        const s = displaySlices[index];
-                        if (s) openCategoryDetail(s.name);
-                      }}
-                    >
-                      {displaySlices.map((s, i) => (
-                        <Cell key={`${s.name}-${i}`} fill={s.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(v: number | string) =>
-                        typeof v === 'number'
-                          ? `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
-                          : String(v)
-                      }
-                      contentStyle={{ borderRadius: 8 }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <>
+                <div className="h-64 min-h-[256px] w-full min-w-0">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={256}>
+                    <PieChart>
+                      <Pie
+                        data={displaySlices}
+                        dataKey="amount"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={92}
+                        paddingAngle={1.5}
+                        isAnimationActive={false}
+                        cursor="pointer"
+                        onClick={(_, index) => {
+                          const s = displaySlices[index];
+                          if (s) openCategoryDetail(s.name);
+                        }}
+                      >
+                        {displaySlices.map((s, i) => (
+                          <Cell key={`${s.name}-${i}`} fill={s.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(v: number | string) =>
+                          typeof v === 'number'
+                            ? `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
+                            : String(v)
+                        }
+                        contentStyle={{ borderRadius: 8 }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <AnalyzerTotalSummary
+                    total={total}
+                    currencyFilter={currencyFilter}
+                    convertToArsBlue={convertToArsBlue}
+                    variant="overlay"
+                  />
+                </div>
+              </>
             )}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-center px-3 max-w-[min(200px,78vw)] mx-auto">
-                <div className="text-xs sm:text-sm text-slate-400">Total</div>
-                <div className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tabular-nums leading-tight">
-                  ${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
-                </div>
-                <div className="text-[10px] sm:text-[11px] text-slate-400 mt-1 leading-snug">
-                  {currencyFilter === 'all' && convertToArsBlue
-                    ? 'Equivalente en ARS (dólar blue; USD y stablecoins convertidos)'
-                    : currencyFilter === 'all'
-                      ? 'Sin cotización USD: montos sin convertir a pesos'
-                      : `Solo movimientos en ${currencyFilter}`}
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="space-y-2">
