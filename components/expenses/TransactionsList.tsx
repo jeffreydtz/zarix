@@ -153,6 +153,7 @@ export default function TransactionsList({
   const [bulkCategoryId, setBulkCategoryId] = useState('');
   const [bulkAccountId, setBulkAccountId] = useState('');
   const [applyingBulk, setApplyingBulk] = useState(false);
+  const [deletingBulk, setDeletingBulk] = useState(false);
 
   const handleSave = () => {
     setEditingTx(null);
@@ -186,7 +187,7 @@ export default function TransactionsList({
       payload.accountId = bulkAccountId;
     }
 
-    if (!payload.categoryId && !payload.accountId && payload.categoryId !== null) {
+    if (!bulkCategoryId && !bulkAccountId) {
       alert('Elegí una categoría y/o cuenta para aplicar');
       return;
     }
@@ -210,6 +211,40 @@ export default function TransactionsList({
       alert(error.message || 'Error en edición masiva');
     } finally {
       setApplyingBulk(false);
+    }
+  };
+
+  const applyBulkDelete = async () => {
+    if (selectedIds.length === 0) {
+      alert('Seleccioná al menos un movimiento');
+      return;
+    }
+    const n = selectedIds.length;
+    if (
+      !confirm(
+        `¿Eliminar ${n} movimiento${n === 1 ? '' : 's'}? Esta acción no se puede deshacer.`
+      )
+    ) {
+      return;
+    }
+    setDeletingBulk(true);
+    try {
+      const response = await fetch('/api/transactions/bulk', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transactionIds: selectedIds }),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'No se pudieron eliminar los movimientos');
+      }
+      window.location.reload();
+    } catch (error: unknown) {
+      console.error(error);
+      const message = error instanceof Error ? error.message : 'Error al eliminar';
+      alert(message);
+    } finally {
+      setDeletingBulk(false);
     }
   };
 
@@ -297,10 +332,23 @@ export default function TransactionsList({
             <button
               type="button"
               onClick={applyBulk}
-              disabled={applyingBulk || selectedIds.length === 0}
+              disabled={applyingBulk || deletingBulk || selectedIds.length === 0}
               className="btn btn-primary disabled:opacity-50"
             >
               {applyingBulk ? 'Aplicando...' : 'Aplicar cambios masivos'}
+            </button>
+          </div>
+        )}
+
+        {selectionMode && selectedIds.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={applyBulkDelete}
+              disabled={deletingBulk || applyingBulk}
+              className="px-3 py-1.5 rounded-lg text-sm border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/60 disabled:opacity-50"
+            >
+              {deletingBulk ? 'Eliminando...' : `Eliminar seleccionados (${selectedIds.length})`}
             </button>
           </div>
         )}
