@@ -1,4 +1,5 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
 
 export interface CategoryBreakdown {
   name: string;
@@ -47,14 +48,16 @@ class AnalyticsService {
   ): Promise<CategoryBreakdown[]> {
     const supabase = createServiceClientSync();
     
-    const { data: transactions } = await supabase
+    let q = supabase
       .from('transactions')
       .select('amount_in_account_currency, category:categories(name, icon)')
       .eq('user_id', userId)
       .eq('type', type)
       .gte('transaction_date', startDate.toISOString())
       .lte('transaction_date', endDate.toISOString());
-    
+    q = await applyArchivedAccountsTransactionFilter(q, userId);
+    const { data: transactions } = await q;
+
     if (!transactions) return [];
     
     const categoryMap = new Map<string, { name: string; icon: string; amount: number; count: number }>();
@@ -90,12 +93,14 @@ class AnalyticsService {
     const startRange = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
     const endRange = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-    const { data: transactions } = await supabase
+    let qMonth = supabase
       .from('transactions')
       .select('type, amount_in_account_currency, transaction_date')
       .eq('user_id', userId)
       .gte('transaction_date', startRange.toISOString())
       .lte('transaction_date', endRange.toISOString());
+    qMonth = await applyArchivedAccountsTransactionFilter(qMonth, userId);
+    const { data: transactions } = await qMonth;
 
     const bucket = new Map<string, { expenses: number; income: number }>();
     for (let i = months - 1; i >= 0; i--) {
@@ -140,13 +145,15 @@ class AnalyticsService {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days + 1);
     
-    const { data: transactions } = await supabase
+    let qDay = supabase
       .from('transactions')
       .select('type, amount_in_account_currency, transaction_date')
       .eq('user_id', userId)
       .gte('transaction_date', startDate.toISOString())
       .lte('transaction_date', endDate.toISOString());
-    
+    qDay = await applyArchivedAccountsTransactionFilter(qDay, userId);
+    const { data: transactions } = await qDay;
+
     const dailyMap = new Map<string, { expenses: number; income: number }>();
     
     for (let i = 0; i < days; i++) {
@@ -186,14 +193,16 @@ class AnalyticsService {
   ): Promise<AccountBreakdown[]> {
     const supabase = createServiceClientSync();
     
-    const { data: transactions } = await supabase
+    let qAcc = supabase
       .from('transactions')
       .select('amount_in_account_currency, account:accounts!transactions_account_id_fkey(name, icon, color)')
       .eq('user_id', userId)
       .eq('type', 'expense')
       .gte('transaction_date', startDate.toISOString())
       .lte('transaction_date', endDate.toISOString());
-    
+    qAcc = await applyArchivedAccountsTransactionFilter(qAcc, userId);
+    const { data: transactions } = await qAcc;
+
     if (!transactions) return [];
     
     const accountMap = new Map<string, { name: string; icon: string; amount: number; color: string }>();
@@ -228,7 +237,7 @@ class AnalyticsService {
   ) {
     const supabase = createServiceClientSync();
     
-    const { data } = await supabase
+    let qTop = supabase
       .from('transactions')
       .select('*, category:categories(name, icon), account:accounts!transactions_account_id_fkey(name)')
       .eq('user_id', userId)
@@ -237,7 +246,9 @@ class AnalyticsService {
       .lte('transaction_date', endDate.toISOString())
       .order('amount_in_account_currency', { ascending: false })
       .limit(limit);
-    
+    qTop = await applyArchivedAccountsTransactionFilter(qTop, userId);
+    const { data } = await qTop;
+
     return data || [];
   }
   

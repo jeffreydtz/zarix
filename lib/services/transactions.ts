@@ -1,7 +1,22 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
+import { accountsService } from './accounts';
 import { cotizacionesService } from './cotizaciones';
 import type { Transaction, Account } from '@/types/database';
+
+/**
+ * Listados globales: excluye movimientos que tocan cuentas archivadas.
+ * Usar en queries directas a `transactions` (analytics, APIs) además de `list()`.
+ */
+export async function applyArchivedAccountsTransactionFilter(query: any, userId: string) {
+  const activeIds = await accountsService.getActiveAccountIds(userId);
+  if (activeIds.length === 0) {
+    return query.eq('id', '00000000-0000-0000-0000-000000000000');
+  }
+  return query
+    .in('account_id', activeIds)
+    .or(`destination_account_id.is.null,destination_account_id.in.(${activeIds.join(',')})`);
+}
 
 /** Misma regla que transferencias: cotización de mercado entre moneda del comprobante y moneda de la cuenta. */
 async function computeAmountInAccountCurrencyForAccount(
@@ -234,6 +249,11 @@ class TransactionsService {
       .eq('user_id', userId)
       .order('transaction_date', { ascending: false })
       .order('id', { ascending: false });
+
+    const globalOnly = !options.accountId && !options.involveAccountId;
+    if (globalOnly) {
+      query = await applyArchivedAccountsTransactionFilter(query, userId);
+    }
 
     if (options.involveAccountId) {
       const id = options.involveAccountId;

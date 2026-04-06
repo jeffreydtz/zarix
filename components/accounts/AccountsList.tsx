@@ -101,7 +101,14 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Eliminar la cuenta "${name}"?`)) return;
+    if (
+      !confirm(
+        `Archivar la cuenta "${name}"?\n\n` +
+          `Dejará de mostrarse en listados y totales. Los movimientos no se borran; podés restaurarla más abajo si hace falta.`
+      )
+    ) {
+      return;
+    }
 
     setLoading(true);
     try {
@@ -260,6 +267,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                     </motion.button>
                     <motion.button
                       type="button"
+                      title="Archivar cuenta"
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleDelete(account.id, account.name)}
                       className="p-2 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500"

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import AccountsList from '@/components/accounts/AccountsList';
+import ArchivedAccountsPanel from '@/components/accounts/ArchivedAccountsPanel';
 import CreateAccountButton from '@/components/accounts/CreateAccountButton';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
 
@@ -16,7 +17,10 @@ export default async function AccountsPage() {
       redirect('/login');
     }
 
-    const accounts = await accountsService.list(user.id).catch(() => []);
+    const [accounts, archivedAccounts] = await Promise.all([
+      accountsService.list(user.id).catch(() => []),
+      accountsService.listArchived(user.id).catch(() => []),
+    ]);
     const aggregates =
       accounts.length > 0 ? accountsService.aggregateAccountTotals(accounts) : null;
 
@@ -47,6 +51,7 @@ export default async function AccountsPage() {
           </div>
 
           <AccountsList accounts={accounts} aggregates={aggregates} />
+          <ArchivedAccountsPanel accounts={archivedAccounts} />
         </div>
       </div>
     );

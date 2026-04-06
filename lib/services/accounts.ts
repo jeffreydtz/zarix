@@ -262,7 +262,42 @@ class AccountsService {
     };
   }
 
-  async getById(id: string, userId: string): Promise<Account> {
+  /**
+   * IDs de cuentas activas (sin cotizaciones; para filtros de visibilidad de transacciones).
+   */
+  async getActiveAccountIds(userId: string): Promise<string[]> {
+    const supabase = createServiceClientSync();
+    const { data, error } = await supabase
+      .from('accounts')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('is_active', true);
+
+    if (error) throw error;
+    return (data ?? []).map((r) => r.id);
+  }
+
+  /**
+   * Cuentas archivadas (`is_active: false`) para restaurar o referencia.
+   */
+  async listArchived(userId: string): Promise<Account[]> {
+    const supabase = createServiceClientSync();
+    const { data, error } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', false)
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+    return (data ?? []).map((a) => ({ ...a, balance: Number(a.balance) }));
+  }
+
+  async getById(
+    id: string,
+    userId: string,
+    options?: { includeInactive?: boolean }
+  ): Promise<Account | null> {
     const supabase = createServiceClientSync();
 
     const { data, error } = await supabase
@@ -272,7 +307,18 @@ class AccountsService {
       .eq('user_id', userId)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if ((error as { code?: string }).code === 'PGRST116') {
+        return null;
+      }
+      throw error;
+    }
+
+    if (!data) return null;
+    if (!options?.includeInactive && !data.is_active) {
+      return null;
+    }
+
     return { ...data, balance: Number(data.balance) };
   }
 
@@ -333,18 +379,12 @@ class AccountsService {
     return data;
   }
 
+  /**
+   * Archiva la cuenta (`is_active: false`). No borra filas ni transacciones;
+   * los movimientos dejan de mostrarse en listados globales mientras la cuenta siga archivada.
+   */
   async delete(id: string, userId: string): Promise<void> {
     const supabase = createServiceClientSync();
-
-    const { data: transactions } = await supabase
-      .from('transactions')
-      .select('id')
-      .eq('account_id', id)
-      .limit(1);
-
-    if (transactions && transactions.length > 0) {
-      throw new Error('Cannot delete account with transactions');
-    }
 
     const { error } = await supabase
       .from('accounts')

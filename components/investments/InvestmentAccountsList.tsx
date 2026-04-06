@@ -14,7 +14,7 @@ export default function InvestmentAccountsList({ accounts }: InvestmentAccountsL
 
   const handleDelete = async (account: AccountWithBalance) => {
     const ok = window.confirm(
-      `Eliminar la cuenta de inversión "${account.name}"?\n\nEsta acción la desactiva y también desactiva sus inversiones asociadas.`
+      `Archivar la cuenta de inversión "${account.name}"?\n\nSe desactiva la cuenta y sus inversiones asociadas. Los movimientos no se borran; podés restaurar la cuenta desde Cuentas → Cuentas archivadas.`
     );
     if (!ok) return;
 

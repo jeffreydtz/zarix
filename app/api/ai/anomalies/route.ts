@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,12 +16,14 @@ export async function GET(req: NextRequest) {
     const fourMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
     const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const { data: transactions } = await supabase
+    let txQ = supabase
       .from('transactions')
       .select('amount_in_account_currency, category_id, transaction_date, category:categories(name, icon)')
       .eq('user_id', user.id)
       .eq('type', 'expense')
       .gte('transaction_date', fourMonthsAgo.toISOString());
+    txQ = await applyArchivedAccountsTransactionFilter(txQ, user.id);
+    const { data: transactions } = await txQ;
 
     if (!transactions || transactions.length === 0) {
       return NextResponse.json({ anomalies: [] });

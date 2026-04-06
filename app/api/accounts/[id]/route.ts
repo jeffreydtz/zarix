@@ -17,6 +17,9 @@ export async function GET(
     }
 
     const account = await accountsService.getById(params.id, user.id);
+    if (!account) {
+      return NextResponse.json({ error: 'Cuenta no encontrada' }, { status: 404 });
+    }
     return NextResponse.json(account);
   } catch (error: any) {
     console.error('Account GET error:', error);

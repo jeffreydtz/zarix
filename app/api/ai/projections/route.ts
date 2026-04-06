@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,12 +15,14 @@ export async function GET(req: NextRequest) {
     // Get last 3 months of income + expense data
     const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1);
 
-    const { data: transactions } = await supabase
+    let txQuery = supabase
       .from('transactions')
       .select('type, amount_in_account_currency, transaction_date')
       .eq('user_id', user.id)
       .in('type', ['expense', 'income'])
       .gte('transaction_date', threeMonthsAgo.toISOString());
+    txQuery = await applyArchivedAccountsTransactionFilter(txQuery, user.id);
+    const { data: transactions } = await txQuery;
 
     if (!transactions || transactions.length === 0) {
       return NextResponse.json({
