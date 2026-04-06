@@ -1,8 +1,43 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import ProgressBar from '@/components/ui/ProgressBar';
+
+const LS_SHOW_INVESTMENT_PATRIMONY = 'zarix-dashboard-show-investment-patrimony';
+
+function EyeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+      />
+    </svg>
+  );
+}
+
+function EyeSlashIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+      />
+    </svg>
+  );
+}
 
 interface BalanceHeaderProps {
   liquidUSD: number;
@@ -28,7 +63,30 @@ export default function BalanceHeader({
   creditUtilization = 0,
 }: BalanceHeaderProps) {
   const hasCreditCards = totalCreditLimit > 0;
-  const hasInvestments = investmentsUSD > 0;
+  const hasInvestments = investmentsUSD > 0 || investmentsARSBlue > 0;
+
+  const [showInvestmentPatrimony, setShowInvestmentPatrimony] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(LS_SHOW_INVESTMENT_PATRIMONY);
+      if (stored === 'true') setShowInvestmentPatrimony(true);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const toggleInvestmentPatrimony = () => {
+    setShowInvestmentPatrimony((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(LS_SHOW_INVESTMENT_PATRIMONY, next ? 'true' : 'false');
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -72,49 +130,83 @@ export default function BalanceHeader({
         </motion.div>
 
         {hasInvestments ? (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="card bg-gradient-to-br from-purple-50 via-purple-50 to-pink-100 dark:from-purple-950 dark:via-slate-900 dark:to-pink-950 border-purple-200 dark:border-purple-800"
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <motion.span 
-                className="text-2xl"
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+          showInvestmentPatrimony ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="card bg-gradient-to-br from-purple-50 via-purple-50 to-pink-100 dark:from-purple-950 dark:via-slate-900 dark:to-pink-950 border-purple-200 dark:border-purple-800 relative"
+            >
+              <button
+                type="button"
+                onClick={toggleInvestmentPatrimony}
+                className="absolute top-3 right-3 p-2 rounded-xl text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-300 hover:bg-purple-100/80 dark:hover:bg-purple-900/40 transition-colors"
+                title="Ocultar patrimonio de inversiones"
+                aria-label="Ocultar patrimonio de inversiones"
               >
-                📈
-              </motion.span>
+                <EyeIcon className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-2 mb-3 pr-10">
+                <motion.span
+                  className="text-2xl"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+                >
+                  📈
+                </motion.span>
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    Patrimonio Total
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Con inversiones</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                    <AnimatedNumber value={totalARSBlue} prefix="$" decimals={0} />
+                  </span>
+                  <span className="text-sm font-medium text-slate-500">ARS</span>
+                </div>
+                <div className="flex items-baseline gap-2 text-slate-600 dark:text-slate-400">
+                  <span className="text-lg font-semibold">
+                    <AnimatedNumber value={totalUSD} prefix="USD " decimals={2} />
+                  </span>
+                </div>
+                <div className="text-xs text-purple-600 dark:text-purple-400 mt-3 pt-3 border-t border-purple-200 dark:border-purple-800 flex items-center gap-1">
+                  <span>Inversiones:</span>
+                  <span className="font-semibold">
+                    <AnimatedNumber value={investmentsARSBlue} prefix="$" decimals={0} /> ARS
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="card border-2 border-dashed border-purple-200 dark:border-purple-800 bg-purple-50/40 dark:bg-purple-950/20 flex flex-col items-center justify-center gap-3 py-8 px-4 text-center min-h-[180px]"
+            >
+              <button
+                type="button"
+                onClick={toggleInvestmentPatrimony}
+                className="p-3 rounded-2xl text-purple-600 dark:text-purple-300 bg-purple-100/80 dark:bg-purple-900/40 hover:bg-purple-200/90 dark:hover:bg-purple-900/60 transition-colors"
+                title="Mostrar patrimonio de inversiones"
+                aria-label="Mostrar patrimonio de inversiones"
+              >
+                <EyeSlashIcon className="w-8 h-8" />
+              </button>
               <div>
-                <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  Patrimonio Total
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Con inversiones
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                  Patrimonio de inversiones oculto
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Tocá el ojo para ver totales con inversiones
                 </p>
               </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                  <AnimatedNumber value={totalARSBlue} prefix="$" decimals={0} />
-                </span>
-                <span className="text-sm font-medium text-slate-500">ARS</span>
-              </div>
-              <div className="flex items-baseline gap-2 text-slate-600 dark:text-slate-400">
-                <span className="text-lg font-semibold">
-                  <AnimatedNumber value={totalUSD} prefix="USD " decimals={2} />
-                </span>
-              </div>
-              <div className="text-xs text-purple-600 dark:text-purple-400 mt-3 pt-3 border-t border-purple-200 dark:border-purple-800 flex items-center gap-1">
-                <span>Inversiones:</span>
-                <span className="font-semibold">
-                  <AnimatedNumber value={investmentsARSBlue} prefix="$" decimals={0} /> ARS
-                </span>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )
         ) : (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
