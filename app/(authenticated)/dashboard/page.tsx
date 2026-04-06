@@ -1,14 +1,14 @@
+import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
-import type { TransactionWithCategory } from '@/lib/services/transactions';
-import type { SpendingAnalyzerTxItem } from '@/components/dashboard/SpendingAnalyzer';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import BalanceHeader from '@/components/dashboard/BalanceHeader';
 import FloatingAddButton from '@/components/dashboard/FloatingAddButton';
+import DashboardSpendingAnalyzerSection from '@/components/dashboard/DashboardSpendingAnalyzerSection';
 import { brandAsset } from '@/lib/brand';
 
 const QuotesWidget = dynamic(() => import('@/components/dashboard/QuotesWidget'), {
@@ -26,25 +26,6 @@ const RecentTransactions = dynamic(() => import('@/components/dashboard/RecentTr
 const AnomaliesWidget = dynamic(() => import('@/components/dashboard/AnomaliesWidget'), {
   loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
 });
-const SpendingAnalyzer = dynamic(() => import('@/components/dashboard/SpendingAnalyzer'), {
-  ssr: false,
-  loading: () => <div className="card h-80 animate-pulse bg-slate-100 dark:bg-slate-800" />,
-});
-
-function mapToAnalyzerTx(tx: TransactionWithCategory): SpendingAnalyzerTxItem {
-  return {
-    id: tx.id,
-    type: tx.type,
-    amount: Number(tx.amount),
-    currency: tx.currency,
-    amount_in_account_currency: Number(tx.amount_in_account_currency ?? 0),
-    category: tx.category ?? null,
-    account: tx.account ?? null,
-    transaction_date: tx.transaction_date,
-    description: tx.description ?? null,
-  };
-}
-
 export default async function DashboardPage() {
   try {
     const supabase = await createClient();
@@ -56,7 +37,7 @@ export default async function DashboardPage() {
       redirect('/login');
     }
 
-    const [accounts, recentTransactions, quotes, analyzerPoolRaw] = await Promise.all([
+    const [accounts, recentTransactions, quotes] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       transactionsService.list(user.id, { limit: 5 }).catch(() => []),
       cotizacionesService.getAllQuotes().catch(() => ({
@@ -73,12 +54,7 @@ export default async function DashboardPage() {
         },
         timestamp: new Date().toISOString(),
       })),
-      transactionsService.list(user.id, { limit: 10000 }).catch(() => null as TransactionWithCategory[] | null),
     ]);
-
-    const analyzerInitialTxs: SpendingAnalyzerTxItem[] | undefined =
-      analyzerPoolRaw === null ? undefined : analyzerPoolRaw.map(mapToAnalyzerTx);
-    const analyzerTruncated = analyzerPoolRaw !== null && analyzerPoolRaw.length >= 10000;
 
     const balances =
       accounts.length > 0
@@ -130,15 +106,11 @@ export default async function DashboardPage() {
 
           <QuotesWidget quotes={quotes} />
 
-          <SpendingAnalyzer
-            initialTransactions={analyzerInitialTxs}
-            initialTransactionsTruncated={analyzerTruncated}
-            usdToArsBlue={quotes.dolar.blue.sell || 0}
-            cryptoPriceArs={{
-              btc: quotes.crypto.btc.priceARS,
-              eth: quotes.crypto.eth.priceARS,
-            }}
-          />
+          <Suspense
+            fallback={<div className="card h-80 animate-pulse bg-slate-100 dark:bg-slate-800" />}
+          >
+            <DashboardSpendingAnalyzerSection userId={user.id} quotes={quotes} />
+          </Suspense>
 
           <CreditCardsWidget accounts={accounts} />
 

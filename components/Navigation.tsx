@@ -66,6 +66,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
         <div className="flex items-center justify-between h-14 px-4">
           <Link
             href="/dashboard"
+            prefetch
             className="flex items-center gap-2 shrink-0 min-h-[44px] min-w-[44px] -ml-2 pl-2"
           >
             <div className="w-9 h-9 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center p-1">
@@ -85,16 +86,11 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
         </div>
       </header>
 
-      {/* ——— Desktop: navegación completa ——— */}
-      <motion.nav
-        initial={{ y: -12, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.25 }}
-        className="hidden md:block bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40"
-      >
+      {/* ——— Desktop: navegación completa (sin layout spring: menos trabajo en cada cambio de ruta) ——— */}
+      <nav className="hidden md:block bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
-            <Link href="/dashboard" className="flex items-center gap-2 shrink-0 min-h-[44px]">
+            <Link href="/dashboard" prefetch className="flex items-center gap-2 shrink-0 min-h-[44px]">
               <div className="w-8 h-8 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center p-0.5">
                 <Image
                   src={brandAsset.logoSvg}
@@ -116,13 +112,13 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                   <Link
                     key={link.href}
                     href={link.href}
+                    prefetch
                     className="relative px-3 py-2 rounded-xl text-sm font-medium transition-colors min-h-[44px] flex items-center"
                   >
                     {isActive && (
-                      <motion.div
-                        layoutId="activeTabDesktop"
+                      <span
                         className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 rounded-xl"
-                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                        aria-hidden
                       />
                     )}
                     <span
@@ -150,13 +146,13 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                   }`}
                 >
                   <span>Más</span>
-                  <motion.span
-                    animate={{ rotate: moreOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="text-xs leading-none"
+                  <span
+                    className={`inline-block text-xs leading-none transition-transform duration-200 ease-out ${
+                      moreOpen ? 'rotate-180' : ''
+                    }`}
                   >
                     ▾
-                  </motion.span>
+                  </span>
                 </button>
 
                 <AnimatePresence>
@@ -174,6 +170,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                           <Link
                             key={link.href}
                             href={link.href}
+                            prefetch
                             className={`flex items-center gap-3 px-4 py-3 text-sm min-h-[44px] transition-colors ${
                               isActive
                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium'
@@ -195,7 +192,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
             </div>
           </div>
         </div>
-      </motion.nav>
+      </nav>
 
       <div className="flex-1 min-h-0 w-full min-w-0 overflow-y-auto overscroll-y-contain pb-mobile-nav md:flex-none md:overflow-visible md:pb-0 md:min-h-0">
         {children}
@@ -213,6 +210,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch
                 className={`flex flex-1 flex-col items-center justify-center gap-0.5 min-w-0 min-h-[48px] rounded-xl transition-colors ${
                   isActive
                     ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-900/20'
@@ -281,6 +279,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                     <li key={link.href}>
                       <Link
                         href={link.href}
+                        prefetch
                         onClick={() => setMoreSheetOpen(false)}
                         className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-base min-h-[48px] ${
                           isActive

@@ -13,7 +13,8 @@ import {
 export default function OfflineReferenceWarmup() {
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+
+    const run = async () => {
       if (typeof navigator !== 'undefined' && !navigator.onLine) return;
       const online = typeof navigator !== 'undefined' && navigator.onLine;
       const [accs, cats] = await Promise.all([
@@ -23,9 +24,24 @@ export default function OfflineReferenceWarmup() {
       if (cancelled) return;
       maybePersistAccountsSnapshot(accs, online);
       maybePersistCategoriesSnapshot(cats, online);
-    })();
+    };
+
+    // No competir con el primer fetch de la página / transición de ruta (misma prioridad de red).
+    const schedule =
+      typeof requestIdleCallback !== 'undefined'
+        ? () => {
+            const id = requestIdleCallback(() => void run(), { timeout: 4000 });
+            return () => cancelIdleCallback(id);
+          }
+        : () => {
+            const t = window.setTimeout(() => void run(), 800);
+            return () => clearTimeout(t);
+          };
+
+    const cancelSchedule = schedule();
     return () => {
       cancelled = true;
+      cancelSchedule();
     };
   }, []);
 
