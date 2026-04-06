@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { User } from '@/types/database';
 
 interface SettingsFormProps {
@@ -30,6 +30,60 @@ export default function SettingsForm({
   );
   const [customBotToken, setCustomBotToken] = useState('');
   const [lastWebhookUrl, setLastWebhookUrl] = useState<string | null>(null);
+
+  const [weeklySummary, setWeeklySummary] = useState(user.weekly_summary_enabled);
+  const [monthlySummary, setMonthlySummary] = useState(user.monthly_summary_enabled);
+  const [nextWeeklyLabel, setNextWeeklyLabel] = useState<string | null>(null);
+  const [nextMonthlyLabel, setNextMonthlyLabel] = useState<string | null>(null);
+  const [notifLoading, setNotifLoading] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/user/notification-preferences')
+      .then((r) => r.json())
+      .then((d) => {
+        if (typeof d.weekly_summary_enabled === 'boolean') {
+          setWeeklySummary(d.weekly_summary_enabled);
+        }
+        if (typeof d.monthly_summary_enabled === 'boolean') {
+          setMonthlySummary(d.monthly_summary_enabled);
+        }
+        if (d.next_weekly_label) setNextWeeklyLabel(d.next_weekly_label);
+        if (d.next_monthly_label) setNextMonthlyLabel(d.next_monthly_label);
+      })
+      .catch(() => {});
+  }, []);
+
+  const saveNotificationToggle = async (
+    field: 'weekly_summary_enabled' | 'monthly_summary_enabled',
+    value: boolean
+  ) => {
+    setNotifLoading(true);
+    try {
+      const res = await fetch('/api/user/notification-preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: value }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error');
+      if (typeof data.weekly_summary_enabled === 'boolean') {
+        setWeeklySummary(data.weekly_summary_enabled);
+      }
+      if (typeof data.monthly_summary_enabled === 'boolean') {
+        setMonthlySummary(data.monthly_summary_enabled);
+      }
+      if (data.next_weekly_label !== undefined) {
+        setNextWeeklyLabel(data.next_weekly_label);
+      }
+      if (data.next_monthly_label !== undefined) {
+        setNextMonthlyLabel(data.next_monthly_label);
+      }
+    } catch {
+      setIntegMessage('❌ No se pudieron guardar las notificaciones.');
+    } finally {
+      setNotifLoading(false);
+    }
+  };
 
   const webhookUrl =
     lastWebhookUrl ||
@@ -417,30 +471,54 @@ export default function SettingsForm({
       </div>
 
       <div className="card">
-        <h2 className="text-xl font-semibold mb-4">Notificaciones</h2>
-        <div className="space-y-3">
-          <label className="flex items-center justify-between">
-            <span>Resumen diario (22hs)</span>
+        <h2 className="text-xl font-semibold mb-2">Notificaciones por Telegram</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Mismo ajuste que en el bot con <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">/resumenes</code>
+          . Los envíos siguen el horario del servidor (≈09:00 UTC); abajo ves la fecha aproximada en tu zona.
+        </p>
+        <div className="space-y-4">
+          <label className="flex items-start justify-between gap-3 cursor-pointer">
+            <span className="text-sm">
+              <span className="font-medium block">Resumen semanal</span>
+              <span className="text-gray-500 dark:text-gray-400 text-xs">
+                Cada lunes (semana cerrada).{' '}
+                {weeklySummary && nextWeeklyLabel ? (
+                  <span className="block mt-1 text-indigo-600 dark:text-indigo-400">
+                    Próximo: {nextWeeklyLabel}
+                  </span>
+                ) : !weeklySummary ? (
+                  <span className="block mt-1">Desactivado — no se envía.</span>
+                ) : null}
+              </span>
+            </span>
             <input
               type="checkbox"
-              defaultChecked={user.daily_summary_enabled}
-              className="w-5 h-5"
+              checked={weeklySummary}
+              disabled={notifLoading}
+              onChange={(e) => saveNotificationToggle('weekly_summary_enabled', e.target.checked)}
+              className="w-6 h-6 mt-1 shrink-0 accent-blue-600"
             />
           </label>
-          <label className="flex items-center justify-between">
-            <span>Resumen semanal (lunes)</span>
+          <label className="flex items-start justify-between gap-3 cursor-pointer">
+            <span className="text-sm">
+              <span className="font-medium block">Resumen mensual</span>
+              <span className="text-gray-500 dark:text-gray-400 text-xs">
+                Día 1 de cada mes (mes cerrado).{' '}
+                {monthlySummary && nextMonthlyLabel ? (
+                  <span className="block mt-1 text-indigo-600 dark:text-indigo-400">
+                    Próximo: {nextMonthlyLabel}
+                  </span>
+                ) : !monthlySummary ? (
+                  <span className="block mt-1">Desactivado — no se envía.</span>
+                ) : null}
+              </span>
+            </span>
             <input
               type="checkbox"
-              defaultChecked={user.weekly_summary_enabled}
-              className="w-5 h-5"
-            />
-          </label>
-          <label className="flex items-center justify-between">
-            <span>Resumen mensual (día 1)</span>
-            <input
-              type="checkbox"
-              defaultChecked={user.monthly_summary_enabled}
-              className="w-5 h-5"
+              checked={monthlySummary}
+              disabled={notifLoading}
+              onChange={(e) => saveNotificationToggle('monthly_summary_enabled', e.target.checked)}
+              className="w-6 h-6 mt-1 shrink-0 accent-blue-600"
             />
           </label>
         </div>

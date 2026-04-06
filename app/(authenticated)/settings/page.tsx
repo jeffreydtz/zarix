@@ -23,7 +23,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto px-4 py-6 pb-24 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 py-6 pb-8 md:pb-10 space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Configuracion</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">

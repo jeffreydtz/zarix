@@ -6,9 +6,9 @@ export default function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="min-h-dvh flex flex-col">
       <Navigation />
-      {children}
+      <div className="flex-1 w-full min-w-0 pb-mobile-nav">{children}</div>
     </div>
   );
 }

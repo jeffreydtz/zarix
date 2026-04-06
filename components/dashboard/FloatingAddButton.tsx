@@ -125,7 +125,7 @@ export default function FloatingAddButton() {
     <>
       {/* Pending sync indicator */}
       {(pendingCount > 0 || syncing) && (
-        <div className="fixed bottom-24 right-6 z-50 text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 rounded-full px-3 py-1.5 shadow-md flex items-center gap-1.5 pointer-events-none">
+        <div className="fixed z-50 text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 rounded-full px-3 py-1.5 shadow-md flex items-center gap-1.5 pointer-events-none bottom-[calc(8.5rem+env(safe-area-inset-bottom,0px))] right-4 md:bottom-24 md:right-6">
           {syncing ? (
             <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -144,8 +144,9 @@ export default function FloatingAddButton() {
 
       {/* Floating Action Button */}
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+        className="fixed z-50 w-14 h-14 min-w-[56px] min-h-[56px] bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center transition-transform active:scale-95 touch-manipulation right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-6 md:right-6"
         title="Nuevo Movimiento"
         aria-label="Nuevo Movimiento"
       >
@@ -163,10 +164,10 @@ export default function FloatingAddButton() {
       {/* Modal */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-4 z-[60] overscroll-contain"
           onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
         >
-          <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-slate-800 rounded-t-3xl sm:rounded-2xl max-w-md w-full p-6 max-h-[min(92dvh,900px)] overflow-y-auto overscroll-contain shadow-2xl pb-[env(safe-area-inset-bottom,0px)]">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">

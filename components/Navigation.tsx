@@ -8,163 +8,290 @@ import { useState, useRef, useEffect } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 
 const PRIMARY_LINKS = [
-  { href: '/dashboard',   label: 'Inicio',       icon: '🏠' },
-  { href: '/expenses',    label: 'Movimientos',  icon: '💸' },
-  { href: '/accounts',    label: 'Cuentas',      icon: '🏦' },
-  { href: '/investments', label: 'Inversiones',  icon: '📈' },
+  { href: '/dashboard', label: 'Inicio', icon: '🏠' },
+  { href: '/expenses', label: 'Movimientos', icon: '💸' },
+  { href: '/accounts', label: 'Cuentas', icon: '🏦' },
+  { href: '/investments', label: 'Inversiones', icon: '📈' },
 ];
 
 const MORE_LINKS = [
-  { href: '/analysis',   label: 'Análisis',     icon: '📊' },
-  { href: '/budgets',    label: 'Presupuestos',  icon: '🎯' },
-  { href: '/recurring',  label: 'Recurrentes',  icon: '🔄' },
-  { href: '/categories', label: 'Categorías',   icon: '🏷️' },
-  { href: '/settings',   label: 'Config',       icon: '⚙️' },
+  { href: '/analysis', label: 'Análisis', icon: '📊' },
+  { href: '/budgets', label: 'Presupuestos', icon: '🎯' },
+  { href: '/recurring', label: 'Recurrentes', icon: '🔄' },
+  { href: '/categories', label: 'Categorías', icon: '🏷️' },
+  { href: '/settings', label: 'Config', icon: '⚙️' },
 ];
 
 export default function Navigation() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
+    function handleClick(e: MouseEvent | TouchEvent) {
       if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
         setMoreOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener('touchstart', handleClick, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('touchstart', handleClick);
+    };
   }, []);
 
-  // Close dropdown on route change
-  useEffect(() => { setMoreOpen(false); }, [pathname]);
+  useEffect(() => {
+    setMoreOpen(false);
+    setMoreSheetOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!moreSheetOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMoreSheetOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [moreSheetOpen]);
 
   const isMoreActive = MORE_LINKS.some((l) => l.href === pathname);
 
   return (
-    <motion.nav
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40"
-    >
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="flex items-center justify-between h-14">
-
-          {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
-            <motion.div
-              className="w-8 h-8 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center"
-              whileHover={{ rotate: [0, -10, 10, 0] }}
-              transition={{ duration: 0.4 }}
-            >
+    <>
+      {/* ——— Mobile: barra superior compacta ——— */}
+      <header className="md:hidden sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 pt-[env(safe-area-inset-top,0px)]">
+        <div className="flex items-center justify-between h-14 px-4">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 shrink-0 min-h-[44px] min-w-[44px] -ml-2 pl-2"
+          >
+            <div className="w-9 h-9 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center">
               <Image
                 src="/icons/icon-192.png"
-                alt="Zarix"
-                width={24}
-                height={24}
-                className="w-6 h-6 object-contain"
+                alt=""
+                width={28}
+                height={28}
+                className="w-7 h-7 object-contain"
                 priority
               />
-            </motion.div>
-            <span className="font-bold text-lg text-blue-600 dark:text-blue-400">
-              Zarix
-            </span>
-          </Link>
-
-          {/* Nav links */}
-          <div className="flex items-center gap-1">
-            {PRIMARY_LINKS.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="relative px-3 py-1.5 rounded-xl text-sm font-medium transition-colors"
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTab"
-                      className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 rounded-xl"
-                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                    />
-                  )}
-                  <span
-                    className={`relative z-10 flex items-center gap-1.5 ${
-                      isActive
-                        ? 'text-blue-600 dark:text-blue-400'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                    }`}
-                  >
-                    <span className="text-sm">{link.icon}</span>
-                    <span className="hidden sm:inline">{link.label}</span>
-                  </span>
-                </Link>
-              );
-            })}
-
-            {/* More dropdown */}
-            <div ref={moreRef} className="relative">
-              <button
-                onClick={() => setMoreOpen((o) => !o)}
-                className={`relative px-3 py-1.5 rounded-xl text-sm font-medium transition-colors flex items-center gap-1 ${
-                  isMoreActive || moreOpen
-                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                }`}
-              >
-                <span className="hidden sm:inline">Más</span>
-                <motion.span
-                  animate={{ rotate: moreOpen ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-xs leading-none"
-                >
-                  ▾
-                </motion.span>
-              </button>
-
-              <AnimatePresence>
-                {moreOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-2 w-44 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-black/30 overflow-hidden"
-                  >
-                    {MORE_LINKS.map((link) => {
-                      const isActive = pathname === link.href;
-                      return (
-                        <Link
-                          key={link.href}
-                          href={link.href}
-                          className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                            isActive
-                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium'
-                              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
-                          }`}
-                        >
-                          <span>{link.icon}</span>
-                          <span>{link.label}</span>
-                          {isActive && (
-                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500" />
-                          )}
-                        </Link>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
+            <span className="font-bold text-lg text-blue-600 dark:text-blue-400">Zarix</span>
+          </Link>
+          <ThemeToggle />
+        </div>
+      </header>
 
-            <div className="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1" />
+      {/* ——— Desktop: navegación completa ——— */}
+      <motion.nav
+        initial={{ y: -12, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.25 }}
+        className="hidden md:block bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40"
+      >
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex items-center justify-between h-14">
+            <Link href="/dashboard" className="flex items-center gap-2 shrink-0 min-h-[44px]">
+              <div className="w-8 h-8 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center">
+                <Image
+                  src="/icons/icon-192.png"
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="w-6 h-6 object-contain"
+                  priority
+                />
+              </div>
+              <span className="font-bold text-lg text-blue-600 dark:text-blue-400">Zarix</span>
+            </Link>
 
-            <ThemeToggle />
+            <div className="flex items-center gap-1">
+              {PRIMARY_LINKS.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="relative px-3 py-2 rounded-xl text-sm font-medium transition-colors min-h-[44px] flex items-center"
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTabDesktop"
+                        className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 rounded-xl"
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                    <span
+                      className={`relative z-10 flex items-center gap-1.5 ${
+                        isActive
+                          ? 'text-blue-600 dark:text-blue-400'
+                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <span>{link.icon}</span>
+                      <span>{link.label}</span>
+                    </span>
+                  </Link>
+                );
+              })}
+
+              <div ref={moreRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setMoreOpen((o) => !o)}
+                  className={`relative px-3 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1 min-h-[44px] ${
+                    isMoreActive || moreOpen
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                  }`}
+                >
+                  <span>Más</span>
+                  <motion.span
+                    animate={{ rotate: moreOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-xs leading-none"
+                  >
+                    ▾
+                  </motion.span>
+                </button>
+
+                <AnimatePresence>
+                  {moreOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden"
+                    >
+                      {MORE_LINKS.map((link) => {
+                        const isActive = pathname === link.href;
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className={`flex items-center gap-3 px-4 py-3 text-sm min-h-[44px] transition-colors ${
+                              isActive
+                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium'
+                                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                            }`}
+                          >
+                            <span>{link.icon}</span>
+                            <span>{link.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <div className="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1" />
+              <ThemeToggle />
+            </div>
           </div>
         </div>
-      </div>
-    </motion.nav>
+      </motion.nav>
+
+      {/* ——— Mobile: barra inferior (thumb zone) ——— */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom,0px)]"
+        aria-label="Navegación principal"
+      >
+        <div className="flex items-stretch justify-around h-14 max-w-lg mx-auto px-1">
+          {PRIMARY_LINKS.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex flex-1 flex-col items-center justify-center gap-0.5 min-w-0 min-h-[48px] rounded-xl transition-colors ${
+                  isActive
+                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-900/20'
+                    : 'text-slate-500 dark:text-slate-400 active:bg-slate-100 dark:active:bg-slate-800'
+                }`}
+              >
+                <span className="text-lg leading-none" aria-hidden>
+                  {link.icon}
+                </span>
+                <span className="text-[10px] font-medium truncate max-w-full px-0.5">
+                  {link.label === 'Movimientos' ? 'Movs' : link.label}
+                </span>
+              </Link>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setMoreSheetOpen(true)}
+            className={`flex flex-1 flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-xl transition-colors ${
+              isMoreActive || moreSheetOpen
+                ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-900/20'
+                : 'text-slate-500 dark:text-slate-400 active:bg-slate-100 dark:active:bg-slate-800'
+            }`}
+            aria-expanded={moreSheetOpen}
+            aria-haspopup="dialog"
+            aria-label="Más opciones"
+          >
+            <span className="text-lg leading-none" aria-hidden>
+              ⋯
+            </span>
+            <span className="text-[10px] font-medium">Más</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Sheet “Más” en móvil */}
+      <AnimatePresence>
+        {moreSheetOpen && (
+          <>
+            <motion.button
+              type="button"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="md:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px]"
+              aria-label="Cerrar menú"
+              onClick={() => setMoreSheetOpen(false)}
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Más secciones"
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              className="md:hidden fixed left-0 right-0 bottom-0 z-50 max-h-[min(70vh,520px)] rounded-t-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden flex flex-col pb-[env(safe-area-inset-bottom,0px)]"
+            >
+              <div className="flex justify-center pt-3 pb-2">
+                <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+              </div>
+              <ul className="overflow-y-auto overscroll-contain px-2 pb-4 space-y-0.5">
+                {MORE_LINKS.map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        onClick={() => setMoreSheetOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-base min-h-[48px] ${
+                          isActive
+                            ? 'bg-blue-50 dark:bg-blue-900/25 text-blue-600 dark:text-blue-400 font-semibold'
+                            : 'text-slate-700 dark:text-slate-200 active:bg-slate-100 dark:active:bg-slate-700/50'
+                        }`}
+                      >
+                        <span className="text-xl">{link.icon}</span>
+                        <span>{link.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

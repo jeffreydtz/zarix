@@ -50,12 +50,32 @@
   border-color: rgb(var(--border));
 }
 
+html {
+  /* Evita “rebote” del scroll en iOS dentro del viewport PWA */
+  overscroll-behavior-y: none;
+}
+
 body {
   color: rgb(var(--foreground));
   background: rgb(var(--background));
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+  min-height: 100svh;
+  text-rendering: optimizeLegibility;
+}
+
+/* Touch: menos delay en taps, sin rectángulo gris en iOS */
+button,
+a,
+[role='button'],
+input[type='submit'],
+input[type='button'],
+label[for],
+summary {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Theme transitions — applied after hydration to avoid flash */
@@ -68,8 +88,20 @@ body {
   transition-timing-function: ease;
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 @layer utilities {
@@ -239,9 +271,20 @@ html {
   .card {
     @apply rounded-xl p-4;
   }
-  
+
   .btn {
-    @apply py-3 text-base;
+    @apply py-3 text-base min-h-[44px];
+  }
+}
+
+/* Espacio para barra inferior fija + notch / home indicator */
+.pb-mobile-nav {
+  padding-bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  .pb-mobile-nav {
+    padding-bottom: 0;
   }
 }
 

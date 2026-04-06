@@ -1,4 +1,5 @@
 import { Telegraf, Context } from 'telegraf';
+import { Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
 import {
   getGeminiForUser,
@@ -19,6 +20,7 @@ import {
 } from '@/lib/services/botSessions';
 import { executeBotTransaction } from '@/lib/telegram/executeBotTransaction';
 import { parseBotTransactionDateInput } from '@/lib/transaction-date';
+import { buildTelegramSummaryScheduleLines } from '@/lib/notification-schedule';
 
 interface BotContext extends Context {
   userId?: string;
@@ -72,6 +74,20 @@ async function linkUserToTelegram(userId: string, telegramChatId: number, userna
   if (error) throw error;
 }
 
+function summaryPrefsKeyboard(weekly: boolean, monthly: boolean) {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback(`📅 Semanal ${weekly ? '✅' : '⬜'}`, 'sum:weekly'),
+      Markup.button.callback(`📆 Mensual ${monthly ? '✅' : '⬜'}`, 'sum:monthly'),
+    ],
+  ]);
+}
+
+function coerceSummaryBool(v: unknown, fallback: boolean): boolean {
+  if (v === null || v === undefined) return fallback;
+  return Boolean(v);
+}
+
 async function getFinancialContext(userId: string): Promise<FinancialContext> {
   const supabase = createServiceClientSync();
 
@@ -102,7 +118,10 @@ function registerBotHandlers(bot: Telegraf) {
 
   if (existingUser) {
     return ctx.reply(
-      `¡Ya estás vinculado! 🎉\n\nUsá /cuentas para ver tus saldos o hablame natural: "gasté 5000 en el super"`
+      `¡Ya estás vinculado! 🎉\n\n` +
+        `/cuentas → saldos\n` +
+        `/resumenes → avisos semanal y mensual por Telegram\n` +
+        `O escribime: "gasté 5000 en el super"`
     );
   }
 
@@ -195,7 +214,8 @@ bot.command('help', async (ctx) => {
 
 /cuentas → ver saldos de todas tus cuentas
 /cotizaciones → dólar blue, MEP, BTC, ETH
-/resumen → resumen del mes actual
+/resumen → resumen del mes actual (al instante)
+/resumenes → activar/desactivar *avisos* semanal y mensual por Telegram
 /reset → borrar memoria del chat con el bot (no borra tus movimientos)
 /help → esta ayuda
 
@@ -222,6 +242,107 @@ bot.command('reset', async (ctx) => {
   }
   await clearBotSession(user.id, ctx.chat.id);
   return ctx.reply('Listo, borré el contexto de esta conversación. Tus movimientos no se tocaron.');
+});
+
+bot.command('resumenes', async (ctx) => {
+  const user = await getUserFromTelegramId(ctx.chat.id);
+  if (!user) {
+    return ctx.reply('No estás vinculado. Usá /start y vinculá tu chat desde la app.');
+  }
+  const weekly = coerceSummaryBool(user.weekly_summary_enabled, true);
+  const monthly = coerceSummaryBool(user.monthly_summary_enabled, true);
+  const header =
+    '📬 *Resúmenes automáticos por Telegram*\n\n' +
+    'Tocá *Semanal* o *Mensual* para activar o desactivar. Se guarda al toque.\n\n';
+  const body = buildTelegramSummaryScheduleLines(weekly, monthly, user.timezone);
+  return ctx.reply(header + body, {
+    parse_mode: 'Markdown',
+    ...summaryPrefsKeyboard(weekly, monthly),
+  });
+});
+
+bot.command('notificaciones', async (ctx) => {
+  const user = await getUserFromTelegramId(ctx.chat.id);
+  if (!user) {
+    return ctx.reply('No estás vinculado. Usá /start y vinculá tu chat desde la app.');
+  }
+  const weekly = coerceSummaryBool(user.weekly_summary_enabled, true);
+  const monthly = coerceSummaryBool(user.monthly_summary_enabled, true);
+  const header =
+    '📬 *Resúmenes automáticos por Telegram*\n\n' +
+    'Tocá para activar o desactivar.\n\n';
+  const body = buildTelegramSummaryScheduleLines(weekly, monthly, user.timezone);
+  return ctx.reply(header + body, {
+    parse_mode: 'Markdown',
+    ...summaryPrefsKeyboard(weekly, monthly),
+  });
+});
+
+bot.action(/^sum:(weekly|monthly)$/, async (ctx) => {
+  const chatId = ctx.chat?.id;
+  if (!chatId) {
+    await ctx.answerCbQuery('Error de chat');
+    return;
+  }
+
+  const user = await getUserFromTelegramId(chatId);
+  if (!user) {
+    await ctx.answerCbQuery('No vinculado');
+    return;
+  }
+
+  const kind = ctx.match[1];
+  const field =
+    kind === 'weekly' ? 'weekly_summary_enabled' : 'monthly_summary_enabled';
+  const current =
+    kind === 'weekly'
+      ? coerceSummaryBool(user.weekly_summary_enabled, true)
+      : coerceSummaryBool(user.monthly_summary_enabled, true);
+  const nextVal = !current;
+
+  const supabase = createServiceClientSync();
+  const { error } = await supabase
+    .from('users')
+    .update({ [field]: nextVal })
+    .eq('id', user.id);
+
+  if (error) {
+    await ctx.answerCbQuery('No se pudo guardar');
+    return;
+  }
+
+  await ctx.answerCbQuery(nextVal ? 'Activado' : 'Desactivado');
+
+  const fresh = await getUserFromTelegramId(chatId);
+  if (!fresh) return;
+
+  const weekly = coerceSummaryBool(fresh.weekly_summary_enabled, true);
+  const monthly = coerceSummaryBool(fresh.monthly_summary_enabled, true);
+  const header =
+    '📬 *Resúmenes automáticos por Telegram*\n\n' +
+    'Tocá *Semanal* o *Mensual* para activar o desactivar. Se guarda al toque.\n\n';
+  const body = buildTelegramSummaryScheduleLines(weekly, monthly, fresh.timezone);
+  const text = header + body;
+
+  try {
+    if (ctx.callbackQuery?.message && 'message_id' in ctx.callbackQuery.message) {
+      await ctx.telegram.editMessageText(
+        chatId,
+        ctx.callbackQuery.message.message_id,
+        undefined,
+        text,
+        {
+          parse_mode: 'Markdown',
+          reply_markup: summaryPrefsKeyboard(weekly, monthly).reply_markup,
+        }
+      );
+    }
+  } catch {
+    await ctx.reply(text, {
+      parse_mode: 'Markdown',
+      ...summaryPrefsKeyboard(weekly, monthly),
+    });
+  }
 });
 
 bot.on(message('photo'), async (ctx) => {
