@@ -79,8 +79,10 @@ function CryptoRow({ coin, index }: { coin: CryptoQuote; index: number }) {
 }
 
 function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
+  /** EQUITY desactiva “índice” para ^IXIC vía Stooq/QQQ (precio en USD, no puntos). */
   const isIndex =
-    stock.instrumentType === 'INDEX' || stock.ticker.startsWith('^');
+    stock.instrumentType === 'INDEX' ||
+    (stock.ticker.startsWith('^') && stock.instrumentType !== 'EQUITY');
   const isArg = stock.currency === 'ARS';
   const isPts = stock.currency === 'PTS';
 
@@ -125,7 +127,7 @@ function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 min-w-0">
           <span className="font-semibold text-sm text-slate-800 dark:text-slate-100 truncate">
-            {isIndex ? stock.name : displayTicker}
+            {isIndex || stock.ticker.startsWith('^') ? stock.name : displayTicker}
           </span>
           {isIndex && (
             <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400 shrink-0">
@@ -133,7 +135,9 @@ function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
             </span>
           )}
         </div>
-        <div className="text-xs text-slate-400 truncate">{isIndex ? stock.ticker : stock.name}</div>
+        <div className="text-xs text-slate-400 truncate">
+          {isIndex ? stock.ticker : stock.ticker.startsWith('^') ? stock.ticker : stock.name}
+        </div>
       </div>
       <div className="text-right">
         <div className="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">{priceStr}</div>
