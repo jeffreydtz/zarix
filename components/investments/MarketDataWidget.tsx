@@ -119,11 +119,22 @@ function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
         isIndex ? 'bg-violet-50/60 dark:bg-violet-950/20 -mx-4 px-4 border-slate-200/80 dark:border-violet-900/30' : ''
       }`}
     >
-      <div
-        className={`w-7 h-7 flex items-center justify-center text-[10px] font-bold shrink-0 ${iconClass}`}
-      >
-        {iconLetter}
-      </div>
+      {stock.logoUrl ? (
+        <Image
+          src={stock.logoUrl}
+          alt=""
+          width={28}
+          height={28}
+          className="w-7 h-7 shrink-0 rounded-lg object-contain bg-white dark:bg-slate-900 ring-1 ring-slate-200/90 dark:ring-slate-600"
+          unoptimized
+        />
+      ) : (
+        <div
+          className={`w-7 h-7 flex items-center justify-center text-[10px] font-bold shrink-0 ${iconClass}`}
+        >
+          {iconLetter}
+        </div>
+      )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 min-w-0">
           <span className="font-semibold text-sm text-slate-800 dark:text-slate-100 truncate">

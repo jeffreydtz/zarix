@@ -7,6 +7,8 @@ export interface StockQuote {
   currency: string;
   /** INDEX = índice (^IXIC, ^MERV); EQUITY = acción */
   instrumentType?: 'INDEX' | 'EQUITY' | string;
+  /** Logo en CDN de Yahoo (`s.yimg.com`); no siempre viene (p. ej. índices o algunos BYMA). */
+  logoUrl?: string;
 }
 
 export interface CryptoQuote {

@@ -3,6 +3,23 @@ import type { StockQuote } from '@/lib/market-data-types';
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey'] });
 
+/** Campos explícitos: `logoUrl` no viene si no se pide en la API de Yahoo. */
+const QUOTE_FIELDS = [
+  'symbol',
+  'regularMarketPrice',
+  'regularMarketChange',
+  'regularMarketChangePercent',
+  'regularMarketPreviousClose',
+  'currency',
+  'shortName',
+  'longName',
+  'quoteType',
+  'logoUrl',
+  'companyLogoUrl',
+] as const;
+
+const QUOTE_OPTS = { fields: [...QUOTE_FIELDS] };
+
 const RETRY_MS = [0, 850, 2000] as const;
 
 function sleep(ms: number): Promise<void> {
@@ -47,6 +64,13 @@ function mapYahooQuoteRow(symbol: string, q: Record<string, unknown>): StockQuot
     (typeof q.symbol === 'string' && q.symbol) ||
     symbol;
 
+  const rawLogo =
+    (typeof q.logoUrl === 'string' && q.logoUrl) ||
+    (typeof q.companyLogoUrl === 'string' && q.companyLogoUrl) ||
+    '';
+  const logoUrl =
+    rawLogo.startsWith('https://') || rawLogo.startsWith('http://') ? rawLogo : undefined;
+
   return {
     ticker: symbol,
     name,
@@ -55,6 +79,7 @@ function mapYahooQuoteRow(symbol: string, q: Record<string, unknown>): StockQuot
     changePct,
     currency: resolveCurrency(symbol, typeof q.currency === 'string' ? q.currency : undefined),
     instrumentType,
+    ...(logoUrl ? { logoUrl } : {}),
   };
 }
 
@@ -101,7 +126,7 @@ export async function fetchYahooStockQuotesMap(tickers: string[]): Promise<Map<s
   for (let round = 0; round < RETRY_MS.length; round++) {
     if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round]);
     try {
-      const rows = await yahooFinance.quote(tickers, undefined, MODULE_OPTS);
+      const rows = await yahooFinance.quote(tickers, QUOTE_OPTS, MODULE_OPTS);
       mergeQuoteBatchIntoMap(map, rows);
       if (map.size > 0) break;
     } catch {
@@ -115,7 +140,7 @@ export async function fetchYahooStockQuotesMap(tickers: string[]): Promise<Map<s
     for (let round = 0; round < RETRY_MS.length; round++) {
       if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round]);
       try {
-        const rows = await yahooFinance.quote(t, undefined, MODULE_OPTS);
+        const rows = await yahooFinance.quote(t, QUOTE_OPTS, MODULE_OPTS);
         mergeQuoteBatchIntoMap(map, rows);
         break;
       } catch {
