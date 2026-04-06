@@ -55,9 +55,13 @@ export default function InvestmentAccountsList({ accounts }: InvestmentAccountsL
                 <div className="text-lg font-bold">
                   ${account.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                 </div>
-                {account.balance_ars_blue && account.currency !== 'ARS' && (
+                {account.currency !== 'ARS' && Number(account.balance) !== 0 && (
                   <div className="text-xs text-gray-400">
-                    ≈ ${account.balance_ars_blue.toLocaleString('es-AR')} ARS
+                    {account.balance_ars_blue != null && account.balance_ars_blue !== 0 ? (
+                      <>≈ ${account.balance_ars_blue.toLocaleString('es-AR')} ARS</>
+                    ) : (
+                      <>Sin cotización a ARS</>
+                    )}
                   </div>
                 )}
               </div>

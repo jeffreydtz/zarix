@@ -55,16 +55,8 @@ export default async function DashboardPage() {
       redirect('/login');
     }
 
-    const [accounts, balances, recentTransactions, quotes, analyzerPoolRaw] = await Promise.all([
+    const [accounts, recentTransactions, quotes, analyzerPoolRaw] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
-      accountsService.getTotalBalanceWithInvestments(user.id).catch(() => ({ 
-        liquidUSD: 0,
-        liquidARSBlue: 0,
-        investmentsUSD: 0,
-        investmentsARSBlue: 0,
-        totalUSD: 0,
-        totalARSBlue: 0,
-      })),
       transactionsService.list(user.id, { limit: 5 }).catch(() => []),
       cotizacionesService.getAllQuotes().catch(() => ({
         dolar: {
@@ -87,10 +79,20 @@ export default async function DashboardPage() {
       analyzerPoolRaw === null ? undefined : analyzerPoolRaw.map(mapToAnalyzerTx);
     const analyzerTruncated = analyzerPoolRaw !== null && analyzerPoolRaw.length >= 10000;
 
-    const creditCards = accounts.filter((a) => a.type === 'credit_card');
-    const totalCreditUsed = creditCards.reduce((sum, a) => sum + Math.abs(Number(a.balance || 0)), 0);
-    const totalCreditLimit = creditCards.reduce((sum, a) => sum + Number(a.credit_limit || 0), 0);
-    const creditUtilization = totalCreditLimit > 0 ? (totalCreditUsed / totalCreditLimit) * 100 : 0;
+    const balances =
+      accounts.length > 0
+        ? accountsService.aggregateAccountTotals(accounts)
+        : {
+            liquidUSD: 0,
+            liquidARSBlue: 0,
+            investmentsUSD: 0,
+            investmentsARSBlue: 0,
+            totalUSD: 0,
+            totalARSBlue: 0,
+            totalCreditUsed: 0,
+            totalCreditLimit: 0,
+            creditUtilization: 0,
+          };
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
@@ -119,9 +121,9 @@ export default async function DashboardPage() {
             investmentsARSBlue={balances.investmentsARSBlue}
             totalUSD={balances.totalUSD}
             totalARSBlue={balances.totalARSBlue}
-            totalCreditUsed={totalCreditUsed}
-            totalCreditLimit={totalCreditLimit}
-            creditUtilization={creditUtilization}
+            totalCreditUsed={balances.totalCreditUsed}
+            totalCreditLimit={balances.totalCreditLimit}
+            creditUtilization={balances.creditUtilization}
           />
 
           <QuotesWidget quotes={quotes} />

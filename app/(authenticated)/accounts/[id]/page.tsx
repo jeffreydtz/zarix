@@ -1,0 +1,105 @@
+import Link from 'next/link';
+import { notFound, redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import { accountsService } from '@/lib/services/accounts';
+import { transactionsService } from '@/lib/services/transactions';
+import TransactionsList from '@/components/expenses/TransactionsList';
+import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
+
+export default async function AccountDetailPage({ params }: { params: { id: string } }) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      redirect('/login');
+    }
+
+    const account = await accountsService.getById(params.id, user.id).catch(() => null);
+    if (!account) {
+      notFound();
+    }
+
+    const [accounts, transactions, categoriesResult] = await Promise.all([
+      accountsService.list(user.id).catch(() => []),
+      transactionsService
+        .list(user.id, { involveAccountId: account.id, limit: 500 })
+        .catch(() => []),
+      supabase
+        .from('categories')
+        .select('*')
+        .or(`user_id.eq.${user.id},is_system.eq.true`),
+    ]);
+
+    const categories = categoriesResult.data || [];
+
+    const balance = Number(account.balance);
+    const typeLabel = account.type.replace('_', ' ');
+
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
+        <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <Link
+                href="/accounts"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline mb-2 inline-block"
+              >
+                ← Volver a cuentas
+              </Link>
+              <div className="flex items-center gap-3 flex-wrap">
+                <span
+                  className="text-4xl w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm"
+                  style={{ backgroundColor: `${account.color || '#3B82F6'}25` }}
+                >
+                  {account.icon || '💳'}
+                </span>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">
+                    {account.name}
+                  </h1>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm capitalize">
+                    {typeLabel} · {account.currency}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5">
+                  Saldo actual
+                </p>
+                <p
+                  className={`text-3xl font-bold tabular-nums ${
+                    account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-100'
+                  }`}
+                >
+                  {account.is_debt ? '-' : ''}$
+                  {(account.is_debt ? Math.abs(balance) : balance).toLocaleString('es-AR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}{' '}
+                  <span className="text-lg font-medium text-slate-500">{account.currency}</span>
+                </p>
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 max-w-xl">
+                Incluye gastos, ingresos y transferencias donde esta cuenta es origen o destino.
+              </p>
+            </div>
+            <CreateTransactionButton accounts={accounts} categories={categories} />
+          </div>
+
+          <TransactionsList
+            transactions={transactions}
+            accounts={accounts}
+            categories={categories}
+            emptySubmessage="No hay movimientos que involucren esta cuenta. Podés cargar uno desde el botón de arriba o desde Movimientos."
+          />
+        </div>
+      </div>
+    );
+  } catch (error) {
+    console.error('Account detail page error:', error);
+    redirect('/login');
+  }
+}

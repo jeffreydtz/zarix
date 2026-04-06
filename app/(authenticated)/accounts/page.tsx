@@ -17,6 +17,8 @@ export default async function AccountsPage() {
     }
 
     const accounts = await accountsService.list(user.id).catch(() => []);
+    const aggregates =
+      accounts.length > 0 ? accountsService.aggregateAccountTotals(accounts) : null;
 
     const { data: categories } = await supabase
       .from('categories')
@@ -44,7 +46,7 @@ export default async function AccountsPage() {
             </div>
           </div>
 
-          <AccountsList accounts={accounts} />
+          <AccountsList accounts={accounts} aggregates={aggregates} />
         </div>
       </div>
     );

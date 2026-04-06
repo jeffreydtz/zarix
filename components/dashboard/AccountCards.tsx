@@ -36,14 +36,19 @@ function AccountCards({ accounts }: AccountCardsProps) {
           const creditUtilization = creditLimit > 0 ? (creditUsed / creditLimit) * 100 : 0;
 
           return (
-            <motion.div
+            <Link
               key={account.id}
+              href={`/accounts/${account.id}`}
+              className="flex-shrink-0 w-72 snap-start block no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 rounded-2xl"
+              aria-label={`Ver movimientos de ${account.name}`}
+            >
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.08 + 0.5 }}
               whileHover={{ y: -4, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex-shrink-0 w-72 rounded-2xl p-5 text-white snap-start cursor-pointer shadow-lg"
+              className="rounded-2xl p-5 text-white cursor-pointer shadow-lg h-full"
               style={{ 
                 background: `linear-gradient(135deg, ${account.color}, ${account.color}dd)`,
                 boxShadow: `0 8px 32px ${account.color}40`
@@ -64,14 +69,25 @@ function AccountCards({ accounts }: AccountCardsProps) {
               <div className="mb-2">
                 <div className="text-sm font-medium opacity-90 mb-1">{account.name}</div>
                 <div className="text-3xl font-bold tracking-tight">
-                  {account.is_debt && '-'}
-                  ${account.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                  {account.is_debt
+                    ? `-$${Math.abs(Number(account.balance)).toLocaleString('es-AR', {
+                        minimumFractionDigits: 2,
+                      })}`
+                    : `$${Number(account.balance).toLocaleString('es-AR', {
+                        minimumFractionDigits: 2,
+                      })}`}
                 </div>
               </div>
 
-              {account.currency !== 'ARS' && (
+              {account.currency !== 'ARS' && Number(account.balance) !== 0 && (
                 <div className="text-xs opacity-75 font-medium">
-                  ≈ ${account.balance_ars_blue?.toLocaleString('es-AR', { maximumFractionDigits: 0 }) || 0} ARS
+                  {account.balance_ars_blue != null && account.balance_ars_blue !== 0 ? (
+                    <>
+                      ≈ ${account.balance_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS
+                    </>
+                  ) : (
+                    <>Sin cotización a ARS</>
+                  )}
                 </div>
               )}
 
@@ -95,6 +111,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
                 </div>
               )}
             </motion.div>
+            </Link>
           );
         })}
 

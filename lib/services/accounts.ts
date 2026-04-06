@@ -34,6 +34,24 @@ export interface AccountWithBalance extends Account {
   balance_ars_blue?: number;
 }
 
+/** Totales derivados de `list()` — misma cotización que cada fila. */
+export interface AccountAggregates {
+  /** Suma en USD equivalente (cuentas no inversión, incluidas en total). */
+  liquidUSD: number;
+  liquidARSBlue: number;
+  investmentsUSD: number;
+  investmentsARSBlue: number;
+  totalUSD: number;
+  totalARSBlue: number;
+  totalCreditUsed: number;
+  totalCreditLimit: number;
+  creditUtilization: number;
+}
+
+function roundMoney(n: number): number {
+  return Math.round(n * 100) / 100;
+}
+
 class AccountsService {
   private getRateToUsd(usdRates: Record<string, number>, currency: string | null | undefined): number {
     const c = normalizeAccountCurrency(currency);
@@ -167,6 +185,57 @@ class AccountsService {
     return accountsWithConversion;
   }
 
+  /**
+   * Suma `balance_usd` / `balance_ars_blue` por cuenta según `include_in_total` y tipo.
+   * Debe usarse sobre el resultado de `list()` para que coincida con lo mostrado por fila.
+   */
+  aggregateAccountTotals(accounts: AccountWithBalance[]): AccountAggregates {
+    let liquidUSD = 0;
+    let liquidARSBlue = 0;
+    let investmentsUSD = 0;
+    let investmentsARSBlue = 0;
+    let totalCreditUsed = 0;
+    let totalCreditLimit = 0;
+
+    for (const a of accounts) {
+      if (!a.include_in_total) continue;
+
+      if (a.type === 'credit_card') {
+        totalCreditUsed += Math.abs(Number(a.balance));
+        totalCreditLimit += Number(a.credit_limit || 0);
+      }
+
+      const usd = a.balance_usd ?? 0;
+      const ars = a.balance_ars_blue ?? 0;
+
+      if (a.type === 'investment') {
+        investmentsUSD += usd;
+        investmentsARSBlue += ars;
+      } else {
+        liquidUSD += usd;
+        liquidARSBlue += ars;
+      }
+    }
+
+    const totalUSD = liquidUSD + investmentsUSD;
+    const totalARSBlue = liquidARSBlue + investmentsARSBlue;
+
+    return {
+      liquidUSD: roundMoney(liquidUSD),
+      liquidARSBlue: roundMoney(liquidARSBlue),
+      investmentsUSD: roundMoney(investmentsUSD),
+      investmentsARSBlue: roundMoney(investmentsARSBlue),
+      totalUSD: roundMoney(totalUSD),
+      totalARSBlue: roundMoney(totalARSBlue),
+      totalCreditUsed: roundMoney(totalCreditUsed),
+      totalCreditLimit: roundMoney(totalCreditLimit),
+      creditUtilization:
+        totalCreditLimit > 0
+          ? roundMoney((totalCreditUsed / totalCreditLimit) * 100)
+          : 0,
+    };
+  }
+
   async getById(id: string, userId: string): Promise<Account> {
     const supabase = createServiceClientSync();
 
@@ -223,119 +292,31 @@ class AccountsService {
   }
 
   async getTotalBalance(userId: string) {
-    const supabase = createServiceClientSync();
-
-    const { data, error } = await supabase
-      .from('accounts')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('is_active', true)
-      .neq('type', 'investment');
-
-    if (error) throw error;
-
-    const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
-    
-    if (blueRate === 0) {
-      throw new Error('Exchange rate not available');
-    }
-
-    const usdRates = await this.buildUsdRates(
-      data.map((a) => a.currency),
-      blueRate
-    );
-
-    let totalUSD = 0;
-    let totalARSBlue = 0;
-    let totalCreditUsed = 0;
-    let totalCreditLimit = 0;
-
-    for (const account of data) {
-      if (!account.include_in_total) continue;
-
-      const balance = Number(account.balance);
-
-      if (account.type === 'credit_card') {
-        totalCreditUsed += Math.abs(balance);
-        totalCreditLimit += Number(account.credit_limit || 0);
-      }
-
-      const rateToUSD = this.getRateToUsd(usdRates, account.currency);
-      if (rateToUSD > 0) {
-        const balanceUSD = balance * rateToUSD;
-        totalUSD += balanceUSD;
-        totalARSBlue += balanceUSD * blueRate;
-      }
-    }
+    const accounts = await this.list(userId);
+    const nonInvestment = accounts.filter((a) => a.type !== 'investment');
+    const agg = this.aggregateAccountTotals(accounts);
 
     return {
-      totalUSD: Math.round(totalUSD * 100) / 100,
-      totalARSBlue: Math.round(totalARSBlue * 100) / 100,
-      accountCount: data.length,
-      totalCreditUsed: Math.round(totalCreditUsed * 100) / 100,
-      totalCreditLimit: Math.round(totalCreditLimit * 100) / 100,
-      creditUtilization: totalCreditLimit > 0 ? Math.round((totalCreditUsed / totalCreditLimit) * 100 * 100) / 100 : 0,
+      totalUSD: agg.liquidUSD,
+      totalARSBlue: agg.liquidARSBlue,
+      accountCount: nonInvestment.length,
+      totalCreditUsed: agg.totalCreditUsed,
+      totalCreditLimit: agg.totalCreditLimit,
+      creditUtilization: agg.creditUtilization,
     };
   }
 
   async getTotalBalanceWithInvestments(userId: string) {
-    const supabase = createServiceClientSync();
-
-    const { data: allAccounts, error } = await supabase
-      .from('accounts')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('is_active', true);
-
-    if (error) throw error;
-
-    const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
-    
-    if (blueRate === 0) {
-      throw new Error('Exchange rate not available');
-    }
-
-    const usdRates = await this.buildUsdRates(
-      allAccounts.map((a) => a.currency),
-      blueRate
-    );
-
-    let liquidUSD = 0;
-    let liquidARSBlue = 0;
-    let investmentsUSD = 0;
-    let investmentsARSBlue = 0;
-
-    for (const account of allAccounts) {
-      if (!account.include_in_total) continue;
-
-      const balance = Number(account.balance);
-      const isInvestment = account.type === 'investment';
-
-      let balanceUSD = 0;
-      let balanceARSBlue = 0;
-
-      const rateToUSD = this.getRateToUsd(usdRates, account.currency);
-      if (rateToUSD > 0) {
-        balanceUSD = balance * rateToUSD;
-        balanceARSBlue = balanceUSD * blueRate;
-      }
-
-      if (isInvestment) {
-        investmentsUSD += balanceUSD;
-        investmentsARSBlue += balanceARSBlue;
-      } else {
-        liquidUSD += balanceUSD;
-        liquidARSBlue += balanceARSBlue;
-      }
-    }
+    const accounts = await this.list(userId);
+    const agg = this.aggregateAccountTotals(accounts);
 
     return {
-      liquidUSD: Math.round(liquidUSD * 100) / 100,
-      liquidARSBlue: Math.round(liquidARSBlue * 100) / 100,
-      investmentsUSD: Math.round(investmentsUSD * 100) / 100,
-      investmentsARSBlue: Math.round(investmentsARSBlue * 100) / 100,
-      totalUSD: Math.round((liquidUSD + investmentsUSD) * 100) / 100,
-      totalARSBlue: Math.round((liquidARSBlue + investmentsARSBlue) * 100) / 100,
+      liquidUSD: agg.liquidUSD,
+      liquidARSBlue: agg.liquidARSBlue,
+      investmentsUSD: agg.investmentsUSD,
+      investmentsARSBlue: agg.investmentsARSBlue,
+      totalUSD: agg.totalUSD,
+      totalARSBlue: agg.totalARSBlue,
     };
   }
 

@@ -183,7 +183,13 @@ class TransactionsService {
   async list(
     userId: string,
     options: {
+      /** Solo movimientos donde esta cuenta es la principal (origen). */
       accountId?: string;
+      /**
+       * Movimientos donde la cuenta participa como origen O como destino (útil para ver
+       * transferencias entrantes y salientes en la ficha de la cuenta).
+       */
+      involveAccountId?: string;
       categoryId?: string;
       type?: string;
       startDate?: string;
@@ -211,7 +217,10 @@ class TransactionsService {
       .order('transaction_date', { ascending: false })
       .order('id', { ascending: false });
 
-    if (options.accountId) {
+    if (options.involveAccountId) {
+      const id = options.involveAccountId;
+      query = query.or(`account_id.eq.${id},destination_account_id.eq.${id}`);
+    } else if (options.accountId) {
       query = query.eq('account_id', options.accountId);
     }
 

@@ -12,12 +12,15 @@ interface TransactionsListProps {
   transactions: TransactionWithCategory[];
   accounts?: Array<{ id: string; name: string; currency: string; balance: number }>;
   categories?: Array<{ id: string; name: string; type: string; icon: string }>;
+  /** Texto bajo "No hay movimientos" (p. ej. en ficha de cuenta). */
+  emptySubmessage?: string;
 }
 
 export default function TransactionsList({ 
   transactions, 
   accounts = [], 
-  categories = [] 
+  categories = [],
+  emptySubmessage = 'Usa el bot de Telegram para registrar gastos e ingresos',
 }: TransactionsListProps) {
   const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -100,9 +103,7 @@ export default function TransactionsList({
           💸
         </motion.div>
         <p className="text-slate-500 dark:text-slate-400 mb-2">No hay movimientos</p>
-        <p className="text-sm text-slate-400 dark:text-slate-500">
-          Usa el bot de Telegram para registrar gastos e ingresos
-        </p>
+        <p className="text-sm text-slate-400 dark:text-slate-500">{emptySubmessage}</p>
       </motion.div>
     );
   }
