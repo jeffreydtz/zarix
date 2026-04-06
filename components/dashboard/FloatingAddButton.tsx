@@ -7,6 +7,14 @@ import {
   calendarDateToUtcNoonIso,
   todayLocalYmd,
 } from '@/lib/transaction-date';
+import {
+  fetchJsonArray,
+  getOfflineCachedAccounts,
+  getOfflineCachedCategories,
+  maybePersistAccountsSnapshot,
+  maybePersistCategoriesSnapshot,
+  pickReferenceList,
+} from '@/lib/offline-reference-cache';
 import type { AccountType } from '@/types/database';
 
 interface Account {
@@ -41,17 +49,25 @@ export default function FloatingAddButton() {
 
   const { isOnline, pendingCount, syncing, enqueue } = useOfflineQueue();
 
-  // Fetch accounts + categories when the modal opens
+  // Fetch accounts + categories when the modal opens (snapshot en localStorage para offline)
   useEffect(() => {
     if (!isOpen) return;
     setTransactionDateYmd(todayLocalYmd());
     setDataLoading(true);
+
+    const cachedAccs = getOfflineCachedAccounts<Account>();
+    const cachedCats = getOfflineCachedCategories<Category>();
+    const online = typeof navigator !== 'undefined' && navigator.onLine;
+
     Promise.all([
-      fetch('/api/accounts').then((r) => r.json()).catch(() => []),
-      fetch('/api/categories').then((r) => r.json()).catch(() => []),
-    ]).then(([accs, cats]) => {
-      setAccounts(Array.isArray(accs) ? accs : []);
-      setCategories(Array.isArray(cats) ? cats : []);
+      fetchJsonArray<Account>('/api/accounts'),
+      fetchJsonArray<Category>('/api/categories'),
+    ]).then(([accsRaw, catsRaw]) => {
+      maybePersistAccountsSnapshot(accsRaw, online);
+      maybePersistCategoriesSnapshot(catsRaw, online);
+
+      setAccounts(pickReferenceList(accsRaw, cachedAccs));
+      setCategories(pickReferenceList(catsRaw, cachedCats));
       setDataLoading(false);
     });
   }, [isOpen]);

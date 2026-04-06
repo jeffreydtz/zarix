@@ -1,4 +1,5 @@
 import Navigation from '@/components/Navigation';
+import OfflineReferenceWarmup from '@/components/OfflineReferenceWarmup';
 
 export default function AuthenticatedLayout({
   children,
@@ -7,6 +8,7 @@ export default function AuthenticatedLayout({
 }) {
   return (
     <div className="min-h-dvh flex flex-col">
+      <OfflineReferenceWarmup />
       <Navigation />
       <div className="flex-1 w-full min-w-0 pb-mobile-nav">{children}</div>
     </div>

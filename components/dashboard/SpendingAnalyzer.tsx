@@ -241,6 +241,16 @@ function formatTxRowDate(iso: string): string {
   return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+function analyzerCurrencyFootnote(currencyFilter: string, convertToArsBlue: boolean): string {
+  if (currencyFilter === 'all' && convertToArsBlue) {
+    return 'Equivalente en ARS (dólar blue; USD y stablecoins convertidos)';
+  }
+  if (currencyFilter === 'all') {
+    return 'Sin cotización USD: montos sin convertir a pesos';
+  }
+  return `Solo movimientos en ${currencyFilter}`;
+}
+
 function AnalyzerTotalSummary({
   total,
   currencyFilter,
@@ -256,17 +266,16 @@ function AnalyzerTotalSummary({
     variant === 'overlay'
       ? 'text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tabular-nums leading-tight'
       : 'text-xl font-bold text-slate-700 dark:text-slate-200 tabular-nums leading-tight';
+  const showFootnote = variant === 'inline';
   return (
-    <div className="text-center px-3 max-w-[min(200px,78vw)] mx-auto">
+    <div className="text-center px-3 max-w-[min(220px,82vw)] mx-auto">
       <div className="text-xs sm:text-sm text-slate-400">Total</div>
       <div className={amountClass}>${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
-      <div className="text-[10px] sm:text-[11px] text-slate-400 mt-1 leading-snug">
-        {currencyFilter === 'all' && convertToArsBlue
-          ? 'Equivalente en ARS (dólar blue; USD y stablecoins convertidos)'
-          : currencyFilter === 'all'
-            ? 'Sin cotización USD: montos sin convertir a pesos'
-            : `Solo movimientos en ${currencyFilter}`}
-      </div>
+      {showFootnote && (
+        <div className="text-[10px] sm:text-[11px] text-slate-400 mt-1 leading-snug">
+          {analyzerCurrencyFootnote(currencyFilter, convertToArsBlue)}
+        </div>
+      )}
     </div>
   );
 }
@@ -304,6 +313,16 @@ export default function SpendingAnalyzer({
   const [detailCategory, setDetailCategory] = useState<string | null>(null);
   const [fetchedUsdArs, setFetchedUsdArs] = useState<number | null>(null);
   const [fetchedCryptoArs, setFetchedCryptoArs] = useState<{ btc?: number; eth?: number } | undefined>();
+  /** Tooltips del pie molestan en táctil; solo con puntero fino + hover real. */
+  const [chartTooltipEnabled, setChartTooltipEnabled] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const sync = () => setChartTooltipEnabled(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   const effectiveUsdBlue = useMemo(() => {
     if (usdToArsBlueProp !== undefined && usdToArsBlueProp > 0) return usdToArsBlueProp;
@@ -578,10 +597,13 @@ export default function SpendingAnalyzer({
       animate={{ opacity: 1, y: 0 }}
       className="card"
     >
-      <div className="flex items-center justify-between mb-3">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
+        <div className="min-w-0">
           <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Analizador de gastos</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-xl">
+          <p className="sm:hidden text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+            Tocá el gráfico o una categoría para ver movimientos. Moneda y cuenta: filtros abajo.
+          </p>
+          <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-xl">
             Vista general: se suman <strong>todas las cuentas</strong>; con “Todas las monedas” el total se expresa en{' '}
             <strong>pesos equivalentes (dólar blue)</strong> para incluir ingresos en USD. Filtrá por moneda o cuenta si necesitás
             ver solo una moneda. Tocá una categoría para ver los movimientos del período.
@@ -592,27 +614,47 @@ export default function SpendingAnalyzer({
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 shrink-0 sm:justify-end">
           {range !== 'custom' && (
             <>
-              <button onClick={() => movePeriod(-1)} className="px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-xs">‹</button>
-              <button onClick={() => movePeriod(1)} className="px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-xs">›</button>
+              <button
+                type="button"
+                onClick={() => movePeriod(-1)}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-slate-300 dark:border-slate-700 text-base text-slate-700 dark:text-slate-200 active:bg-slate-200 dark:active:bg-slate-700 touch-manipulation"
+                aria-label="Período anterior"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                onClick={() => movePeriod(1)}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-slate-300 dark:border-slate-700 text-base text-slate-700 dark:text-slate-200 active:bg-slate-200 dark:active:bg-slate-700 touch-manipulation"
+                aria-label="Período siguiente"
+              >
+                ›
+              </button>
             </>
           )}
-          <span className="text-xs text-slate-500">{periodLabel}</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400 px-1">{periodLabel}</span>
         </div>
       </div>
 
       <div className="flex gap-2 mb-3">
         <button
+          type="button"
           onClick={() => setMode('expense')}
-          className={`px-3 py-1.5 rounded-lg text-sm ${mode === 'expense' ? 'bg-red-500 text-white' : 'bg-slate-100 dark:bg-slate-800'}`}
+          className={`min-h-11 flex-1 sm:flex-none rounded-xl px-4 text-sm font-medium touch-manipulation active:opacity-90 ${
+            mode === 'expense' ? 'bg-red-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'
+          }`}
         >
           Gastos
         </button>
         <button
+          type="button"
           onClick={() => setMode('income')}
-          className={`px-3 py-1.5 rounded-lg text-sm ${mode === 'income' ? 'bg-green-500 text-white' : 'bg-slate-100 dark:bg-slate-800'}`}
+          className={`min-h-11 flex-1 sm:flex-none rounded-xl px-4 text-sm font-medium touch-manipulation active:opacity-90 ${
+            mode === 'income' ? 'bg-green-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'
+          }`}
         >
           Ingresos
         </button>
@@ -628,11 +670,12 @@ export default function SpendingAnalyzer({
         ].map((t) => (
           <button
             key={t.id}
+            type="button"
             onClick={() => setRange(t.id as RangeType)}
-            className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+            className={`min-h-10 touch-manipulation rounded-xl border px-3 text-sm transition-colors active:opacity-90 ${
               range === t.id
                 ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 border-transparent'
-                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+                : 'border-slate-200 bg-white text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
             }`}
           >
             {t.label}
@@ -705,8 +748,8 @@ export default function SpendingAnalyzer({
       ) : error ? (
         <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">{error}</div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="relative bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/40 sm:rounded-2xl sm:p-4">
             {displaySlices.length === 0 ? (
               <div className="min-h-[256px] flex flex-col items-center justify-center gap-4 text-center px-2 py-4 sm:py-0">
                 <p className="text-slate-400 dark:text-slate-500 text-sm leading-relaxed">
@@ -723,8 +766,8 @@ export default function SpendingAnalyzer({
               </div>
             ) : (
               <>
-                <div className="h-64 min-h-[256px] w-full min-w-0">
-                  <ResponsiveContainer width="100%" height="100%" minHeight={256}>
+                <div className="relative h-[220px] min-h-[220px] w-full min-w-0 sm:h-64 sm:min-h-[256px]">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={220}>
                     <PieChart>
                       <Pie
                         data={displaySlices}
@@ -732,8 +775,8 @@ export default function SpendingAnalyzer({
                         nameKey="name"
                         cx="50%"
                         cy="50%"
-                        innerRadius={60}
-                        outerRadius={92}
+                        innerRadius="52%"
+                        outerRadius="80%"
                         paddingAngle={1.5}
                         isAnimationActive={false}
                         cursor="pointer"
@@ -746,40 +789,45 @@ export default function SpendingAnalyzer({
                           <Cell key={`${s.name}-${i}`} fill={s.color} />
                         ))}
                       </Pie>
-                      <Tooltip
-                        formatter={(v: number | string) =>
-                          typeof v === 'number'
-                            ? `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
-                            : String(v)
-                        }
-                        contentStyle={{ borderRadius: 8 }}
-                      />
+                      {chartTooltipEnabled && (
+                        <Tooltip
+                          formatter={(v: number | string) =>
+                            typeof v === 'number'
+                              ? `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
+                              : String(v)
+                          }
+                          contentStyle={{ borderRadius: 8 }}
+                        />
+                      )}
                     </PieChart>
                   </ResponsiveContainer>
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <AnalyzerTotalSummary
+                      total={total}
+                      currencyFilter={currencyFilter}
+                      convertToArsBlue={convertToArsBlue}
+                      variant="overlay"
+                    />
+                  </div>
                 </div>
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <AnalyzerTotalSummary
-                    total={total}
-                    currencyFilter={currencyFilter}
-                    convertToArsBlue={convertToArsBlue}
-                    variant="overlay"
-                  />
-                </div>
+                <p className="mt-2 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400 px-1 sm:px-2">
+                  {analyzerCurrencyFootnote(currencyFilter, convertToArsBlue)}
+                </p>
               </>
             )}
           </div>
 
           <div className="space-y-2">
             <div className="grid grid-cols-2 gap-2 mb-1">
-              <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs">
-                <div className="text-slate-500">Ticket promedio</div>
-                <div className="font-semibold text-slate-700 dark:text-slate-200">
+              <div className="min-h-[52px] rounded-xl bg-slate-100 px-3 py-2.5 dark:bg-slate-800">
+                <div className="text-[11px] text-slate-500 sm:text-xs">Ticket promedio</div>
+                <div className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200 sm:text-base">
                   ${avgTicket.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                 </div>
               </div>
-              <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs">
-                <div className="text-slate-500">Ticket máximo</div>
-                <div className="font-semibold text-slate-700 dark:text-slate-200">
+              <div className="min-h-[52px] rounded-xl bg-slate-100 px-3 py-2.5 dark:bg-slate-800">
+                <div className="text-[11px] text-slate-500 sm:text-xs">Ticket máximo</div>
+                <div className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200 sm:text-base">
                   $
                   {maxTx
                     ? txAmountForAggregation(
@@ -793,22 +841,42 @@ export default function SpendingAnalyzer({
               </div>
             </div>
 
+            {displaySlices.length > 0 && (
+              <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 lg:hidden">
+                Categorías
+              </p>
+            )}
+
             {displaySlices.slice(0, 8).map((s, idx) => (
               <button
                 type="button"
                 key={`${s.name}-${idx}`}
                 onClick={() => openCategoryDetail(s.name)}
-                className="w-full text-left flex items-center justify-between p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-colors cursor-pointer border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                className="flex min-h-[52px] w-full touch-manipulation items-center justify-between gap-3 rounded-xl border border-transparent bg-slate-100 px-3 py-3 text-left transition-colors hover:bg-slate-200/80 focus:outline-none focus:ring-2 focus:ring-blue-500/40 active:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700/80 dark:active:bg-slate-700 sm:min-h-0 sm:py-3"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-lg inline-flex items-center justify-center">
-                    <CategoryIcon icon={s.icon} className="w-4 h-4" />
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <span
+                    className="h-3.5 w-3.5 shrink-0 rounded-full ring-1 ring-slate-300/80 dark:ring-slate-600 sm:h-3 sm:w-3"
+                    style={{ backgroundColor: s.color }}
+                    aria-hidden
+                  />
+                  <span className="inline-flex shrink-0 items-center justify-center text-xl sm:text-lg">
+                    <CategoryIcon icon={s.icon} className="h-5 w-5 sm:h-4 sm:w-4" />
                   </span>
-                  <span className="font-medium text-slate-700 dark:text-slate-200 truncate">{s.name}</span>
+                  <span className="truncate font-medium text-slate-700 dark:text-slate-200">{s.name}</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-semibold text-slate-700 dark:text-slate-200">{s.percent.toFixed(0)}%</div>
-                  <div className="text-sm text-slate-500">${s.amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
+                <div className="flex shrink-0 items-center gap-2 text-right">
+                  <div>
+                    <div className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200">
+                      {s.percent.toFixed(0)}%
+                    </div>
+                    <div className="text-xs tabular-nums text-slate-500 sm:text-sm">
+                      ${s.amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                    </div>
+                  </div>
+                  <span className="text-slate-400 dark:text-slate-500 sm:hidden" aria-hidden>
+                    ›
+                  </span>
                 </div>
               </button>
             ))}
