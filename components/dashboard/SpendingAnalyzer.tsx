@@ -57,11 +57,12 @@ function getRange(range: RangeType, customFrom: string, customTo: string, anchor
   if (range === 'day') {
     start = end;
   } else if (range === 'week') {
-    const d = new Date(anchorDate);
-    const day = d.getDay();
-    const diff = day === 0 ? 6 : day - 1; // monday as first day
-    d.setDate(d.getDate() - diff);
-    start = toInputDate(d);
+    const weekStart = new Date(anchorDate);
+    const day = weekStart.getDay();
+    const diff = day === 0 ? 6 : day - 1; // lunes como primer día (semana ISO)
+    weekStart.setDate(weekStart.getDate() - diff);
+    start = toInputDate(weekStart);
+    end = toInputDate(addDays(weekStart, 6)); // domingo de la misma semana
   } else if (range === 'month') {
     start = `${anchorDate.getFullYear()}-${String(anchorDate.getMonth() + 1).padStart(2, '0')}-01`;
   } else if (range === 'year') {
