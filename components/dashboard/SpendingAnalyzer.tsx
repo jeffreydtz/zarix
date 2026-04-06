@@ -51,39 +51,43 @@ function addDays(date: Date, days: number) {
 }
 
 function getRange(range: RangeType, customFrom: string, customTo: string, anchorDate: Date) {
-  let end = toInputDate(anchorDate);
-  let start = end;
-
   if (range === 'day') {
-    start = end;
-  } else if (range === 'week') {
-    const weekStart = new Date(anchorDate);
-    const day = weekStart.getDay();
-    const diff = day === 0 ? 6 : day - 1; // lunes como primer día (semana ISO)
-    weekStart.setDate(weekStart.getDate() - diff);
-    start = toInputDate(weekStart);
-    end = toInputDate(addDays(weekStart, 6)); // domingo de la misma semana
-  } else if (range === 'month') {
-    const y = anchorDate.getFullYear();
-    const m = anchorDate.getMonth();
-    start = `${y}-${String(m + 1).padStart(2, '0')}-01`;
-    end = toInputDate(new Date(y, m + 1, 0));
-  } else if (range === 'year') {
-    const y = anchorDate.getFullYear();
-    start = `${y}-01-01`;
-    end = `${y}-12-31`;
-  } else {
-    let s = customFrom || end;
-    let e = customTo || end;
-    if (s > e) {
-      const t = s;
-      s = e;
-      e = t;
-    }
-    return { startDate: s, endDate: e };
+    const d = toInputDate(anchorDate);
+    return { startDate: d, endDate: d };
   }
 
-  return { startDate: start, endDate: end };
+  if (range === 'week') {
+    const weekStart = new Date(anchorDate);
+    const dow = weekStart.getDay();
+    const diff = dow === 0 ? 6 : dow - 1; // lunes como primer día (semana ISO)
+    weekStart.setDate(weekStart.getDate() - diff);
+    const startDate = toInputDate(weekStart);
+    const endDate = toInputDate(addDays(weekStart, 6)); // domingo de la misma semana
+    return { startDate, endDate };
+  }
+
+  if (range === 'month') {
+    const y = anchorDate.getFullYear();
+    const m = anchorDate.getMonth();
+    const startDate = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+    const endDate = toInputDate(new Date(y, m + 1, 0));
+    return { startDate, endDate };
+  }
+
+  if (range === 'year') {
+    const y = anchorDate.getFullYear();
+    return { startDate: `${y}-01-01`, endDate: `${y}-12-31` };
+  }
+
+  const fallback = toInputDate(anchorDate);
+  let s = customFrom || fallback;
+  let e = customTo || fallback;
+  if (s > e) {
+    const t = s;
+    s = e;
+    e = t;
+  }
+  return { startDate: s, endDate: e };
 }
 
 /** Día calendario local (no el prefijo UTC del ISO), alineado con los rangos del analizador. */
@@ -387,9 +391,14 @@ export default function SpendingAnalyzer({
     const a = parseYmdLocal(startDate);
     const b = parseYmdLocal(endDate);
     if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return '';
-    if (startDate === endDate) return a.toLocaleDateString('es-AR');
-    return `${a.toLocaleDateString('es-AR')} — ${b.toLocaleDateString('es-AR')}`;
-  }, [startDate, endDate]);
+    const from = a.toLocaleDateString('es-AR');
+    const to = b.toLocaleDateString('es-AR');
+    // Día: una sola fecha. Semana / mes / año: siempre rango (lunes–domingo, etc.), no confundir con un solo día.
+    if (range === 'day') return from;
+    if (range === 'week' || range === 'month' || range === 'year') return `${from} — ${to}`;
+    if (startDate === endDate) return from;
+    return `${from} — ${to}`;
+  }, [startDate, endDate, range]);
 
   const availableAccounts = useMemo(() => {
     const arr = Array.from(new Set(items.map((i) => i.account?.name).filter(Boolean))) as string[];
