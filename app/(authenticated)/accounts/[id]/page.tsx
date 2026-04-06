@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
+import CorrectDebtBalanceSign from '@/components/accounts/CorrectDebtBalanceSign';
 import RepairCurrencyRangePanel from '@/components/accounts/RepairCurrencyRangePanel';
 import { accountsService } from '@/lib/services/accounts';
 import type { AccountWithBalance } from '@/lib/services/accounts';
@@ -99,6 +100,14 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 max-w-xl">
                 Incluye gastos, ingresos y transferencias donde esta cuenta es origen o destino.
               </p>
+              <div className="mt-4 max-w-xl">
+                <CorrectDebtBalanceSign
+                  accountId={account.id}
+                  balance={balance}
+                  isDebt={account.is_debt}
+                  accountType={account.type}
+                />
+              </div>
             </div>
             <CreateTransactionButton accounts={accounts} categories={categories} />
           </div>

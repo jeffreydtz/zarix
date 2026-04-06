@@ -7,6 +7,24 @@ function normalizeAccountCurrency(currency: string | null | undefined): string {
   return (currency?.trim() || 'ARS').toUpperCase();
 }
 
+/**
+ * Los triggers de transacciones asumen deuda en negativo (gasto resta, pago a TC suma al saldo).
+ * Si la deuda se guarda en positivo, la UI igual muestra "-$X" con abs(), pero un pago INCREMENTA
+ * el saldo en BD y parece que sube la deuda.
+ */
+export function normalizeDebtBalanceForStorage(
+  isDebt: boolean,
+  accountType: string,
+  balance: number
+): number {
+  const debtAccount = isDebt || accountType === 'credit_card';
+  if (!debtAccount) return balance;
+  if (balance > 0) {
+    return -Math.abs(balance);
+  }
+  return balance;
+}
+
 /** Stablecoins tratadas como ~1 USD si la API devolvió 0 o no hay tasa. */
 const STABLECOIN_USD = new Set(['USDT', 'USDC', 'DAI', 'BUSD']);
 
@@ -104,6 +122,13 @@ class AccountsService {
 
     const nextSortOrder = accounts && accounts.length > 0 ? accounts[0].sort_order + 1 : 0;
 
+    const initial = Number(input.initialBalance ?? 0);
+    const balanceStored = normalizeDebtBalanceForStorage(
+      Boolean(input.isDebt),
+      String(input.type),
+      initial
+    );
+
     const { data, error } = await supabase
       .from('accounts')
       .insert({
@@ -111,7 +136,7 @@ class AccountsService {
         name: input.name,
         type: input.type as any,
         currency: input.currency,
-        balance: input.initialBalance || 0,
+        balance: balanceStored,
         icon: input.icon || null,
         color: input.color || '#3B82F6',
         is_debt: input.isDebt || false,
@@ -249,6 +274,44 @@ class AccountsService {
 
     if (error) throw error;
     return { ...data, balance: Number(data.balance) };
+  }
+
+  /**
+   * Si el saldo de una cuenta de deuda quedó en positivo (misma cifra en pantalla que si fuera negativo),
+   * lo pasa a negativo para que pagos y gastos cuadren con los triggers.
+   */
+  async correctDebtBalanceSignIfPositive(
+    accountId: string,
+    userId: string
+  ): Promise<{ before: number; after: number } | null> {
+    const supabase = createServiceClientSync();
+
+    const { data: acc, error } = await supabase
+      .from('accounts')
+      .select('balance, is_debt, type')
+      .eq('id', accountId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !acc) {
+      throw new Error('Cuenta no encontrada');
+    }
+
+    const before = Number(acc.balance);
+    const debtLike = acc.is_debt || acc.type === 'credit_card';
+    if (!debtLike || before <= 0) {
+      return null;
+    }
+
+    const after = -Math.abs(before);
+    const { error: uErr } = await supabase
+      .from('accounts')
+      .update({ balance: after })
+      .eq('id', accountId)
+      .eq('user_id', userId);
+
+    if (uErr) throw uErr;
+    return { before, after };
   }
 
   async update(
