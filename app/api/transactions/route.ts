@@ -18,6 +18,11 @@ export async function GET(req: NextRequest) {
     const minAmountParam = searchParams.get('minAmount');
     const maxAmountParam = searchParams.get('maxAmount');
 
+    const limitRaw = parseInt(searchParams.get('limit') || '100', 10);
+    const offsetRaw = parseInt(searchParams.get('offset') || '0', 10);
+    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 5000) : 100;
+    const offset = Number.isFinite(offsetRaw) && offsetRaw >= 0 ? offsetRaw : 0;
+
     const transactions = await transactionsService.list(user.id, {
       accountId: searchParams.get('accountId') || undefined,
       categoryId: searchParams.get('categoryId') || undefined,
@@ -27,8 +32,8 @@ export async function GET(req: NextRequest) {
       search: searchParams.get('search') || undefined,
       minAmount: minAmountParam ? parseFloat(minAmountParam) : undefined,
       maxAmount: maxAmountParam ? parseFloat(maxAmountParam) : undefined,
-      limit: parseInt(searchParams.get('limit') || '100'),
-      offset: parseInt(searchParams.get('offset') || '0'),
+      limit,
+      offset,
     });
 
     return NextResponse.json(transactions);

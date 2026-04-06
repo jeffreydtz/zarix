@@ -243,10 +243,11 @@ class AnalyticsService {
       .eq('user_id', userId)
       .eq('type', 'expense')
       .gte('transaction_date', startDate.toISOString())
-      .lte('transaction_date', endDate.toISOString())
+      .lte('transaction_date', endDate.toISOString());
+    qTop = await applyArchivedAccountsTransactionFilter(qTop, userId);
+    qTop = qTop
       .order('amount_in_account_currency', { ascending: false })
       .limit(limit);
-    qTop = await applyArchivedAccountsTransactionFilter(qTop, userId);
     const { data } = await qTop;
 
     return data || [];

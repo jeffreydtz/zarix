@@ -4,6 +4,11 @@ import { accountsService } from './accounts';
 import { cotizacionesService } from './cotizaciones';
 import type { Transaction, Account } from '@/types/database';
 
+/** PostgREST: UUIDs con guiones en filtros `.or()` deben ir entre comillas o el parser rompe la query. */
+function postgrestUuidFilterValue(id: string): string {
+  return `"${id}"`;
+}
+
 /**
  * Listados globales: excluye movimientos que tocan cuentas archivadas.
  * Usar en queries directas a `transactions` (analytics, APIs) además de `list()`.
@@ -13,9 +18,12 @@ export async function applyArchivedAccountsTransactionFilter(query: any, userId:
   if (activeIds.length === 0) {
     return query.eq('id', '00000000-0000-0000-0000-000000000000');
   }
+  const idsQuoted = activeIds.map(postgrestUuidFilterValue).join(',');
   return query
     .in('account_id', activeIds)
-    .or(`destination_account_id.is.null,destination_account_id.in.(${activeIds.join(',')})`);
+    .or(
+      `destination_account_id.is.null,destination_account_id.in.(${idsQuoted})`
+    );
 }
 
 /** Misma regla que transferencias: cotización de mercado entre moneda del comprobante y moneda de la cuenta. */
@@ -246,9 +254,7 @@ class TransactionsService {
         destination_account:accounts!transactions_destination_account_id_fkey(name, currency)
       `
       )
-      .eq('user_id', userId)
-      .order('transaction_date', { ascending: false })
-      .order('id', { ascending: false });
+      .eq('user_id', userId);
 
     const globalOnly = !options.accountId && !options.involveAccountId;
     if (globalOnly) {
@@ -256,7 +262,7 @@ class TransactionsService {
     }
 
     if (options.involveAccountId) {
-      const id = options.involveAccountId;
+      const id = postgrestUuidFilterValue(options.involveAccountId);
       query = query.or(`account_id.eq.${id},destination_account_id.eq.${id}`);
     } else if (options.accountId) {
       query = query.eq('account_id', options.accountId);
@@ -294,6 +300,10 @@ class TransactionsService {
     if (options.maxAmount !== undefined) {
       query = query.lte('amount', options.maxAmount);
     }
+
+    query = query
+      .order('transaction_date', { ascending: false })
+      .order('id', { ascending: false });
 
     query = query.limit(options.limit || 100);
 

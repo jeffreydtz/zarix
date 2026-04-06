@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zarix-v3';
+const CACHE_NAME = 'zarix-v4';
 const SYNC_TAG = 'zarix-sync';
 
 const STATIC_ASSETS = [
@@ -48,6 +48,12 @@ self.addEventListener('fetch', (event) => {
 
   // Non-GET requests are handled app-side via the offline queue
   if (request.method !== 'GET') return;
+
+  // Next.js hashed chunks/CSS — never cache-first in SW (stale HTML + old hashes → 404 on chunks).
+  if (url.pathname.startsWith('/_next/')) {
+    event.respondWith(fetch(request));
+    return;
+  }
 
   // Cacheable API endpoints: network-first, store response, fall back to cache
   if (CACHEABLE_API.some((path) => url.pathname.startsWith(path))) {
