@@ -13,6 +13,47 @@ type QuotesLite = {
   ethArs?: number;
 };
 
+/** Monedas habituales para el monto (gasto/ingreso); se agrega la de la cuenta si falta. */
+const MOVEMENT_CURRENCIES = ['ARS', 'USD', 'EUR', 'USDT', 'USDC', 'BTC', 'ETH', 'DAI', 'BUSD'] as const;
+
+function computeArsPreviewSimple(
+  amountStr: string,
+  cur: string,
+  quotesLite: QuotesLite | null,
+  quotesLoading: boolean
+): {
+  ars: number | null;
+  hint: string;
+} | null {
+  const amt = parseFloat(amountStr.replace(',', '.'));
+  if (!Number.isFinite(amt) || amt <= 0) return null;
+  const c = cur.trim().toUpperCase();
+  if (c === 'ARS') {
+    return { ars: amt, hint: 'Monto en pesos argentinos.' };
+  }
+  if (c === 'USD' || STABLE_FOR_ARS.has(c)) {
+    if (!quotesLite) {
+      return quotesLoading
+        ? { ars: null, hint: 'loading' }
+        : { ars: null, hint: 'no-quote' };
+    }
+    return {
+      ars: amt * quotesLite.blueSell,
+      hint: 'dólar blue (referencia automática)',
+    };
+  }
+  if (!quotesLite) {
+    return quotesLoading ? { ars: null, hint: 'loading' } : null;
+  }
+  if (c === 'BTC' && quotesLite.btcArs) {
+    return { ars: amt * quotesLite.btcArs, hint: 'precio BTC en ARS (referencia)' };
+  }
+  if (c === 'ETH' && quotesLite.ethArs) {
+    return { ars: amt * quotesLite.ethArs, hint: 'precio ETH en ARS (referencia)' };
+  }
+  return { ars: null, hint: 'unsupported' };
+}
+
 function parseQuotesResponse(data: unknown): QuotesLite | null {
   if (!data || typeof data !== 'object') return null;
   const d = data as Record<string, unknown>;
@@ -52,6 +93,8 @@ export default function CreateTransactionButton({
     transferOnly ? 'transfer' : 'expense'
   );
   const [amount, setAmount] = useState('');
+  /** Moneda en la que está expresado el monto (gasto/ingreso); se alinea con la cuenta al elegirla. */
+  const [amountCurrency, setAmountCurrency] = useState('ARS');
   const [accountId, setAccountId] = useState('');
   const [destinationAccountId, setDestinationAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -84,6 +127,21 @@ export default function CreateTransactionButton({
     );
   }, [type, sourceAccount, destAccount]);
 
+  const currencyOptions = useMemo(() => {
+    const set = new Set<string>(MOVEMENT_CURRENCIES.map((c) => c));
+    if (sourceAccount) {
+      set.add(sourceAccount.currency.trim().toUpperCase());
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [sourceAccount]);
+
+  /** Al elegir cuenta en gasto/ingreso, la moneda del monto sigue la de la cuenta por defecto. */
+  useEffect(() => {
+    if (type === 'transfer' || !accountId) return;
+    const a = accounts.find((x) => x.id === accountId);
+    if (a) setAmountCurrency(a.currency.trim().toUpperCase());
+  }, [accountId, type, accounts]);
+
   const transferPayloadCurrency = useMemo(() => {
     if (type !== 'transfer' || !sourceAccount) return sourceAccount?.currency ?? 'ARS';
     if (!crossCurrencyTransfer || !destAccount) return sourceAccount.currency;
@@ -96,8 +154,15 @@ export default function CreateTransactionButton({
     return !Number.isFinite(p) || p <= 0;
   }, [type, crossCurrencyTransfer, useManualExchangeRate, manualExchangeRate]);
 
+  const needsCotizacionesForMovement =
+    (type === 'expense' || type === 'income') &&
+    accountId &&
+    amountCurrency.trim().toUpperCase() !== 'ARS';
+
   useEffect(() => {
-    if (!isOpen || !crossCurrencyTransfer) return;
+    if (!isOpen) return;
+    const needQuotes = crossCurrencyTransfer || needsCotizacionesForMovement;
+    if (!needQuotes) return;
     let cancelled = false;
     setQuotesLoading(true);
     fetch('/api/cotizaciones', { cache: 'no-store' })
@@ -114,7 +179,7 @@ export default function CreateTransactionButton({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, crossCurrencyTransfer]);
+  }, [isOpen, crossCurrencyTransfer, needsCotizacionesForMovement]);
 
   /** Referencia en pesos (ARS) del monto ingresado para transferencias multimoneda. */
   const transferArsReference = useMemo(() => {
@@ -197,6 +262,28 @@ export default function CreateTransactionButton({
     quotesLoading,
   ]);
 
+  const expenseIncomeArsReference = useMemo(() => {
+    if (type !== 'expense' && type !== 'income') return null;
+    if (!accountId || !sourceAccount) return null;
+    return computeArsPreviewSimple(amount, amountCurrency, quotesLite, quotesLoading);
+  }, [
+    type,
+    accountId,
+    sourceAccount,
+    amount,
+    amountCurrency,
+    quotesLite,
+    quotesLoading,
+  ]);
+
+  const amountCurNorm = amountCurrency.trim().toUpperCase();
+  const accountCurNorm = sourceAccount?.currency.trim().toUpperCase() ?? '';
+  const showExpenseArsBox =
+    (type === 'expense' || type === 'income') &&
+    accountId &&
+    expenseIncomeArsReference &&
+    (amountCurNorm !== 'ARS' || amountCurNorm !== accountCurNorm);
+
   const resetForm = () => {
     setType(transferOnly ? 'transfer' : 'expense');
     setAmount('');
@@ -207,6 +294,7 @@ export default function CreateTransactionButton({
     setTransferAmountBasis('source');
     setUseManualExchangeRate(false);
     setManualExchangeRate('');
+    setAmountCurrency('ARS');
   };
 
   const handleClose = () => {
@@ -246,8 +334,11 @@ export default function CreateTransactionButton({
       type,
       accountId,
       destinationAccountId: type === 'transfer' ? destinationAccountId : undefined,
-      amount: parseFloat(amount),
-      currency: type === 'transfer' ? transferPayloadCurrency : account.currency,
+      amount: parseFloat(amount.replace(',', '.')),
+      currency:
+        type === 'transfer'
+          ? transferPayloadCurrency
+          : amountCurrency.trim().toUpperCase(),
       categoryId: type === 'transfer' ? null : (categoryId || null),
       description: description || (type === 'transfer' ? 'Transferencia entre cuentas' : ''),
       transactionDate: new Date().toISOString(),
@@ -548,16 +639,73 @@ export default function CreateTransactionButton({
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-2">Monto</label>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="0.01"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        step="0.01"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="0.00"
+                        className="flex-1 min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      />
+                      <select
+                        value={amountCurrency}
+                        onChange={(e) => setAmountCurrency(e.target.value)}
+                        className="w-[5.5rem] shrink-0 px-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-medium"
+                        title="Moneda del monto"
+                      >
+                        {currencyOptions.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                      Si el monto está en otra moneda que la de la cuenta, se convierte con la cotización del
+                      sistema (igual que en transferencias).
+                    </p>
+                    {sourceAccount && amountCurNorm !== accountCurNorm && (
+                      <p className="text-[11px] text-amber-700 dark:text-amber-300 mt-1">
+                        El saldo de la cuenta se registra en <strong>{sourceAccount.currency}</strong>.
+                      </p>
+                    )}
                   </div>
+
+                  {showExpenseArsBox && expenseIncomeArsReference && (
+                    <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/30 px-3 py-2.5 text-xs">
+                      {expenseIncomeArsReference.hint === 'loading' && (
+                        <p className="text-slate-600 dark:text-slate-300">Obteniendo cotización de referencia…</p>
+                      )}
+                      {expenseIncomeArsReference.hint === 'no-quote' && (
+                        <p className="text-amber-800 dark:text-amber-200">
+                          No se pudo cargar el dólar blue. Revisá la conexión; el movimiento igual puede guardarse
+                          si el backend tiene cotización.
+                        </p>
+                      )}
+                      {expenseIncomeArsReference.ars !== null &&
+                        typeof expenseIncomeArsReference.ars === 'number' && (
+                          <p className="text-slate-700 dark:text-slate-200 leading-relaxed">
+                            <span className="text-slate-500 dark:text-slate-400">Equivalente aproximado en pesos: </span>
+                            <span className="font-semibold tabular-nums text-emerald-800 dark:text-emerald-200">
+                              $
+                              {Math.round(expenseIncomeArsReference.ars).toLocaleString('es-AR', {
+                                maximumFractionDigits: 0,
+                              })}{' '}
+                              ARS
+                            </span>
+                            <span className="text-slate-500 dark:text-slate-400"> — {expenseIncomeArsReference.hint}</span>
+                          </p>
+                        )}
+                      {expenseIncomeArsReference.hint === 'unsupported' && (
+                        <p className="text-slate-600 dark:text-slate-400">
+                          No hay referencia automática a pesos para esta moneda en el cotizador; el importe se
+                          convierte igualmente al guardar.
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-sm font-medium mb-2">Cuenta</label>
