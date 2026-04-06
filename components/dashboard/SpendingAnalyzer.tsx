@@ -51,7 +51,7 @@ function addDays(date: Date, days: number) {
 }
 
 function getRange(range: RangeType, customFrom: string, customTo: string, anchorDate: Date) {
-  const end = toInputDate(anchorDate);
+  let end = toInputDate(anchorDate);
   let start = end;
 
   if (range === 'day') {
@@ -64,9 +64,14 @@ function getRange(range: RangeType, customFrom: string, customTo: string, anchor
     start = toInputDate(weekStart);
     end = toInputDate(addDays(weekStart, 6)); // domingo de la misma semana
   } else if (range === 'month') {
-    start = `${anchorDate.getFullYear()}-${String(anchorDate.getMonth() + 1).padStart(2, '0')}-01`;
+    const y = anchorDate.getFullYear();
+    const m = anchorDate.getMonth();
+    start = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+    end = toInputDate(new Date(y, m + 1, 0));
   } else if (range === 'year') {
-    start = `${anchorDate.getFullYear()}-01-01`;
+    const y = anchorDate.getFullYear();
+    start = `${y}-01-01`;
+    end = `${y}-12-31`;
   } else {
     let s = customFrom || end;
     let e = customTo || end;
@@ -530,15 +535,6 @@ export default function SpendingAnalyzer({
   }, [filteredItems, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs]);
 
   const txCount = filteredItems.length;
-  const avgTicket = txCount > 0 ? total / txCount : 0;
-  const maxTx = useMemo(() => {
-    if (filteredItems.length === 0) return null;
-    return [...filteredItems].sort(
-      (a, b) =>
-        txAmountForAggregation(b, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs) -
-        txAmountForAggregation(a, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs)
-    )[0];
-  }, [filteredItems, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs]);
   const variationPct =
     prevTotal > 0 && Number.isFinite(total) ? ((total - prevTotal) / prevTotal) * 100 : null;
   const displaySlices = useMemo(() => {
@@ -827,29 +823,6 @@ export default function SpendingAnalyzer({
           </div>
 
           <div className="space-y-2">
-            <div className="grid grid-cols-2 gap-2 mb-1">
-              <div className="min-h-[52px] rounded-xl bg-slate-100 px-3 py-2.5 dark:bg-slate-800">
-                <div className="text-[11px] text-slate-500 sm:text-xs">Ticket promedio</div>
-                <div className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200 sm:text-base">
-                  ${avgTicket.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
-                </div>
-              </div>
-              <div className="min-h-[52px] rounded-xl bg-slate-100 px-3 py-2.5 dark:bg-slate-800">
-                <div className="text-[11px] text-slate-500 sm:text-xs">Ticket máximo</div>
-                <div className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200 sm:text-base">
-                  $
-                  {maxTx
-                    ? txAmountForAggregation(
-                        maxTx,
-                        convertToArsBlue,
-                        effectiveUsdBlue,
-                        effectiveCryptoArs
-                      ).toLocaleString('es-AR', { maximumFractionDigits: 0 })
-                    : '0'}
-                </div>
-              </div>
-            </div>
-
             {displaySlices.length > 0 && (
               <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 lg:hidden">
                 Categorías
