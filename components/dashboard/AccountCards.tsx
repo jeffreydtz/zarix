@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { AccountWithBalance } from '@/lib/services/accounts';
+import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import Link from 'next/link';
 
 interface AccountCardsProps {
@@ -79,16 +80,8 @@ function AccountCards({ accounts }: AccountCardsProps) {
                 </div>
               </div>
 
-              {account.currency !== 'ARS' && Number(account.balance) !== 0 && (
-                <div className="text-xs opacity-75 font-medium">
-                  {account.balance_ars_blue != null && account.balance_ars_blue !== 0 ? (
-                    <>
-                      ≈ ${account.balance_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS
-                    </>
-                  ) : (
-                    <>Sin cotización a ARS</>
-                  )}
-                </div>
+              {Number(account.balance) !== 0 && (
+                <AccountBalanceEquivalents account={account} variant="dark" />
               )}
 
               {isCreditCard && creditLimit > 0 && (

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
+import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService } from '@/lib/services/transactions';
 
 export async function GET(
@@ -50,6 +51,14 @@ export async function PATCH(
       );
     }
 
+    const cur = String(body.currency ?? '').trim().toUpperCase();
+    if (!isTransactionCurrency(cur)) {
+      return NextResponse.json(
+        { error: 'Solo se permiten monedas ARS, USD o EUR en movimientos' },
+        { status: 400 }
+      );
+    }
+
     const serviceClient = createServiceClientSync();
 
     const { data, error } = await serviceClient
@@ -57,7 +66,7 @@ export async function PATCH(
       .update({
         type: body.type,
         amount: body.amount,
-        currency: body.currency,
+        currency: cur,
         account_id: body.account_id,
         category_id: body.category_id || null,
         description: body.description || null,

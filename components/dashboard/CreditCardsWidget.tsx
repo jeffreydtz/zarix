@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { AccountWithBalance } from '@/lib/services/accounts';
+import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import ProgressBar from '@/components/ui/ProgressBar';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 
@@ -89,6 +90,15 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
                   </p>
                 </div>
               </div>
+
+              {used > 1e-8 && (
+                <>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+                    Importes en {card.currency}. Equivalente aproximado:
+                  </p>
+                  <AccountBalanceEquivalents account={card} />
+                </>
+              )}
 
               <ProgressBar value={utilization} max={100} height="h-2" />
 

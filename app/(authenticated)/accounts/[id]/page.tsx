@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import { accountsService } from '@/lib/services/accounts';
+import type { AccountWithBalance } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
@@ -39,6 +41,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
 
     const balance = Number(account.balance);
     const typeLabel = account.type.replace('_', ' ');
+    const enriched = accounts.find((a) => a.id === account.id) as AccountWithBalance | undefined;
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
@@ -83,6 +86,14 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                   })}{' '}
                   <span className="text-lg font-medium text-slate-500">{account.currency}</span>
                 </p>
+                {enriched && Math.abs(balance) > 1e-8 && (
+                  <div className="mt-1">
+                    <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5">
+                      Referencia en otras monedas
+                    </p>
+                    <AccountBalanceEquivalents account={enriched} variant="detail" />
+                  </div>
+                )}
               </div>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 max-w-xl">
                 Incluye gastos, ingresos y transferencias donde esta cuenta es origen o destino.

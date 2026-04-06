@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { AccountAggregates, AccountWithBalance } from '@/lib/services/accounts';
 import { useState } from 'react';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
+import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 
 interface AccountsListProps {
   accounts: AccountWithBalance[];
@@ -242,20 +243,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                         />
                       </div>
                       <div className="text-sm text-slate-500 dark:text-slate-400">{account.currency}</div>
-                      {account.currency !== 'ARS' && Number(account.balance) !== 0 && (
-                        <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                          {account.balance_ars_blue != null && account.balance_ars_blue !== 0 ? (
-                            <>
-                              ≈ ${account.balance_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}{' '}
-                              ARS
-                            </>
-                          ) : (
-                            <span className="text-amber-600 dark:text-amber-400/90">
-                              Sin cotización a ARS
-                            </span>
-                          )}
-                        </div>
-                      )}
+                      <AccountBalanceEquivalents account={account} />
                     </div>
                   </Link>
 

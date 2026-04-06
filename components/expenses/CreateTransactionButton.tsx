@@ -8,22 +8,20 @@ import {
   calendarDateToUtcNoonIso,
   todayLocalYmd,
 } from '@/lib/transaction-date';
+import {
+  TRANSACTION_CURRENCIES,
+  coerceTransactionCurrency,
+} from '@/lib/constants/transaction-currencies';
 
-const STABLE_FOR_ARS = new Set(['USDT', 'USDC', 'DAI', 'BUSD']);
-
-type QuotesLite = {
-  blueSell: number;
-  btcArs?: number;
-  ethArs?: number;
+type FxLite = {
+  usdArs: number;
+  eurArs: number;
 };
-
-/** Monedas habituales para el monto (gasto/ingreso); se agrega la de la cuenta si falta. */
-const MOVEMENT_CURRENCIES = ['ARS', 'USD', 'EUR', 'USDT', 'USDC', 'BTC', 'ETH', 'DAI', 'BUSD'] as const;
 
 function computeArsPreviewSimple(
   amountStr: string,
   cur: string,
-  quotesLite: QuotesLite | null,
+  fxLite: FxLite | null,
   quotesLoading: boolean
 ): {
   ars: number | null;
@@ -35,43 +33,34 @@ function computeArsPreviewSimple(
   if (c === 'ARS') {
     return { ars: amt, hint: 'Monto en pesos argentinos.' };
   }
-  if (c === 'USD' || STABLE_FOR_ARS.has(c)) {
-    if (!quotesLite) {
-      return quotesLoading
-        ? { ars: null, hint: 'loading' }
-        : { ars: null, hint: 'no-quote' };
-    }
+  if (!fxLite) {
+    return quotesLoading
+      ? { ars: null, hint: 'loading' }
+      : { ars: null, hint: 'no-quote' };
+  }
+  if (c === 'USD') {
     return {
-      ars: amt * quotesLite.blueSell,
+      ars: amt * fxLite.usdArs,
       hint: 'dólar blue (referencia automática)',
     };
   }
-  if (!quotesLite) {
-    return quotesLoading ? { ars: null, hint: 'loading' } : null;
-  }
-  if (c === 'BTC' && quotesLite.btcArs) {
-    return { ars: amt * quotesLite.btcArs, hint: 'precio BTC en ARS (referencia)' };
-  }
-  if (c === 'ETH' && quotesLite.ethArs) {
-    return { ars: amt * quotesLite.ethArs, hint: 'precio ETH en ARS (referencia)' };
+  if (c === 'EUR') {
+    return {
+      ars: amt * fxLite.eurArs,
+      hint: 'EUR/ARS (referencia: EURUSD × dólar blue)',
+    };
   }
   return { ars: null, hint: 'unsupported' };
 }
 
-function parseQuotesResponse(data: unknown): QuotesLite | null {
+function parseFxResponse(data: unknown): FxLite | null {
   if (!data || typeof data !== 'object') return null;
   const d = data as Record<string, unknown>;
-  const blue = d.dolar as { blue?: { sell?: number } } | undefined;
-  const sell = Number(blue?.blue?.sell);
-  if (!Number.isFinite(sell) || sell <= 0) return null;
-  const crypto = d.crypto as Record<string, unknown> | undefined;
-  const btc = Number((crypto?.btc as { priceARS?: number } | undefined)?.priceARS);
-  const eth = Number((crypto?.eth as { priceARS?: number } | undefined)?.priceARS);
-  return {
-    blueSell: sell,
-    btcArs: Number.isFinite(btc) && btc > 0 ? btc : undefined,
-    ethArs: Number.isFinite(eth) && eth > 0 ? eth : undefined,
-  };
+  const usdArs = Number(d.usdArs);
+  const eurArs = Number(d.eurArs);
+  if (!Number.isFinite(usdArs) || usdArs <= 0) return null;
+  if (!Number.isFinite(eurArs) || eurArs <= 0) return null;
+  return { usdArs, eurArs };
 }
 
 interface CreateTransactionButtonProps {
@@ -107,7 +96,7 @@ export default function CreateTransactionButton({
   const [transferAmountBasis, setTransferAmountBasis] = useState<'source' | 'destination'>('source');
   const [useManualExchangeRate, setUseManualExchangeRate] = useState(false);
   const [manualExchangeRate, setManualExchangeRate] = useState('');
-  const [quotesLite, setQuotesLite] = useState<QuotesLite | null>(null);
+  const [fxLite, setFxLite] = useState<FxLite | null>(null);
   const [quotesLoading, setQuotesLoading] = useState(false);
   /** Día del movimiento (YYYY-MM-DD); al guardar se convierte a ISO sin desfase de zona. */
   const [transactionDateYmd, setTransactionDateYmd] = useState(() => todayLocalYmd());
@@ -137,19 +126,13 @@ export default function CreateTransactionButton({
     );
   }, [type, sourceAccount, destAccount]);
 
-  const currencyOptions = useMemo(() => {
-    const set = new Set<string>(MOVEMENT_CURRENCIES.map((c) => c));
-    if (sourceAccount) {
-      set.add(sourceAccount.currency.trim().toUpperCase());
-    }
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [sourceAccount]);
+  const currencyOptions = useMemo(() => [...TRANSACTION_CURRENCIES], []);
 
   /** Al elegir cuenta en gasto/ingreso, la moneda del monto sigue la de la cuenta por defecto. */
   useEffect(() => {
     if (type === 'transfer' || !accountId) return;
     const a = accounts.find((x) => x.id === accountId);
-    if (a) setAmountCurrency(a.currency.trim().toUpperCase());
+    if (a) setAmountCurrency(coerceTransactionCurrency(a.currency));
   }, [accountId, type, accounts]);
 
   const transferPayloadCurrency = useMemo(() => {
@@ -167,7 +150,8 @@ export default function CreateTransactionButton({
   const needsCotizacionesForMovement =
     (type === 'expense' || type === 'income') &&
     accountId &&
-    amountCurrency.trim().toUpperCase() !== 'ARS';
+    (amountCurrency.trim().toUpperCase() === 'USD' ||
+      amountCurrency.trim().toUpperCase() === 'EUR');
 
   useEffect(() => {
     if (!isOpen) return;
@@ -175,13 +159,13 @@ export default function CreateTransactionButton({
     if (!needQuotes) return;
     let cancelled = false;
     setQuotesLoading(true);
-    fetch('/api/cotizaciones', { cache: 'no-store' })
+    fetch('/api/cotizaciones/transactions-fx', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (!cancelled) setQuotesLite(parseQuotesResponse(data));
+        if (!cancelled) setFxLite(parseFxResponse(data));
       })
       .catch(() => {
-        if (!cancelled) setQuotesLite(null);
+        if (!cancelled) setFxLite(null);
       })
       .finally(() => {
         if (!cancelled) setQuotesLoading(false);
@@ -213,48 +197,58 @@ export default function CreateTransactionButton({
       };
     }
 
-    if (cur === 'USD' || STABLE_FOR_ARS.has(cur)) {
-      if (!quotesLite) {
+    if (cur === 'USD') {
+      if (!fxLite) {
         return quotesLoading
           ? { ars: null, hint: 'loading' as const }
           : { ars: null, hint: 'no-quote' as const };
       }
-      let rate = quotesLite.blueSell;
+      let rate = fxLite.usdArs;
       let hint = 'dólar blue (referencia automática)';
-      const srcUsdLike = src === 'USD' || STABLE_FOR_ARS.has(src);
-      const curUsdLike = cur === 'USD' || STABLE_FOR_ARS.has(cur);
+      const srcUsd = src === 'USD';
+      const curUsd = cur === 'USD';
       if (hasManual) {
-        if (srcUsdLike && dst === 'ARS' && transferAmountBasis === 'source' && curUsdLike) {
+        if (srcUsd && dst === 'ARS' && transferAmountBasis === 'source' && curUsd) {
           rate = manualR;
           hint = 'tu tipo de cambio manual';
         } else if (
           src === 'ARS' &&
-          (dst === 'USD' || STABLE_FOR_ARS.has(dst)) &&
+          dst === 'USD' &&
           transferAmountBasis === 'destination' &&
-          curUsdLike
+          curUsd
         ) {
           rate = manualR;
-          hint = 'tu tipo de cambio manual (ARS por 1 unidad en USD/stable)';
+          hint = 'tu tipo de cambio manual (ARS por 1 USD)';
         }
       }
       return { ars: amt * rate, hint };
     }
 
-    if (!quotesLite) {
-      return quotesLoading ? { ars: null, hint: 'loading' as const } : null;
-    }
-
-    if (cur === 'BTC' && quotesLite.btcArs) {
-      return {
-        ars: amt * quotesLite.btcArs,
-        hint: 'precio BTC en ARS (referencia)',
-      };
-    }
-    if (cur === 'ETH' && quotesLite.ethArs) {
-      return {
-        ars: amt * quotesLite.ethArs,
-        hint: 'precio ETH en ARS (referencia)',
-      };
+    if (cur === 'EUR') {
+      if (!fxLite) {
+        return quotesLoading
+          ? { ars: null, hint: 'loading' as const }
+          : { ars: null, hint: 'no-quote' as const };
+      }
+      let rate = fxLite.eurArs;
+      let hint = 'EUR/ARS (referencia)';
+      const srcEur = src === 'EUR';
+      const curEur = cur === 'EUR';
+      if (hasManual) {
+        if (srcEur && dst === 'ARS' && transferAmountBasis === 'source' && curEur) {
+          rate = manualR;
+          hint = 'tu tipo de cambio manual';
+        } else if (
+          src === 'ARS' &&
+          dst === 'EUR' &&
+          transferAmountBasis === 'destination' &&
+          curEur
+        ) {
+          rate = manualR;
+          hint = 'tu tipo de cambio manual (ARS por 1 EUR)';
+        }
+      }
+      return { ars: amt * rate, hint };
     }
 
     return { ars: null, hint: 'unsupported' as const };
@@ -268,21 +262,21 @@ export default function CreateTransactionButton({
     transferAmountBasis,
     useManualExchangeRate,
     manualExchangeRate,
-    quotesLite,
+    fxLite,
     quotesLoading,
   ]);
 
   const expenseIncomeArsReference = useMemo(() => {
     if (type !== 'expense' && type !== 'income') return null;
     if (!accountId || !sourceAccount) return null;
-    return computeArsPreviewSimple(amount, amountCurrency, quotesLite, quotesLoading);
+    return computeArsPreviewSimple(amount, amountCurrency, fxLite, quotesLoading);
   }, [
     type,
     accountId,
     sourceAccount,
     amount,
     amountCurrency,
-    quotesLite,
+    fxLite,
     quotesLoading,
   ]);
 

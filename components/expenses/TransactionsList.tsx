@@ -58,6 +58,70 @@ export interface ViewAccountContext {
   usdToArs?: number | null;
 }
 
+function AccountMovementsSummaryCard({
+  transactions,
+  viewAccountContext,
+}: {
+  transactions: TransactionWithCategory[];
+  viewAccountContext: ViewAccountContext;
+}) {
+  const { accountId, accountCurrency, usdToArs } = viewAccountContext;
+  const ac = accountCurrency.trim().toUpperCase();
+  const netListed = sumImpactInAccountCurrency(transactions, accountId);
+  const byOrig = aggregateOriginalByCurrency(transactions, accountId);
+  const origParts = Object.entries(byOrig)
+    .filter(([, v]) => Math.abs(v) > 1e-8)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([cur, v]) => fmtMoney(v, cur));
+  const refArs =
+    ac === 'USD' && usdToArs && usdToArs > 0 ? netListed * usdToArs : null;
+  const refUsd =
+    ac === 'ARS' && usdToArs && usdToArs > 0 ? netListed / usdToArs : null;
+
+  return (
+    <div className="card mb-3 border border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/50">
+      <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+        Resumen de movimientos listados
+      </p>
+      <p className="text-lg font-bold tabular-nums text-slate-800 dark:text-slate-100">
+        {fmtMoney(netListed, ac)}{' '}
+        <span className="text-sm font-normal text-slate-500">(impacto neto en la cuenta)</span>
+      </p>
+      {transactions.length === 0 && (
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+          Todavía no hay movimientos en esta lista; el total neto es cero.
+        </p>
+      )}
+      {origParts.length > 0 && (
+        <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
+          <span className="text-slate-500 dark:text-slate-400">Por moneda original: </span>
+          {origParts.join(' · ')}
+        </p>
+      )}
+      {refArs != null && (
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+          Referencia aprox. en ARS (cotización actual):{' '}
+          <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+            {fmtMoney(refArs, 'ARS')}
+          </span>
+        </p>
+      )}
+      {refUsd != null && (
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+          Referencia aprox. en USD:{' '}
+          <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+            {fmtMoney(refUsd, 'USD')}
+          </span>
+        </p>
+      )}
+      <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+        La suma usa el mismo criterio que el saldo (incluye conversiones y transferencias). Si hay más
+        movimientos fuera de esta lista, no coincidirá con el saldo actual.
+      </p>
+    </div>
+  );
+}
+
 interface TransactionsListProps {
   transactions: TransactionWithCategory[];
   accounts?: Array<{ id: string; name: string; currency: string; balance: number }>;
@@ -143,7 +207,7 @@ export default function TransactionsList({
     }
   };
 
-  if (transactions.length === 0) {
+  if (transactions.length === 0 && !viewAccountContext) {
     return (
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -163,8 +227,11 @@ export default function TransactionsList({
     );
   }
 
+  const emptyAccountOnly = transactions.length === 0 && viewAccountContext;
+
   return (
     <>
+      {!emptyAccountOnly && (
       <div className="card mb-3">
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -232,63 +299,34 @@ export default function TransactionsList({
           </div>
         )}
       </div>
+      )}
 
-      {viewAccountContext && transactions.length > 0 && (() => {
-        const { accountId, accountCurrency, usdToArs } = viewAccountContext;
-        const ac = accountCurrency.trim().toUpperCase();
-        const netListed = sumImpactInAccountCurrency(transactions, accountId);
-        const byOrig = aggregateOriginalByCurrency(transactions, accountId);
-        const origParts = Object.entries(byOrig)
-          .filter(([, v]) => Math.abs(v) > 1e-8)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([cur, v]) => fmtMoney(v, cur));
-        const refArs =
-          ac === 'USD' && usdToArs && usdToArs > 0
-            ? netListed * usdToArs
-            : null;
-        const refUsd =
-          ac === 'ARS' && usdToArs && usdToArs > 0
-            ? netListed / usdToArs
-            : null;
-        return (
-          <div className="card mb-3 border border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/50">
-            <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
-              Resumen de movimientos listados
-            </p>
-            <p className="text-lg font-bold tabular-nums text-slate-800 dark:text-slate-100">
-              {fmtMoney(netListed, ac)}{' '}
-              <span className="text-sm font-normal text-slate-500">(impacto neto en la cuenta)</span>
-            </p>
-            {origParts.length > 0 && (
-              <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
-                <span className="text-slate-500 dark:text-slate-400">Por moneda original: </span>
-                {origParts.join(' · ')}
-              </p>
-            )}
-            {refArs != null && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                Referencia aprox. en ARS (cotización actual):{' '}
-                <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
-                  {fmtMoney(refArs, 'ARS')}
-                </span>
-              </p>
-            )}
-            {refUsd != null && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                Referencia aprox. en USD:{' '}
-                <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
-                  {fmtMoney(refUsd, 'USD')}
-                </span>
-              </p>
-            )}
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
-              La suma usa el mismo criterio que el saldo (incluye conversiones y transferencias). Si hay más
-              movimientos fuera de esta lista, no coincidirá con el saldo actual.
-            </p>
-          </div>
-        );
-      })()}
+      {viewAccountContext && (
+        <AccountMovementsSummaryCard
+          transactions={transactions}
+          viewAccountContext={viewAccountContext}
+        />
+      )}
 
+      {emptyAccountOnly && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card text-center py-16"
+        >
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-5xl mb-4"
+          >
+            💸
+          </motion.div>
+          <p className="text-slate-500 dark:text-slate-400 mb-2">No hay movimientos</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">{emptySubmessage}</p>
+        </motion.div>
+      )}
+
+      {!emptyAccountOnly && (
       <motion.div 
         initial="hidden"
         animate="show"
@@ -442,6 +480,7 @@ export default function TransactionsList({
           );
         })}
       </motion.div>
+      )}
 
       <AnimatePresence>
         {editingTx && (

@@ -298,26 +298,89 @@ class CotizacionesService {
     }
   }
 
+  /**
+   * EUR/USD spot (cuántos USD por 1 EUR), vía Yahoo. Solo para pares fiat de transacciones.
+   */
+  private async getEurUsdRate(): Promise<number> {
+    const cacheKey = this.getCacheKey('yahoo', 'EURUSD', 'spot');
+    const cached = this.getFromCache<number>(cacheKey);
+    if (cached) return cached;
+
+    const response = await fetch(
+      'https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?range=1d&interval=1d',
+      { next: { revalidate: 300 } }
+    );
+    if (!response.ok) {
+      throw new Error(`Yahoo EURUSD error: ${response.status}`);
+    }
+    const data = await response.json();
+    const price = Number(data?.chart?.result?.[0]?.meta?.regularMarketPrice);
+    if (!Number.isFinite(price) || price <= 0) {
+      throw new Error('Invalid EUR/USD from Yahoo');
+    }
+    this.setCache(cacheKey, price);
+    return price;
+  }
+
+  /** Cotizaciones mínimas para movimientos (ARS / USD / EUR), sin crypto ni otros mercados. */
+  async getTransactionsFxRates(): Promise<{ usdArs: number; eurArs: number }> {
+    const dolar = await this.getDolarQuotes();
+    const usdArs = dolar.blue.sell;
+    const eurUsd = await this.getEurUsdRate();
+    const eurArs = eurUsd * usdArs;
+    return { usdArs, eurArs };
+  }
+
   async getExchangeRate(
     from: string,
     to: string = 'ARS'
   ): Promise<number> {
-    if (from === to) return 1;
+    const fromU = from.trim().toUpperCase();
+    const toU = to.trim().toUpperCase();
+    if (fromU === toU) return 1;
 
-    const cacheKey = this.getCacheKey('auto', from, to);
+    const cacheKey = this.getCacheKey('auto', fromU, toU);
     const cached = this.getFromCache<number>(cacheKey);
     if (cached) return cached;
 
-    if (from === 'USD' && to === 'ARS') {
+    if (fromU === 'USD' && toU === 'ARS') {
       const dolar = await this.getDolarQuotes();
       const rate = dolar.blue.sell;
       this.setCache(cacheKey, rate);
       return rate;
     }
 
-    if (from === 'ARS' && to === 'USD') {
+    if (fromU === 'ARS' && toU === 'USD') {
       const dolar = await this.getDolarQuotes();
       const rate = 1 / dolar.blue.buy;
+      this.setCache(cacheKey, rate);
+      return rate;
+    }
+
+    if (fromU === 'EUR' && toU === 'ARS') {
+      const eurUsd = await this.getEurUsdRate();
+      const dolar = await this.getDolarQuotes();
+      const rate = eurUsd * dolar.blue.sell;
+      this.setCache(cacheKey, rate);
+      return rate;
+    }
+
+    if (fromU === 'ARS' && toU === 'EUR') {
+      const eurArs = await this.getExchangeRate('EUR', 'ARS');
+      const rate = 1 / eurArs;
+      this.setCache(cacheKey, rate);
+      return rate;
+    }
+
+    if (fromU === 'EUR' && toU === 'USD') {
+      const rate = await this.getEurUsdRate();
+      this.setCache(cacheKey, rate);
+      return rate;
+    }
+
+    if (fromU === 'USD' && toU === 'EUR') {
+      const eurUsd = await this.getEurUsdRate();
+      const rate = 1 / eurUsd;
       this.setCache(cacheKey, rate);
       return rate;
     }

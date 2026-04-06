@@ -8,6 +8,11 @@ import {
   calendarDateToUtcNoonIso,
   isoToLocalDateInputValue,
 } from '@/lib/transaction-date';
+import {
+  TRANSACTION_CURRENCIES,
+  coerceTransactionCurrency,
+  type TransactionCurrency,
+} from '@/lib/constants/transaction-currencies';
 
 interface EditTransactionModalProps {
   transaction: TransactionWithCategory;
@@ -25,10 +30,19 @@ export default function EditTransactionModal({
   onSave,
 }: EditTransactionModalProps) {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    type: typeof transaction.type;
+    amount: string;
+    currency: TransactionCurrency;
+    account_id: string;
+    category_id: string;
+    description: string;
+    transaction_date: string;
+    notes: string;
+  }>({
     type: transaction.type,
     amount: transaction.amount.toString(),
-    currency: transaction.currency,
+    currency: coerceTransactionCurrency(transaction.currency),
     account_id: transaction.account_id || '',
     category_id: transaction.category_id || '',
     description: transaction.description || '',
@@ -167,13 +181,16 @@ export default function EditTransactionModal({
               </label>
               <select
                 value={formData.currency}
-                onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, currency: coerceTransactionCurrency(e.target.value) })
+                }
                 className="input"
               >
-                <option value="ARS">ARS</option>
-                <option value="USD">USD</option>
-                <option value="BTC">BTC</option>
-                <option value="ETH">ETH</option>
+                {TRANSACTION_CURRENCIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
