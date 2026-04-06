@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
+import RepairCurrencyRangePanel from '@/components/accounts/RepairCurrencyRangePanel';
 import { accountsService } from '@/lib/services/accounts';
 import type { AccountWithBalance } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
@@ -101,6 +102,8 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
             </div>
             <CreateTransactionButton accounts={accounts} categories={categories} />
           </div>
+
+          <RepairCurrencyRangePanel accountId={account.id} />
 
           <TransactionsList
             transactions={transactions}

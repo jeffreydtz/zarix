@@ -430,6 +430,97 @@ class TransactionsService {
       exchange_rate: exchangeRate !== 1 ? exchangeRate : null,
     };
   }
+
+  /**
+   * Recalcula `amount_in_account_currency` y `exchange_rate` con la cotización actual (como al crear el movimiento)
+   * para gastos/ingresos en moneda distinta a la de la cuenta. El trigger de saldos aplica el delta.
+   */
+  async repairCrossCurrencyInDateRange(
+    userId: string,
+    accountId: string,
+    startDateYmd: string,
+    endDateYmd: string,
+    options?: { force?: boolean; onlyUsd?: boolean }
+  ): Promise<{
+    updated: number;
+    sameCurrency: number;
+    filteredOut: number;
+    alreadyAligned: number;
+  }> {
+    const supabase = createServiceClientSync();
+
+    const { data: account, error: accErr } = await supabase
+      .from('accounts')
+      .select('currency')
+      .eq('id', accountId)
+      .eq('user_id', userId)
+      .single();
+
+    if (accErr || !account) {
+      throw new Error('Cuenta no encontrada');
+    }
+
+    const accountCurrency = account.currency;
+
+    const { data: rows, error: qErr } = await supabase
+      .from('transactions')
+      .select('id, amount, currency, amount_in_account_currency, type')
+      .eq('user_id', userId)
+      .eq('account_id', accountId)
+      .in('type', ['expense', 'income'])
+      .gte('transaction_date', `${startDateYmd}T00:00:00`)
+      .lte('transaction_date', `${endDateYmd}T23:59:59`)
+      .order('transaction_date', { ascending: true })
+      .limit(5000);
+
+    if (qErr) throw qErr;
+
+    let updated = 0;
+    let sameCurrency = 0;
+    let filteredOut = 0;
+    let alreadyAligned = 0;
+
+    for (const tx of rows || []) {
+      const txCur = normalizeCurrency(tx.currency);
+      const accCur = normalizeCurrency(accountCurrency);
+      if (txCur === accCur) {
+        sameCurrency++;
+        continue;
+      }
+
+      if (options?.onlyUsd && txCur !== 'USD') {
+        filteredOut++;
+        continue;
+      }
+
+      const oldAin = Number(tx.amount_in_account_currency);
+      const rec = await this.recomputeExpenseIncomeAmountFields(
+        Number(tx.amount),
+        tx.currency,
+        accountCurrency
+      );
+
+      const diff = Math.abs(rec.amount_in_account_currency - oldAin);
+      if (!options?.force && diff < 0.01) {
+        alreadyAligned++;
+        continue;
+      }
+
+      const { error: uErr } = await supabase
+        .from('transactions')
+        .update({
+          amount_in_account_currency: rec.amount_in_account_currency,
+          exchange_rate: rec.exchange_rate,
+        })
+        .eq('id', tx.id)
+        .eq('user_id', userId);
+
+      if (uErr) throw uErr;
+      updated++;
+    }
+
+    return { updated, sameCurrency, filteredOut, alreadyAligned };
+  }
 }
 
 export const transactionsService = new TransactionsService();
