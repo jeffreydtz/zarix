@@ -435,6 +435,7 @@ ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recurring_rules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE budgets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE budget_alerts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE investments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bot_sessions ENABLE ROW LEVEL SECURITY;
 
@@ -464,6 +465,11 @@ CREATE POLICY recurring_rules_all ON recurring_rules FOR ALL USING (auth.uid() =
 
 -- Budgets: solo los propios
 CREATE POLICY budgets_all ON budgets FOR ALL USING (auth.uid() = user_id);
+
+-- Budget alerts: solo filas ligadas a presupuestos del usuario
+CREATE POLICY budget_alerts_all ON budget_alerts FOR ALL USING (
+  EXISTS (SELECT 1 FROM budgets b WHERE b.id = budget_alerts.budget_id AND b.user_id = auth.uid())
+);
 
 -- Investments: solo las propias
 CREATE POLICY investments_all ON investments FOR ALL USING (auth.uid() = user_id);
@@ -514,7 +520,10 @@ INSERT INTO categories (id, user_id, name, type, icon, is_system) VALUES
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 -- Vista de saldos totales por usuario (con conversión a ARS blue y USD)
-CREATE OR REPLACE VIEW v_user_balance_summary AS
+-- security_invoker: evalúa con permisos del usuario que consulta (RLS en tablas base)
+CREATE OR REPLACE VIEW v_user_balance_summary
+WITH (security_invoker = true)
+AS
 WITH latest_rates AS (
   SELECT DISTINCT ON (from_currency, to_currency)
     from_currency,
@@ -556,7 +565,9 @@ WHERE a.is_active = TRUE
 GROUP BY a.user_id;
 
 -- Vista de gastos por categoría (mes actual)
-CREATE OR REPLACE VIEW v_current_month_expenses AS
+CREATE OR REPLACE VIEW v_current_month_expenses
+WITH (security_invoker = true)
+AS
 SELECT
   t.user_id,
   c.name AS category_name,
