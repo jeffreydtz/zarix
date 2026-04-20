@@ -12,6 +12,7 @@ import {
   TRANSACTION_CURRENCIES,
   coerceTransactionCurrency,
 } from '@/lib/constants/transaction-currencies';
+import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 
 type FxLite = {
   usdArs: number;
@@ -548,15 +549,18 @@ export default function CreateTransactionButton({
                         </span>
                       )}
                     </label>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="0.01"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        step="0.01"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="0.00"
+                        className="flex-1 min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      />
+                      <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
+                    </div>
                   </div>
 
                   {crossCurrencyTransfer && transferArsReference && (
@@ -654,6 +658,7 @@ export default function CreateTransactionButton({
                         placeholder="0.00"
                         className="flex-1 min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                       />
+                      <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
                       <select
                         value={amountCurrency}
                         onChange={(e) => setAmountCurrency(e.target.value)}

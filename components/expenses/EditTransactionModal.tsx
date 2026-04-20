@@ -13,6 +13,7 @@ import {
   coerceTransactionCurrency,
   type TransactionCurrency,
 } from '@/lib/constants/transaction-currencies';
+import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 
 interface EditTransactionModalProps {
   transaction: TransactionWithCategory;
@@ -166,14 +167,20 @@ export default function EditTransactionModal({
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Monto
               </label>
-              <input
-                type="number"
-                step="0.01"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="input"
-                required
-              />
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="input flex-1 min-w-0"
+                  required
+                />
+                <MiniAmountCalculatorButton
+                  currentAmount={formData.amount}
+                  onApply={(v) => setFormData({ ...formData, amount: v })}
+                />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
