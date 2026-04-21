@@ -64,6 +64,15 @@ function parseFxResponse(data: unknown): FxLite | null {
   return { usdArs, eurArs };
 }
 
+/** Saldo disponible para debitar en transferencia (no negativo). */
+function transferableBalanceFromSource(balance: number): number {
+  return Math.round(Math.max(0, Number(balance)) * 100) / 100;
+}
+
+function formatAmountForNumberInput(n: number): string {
+  return transferableBalanceFromSource(n).toFixed(2);
+}
+
 interface CreateTransactionButtonProps {
   accounts: Array<{ id: string; name: string; currency: string; balance: number }>;
   categories: Array<{ id: string; name: string; icon: string; type: string }>;
@@ -384,6 +393,23 @@ export default function CreateTransactionButton({
   const openButtonLabel = triggerLabel ?? (transferOnly ? 'Transferir entre cuentas' : '+ Nuevo Movimiento');
   const openButtonClass = triggerClassName ?? 'btn btn-primary';
 
+  const transferMaxFromSource = sourceAccount
+    ? transferableBalanceFromSource(sourceAccount.balance)
+    : 0;
+  const transferMaxBalanceTitle =
+    sourceAccount != null
+      ? `Completar con el saldo disponible en ${sourceAccount.currency}: ${transferMaxFromSource.toLocaleString('es-AR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`
+      : undefined;
+
+  const applyMaxTransferFromSource = () => {
+    if (!sourceAccount) return;
+    setTransferAmountBasis('source');
+    setAmount(formatAmountForNumberInput(sourceAccount.balance));
+  };
+
   return (
     <>
       <button
@@ -549,18 +575,46 @@ export default function CreateTransactionButton({
                         </span>
                       )}
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2">
                       <input
                         type="number"
                         inputMode="decimal"
                         step="0.01"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        placeholder="0.00"
-                        className="flex-1 min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        placeholder={sourceAccount ? 'Máximo saldo' : '0.00'}
+                        className="w-full min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                       />
-                      <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={applyMaxTransferFromSource}
+                          disabled={!sourceAccount || transferMaxFromSource <= 0}
+                          title={transferMaxBalanceTitle}
+                          className="shrink-0 px-3 py-2 rounded-lg text-sm font-medium border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/50 text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/40 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed"
+                        >
+                          Máximo saldo
+                        </button>
+                        <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
+                      </div>
                     </div>
+                    {sourceAccount && transferMaxFromSource > 0 && (
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                        Disponible en origen ({sourceAccount.currency}):{' '}
+                        <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+                          {transferMaxFromSource.toLocaleString('es-AR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                        {crossCurrencyTransfer && (
+                          <span className="block mt-0.5">
+                            &quot;Máximo saldo&quot; completa en moneda del origen; el destino se calcula con la
+                            cotización.
+                          </span>
+                        )}
+                      </p>
+                    )}
                   </div>
 
                   {crossCurrencyTransfer && transferArsReference && (

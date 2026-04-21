@@ -2,9 +2,21 @@
 
 Zarix es una app de finanzas personales para uso individual, enfocada en Argentina.
 
-## Que es la pagina
+> Control simple, rapido y visual de tu dinero en un solo lugar.
 
-La pagina web de Zarix te permite:
+## Indice
+
+- [Que es Zarix](#que-es-zarix)
+- [Secciones principales](#secciones-principales)
+- [Stack tecnologico](#stack-tecnologico)
+- [Arquitectura y flujo](#arquitectura-y-flujo)
+- [Instalacion local](#instalacion-local)
+- [Buenas practicas de seguridad](#buenas-practicas-de-seguridad)
+- [FAQ](#faq)
+
+## Que es Zarix
+
+La web de Zarix te permite:
 
 - ver tu patrimonio y saldos en un dashboard claro,
 - registrar y editar movimientos,
@@ -48,7 +60,96 @@ La pagina web de Zarix te permite:
 - Preferencias de usuario.
 - Importacion y exportacion de datos (CSV/JSON/backup).
 
-## Funcionalidad basica
+## Stack tecnologico
+
+- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts.
+- **Backend/Data**: Supabase (PostgreSQL + Auth + APIs).
+- **Automatizaciones**: Telegram Bot (Telegraf), scripts Node/TS.
+- **Integraciones**: cotizaciones y mercado (Yahoo Finance y fuentes externas).
+- **Validacion y estado**: Zod + Zustand.
+
+## Arquitectura y flujo
+
+### Vista general
+
+```mermaid
+flowchart LR
+    U[Usuario] --> W[Web App - Next.js]
+    U --> T[Bot Telegram]
+    W --> S[(Supabase / Postgres)]
+    T --> A[API interna]
+    A --> S
+    W --> M[Servicios de mercado]
+```
+
+### Flujo simplificado de un movimiento
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant UI as Interfaz Zarix
+    participant API as API/Server Actions
+    participant DB as Supabase Postgres
+
+    U->>UI: Carga gasto/ingreso
+    UI->>API: Envia datos validados
+    API->>DB: Inserta movimiento
+    DB-->>API: OK
+    API-->>UI: Estado actualizado
+    UI-->>U: Dashboard recalculado
+```
+
+### Mapa funcional rapido
+
+```text
+Zarix
+├── Dashboard
+├── Movimientos
+├── Cuentas y Tarjetas
+├── Inversiones
+├── Analisis
+└── Import / Export
+```
+
+## Instalacion local
+
+### 1) Requisitos
+
+- Node.js 18+
+- npm 9+
+- Proyecto Supabase configurado
+
+### 2) Levantar el proyecto
+
+```bash
+npm install
+npm run dev
+```
+
+### 3) Scripts utiles
+
+```bash
+npm run build            # build de produccion
+npm run lint             # chequeo de codigo
+npm run db:push          # aplica cambios de DB en Supabase
+npm run db:reset         # resetea DB local/sandbox
+npm run telegram:webhook # configura webhook de Telegram
+```
+
+## Buenas practicas de seguridad
+
+Para compartir este repositorio o mostrarlo publicamente sin comprometer tus datos:
+
+- No subir secretos a Git (`.env`, tokens, claves privadas, credenciales de bot).
+- Usar variables de entorno para keys y URLs sensibles.
+- Nunca hardcodear IDs de cuentas reales, usuarios reales ni movimientos reales.
+- Anonimizar cualquier CSV/JSON de ejemplo antes de compartirlo.
+- Mantener politicas de acceso en Supabase (Auth + RLS cuando aplique).
+- Revisar logs y scripts para evitar `console.log` con informacion sensible.
+
+> Recomendado: crear un `.env.example` con placeholders y sin valores reales.
+
+## Funcionalidad base
 
 - Registro manual en web.
 - Soporte de carga por bot de Telegram.
