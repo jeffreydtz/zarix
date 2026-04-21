@@ -245,6 +245,32 @@ CREATE INDEX idx_investments_type ON investments(type, is_active);
 CREATE INDEX idx_investments_ticker ON investments(ticker) WHERE ticker IS NOT NULL;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 7b. PORTFOLIO PERFORMANCE SNAPSHOTS (ROI / PnL diario, USD + blue)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE portfolio_performance_snapshots (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  snapshot_date DATE NOT NULL,
+  cost_basis_usd NUMERIC(20, 8) NOT NULL,
+  market_value_usd NUMERIC(20, 8) NOT NULL,
+  unrealized_pnl_usd NUMERIC(20, 8) NOT NULL,
+  roi_percent NUMERIC(14, 6) NOT NULL,
+  blue_ars_per_usd NUMERIC(20, 8) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT portfolio_snapshots_user_day UNIQUE (user_id, snapshot_date)
+);
+
+CREATE INDEX idx_portfolio_snapshots_user_day ON portfolio_performance_snapshots(user_id, snapshot_date DESC);
+
+ALTER TABLE portfolio_performance_snapshots ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY portfolio_performance_snapshots_all
+  ON portfolio_performance_snapshots
+  FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 8. BOT SESSIONS (contexto de conversación con IA)
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CREATE TABLE bot_sessions (

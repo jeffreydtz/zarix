@@ -15,7 +15,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const portfolio = await investmentsService.getPortfolioSummary(user.id);
+    const live = req.nextUrl.searchParams.get('live') === '1';
+    const portfolio = await investmentsService.getPortfolioSummary(user.id, {
+      forceRefreshQuotes: live,
+    });
     return NextResponse.json(portfolio);
   } catch (error: any) {
     console.error('Portfolio GET error:', error);

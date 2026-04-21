@@ -59,6 +59,11 @@ export interface Database {
         Insert: Omit<Investment, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<Investment, 'id' | 'created_at' | 'updated_at'>>;
       };
+      portfolio_performance_snapshots: {
+        Row: PortfolioPerformanceSnapshot;
+        Insert: Omit<PortfolioPerformanceSnapshot, 'id' | 'created_at'>;
+        Update: Partial<Omit<PortfolioPerformanceSnapshot, 'id' | 'created_at'>>;
+      };
       recurring_rules: {
         Row: RecurringRule;
         Insert: Omit<RecurringRule, 'id' | 'created_at'>;
@@ -194,6 +199,18 @@ export interface Investment {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface PortfolioPerformanceSnapshot {
+  id: string;
+  user_id: string;
+  snapshot_date: string;
+  cost_basis_usd: number;
+  market_value_usd: number;
+  unrealized_pnl_usd: number;
+  roi_percent: number;
+  blue_ars_per_usd: number;
+  created_at: string;
 }
 
 export interface RecurringRule {

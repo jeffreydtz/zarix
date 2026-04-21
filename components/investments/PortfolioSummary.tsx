@@ -4,6 +4,9 @@ interface PortfolioSummaryProps {
   totalValue: number;
   totalPnL: number;
   totalPnLPercent: number;
+  blueArsPerUsd: number;
+  totalValueArsBlue: number;
+  totalPnLArsBlue: number;
   byType: Array<{
     type: string;
     count: number;
@@ -30,6 +33,9 @@ export default function PortfolioSummary({
   totalValue,
   totalPnL,
   totalPnLPercent,
+  blueArsPerUsd,
+  totalValueArsBlue,
+  totalPnLArsBlue,
   byType,
 }: PortfolioSummaryProps) {
   return (
@@ -38,8 +44,17 @@ export default function PortfolioSummary({
         <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
           Valor total del portafolio
         </h2>
-        <div className="text-3xl font-bold text-slate-900 dark:text-slate-50 tabular-nums mb-2">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+          Totales en <strong>USD equivalente</strong>: el peso se convierte con dólar blue (venta{' '}
+          {blueArsPerUsd > 0 ? `~$${blueArsPerUsd.toLocaleString('es-AR', { maximumFractionDigits: 0 })}` : '—'} ARS
+          por USD) para unificar con acciones USA y crypto.
+        </p>
+        <div className="text-3xl font-bold text-slate-900 dark:text-slate-50 tabular-nums mb-1">
           USD {totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        </div>
+        <div className="text-sm text-slate-600 dark:text-slate-300 tabular-nums mb-3">
+          ≈ ARS{' '}
+          {totalValueArsBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })} (referencia blue)
         </div>
         <div
           className={`text-lg font-medium tabular-nums ${
@@ -51,6 +66,10 @@ export default function PortfolioSummary({
           <span className="text-slate-500 dark:text-slate-400 font-normal">
             ({totalPnLPercent.toFixed(2)}%)
           </span>
+        </div>
+        <div className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+          PnL en ARS blue: {totalPnL >= 0 ? '+' : ''}
+          {totalPnLArsBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
         </div>
       </div>
 

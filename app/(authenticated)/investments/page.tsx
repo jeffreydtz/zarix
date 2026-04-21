@@ -2,10 +2,10 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { investmentsService } from '@/lib/services/investments';
 import { accountsService } from '@/lib/services/accounts';
-import PortfolioSummary from '@/components/investments/PortfolioSummary';
-import InvestmentsList from '@/components/investments/InvestmentsList';
 import MarketDataWidget from '@/components/investments/MarketDataWidget';
 import InvestmentAccountsList from '@/components/investments/InvestmentAccountsList';
+import InvestmentsWorkspace from '@/components/investments/InvestmentsWorkspace';
+import type { Account } from '@/types/database';
 
 const INVESTMENT_LABELS: Record<string, string> = {
   plazo_fijo: 'Plazo Fijo',
@@ -32,9 +32,13 @@ export default async function InvestmentsPage() {
       investmentsService.getPortfolioSummary(user.id).catch(() => ({
         investments: [],
         totalCurrentValue: 0,
-        totalCost: 0,
+        totalPurchaseValue: 0,
         totalPnL: 0,
         totalPnLPercent: 0,
+        blueArsPerUsd: 1,
+        totalCurrentValueArsBlue: 0,
+        totalPurchaseValueArsBlue: 0,
+        totalPnLArsBlue: 0,
         byType: [],
       })),
       accountsService
@@ -63,7 +67,8 @@ export default async function InvestmentsPage() {
               Inversiones
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
-              Portafolio, vencimientos y referencia de mercado (Nasdaq, MERVAL y cripto).
+              Registrá cuánto tenés y en qué; buscá tickers, verificá cotizaciones y el portafolio se actualiza solo cada
+              pocos minutos. Referencia de mercado abajo (Nasdaq, MERVAL, cripto).
             </p>
           </header>
 
@@ -71,11 +76,9 @@ export default async function InvestmentsPage() {
             <InvestmentAccountsList accounts={investmentAccounts as any} />
           )}
 
-          <PortfolioSummary
-            totalValue={portfolio.totalCurrentValue}
-            totalPnL={portfolio.totalPnL}
-            totalPnLPercent={portfolio.totalPnLPercent}
-            byType={portfolio.byType}
+          <InvestmentsWorkspace
+            initialPortfolio={portfolio}
+            investmentAccounts={investmentAccounts as Account[]}
           />
 
           {/* Live market data */}
@@ -144,10 +147,6 @@ export default async function InvestmentsPage() {
             </div>
           )}
 
-          <section className="space-y-3">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Posiciones</h2>
-            <InvestmentsList investments={portfolio.investments} />
-          </section>
         </div>
       </div>
     );
