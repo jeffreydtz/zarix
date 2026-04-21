@@ -675,7 +675,7 @@ bot.on(message('text'), async (ctx) => {
 
   const offTopicKeywords = [
     'chiste', 'poema', 'canción', 'receta', 'clima', 'tiempo',
-    'horóscopo', 'partido', 'fútbol', 'película', 'serie',
+    'horóscopo', 'serie',
     'traduci', 'traducir', 'código', 'programar', 'html', 'javascript',
   ];
 
