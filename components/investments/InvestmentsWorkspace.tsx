@@ -44,16 +44,6 @@ export default function InvestmentsWorkspace({
     }
   }, []);
 
-  useEffect(() => {
-    const t = setTimeout(() => void refreshLive(), 600);
-    return () => clearTimeout(t);
-  }, [refreshLive]);
-
-  useEffect(() => {
-    const id = setInterval(() => void refreshLive(), 120_000);
-    return () => clearInterval(id);
-  }, [refreshLive]);
-
   const onPortfolioChanged = useCallback(() => {
     void refreshLive();
     router.refresh();
@@ -63,19 +53,24 @@ export default function InvestmentsWorkspace({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <AddInvestmentPanel investmentAccounts={investmentAccounts} onCreated={onPortfolioChanged} />
-        <div className="text-xs text-slate-500 dark:text-slate-400 sm:text-right tabular-nums">
-          {liveLoading ? (
-            <span>Actualizando cotizaciones…</span>
-          ) : lastLiveAt ? (
+        <div className="flex flex-col items-stretch sm:items-end gap-2 text-xs text-slate-500 dark:text-slate-400 sm:text-right tabular-nums">
+          <button
+            type="button"
+            onClick={() => void refreshLive()}
+            disabled={liveLoading}
+            className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/80 disabled:opacity-50 transition-colors"
+          >
+            {liveLoading ? 'Actualizando…' : 'Actualizar cotizaciones'}
+          </button>
+          {lastLiveAt ? (
             <span>
-              Cotizaciones en vivo:{' '}
+              Última actualización en vivo:{' '}
               {lastLiveAt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
-              <span className="block text-slate-400 dark:text-slate-500 mt-0.5">
-                Próxima actualización automática en ~2 min
-              </span>
             </span>
           ) : (
-            <span>Sincronizando precios…</span>
+            <span className="text-slate-400 dark:text-slate-500">
+              Los datos iniciales vienen del servidor; tocá el botón para forzar cotizaciones recientes.
+            </span>
           )}
         </div>
       </div>
