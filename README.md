@@ -146,6 +146,8 @@ Para compartir este repositorio o mostrarlo publicamente sin comprometer tus dat
 - Anonimizar cualquier CSV/JSON de ejemplo antes de compartirlo.
 - Mantener politicas de acceso en Supabase (Auth + RLS cuando aplique).
 - Revisar logs y scripts para evitar `console.log` con informacion sensible.
+- Definir `CRON_SECRET` en produccion: sin valor, los endpoints `/api/cron/*` quedan cerrados (no usar `Bearer undefined`).
+- El login de desarrollo (`/api/auth/dev-login`) en produccion responde 404 salvo que configures explicitamente `ALLOW_DEV_LOGIN=true` (solo si lo necesitas y con `DEV_LOGIN_SECRET` fuerte).
 
 > Recomendado: crear un `.env.example` con placeholders y sin valores reales.
 

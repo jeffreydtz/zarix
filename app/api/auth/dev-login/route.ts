@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { timingSafeStringEqual } from '@/lib/secure-compare';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
+    if (
+      process.env.NODE_ENV === 'production' &&
+      process.env.ALLOW_DEV_LOGIN !== 'true'
+    ) {
+      return new NextResponse(null, { status: 404 });
+    }
+
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
     const secret = searchParams.get('secret');
@@ -16,7 +24,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    if (secret !== process.env.DEV_LOGIN_SECRET) {
+    if (!timingSafeStringEqual(secret, process.env.DEV_LOGIN_SECRET)) {
       return NextResponse.json(
         { error: 'Invalid secret' },
         { status: 401 }

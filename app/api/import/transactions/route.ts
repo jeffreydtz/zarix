@@ -6,6 +6,8 @@ import { transactionsService } from '@/lib/services/transactions';
 import type { ImportSkippedDetail } from '@/types/import';
 
 const MAX_SKIPPED_DETAILS = 250;
+/** Límite de tamaño de archivo de import (mitiga DoS y reduce superficie de bugs en parsers). */
+const MAX_IMPORT_FILE_BYTES = 12 * 1024 * 1024;
 
 interface ImportedTransaction {
   date: string;
@@ -799,6 +801,13 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    if (file.size > MAX_IMPORT_FILE_BYTES) {
+      return NextResponse.json(
+        { error: `El archivo supera el máximo permitido (${MAX_IMPORT_FILE_BYTES / (1024 * 1024)} MB)` },
+        { status: 413 }
+      );
     }
 
     const rawDateFmt = (formData.get('dateFormat') as string) || 'dmy';

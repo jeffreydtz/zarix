@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServiceClientSync } from '@/lib/supabase/server';
+import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import type { StockQuote } from '@/lib/market-data-types';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { fetchYahooStockQuotesMap, orderedStockQuotesFromMap } from '@/lib/yahoo-finance-quotes';
@@ -202,6 +202,14 @@ function jsonResponse(
 }
 
 export async function GET(request: Request) {
+  const supabaseAuth = await createClient();
+  const {
+    data: { user },
+  } = await supabaseAuth.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const forceRefresh = searchParams.get('refresh') === '1';
 

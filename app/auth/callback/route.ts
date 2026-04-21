@@ -1,36 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getEmailRedirectOrigin } from '@/lib/auth/email-redirect';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
   const code = requestUrl.searchParams.get('code');
-  const origin = requestUrl.origin;
+  /** Origen confiable (env) para evitar open redirects por cabecera `Host` en despliegues mal configurados. */
+  const siteOrigin = getEmailRedirectOrigin(req);
 
-  console.log('🔍 Auth callback received:', { code: code?.substring(0, 10), origin });
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Auth callback:', { hasCode: Boolean(code) });
+  }
 
   if (code) {
     try {
       const supabase = await createClient();
-      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-      
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+
       if (error) {
-        console.error('❌ Error exchanging code:', error);
-        return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('exchangeCodeForSession:', error);
+        }
+        return NextResponse.redirect(`${siteOrigin}/login?error=${encodeURIComponent(error.message)}`);
       }
 
-      console.log('✅ Session created for user:', data.user?.email);
-      
-      // Redirect to dashboard
-      return NextResponse.redirect(`${origin}/dashboard`);
-    } catch (err: any) {
-      console.error('❌ Unexpected error:', err);
-      return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(err.message)}`);
+      return NextResponse.redirect(`${siteOrigin}/dashboard`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Auth callback error:', err);
+      }
+      return NextResponse.redirect(`${siteOrigin}/login?error=${encodeURIComponent(message)}`);
     }
   }
 
-  // No code provided
-  console.warn('⚠️ No code in callback');
-  return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent('No authorization code provided')}`);
+  return NextResponse.redirect(
+    `${siteOrigin}/login?error=${encodeURIComponent('No authorization code provided')}`
+  );
 }
