@@ -17,6 +17,7 @@ import {
 } from '@/lib/offline-reference-cache';
 import type { AccountType } from '@/types/database';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
+import InternalAiChat from '@/components/dashboard/InternalAiChat';
 
 interface Account {
   id: string;
@@ -40,6 +41,7 @@ export default function FloatingAddButton() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'manual' | 'chatbot'>('manual');
 
   const [type, setType] = useState<'expense' | 'income'>('expense');
   const [amount, setAmount] = useState('');
@@ -84,6 +86,7 @@ export default function FloatingAddButton() {
 
   const handleClose = () => {
     setIsOpen(false);
+    setActiveTab('manual');
     resetForm();
   };
 
@@ -209,7 +212,41 @@ export default function FloatingAddButton() {
               </button>
             </div>
 
-            {dataLoading ? (
+            <div className="mb-4 rounded-xl bg-slate-100 p-1 dark:bg-slate-700/60">
+              <div className="grid grid-cols-2 gap-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('manual')}
+                  className={`rounded-lg py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'manual'
+                      ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-800 dark:text-slate-100'
+                      : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  Manual
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('chatbot')}
+                  className={`rounded-lg py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'chatbot'
+                      ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-800 dark:text-slate-100'
+                      : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  Chatbot
+                </button>
+              </div>
+            </div>
+
+            {activeTab === 'chatbot' ? (
+              <div className="space-y-3">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Escribí algo como: &quot;gasté 5000 en super&quot; o &quot;me entraron 800000 de sueldo&quot;.
+                </p>
+                <InternalAiChat embedded />
+              </div>
+            ) : dataLoading ? (
               <div className="space-y-3">
                 {[...Array(4)].map((_, i) => (
                   <div key={i} className="h-11 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />

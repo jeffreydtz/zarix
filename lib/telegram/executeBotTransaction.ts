@@ -3,6 +3,7 @@ import { parseBotTransactionDateInput } from '@/lib/transaction-date';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
+import type { ExecutedTransactionSummary } from '@/types/internal-ai-chat';
 
 export type BotTxPayload = {
   type?: string;
@@ -18,7 +19,7 @@ export type BotTxPayload = {
 };
 
 export type ExecuteBotTxResult =
-  | { kind: 'success'; reply: string }
+  | { kind: 'success'; reply: string; executed?: ExecutedTransactionSummary }
   | { kind: 'abort'; reply: string };
 
 function normalizeTxType(raw?: string): 'expense' | 'income' | 'transfer' {
@@ -156,7 +157,7 @@ export async function executeBotTransaction(
     parseBotTransactionDateInput(txData.date);
 
   try {
-    await transactionsService.create({
+    const createdTransaction = await transactionsService.create({
       userId,
       type: txType,
       accountId,
@@ -182,7 +183,18 @@ export async function executeBotTransaction(
       responseWithAccount += conversionNote;
     }
 
-    return { kind: 'success', reply: responseWithAccount };
+    return {
+      kind: 'success',
+      reply: responseWithAccount,
+      executed: {
+        id: createdTransaction.id,
+        summary: responseWithAccount,
+        amount: finalAmount,
+        currency: finalCurrency,
+        accountName,
+        categoryName: txData.category,
+      },
+    };
   } catch (txError: unknown) {
     console.error('Transaction error:', txError);
     const err = txError as { code?: string; message?: string };

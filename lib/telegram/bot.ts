@@ -3,10 +3,8 @@ import { Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
 import {
   getGeminiForUser,
-  getTierForRequest,
   GeminiMissingKeyError,
 } from '@/lib/ai/gemini';
-import { buildBotSystemPrompt } from '@/lib/ai/prompts';
 import { transactionsService } from '@/lib/services/transactions';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
@@ -19,31 +17,16 @@ import {
   storedTurnsToGeminiHistory,
 } from '@/lib/services/botSessions';
 import { subscriptionsService } from '@/lib/services/subscriptions';
-import { executeBotTransaction } from '@/lib/telegram/executeBotTransaction';
+import {
+  processInternalAiChatMessage,
+} from '@/lib/services/internal-ai-chat';
 import { parseBotTransactionDateInput } from '@/lib/transaction-date';
 import { buildTelegramSummaryScheduleLines } from '@/lib/notification-schedule';
 import type { SubscriptionStatus } from '@/types/database';
+import type { InternalAiChatHistoryItem } from '@/types/internal-ai-chat';
 
 interface BotContext extends Context {
   userId?: string;
-}
-
-const MAX_BATCH_TRANSACTIONS = 12;
-
-/** Mensajes largos o con varios montos: modelo full + más tokens. */
-function preferFullTierForMessage(message: string): boolean {
-  const newlines = (message.match(/\n/g) || []).length;
-  if (message.length > 400) return true;
-  if (newlines >= 2) return true;
-  if (/^\s*[-•*]\s/m.test(message) || /;\s/.test(message)) return true;
-  const nums = message.match(/\d[\d.,]*/g);
-  if (nums && nums.length >= 4) return true;
-  return false;
-}
-
-function parseModelJson(aiResponse: string): unknown {
-  const cleaned = aiResponse.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
-  return JSON.parse(cleaned);
 }
 
 const GEMINI_SETUP_MSG =
@@ -119,6 +102,16 @@ async function getFinancialContext(userId: string): Promise<FinancialContext> {
     categories: categories.data,
     monthSummary,
   };
+}
+
+function toInternalHistoryItems(history: Array<{ role?: string; parts?: Array<{ text?: string }> }>): InternalAiChatHistoryItem[] {
+  return history
+    .map((h) => {
+      const text = h.parts?.map((p) => p.text || '').join(' ').trim() || '';
+      const role = h.role === 'model' ? 'model' : 'user';
+      return text ? { role, text } : null;
+    })
+    .filter((item): item is InternalAiChatHistoryItem => item !== null);
 }
 
 function registerBotHandlers(bot: Telegraf) {
@@ -556,86 +549,21 @@ bot.on(message('voice'), async (ctx) => {
     await ctx.reply(`🎤 Escuché: _"${transcribed}"_`, { parse_mode: 'Markdown' });
 
     const financialContext = await getFinancialContext(user.id);
-    const systemPrompt = buildBotSystemPrompt(financialContext);
     const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
-    const history = storedTurnsToGeminiHistory(storedTurns);
-    const tier = preferFullTierForMessage(transcribed)
-      ? 'full'
-      : getTierForRequest(transcribed, false);
-
-    let aiResponse = '';
+    const history = toInternalHistoryItems(storedTurnsToGeminiHistory(storedTurns));
+    let rawResponse = '';
     try {
-      aiResponse = await gVoice.chat(transcribed, {
-        tier,
-        systemInstruction: systemPrompt,
+      const result = await processInternalAiChatMessage({
+        userId: user.id,
+        message: transcribed,
         history,
-        maxTokens: 2048,
+        financialContext,
       });
-
-      let parsedResponse: {
-        action: string;
-        transaction?: Record<string, unknown>;
-        transactions?: Record<string, unknown>[];
-        response: string;
-      };
-      try {
-        parsedResponse = parseModelJson(aiResponse) as typeof parsedResponse;
-      } catch {
-        return ctx.reply(aiResponse);
-      }
-
-      if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
-        const r = await executeBotTransaction(user.id, financialContext, parsedResponse.transaction, {
-          summaryResponse: parsedResponse.response,
-        });
-        if (r.kind === 'abort') return ctx.reply(r.reply);
-        return ctx.reply(`✅ ${r.reply}`);
-      }
-
-      if (
-        parsedResponse.action === 'create_transactions' &&
-        Array.isArray(parsedResponse.transactions)
-      ) {
-        const txs = parsedResponse.transactions
-          .filter((t) => t && typeof t.amount === 'number' && (t.amount as number) > 0)
-          .slice(0, MAX_BATCH_TRANSACTIONS);
-        if (txs.length === 0) {
-          return ctx.reply(
-            parsedResponse.response || 'No encontré montos válidos en lo que dijiste.'
-          );
-        }
-        const lines: string[] = [];
-        for (const tx of txs) {
-          const r = await executeBotTransaction(user.id, financialContext, tx, {});
-          if (r.kind === 'abort') return ctx.reply(r.reply);
-          lines.push(r.reply);
-        }
-        return ctx.reply(`✅ ${parsedResponse.response}\n\n${lines.join('\n')}`);
-      }
-
-      if (parsedResponse.action === 'create_account' && parsedResponse.transaction) {
-        const accData = parsedResponse.transaction;
-        try {
-          await accountsService.create({
-            userId: user.id,
-            name: (accData.account || accData.name) as string,
-            type: (accData.type as string) || 'cash',
-            currency: (accData.currency as string) || 'ARS',
-            initialBalance: 0,
-            icon: accData.type === 'bank' ? '🏦' : '💵',
-          });
-          return ctx.reply(
-            `Listo! Creé la cuenta "${accData.account || accData.name}". Ahora podés usarla para registrar gastos.`
-          );
-        } catch {
-          return ctx.reply('No pude crear la cuenta. ¿Podés intentar de nuevo?');
-        }
-      }
-
-      return ctx.reply(parsedResponse.response);
+      rawResponse = result.raw_response || '';
+      return ctx.reply(result.assistant_message);
     } finally {
-      if (aiResponse) {
-        await appendBotTurn(user.id, ctx.chat.id, transcribed, aiResponse).catch(() => {});
+      if (rawResponse) {
+        await appendBotTurn(user.id, ctx.chat.id, transcribed, rawResponse).catch(() => {});
       }
     }
   } catch (error) {
@@ -712,9 +640,8 @@ bot.on(message('text'), async (ctx) => {
   try {
     const financialContext = await getFinancialContext(user.id);
 
-    let gText;
     try {
-      gText = await getGeminiForUser(user.id);
+      await getGeminiForUser(user.id);
     } catch (e) {
       if (e instanceof GeminiMissingKeyError) {
         return ctx.reply(GEMINI_SETUP_MSG);
@@ -722,94 +649,21 @@ bot.on(message('text'), async (ctx) => {
       throw e;
     }
 
-    const systemPrompt = buildBotSystemPrompt(financialContext);
-
     const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
-    const history = storedTurnsToGeminiHistory(storedTurns);
-    const tier = preferFullTierForMessage(userMessage)
-      ? 'full'
-      : getTierForRequest(userMessage, false);
-
-    let aiResponse = '';
+    const history = toInternalHistoryItems(storedTurnsToGeminiHistory(storedTurns));
+    let rawResponse = '';
     try {
-      aiResponse = await gText.chat(userMessage, {
-        tier,
-        systemInstruction: systemPrompt,
+      const result = await processInternalAiChatMessage({
+        userId: user.id,
+        message: userMessage,
         history,
-        maxTokens: 2048,
+        financialContext,
       });
-
-      console.log('[BOT] AI Response:', aiResponse.substring(0, 200));
-
-      let parsedResponse: {
-        action: string;
-        transaction?: Record<string, unknown>;
-        transactions?: Record<string, unknown>[];
-        response: string;
-      };
-
-      try {
-        parsedResponse = parseModelJson(aiResponse) as typeof parsedResponse;
-        console.log('[BOT] Parsed action:', parsedResponse.action);
-      } catch (parseError) {
-        console.error('[BOT] JSON parse error:', parseError);
-        return ctx.reply(aiResponse);
-      }
-
-      if (parsedResponse.action === 'create_transaction' && parsedResponse.transaction) {
-        const r = await executeBotTransaction(user.id, financialContext, parsedResponse.transaction, {
-          summaryResponse: parsedResponse.response,
-        });
-        if (r.kind === 'abort') return ctx.reply(r.reply);
-        return ctx.reply(r.reply);
-      }
-
-      if (
-        parsedResponse.action === 'create_transactions' &&
-        Array.isArray(parsedResponse.transactions)
-      ) {
-        const txs = parsedResponse.transactions
-          .filter((t) => t && typeof t.amount === 'number' && (t.amount as number) > 0)
-          .slice(0, MAX_BATCH_TRANSACTIONS);
-        if (txs.length === 0) {
-          return ctx.reply(
-            parsedResponse.response || 'No encontré montos válidos en tu mensaje.'
-          );
-        }
-        const lines: string[] = [];
-        for (const tx of txs) {
-          const r = await executeBotTransaction(user.id, financialContext, tx, {});
-          if (r.kind === 'abort') return ctx.reply(r.reply);
-          lines.push(r.reply);
-        }
-        return ctx.reply(`✅ ${parsedResponse.response}\n\n${lines.join('\n')}`);
-      }
-
-      if (parsedResponse.action === 'create_account' && parsedResponse.transaction) {
-        const accData = parsedResponse.transaction;
-
-        try {
-          await accountsService.create({
-            userId: user.id,
-            name: (accData.account || accData.name) as string,
-            type: (accData.type as string) || 'cash',
-            currency: (accData.currency as string) || 'ARS',
-            initialBalance: 0,
-            icon: accData.type === 'bank' ? '🏦' : '💵',
-          });
-
-          return ctx.reply(
-            `Listo! Creé la cuenta "${accData.account || accData.name}". Ahora podés usarla para registrar gastos.`
-          );
-        } catch {
-          return ctx.reply('No pude crear la cuenta. ¿Podés intentar de nuevo?');
-        }
-      }
-
-      return ctx.reply(parsedResponse.response);
+      rawResponse = result.raw_response || '';
+      return ctx.reply(result.assistant_message);
     } finally {
-      if (aiResponse) {
-        await appendBotTurn(user.id, ctx.chat.id, userMessage, aiResponse).catch(() => {});
+      if (rawResponse) {
+        await appendBotTurn(user.id, ctx.chat.id, userMessage, rawResponse).catch(() => {});
       }
     }
   } catch (error: any) {

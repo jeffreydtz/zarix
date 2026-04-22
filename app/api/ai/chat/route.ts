@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import {
-  getGeminiForUser,
-  getTierForRequest,
-  GeminiMissingKeyError,
-} from '@/lib/ai/gemini';
-import { buildBotSystemPrompt } from '@/lib/ai/prompts';
+import { GeminiMissingKeyError } from '@/lib/ai/gemini';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import {
   subscriptionsService,
   SubscriptionAccessError,
 } from '@/lib/services/subscriptions';
+import { processInternalAiChatMessage } from '@/lib/services/internal-ai-chat';
+import type {
+  InternalAiChatErrorResponse,
+  InternalAiChatRequest,
+  InternalAiChatSuccessResponse,
+} from '@/types/internal-ai-chat';
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,10 +27,10 @@ export async function POST(req: NextRequest) {
 
     await subscriptionsService.ensureOrchestratorAccess(user.id);
 
-    const body = await req.json();
+    const body = (await req.json()) as InternalAiChatRequest;
     const { message, history } = body;
 
-    if (!message) {
+    if (!message || !message.trim()) {
       return NextResponse.json({ error: 'Message required' }, { status: 400 });
     }
 
@@ -44,38 +45,40 @@ export async function POST(req: NextRequest) {
       throw new Error('Error loading context');
     }
 
-    const systemPrompt = buildBotSystemPrompt({
+    const financialContext = {
       user: userProfile.data,
       accounts,
       categories: categories.data,
       monthSummary,
+    };
+
+    const response: InternalAiChatSuccessResponse = await processInternalAiChatMessage({
+      userId: user.id,
+      message: message.trim(),
+      history,
+      financialContext,
     });
-
-    const tier = getTierForRequest(message, false);
-
-    const gemini = await getGeminiForUser(user.id);
-    const response = await gemini.chat(message, {
-      tier,
-      systemInstruction: systemPrompt,
-      history: history || [],
-      maxTokens: 2048,
-    });
-
-    return NextResponse.json({ response, tier });
+    return NextResponse.json(response);
   } catch (error) {
     if (error instanceof SubscriptionAccessError) {
+      const payload: InternalAiChatErrorResponse = {
+        error: error.message,
+        code: 'subscription_required',
+        status: error.status,
+      };
       return NextResponse.json(
-        { error: error.message, code: 'subscription_required', status: error.status },
+        payload,
         { status: 403 }
       );
     }
     if (error instanceof GeminiMissingKeyError) {
+      const payload: InternalAiChatErrorResponse = {
+        error:
+          'Configurá tu API Key de Google Gemini en Configuración (o la del servidor no está definida).',
+        code: 'missing_gemini_key',
+      };
       return NextResponse.json(
-        {
-          error:
-            'Configurá tu API Key de Google Gemini en Configuración (o la del servidor no está definida).',
-          code: 'missing_gemini_key',
-        },
+        payload,
         { status: 503 }
       );
     }
