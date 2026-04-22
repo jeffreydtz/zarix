@@ -226,6 +226,10 @@ export interface RecurringRule {
   start_date: string;
   end_date: string | null;
   last_executed_date: string | null;
+  is_subscription: boolean;
+  subscription_name: string | null;
+  subscription_plan: string | null;
+  notification_enabled: boolean;
   is_active: boolean;
   created_at: string;
 }

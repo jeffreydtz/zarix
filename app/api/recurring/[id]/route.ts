@@ -17,6 +17,9 @@ export async function PUT(
     if (body.amount !== undefined) updates.amount = body.amount;
     if (body.description !== undefined) updates.description = body.description;
     if (body.endDate !== undefined) updates.end_date = body.endDate;
+    if (body.notificationEnabled !== undefined) updates.notification_enabled = body.notificationEnabled;
+    if (body.subscriptionName !== undefined) updates.subscription_name = body.subscriptionName;
+    if (body.subscriptionPlan !== undefined) updates.subscription_plan = body.subscriptionPlan;
 
     const { data, error } = await supabase
       .from('recurring_rules')

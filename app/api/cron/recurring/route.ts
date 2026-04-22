@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
         .eq('id', rule.user_id)
         .single();
 
-      if (user?.telegram_chat_id) {
+      if (rule.notification_enabled && user?.telegram_chat_id) {
         const typeEmoji = rule.type === 'expense' ? '💸' : '💰';
         const typeLabel = rule.type === 'expense' ? 'Gasto' : 'Ingreso';
         const freqLabel = {

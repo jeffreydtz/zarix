@@ -166,6 +166,10 @@ CREATE TABLE recurring_rules (
   currency TEXT NOT NULL,
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
   description TEXT NOT NULL,
+  is_subscription BOOLEAN NOT NULL DEFAULT FALSE,
+  subscription_name TEXT,
+  subscription_plan TEXT,
+  notification_enabled BOOLEAN NOT NULL DEFAULT TRUE,
   frequency recurrence_frequency NOT NULL,
   start_date DATE NOT NULL,
   end_date DATE,
@@ -175,6 +179,7 @@ CREATE TABLE recurring_rules (
 );
 
 CREATE INDEX idx_recurring_user ON recurring_rules(user_id, is_active);
+CREATE INDEX idx_recurring_subscriptions ON recurring_rules(user_id, is_subscription, is_active);
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 6. BUDGETS (presupuestos mensuales)

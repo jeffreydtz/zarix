@@ -29,6 +29,15 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
+    const amount = Number(body.amount);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json({ error: 'Monto inválido' }, { status: 400 });
+    }
+
+    if (!body.accountId || !body.type || !body.frequency || !body.startDate) {
+      return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
+    }
 
     const { data, error } = await supabase
       .from('recurring_rules')
@@ -36,10 +45,14 @@ export async function POST(req: NextRequest) {
         user_id: user.id,
         account_id: body.accountId,
         type: body.type,
-        amount: body.amount,
+        amount,
         currency: body.currency,
         category_id: body.categoryId || null,
         description: body.description,
+        is_subscription: Boolean(body.isSubscription),
+        subscription_name: body.subscriptionName || null,
+        subscription_plan: body.subscriptionPlan || null,
+        notification_enabled: body.notificationEnabled !== false,
         frequency: body.frequency,
         start_date: body.startDate,
         end_date: body.endDate || null,
