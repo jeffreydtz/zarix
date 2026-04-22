@@ -102,7 +102,7 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
   };
 
   return (
-    <section className={`${embedded ? '' : 'card'} space-y-3 ${className}`.trim()}>
+    <section className={`${embedded ? '' : 'card'} ${embedded ? 'space-y-2.5' : 'space-y-3'} ${className}`.trim()}>
       {!embedded && (
         <div>
           <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
@@ -125,7 +125,13 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
         </div>
       )}
 
-      <div className="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
+      <div
+        className={`overflow-y-auto rounded-xl p-3 ${
+          embedded
+            ? 'max-h-60 border border-slate-700/70 bg-slate-900/60'
+            : 'max-h-80 border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900'
+        }`}
+      >
         <div className="space-y-3">
           {messages.map((message) => (
             <div
@@ -162,18 +168,22 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
         </div>
       )}
 
-      <form onSubmit={sendMessage} className="flex gap-2">
+      <form onSubmit={sendMessage} className="flex items-stretch gap-2">
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Escribí un movimiento..."
-          className="input flex-1"
+          className={`flex-1 rounded-xl border px-4 py-2.5 text-sm outline-none transition focus:ring-2 ${
+            embedded
+              ? 'border-slate-600 bg-slate-900 text-slate-100 placeholder:text-slate-400 focus:ring-emerald-500'
+              : 'border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 focus:ring-emerald-500'
+          }`}
           disabled={loading || blockedStatus !== null}
         />
         <button
           type="submit"
           disabled={!canSend}
-          className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500"
         >
           Enviar
         </button>

@@ -190,7 +190,7 @@ export default function FloatingAddButton() {
           className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-4 z-[60] overscroll-contain"
           onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
         >
-          <div className="bg-white dark:bg-slate-800 rounded-t-3xl sm:rounded-2xl max-w-md w-full p-6 max-h-[min(92dvh,900px)] overflow-y-auto overscroll-contain shadow-2xl pb-[env(safe-area-inset-bottom,0px)]">
+          <div className="bg-white dark:bg-slate-800 rounded-t-3xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 max-h-[min(92dvh,900px)] overflow-y-auto overscroll-contain shadow-2xl border border-slate-200/80 dark:border-slate-700 pb-[env(safe-area-inset-bottom,0px)]">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
@@ -240,8 +240,8 @@ export default function FloatingAddButton() {
             </div>
 
             {activeTab === 'chatbot' ? (
-              <div className="space-y-3">
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+              <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 dark:border-slate-700 dark:bg-slate-900/40">
+                <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
                   Escribí algo como: &quot;gasté 5000 en super&quot; o &quot;me entraron 800000 de sueldo&quot;.
                 </p>
                 <InternalAiChat embedded />
