@@ -141,7 +141,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                   onClick={() => setEditIconMode('emoji')}
                   className={`px-2 py-1 rounded text-xs border ${
                     editIconMode === 'emoji'
-                      ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                      ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
                       : 'border-gray-200 dark:border-gray-700'
                   }`}
                 >
@@ -152,7 +152,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                   onClick={() => setEditIconMode('symbol')}
                   className={`px-2 py-1 rounded text-xs border ${
                     editIconMode === 'symbol'
-                      ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                      ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
                       : 'border-gray-200 dark:border-gray-700'
                   }`}
                 >
@@ -167,7 +167,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                       key={icon}
                       onClick={() => setEditIcon(icon)}
                       className={`text-xl p-1 rounded ${
-                        editIcon === icon ? 'bg-blue-100 dark:bg-blue-900' : ''
+                        editIcon === icon ? 'bg-emerald-100 dark:bg-emerald-900' : ''
                       }`}
                     >
                       {icon}
@@ -182,7 +182,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                         key={value}
                         onClick={() => setEditIcon(value)}
                         className={`p-2 rounded flex items-center justify-center ${
-                          editIcon === value ? 'bg-blue-100 dark:bg-blue-900' : ''
+                          editIcon === value ? 'bg-emerald-100 dark:bg-emerald-900' : ''
                         }`}
                       >
                         <CategoryIcon icon={value} className="w-4 h-4" />
@@ -251,7 +251,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
               <>
                 <button
                   onClick={() => handleEdit(category)}
-                  className="text-blue-600 hover:text-blue-700 px-3 py-1 text-sm font-medium"
+                  className="text-emerald-600 hover:text-emerald-700 px-3 py-1 text-sm font-medium"
                 >
                   Editar
                 </button>

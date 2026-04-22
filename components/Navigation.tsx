@@ -62,7 +62,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
   return (
     <>
       {/* ——— Mobile: barra superior compacta ——— */}
-      <header className="md:hidden shrink-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 pt-[env(safe-area-inset-top,0px)]">
+      <header className="md:hidden shrink-0 z-40 bg-white/90 dark:bg-[#06070A]/90 backdrop-blur-lg border-b border-slate-200 dark:border-[#232733] pt-[env(safe-area-inset-top,0px)]">
         <div className="flex items-center justify-between h-14 px-4">
           <Link
             href="/dashboard"
@@ -80,14 +80,14 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                 unoptimized
               />
             </div>
-            <span className="font-bold text-lg text-blue-600 dark:text-blue-400">Zarix</span>
+            <span className="font-bold text-lg text-emerald-600 dark:text-emerald-400">Zarix</span>
           </Link>
           <ThemeToggle />
         </div>
       </header>
 
       {/* ——— Desktop: navegación completa (sin layout spring: menos trabajo en cada cambio de ruta) ——— */}
-      <nav className="hidden md:block bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
+      <nav className="hidden md:block bg-white/80 dark:bg-[#06070A]/80 backdrop-blur-lg border-b border-slate-200 dark:border-[#232733] sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             <Link href="/dashboard" prefetch className="flex items-center gap-2 shrink-0 min-h-[44px]">
@@ -102,7 +102,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                   unoptimized
                 />
               </div>
-              <span className="font-bold text-lg text-blue-600 dark:text-blue-400">Zarix</span>
+              <span className="font-bold text-lg text-emerald-600 dark:text-emerald-400">Zarix</span>
             </Link>
 
             <div className="flex items-center gap-1">
@@ -116,15 +116,12 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                     className="relative px-3 py-2 rounded-xl text-sm font-medium transition-colors min-h-[44px] flex items-center"
                   >
                     {isActive && (
-                      <span
-                        className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 rounded-xl"
-                        aria-hidden
-                      />
+                      <span className="absolute inset-0 bg-emerald-100 dark:bg-emerald-500/15 rounded-xl" aria-hidden />
                     )}
                     <span
                       className={`relative z-10 flex items-center gap-1.5 ${
                         isActive
-                          ? 'text-blue-600 dark:text-blue-400'
+                          ? 'text-emerald-600 dark:text-emerald-400'
                           : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                       }`}
                     >
@@ -173,7 +170,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                             prefetch
                             className={`flex items-center gap-3 px-4 py-3 text-sm min-h-[44px] transition-colors ${
                               isActive
-                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium'
+                                ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium'
                                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
                             }`}
                           >
@@ -200,7 +197,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
 
       {/* ——— Mobile: barra inferior (thumb zone); en flujo flex para que no “flote” al scrollear (iOS/PWA) ——— */}
       <nav
-        className="md:hidden shrink-0 w-full z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom,0px)]"
+        className="md:hidden shrink-0 w-full z-40 bg-white/95 dark:bg-[#06070A]/95 backdrop-blur-md border-t border-slate-200 dark:border-[#232733] pb-[env(safe-area-inset-bottom,0px)]"
         aria-label="Navegación principal"
       >
         <div className="flex items-stretch justify-around h-14 max-w-lg mx-auto px-1">
@@ -213,7 +210,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                 prefetch
                 className={`flex flex-1 flex-col items-center justify-center gap-0.5 min-w-0 min-h-[48px] rounded-xl transition-colors ${
                   isActive
-                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-900/20'
+                    ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-500/15'
                     : 'text-slate-500 dark:text-slate-400 active:bg-slate-100 dark:active:bg-slate-800'
                 }`}
               >
@@ -231,7 +228,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
             onClick={() => setMoreSheetOpen(true)}
             className={`flex flex-1 flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-xl transition-colors ${
               isMoreActive || moreSheetOpen
-                ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-900/20'
+                ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-500/15'
                 : 'text-slate-500 dark:text-slate-400 active:bg-slate-100 dark:active:bg-slate-800'
             }`}
             aria-expanded={moreSheetOpen}
@@ -283,7 +280,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                         onClick={() => setMoreSheetOpen(false)}
                         className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-base min-h-[48px] ${
                           isActive
-                            ? 'bg-blue-50 dark:bg-blue-900/25 text-blue-600 dark:text-blue-400 font-semibold'
+                            ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold'
                             : 'text-slate-700 dark:text-slate-200 active:bg-slate-100 dark:active:bg-slate-700/50'
                         }`}
                       >

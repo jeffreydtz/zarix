@@ -93,7 +93,7 @@ export default function PortfolioSummary({
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-slate-700/80 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-blue-500 dark:bg-blue-500 h-2 rounded-full transition-all min-w-0"
+                      className="bg-emerald-500 dark:bg-emerald-500 h-2 rounded-full transition-all min-w-0"
                       style={{ width: `${Math.min(100, percent)}%` }}
                     />
                   </div>

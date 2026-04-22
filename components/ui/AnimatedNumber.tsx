@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion, useSpring } from 'framer-motion';
 
 interface AnimatedNumberProps {
   value: number;
@@ -21,7 +21,6 @@ export default function AnimatedNumber({
   className = '',
 }: AnimatedNumberProps) {
   const [displayValue, setDisplayValue] = useState(0);
-  const prevValue = useRef(0);
 
   const spring = useSpring(0, {
     stiffness: 100,
@@ -47,7 +46,7 @@ export default function AnimatedNumber({
 
   return (
     <motion.span
-      className={className}
+      className={`zx-num ${className}`.trim()}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >

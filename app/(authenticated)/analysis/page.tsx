@@ -55,7 +55,7 @@ export default async function AnalysisPage() {
     const currentMonthName = monthNames[now.getMonth()];
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors duration-300">
         <div className="max-w-7xl mx-auto p-4 pb-8 md:pb-10 space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -131,7 +131,7 @@ export default async function AnalysisPage() {
           )}
 
           {/* Insights Section */}
-          <div className="card p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
+          <div className="card p-6 bg-gradient-to-br from-emerald-50 to-indigo-50 dark:from-emerald-900/20 dark:to-indigo-900/20 border-emerald-200 dark:border-emerald-800">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <span>🔍</span> Análisis Rápido
             </h3>

@@ -95,7 +95,7 @@ export default function BalanceHeader({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="card bg-gradient-to-br from-blue-50 via-blue-50 to-indigo-100 dark:from-blue-950 dark:via-slate-900 dark:to-indigo-950 border-blue-200 dark:border-blue-800"
+          className="card bg-gradient-to-br from-emerald-50 via-emerald-50 to-green-100 dark:from-emerald-500/10 dark:via-[#12151C] dark:to-[#1A1E27] border-emerald-200 dark:border-emerald-500/25"
         >
           <div className="flex items-center gap-2 mb-3">
             <motion.span 
@@ -116,7 +116,7 @@ export default function BalanceHeader({
           </div>
           <div className="space-y-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+              <span className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
                 <AnimatedNumber value={liquidARSBlue} prefix="$" decimals={0} />
               </span>
               <span className="text-sm font-medium text-slate-500">ARS</span>
@@ -135,7 +135,7 @@ export default function BalanceHeader({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="card bg-gradient-to-br from-purple-50 via-purple-50 to-pink-100 dark:from-purple-950 dark:via-slate-900 dark:to-pink-950 border-purple-200 dark:border-purple-800 relative"
+            className="card bg-gradient-to-br from-violet-50 via-violet-50 to-fuchsia-100 dark:from-violet-500/10 dark:via-[#12151C] dark:to-[#1A1E27] border-violet-200 dark:border-violet-500/25 relative"
             >
               <button
                 type="button"
@@ -232,7 +232,7 @@ export default function BalanceHeader({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="card bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-100 dark:from-amber-950 dark:via-slate-900 dark:to-yellow-950 border-amber-200 dark:border-amber-800"
+          className="card bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-100 dark:from-amber-500/10 dark:via-[#12151C] dark:to-[#1A1E27] border-amber-200 dark:border-amber-500/25"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">

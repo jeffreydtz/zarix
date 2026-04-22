@@ -125,7 +125,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
             placeholder="Buscar descripción..."
             value={searchParams.get('search') || ''}
             onChange={(e) => updateParams({ search: e.target.value })}
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
           />
         </div>
 
@@ -134,7 +134,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value={searchParams.get('type') || ''}
             onChange={(e) => updateParams({ type: e.target.value })}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
           >
             <option value="">Todos los tipos</option>
             <option value="expense">💸 Gastos</option>
@@ -148,7 +148,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value={searchParams.get('accountId') || ''}
             onChange={(e) => updateParams({ accountId: e.target.value })}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
           >
             <option value="">Todas las cuentas</option>
             {accounts.map((acc) => (
@@ -164,7 +164,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value=""
             onChange={(e) => handlePreset(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
           >
             <option value="">Período rápido</option>
             <option value="today">Hoy</option>
@@ -181,7 +181,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-xs text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1"
+            className="text-xs text-emerald-500 hover:text-emerald-600 font-medium flex items-center gap-1"
           >
             {showAdvanced ? '▲' : '▼'} Filtros avanzados
           </button>
@@ -214,7 +214,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                 <select
                   value={searchParams.get('categoryId') || ''}
                   onChange={(e) => updateParams({ categoryId: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                 >
                   <option value="">Todas las categorías</option>
                   <option value="uncategorized">Sin categoría</option>
@@ -231,7 +231,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                   type="date"
                   value={searchParams.get('startDate') || ''}
                   onChange={(e) => updateParams({ startDate: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                 />
               </div>
 
@@ -242,7 +242,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                   type="date"
                   value={searchParams.get('endDate') || ''}
                   onChange={(e) => updateParams({ endDate: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                 />
               </div>
 
@@ -255,14 +255,14 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                     placeholder="Min"
                     value={searchParams.get('minAmount') || ''}
                     onChange={(e) => updateParams({ minAmount: e.target.value })}
-                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                   <input
                     type="number"
                     placeholder="Max"
                     value={searchParams.get('maxAmount') || ''}
                     onChange={(e) => updateParams({ maxAmount: e.target.value })}
-                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                 </div>
               </div>
@@ -296,9 +296,9 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
       {hasActiveFilters && (
         <div className="px-4 pb-3 flex flex-wrap gap-2">
           {searchParams.get('search') && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs rounded-full">
               🔍 &quot;{searchParams.get('search')}&quot;
-              <button onClick={() => updateParams({ search: '' })} className="hover:text-blue-900 ml-0.5">✕</button>
+              <button onClick={() => updateParams({ search: '' })} className="hover:text-emerald-900 ml-0.5">✕</button>
             </span>
           )}
           {searchParams.get('startDate') && (

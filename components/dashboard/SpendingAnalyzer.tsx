@@ -32,8 +32,8 @@ interface CategorySlice {
 }
 
 const COLORS = [
-  '#F59E0B', '#EF4444', '#3B82F6', '#10B981', '#8B5CF6',
-  '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1',
+  '#34D399', '#60A5FA', '#A78BFA', '#F59E0B', '#FB7185',
+  '#22D3EE', '#4ADE80', '#FBBF24', '#818CF8', '#2DD4BF',
 ];
 const MAX_PIE_SLICES = 8;
 
@@ -688,12 +688,14 @@ export default function SpendingAnalyzer({
         </div>
       </div>
 
-      <div className="flex gap-2 mb-3">
+      <div className="zx-segmented mb-3 w-full sm:w-auto">
         <button
           type="button"
           onClick={() => setMode('expense')}
-          className={`min-h-11 flex-1 sm:flex-none rounded-xl px-4 text-sm font-medium touch-manipulation active:opacity-90 ${
-            mode === 'expense' ? 'bg-red-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'
+          className={`min-h-11 flex-1 sm:flex-none rounded-lg px-4 text-sm font-medium touch-manipulation active:opacity-90 ${
+            mode === 'expense'
+              ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100'
+              : 'text-slate-600 dark:text-slate-300'
           }`}
         >
           Gastos
@@ -701,8 +703,10 @@ export default function SpendingAnalyzer({
         <button
           type="button"
           onClick={() => setMode('income')}
-          className={`min-h-11 flex-1 sm:flex-none rounded-xl px-4 text-sm font-medium touch-manipulation active:opacity-90 ${
-            mode === 'income' ? 'bg-green-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'
+          className={`min-h-11 flex-1 sm:flex-none rounded-lg px-4 text-sm font-medium touch-manipulation active:opacity-90 ${
+            mode === 'income'
+              ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100'
+              : 'text-slate-600 dark:text-slate-300'
           }`}
         >
           Ingresos
@@ -723,7 +727,7 @@ export default function SpendingAnalyzer({
             onClick={() => setRange(t.id as RangeType)}
             className={`min-h-10 touch-manipulation rounded-xl border px-3 text-sm transition-colors active:opacity-90 ${
               range === t.id
-                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 border-transparent'
+                ? 'bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950 border-transparent'
                 : 'border-slate-200 bg-white text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
             }`}
           >
@@ -766,11 +770,11 @@ export default function SpendingAnalyzer({
             ))}
           </select>
         </label>
-        <div className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs">
+        <div className="zx-kpi text-xs">
           <div className="text-slate-500">Movimientos</div>
           <div className="font-semibold text-slate-700 dark:text-slate-200">{txCount}</div>
         </div>
-        <div className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs">
+        <div className="zx-kpi text-xs">
           <div className="text-slate-500">Vs período anterior</div>
           <div
             className={`font-semibold ${
@@ -798,7 +802,7 @@ export default function SpendingAnalyzer({
         <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">{error}</div>
       ) : (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/40 sm:rounded-2xl sm:p-4">
+          <div className="zx-panel p-3 sm:p-4">
             {displaySlices.length === 0 ? (
               <div className="min-h-[256px] flex flex-col items-center justify-center gap-4 text-center px-2 py-4 sm:py-0">
                 <p className="text-slate-400 dark:text-slate-500 text-sm leading-relaxed">
@@ -876,7 +880,7 @@ export default function SpendingAnalyzer({
                 type="button"
                 key={`${s.name}-${idx}`}
                 onClick={() => openCategoryDetail(s.name)}
-                className="flex min-h-[52px] w-full touch-manipulation items-center justify-between gap-3 rounded-xl border border-transparent bg-slate-100 px-3 py-3 text-left transition-colors hover:bg-slate-200/80 focus:outline-none focus:ring-2 focus:ring-blue-500/40 active:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700/80 dark:active:bg-slate-700 sm:min-h-0 sm:py-3"
+                className="flex min-h-[52px] w-full touch-manipulation items-center justify-between gap-3 rounded-xl border border-transparent bg-slate-100/90 px-3 py-3 text-left transition-colors hover:bg-slate-200/80 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 active:bg-slate-200 dark:bg-slate-800/90 dark:hover:bg-slate-700/80 dark:active:bg-slate-700 sm:min-h-0 sm:py-3"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <span
@@ -921,7 +925,7 @@ export default function SpendingAnalyzer({
             role="dialog"
             aria-modal="true"
             aria-labelledby="analyzer-detail-title"
-            className="bg-white dark:bg-slate-900 w-full sm:max-w-lg max-h-[88vh] overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700"
+            className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl w-full sm:max-w-lg max-h-[88vh] overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">

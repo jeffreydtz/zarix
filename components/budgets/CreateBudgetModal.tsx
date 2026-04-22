@@ -97,7 +97,7 @@ export default function CreateBudgetModal({
               <select
                 value={form.categoryId}
                 onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none"
               >
                 <option value="">General (sin categoría)</option>
                 {expenseCategories.map((cat) => (
@@ -120,7 +120,7 @@ export default function CreateBudgetModal({
                   value={form.amount}
                   onChange={(e) => setForm({ ...form, amount: e.target.value })}
                   placeholder="80.000"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none"
                 />
               </div>
               <div className="w-28">
@@ -130,7 +130,7 @@ export default function CreateBudgetModal({
                 <select
                   value={form.currency}
                   onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none"
                 >
                   <option value="ARS">ARS</option>
                   <option value="USD">USD</option>
@@ -150,11 +150,11 @@ export default function CreateBudgetModal({
                 step={5}
                 value={form.alertAtPercent}
                 onChange={(e) => setForm({ ...form, alertAtPercent: Number(e.target.value) })}
-                className="w-full accent-blue-500"
+                className="w-full accent-emerald-500"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
                 <span>50%</span>
-                <span className="font-semibold text-blue-500">{form.alertAtPercent}%</span>
+                <span className="font-semibold text-emerald-500">{form.alertAtPercent}%</span>
                 <span>100%</span>
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function CreateBudgetModal({
                 type="button"
                 onClick={() => setForm({ ...form, rolloverEnabled: !form.rolloverEnabled })}
                 className={`relative w-12 h-6 rounded-full transition-colors ${
-                  form.rolloverEnabled ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'
+                  form.rolloverEnabled ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
                 }`}
               >
                 <span
@@ -196,7 +196,7 @@ export default function CreateBudgetModal({
               <button
                 type="submit"
                 disabled={loading || !form.amount}
-                className="flex-1 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-colors disabled:opacity-50"
               >
                 {loading ? 'Guardando...' : 'Crear Presupuesto'}
               </button>

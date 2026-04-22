@@ -165,7 +165,7 @@ export default function CreateAccountButton() {
                         onClick={() => setSelectedType(type.value)}
                         className={`p-3 rounded-xl border-2 transition-all text-left flex items-center gap-2 ${
                           selectedType === type.value
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                             : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
                         }`}
                       >
@@ -187,7 +187,7 @@ export default function CreateAccountButton() {
                         onClick={() => setSelectedIcon(icon)}
                         className={`p-2.5 text-2xl rounded-xl border-2 transition-all ${
                           selectedIcon === icon
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                             : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
                         }`}
                       >
@@ -208,7 +208,7 @@ export default function CreateAccountButton() {
                         onClick={() => setSelectedCurrency(currency.value)}
                         className={`p-2 rounded-xl border-2 transition-all text-center ${
                           selectedCurrency === currency.value
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                             : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
                         }`}
                       >
@@ -346,7 +346,7 @@ export default function CreateAccountButton() {
                         id="isDebt"
                         checked={isDebt}
                         onChange={(e) => setIsDebt(e.target.checked)}
-                        className="w-5 h-5 text-blue-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-5 h-5 text-emerald-600 rounded-lg focus:ring-2 focus:ring-emerald-500"
                       />
                       <label htmlFor="isDebt" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Es una deuda (mostrar saldo negativo)
@@ -366,7 +366,7 @@ export default function CreateAccountButton() {
                         id="includeInLiquid"
                         checked={includeInLiquid}
                         onChange={(e) => setIncludeInLiquid(e.target.checked)}
-                        className="w-5 h-5 text-blue-600 rounded-lg focus:ring-2 focus:ring-blue-500 mt-0.5"
+                        className="w-5 h-5 text-emerald-600 rounded-lg focus:ring-2 focus:ring-emerald-500 mt-0.5"
                       />
                       <div>
                         <label htmlFor="includeInLiquid" className="text-sm font-medium text-slate-700 dark:text-slate-300">

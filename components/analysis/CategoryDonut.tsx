@@ -1,6 +1,6 @@
 'use client';
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { motion } from 'framer-motion';
 import type { CategoryBreakdown } from '@/lib/services/analytics';
 
@@ -29,7 +29,8 @@ export default function CategoryDonut({ data, title }: Props) {
       animate={{ opacity: 1, y: 0 }}
       className="card p-6"
     >
-      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+      <h3 className="text-lg font-semibold mb-1">{title}</h3>
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Distribucion por categoria en el periodo seleccionado.</p>
       
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -51,10 +52,10 @@ export default function CategoryDonut({ data, title }: Props) {
             <Tooltip
               formatter={(value: number) => [`$${value.toLocaleString('es-AR')}`, 'Monto']}
               contentStyle={{
-                backgroundColor: 'rgba(30, 41, 59, 0.95)',
-                border: 'none',
-                borderRadius: '8px',
-                color: 'white'
+                backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                border: '1px solid rgba(148, 163, 184, 0.25)',
+                borderRadius: '10px',
+                color: '#F8FAFC'
               }}
             />
           </PieChart>
@@ -68,7 +69,7 @@ export default function CategoryDonut({ data, title }: Props) {
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="zx-panel flex items-center justify-between p-2 transition-colors"
           >
             <div className="flex items-center gap-2">
               <div
@@ -80,7 +81,7 @@ export default function CategoryDonut({ data, title }: Props) {
               <span className="text-xs text-slate-500">({cat.count})</span>
             </div>
             <div className="text-right">
-              <div className="font-semibold text-sm">
+              <div className="font-semibold text-sm zx-num">
                 ${cat.amount.toLocaleString('es-AR')}
               </div>
               <div className="text-xs text-slate-500">
@@ -92,7 +93,7 @@ export default function CategoryDonut({ data, title }: Props) {
       </div>
 
       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-        <div className="flex justify-between font-semibold">
+        <div className="flex justify-between font-semibold zx-num">
           <span>Total</span>
           <span>${total.toLocaleString('es-AR')}</span>
         </div>

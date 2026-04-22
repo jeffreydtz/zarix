@@ -70,7 +70,7 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             </p>
           )}
         </div>
-        <span className="text-xs text-slate-400 dark:text-slate-500">En vivo</span>
+        <span className="zx-pill-live">En vivo</span>
       </div>
       
       <motion.div 

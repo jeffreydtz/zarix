@@ -108,7 +108,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                     </motion.div>
 
                     <div className="flex-1 min-w-0 pr-1">
-                      <div className="font-semibold text-lg text-slate-800 dark:text-slate-200 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      <div className="font-semibold text-lg text-slate-800 dark:text-slate-200 leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
                         {getAccountDisplayName(account)}
                       </div>
                       <div className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
@@ -144,7 +144,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                       type="button"
                       whileTap={{ scale: 0.9 }}
                       onClick={() => setEditAccount(account)}
-                      className="p-2 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-500"
+                      className="p-2 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-500"
                       title="Editar cuenta"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

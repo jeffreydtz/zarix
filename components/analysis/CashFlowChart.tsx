@@ -71,10 +71,10 @@ export default function CashFlowChart({ data }: Props) {
                 name === 'expenses' ? 'Gastos' : 'Ingresos'
               ]}
               contentStyle={{
-                backgroundColor: 'rgba(30, 41, 59, 0.95)',
-                border: 'none',
-                borderRadius: '8px',
-                color: 'white'
+                backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                border: '1px solid rgba(148, 163, 184, 0.25)',
+                borderRadius: '10px',
+                color: '#F8FAFC'
               }}
             />
             <ReferenceLine 
@@ -104,24 +104,24 @@ export default function CashFlowChart({ data }: Props) {
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
-        <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+        <div className="zx-kpi">
           <div className="text-slate-500 dark:text-slate-400">Total gastos</div>
-          <div className="text-lg font-semibold text-red-600 dark:text-red-400">
+          <div className="text-lg font-semibold text-red-600 dark:text-red-400 zx-num">
             ${totalExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>
-        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+        <div className="zx-kpi">
           <div className="text-slate-500 dark:text-slate-400">Total ingresos</div>
-          <div className="text-lg font-semibold text-green-600 dark:text-green-400">
+          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400 zx-num">
             ${totalIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>
-        <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+        <div className="zx-kpi">
           <div className="text-slate-500 dark:text-slate-400">Día pico</div>
           <div className="text-lg font-semibold text-amber-600 dark:text-amber-400">
             {maxExpenseDay.dayLabel}
           </div>
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-slate-500 zx-num">
             ${maxExpenseDay.expenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>

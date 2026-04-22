@@ -243,7 +243,7 @@ export default function ExportImport() {
             <button
               onClick={handleExportJSON}
               disabled={exporting}
-              className="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
+              className="btn bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm"
             >
               {exporting ? '...' : '📄 JSON'}
             </button>
@@ -268,7 +268,7 @@ export default function ExportImport() {
             </h3>
             <button
               onClick={() => setShowGuide(!showGuide)}
-              className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
             >
               {showGuide ? '▲ Ocultar guía' : '▼ Ver guía de formato'}
             </button>
@@ -283,11 +283,11 @@ export default function ExportImport() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-4 overflow-hidden"
               >
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 text-sm space-y-4">
+                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800 text-sm space-y-4">
 
                   {/* Excel multi-hoja / Airtable */}
                   <div>
-                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
                       📗 Excel (.xlsx / .xls) con varias hojas
                     </h4>
                     <p className="text-slate-600 dark:text-slate-400 mb-2">
@@ -311,7 +311,7 @@ export default function ExportImport() {
 
                   {/* CSV Format */}
                   <div>
-                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
                       📊 CSV simple (Gasto / Ingreso por fila)
                     </h4>
                     <p className="text-slate-600 dark:text-slate-400 mb-2">
@@ -327,7 +327,7 @@ export default function ExportImport() {
 
                   {/* CSV transferencias entre cuentas */}
                   <div>
-                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
                       🔁 CSV transferencias (origen → destino)
                     </h4>
                     <p className="text-slate-600 dark:text-slate-400 mb-2">
@@ -348,7 +348,7 @@ export default function ExportImport() {
 
                   {/* Column mapping */}
                   <div>
-                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
                       🔗 Mapeo de columnas (CSV simple)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
@@ -389,7 +389,7 @@ export default function ExportImport() {
 
                   {/* Cuentas no encontradas */}
                   <div>
-                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
                       🏦 Cuentas que no coinciden
                     </h4>
                     <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
@@ -408,7 +408,7 @@ export default function ExportImport() {
 
                   {/* JSON Format */}
                   <div>
-                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
                       📄 Formato JSON
                     </h4>
                     <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-xs overflow-x-auto">
@@ -484,7 +484,7 @@ export default function ExportImport() {
             className={`
               inline-flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer
               border-2 border-dashed border-slate-300 dark:border-slate-600
-              hover:border-blue-500 dark:hover:border-blue-400
+              hover:border-emerald-500 dark:hover:border-emerald-400
               transition-colors
               ${importing ? 'opacity-50 cursor-not-allowed' : ''}
             `}

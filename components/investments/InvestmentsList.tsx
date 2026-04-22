@@ -89,7 +89,7 @@ export default function InvestmentsList({ investments, onArchived, onEdit }: Inv
                   <button
                     type="button"
                     onClick={() => onEdit(inv)}
-                    className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
                   >
                     Editar
                   </button>

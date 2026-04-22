@@ -14,7 +14,7 @@ interface ProgressBarProps {
 export default function ProgressBar({
   value,
   max = 100,
-  colorClass = 'bg-blue-500',
+  colorClass = 'bg-emerald-500',
   height = 'h-2',
   showLabel = false,
   animated = true,
@@ -22,7 +22,7 @@ export default function ProgressBar({
   const percentage = Math.min((value / max) * 100, 100);
 
   const getColorClass = () => {
-    if (colorClass !== 'bg-blue-500') return colorClass;
+    if (colorClass !== 'bg-emerald-500') return colorClass;
     if (percentage > 80) return 'bg-gradient-to-r from-red-500 to-red-600';
     if (percentage > 50) return 'bg-gradient-to-r from-yellow-500 to-orange-500';
     return 'bg-gradient-to-r from-green-500 to-emerald-500';

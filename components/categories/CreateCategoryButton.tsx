@@ -119,7 +119,7 @@ export default function CreateCategoryButton() {
                     onClick={() => setIconMode('emoji')}
                     className={`px-3 py-1.5 rounded-lg text-sm border ${
                       iconMode === 'emoji'
-                        ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                        ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
                         : 'border-gray-200 dark:border-gray-700'
                     }`}
                   >
@@ -130,7 +130,7 @@ export default function CreateCategoryButton() {
                     onClick={() => setIconMode('symbol')}
                     className={`px-3 py-1.5 rounded-lg text-sm border ${
                       iconMode === 'symbol'
-                        ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                        ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
                         : 'border-gray-200 dark:border-gray-700'
                     }`}
                   >
@@ -147,7 +147,7 @@ export default function CreateCategoryButton() {
                         onClick={() => setSelectedIcon(icon)}
                         className={`p-3 text-2xl rounded-lg border-2 transition-all ${
                           selectedIcon === icon
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                         }`}
                       >
@@ -164,7 +164,7 @@ export default function CreateCategoryButton() {
                           onClick={() => setSelectedIcon(value)}
                           className={`p-3 rounded-lg border-2 transition-all flex items-center justify-center ${
                             selectedIcon === value
-                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                               : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                           }`}
                         >

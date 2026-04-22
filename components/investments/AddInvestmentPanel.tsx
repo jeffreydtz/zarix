@@ -242,7 +242,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition-colors"
+        className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition-colors"
       >
         {open ? 'Cerrar' : '+ Agregar posición'}
       </button>
@@ -353,7 +353,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
                 type="button"
                 onClick={() => void verifyQuote()}
                 disabled={quoteLoading || !ticker.trim()}
-                className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+                className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:underline disabled:opacity-50"
               >
                 {quoteLoading ? 'Consultando…' : 'Verificar cotización ahora'}
               </button>

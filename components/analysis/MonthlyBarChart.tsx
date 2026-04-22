@@ -39,12 +39,12 @@ export default function MonthlyBarChart({ data }: Props) {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Evolución Mensual</h3>
         {previousMonth && (
-          <div className={`text-sm px-2 py-1 rounded-full ${
+          <div className={`text-sm px-2 py-1 rounded-full zx-num ${
             expensesDiff <= 0 
-              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' 
               : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
           }`}>
-            {expensesDiff <= 0 ? '📉' : '📈'} {expensesDiff >= 0 ? '+' : ''}{expensesDiff.toFixed(1)}% vs mes anterior
+            {expensesDiff >= 0 ? '+' : ''}{expensesDiff.toFixed(1)}% vs mes anterior
           </div>
         )}
       </div>
@@ -69,10 +69,10 @@ export default function MonthlyBarChart({ data }: Props) {
                 name === 'expenses' ? 'Gastos' : name === 'income' ? 'Ingresos' : 'Balance'
               ]}
               contentStyle={{
-                backgroundColor: 'rgba(30, 41, 59, 0.95)',
-                border: 'none',
-                borderRadius: '8px',
-                color: 'white'
+                backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                border: '1px solid rgba(148, 163, 184, 0.25)',
+                borderRadius: '10px',
+                color: '#F8FAFC'
               }}
             />
             <Legend 
@@ -85,15 +85,15 @@ export default function MonthlyBarChart({ data }: Props) {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-        <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <div className="zx-kpi">
           <div className="text-slate-500">Promedio gastos (6 meses)</div>
-          <div className="text-lg font-semibold text-red-500">
+          <div className="text-lg font-semibold text-red-500 zx-num">
             ${avgExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>
-        <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <div className="zx-kpi">
           <div className="text-slate-500">Promedio ingresos (6 meses)</div>
-          <div className="text-lg font-semibold text-green-500">
+          <div className="text-lg font-semibold text-emerald-500 zx-num">
             ${avgIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>

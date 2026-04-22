@@ -30,7 +30,7 @@ export default async function AccountsPage() {
       .or(`user_id.eq.${user.id},is_system.eq.true`);
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>

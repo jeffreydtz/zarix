@@ -108,7 +108,7 @@ function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
 
   const iconClass = isIndex
     ? 'rounded-lg bg-violet-100 dark:bg-violet-900/35 text-violet-800 dark:text-violet-200'
-    : 'rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
+    : 'rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300';
 
   return (
     <motion.div
@@ -172,14 +172,14 @@ function formatSnapshotLabel(iso?: string): string | null {
 
 function MarketSection({
   title,
-  icon,
+  marketTag,
   children,
   loading,
   stale,
   snapshotAt,
 }: {
   title: string;
-  icon: string;
+  marketTag: string;
   children: React.ReactNode;
   loading: boolean;
   stale?: boolean;
@@ -187,10 +187,10 @@ function MarketSection({
 }) {
   const snap = formatSnapshotLabel(snapshotAt);
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+    <div className="zx-panel overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-base shrink-0">{icon}</span>
+          <span className="badge badge-primary uppercase tracking-wide">{marketTag}</span>
           <span className="font-bold text-sm text-slate-800 dark:text-slate-100 truncate">{title}</span>
         </div>
         <div className="flex flex-col items-end text-right shrink-0">
@@ -198,7 +198,7 @@ function MarketSection({
             className={
               stale
                 ? 'text-[10px] font-medium text-amber-600 dark:text-amber-400'
-                : 'text-xs text-slate-400 dark:text-slate-500'
+                : 'text-[11px] text-emerald-600 dark:text-emerald-300'
             }
           >
             {stale ? 'Última cotización guardada' : 'Tiempo real'}
@@ -281,9 +281,9 @@ export default function MarketDataWidget() {
             onClick={() => {
               void fetchData({ showLoading: true, forceRefresh: true });
             }}
-            className="text-xs text-blue-500 hover:text-blue-600 font-medium px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+            className="text-xs text-emerald-600 dark:text-emerald-300 hover:text-emerald-700 dark:hover:text-emerald-200 font-medium px-2 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
           >
-            ↻ Refrescar
+            Actualizar
           </button>
         </div>
       </div>
@@ -303,7 +303,7 @@ export default function MarketDataWidget() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <MarketSection
           title="Top Crypto"
-          icon="₿"
+          marketTag="CRYPTO"
           loading={loading && !data?.crypto?.length}
           stale={st?.crypto}
           snapshotAt={times?.crypto}
@@ -318,7 +318,7 @@ export default function MarketDataWidget() {
 
         <MarketSection
           title="USA · Nasdaq & acciones"
-          icon="🇺🇸"
+          marketTag="USA"
           loading={loading && !data?.usStocks?.length}
           stale={st?.usStocks}
           snapshotAt={times?.usStocks}
@@ -334,7 +334,7 @@ export default function MarketDataWidget() {
 
         <MarketSection
           title="Argentina · MERVAL & panel"
-          icon="🇦🇷"
+          marketTag="AR"
           loading={loading && !data?.argStocks?.length}
           stale={st?.argStocks}
           snapshotAt={times?.argStocks}

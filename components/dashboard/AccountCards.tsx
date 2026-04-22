@@ -24,7 +24,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
         </h3>
         <Link 
           href="/accounts" 
-          className="text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 font-medium"
+          className="text-sm text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-medium"
         >
           Ver todas
         </Link>

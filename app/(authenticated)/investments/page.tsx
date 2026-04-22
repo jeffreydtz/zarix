@@ -60,7 +60,7 @@ export default async function InvestmentsPage() {
     ]);
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
           <header className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50">

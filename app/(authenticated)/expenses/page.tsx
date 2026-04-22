@@ -43,7 +43,7 @@ export default async function ExpensesPage({
 
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors">
         <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>

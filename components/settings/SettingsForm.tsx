@@ -496,7 +496,7 @@ export default function SettingsForm({
               checked={weeklySummary}
               disabled={notifLoading}
               onChange={(e) => saveNotificationToggle('weekly_summary_enabled', e.target.checked)}
-              className="w-6 h-6 mt-1 shrink-0 accent-blue-600"
+              className="w-6 h-6 mt-1 shrink-0 accent-emerald-600"
             />
           </label>
           <label className="flex items-start justify-between gap-3 cursor-pointer">
@@ -518,7 +518,7 @@ export default function SettingsForm({
               checked={monthlySummary}
               disabled={notifLoading}
               onChange={(e) => saveNotificationToggle('monthly_summary_enabled', e.target.checked)}
-              className="w-6 h-6 mt-1 shrink-0 accent-blue-600"
+              className="w-6 h-6 mt-1 shrink-0 accent-emerald-600"
             />
           </label>
         </div>

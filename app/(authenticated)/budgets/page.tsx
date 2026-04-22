@@ -120,7 +120,7 @@ export default function BudgetsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors">
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
 
         {/* Header */}
@@ -135,7 +135,7 @@ export default function BudgetsPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-blue-500/20 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-emerald-500/20 transition-colors"
           >
             <span>+</span> Nuevo
           </motion.button>
@@ -154,7 +154,7 @@ export default function BudgetsPage() {
               {MONTH_NAMES[viewMonth]} {viewYear}
             </div>
             {isCurrentMonth && (
-              <div className="text-xs text-blue-500 font-medium">Mes actual</div>
+              <div className="text-xs text-emerald-500 font-medium">Mes actual</div>
             )}
           </div>
           <button
@@ -256,7 +256,7 @@ export default function BudgetsPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowModal(true)}
-              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/20 transition-colors"
+              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/20 transition-colors"
             >
               Crear mi primer presupuesto
             </motion.button>
@@ -280,8 +280,8 @@ export default function BudgetsPage() {
 
         {/* Info box */}
         {!loading && (
-          <div className="rounded-2xl p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40">
-            <p className="text-sm text-blue-700 dark:text-blue-300">
+          <div className="rounded-2xl p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/40">
+            <p className="text-sm text-emerald-700 dark:text-emerald-300">
               💡 <strong>Tip:</strong> Las alertas de presupuesto se envían automáticamente al Bot de Telegram cuando alcanzás el umbral configurado (por defecto 80%) y cuando lo superás.
             </p>
           </div>
