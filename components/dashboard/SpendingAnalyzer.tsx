@@ -252,31 +252,49 @@ function formatTxRowDate(iso: string): string {
 }
 
 function analyzerCurrencyFootnote(currencyFilter: string, convertToArsBlue: boolean): string {
-  if (currencyFilter === 'all' && convertToArsBlue) {
-    return 'Equivalente en ARS (dólar blue; USD y stablecoins convertidos)';
-  }
   if (currencyFilter === 'all') {
-    return 'Sin cotización USD: montos sin convertir a pesos';
+    return 'Totales separados por moneda (sin conversión)';
   }
   return `Solo movimientos en ${currencyFilter}`;
 }
 
+function formatCurrencyAmount(value: number, currency: string): string {
+  const locale = currency === 'ARS' ? 'es-AR' : 'en-US';
+  return `${currency} ${value.toLocaleString(locale, { maximumFractionDigits: 0 })}`;
+}
+
+function buildSummaryRows(totalsByCurrency: Record<string, number>, currencyFilter: string): Array<{ currency: string; amount: number }> {
+  if (currencyFilter !== 'all') {
+    return [{ currency: currencyFilter, amount: totalsByCurrency[currencyFilter] ?? 0 }];
+  }
+
+  const preferred = ['ARS', 'USD'];
+  const others = Object.keys(totalsByCurrency)
+    .filter((currency) => !preferred.includes(currency))
+    .sort((a, b) => a.localeCompare(b));
+
+  return [...preferred, ...others].map((currency) => ({
+    currency,
+    amount: totalsByCurrency[currency] ?? 0,
+  }));
+}
+
 function AnalyzerTotalSummary({
-  total,
+  totalsByCurrency,
   currencyFilter,
-  convertToArsBlue,
   variant,
 }: {
-  total: number;
+  totalsByCurrency: Record<string, number>;
   currencyFilter: string;
-  convertToArsBlue: boolean;
   variant: 'inline' | 'belowChart';
 }) {
   const amountClass =
     variant === 'belowChart'
-      ? 'text-lg sm:text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-100 tabular-nums leading-tight break-words [overflow-wrap:anywhere]'
-      : 'text-xl font-bold text-slate-700 dark:text-slate-200 tabular-nums leading-tight';
+      ? 'text-base sm:text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 tabular-nums leading-tight break-words [overflow-wrap:anywhere]'
+      : 'text-lg font-bold text-slate-700 dark:text-slate-200 tabular-nums leading-tight';
   const showFootnote = variant === 'inline';
+  const rows = buildSummaryRows(totalsByCurrency, currencyFilter);
+
   return (
     <div
       className={
@@ -288,10 +306,16 @@ function AnalyzerTotalSummary({
       <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
         Total
       </div>
-      <div className={amountClass}>${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</div>
+      <div className="mt-1 space-y-0.5">
+        {rows.map((row) => (
+          <div key={row.currency} className={amountClass}>
+            {formatCurrencyAmount(row.amount, row.currency)}
+          </div>
+        ))}
+      </div>
       {showFootnote && (
         <div className="text-[10px] sm:text-[11px] text-slate-400 mt-1 leading-snug">
-          {analyzerCurrencyFootnote(currencyFilter, convertToArsBlue)}
+          {analyzerCurrencyFootnote(currencyFilter, false)}
         </div>
       )}
     </div>
@@ -355,8 +379,8 @@ export default function SpendingAnalyzer({
     [cryptoPriceArsProp, fetchedCryptoArs]
   );
 
-  /** Vista “todas las monedas”: sumar todo en ARS (dólar blue) para no mezclar USD con pesos. */
-  const convertToArsBlue = currencyFilter === 'all' && effectiveUsdBlue > 0;
+  /** En el analizador se muestran montos por moneda, sin convertir a equivalente ARS. */
+  const convertToArsBlue = false;
 
   useEffect(() => {
     if (usdToArsBlueProp !== undefined && usdToArsBlueProp > 0) return;
@@ -542,6 +566,17 @@ export default function SpendingAnalyzer({
 
     return { total: totalAmount, slices: out };
   }, [filteredItems, convertToArsBlue, effectiveUsdBlue, effectiveCryptoArs]);
+
+  const totalsByCurrency = useMemo(() => {
+    const totals: Record<string, number> = {};
+    for (const tx of filteredItems) {
+      const currency = normalizeAccountCur(tx.account?.currency || tx.currency);
+      const amount = txDisplayAmount(tx);
+      if (!Number.isFinite(amount) || amount === 0) continue;
+      totals[currency] = (totals[currency] || 0) + amount;
+    }
+    return totals;
+  }, [filteredItems]);
 
   const txCount = filteredItems.length;
   const variationPct =
@@ -772,9 +807,8 @@ export default function SpendingAnalyzer({
                     : 'No hay ingresos en este período con los filtros actuales.'}
                 </p>
                 <AnalyzerTotalSummary
-                  total={total}
+                  totalsByCurrency={totalsByCurrency}
                   currencyFilter={currencyFilter}
-                  convertToArsBlue={convertToArsBlue}
                   variant="inline"
                 />
               </div>
@@ -818,14 +852,13 @@ export default function SpendingAnalyzer({
                     </ResponsiveContainer>
                   </div>
                   <AnalyzerTotalSummary
-                    total={total}
+                    totalsByCurrency={totalsByCurrency}
                     currencyFilter={currencyFilter}
-                    convertToArsBlue={convertToArsBlue}
                     variant="belowChart"
                   />
                 </div>
                 <p className="mt-1.5 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400 px-1 sm:px-2">
-                  {analyzerCurrencyFootnote(currencyFilter, convertToArsBlue)}
+                  {analyzerCurrencyFootnote(currencyFilter, false)}
                 </p>
               </>
             )}
