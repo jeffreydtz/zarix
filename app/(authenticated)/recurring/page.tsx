@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CategoryIcon, getOptionTextIcon } from '@/lib/category-icons';
 
@@ -116,6 +116,17 @@ const SUBSCRIPTION_SERVICES: SubscriptionService[] = [
 function formatMoney(value: number, currency: string): string {
   const locale = currency === 'ARS' ? 'es-AR' : 'en-US';
   return `${currency} ${value.toLocaleString(locale, { maximumFractionDigits: 2 })}`;
+}
+
+function getCurrencyTotalsRows(totals: Record<string, number>): Array<{ currency: string; amount: number }> {
+  const preferredCurrencies = ['ARS', 'USD'];
+  const remainingCurrencies = Object.keys(totals).filter((currency) => !preferredCurrencies.includes(currency));
+  const orderedCurrencies = [...preferredCurrencies, ...remainingCurrencies];
+
+  return orderedCurrencies.map((currency) => ({
+    currency,
+    amount: totals[currency] ?? 0,
+  }));
 }
 
 function monthlyEquivalent(amount: number, frequency: string): number {
@@ -402,13 +413,13 @@ export default function RecurringPage() {
           />
           <StatCard
             title="Costo mensual estimado"
-            value={Object.entries(monthlyByCurrency).length ? Object.entries(monthlyByCurrency).map(([currency, value]) => formatMoney(value, currency)).join(' · ') : 'Sin datos'}
-            caption="Basado en frecuencia de cada plan"
+            value={<CurrencyBreakdown totals={monthlyByCurrency} />}
+            caption="Gastos estimados separados por moneda"
             gradient="from-sky-500/10 to-indigo-500/10"
           />
           <StatCard
             title="Costo anual estimado"
-            value={Object.entries(yearlyByCurrency).length ? Object.entries(yearlyByCurrency).map(([currency, value]) => formatMoney(value, currency)).join(' · ') : 'Sin datos'}
+            value={<CurrencyBreakdown totals={yearlyByCurrency} />}
             caption={`${upcomingRenewals.length} renovaciones en 14 días`}
             gradient="from-emerald-500/10 to-teal-500/10"
           />
@@ -716,15 +727,34 @@ function StatCard({
   gradient,
 }: {
   title: string;
-  value: string;
+  value: ReactNode;
   caption: string;
   gradient: string;
 }) {
   return (
     <div className={`rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-gradient-to-br ${gradient} bg-white dark:bg-slate-800`}>
       <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{title}</p>
-      <p className="text-lg font-bold text-slate-800 dark:text-slate-100 mt-1">{value}</p>
+      <div className="text-lg font-bold text-slate-800 dark:text-slate-100 mt-1">{value}</div>
       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{caption}</p>
+    </div>
+  );
+}
+
+function CurrencyBreakdown({ totals }: { totals: Record<string, number> }) {
+  const rows = getCurrencyTotalsRows(totals);
+  const hasAnyValue = Object.keys(totals).length > 0;
+
+  if (!hasAnyValue) {
+    return <p className="text-base font-semibold">ARS 0 · USD 0</p>;
+  }
+
+  return (
+    <div className="space-y-0.5">
+      {rows.map(({ currency, amount }) => (
+        <p key={currency} className="text-base font-semibold leading-snug">
+          {formatMoney(amount, currency)}
+        </p>
+      ))}
     </div>
   );
 }
