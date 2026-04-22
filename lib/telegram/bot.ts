@@ -18,9 +18,11 @@ import {
   getStoredTurns,
   storedTurnsToGeminiHistory,
 } from '@/lib/services/botSessions';
+import { subscriptionsService } from '@/lib/services/subscriptions';
 import { executeBotTransaction } from '@/lib/telegram/executeBotTransaction';
 import { parseBotTransactionDateInput } from '@/lib/transaction-date';
 import { buildTelegramSummaryScheduleLines } from '@/lib/notification-schedule';
+import type { SubscriptionStatus } from '@/types/database';
 
 interface BotContext extends Context {
   userId?: string;
@@ -46,6 +48,16 @@ function parseModelJson(aiResponse: string): unknown {
 
 const GEMINI_SETUP_MSG =
   'No tenés configurada tu API Key de Google Gemini. Entrá a la app web → Configuración → Google Gemini y seguí el instructivo.';
+
+function getSubscriptionBlockedMessage(status: SubscriptionStatus | null | undefined): string {
+  if (status === 'PAST_DUE') {
+    return 'Tu suscripción está vencida por falta de pago. Actualizá tu método de pago para volver a usar el asistente de IA.';
+  }
+  if (status === 'CANCELED') {
+    return 'Tu suscripción está cancelada. Reactivala para volver a usar el asistente de IA.';
+  }
+  return 'No encontramos una suscripción activa para esta cuenta.';
+}
 
 async function getUserFromTelegramId(telegramChatId: number) {
   const supabase = createServiceClientSync();
@@ -350,6 +362,9 @@ bot.on(message('photo'), async (ctx) => {
   if (!user) {
     return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
   }
+  if (!subscriptionsService.hasOrchestratorAccess(user.status)) {
+    return ctx.reply(getSubscriptionBlockedMessage(user.status));
+  }
 
   try {
     await ctx.reply('📷 Analizando la imagen...');
@@ -489,6 +504,9 @@ bot.on(message('voice'), async (ctx) => {
   const user = await getUserFromTelegramId(ctx.chat.id);
   if (!user) {
     return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
+  }
+  if (!subscriptionsService.hasOrchestratorAccess(user.status)) {
+    return ctx.reply(getSubscriptionBlockedMessage(user.status));
   }
 
   try {
@@ -635,6 +653,9 @@ bot.on(message('text'), async (ctx) => {
     return ctx.reply(
       'No estás vinculado todavía. Usá /start para vincular tu cuenta.'
     );
+  }
+  if (!subscriptionsService.hasOrchestratorAccess(user.status)) {
+    return ctx.reply(getSubscriptionBlockedMessage(user.status));
   }
 
   const userMessage = ctx.message.text;

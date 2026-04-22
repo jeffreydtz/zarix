@@ -8,6 +8,14 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- Para búsqueda full-text rápida
 
+-- Estado de suscripción del producto SaaS (feature flags de acceso).
+CREATE TYPE subscription_status AS ENUM (
+  'ACTIVE',
+  'GRACE_PERIOD',
+  'PAST_DUE',
+  'CANCELED'
+);
+
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 1. USERS (extend Supabase Auth)
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -18,6 +26,10 @@ CREATE TABLE users (
   gemini_api_key TEXT,
   telegram_bot_token TEXT,
   telegram_webhook_secret TEXT,
+  mp_preapproval_id TEXT,
+  status subscription_status NOT NULL DEFAULT 'ACTIVE',
+  current_period_end TIMESTAMPTZ,
+  grace_period_end TIMESTAMPTZ,
   default_currency TEXT NOT NULL DEFAULT 'ARS',
   timezone TEXT NOT NULL DEFAULT 'America/Argentina/Buenos_Aires',
   notification_time TIME DEFAULT '22:00:00',
@@ -29,6 +41,11 @@ CREATE TABLE users (
 );
 
 CREATE INDEX idx_users_telegram ON users(telegram_chat_id) WHERE telegram_chat_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_users_mp_preapproval_id ON users(mp_preapproval_id)
+  WHERE mp_preapproval_id IS NOT NULL;
+CREATE INDEX idx_users_subscription_status ON users(status);
+CREATE INDEX idx_users_grace_period_end ON users(grace_period_end)
+  WHERE status = 'GRACE_PERIOD';
 
 CREATE UNIQUE INDEX idx_users_telegram_webhook_secret ON users(telegram_webhook_secret)
   WHERE telegram_webhook_secret IS NOT NULL;
@@ -472,7 +489,22 @@ ALTER TABLE bot_sessions ENABLE ROW LEVEL SECURITY;
 
 -- Users: solo puede ver y editar su propio perfil
 CREATE POLICY users_select ON users FOR SELECT USING (auth.uid() = id);
-CREATE POLICY users_update ON users FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY users_update ON users
+  FOR UPDATE
+  USING (auth.uid() = id)
+  WITH CHECK (
+    auth.uid() = id
+    AND status = (SELECT u.status FROM users u WHERE u.id = auth.uid())
+    AND mp_preapproval_id IS NOT DISTINCT FROM (
+      SELECT u.mp_preapproval_id FROM users u WHERE u.id = auth.uid()
+    )
+    AND current_period_end IS NOT DISTINCT FROM (
+      SELECT u.current_period_end FROM users u WHERE u.id = auth.uid()
+    )
+    AND grace_period_end IS NOT DISTINCT FROM (
+      SELECT u.grace_period_end FROM users u WHERE u.id = auth.uid()
+    )
+  );
 
 -- Accounts: solo sus propias cuentas (TO authenticated; anon sin política = sin acceso)
 CREATE POLICY accounts_select_own ON accounts FOR SELECT TO authenticated USING (auth.uid() = user_id);

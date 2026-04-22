@@ -13,6 +13,8 @@ export type CategoryType = 'expense' | 'income';
 
 export type RecurrenceFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
+export type SubscriptionStatus = 'ACTIVE' | 'GRACE_PERIOD' | 'PAST_DUE' | 'CANCELED';
+
 export type InvestmentType =
   | 'stock_arg'
   | 'cedear'
@@ -90,6 +92,10 @@ export interface User {
   gemini_api_key: string | null;
   telegram_bot_token: string | null;
   telegram_webhook_secret: string | null;
+  mp_preapproval_id: string | null;
+  status: SubscriptionStatus;
+  current_period_end: string | null;
+  grace_period_end: string | null;
   default_currency: string;
   timezone: string;
   notification_time: string;

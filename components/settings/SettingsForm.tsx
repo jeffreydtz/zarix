@@ -36,6 +36,11 @@ export default function SettingsForm({
   const [nextWeeklyLabel, setNextWeeklyLabel] = useState<string | null>(null);
   const [nextMonthlyLabel, setNextMonthlyLabel] = useState<string | null>(null);
   const [notifLoading, setNotifLoading] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState(user.status);
+  const [gracePeriodEnd, setGracePeriodEnd] = useState<string | null>(
+    user.grace_period_end
+  );
+  const [billingLoading, setBillingLoading] = useState(false);
 
   useEffect(() => {
     fetch('/api/user/notification-preferences')
@@ -52,6 +57,45 @@ export default function SettingsForm({
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    fetch('/api/user/subscription')
+      .then((r) => r.json())
+      .then((d) => {
+        if (typeof d?.status === 'string') {
+          setSubscriptionStatus(d.status);
+        }
+        if (typeof d?.grace_period_end === 'string' || d?.grace_period_end === null) {
+          setGracePeriodEnd(d.grace_period_end ?? null);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const isPastDue = subscriptionStatus === 'PAST_DUE' || subscriptionStatus === 'CANCELED';
+  const isGracePeriod = subscriptionStatus === 'GRACE_PERIOD';
+
+  const startCheckout = async () => {
+    setBillingLoading(true);
+    setIntegMessage('');
+    try {
+      const res = await fetch('/api/billing/subscription-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.init_point) {
+        throw new Error(data.error || 'No se pudo iniciar el checkout');
+      }
+      window.location.href = data.init_point as string;
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setIntegMessage(`❌ ${err.message || 'No se pudo iniciar el checkout'}`);
+    } finally {
+      setBillingLoading(false);
+    }
+  };
 
   const saveNotificationToggle = async (
     field: 'weekly_summary_enabled' | 'monthly_summary_enabled',
@@ -223,6 +267,39 @@ export default function SettingsForm({
         </div>
       )}
 
+      {isGracePeriod && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-800 p-4 text-amber-900 dark:text-amber-200">
+          <div className="font-semibold">Aviso de pago: estas en periodo de gracia</div>
+          <p className="text-sm mt-1">
+            El ultimo cobro de tu suscripcion fallo. Podes seguir usando la IA temporalmente, pero
+            necesitas actualizar el metodo de pago para no perder acceso.
+          </p>
+          {gracePeriodEnd && (
+            <p className="text-xs mt-2">
+              Limite de gracia: {new Date(gracePeriodEnd).toLocaleString('es-AR')}
+            </p>
+          )}
+        </div>
+      )}
+
+      {isPastDue ? (
+        <div className="card border-2 border-rose-200 dark:border-rose-900">
+          <h2 className="text-xl font-semibold mb-2">Bot de IA bloqueado por suscripcion</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Tu estado actual es <strong>{subscriptionStatus}</strong>. Para volver a usar el panel
+            del bot de IA (Gemini + Telegram), necesitas activar o regularizar el pago.
+          </p>
+          <button
+            type="button"
+            onClick={startCheckout}
+            disabled={billingLoading}
+            className="btn btn-primary disabled:opacity-50"
+          >
+            {billingLoading ? 'Abriendo checkout...' : 'Actualizar suscripcion'}
+          </button>
+        </div>
+      ) : (
+        <>
       <div className="card border-2 border-indigo-200 dark:border-indigo-900">
         <h2 className="text-xl font-semibold mb-2">Google Gemini (IA)</h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -523,6 +600,8 @@ export default function SettingsForm({
           </label>
         </div>
       </div>
+      </>
+      )}
 
       <div className="card">
         <h2 className="text-xl font-semibold mb-4">Preferencias</h2>

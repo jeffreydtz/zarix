@@ -8,6 +8,10 @@ import {
 import { buildBotSystemPrompt } from '@/lib/ai/prompts';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
+import {
+  subscriptionsService,
+  SubscriptionAccessError,
+} from '@/lib/services/subscriptions';
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,6 +23,8 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    await subscriptionsService.ensureOrchestratorAccess(user.id);
 
     const body = await req.json();
     const { message, history } = body;
@@ -57,6 +63,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ response, tier });
   } catch (error) {
+    if (error instanceof SubscriptionAccessError) {
+      return NextResponse.json(
+        { error: error.message, code: 'subscription_required', status: error.status },
+        { status: 403 }
+      );
+    }
     if (error instanceof GeminiMissingKeyError) {
       return NextResponse.json(
         {
