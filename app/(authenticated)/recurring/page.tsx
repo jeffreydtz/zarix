@@ -425,6 +425,48 @@ export default function RecurringPage() {
           />
         </div>
 
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 md:p-5">
+          <div className="flex items-start justify-between gap-3 mb-4">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Info de planes</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Valores de referencia para cargar suscripciones de forma más rápida.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+            {SUBSCRIPTION_SERVICES.map((service) => (
+              <div
+                key={service.id}
+                className="rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-slate-50/70 dark:bg-slate-900/30"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg" aria-hidden>
+                    {service.icon}
+                  </span>
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-100">{service.name}</h3>
+                </div>
+                <div className="space-y-2">
+                  {service.plans.map((plan) => (
+                    <div
+                      key={plan.id}
+                      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-2"
+                    >
+                      <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{plan.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        {formatMoney(plan.amount, plan.currency)} / {FREQ_LABELS[plan.frequency]}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Equiv. anual: {formatMoney(yearlyEquivalent(plan.amount, plan.frequency), plan.currency)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <AnimatePresence>
           {showForm && (
             <motion.div

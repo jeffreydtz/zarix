@@ -18,7 +18,7 @@ const PRIMARY_LINKS = [
 const MORE_LINKS = [
   { href: '/analysis', label: 'Análisis', icon: '📊' },
   { href: '/budgets', label: 'Presupuestos', icon: '🎯' },
-  { href: '/recurring', label: 'Recurrentes', icon: '🔄' },
+  { href: '/recurring', label: 'Planes', icon: '🔄' },
   { href: '/categories', label: 'Categorías', icon: '🏷️' },
   { href: '/settings', label: 'Config', icon: '⚙️' },
 ];

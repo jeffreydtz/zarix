@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { mercadoPagoService } from '@/lib/services/mercado-pago-service';
 import { subscriptionsService } from '@/lib/services/subscriptions';
+import { getBillingPlanById, getBillingPlans } from '@/lib/billing/plans';
 
 export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  return NextResponse.json({ plans: getBillingPlans() });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,34 +29,28 @@ export async function POST(req: NextRequest) {
     }
 
     const body = (await req.json().catch(() => ({}))) as {
-      reason?: string;
-      transaction_amount?: number;
-      currency_id?: string;
+      plan_id?: string;
       back_url?: string;
     };
 
-    const reason = body.reason || process.env.MP_SUBSCRIPTION_REASON || 'Zarix SaaS';
-    const transactionAmount = Number(
-      body.transaction_amount ?? process.env.MP_SUBSCRIPTION_AMOUNT ?? 0
-    );
-    const currencyId = body.currency_id || process.env.MP_SUBSCRIPTION_CURRENCY || 'ARS';
+    const plans = getBillingPlans();
+    const selectedPlan =
+      (body.plan_id && getBillingPlanById(body.plan_id)) || plans[0] || null;
+
+    if (!selectedPlan) {
+      return NextResponse.json({ error: 'No billing plans configured' }, { status: 500 });
+    }
+
     const backUrl =
       body.back_url || process.env.MP_SUBSCRIPTION_BACK_URL || `${req.nextUrl.origin}/settings`;
-
-    if (!Number.isFinite(transactionAmount) || transactionAmount <= 0) {
-      return NextResponse.json(
-        { error: 'Invalid transaction amount for subscription' },
-        { status: 400 }
-      );
-    }
 
     const preapproval = await mercadoPagoService.createPreapproval({
       userId: user.id,
       payerEmail: user.email,
-      reason,
+      reason: selectedPlan.reason,
       backUrl,
-      transactionAmount,
-      currencyId,
+      transactionAmount: selectedPlan.amount,
+      currencyId: selectedPlan.currency,
     });
 
     if (!preapproval.id || !preapproval.init_point) {
@@ -80,6 +79,7 @@ export async function POST(req: NextRequest) {
       init_point: preapproval.init_point,
       preapproval_id: preapproval.id,
       status: nextState.status,
+      plan: selectedPlan,
     });
   } catch (error) {
     console.error('subscription-link error:', error);

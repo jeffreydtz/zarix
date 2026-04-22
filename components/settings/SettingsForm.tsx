@@ -11,6 +11,15 @@ interface SettingsFormProps {
   appBaseUrl: string;
 }
 
+interface BillingPlan {
+  id: string;
+  name: string;
+  description: string;
+  amount: number;
+  currency: string;
+  interval: 'monthly' | 'yearly';
+}
+
 export default function SettingsForm({
   user,
   geminiConfigured,
@@ -41,6 +50,8 @@ export default function SettingsForm({
     user.grace_period_end
   );
   const [billingLoading, setBillingLoading] = useState(false);
+  const [billingPlans, setBillingPlans] = useState<BillingPlan[]>([]);
+  const [selectedPlanId, setSelectedPlanId] = useState('');
 
   useEffect(() => {
     fetch('/api/user/notification-preferences')
@@ -54,6 +65,19 @@ export default function SettingsForm({
         }
         if (d.next_weekly_label) setNextWeeklyLabel(d.next_weekly_label);
         if (d.next_monthly_label) setNextMonthlyLabel(d.next_monthly_label);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/billing/subscription-link')
+      .then((r) => r.json())
+      .then((d) => {
+        const plans = Array.isArray(d?.plans) ? (d.plans as BillingPlan[]) : [];
+        setBillingPlans(plans);
+        if (plans.length > 0) {
+          setSelectedPlanId(plans[0].id);
+        }
       })
       .catch(() => {});
   }, []);
@@ -74,6 +98,14 @@ export default function SettingsForm({
 
   const isPastDue = subscriptionStatus === 'PAST_DUE' || subscriptionStatus === 'CANCELED';
   const isGracePeriod = subscriptionStatus === 'GRACE_PERIOD';
+  const isActivePlan = subscriptionStatus === 'ACTIVE';
+
+  const subscriptionStatusLabel: Record<string, string> = {
+    ACTIVE: 'Activa',
+    GRACE_PERIOD: 'Periodo de gracia',
+    PAST_DUE: 'Pago pendiente',
+    CANCELED: 'Cancelada',
+  };
 
   const startCheckout = async () => {
     setBillingLoading(true);
@@ -82,7 +114,9 @@ export default function SettingsForm({
       const res = await fetch('/api/billing/subscription-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          plan_id: selectedPlanId || undefined,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.init_point) {
@@ -266,6 +300,75 @@ export default function SettingsForm({
           {integMessage}
         </div>
       )}
+
+      <div className="card border-2 border-violet-200 dark:border-violet-900">
+        <h2 className="text-xl font-semibold mb-2">Plan y suscripción</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          Estado de la pasarela de pagos y selección del plan a contratar.
+        </p>
+        {billingPlans.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+            {billingPlans.map((plan) => (
+              <button
+                key={plan.id}
+                type="button"
+                onClick={() => setSelectedPlanId(plan.id)}
+                className={`text-left rounded-xl border p-3 transition-colors ${
+                  selectedPlanId === plan.id
+                    ? 'border-violet-400 bg-violet-50 dark:bg-violet-950/30 dark:border-violet-700'
+                    : 'border-gray-200 dark:border-gray-700'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-medium">{plan.name}</p>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700">
+                    {plan.interval === 'yearly' ? 'Anual' : 'Mensual'}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{plan.description}</p>
+                <p className="text-sm font-semibold mt-2">
+                  {plan.currency} {plan.amount.toLocaleString('es-AR', { maximumFractionDigits: 2 })}
+                </p>
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <span className="text-sm text-gray-500">Estado:</span>
+          <span
+            className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+              isActivePlan
+                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200'
+                : isGracePeriod
+                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200'
+                  : 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200'
+            }`}
+          >
+            {subscriptionStatusLabel[subscriptionStatus] || subscriptionStatus}
+          </span>
+          {gracePeriodEnd && (
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Límite: {new Date(gracePeriodEnd).toLocaleString('es-AR')}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={startCheckout}
+            disabled={billingLoading}
+            className="btn btn-primary disabled:opacity-50"
+          >
+            {billingLoading ? 'Abriendo checkout...' : 'Gestionar suscripción'}
+          </button>
+          <a
+            href="/recurring"
+            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm"
+          >
+            Ver planes y recurrentes
+          </a>
+        </div>
+      </div>
 
       {isGracePeriod && (
         <div className="rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-800 p-4 text-amber-900 dark:text-amber-200">
