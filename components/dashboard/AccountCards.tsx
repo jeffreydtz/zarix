@@ -33,6 +33,11 @@ function AccountCards({ accounts }: AccountCardsProps) {
       <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar -mx-4 px-4">
         {accounts.map((account, index) => {
           const isCreditCard = account.type === 'credit_card';
+          const isMulticurrencyCard =
+            isCreditCard &&
+            account.is_multicurrency &&
+            typeof account.multicurrency_balance_primary === 'number' &&
+            typeof account.multicurrency_balance_secondary === 'number';
           const creditUsed = isCreditCard ? Math.abs(account.balance) : 0;
           const creditLimit = account.credit_limit || 0;
           const creditUtilization = creditLimit > 0 ? (creditUsed / creditLimit) * 100 : 0;
@@ -70,15 +75,34 @@ function AccountCards({ accounts }: AccountCardsProps) {
 
               <div className="mb-2">
                 <div className="text-sm font-medium opacity-90 mb-1">{getAccountDisplayName(account)}</div>
-                <div className="text-3xl font-bold tracking-tight">
-                  {account.is_debt
-                    ? `-$${Math.abs(Number(account.balance)).toLocaleString('es-AR', {
+                {isMulticurrencyCard ? (
+                  <div className="space-y-0.5">
+                    <div className="text-2xl font-bold tracking-tight">
+                      -$
+                      {Math.abs(Number(account.multicurrency_balance_primary)).toLocaleString('es-AR', {
                         minimumFractionDigits: 2,
-                      })}`
-                    : `$${Number(account.balance).toLocaleString('es-AR', {
+                      })}{' '}
+                      {account.currency}
+                    </div>
+                    <div className="text-2xl font-bold tracking-tight">
+                      -$
+                      {Math.abs(Number(account.multicurrency_balance_secondary)).toLocaleString('es-AR', {
                         minimumFractionDigits: 2,
-                      })}`}
-                </div>
+                      })}{' '}
+                      {account.secondary_currency}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-3xl font-bold tracking-tight">
+                    {account.is_debt
+                      ? `-$${Math.abs(Number(account.balance)).toLocaleString('es-AR', {
+                          minimumFractionDigits: 2,
+                        })}`
+                      : `$${Number(account.balance).toLocaleString('es-AR', {
+                          minimumFractionDigits: 2,
+                        })}`}
+                  </div>
+                )}
               </div>
 
               {Number(account.balance) !== 0 && (

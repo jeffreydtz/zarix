@@ -52,6 +52,8 @@ export interface CreateAccountInput {
 export interface AccountWithBalance extends Account {
   balance_usd?: number;
   balance_ars_blue?: number;
+  multicurrency_balance_primary?: number;
+  multicurrency_balance_secondary?: number;
 }
 
 /** Totales derivados de `list()` — misma cotización que cada fila. */
@@ -73,6 +75,88 @@ function roundMoney(n: number): number {
 }
 
 class AccountsService {
+  private postgrestQuotedUuidList(ids: string[]): string {
+    return ids.map((id) => `"${id.replace(/"/g, '\\"')}"`).join(',');
+  }
+
+  private async computeMulticurrencyBalances(
+    userId: string,
+    accounts: Account[]
+  ): Promise<Map<string, { primary: number; secondary: number }>> {
+    const supabase = createServiceClientSync();
+    const multi = accounts.filter((a) => a.is_multicurrency && Boolean(a.secondary_currency));
+    const out = new Map<string, { primary: number; secondary: number }>();
+    if (multi.length === 0) return out;
+
+    const byId = new Map(multi.map((a) => [a.id, a] as const));
+    for (const a of multi) out.set(a.id, { primary: 0, secondary: 0 });
+
+    const inList = this.postgrestQuotedUuidList(multi.map((a) => a.id));
+    const { data: rows, error } = await supabase
+      .from('transactions')
+      .select(
+        'account_id,destination_account_id,type,amount,currency,amount_in_account_currency,exchange_rate'
+      )
+      .eq('user_id', userId)
+      .or(`account_id.in.(${inList}),destination_account_id.in.(${inList})`);
+
+    if (error) throw error;
+
+    const addSigned = (
+      accountId: string,
+      txCurrencyRaw: string,
+      signedOriginalAmount: number,
+      signedPrimaryFallback: number
+    ) => {
+      const acc = byId.get(accountId);
+      const cur = txCurrencyRaw.trim().toUpperCase();
+      if (!acc) return;
+      const primary = acc.currency.trim().toUpperCase();
+      const secondary = (acc.secondary_currency || '').trim().toUpperCase();
+      const b = out.get(accountId);
+      if (!b) return;
+
+      if (cur === primary) {
+        b.primary += signedOriginalAmount;
+        return;
+      }
+      if (cur === secondary) {
+        b.secondary += signedOriginalAmount;
+        return;
+      }
+      b.primary += signedPrimaryFallback;
+    };
+
+    for (const tx of rows || []) {
+      const amount = Number(tx.amount);
+      const ain = Number(tx.amount_in_account_currency);
+      const rate = Number(tx.exchange_rate ?? 1);
+      const sourceId = tx.account_id as string | null;
+      const destinationId = tx.destination_account_id as string | null;
+
+      if (sourceId && byId.has(sourceId)) {
+        if (tx.type === 'expense') addSigned(sourceId, tx.currency, -amount, -ain);
+        if (tx.type === 'income') addSigned(sourceId, tx.currency, amount, ain);
+        if (tx.type === 'adjustment') addSigned(sourceId, tx.currency, amount, ain);
+        if (tx.type === 'transfer') addSigned(sourceId, tx.currency, -amount, -ain);
+      }
+
+      if (destinationId && byId.has(destinationId) && tx.type === 'transfer') {
+        const destAcc = byId.get(destinationId)!;
+        const txCur = String(tx.currency || '').trim().toUpperCase();
+        const primary = destAcc.currency.trim().toUpperCase();
+        const secondary = (destAcc.secondary_currency || '').trim().toUpperCase();
+        const credited = amount * (Number.isFinite(rate) && rate > 0 ? rate : 1);
+        let creditedCurrency = txCur;
+        if (txCur === primary && secondary && rate !== 1) creditedCurrency = secondary;
+        if (txCur === secondary && rate !== 1) creditedCurrency = primary;
+        addSigned(destinationId, creditedCurrency, credited, credited);
+      }
+    }
+
+    return out;
+  }
+
   private getRateToUsd(usdRates: Record<string, number>, currency: string | null | undefined): number {
     const c = normalizeAccountCurrency(currency);
     const r = usdRates[c];
@@ -188,16 +272,24 @@ class AccountsService {
     }
 
     const usdRates = await this.buildUsdRates(
-      accounts.map((a) => a.currency),
+      accounts.flatMap((a) => [a.currency, a.secondary_currency || '']),
       blueRate
     );
+    const multicurrencyBalances = await this.computeMulticurrencyBalances(userId, accounts as Account[]);
 
     const accountsWithConversion = accounts.map((account) => {
       const balance = Number(account.balance);
       const rateToUSD = this.getRateToUsd(usdRates, account.currency);
       let balanceUSD = 0;
       let balanceARSBlue = 0;
-      if (rateToUSD > 0) {
+      const multi = multicurrencyBalances.get(account.id);
+      if (multi) {
+        const ratePrimary = this.getRateToUsd(usdRates, account.currency);
+        const rateSecondary = this.getRateToUsd(usdRates, account.secondary_currency);
+        if (ratePrimary > 0) balanceUSD += multi.primary * ratePrimary;
+        if (rateSecondary > 0) balanceUSD += multi.secondary * rateSecondary;
+        balanceARSBlue = balanceUSD * blueRate;
+      } else if (rateToUSD > 0) {
         balanceUSD = balance * rateToUSD;
         balanceARSBlue = balanceUSD * blueRate;
       }
@@ -207,6 +299,8 @@ class AccountsService {
         balance,
         balance_usd: balanceUSD,
         balance_ars_blue: balanceARSBlue,
+        multicurrency_balance_primary: multi?.primary,
+        multicurrency_balance_secondary: multi?.secondary,
       };
     });
 
@@ -237,7 +331,11 @@ class AccountsService {
       if (a.include_in_total === false) continue;
 
       if (a.type === 'credit_card') {
-        totalCreditUsed += Math.abs(Number(a.balance));
+        const cardUsed = a.is_multicurrency && a.multicurrency_balance_primary != null
+          ? Math.abs(Number(a.multicurrency_balance_primary)) +
+            Math.abs(Number(a.multicurrency_balance_secondary || 0))
+          : Math.abs(Number(a.balance));
+        totalCreditUsed += cardUsed;
         totalCreditLimit += Number(a.credit_limit || 0);
       }
 

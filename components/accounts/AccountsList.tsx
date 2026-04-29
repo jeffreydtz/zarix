@@ -81,7 +81,15 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
       className="space-y-4"
     >
       <AnimatePresence mode="popLayout">
-        {accounts.map((account, index) => (
+        {accounts.map((account, index) => {
+          const isMulticurrencyCard =
+            account.type === 'credit_card' &&
+            account.is_multicurrency &&
+            typeof account.multicurrency_balance_primary === 'number' &&
+            typeof account.multicurrency_balance_secondary === 'number';
+          const primaryCur = account.currency;
+          const secondaryCur = account.secondary_currency || '';
+          return (
             <motion.div
               key={account.id}
               layout
@@ -123,20 +131,45 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                   </Link>
 
                   <div className="flex flex-col items-end justify-start gap-1 text-right shrink-0 min-w-[7.5rem]">
-                    <div
-                      className={`text-lg sm:text-xl font-bold tabular-nums flex flex-wrap items-baseline justify-end gap-x-1 ${account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-200'}`}
-                    >
-                      <AnimatedNumber
-                        value={
-                          account.is_debt ? Math.abs(Number(account.balance)) : Number(account.balance)
-                        }
-                        prefix={account.is_debt ? '-$' : '$'}
-                        decimals={2}
-                      />
-                      <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 shrink-0">
-                        {account.currency}
-                      </span>
-                    </div>
+                    {isMulticurrencyCard ? (
+                      <div className="text-right space-y-0.5">
+                        <div className="text-base sm:text-lg font-bold tabular-nums text-red-500">
+                          -$
+                          {Math.abs(Number(account.multicurrency_balance_primary)).toLocaleString('es-AR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}{' '}
+                          <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                            {primaryCur}
+                          </span>
+                        </div>
+                        <div className="text-base sm:text-lg font-bold tabular-nums text-red-500">
+                          -$
+                          {Math.abs(Number(account.multicurrency_balance_secondary)).toLocaleString('es-AR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}{' '}
+                          <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                            {secondaryCur}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        className={`text-lg sm:text-xl font-bold tabular-nums flex flex-wrap items-baseline justify-end gap-x-1 ${account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-200'}`}
+                      >
+                        <AnimatedNumber
+                          value={
+                            account.is_debt ? Math.abs(Number(account.balance)) : Number(account.balance)
+                          }
+                          prefix={account.is_debt ? '-$' : '$'}
+                          decimals={2}
+                        />
+                        <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 shrink-0">
+                          {account.currency}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-1 shrink-0 self-start pt-1">
@@ -228,7 +261,8 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                 </motion.div>
               )}
             </motion.div>
-        ))}
+          );
+        })}
       </AnimatePresence>
 
       {aggregates && (

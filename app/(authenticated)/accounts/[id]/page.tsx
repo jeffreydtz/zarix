@@ -46,6 +46,11 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
     const balance = Number(account.balance);
     const typeLabel = getAccountTypeLabelEs(account.type);
     const enriched = accounts.find((a) => a.id === account.id) as AccountWithBalance | undefined;
+    const isMulticurrencyCard =
+      account.type === 'credit_card' &&
+      account.is_multicurrency &&
+      typeof enriched?.multicurrency_balance_primary === 'number' &&
+      typeof enriched?.multicurrency_balance_secondary === 'number';
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
@@ -78,18 +83,41 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                 <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5">
                   Saldo actual
                 </p>
-                <p
-                  className={`text-3xl font-bold tabular-nums ${
-                    account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-100'
-                  }`}
-                >
-                  {account.is_debt ? '-' : ''}$
-                  {(account.is_debt ? Math.abs(balance) : balance).toLocaleString('es-AR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}{' '}
-                  <span className="text-lg font-medium text-slate-500">{account.currency}</span>
-                </p>
+                {isMulticurrencyCard ? (
+                  <div className="space-y-1">
+                    <p className="text-3xl font-bold tabular-nums text-red-500">
+                      -$
+                      {Math.abs(Number(enriched.multicurrency_balance_primary)).toLocaleString('es-AR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{' '}
+                      <span className="text-lg font-medium text-slate-500">{account.currency}</span>
+                    </p>
+                    <p className="text-3xl font-bold tabular-nums text-red-500">
+                      -$
+                      {Math.abs(Number(enriched.multicurrency_balance_secondary)).toLocaleString('es-AR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{' '}
+                      <span className="text-lg font-medium text-slate-500">
+                        {account.secondary_currency}
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  <p
+                    className={`text-3xl font-bold tabular-nums ${
+                      account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-100'
+                    }`}
+                  >
+                    {account.is_debt ? '-' : ''}$
+                    {(account.is_debt ? Math.abs(balance) : balance).toLocaleString('es-AR', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}{' '}
+                    <span className="text-lg font-medium text-slate-500">{account.currency}</span>
+                  </p>
+                )}
                 {enriched && Math.abs(balance) > 1e-8 && (
                   <div className="mt-1">
                     <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5">
