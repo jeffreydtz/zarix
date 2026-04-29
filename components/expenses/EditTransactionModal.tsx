@@ -31,6 +31,7 @@ export default function EditTransactionModal({
   onSave,
 }: EditTransactionModalProps) {
   const [loading, setLoading] = useState(false);
+  const [duplicating, setDuplicating] = useState(false);
   const [formData, setFormData] = useState<{
     type: typeof transaction.type;
     amount: string;
@@ -104,6 +105,52 @@ export default function EditTransactionModal({
       alert(error.message || 'Error al eliminar el movimiento');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDuplicate = async () => {
+    setDuplicating(true);
+    try {
+      const payload: Record<string, unknown> = {
+        type: formData.type,
+        accountId: formData.account_id,
+        amount: parseFloat(formData.amount),
+        currency: formData.currency,
+        categoryId: formData.category_id || undefined,
+        description: formData.description || undefined,
+        notes: formData.notes || undefined,
+        tags: transaction.tags || undefined,
+        transactionDate: calendarDateToUtcNoonIso(formData.transaction_date),
+      };
+
+      if (formData.type === 'transfer' && transaction.destination_account_id) {
+        payload.destinationAccountId = transaction.destination_account_id;
+        if (
+          typeof transaction.exchange_rate === 'number' &&
+          Number.isFinite(transaction.exchange_rate) &&
+          transaction.exchange_rate > 0
+        ) {
+          payload.exchangeRateOverride = transaction.exchange_rate;
+        }
+      }
+
+      const response = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Error al duplicar el movimiento');
+      }
+
+      onSave();
+    } catch (error: any) {
+      console.error('Error:', error);
+      alert(error.message || 'Error al duplicar el movimiento');
+    } finally {
+      setDuplicating(false);
     }
   };
 
@@ -279,15 +326,23 @@ export default function EditTransactionModal({
           <div className="flex gap-3 pt-4">
             <button
               type="button"
+              onClick={handleDuplicate}
+              disabled={loading || duplicating}
+              className="btn flex-1 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+            >
+              {duplicating ? 'Duplicando...' : 'Duplicar'}
+            </button>
+            <button
+              type="button"
               onClick={handleDelete}
-              disabled={loading}
+              disabled={loading || duplicating}
               className="btn btn-danger flex-1"
             >
               Eliminar
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || duplicating}
               className="btn btn-primary flex-[2]"
             >
               {loading ? 'Guardando...' : 'Guardar Cambios'}
