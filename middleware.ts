@@ -36,6 +36,7 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isPublicPath =
+    req.nextUrl.pathname === '/' ||
     req.nextUrl.pathname.startsWith('/login') ||
     req.nextUrl.pathname.startsWith('/register') ||
     req.nextUrl.pathname.startsWith('/auth');
