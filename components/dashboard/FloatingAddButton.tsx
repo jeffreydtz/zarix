@@ -8,6 +8,11 @@ import {
   todayLocalYmd,
 } from '@/lib/transaction-date';
 import {
+  TRANSACTION_CURRENCIES,
+  coerceTransactionCurrency,
+  type TransactionCurrency,
+} from '@/lib/constants/transaction-currencies';
+import {
   fetchJsonArray,
   getOfflineCachedAccounts,
   getOfflineCachedCategories,
@@ -45,6 +50,7 @@ export default function FloatingAddButton() {
 
   const [type, setType] = useState<'expense' | 'income'>('expense');
   const [amount, setAmount] = useState('');
+  const [amountCurrency, setAmountCurrency] = useState<TransactionCurrency>('ARS');
   const [accountId, setAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
@@ -78,6 +84,7 @@ export default function FloatingAddButton() {
   const resetForm = () => {
     setType('expense');
     setAmount('');
+    setAmountCurrency('ARS');
     setAccountId('');
     setCategoryId('');
     setDescription('');
@@ -104,7 +111,7 @@ export default function FloatingAddButton() {
       type,
       accountId,
       amount: parseFloat(amount),
-      currency: account.currency,
+      currency: amountCurrency,
       categoryId: categoryId || null,
       description,
       transactionDate: calendarDateToUtcNoonIso(transactionDateYmd),
@@ -295,6 +302,18 @@ export default function FloatingAddButton() {
                       className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
+                    <select
+                      value={amountCurrency}
+                      onChange={(e) => setAmountCurrency(coerceTransactionCurrency(e.target.value))}
+                      className="w-[5.5rem] shrink-0 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      title="Moneda del monto"
+                    >
+                      {TRANSACTION_CURRENCIES.map((currency) => (
+                        <option key={currency} value={currency}>
+                          {currency}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -305,7 +324,14 @@ export default function FloatingAddButton() {
                   </label>
                   <select
                     value={accountId}
-                    onChange={(e) => setAccountId(e.target.value)}
+                    onChange={(e) => {
+                      const selectedAccountId = e.target.value;
+                      setAccountId(selectedAccountId);
+                      const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
+                      if (selectedAccount) {
+                        setAmountCurrency(coerceTransactionCurrency(selectedAccount.currency));
+                      }
+                    }}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Seleccioná una cuenta</option>
