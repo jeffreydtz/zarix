@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { CategoryIcon } from '@/lib/category-icons';
+import type { TransactionWithCategory } from '@/lib/services/transactions';
+import EditTransactionModal from '@/components/expenses/EditTransactionModal';
 
 type RangeType = 'day' | 'week' | 'month' | 'year' | 'custom';
 type AnalyzerMode = 'expense' | 'income';
@@ -353,6 +355,15 @@ export default function SpendingAnalyzer({
   /** 'all' = todas las monedas (general). */
   const [currencyFilter, setCurrencyFilter] = useState<string>('all');
   const [detailCategory, setDetailCategory] = useState<string | null>(null);
+  const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(null);
+  const [editAccounts, setEditAccounts] = useState<
+    Array<{ id: string; name: string; currency: string; balance: number }>
+  >([]);
+  const [editCategories, setEditCategories] = useState<
+    Array<{ id: string; name: string; type: string; icon: string }>
+  >([]);
+  const [openingEditTxId, setOpeningEditTxId] = useState<string | null>(null);
+  const [editOpenError, setEditOpenError] = useState<string | null>(null);
   const [fetchedUsdArs, setFetchedUsdArs] = useState<number | null>(null);
   const [fetchedCryptoArs, setFetchedCryptoArs] = useState<{ btc?: number; eth?: number } | undefined>();
   /** Tooltips del pie molestan en táctil; solo con puntero fino + hover real. */
@@ -626,6 +637,47 @@ export default function SpendingAnalyzer({
 
   const openCategoryDetail = useCallback((sliceName: string) => {
     setDetailCategory(sliceName === 'Otros' ? '__others__' : sliceName);
+  }, []);
+
+  const openTransactionEditor = useCallback(async (txId: string) => {
+    setOpeningEditTxId(txId);
+    setEditOpenError(null);
+    try {
+      const [txRes, accountsRes, categoriesRes] = await Promise.all([
+        fetch(`/api/transactions/${encodeURIComponent(txId)}`, { cache: 'no-store' }),
+        fetch('/api/accounts', { cache: 'no-store' }),
+        fetch('/api/categories', { cache: 'no-store' }),
+      ]);
+
+      if (!txRes.ok) throw new Error('No se pudo cargar el movimiento');
+      if (!accountsRes.ok) throw new Error('No se pudieron cargar las cuentas');
+      if (!categoriesRes.ok) throw new Error('No se pudieron cargar las categorías');
+
+      const [txData, accountsData, categoriesData] = await Promise.all([
+        txRes.json(),
+        accountsRes.json(),
+        categoriesRes.json(),
+      ]);
+
+      setEditAccounts(Array.isArray(accountsData) ? accountsData : []);
+      setEditCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      setEditingTx(txData as TransactionWithCategory);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'No se pudo abrir la edición';
+      setEditOpenError(message);
+    } finally {
+      setOpeningEditTxId(null);
+    }
+  }, []);
+
+  const closeEditor = useCallback(() => {
+    setEditingTx(null);
+  }, []);
+
+  const handleEditorSave = useCallback(() => {
+    setEditingTx(null);
+    setDetailCategory(null);
+    window.location.reload();
   }, []);
 
   const movePeriod = useCallback((direction: -1 | 1) => {
@@ -925,11 +977,11 @@ export default function SpendingAnalyzer({
             role="dialog"
             aria-modal="true"
             aria-labelledby="analyzer-detail-title"
-            className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl w-full sm:max-w-lg max-h-[88vh] overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700"
+            className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl w-full sm:max-w-2xl max-h-[88vh] overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
-              <h4 id="analyzer-detail-title" className="font-semibold text-slate-800 dark:text-slate-100 pr-2">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+              <h4 id="analyzer-detail-title" className="font-semibold text-lg text-slate-800 dark:text-slate-100 pr-2">
                 {detailCategory === '__others__' ? 'Otros (varias categorías)' : detailCategory}
               </h4>
               <button
@@ -941,25 +993,51 @@ export default function SpendingAnalyzer({
                 ✕
               </button>
             </div>
-            <p className="text-xs text-slate-500 px-4 pb-2">{periodLabel}</p>
-            <ul className="overflow-y-auto max-h-[min(60vh,480px)] px-4 pb-4 space-y-3">
+            <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-800">
+              <p className="text-sm text-slate-500 dark:text-slate-400">{periodLabel}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Tocá un movimiento para editarlo.
+              </p>
+              {editOpenError && (
+                <p className="mt-2 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                  {editOpenError}
+                </p>
+              )}
+            </div>
+            <ul className="overflow-y-auto max-h-[min(60vh,520px)] p-4 space-y-3">
               {detailTransactions.map((tx) => (
                 <li
                   key={tx.id}
-                  className="flex justify-between gap-3 text-sm border-b border-slate-100 dark:border-slate-800 pb-3 last:border-0"
+                  className="list-none"
                 >
-                  <div className="min-w-0">
-                    <div className="text-slate-500 text-xs">{formatTxRowDate(tx.transaction_date)}</div>
-                    <div className="text-slate-800 dark:text-slate-200 truncate">
-                      {tx.description?.trim() || 'Sin descripción'}
+                  <button
+                    type="button"
+                    onClick={() => openTransactionEditor(tx.id)}
+                    disabled={openingEditTxId === tx.id}
+                    className="w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-left transition-colors hover:bg-slate-100/80 disabled:opacity-70 dark:border-slate-700 dark:bg-slate-800/70 dark:hover:bg-slate-700/80"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                          {formatTxRowDate(tx.transaction_date)}
+                        </div>
+                        <div className="mt-1 text-sm sm:text-base text-slate-800 dark:text-slate-100 truncate">
+                          {tx.description?.trim() || 'Sin descripción'}
+                        </div>
+                        <div className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate">
+                          {tx.account?.name ?? 'Sin cuenta'} · {(tx.account?.currency || tx.currency || '—').toUpperCase()}
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-semibold text-sm sm:text-base text-slate-700 dark:text-slate-200 tabular-nums">
+                          ${txDisplayAmount(tx).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                        </div>
+                        <div className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+                          {openingEditTxId === tx.id ? 'Abriendo…' : 'Editar ›'}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-xs text-slate-400 truncate">
-                      {tx.account?.name ?? 'Sin cuenta'} · {(tx.account?.currency || tx.currency || '—').toUpperCase()}
-                    </div>
-                  </div>
-                  <div className="font-semibold text-slate-700 dark:text-slate-200 shrink-0 tabular-nums">
-                    ${txDisplayAmount(tx).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
-                  </div>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -969,6 +1047,18 @@ export default function SpendingAnalyzer({
           </div>
         </div>
       )}
+
+      <AnimatePresence>
+        {editingTx && (
+          <EditTransactionModal
+            transaction={editingTx}
+            accounts={editAccounts}
+            categories={editCategories}
+            onClose={closeEditor}
+            onSave={handleEditorSave}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
