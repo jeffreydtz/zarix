@@ -301,17 +301,19 @@ export default function MarketingLanding() {
             </motion.div>
           </motion.div>
         </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent via-slate-950/70 to-slate-950" />
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute bottom-8 left-1/2 h-10 w-10 -translate-x-1/2 rounded-full border border-slate-700/70 bg-slate-900/70"
+          animate={{ y: [0, 8, 0], opacity: [0.45, 1, 0.45] }}
+          transition={{ duration: 1.8, repeat: Infinity }}
+        >
+          <span className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-b-2 border-r-2 border-slate-300" />
+        </motion.div>
       </section>
 
-      <section id="storytelling" className="mx-auto min-h-screen max-w-6xl snap-start px-6 pb-14">
-        <div className="mb-8 pt-10 sm:pt-16">
-          <h2 className="text-3xl font-semibold sm:text-4xl">Scroll storytelling</h2>
-          <p className="mt-3 max-w-2xl text-slate-300">
-            Capitulo por capitulo, con transiciones full-screen y texto que cobra vida mientras
-            avanzas.
-          </p>
-        </div>
-
+      <section id="storytelling" className="relative mx-auto min-h-screen max-w-6xl snap-start px-6 pb-14">
+        <div className="pointer-events-none absolute -top-14 inset-x-0 h-24 bg-gradient-to-b from-transparent to-slate-950" />
         <div ref={storytellingRef} className="relative h-[320vh] snap-y snap-mandatory">
           <div className="sticky top-0 flex min-h-screen items-center">
             <div className="grid w-full gap-8 lg:grid-cols-[1fr_1fr]">
