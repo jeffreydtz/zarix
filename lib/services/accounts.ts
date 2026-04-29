@@ -283,13 +283,7 @@ class AccountsService {
       let balanceUSD = 0;
       let balanceARSBlue = 0;
       const multi = multicurrencyBalances.get(account.id);
-      if (multi) {
-        const ratePrimary = this.getRateToUsd(usdRates, account.currency);
-        const rateSecondary = this.getRateToUsd(usdRates, account.secondary_currency);
-        if (ratePrimary > 0) balanceUSD += multi.primary * ratePrimary;
-        if (rateSecondary > 0) balanceUSD += multi.secondary * rateSecondary;
-        balanceARSBlue = balanceUSD * blueRate;
-      } else if (rateToUSD > 0) {
+      if (rateToUSD > 0) {
         balanceUSD = balance * rateToUSD;
         balanceARSBlue = balanceUSD * blueRate;
       }
@@ -331,11 +325,7 @@ class AccountsService {
       if (a.include_in_total === false) continue;
 
       if (a.type === 'credit_card') {
-        const cardUsed = a.is_multicurrency && a.multicurrency_balance_primary != null
-          ? Math.abs(Number(a.multicurrency_balance_primary)) +
-            Math.abs(Number(a.multicurrency_balance_secondary || 0))
-          : Math.abs(Number(a.balance));
-        totalCreditUsed += cardUsed;
+        totalCreditUsed += Math.abs(Number(a.balance));
         totalCreditLimit += Number(a.credit_limit || 0);
       }
 
