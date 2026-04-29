@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { GeminiMissingKeyError } from '@/lib/ai/gemini';
-import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import {
   subscriptionsService,
@@ -27,28 +26,55 @@ export async function POST(req: NextRequest) {
 
     await subscriptionsService.ensureOrchestratorAccess(user.id);
 
-    const body = (await req.json()) as InternalAiChatRequest;
+    let body: InternalAiChatRequest;
+    try {
+      body = (await req.json()) as InternalAiChatRequest;
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
     const { message, history } = body;
 
     if (!message || !message.trim()) {
       return NextResponse.json({ error: 'Message required' }, { status: 400 });
     }
 
-    const [userProfile, accounts, categories, monthSummary] = await Promise.all([
+    const [userProfile, accountsResult, userCategories, systemCategories, monthSummary] = await Promise.all([
       supabase.from('users').select('*').eq('id', user.id).single(),
-      accountsService.list(user.id),
-      supabase.from('categories').select('*').or(`user_id.eq.${user.id},is_system.eq.true`),
+      supabase
+        .from('accounts')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true }),
+      supabase.from('categories').select('*').eq('user_id', user.id),
+      supabase.from('categories').select('*').eq('is_system', true),
       transactionsService.getMonthSummary(user.id, new Date()),
     ]);
 
-    if (userProfile.error || categories.error) {
-      throw new Error('Error loading context');
+    if (
+      userProfile.error ||
+      accountsResult.error ||
+      userCategories.error ||
+      systemCategories.error
+    ) {
+      throw new Error(
+        [
+          userProfile.error?.message && `user: ${userProfile.error.message}`,
+          accountsResult.error?.message && `accounts: ${accountsResult.error.message}`,
+          userCategories.error?.message && `userCategories: ${userCategories.error.message}`,
+          systemCategories.error?.message && `systemCategories: ${systemCategories.error.message}`,
+        ]
+          .filter(Boolean)
+          .join(' | ') || 'Error loading context'
+      );
     }
+
+    const categories = [...(userCategories.data ?? []), ...(systemCategories.data ?? [])];
 
     const financialContext = {
       user: userProfile.data,
-      accounts,
-      categories: categories.data,
+      accounts: accountsResult.data ?? [],
+      categories,
       monthSummary,
     };
 
