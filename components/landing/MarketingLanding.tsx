@@ -231,7 +231,10 @@ export default function MarketingLanding() {
       <motion.div className="fixed left-0 right-0 top-0 z-50 h-0.5 origin-left bg-indigo-400" style={{ scaleX: smoothProgress }} />
 
       <section className="relative min-h-screen snap-start overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.35),transparent_60%)]" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.35),transparent_60%)]"
+        />
         <div className="mx-auto max-w-6xl px-6 pb-24 pt-8 sm:pt-14">
           <div className="mb-12 flex items-center justify-between">
             <div className="text-xl font-semibold tracking-tight">Zarix</div>
