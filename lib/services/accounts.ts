@@ -137,7 +137,11 @@ class AccountsService {
       if (sourceId && byId.has(sourceId)) {
         if (tx.type === 'expense') addSigned(sourceId, tx.currency, -amount, -ain);
         if (tx.type === 'income') addSigned(sourceId, tx.currency, amount, ain);
-        if (tx.type === 'adjustment') addSigned(sourceId, tx.currency, amount, ain);
+        if (tx.type === 'adjustment') {
+          // En ajustes, `amount` se guarda siempre positivo; el signo real está en `amount_in_account_currency`.
+          // Usar `amount` acá infla la deuda en tarjetas bimoneda cuando el ajuste fue negativo.
+          addSigned(sourceId, tx.currency, ain, ain);
+        }
         if (tx.type === 'transfer') addSigned(sourceId, tx.currency, -amount, -ain);
       }
 
