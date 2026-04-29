@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import { CategoryIcon, getOptionTextIcon } from '@/lib/category-icons';
 
 interface RecurringRule {
@@ -352,6 +353,9 @@ export default function RecurringPage() {
   const activeRules = rules.filter((rule) => rule.is_active);
   const pausedRules = rules.filter((rule) => !rule.is_active);
   const activeSubscriptions = activeRules.filter((rule) => rule.is_subscription);
+  const activeGenericRules = activeRules.filter((rule) => !rule.is_subscription);
+  const pausedSubscriptions = pausedRules.filter((rule) => rule.is_subscription);
+  const pausedGenericRules = pausedRules.filter((rule) => !rule.is_subscription);
 
   const monthlyByCurrency = useMemo(() => {
     const totals: Record<string, number> = {};
@@ -389,24 +393,32 @@ export default function RecurringPage() {
       <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Suscripciones y recurrentes</h1>
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Recurrentes (gastos e ingresos)</h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-              Elegí servicio, plan, renovación y notificaciones en un solo lugar.
+              Acá gestionás servicios recurrentes (Netflix, Spotify, etc.) y reglas manuales. Los planes Zarix (Gratis/Premium) se configuran en Configuración.
             </p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-purple-500/20 transition-colors"
-          >
-            <span>{showForm ? '✕' : '+'}</span> {showForm ? 'Cerrar' : 'Nueva regla'}
-          </motion.button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/settings"
+              className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              Plan Zarix en Configuración
+            </Link>
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowForm(!showForm)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-purple-500/20 transition-colors"
+            >
+              <span>{showForm ? '✕' : '+'}</span> {showForm ? 'Cerrar' : 'Nueva regla recurrente'}
+            </motion.button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <StatCard
-            title="Suscripciones activas"
+            title="Servicios externos activos"
             value={String(activeSubscriptions.length)}
             caption={`${activeSubscriptions.filter((rule) => rule.notification_enabled).length} con notificación`}
             gradient="from-fuchsia-500/10 to-purple-500/10"
@@ -428,9 +440,9 @@ export default function RecurringPage() {
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 md:p-5">
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Info de planes</h2>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Info de servicios</h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                Valores de referencia para cargar suscripciones de forma más rápida.
+                Catálogo de referencia para cargar gastos de servicios recurrentes más rápido.
               </p>
             </div>
           </div>
@@ -476,7 +488,7 @@ export default function RecurringPage() {
               className="overflow-hidden"
             >
               <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">✨ Nueva regla</h2>
+                <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">✨ Nueva regla recurrente</h2>
 
                 <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-700 mb-5">
                   <button
@@ -484,14 +496,14 @@ export default function RecurringPage() {
                     onClick={() => setForm((prev) => ({ ...prev, kind: 'subscription', type: 'expense' }))}
                     className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${form.kind === 'subscription' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-300'}`}
                   >
-                    📺 Suscripción
+                    📺 Servicio externo
                   </button>
                   <button
                     type="button"
                     onClick={() => setForm((prev) => ({ ...prev, kind: 'generic' }))}
                     className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${form.kind === 'generic' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-300'}`}
                   >
-                    🔁 Recurrente general
+                    🔁 Recurrente manual
                   </button>
                 </div>
 
@@ -516,7 +528,7 @@ export default function RecurringPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Plan</label>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Paquete del servicio</label>
                         <select
                           required
                           value={form.planId}
@@ -524,7 +536,7 @@ export default function RecurringPage() {
                           disabled={!selectedService}
                           className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 disabled:opacity-60 focus:ring-2 focus:ring-purple-500 outline-none"
                         >
-                          <option value="">Elegí un plan</option>
+                          <option value="">Elegí un paquete</option>
                           {(selectedService?.plans || []).map((plan) => (
                             <option key={plan.id} value={plan.id}>
                               {plan.name} - {formatMoney(plan.amount, plan.currency)} / {FREQ_LABELS[plan.frequency]}
@@ -732,24 +744,42 @@ export default function RecurringPage() {
             <div className="text-6xl mb-4">✨</div>
             <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">Sin reglas todavía</h3>
             <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-              Cargá tus suscripciones (Netflix, YouTube Premium y más) y también cualquier gasto o ingreso recurrente.
+              Cargá tus servicios recurrentes (Netflix, YouTube Premium y más) o cualquier gasto/ingreso recurrente manual.
             </p>
           </motion.div>
         ) : (
           <div className="space-y-4">
-            {activeRules.length > 0 && (
+            {activeSubscriptions.length > 0 && (
               <RuleSection
-                title={`✅ Activas (${activeRules.length})`}
-                rules={activeRules}
+                title={`📺 Servicios externos activos (${activeSubscriptions.length})`}
+                rules={activeSubscriptions}
                 onToggle={toggleActive}
                 onToggleNotification={toggleNotification}
                 onDelete={deleteRule}
               />
             )}
-            {pausedRules.length > 0 && (
+            {activeGenericRules.length > 0 && (
               <RuleSection
-                title={`⏸️ Pausadas (${pausedRules.length})`}
-                rules={pausedRules}
+                title={`🔁 Recurrentes activos (${activeGenericRules.length})`}
+                rules={activeGenericRules}
+                onToggle={toggleActive}
+                onToggleNotification={toggleNotification}
+                onDelete={deleteRule}
+              />
+            )}
+            {pausedSubscriptions.length > 0 && (
+              <RuleSection
+                title={`⏸️ Servicios externos pausados (${pausedSubscriptions.length})`}
+                rules={pausedSubscriptions}
+                onToggle={toggleActive}
+                onToggleNotification={toggleNotification}
+                onDelete={deleteRule}
+              />
+            )}
+            {pausedGenericRules.length > 0 && (
+              <RuleSection
+                title={`⏸️ Recurrentes pausados (${pausedGenericRules.length})`}
+                rules={pausedGenericRules}
                 onToggle={toggleActive}
                 onToggleNotification={toggleNotification}
                 onDelete={deleteRule}
