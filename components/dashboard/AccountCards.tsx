@@ -36,7 +36,6 @@ function AccountCards({ accounts }: AccountCardsProps) {
           const isMulticurrencyCard =
             isCreditCard &&
             account.is_multicurrency &&
-            typeof account.multicurrency_balance_primary === 'number' &&
             typeof account.multicurrency_balance_secondary === 'number';
           const creditUsed = isCreditCard ? Math.abs(account.balance) : 0;
           const creditLimit = account.credit_limit || 0;
@@ -79,7 +78,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
                   <div className="space-y-0.5">
                     <div className="text-2xl font-bold tracking-tight">
                       -$
-                      {Math.abs(Number(account.multicurrency_balance_primary)).toLocaleString('es-AR', {
+                      {Math.abs(Number(account.balance)).toLocaleString('es-AR', {
                         minimumFractionDigits: 2,
                       })}{' '}
                       {account.currency}

@@ -85,7 +85,6 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
           const isMulticurrencyCard =
             account.type === 'credit_card' &&
             account.is_multicurrency &&
-            typeof account.multicurrency_balance_primary === 'number' &&
             typeof account.multicurrency_balance_secondary === 'number';
           const primaryCur = account.currency;
           const secondaryCur = account.secondary_currency || '';
@@ -135,7 +134,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                       <div className="text-right space-y-0.5">
                         <div className="text-base sm:text-lg font-bold tabular-nums text-red-500">
                           -$
-                          {Math.abs(Number(account.multicurrency_balance_primary)).toLocaleString('es-AR', {
+                          {Math.abs(Number(account.balance)).toLocaleString('es-AR', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}{' '}

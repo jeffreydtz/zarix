@@ -49,7 +49,6 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
     const isMulticurrencyCard =
       account.type === 'credit_card' &&
       account.is_multicurrency &&
-      typeof enriched?.multicurrency_balance_primary === 'number' &&
       typeof enriched?.multicurrency_balance_secondary === 'number';
 
     return (
@@ -87,7 +86,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                   <div className="space-y-1">
                     <p className="text-3xl font-bold tabular-nums text-red-500">
                       -$
-                      {Math.abs(Number(enriched.multicurrency_balance_primary)).toLocaleString('es-AR', {
+                      {Math.abs(Number(balance)).toLocaleString('es-AR', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}{' '}
