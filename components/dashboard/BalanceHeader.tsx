@@ -97,7 +97,7 @@ export default function BalanceHeader({
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={maybeReduceTransition(shouldReduceMotion, motionTransition.smooth)}
-          className="card bg-gradient-to-br from-emerald-50 via-white to-green-100 dark:from-emerald-500/12 dark:via-surface-elevated dark:to-surface-soft border-emerald-200 dark:border-emerald-500/25"
+          className="card bg-emerald-50/85 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25"
         >
           <div className="flex items-center gap-2 mb-3">
             <motion.span 
@@ -137,7 +137,7 @@ export default function BalanceHeader({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.05 })}
-            className="card bg-gradient-to-br from-violet-50 via-white to-fuchsia-100 dark:from-violet-500/12 dark:via-surface-elevated dark:to-surface-soft border-violet-200 dark:border-violet-500/25 relative"
+            className="card bg-violet-50/85 dark:bg-violet-500/10 border-violet-200 dark:border-violet-500/25 relative"
             >
               <button
                 type="button"
@@ -234,7 +234,7 @@ export default function BalanceHeader({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.12 })}
-          className="card bg-gradient-to-br from-amber-50 via-white to-yellow-100 dark:from-amber-500/12 dark:via-surface-elevated dark:to-surface-soft border-amber-200 dark:border-amber-500/25"
+          className="card bg-amber-50/85 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/25"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
