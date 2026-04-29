@@ -41,7 +41,7 @@ export default function PortfolioSummary({
   totalPnLArsBlue,
   byType,
 }: PortfolioSummaryProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
   return (
     <div className="space-y-4">

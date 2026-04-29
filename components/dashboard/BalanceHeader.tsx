@@ -63,7 +63,7 @@ export default function BalanceHeader({
   totalCreditLimit = 0,
   creditUtilization = 0,
 }: BalanceHeaderProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const hasCreditCards = totalCreditLimit > 0;
   const hasInvestments = investmentsUSD > 0 || investmentsARSBlue > 0;
 

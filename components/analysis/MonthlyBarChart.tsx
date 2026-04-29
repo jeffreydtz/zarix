@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function MonthlyBarChart({ data }: Props) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
   if (data.length === 0) {
     return (

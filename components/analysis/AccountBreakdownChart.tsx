@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function AccountBreakdownChart({ data }: Props) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
   if (data.length === 0) {
     return (

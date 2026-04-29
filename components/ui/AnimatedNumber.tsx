@@ -21,7 +21,7 @@ export default function AnimatedNumber({
   suffix = '',
   className = '',
 }: AnimatedNumberProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const spanRef = useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(0);
   const spring = useSpring(motionValue, {

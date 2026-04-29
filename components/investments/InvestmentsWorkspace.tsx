@@ -22,7 +22,7 @@ export default function InvestmentsWorkspace({
   investmentAccounts,
 }: InvestmentsWorkspaceProps) {
   const router = useRouter();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [portfolio, setPortfolio] = useState(initialPortfolio);
   const [lastLiveAt, setLastLiveAt] = useState<Date | null>(null);
   const [liveLoading, setLiveLoading] = useState(false);

@@ -26,7 +26,7 @@ const MORE_LINKS = [
 
 export default function Navigation({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);

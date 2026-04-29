@@ -20,7 +20,7 @@ export default function ProgressBar({
   showLabel = false,
   animated = true,
 }: ProgressBarProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const percentage = Math.min((value / max) * 100, 100);
 
   const getColorClass = () => {

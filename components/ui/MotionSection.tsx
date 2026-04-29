@@ -17,7 +17,7 @@ export default function MotionSection({
   className,
   intensity = 'normal',
 }: MotionSectionProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const initialY = intensity === 'hero' ? 22 : intensity === 'subtle' ? 10 : 16;
   const duration = intensity === 'hero' ? 0.5 : intensity === 'subtle' ? 0.28 : 0.4;
 

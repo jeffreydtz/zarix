@@ -21,7 +21,7 @@ interface Props {
 }
 
 export default function TopExpenses({ transactions, title = 'Gastos más grandes del mes' }: Props) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
   if (transactions.length === 0) {
     return (

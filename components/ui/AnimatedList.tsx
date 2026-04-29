@@ -15,7 +15,7 @@ export default function AnimatedList({
   className = '',
   staggerDelay = 0.08,
 }: AnimatedListProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const childNodes = Children.toArray(children);
 
   return (

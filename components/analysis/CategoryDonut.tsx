@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function CategoryDonut({ data, title }: Props) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [activeName, setActiveName] = useState<string | null>(null);
 
   if (data.length === 0) {

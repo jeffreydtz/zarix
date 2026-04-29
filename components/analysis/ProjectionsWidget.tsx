@@ -21,7 +21,7 @@ interface ProjectionData {
 }
 
 export default function ProjectionsWidget() {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [data, setData] = useState<ProjectionData | null>(null);
   const [loading, setLoading] = useState(true);
 

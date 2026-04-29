@@ -13,7 +13,7 @@ interface RecentTransactionsProps {
 }
 
 function RecentTransactions({ transactions }: RecentTransactionsProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   /** Más reciente primero; desempate por id para orden estable. */
   const sorted = useMemo(
     () =>

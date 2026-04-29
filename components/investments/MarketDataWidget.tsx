@@ -243,7 +243,7 @@ function MarketSection({
 }
 
 export default function MarketDataWidget() {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [data, setData] = useState<MarketDataClient | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
