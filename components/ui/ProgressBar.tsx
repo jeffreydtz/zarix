@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface ProgressBarProps {
   value: number;
@@ -19,6 +20,7 @@ export default function ProgressBar({
   showLabel = false,
   animated = true,
 }: ProgressBarProps) {
+  const shouldReduceMotion = useReducedMotion();
   const percentage = Math.min((value / max) * 100, 100);
 
   const getColorClass = () => {
@@ -39,13 +41,14 @@ export default function ProgressBar({
       <div className={`w-full bg-slate-200 dark:bg-slate-700 rounded-full ${height} overflow-hidden`}>
         <motion.div
           className={`${height} rounded-full ${getColorClass()}`}
-          initial={animated ? { width: 0 } : { width: `${percentage}%` }}
-          animate={{ width: `${percentage}%` }}
-          transition={{ 
-            duration: animated ? 0.8 : 0, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            delay: animated ? 0.2 : 0,
-          }}
+          style={{ transformOrigin: '0% 50%' }}
+          initial={animated && !shouldReduceMotion ? { scaleX: 0 } : { scaleX: percentage / 100 }}
+          animate={{ scaleX: percentage / 100 }}
+          transition={maybeReduceTransition(shouldReduceMotion, animated ? {
+            ...motionTransition.smooth,
+            duration: 0.75,
+            delay: 0.08,
+          } : motionTransition.instant)}
         />
       </div>
     </div>

@@ -3,6 +3,8 @@ import dynamic from 'next/dynamic';
 import { getCachedUser } from '@/lib/auth/session';
 import { analyticsService } from '@/lib/services/analytics';
 import ProjectionsWidget from '@/components/analysis/ProjectionsWidget';
+import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
+import MotionSection from '@/components/ui/MotionSection';
 
 const CategoryDonut = dynamic(() => import('@/components/analysis/CategoryDonut'), { ssr: false });
 const MonthlyBarChart = dynamic(() => import('@/components/analysis/MonthlyBarChart'), { ssr: false });
@@ -55,131 +57,120 @@ export default async function AnalysisPage() {
     const currentMonthName = monthNames[now.getMonth()];
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors duration-300">
-        <div className="max-w-7xl mx-auto p-4 pb-8 md:pb-10 space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Análisis Financiero
-              </h1>
-              <p className="text-sm text-slate-500">{currentMonthName} {now.getFullYear()}</p>
-            </div>
-          </div>
-
-          {/* Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="card p-4">
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Gastos</div>
-              <div className="text-xl font-bold text-red-600 dark:text-red-400">
+      <PageScaffold
+        hero={(
+          <PageHero
+            eyebrow="Inteligencia financiera"
+            title="Analisis financiero"
+            subtitle={`Tendencias y patrones de ${currentMonthName} ${now.getFullYear()} para anticiparte con mejores decisiones.`}
+          />
+        )}
+      >
+        <MotionSection delay={0.04} intensity="hero">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="card bg-gradient-to-br from-red-50/80 via-white to-red-50/70 dark:from-red-900/15 dark:via-surface-elevated dark:to-red-900/5">
+              <div className="text-xs text-muted-foreground mb-1">Gastos</div>
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                 ${totalExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
               </div>
-              {previousMonthData && (
-                <div className={`text-xs mt-1 ${expensesDiff <= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {expensesDiff >= 0 ? '↑' : '↓'} {Math.abs(expensesDiff).toFixed(0)}% vs mes anterior
+              {previousMonthData ? (
+                <div className={`text-xs mt-1 ${expensesDiff <= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                  {expensesDiff >= 0 ? 'Subio' : 'Bajo'} {Math.abs(expensesDiff).toFixed(0)}% vs mes anterior
                 </div>
-              )}
+              ) : null}
             </div>
 
-            <div className="card p-4">
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Ingresos</div>
-              <div className="text-xl font-bold text-green-600 dark:text-green-400">
+            <div className="card bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/70 dark:from-emerald-900/20 dark:via-surface-elevated dark:to-emerald-900/5">
+              <div className="text-xs text-muted-foreground mb-1">Ingresos</div>
+              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 ${totalIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="card p-4">
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Balance</div>
-              <div className={`text-xl font-bold ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            <div className="card bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/60 dark:from-indigo-900/20 dark:via-surface-elevated dark:to-blue-900/5">
+              <div className="text-xs text-muted-foreground mb-1">Balance</div>
+              <div className={`text-2xl font-bold ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                 {balance >= 0 ? '+' : ''}${balance.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="card p-4">
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Promedio 6 meses</div>
-              <div className="text-xl font-bold text-slate-700 dark:text-slate-300">
+            <div className="card bg-gradient-to-br from-slate-100/80 via-white to-slate-100/60 dark:from-slate-800/60 dark:via-surface-elevated dark:to-slate-800/40">
+              <div className="text-xs text-muted-foreground mb-1">Promedio 6 meses</div>
+              <div className="text-2xl font-bold text-foreground">
                 ${averages.avgExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
               </div>
-              <div className="text-xs text-slate-500">gastos/mes</div>
+              <div className="text-xs text-muted-foreground">gastos / mes</div>
             </div>
           </div>
+        </MotionSection>
 
-          {/* Main Charts Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CategoryDonut 
-              data={categoryBreakdown} 
-              title="Gastos por Categoría" 
-            />
-            
+        <MotionSection delay={0.09} intensity="normal">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6">
+            <CategoryDonut data={categoryBreakdown} title="Gastos por categoria" />
             <MonthlyBarChart data={monthlyTrend} />
           </div>
+        </MotionSection>
 
-          {/* Cash Flow */}
+        <MotionSection delay={0.14} intensity="normal">
           <CashFlowChart data={dailyTrend} />
+        </MotionSection>
 
-          {/* Secondary Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <MotionSection delay={0.18} intensity="subtle">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6">
             <TopExpenses transactions={topExpenses} />
             <AccountBreakdownChart data={accountBreakdown} />
           </div>
+        </MotionSection>
 
-          {/* Income Breakdown (if any) */}
-          {incomeBreakdown.length > 0 && (
-            <CategoryDonut 
-              data={incomeBreakdown} 
-              title="Ingresos por Categoría" 
-            />
-          )}
+        {incomeBreakdown.length > 0 ? (
+          <MotionSection delay={0.23} intensity="subtle">
+            <CategoryDonut data={incomeBreakdown} title="Ingresos por categoria" />
+          </MotionSection>
+        ) : null}
 
-          {/* Insights Section */}
-          <div className="card p-6 bg-gradient-to-br from-emerald-50 to-indigo-50 dark:from-emerald-900/20 dark:to-indigo-900/20 border-emerald-200 dark:border-emerald-800">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <span>🔍</span> Análisis Rápido
-            </h3>
-            <div className="space-y-3 text-sm">
-              {totalExpenses > totalIncome && (
-                <div className="flex items-start gap-2 p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                  <span>⚠️</span>
-                  <span>Gastaste más de lo que ingresaste este mes. Diferencia: ${(totalExpenses - totalIncome).toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
-                </div>
-              )}
-              
-              {categoryBreakdown.length > 0 && (
-                <div className="flex items-start gap-2 p-2 bg-white/50 dark:bg-slate-800/50 rounded-lg">
-                  <span>📊</span>
-                  <span>
-                    Tu categoría más alta es <strong>{categoryBreakdown[0].icon} {categoryBreakdown[0].name}</strong> con ${categoryBreakdown[0].amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ({categoryBreakdown[0].percent.toFixed(0)}% del total)
-                  </span>
-                </div>
-              )}
-              
-              {expensesDiff > 10 && previousMonthData && (
-                <div className="flex items-start gap-2 p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                  <span>📈</span>
-                  <span>Tus gastos aumentaron {expensesDiff.toFixed(0)}% respecto al mes pasado. Revisá los gastos grandes.</span>
-                </div>
-              )}
-              
-              {expensesDiff < -10 && previousMonthData && (
-                <div className="flex items-start gap-2 p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                  <span>🎉</span>
-                  <span>¡Excelente! Redujiste tus gastos {Math.abs(expensesDiff).toFixed(0)}% respecto al mes pasado.</span>
-                </div>
-              )}
+        <MotionSection delay={0.26} intensity="subtle" className="card border-primary/30 bg-gradient-to-br from-primary/10 via-surface to-indigo-100/60 dark:to-indigo-900/20">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <span>Analisis rapido</span>
+          </h3>
+          <div className="space-y-3 text-sm">
+            {totalExpenses > totalIncome ? (
+              <div className="flex items-start gap-2 p-3 rounded-control border border-red-200/70 dark:border-red-900/50 bg-red-100/80 dark:bg-red-900/25">
+                <span>Gastaste mas que tus ingresos este mes. Diferencia: ${(totalExpenses - totalIncome).toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
+              </div>
+            ) : null}
 
-              {totalExpenses > averages.avgExpenses * 1.2 && (
-                <div className="flex items-start gap-2 p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                  <span>💡</span>
-                  <span>Estás 20% por encima de tu promedio de gastos. Todavía quedan días del mes para equilibrar.</span>
-                </div>
-              )}
-            </div>
+            {categoryBreakdown.length > 0 ? (
+              <div className="flex items-start gap-2 p-3 rounded-control border border-border bg-surface-soft/70">
+                <span>
+                  Categoria dominante: <strong>{categoryBreakdown[0].icon} {categoryBreakdown[0].name}</strong> con ${categoryBreakdown[0].amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ({categoryBreakdown[0].percent.toFixed(0)}% del total).
+                </span>
+              </div>
+            ) : null}
+
+            {expensesDiff > 10 && previousMonthData ? (
+              <div className="flex items-start gap-2 p-3 rounded-control border border-amber-200/70 dark:border-amber-900/50 bg-amber-100/80 dark:bg-amber-900/25">
+                <span>Tus gastos subieron {expensesDiff.toFixed(0)}% vs mes pasado. Conviene revisar los consumos mas altos.</span>
+              </div>
+            ) : null}
+
+            {expensesDiff < -10 && previousMonthData ? (
+              <div className="flex items-start gap-2 p-3 rounded-control border border-emerald-200/70 dark:border-emerald-900/50 bg-emerald-100/70 dark:bg-emerald-900/25">
+                <span>Buen avance: redujiste gastos {Math.abs(expensesDiff).toFixed(0)}% frente al mes anterior.</span>
+              </div>
+            ) : null}
+
+            {totalExpenses > averages.avgExpenses * 1.2 ? (
+              <div className="flex items-start gap-2 p-3 rounded-control border border-amber-200/70 dark:border-amber-900/50 bg-amber-100/80 dark:bg-amber-900/25">
+                <span>Estas 20% por encima de tu promedio historico. Todavia podes ajustar el cierre del mes.</span>
+              </div>
+            ) : null}
           </div>
+        </MotionSection>
 
-          {/* Projections */}
+        <MotionSection delay={0.32} intensity="subtle">
           <ProjectionsWidget />
-
-        </div>
-      </div>
+        </MotionSection>
+      </PageScaffold>
     );
   } catch (error) {
     console.error('Analysis page error:', error);

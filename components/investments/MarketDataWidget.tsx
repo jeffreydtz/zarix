@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import type {
   CryptoQuote,
@@ -10,6 +10,7 @@ import type {
 } from '@/lib/market-data-types';
 import { loadMarketDataFromLocal, saveMarketDataToLocal } from '@/lib/market-data-local-cache';
 import { mergeMarketWithLocalSnapshot } from '@/lib/market-data-merge-local';
+import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 function ChangeBadge({ value }: { value: number }) {
   const pos = value >= 0;
@@ -40,13 +41,26 @@ function SkeletonRow() {
   );
 }
 
-function CryptoRow({ coin, index }: { coin: CryptoQuote; index: number }) {
+function CryptoRow({
+  coin,
+  index,
+  shouldReduceMotion,
+}: {
+  coin: CryptoQuote;
+  index: number;
+  shouldReduceMotion: boolean;
+}) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -10 }}
+      initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -10 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className="flex items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50 last:border-0"
+      transition={maybeReduceTransition(shouldReduceMotion, {
+        ...motionTransition.smooth,
+        delay: index * 0.04,
+        duration: 0.22,
+      })}
+      whileHover={shouldReduceMotion ? undefined : { x: 2 }}
+      className="flex items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50 last:border-0 rounded-control px-2 hover:bg-surface-soft/75 transition-colors"
     >
       {coin.image ? (
         <Image
@@ -78,7 +92,15 @@ function CryptoRow({ coin, index }: { coin: CryptoQuote; index: number }) {
   );
 }
 
-function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
+function StockRow({
+  stock,
+  index,
+  shouldReduceMotion,
+}: {
+  stock: StockQuote;
+  index: number;
+  shouldReduceMotion: boolean;
+}) {
   /** EQUITY desactiva “índice” para ^IXIC vía Stooq/QQQ (precio en USD, no puntos). */
   const isIndex =
     stock.instrumentType === 'INDEX' ||
@@ -112,11 +134,16 @@ function StockRow({ stock, index }: { stock: StockQuote; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -10 }}
+      initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -10 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
+      transition={maybeReduceTransition(shouldReduceMotion, {
+        ...motionTransition.smooth,
+        delay: index * 0.04,
+        duration: 0.22,
+      })}
+      whileHover={shouldReduceMotion ? undefined : { x: 2 }}
       className={`flex items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50 last:border-0 ${
-        isIndex ? 'bg-violet-50/60 dark:bg-violet-950/20 -mx-4 px-4 border-slate-200/80 dark:border-violet-900/30' : ''
+        isIndex ? 'bg-violet-50/60 dark:bg-violet-950/20 -mx-4 px-4 border-slate-200/80 dark:border-violet-900/30' : 'rounded-control px-2 hover:bg-surface-soft/75 transition-colors'
       }`}
     >
       {stock.logoUrl ? (
@@ -216,6 +243,7 @@ function MarketSection({
 }
 
 export default function MarketDataWidget() {
+  const shouldReduceMotion = useReducedMotion();
   const [data, setData] = useState<MarketDataClient | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
@@ -271,6 +299,10 @@ export default function MarketDataWidget() {
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-xl">
             Índices Nasdaq Composite y MERVAL, acciones líderes y las cinco mayores cripto por capitalización.
           </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <span className="story-chip">Pulso global: cripto + USA + AR</span>
+            <span className="story-chip-strong">Uso táctico: detectar momentum diario</span>
+          </div>
         </div>
         <div className="flex items-center gap-2 shrink-0 sm:pb-0.5">
           {lastUpdated && (
@@ -300,7 +332,7 @@ export default function MarketDataWidget() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
         <MarketSection
           title="Top Crypto"
           marketTag="CRYPTO"
@@ -309,7 +341,7 @@ export default function MarketDataWidget() {
           snapshotAt={times?.crypto}
         >
           {(data?.crypto || []).map((coin, i) => (
-            <CryptoRow key={coin.id} coin={coin} index={i} />
+            <CryptoRow key={coin.id} coin={coin} index={i} shouldReduceMotion={shouldReduceMotion} />
           ))}
           {!loading && !(data?.crypto || []).length && (
             <div className="py-6 text-sm text-slate-500 dark:text-slate-400">Sin datos de crypto.</div>
@@ -324,7 +356,9 @@ export default function MarketDataWidget() {
           snapshotAt={times?.usStocks}
         >
           {(data?.usStocks || []).length > 0 ? (
-            (data?.usStocks || []).map((stock, i) => <StockRow key={stock.ticker} stock={stock} index={i} />)
+            (data?.usStocks || []).map((stock, i) => (
+              <StockRow key={stock.ticker} stock={stock} index={i} shouldReduceMotion={shouldReduceMotion} />
+            ))
           ) : (
             <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
               Sin datos del mercado USA (índice Nasdaq y acciones) en este momento.
@@ -340,7 +374,9 @@ export default function MarketDataWidget() {
           snapshotAt={times?.argStocks}
         >
           {(data?.argStocks || []).length > 0 ? (
-            (data?.argStocks || []).map((stock, i) => <StockRow key={stock.ticker} stock={stock} index={i} />)
+            (data?.argStocks || []).map((stock, i) => (
+              <StockRow key={stock.ticker} stock={stock} index={i} shouldReduceMotion={shouldReduceMotion} />
+            ))
           ) : (
             <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
               Sin datos de Argentina (índice MERVAL y acciones) en este momento.

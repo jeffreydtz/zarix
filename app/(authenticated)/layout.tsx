@@ -24,10 +24,10 @@ export default async function AuthenticatedLayout({
   }
 
   return (
-    <div className="flex flex-col h-dvh max-h-dvh min-h-0 overflow-hidden md:h-auto md:max-h-none md:min-h-dvh md:overflow-visible">
+    <div className="flex flex-col h-dvh max-h-dvh min-h-0 overflow-hidden md:h-auto md:max-h-none md:min-h-dvh md:overflow-visible bg-background">
       <OfflineReferenceWarmup />
       {gracePeriodEnd && (
-        <div className="bg-amber-100 border-b border-amber-300 text-amber-900 dark:bg-amber-950/60 dark:border-amber-800 dark:text-amber-200 px-4 py-2 text-sm">
+        <div className="bg-amber-100/90 border-b border-amber-300 text-amber-900 dark:bg-amber-950/55 dark:border-amber-800 dark:text-amber-200 px-4 py-2.5 text-sm backdrop-blur-md">
           Tu ultimo cobro fallo y estas en periodo de gracia hasta{' '}
           <strong>{new Date(gracePeriodEnd).toLocaleString('es-AR')}</strong>. Actualiza el pago para
           evitar interrupciones del orquestador de IA.

@@ -1,14 +1,17 @@
 'use client';
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import type { DailyData } from '@/lib/services/analytics';
+import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface Props {
   data: DailyData[];
 }
 
 export default function CashFlowChart({ data }: Props) {
+  const shouldReduceMotion = useReducedMotion();
+
   if (data.length === 0) {
     return (
       <div className="card p-6">
@@ -28,19 +31,25 @@ export default function CashFlowChart({ data }: Props) {
   const totalExpenses = data.reduce((sum, d) => sum + d.expenses, 0);
   const totalIncome = data.reduce((sum, d) => sum + d.income, 0);
   const avgDaily = totalExpenses / data.length;
+  const net = totalIncome - totalExpenses;
 
   const maxExpenseDay = data.reduce((max, d) => d.expenses > max.expenses ? d : max, data[0]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-      className="card p-6"
+      transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.12 })}
+      className="card card-spotlight p-6"
     >
-      <h3 className="text-lg font-semibold mb-4">Flujo de Caja (últimos 30 días)</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 className="text-lg font-semibold">Flujo de Caja (últimos 30 días)</h3>
+        <span className={`story-chip ${net >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-500 dark:text-red-300'}`}>
+          Neto del periodo: {net >= 0 ? '+' : ''}${net.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+        </span>
+      </div>
 
-      <div className="h-64">
+      <div className="h-64 chart-shell p-2">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
             <defs>
@@ -53,17 +62,17 @@ export default function CashFlowChart({ data }: Props) {
                 <stop offset="95%" stopColor="#22C55E" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+            <CartesianGrid strokeDasharray="4 4" stroke="rgb(148 163 184 / 0.25)" />
             <XAxis 
               dataKey="dayLabel" 
               tick={{ fontSize: 10 }}
               interval={4}
-              stroke="#9CA3AF"
+              stroke="rgb(148 163 184 / 0.85)"
             />
             <YAxis 
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
               tick={{ fontSize: 10 }}
-              stroke="#9CA3AF"
+              stroke="rgb(148 163 184 / 0.85)"
             />
             <Tooltip
               formatter={(value: number, name: string) => [
@@ -71,10 +80,10 @@ export default function CashFlowChart({ data }: Props) {
                 name === 'expenses' ? 'Gastos' : 'Ingresos'
               ]}
               contentStyle={{
-                backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                backgroundColor: 'rgba(10, 12, 17, 0.95)',
                 border: '1px solid rgba(148, 163, 184, 0.25)',
-                borderRadius: '10px',
-                color: '#F8FAFC'
+                borderRadius: '12px',
+                color: '#F8FAFC',
               }}
             />
             <ReferenceLine 
@@ -90,6 +99,7 @@ export default function CashFlowChart({ data }: Props) {
               fillOpacity={1}
               fill="url(#colorExpenses)"
               name="expenses"
+              animationDuration={shouldReduceMotion ? 0 : 680}
             />
             <Area 
               type="monotone" 
@@ -98,6 +108,7 @@ export default function CashFlowChart({ data }: Props) {
               fillOpacity={1}
               fill="url(#colorIncome)"
               name="income"
+              animationDuration={shouldReduceMotion ? 0 : 620}
             />
           </AreaChart>
         </ResponsiveContainer>

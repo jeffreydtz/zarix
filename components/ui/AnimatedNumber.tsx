@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { motion, useSpring } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { motion, useMotionValue, useReducedMotion, useSpring, useMotionValueEvent } from 'framer-motion';
+import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface AnimatedNumberProps {
   value: number;
@@ -20,37 +21,47 @@ export default function AnimatedNumber({
   suffix = '',
   className = '',
 }: AnimatedNumberProps) {
-  const [displayValue, setDisplayValue] = useState(0);
-
-  const spring = useSpring(0, {
-    stiffness: 100,
-    damping: 30,
-    duration: duration * 1000,
+  const shouldReduceMotion = useReducedMotion();
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const motionValue = useMotionValue(0);
+  const spring = useSpring(motionValue, {
+    stiffness: 110,
+    damping: 28,
   });
 
   useEffect(() => {
+    if (shouldReduceMotion) {
+      motionValue.set(value);
+      return;
+    }
     spring.set(value);
-  }, [value, spring]);
+  }, [value, spring, motionValue, shouldReduceMotion]);
 
-  useEffect(() => {
-    const unsubscribe = spring.on('change', (latest) => {
-      setDisplayValue(latest);
-    });
-    return unsubscribe;
-  }, [spring]);
+  useMotionValueEvent(shouldReduceMotion ? motionValue : spring, 'change', (latest) => {
+    if (!spanRef.current) return;
+    spanRef.current.textContent = `${prefix}${latest.toLocaleString('es-AR', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    })}${suffix}`;
+  });
 
-  const formattedValue = displayValue.toLocaleString('es-AR', {
+  const initialValue = `${prefix}${value.toLocaleString('es-AR', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-  });
+  })}${suffix}`;
 
   return (
     <motion.span
+      ref={spanRef}
       className={`zx-num ${className}`.trim()}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      transition={maybeReduceTransition(shouldReduceMotion, {
+        ...motionTransition.smooth,
+        duration,
+      })}
     >
-      {prefix}{formattedValue}{suffix}
+      {initialValue}
     </motion.span>
   );
 }

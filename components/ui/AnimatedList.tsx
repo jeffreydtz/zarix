@@ -1,54 +1,38 @@
 'use client';
 
-import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ReactNode } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Children, ReactNode, isValidElement } from 'react';
+import { motionVariants, maybeReduceTransition } from '@/lib/motion';
 
 interface AnimatedListProps {
-  children: ReactNode[];
+  children: ReactNode;
   className?: string;
   staggerDelay?: number;
 }
 
-const container: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const item: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-      duration: 0.4,
-    }
-  },
-};
-
 export default function AnimatedList({ 
   children, 
   className = '',
+  staggerDelay = 0.08,
 }: AnimatedListProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const childNodes = Children.toArray(children);
+
   return (
     <motion.div
-      variants={container}
+      variants={motionVariants.listContainer}
+      custom={shouldReduceMotion ? 0 : staggerDelay}
       initial="hidden"
-      animate="show"
+      animate="visible"
       className={className}
     >
-      <AnimatePresence mode="popLayout">
-        {children.map((child, index) => (
+      <AnimatePresence mode={shouldReduceMotion ? 'sync' : 'popLayout'}>
+        {childNodes.map((child, index) => (
           <motion.div
-            key={index}
-            variants={item}
-            layout
-            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+            key={isValidElement(child) && child.key ? child.key : `animated-item-${index}`}
+            variants={motionVariants.listItem}
+            layout={!shouldReduceMotion}
+            transition={maybeReduceTransition(shouldReduceMotion, motionVariants.listItem.visible?.transition ?? {})}
           >
             {child}
           </motion.div>

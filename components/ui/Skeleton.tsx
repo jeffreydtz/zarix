@@ -1,7 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
-
 interface SkeletonProps {
   className?: string;
   variant?: 'text' | 'circular' | 'rectangular' | 'card';
@@ -18,17 +16,7 @@ export default function Skeleton({ className = '', variant = 'rectangular' }: Sk
   };
 
   return (
-    <motion.div
-      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
-      animate={{
-        opacity: [0.5, 0.8, 0.5],
-      }}
-      transition={{
-        duration: 1.5,
-        repeat: Infinity,
-        ease: 'easeInOut',
-      }}
-    />
+    <div className={`${baseClasses} ${variantClasses[variant]} ${className} animate-pulse-subtle`} />
   );
 }
 

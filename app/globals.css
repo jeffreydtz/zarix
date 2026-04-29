@@ -22,6 +22,18 @@
   --ring: 34 197 94;
   --success: 34 197 94;
   --warning: 255 176 32;
+  --surface: 255 255 255;
+  --surface-elevated: 255 255 255;
+  --surface-soft: 242 245 250;
+  --surface-glass: 255 255 255;
+  --surface-strong: 18 21 28;
+  --shadow-soft: 12 15 22;
+  --shadow-strong: 12 15 22;
+  --radius-card: 1.35rem;
+  --radius-control: 0.95rem;
+  --layout-max-width: 72rem;
+  --layout-gutter: 1rem;
+  --reading-width: 52rem;
 }
 
 .dark {
@@ -44,6 +56,13 @@
   --ring: 34 197 94;
   --success: 34 197 94;
   --warning: 255 176 32;
+  --surface: 10 12 17;
+  --surface-elevated: 18 21 28;
+  --surface-soft: 24 28 38;
+  --surface-glass: 15 18 26;
+  --surface-strong: 245 246 248;
+  --shadow-soft: 2 6 23;
+  --shadow-strong: 2 6 23;
 }
 
 * {
@@ -79,11 +98,12 @@ summary {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Theme transitions — applied after hydration to avoid flash */
+/* Theme transitions — keep this targeted to reduce expensive recalculations */
 .theme-ready body,
-.theme-ready *,
-.theme-ready *::before,
-.theme-ready *::after {
+.theme-ready .card,
+.theme-ready .zx-panel,
+.theme-ready .zx-kpi,
+.theme-ready .page-shell {
   transition-property: background-color, border-color, color;
   transition-duration: 200ms;
   transition-timing-function: ease;
@@ -131,13 +151,14 @@ summary {
   }
 
   .glass {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(var(--surface-glass), 0.5);
+    backdrop-filter: blur(18px) saturate(135%);
+    -webkit-backdrop-filter: blur(18px) saturate(135%);
+    border: 1px solid rgb(var(--border) / 0.6);
   }
 
   .dark .glass {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(var(--surface-glass), 0.52);
   }
 }
 
@@ -185,22 +206,90 @@ summary {
 }
 
 @layer components {
+  .page-shell {
+    @apply min-h-screen transition-colors duration-300;
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))];
+  }
+
+  .page-container {
+    width: min(100% - calc(var(--layout-gutter) * 2), var(--layout-max-width));
+    margin-inline: auto;
+    @apply py-6 md:py-8 space-y-6 md:space-y-7;
+  }
+
+  .page-hero {
+    @apply rounded-[calc(var(--radius-card)+0.2rem)] border px-5 py-5 md:px-7 md:py-6;
+    @apply bg-gradient-to-br from-white/90 via-white/80 to-slate-100/90;
+    @apply dark:from-slate-900/70 dark:via-slate-900/55 dark:to-slate-800/55;
+    @apply border-[rgb(var(--border))] shadow-[0_16px_46px_rgba(var(--shadow-soft),0.1)];
+  }
+
+  .page-title {
+    font-size: clamp(1.55rem, 1.3rem + 1.2vw, 2.35rem);
+    line-height: 1.08;
+    @apply font-semibold tracking-tight;
+    letter-spacing: -0.015em;
+  }
+
+  .page-subtitle {
+    font-size: clamp(0.93rem, 0.88rem + 0.2vw, 1rem);
+    @apply text-[rgb(var(--muted-foreground))];
+    line-height: 1.55;
+  }
+
+  .chart-shell {
+    @apply rounded-card border border-border/80 bg-surface-elevated/70;
+    @apply shadow-[0_10px_28px_rgba(var(--shadow-soft),0.09)] dark:shadow-[0_14px_40px_rgba(var(--shadow-strong),0.34)];
+  }
+
+  .card-spotlight {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-spotlight::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    background: radial-gradient(circle at top right, rgb(var(--primary) / 0.18), transparent 55%);
+    opacity: 0.5;
+    transition: opacity 280ms ease;
+  }
+
+  .card-spotlight:hover::after {
+    opacity: 0.9;
+  }
+
+  .story-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border/80;
+    @apply bg-surface-soft/80 px-2.5 py-1 text-[11px] font-semibold text-muted-foreground;
+  }
+
+  .story-chip-strong {
+    @apply story-chip text-foreground border-primary/25 bg-primary/10;
+  }
+
   .card {
-    @apply rounded-2xl border p-5;
+    border-radius: var(--radius-card);
+    @apply border p-5;
     @apply bg-[rgb(var(--card))] text-[rgb(var(--card-foreground))] border-[rgb(var(--border))];
-    @apply shadow-[0_10px_28px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_44px_rgba(0,0,0,0.36)];
-    @apply transition-all duration-200 ease-out;
+    @apply shadow-[0_12px_32px_rgba(var(--shadow-soft),0.1)] dark:shadow-[0_18px_48px_rgba(var(--shadow-strong),0.42)];
+    @apply transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out;
   }
 
   .zx-panel {
-    @apply rounded-2xl border border-slate-200/80 bg-white/90;
-    @apply dark:border-slate-700/70 dark:bg-slate-900/55;
-    @apply backdrop-blur-xl shadow-[0_8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_14px_34px_rgba(2,6,23,0.4)];
+    border-radius: var(--radius-card);
+    @apply border bg-[rgb(var(--surface-glass))/0.78] dark:bg-[rgb(var(--surface-glass))/0.62];
+    @apply border-[rgb(var(--border))/0.8] backdrop-blur-xl;
+    @apply shadow-[0_10px_28px_rgba(var(--shadow-soft),0.11)] dark:shadow-[0_16px_40px_rgba(var(--shadow-strong),0.4)];
   }
 
   .zx-kpi {
-    @apply rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2;
-    @apply dark:border-slate-700/70 dark:bg-slate-800/70;
+    border-radius: calc(var(--radius-control) + 0.05rem);
+    @apply border px-3 py-2;
+    @apply border-[rgb(var(--border))/0.8] bg-[rgb(var(--surface-soft))/0.86];
+    @apply dark:bg-[rgb(var(--surface-soft))/0.56];
   }
 
   .zx-segmented {
@@ -215,12 +304,13 @@ summary {
 
   .card-interactive {
     @apply card cursor-pointer;
-    @apply hover:shadow-md hover:-translate-y-0.5;
+    @apply hover:shadow-lg hover:-translate-y-0.5;
     @apply active:translate-y-0 active:shadow-sm;
   }
 
   .btn {
-    @apply px-4 py-2.5 rounded-xl font-semibold transition-all duration-200;
+    border-radius: var(--radius-control);
+    @apply px-4 py-2.5 font-semibold transition-[background-color,color,box-shadow,transform] duration-200;
     @apply active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
@@ -248,7 +338,8 @@ summary {
   }
 
   .input {
-    @apply w-full px-4 py-3 rounded-xl border;
+    border-radius: var(--radius-control);
+    @apply w-full px-4 py-3 border;
     @apply bg-[rgb(var(--card))] text-[rgb(var(--foreground))] border-[rgb(var(--border))];
     @apply placeholder:text-[rgb(var(--muted-foreground))];
     @apply focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent;
@@ -256,7 +347,7 @@ summary {
   }
 
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
     @apply transition-colors duration-200;
   }
 
@@ -296,11 +387,40 @@ summary {
 
 @media (max-width: 640px) {
   .card {
-    @apply rounded-xl p-4;
+    border-radius: 1.05rem;
+    @apply p-4;
   }
 
   .btn {
     @apply py-3 text-base min-h-[44px];
+  }
+
+  .page-hero {
+    @apply px-4 py-4;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --layout-gutter: 1.25rem;
+  }
+
+  .page-container {
+    @apply py-8 space-y-7;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --layout-gutter: 1.5rem;
+  }
+
+  .page-container {
+    @apply py-10 space-y-8;
+  }
+
+  .page-subtitle {
+    max-width: var(--reading-width);
   }
 }
 

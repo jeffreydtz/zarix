@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface ProjectionData {
   hasData: boolean;
@@ -20,6 +21,7 @@ interface ProjectionData {
 }
 
 export default function ProjectionsWidget() {
+  const shouldReduceMotion = useReducedMotion();
   const [data, setData] = useState<ProjectionData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -65,9 +67,9 @@ export default function ProjectionsWidget() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.15 }}
+      transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.1 })}
       className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden"
     >
       {/* Header */}
@@ -121,9 +123,13 @@ export default function ProjectionsWidget() {
             return (
               <motion.div
                 key={proj.months}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.94 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 + i * 0.08 }}
+                transition={maybeReduceTransition(shouldReduceMotion, {
+                  ...motionTransition.smooth,
+                  delay: 0.08 + i * 0.06,
+                  duration: 0.32,
+                })}
                 className="rounded-xl border border-slate-100 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/40 p-3 text-center"
               >
                 <div className="text-xs text-slate-500 dark:text-slate-400 mb-1.5 font-medium">
@@ -152,11 +158,15 @@ export default function ProjectionsWidget() {
               return (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
                   <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${height}%` }}
-                    transition={{ duration: 0.6, delay: 0.2 + i * 0.06, ease: 'easeOut' }}
+                    style={{ minHeight: 4, height: '100%', transformOrigin: '50% 100%' }}
+                    initial={{ scaleY: 0 }}
+                    animate={{ scaleY: height / 100 }}
+                    transition={maybeReduceTransition(shouldReduceMotion, {
+                      ...motionTransition.smooth,
+                      duration: 0.45,
+                      delay: 0.14 + i * 0.05,
+                    })}
                     className={`w-full rounded-t-sm ${isNeg ? 'bg-red-400' : 'bg-blue-400 dark:bg-blue-500'}`}
-                    style={{ minHeight: 4 }}
                     title={`${m.month}: $${m.projected.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`}
                   />
                   <div className="text-[9px] text-slate-400 leading-none truncate w-full text-center">

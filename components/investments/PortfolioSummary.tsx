@@ -1,5 +1,8 @@
 'use client';
 
+import { motion, useReducedMotion } from 'framer-motion';
+import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+
 interface PortfolioSummaryProps {
   totalValue: number;
   totalPnL: number;
@@ -38,9 +41,16 @@ export default function PortfolioSummary({
   totalPnLArsBlue,
   byType,
 }: PortfolioSummaryProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <div className="space-y-4">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+      <motion.div
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={maybeReduceTransition(shouldReduceMotion, motionTransition.smooth)}
+        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm card-spotlight"
+      >
         <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
           Valor total del portafolio
         </h2>
@@ -71,10 +81,21 @@ export default function PortfolioSummary({
           PnL en ARS blue: {totalPnL >= 0 ? '+' : ''}
           {totalPnLArsBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
         </div>
-      </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="story-chip">Base de lectura: USD equivalente</span>
+          <span className={`story-chip ${totalPnL >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-500 dark:text-red-300'}`}>
+            Estado: {totalPnL >= 0 ? 'tracción positiva' : 'drawdown activo'}
+          </span>
+        </div>
+      </motion.div>
 
       {byType.length > 0 && (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+        <motion.div
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.06 })}
+          className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm"
+        >
           <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">
             Distribución por tipo
           </h3>
@@ -91,10 +112,17 @@ export default function PortfolioSummary({
                       {percent.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="w-full bg-slate-100 dark:bg-slate-700/80 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-emerald-500 dark:bg-emerald-500 h-2 rounded-full transition-all min-w-0"
-                      style={{ width: `${Math.min(100, percent)}%` }}
+                  <div className="w-full bg-slate-100 dark:bg-slate-700/80 rounded-full h-2.5 overflow-hidden">
+                    <motion.div
+                      className="bg-emerald-500 dark:bg-emerald-500 rounded-full transition-all min-w-0"
+                      style={{ width: `${Math.min(100, percent)}%`, height: '100%', transformOrigin: '0% 50%' }}
+                      initial={{ scaleX: shouldReduceMotion ? Math.min(100, percent) / 100 : 0 }}
+                      animate={{ scaleX: Math.min(100, percent) / 100 }}
+                      transition={maybeReduceTransition(shouldReduceMotion, {
+                        ...motionTransition.smooth,
+                        delay: 0.08,
+                        duration: 0.35,
+                      })}
                     />
                   </div>
                   <div className="flex items-center justify-between mt-1">
@@ -109,7 +137,7 @@ export default function PortfolioSummary({
               );
             })}
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );

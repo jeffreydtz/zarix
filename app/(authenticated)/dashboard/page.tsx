@@ -10,6 +10,8 @@ import BalanceHeader from '@/components/dashboard/BalanceHeader';
 import FloatingAddButton from '@/components/dashboard/FloatingAddButton';
 import DashboardSpendingAnalyzerSection from '@/components/dashboard/DashboardSpendingAnalyzerSection';
 import { brandAsset } from '@/lib/brand';
+import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
+import MotionSection from '@/components/ui/MotionSection';
 
 const QuotesWidget = dynamic(() => import('@/components/dashboard/QuotesWidget'), {
   loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
@@ -69,26 +71,35 @@ export default async function DashboardPage() {
           };
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800 flex items-center justify-center p-1">
-              <Image
-                src={brandAsset.logoSvg}
-                alt="Zarix"
-                width={40}
-                height={40}
-                className="w-10 h-10 object-contain"
-                priority
-                unoptimized
-              />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-emerald-700 dark:text-emerald-400">Zarix</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Tu resumen financiero de hoy</p>
-            </div>
-          </div>
-
+      <PageScaffold
+        hero={(
+          <PageHero
+            eyebrow="Hoy"
+            title="Centro de control financiero"
+            subtitle="Visión en tiempo real de patrimonio, liquidez y alertas para decidir con claridad."
+            rightSlot={(
+              <div className="flex items-center gap-3 rounded-card border border-border bg-surface-soft/70 px-3 py-2">
+                <div className="w-11 h-11 rounded-control overflow-hidden border border-border shadow-sm bg-surface flex items-center justify-center p-1">
+                  <Image
+                    src={brandAsset.logoSvg}
+                    alt="Zarix"
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 object-contain"
+                    priority
+                    unoptimized
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Zarix</p>
+                  <p className="text-xs text-muted-foreground">Resumen inteligente del dia</p>
+                </div>
+              </div>
+            )}
+          />
+        )}
+      >
+        <MotionSection delay={0.02} intensity="hero">
           <BalanceHeader
             liquidUSD={balances.liquidUSD}
             liquidARSBlue={balances.liquidARSBlue}
@@ -100,26 +111,36 @@ export default async function DashboardPage() {
             totalCreditLimit={balances.totalCreditLimit}
             creditUtilization={balances.creditUtilization}
           />
+        </MotionSection>
 
+        <MotionSection delay={0.08} intensity="normal">
           <QuotesWidget quotes={quotes} />
+        </MotionSection>
 
-          <Suspense
-            fallback={<div className="card h-80 animate-pulse bg-slate-100 dark:bg-slate-800" />}
-          >
+        <MotionSection delay={0.14} intensity="normal">
+          <Suspense fallback={<div className="card h-80 animate-pulse-subtle bg-surface-soft" />}>
             <DashboardSpendingAnalyzerSection quotes={quotes} />
           </Suspense>
+        </MotionSection>
 
+        <MotionSection delay={0.2} intensity="subtle">
           <CreditCardsWidget accounts={accounts} />
+        </MotionSection>
 
+        <MotionSection delay={0.24} intensity="subtle">
           <AccountCards accounts={accounts} />
+        </MotionSection>
 
+        <MotionSection delay={0.28} intensity="subtle">
           <RecentTransactions transactions={recentTransactions} />
+        </MotionSection>
 
+        <MotionSection delay={0.32} intensity="subtle">
           <AnomaliesWidget />
+        </MotionSection>
 
-          <FloatingAddButton />
-        </div>
-      </div>
+        <FloatingAddButton />
+      </PageScaffold>
     );
   } catch (error) {
     console.error('Dashboard error:', error);

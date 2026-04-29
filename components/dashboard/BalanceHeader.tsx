@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import ProgressBar from '@/components/ui/ProgressBar';
+import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 const LS_SHOW_INVESTMENT_PATRIMONY = 'zarix-dashboard-show-investment-patrimony';
 
@@ -62,6 +63,7 @@ export default function BalanceHeader({
   totalCreditLimit = 0,
   creditUtilization = 0,
 }: BalanceHeaderProps) {
+  const shouldReduceMotion = useReducedMotion();
   const hasCreditCards = totalCreditLimit > 0;
   const hasInvestments = investmentsUSD > 0 || investmentsARSBlue > 0;
 
@@ -92,16 +94,16 @@ export default function BalanceHeader({
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="card bg-gradient-to-br from-emerald-50 via-emerald-50 to-green-100 dark:from-emerald-500/10 dark:via-[#12151C] dark:to-[#1A1E27] border-emerald-200 dark:border-emerald-500/25"
+          transition={maybeReduceTransition(shouldReduceMotion, motionTransition.smooth)}
+          className="card bg-gradient-to-br from-emerald-50 via-white to-green-100 dark:from-emerald-500/12 dark:via-surface-elevated dark:to-surface-soft border-emerald-200 dark:border-emerald-500/25"
         >
           <div className="flex items-center gap-2 mb-3">
             <motion.span 
               className="text-2xl"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              animate={shouldReduceMotion ? undefined : { scale: [1, 1.08, 1] }}
+              transition={shouldReduceMotion ? undefined : { duration: 2.3, repeat: Infinity, repeatDelay: 3.5 }}
             >
               💰
             </motion.span>
@@ -134,8 +136,8 @@ export default function BalanceHeader({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            className="card bg-gradient-to-br from-violet-50 via-violet-50 to-fuchsia-100 dark:from-violet-500/10 dark:via-[#12151C] dark:to-[#1A1E27] border-violet-200 dark:border-violet-500/25 relative"
+              transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.05 })}
+            className="card bg-gradient-to-br from-violet-50 via-white to-fuchsia-100 dark:from-violet-500/12 dark:via-surface-elevated dark:to-surface-soft border-violet-200 dark:border-violet-500/25 relative"
             >
               <button
                 type="button"
@@ -149,8 +151,8 @@ export default function BalanceHeader({
               <div className="flex items-center gap-2 mb-3 pr-10">
                 <motion.span
                   className="text-2xl"
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+                  animate={shouldReduceMotion ? undefined : { y: [0, -3, 0] }}
+                  transition={shouldReduceMotion ? undefined : { duration: 1.8, repeat: Infinity, repeatDelay: 2.4 }}
                 >
                   📈
                 </motion.span>
@@ -185,7 +187,7 @@ export default function BalanceHeader({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.05 })}
               className="card border-2 border-dashed border-purple-200 dark:border-purple-800 bg-purple-50/40 dark:bg-purple-950/20 flex flex-col items-center justify-center gap-3 py-8 px-4 text-center min-h-[180px]"
             >
               <button
@@ -211,7 +213,7 @@ export default function BalanceHeader({
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.05 })}
             className="card border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-800/50"
           >
             <div className="flex items-center gap-2 mb-2">
@@ -231,8 +233,8 @@ export default function BalanceHeader({
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="card bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-100 dark:from-amber-500/10 dark:via-[#12151C] dark:to-[#1A1E27] border-amber-200 dark:border-amber-500/25"
+          transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.12 })}
+          className="card bg-gradient-to-br from-amber-50 via-white to-yellow-100 dark:from-amber-500/12 dark:via-surface-elevated dark:to-surface-soft border-amber-200 dark:border-amber-500/25"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">

@@ -1,17 +1,19 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import Link from 'next/link';
+import { motionVariants, maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface RecentTransactionsProps {
   transactions: TransactionWithCategory[];
 }
 
 function RecentTransactions({ transactions }: RecentTransactionsProps) {
+  const shouldReduceMotion = useReducedMotion();
   /** Más reciente primero; desempate por id para orden estable. */
   const sorted = useMemo(
     () =>
@@ -26,9 +28,10 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.6 }}
+      initial="hidden"
+      variants={motionVariants.sectionEnter}
+      animate="visible"
+      transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.25 })}
       className="card"
     >
       <div className="flex items-center justify-between mb-5">
@@ -37,7 +40,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
         </h3>
         <Link 
           href="/expenses" 
-          className="text-sm text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-medium"
+          className="text-sm text-primary hover:opacity-85 font-medium"
         >
           Ver todo
         </Link>
@@ -50,8 +53,8 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
           className="text-center py-12"
         >
           <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            animate={shouldReduceMotion ? undefined : { y: [0, -6, 0] }}
+            transition={shouldReduceMotion ? undefined : { duration: 2.2, repeat: Infinity }}
             className="text-5xl mb-4"
           >
             💸
@@ -68,16 +71,20 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
           {sorted.map((tx, index) => (
             <motion.div
               key={tx.id}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -16 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.08 + 0.6 }}
-              whileHover={{ x: 4 }}
-              className="flex items-center justify-between py-3 px-3 -mx-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+              transition={maybeReduceTransition(shouldReduceMotion, {
+                ...motionTransition.smooth,
+                delay: index * 0.05 + 0.2,
+                duration: 0.35,
+              })}
+              whileHover={shouldReduceMotion ? undefined : { x: 3 }}
+              className="flex items-center justify-between py-3 px-3 -mx-3 rounded-control hover:bg-surface-soft/80 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <motion.div 
-                  className="text-2xl w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700"
-                  whileHover={{ scale: 1.1 }}
+                  className="text-2xl w-10 h-10 flex items-center justify-center rounded-control bg-surface-soft"
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.06 }}
                 >
                   {tx.category?.icon || (tx.type === 'income' ? '💰' : '💸')}
                 </motion.div>
