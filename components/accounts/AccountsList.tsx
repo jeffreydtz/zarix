@@ -152,6 +152,19 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                             {secondaryCur}
                           </span>
                         </div>
+                        <div className="text-[11px] sm:text-xs font-medium tabular-nums text-slate-500 dark:text-slate-400">
+                          Total (ARS blue):{' '}
+                          <span className="font-semibold text-red-500">
+                            -$
+                            {Math.abs(
+                              Number(account.multicurrency_total_ars_blue ?? account.balance_ars_blue ?? 0)
+                            ).toLocaleString('es-AR', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}{' '}
+                            ARS
+                          </span>
+                        </div>
                       </div>
                     ) : (
                       <div

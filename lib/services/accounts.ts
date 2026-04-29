@@ -54,6 +54,8 @@ export interface AccountWithBalance extends Account {
   balance_ars_blue?: number;
   multicurrency_balance_primary?: number;
   multicurrency_balance_secondary?: number;
+  multicurrency_total_usd?: number;
+  multicurrency_total_ars_blue?: number;
 }
 
 /** Totales derivados de `list()` — misma cotización que cada fila. */
@@ -138,9 +140,10 @@ class AccountsService {
         if (tx.type === 'expense') addSigned(sourceId, tx.currency, -amount, -ain);
         if (tx.type === 'income') addSigned(sourceId, tx.currency, amount, ain);
         if (tx.type === 'adjustment') {
-          // En ajustes, `amount` se guarda siempre positivo; el signo real está en `amount_in_account_currency`.
-          // Usar `amount` acá infla la deuda en tarjetas bimoneda cuando el ajuste fue negativo.
-          addSigned(sourceId, tx.currency, ain, ain);
+          // En ajustes, `amount` se guarda positivo; el signo real viene en `amount_in_account_currency`.
+          // Para el bucket por moneda (ARS/USD) usamos el monto original con el signo del ajuste.
+          const signedOriginal = Math.sign(ain || 0) * Math.abs(amount);
+          addSigned(sourceId, tx.currency, signedOriginal, ain);
         }
         if (tx.type === 'transfer') addSigned(sourceId, tx.currency, -amount, -ain);
       }
@@ -287,9 +290,23 @@ class AccountsService {
       let balanceUSD = 0;
       let balanceARSBlue = 0;
       const multi = multicurrencyBalances.get(account.id);
+      const secondaryRateToUSD = this.getRateToUsd(usdRates, account.secondary_currency);
       if (rateToUSD > 0) {
         balanceUSD = balance * rateToUSD;
         balanceARSBlue = balanceUSD * blueRate;
+      }
+
+      // Tarjetas bimoneda: el patrimonio debe considerar ARS + USD (convertidos a USD/ARS blue).
+      if (
+        account.type === 'credit_card' &&
+        account.is_multicurrency &&
+        multi &&
+        rateToUSD > 0 &&
+        secondaryRateToUSD > 0
+      ) {
+        const combinedUSD = Number(multi.primary) * rateToUSD + Number(multi.secondary) * secondaryRateToUSD;
+        balanceUSD = combinedUSD;
+        balanceARSBlue = combinedUSD * blueRate;
       }
 
       return {
@@ -299,6 +316,10 @@ class AccountsService {
         balance_ars_blue: balanceARSBlue,
         multicurrency_balance_primary: multi?.primary,
         multicurrency_balance_secondary: multi?.secondary,
+        multicurrency_total_usd:
+          account.type === 'credit_card' && account.is_multicurrency ? balanceUSD : undefined,
+        multicurrency_total_ars_blue:
+          account.type === 'credit_card' && account.is_multicurrency ? balanceARSBlue : undefined,
       };
     });
 
@@ -399,6 +420,135 @@ class AccountsService {
 
     if (error) throw error;
     return (data ?? []).map((a) => ({ ...a, balance: Number(a.balance) }));
+  }
+
+  async getMulticurrencyBreakdown(
+    userId: string,
+    accountId: string
+  ): Promise<{ primary: number; secondary: number; secondaryCurrency: string }> {
+    const supabase = createServiceClientSync();
+    const { data: acc, error: accErr } = await supabase
+      .from('accounts')
+      .select('currency,secondary_currency,is_multicurrency,type')
+      .eq('id', accountId)
+      .eq('user_id', userId)
+      .single();
+
+    if (accErr || !acc) {
+      throw new Error('Cuenta no encontrada');
+    }
+    if (!(acc.type === 'credit_card' && acc.is_multicurrency && acc.secondary_currency)) {
+      throw new Error('La cuenta no es tarjeta bimoneda');
+    }
+
+    const primary = normalizeAccountCurrency(acc.currency);
+    const secondary = normalizeAccountCurrency(acc.secondary_currency);
+
+    const { data: rows, error: txErr } = await supabase
+      .from('transactions')
+      .select(
+        'account_id,destination_account_id,type,amount,currency,amount_in_account_currency,exchange_rate'
+      )
+      .eq('user_id', userId)
+      .or(`account_id.eq.${accountId},destination_account_id.eq.${accountId}`);
+
+    if (txErr) throw txErr;
+
+    let primaryBal = 0;
+    let secondaryBal = 0;
+    const addSigned = (txCurRaw: string, signedOriginal: number, signedPrimaryFallback: number) => {
+      const txCur = normalizeAccountCurrency(txCurRaw);
+      if (txCur === primary) {
+        primaryBal += signedOriginal;
+        return;
+      }
+      if (txCur === secondary) {
+        secondaryBal += signedOriginal;
+        return;
+      }
+      primaryBal += signedPrimaryFallback;
+    };
+
+    for (const tx of rows || []) {
+      const amount = Number(tx.amount);
+      const ain = Number(tx.amount_in_account_currency);
+      const rate = Number(tx.exchange_rate ?? 1);
+      const sourceId = tx.account_id as string | null;
+      const destinationId = tx.destination_account_id as string | null;
+
+      if (sourceId === accountId) {
+        if (tx.type === 'expense') addSigned(tx.currency, -Math.abs(amount), -Math.abs(ain));
+        if (tx.type === 'income') addSigned(tx.currency, Math.abs(amount), Math.abs(ain));
+        if (tx.type === 'adjustment') {
+          const signedOriginal = Math.sign(ain || 0) * Math.abs(amount);
+          addSigned(tx.currency, signedOriginal, ain);
+        }
+        if (tx.type === 'transfer') addSigned(tx.currency, -Math.abs(amount), -Math.abs(ain));
+      }
+
+      if (destinationId === accountId && tx.type === 'transfer') {
+        const txCur = normalizeAccountCurrency(String(tx.currency || ''));
+        const credited = amount * (Number.isFinite(rate) && rate > 0 ? rate : 1);
+        let creditedCurrency = txCur;
+        if (txCur === primary && secondary && rate !== 1) creditedCurrency = secondary;
+        if (txCur === secondary && rate !== 1) creditedCurrency = primary;
+        addSigned(creditedCurrency, Math.abs(credited), Math.abs(credited));
+      }
+    }
+
+    return { primary: primaryBal, secondary: secondaryBal, secondaryCurrency: secondary };
+  }
+
+  async createSecondaryBalanceAdjustment(
+    userId: string,
+    accountId: string,
+    targetSecondaryBalance: number
+  ): Promise<void> {
+    const supabase = createServiceClientSync();
+    const { data: acc, error: accErr } = await supabase
+      .from('accounts')
+      .select('currency,secondary_currency,is_multicurrency,type')
+      .eq('id', accountId)
+      .eq('user_id', userId)
+      .single();
+
+    if (accErr || !acc) {
+      throw new Error('Cuenta no encontrada');
+    }
+    if (!(acc.type === 'credit_card' && acc.is_multicurrency && acc.secondary_currency)) {
+      throw new Error('La cuenta no es tarjeta bimoneda');
+    }
+
+    const breakdown = await this.getMulticurrencyBreakdown(userId, accountId);
+    const target = Number(targetSecondaryBalance);
+    if (!Number.isFinite(target)) {
+      throw new Error('Saldo secundario inválido');
+    }
+
+    const deltaSecondary = target - Number(breakdown.secondary);
+    if (Math.abs(deltaSecondary) < 1e-8) return;
+
+    const rate = await cotizacionesService.getExchangeRate(
+      breakdown.secondaryCurrency,
+      normalizeAccountCurrency(acc.currency)
+    );
+    if (!Number.isFinite(rate) || rate <= 0) {
+      throw new Error('No se pudo obtener cotización para ajustar saldo secundario');
+    }
+
+    const signedInPrimary = deltaSecondary * rate;
+    const { error: insErr } = await supabase.from('transactions').insert({
+      user_id: userId,
+      type: 'adjustment',
+      account_id: accountId,
+      amount: Math.abs(deltaSecondary),
+      currency: breakdown.secondaryCurrency,
+      amount_in_account_currency: signedInPrimary,
+      description: 'Ajuste de saldo moneda secundaria (edición de cuenta)',
+      transaction_date: new Date().toISOString(),
+    });
+
+    if (insErr) throw insErr;
   }
 
   async getById(

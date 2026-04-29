@@ -51,6 +51,9 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
   const [targetBalance, setTargetBalance] = useState(
     String(Number(account.balance).toFixed(2))
   );
+  const [targetSecondaryBalance, setTargetSecondaryBalance] = useState(
+    String(Number(account.multicurrency_balance_secondary ?? 0).toFixed(2))
+  );
 
   useEffect(() => {
     setName(account.name);
@@ -69,6 +72,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
     setIsMulticurrency(account.is_multicurrency);
     setSecondaryCurrency(account.secondary_currency || 'USD');
     setTargetBalance(String(Number(account.balance).toFixed(2)));
+    setTargetSecondaryBalance(String(Number(account.multicurrency_balance_secondary ?? 0).toFixed(2)));
   }, [account]);
 
   const isCreditCard = type === 'credit_card';
@@ -95,6 +99,13 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
     const target = parseFloat(targetBalance.replace(',', '.'));
     if (!Number.isFinite(target)) {
       alert('Ingresá un saldo válido');
+      return;
+    }
+    const currentSecondary = Number(account.multicurrency_balance_secondary ?? 0);
+    const targetSecondary = parseFloat(targetSecondaryBalance.replace(',', '.'));
+    const shouldHandleSecondary = isCreditCard && isMulticurrency;
+    if (shouldHandleSecondary && !Number.isFinite(targetSecondary)) {
+      alert('Ingresá un saldo secundario válido');
       return;
     }
 
@@ -154,6 +165,23 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
           const data = await adj.json().catch(() => ({}));
           throw new Error(
             (data as { error?: string }).error || 'Error al ajustar el saldo'
+          );
+        }
+      }
+
+      if (
+        shouldHandleSecondary &&
+        !moneyNearlyEqual(targetSecondary, currentSecondary)
+      ) {
+        const adjSecondary = await fetch(`/api/accounts/${account.id}/adjust-secondary-balance`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetSecondaryBalance: targetSecondary }),
+        });
+        if (!adjSecondary.ok) {
+          const data = await adjSecondary.json().catch(() => ({}));
+          throw new Error(
+            (data as { error?: string }).error || 'Error al ajustar saldo secundario'
           );
         }
       }
@@ -308,6 +336,24 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                 className="input w-full font-mono"
               />
             </div>
+
+            {isCreditCard && isMulticurrency && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Saldo secundario en Zarix ({secondaryCurrency})
+                </label>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                  Se crea un movimiento de ajuste en la moneda secundaria por la diferencia.
+                </p>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={targetSecondaryBalance}
+                  onChange={(e) => setTargetSecondaryBalance(e.target.value)}
+                  className="input w-full font-mono"
+                />
+              </div>
+            )}
 
             <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/40">
               <input

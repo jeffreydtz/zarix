@@ -90,6 +90,16 @@ function AccountCards({ accounts }: AccountCardsProps) {
                       })}{' '}
                       {account.secondary_currency}
                     </div>
+                    <div className="text-xs font-semibold opacity-90 tabular-nums">
+                      Total (ARS blue): -$
+                      {Math.abs(
+                        Number(account.multicurrency_total_ars_blue ?? account.balance_ars_blue ?? 0)
+                      ).toLocaleString('es-AR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{' '}
+                      ARS
+                    </div>
                   </div>
                 ) : (
                   <div className="text-3xl font-bold tracking-tight">

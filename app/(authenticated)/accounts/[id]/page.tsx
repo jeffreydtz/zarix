@@ -11,6 +11,7 @@ import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
 import ReconcileBalanceButton from '@/components/accounts/ReconcileBalanceButton';
+import AccountDetailEditButton from '@/components/accounts/AccountDetailEditButton';
 import { getAccountDisplayName, getAccountTypeLabelEs } from '@/lib/account-display-name';
 
 export default async function AccountDetailPage({ params }: { params: { id: string } }) {
@@ -46,6 +47,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
     const balance = Number(account.balance);
     const typeLabel = getAccountTypeLabelEs(account.type);
     const enriched = accounts.find((a) => a.id === account.id) as AccountWithBalance | undefined;
+    const editableAccount = (enriched ?? { ...account, balance }) as AccountWithBalance;
     const isMulticurrencyCard =
       account.type === 'credit_card' &&
       account.is_multicurrency &&
@@ -102,6 +104,19 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                         {account.secondary_currency}
                       </span>
                     </p>
+                    <p className="text-sm font-medium tabular-nums text-slate-500 dark:text-slate-400">
+                      Total (ARS blue):{' '}
+                      <span className="font-semibold text-red-500">
+                        -$
+                        {Math.abs(
+                          Number(enriched.multicurrency_total_ars_blue ?? enriched.balance_ars_blue ?? 0)
+                        ).toLocaleString('es-AR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{' '}
+                        ARS
+                      </span>
+                    </p>
                   </div>
                 ) : (
                   <p
@@ -139,7 +154,10 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                 <ReconcileBalanceButton accountId={account.id} />
               </div>
             </div>
-            <CreateTransactionButton accounts={accounts} categories={categories} />
+            <div className="flex items-center gap-2">
+              <AccountDetailEditButton account={editableAccount} />
+              <CreateTransactionButton accounts={accounts} categories={categories} />
+            </div>
           </div>
 
           <RepairCurrencyRangePanel accountId={account.id} />
