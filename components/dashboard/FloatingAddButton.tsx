@@ -13,7 +13,7 @@ import {
   type TransactionCurrency,
 } from '@/lib/constants/transaction-currencies';
 import {
-  fetchJsonArray,
+  fetchReferenceList,
   getOfflineCachedAccounts,
   getOfflineCachedCategories,
   maybePersistAccountsSnapshot,
@@ -69,8 +69,8 @@ export default function FloatingAddButton() {
     const online = typeof navigator !== 'undefined' && navigator.onLine;
 
     Promise.all([
-      fetchJsonArray<Account>('/api/accounts'),
-      fetchJsonArray<Category>('/api/categories'),
+      fetchReferenceList<Account>('/api/accounts?lite=1', { ttlMs: 2 * 60 * 1000 }),
+      fetchReferenceList<Category>('/api/categories', { ttlMs: 2 * 60 * 1000 }),
     ]).then(([accsRaw, catsRaw]) => {
       maybePersistAccountsSnapshot(accsRaw, online);
       maybePersistCategoriesSnapshot(catsRaw, online);

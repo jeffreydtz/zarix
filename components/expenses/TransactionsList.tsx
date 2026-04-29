@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -154,6 +154,26 @@ export default function TransactionsList({
   const [bulkAccountId, setBulkAccountId] = useState('');
   const [applyingBulk, setApplyingBulk] = useState(false);
   const [deletingBulk, setDeletingBulk] = useState(false);
+  const enableListAnimations = transactions.length <= 40;
+
+  const txDateMeta = useMemo(() => {
+    const out = new Map<string, { dateLabel: string; distanceLabel: string }>();
+    for (const tx of transactions) {
+      const date = new Date(tx.transaction_date);
+      out.set(tx.id, {
+        dateLabel: date.toLocaleDateString('es-AR', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        }),
+        distanceLabel: formatDistanceToNow(date, {
+          addSuffix: true,
+          locale: es,
+        }),
+      });
+    }
+    return out;
+  }, [transactions]);
 
   const handleSave = () => {
     setEditingTx(null);
@@ -381,17 +401,22 @@ export default function TransactionsList({
       )}
 
       {!emptyAccountOnly && (
-      <motion.div 
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: { opacity: 0 },
-          show: { opacity: 1, transition: { staggerChildren: 0.05 } }
-        }}
+      <motion.div
+        initial={enableListAnimations ? 'hidden' : false}
+        animate={enableListAnimations ? 'show' : undefined}
+        variants={
+          enableListAnimations
+            ? {
+                hidden: { opacity: 0 },
+                show: { opacity: 1, transition: { staggerChildren: 0.05 } },
+              }
+            : undefined
+        }
         className="space-y-3"
       >
         {transactions.map((tx) => {
           const vac = viewAccountContext;
+          const dateMeta = txDateMeta.get(tx.id);
           const impact = vac
             ? impactInAccountCurrency(tx, vac.accountId, {
                 accountCurrency: vac.accountCurrency.trim().toUpperCase(),
@@ -403,11 +428,15 @@ export default function TransactionsList({
           return (
           <motion.div 
             key={tx.id} 
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              show: { opacity: 1, y: 0 }
-            }}
-            whileHover={{ scale: 1.01 }}
+            variants={
+              enableListAnimations
+                ? {
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0 },
+                  }
+                : undefined
+            }
+            whileHover={enableListAnimations ? { scale: 1.01 } : undefined}
             onClick={() => {
               if (selectionMode) return;
               setEditingTx(tx);
@@ -427,7 +456,7 @@ export default function TransactionsList({
                 )}
                 <motion.div 
                   className="text-3xl w-12 h-12 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700"
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={enableListAnimations ? { scale: 1.1 } : undefined}
                 >
                   {tx.category?.icon || (tx.type === 'income' ? '💰' : '💸')}
                 </motion.div>
@@ -437,17 +466,7 @@ export default function TransactionsList({
                     {tx.description || tx.category?.name || 'Sin descripcion'}
                   </div>
                   <div className="text-sm text-slate-500 dark:text-slate-400">
-                    {tx.account?.name} •{' '}
-                    {new Date(tx.transaction_date).toLocaleDateString('es-AR', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}{' '}
-                    •{' '}
-                    {formatDistanceToNow(new Date(tx.transaction_date), {
-                      addSuffix: true,
-                      locale: es,
-                    })}
+                    {tx.account?.name} • {dateMeta?.dateLabel ?? '—'} • {dateMeta?.distanceLabel ?? '—'}
                   </div>
                   {tx.notes && (
                     <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">{tx.notes}</div>

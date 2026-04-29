@@ -77,10 +77,6 @@ function roundMoney(n: number): number {
 }
 
 class AccountsService {
-  private postgrestQuotedUuidList(ids: string[]): string {
-    return ids.map((id) => `"${id.replace(/"/g, '\\"')}"`).join(',');
-  }
-
   private async computeMulticurrencyBalances(
     userId: string,
     accounts: Account[]
@@ -90,75 +86,18 @@ class AccountsService {
     const out = new Map<string, { primary: number; secondary: number }>();
     if (multi.length === 0) return out;
 
-    const byId = new Map(multi.map((a) => [a.id, a] as const));
-    for (const a of multi) out.set(a.id, { primary: 0, secondary: 0 });
-
-    const inList = this.postgrestQuotedUuidList(multi.map((a) => a.id));
-    const { data: rows, error } = await supabase
-      .from('transactions')
-      .select(
-        'account_id,destination_account_id,type,amount,currency,amount_in_account_currency,exchange_rate'
-      )
-      .eq('user_id', userId)
-      .or(`account_id.in.(${inList}),destination_account_id.in.(${inList})`);
+    const { data: rows, error } = await supabase.rpc('get_multicurrency_balances', {
+      p_user_id: userId,
+      p_account_ids: multi.map((a) => a.id),
+    });
 
     if (error) throw error;
 
-    const addSigned = (
-      accountId: string,
-      txCurrencyRaw: string,
-      signedOriginalAmount: number,
-      signedPrimaryFallback: number
-    ) => {
-      const acc = byId.get(accountId);
-      const cur = txCurrencyRaw.trim().toUpperCase();
-      if (!acc) return;
-      const primary = acc.currency.trim().toUpperCase();
-      const secondary = (acc.secondary_currency || '').trim().toUpperCase();
-      const b = out.get(accountId);
-      if (!b) return;
-
-      if (cur === primary) {
-        b.primary += signedOriginalAmount;
-        return;
-      }
-      if (cur === secondary) {
-        b.secondary += signedOriginalAmount;
-        return;
-      }
-      b.primary += signedPrimaryFallback;
-    };
-
-    for (const tx of rows || []) {
-      const amount = Number(tx.amount);
-      const ain = Number(tx.amount_in_account_currency);
-      const rate = Number(tx.exchange_rate ?? 1);
-      const sourceId = tx.account_id as string | null;
-      const destinationId = tx.destination_account_id as string | null;
-
-      if (sourceId && byId.has(sourceId)) {
-        if (tx.type === 'expense') addSigned(sourceId, tx.currency, -amount, -ain);
-        if (tx.type === 'income') addSigned(sourceId, tx.currency, amount, ain);
-        if (tx.type === 'adjustment') {
-          // En ajustes, `amount` se guarda positivo; el signo real viene en `amount_in_account_currency`.
-          // Para el bucket por moneda (ARS/USD) usamos el monto original con el signo del ajuste.
-          const signedOriginal = Math.sign(ain || 0) * Math.abs(amount);
-          addSigned(sourceId, tx.currency, signedOriginal, ain);
-        }
-        if (tx.type === 'transfer') addSigned(sourceId, tx.currency, -amount, -ain);
-      }
-
-      if (destinationId && byId.has(destinationId) && tx.type === 'transfer') {
-        const destAcc = byId.get(destinationId)!;
-        const txCur = String(tx.currency || '').trim().toUpperCase();
-        const primary = destAcc.currency.trim().toUpperCase();
-        const secondary = (destAcc.secondary_currency || '').trim().toUpperCase();
-        const credited = amount * (Number.isFinite(rate) && rate > 0 ? rate : 1);
-        let creditedCurrency = txCur;
-        if (txCur === primary && secondary && rate !== 1) creditedCurrency = secondary;
-        if (txCur === secondary && rate !== 1) creditedCurrency = primary;
-        addSigned(destinationId, creditedCurrency, credited, credited);
-      }
+    for (const row of rows || []) {
+      out.set(String(row.account_id), {
+        primary: Number(row.primary_balance ?? 0),
+        secondary: Number(row.secondary_balance ?? 0),
+      });
     }
 
     return out;
@@ -404,6 +343,38 @@ class AccountsService {
 
     if (error) throw error;
     return (data ?? []).map((r) => r.id);
+  }
+
+  /**
+   * Lista liviana de cuentas de inversión para formularios/pantalla de inversiones.
+   */
+  async listInvestmentAccounts(userId: string): Promise<Account[]> {
+    const supabase = createServiceClientSync();
+    const { data, error } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .eq('type', 'investment')
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+    return (data ?? []).map((a) => ({ ...a, balance: Number(a.balance) }));
+  }
+
+  async listReferenceAccounts(
+    userId: string
+  ): Promise<Array<Pick<Account, 'id' | 'name' | 'currency' | 'balance' | 'type' | 'last_4_digits'>>> {
+    const supabase = createServiceClientSync();
+    const { data, error } = await supabase
+      .from('accounts')
+      .select('id,name,currency,balance,type,last_4_digits')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+    return (data ?? []).map((a) => ({ ...a, balance: Number(a.balance) }));
   }
 
   /**

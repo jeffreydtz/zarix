@@ -13,7 +13,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const accounts = await accountsService.list(user.id);
+    const lite = req.nextUrl.searchParams.get('lite') === '1';
+    const accounts = lite
+      ? await accountsService.listReferenceAccounts(user.id)
+      : await accountsService.list(user.id);
     return NextResponse.json(accounts);
   } catch (error: any) {
     console.error('Accounts GET error:', error);

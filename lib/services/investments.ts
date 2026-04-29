@@ -148,7 +148,7 @@ class InvestmentsService {
 
   private async loadInvestmentsNormalized(
     userId: string,
-    options?: { forceRefreshQuotes?: boolean }
+    options?: { forceRefreshQuotes?: boolean; skipQuoteRefresh?: boolean }
   ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number }> {
     const supabase = createServiceClientSync();
 
@@ -174,8 +174,7 @@ class InvestmentsService {
         const lastUpdatedAt = inv.current_price_updated_at ? new Date(inv.current_price_updated_at).getTime() : 0;
         const isStale =
           Boolean(options?.forceRefreshQuotes) ||
-          !lastUpdatedAt ||
-          now - lastUpdatedAt > 15 * 60 * 1000;
+          (!options?.skipQuoteRefresh && (!lastUpdatedAt || now - lastUpdatedAt > 15 * 60 * 1000));
 
         if (inv.ticker && isStale) {
           try {
@@ -330,7 +329,7 @@ class InvestmentsService {
 
   async getPortfolioSummary(
     userId: string,
-    options?: { forceRefreshQuotes?: boolean; skipDailySnapshot?: boolean }
+    options?: { forceRefreshQuotes?: boolean; skipDailySnapshot?: boolean; skipQuoteRefresh?: boolean }
   ): Promise<PortfolioSummaryPayload> {
     const { investments, blueArsPerUsd } = await this.loadInvestmentsNormalized(userId, options);
 

@@ -8,6 +8,15 @@ const KEYS = {
   categories: 'zarix-offline-snapshot-categories-v1',
 } as const;
 
+const META_KEYS = {
+  accounts: 'zarix-offline-snapshot-accounts-meta-v1',
+  categories: 'zarix-offline-snapshot-categories-meta-v1',
+} as const;
+
+const inFlight = new Map<string, Promise<unknown[] | null>>();
+
+type SnapshotMeta = { updatedAt: number };
+
 function readArray<T>(key: string): T[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -29,6 +38,28 @@ function writeArray<T>(key: string, data: T[]): void {
   }
 }
 
+function readMeta(key: string): SnapshotMeta | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as SnapshotMeta;
+    if (!parsed || typeof parsed.updatedAt !== 'number') return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeMeta(key: string, meta: SnapshotMeta): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(key, JSON.stringify(meta));
+  } catch {
+    /* ignore */
+  }
+}
+
 export function getOfflineCachedAccounts<T>(): T[] {
   return readArray<T>(KEYS.accounts);
 }
@@ -44,12 +75,18 @@ export function getOfflineCachedCategories<T>(): T[] {
  */
 export function maybePersistAccountsSnapshot<T>(rows: T[] | null, online: boolean): void {
   if (rows === null) return;
-  if (online || rows.length > 0) writeArray(KEYS.accounts, rows);
+  if (online || rows.length > 0) {
+    writeArray(KEYS.accounts, rows);
+    writeMeta(META_KEYS.accounts, { updatedAt: Date.now() });
+  }
 }
 
 export function maybePersistCategoriesSnapshot<T>(rows: T[] | null, online: boolean): void {
   if (rows === null) return;
-  if (online || rows.length > 0) writeArray(KEYS.categories, rows);
+  if (online || rows.length > 0) {
+    writeArray(KEYS.categories, rows);
+    writeMeta(META_KEYS.categories, { updatedAt: Date.now() });
+  }
 }
 
 /**
@@ -74,4 +111,48 @@ export async function fetchJsonArray<T>(url: string): Promise<T[] | null> {
   } catch {
     return null;
   }
+}
+
+function isFresh(meta: SnapshotMeta | null, ttlMs: number): boolean {
+  if (!meta) return false;
+  return Date.now() - meta.updatedAt <= ttlMs;
+}
+
+/**
+ * Evita fetches duplicados en la misma sesión y permite TTL configurable.
+ */
+export async function fetchReferenceList<T>(
+  url: string,
+  options?: { ttlMs?: number; force?: boolean }
+): Promise<T[] | null> {
+  const ttlMs = options?.ttlMs ?? 2 * 60 * 1000;
+  const force = Boolean(options?.force);
+  const isAccounts = url.startsWith('/api/accounts');
+  const cached = isAccounts ? getOfflineCachedAccounts<T>() : getOfflineCachedCategories<T>();
+  const meta = readMeta(isAccounts ? META_KEYS.accounts : META_KEYS.categories);
+
+  if (!force && cached.length > 0 && isFresh(meta, ttlMs)) {
+    return cached;
+  }
+
+  const key = `${url}::${force ? 'force' : 'normal'}`;
+  const current = inFlight.get(key) as Promise<T[] | null> | undefined;
+  if (current) return current;
+
+  const request = fetchJsonArray<T>(url)
+    .then((rows) => {
+      const online = typeof navigator !== 'undefined' && navigator.onLine;
+      if (isAccounts) {
+        maybePersistAccountsSnapshot(rows, online);
+      } else {
+        maybePersistCategoriesSnapshot(rows, online);
+      }
+      return rows;
+    })
+    .finally(() => {
+      inFlight.delete(key);
+    });
+
+  inFlight.set(key, request as Promise<unknown[] | null>);
+  return request;
 }

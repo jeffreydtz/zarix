@@ -1,11 +1,14 @@
 import { redirect } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/server';
+import { getCachedUser } from '@/lib/auth/session';
 import { investmentsService } from '@/lib/services/investments';
 import { accountsService } from '@/lib/services/accounts';
-import MarketDataWidget from '@/components/investments/MarketDataWidget';
-import InvestmentAccountsList from '@/components/investments/InvestmentAccountsList';
 import InvestmentsWorkspace from '@/components/investments/InvestmentsWorkspace';
 import type { Account } from '@/types/database';
+
+const MarketDataWidget = dynamic(() => import('@/components/investments/MarketDataWidget'), { ssr: false });
+const InvestmentAccountsList = dynamic(() => import('@/components/investments/InvestmentAccountsList'), { ssr: false });
 
 const INVESTMENT_LABELS: Record<string, string> = {
   plazo_fijo: 'Plazo Fijo',
@@ -15,21 +18,22 @@ const INVESTMENT_LABELS: Record<string, string> = {
 
 export default async function InvestmentsPage() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       redirect('/login');
     }
+    const supabase = await createClient();
 
     const now = new Date();
     const in30Days = new Date(now);
     in30Days.setDate(in30Days.getDate() + 30);
 
     const [portfolio, investmentAccounts, upcomingMaturities] = await Promise.all([
-      investmentsService.getPortfolioSummary(user.id).catch(() => ({
+      investmentsService.getPortfolioSummary(user.id, {
+        skipDailySnapshot: true,
+        skipQuoteRefresh: true,
+      }).catch(() => ({
         investments: [],
         totalCurrentValue: 0,
         totalPurchaseValue: 0,
@@ -41,10 +45,7 @@ export default async function InvestmentsPage() {
         totalPnLArsBlue: 0,
         byType: [],
       })),
-      accountsService
-        .list(user.id)
-        .then((accs) => accs.filter((acc) => acc.type === 'investment'))
-        .catch(() => []),
+      accountsService.listInvestmentAccounts(user.id).catch(() => []),
       (async () => {
         const { data } = await supabase
           .from('investments')

@@ -1,17 +1,18 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import dynamic from 'next/dynamic';
+import { getCachedUser } from '@/lib/auth/session';
 import { analyticsService } from '@/lib/services/analytics';
-import CategoryDonut from '@/components/analysis/CategoryDonut';
-import MonthlyBarChart from '@/components/analysis/MonthlyBarChart';
-import CashFlowChart from '@/components/analysis/CashFlowChart';
-import TopExpenses from '@/components/analysis/TopExpenses';
-import AccountBreakdownChart from '@/components/analysis/AccountBreakdownChart';
 import ProjectionsWidget from '@/components/analysis/ProjectionsWidget';
+
+const CategoryDonut = dynamic(() => import('@/components/analysis/CategoryDonut'), { ssr: false });
+const MonthlyBarChart = dynamic(() => import('@/components/analysis/MonthlyBarChart'), { ssr: false });
+const CashFlowChart = dynamic(() => import('@/components/analysis/CashFlowChart'), { ssr: false });
+const TopExpenses = dynamic(() => import('@/components/analysis/TopExpenses'), { ssr: false });
+const AccountBreakdownChart = dynamic(() => import('@/components/analysis/AccountBreakdownChart'), { ssr: false });
 
 export default async function AnalysisPage() {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       redirect('/login');
@@ -27,7 +28,6 @@ export default async function AnalysisPage() {
       dailyTrend,
       topExpenses,
       accountBreakdown,
-      averages,
       incomeBreakdown
     ] = await Promise.all([
       analyticsService.getCategoryBreakdown(user.id, startOfMonth, endOfMonth, 'expense').catch(() => []),
@@ -35,9 +35,9 @@ export default async function AnalysisPage() {
       analyticsService.getDailyTrend(user.id, 30).catch(() => []),
       analyticsService.getTopExpenses(user.id, startOfMonth, endOfMonth, 10).catch(() => []),
       analyticsService.getAccountBreakdown(user.id, startOfMonth, endOfMonth).catch(() => []),
-      analyticsService.getAverages(user.id).catch(() => ({ avgExpenses: 0, avgIncome: 0, avgBalance: 0 })),
       analyticsService.getCategoryBreakdown(user.id, startOfMonth, endOfMonth, 'income').catch(() => [])
     ]);
+    const averages = analyticsService.getAveragesFromMonthly(monthlyTrend);
 
     const totalExpenses = categoryBreakdown.reduce((sum, c) => sum + c.amount, 0);
     const totalIncome = incomeBreakdown.reduce((sum, c) => sum + c.amount, 0);

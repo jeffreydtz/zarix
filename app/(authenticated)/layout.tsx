@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { getCachedUser } from '@/lib/auth/session';
 import Navigation from '@/components/Navigation';
 import OfflineReferenceWarmup from '@/components/OfflineReferenceWarmup';
 
@@ -7,10 +8,8 @@ export default async function AuthenticatedLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCachedUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   let gracePeriodEnd: string | null = null;
   if (user) {

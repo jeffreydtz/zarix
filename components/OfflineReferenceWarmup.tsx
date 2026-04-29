@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import {
-  fetchJsonArray,
+  fetchReferenceList,
   maybePersistAccountsSnapshot,
   maybePersistCategoriesSnapshot,
 } from '@/lib/offline-reference-cache';
@@ -18,8 +18,8 @@ export default function OfflineReferenceWarmup() {
       if (typeof navigator !== 'undefined' && !navigator.onLine) return;
       const online = typeof navigator !== 'undefined' && navigator.onLine;
       const [accs, cats] = await Promise.all([
-        fetchJsonArray<unknown>('/api/accounts'),
-        fetchJsonArray<unknown>('/api/categories'),
+        fetchReferenceList<unknown>('/api/accounts?lite=1', { ttlMs: 2 * 60 * 1000 }),
+        fetchReferenceList<unknown>('/api/categories', { ttlMs: 2 * 60 * 1000 }),
       ]);
       if (cancelled) return;
       maybePersistAccountsSnapshot(accs, online);

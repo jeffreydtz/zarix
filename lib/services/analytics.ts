@@ -1,6 +1,5 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
-import { accountsService } from '@/lib/services/accounts';
-import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
+import type { TransactionWithCategory } from '@/lib/services/transactions';
 
 export interface CategoryBreakdown {
   name: string;
@@ -48,43 +47,29 @@ class AnalyticsService {
     type: 'expense' | 'income' = 'expense'
   ): Promise<CategoryBreakdown[]> {
     const supabase = createServiceClientSync();
-    
-    let q = supabase
-      .from('transactions')
-      .select('amount_in_account_currency, category:categories(name, icon)')
-      .eq('user_id', userId)
-      .eq('type', type)
-      .gte('transaction_date', startDate.toISOString())
-      .lte('transaction_date', endDate.toISOString());
-    const activeIds = await accountsService.getActiveAccountIds(userId);
-    q = applyArchivedAccountsTransactionFilter(q, activeIds);
-    const { data: transactions } = await q;
 
-    if (!transactions) return [];
-    
-    const categoryMap = new Map<string, { name: string; icon: string; amount: number; count: number }>();
-    let total = 0;
-    
-    transactions.forEach(t => {
-      const cat = t.category as unknown as { name: string; icon: string } | null;
-      const catName = cat?.name || 'Sin categoría';
-      const catIcon = cat?.icon || '❓';
-      const amount = Number(t.amount_in_account_currency);
-      
-      const existing = categoryMap.get(catName) || { name: catName, icon: catIcon, amount: 0, count: 0 };
-      existing.amount += amount;
-      existing.count += 1;
-      categoryMap.set(catName, existing);
-      total += amount;
+    const { data, error } = await supabase.rpc('analytics_category_breakdown', {
+      p_user_id: userId,
+      p_start: startDate.toISOString(),
+      p_end: endDate.toISOString(),
+      p_type: type,
     });
-    
-    return Array.from(categoryMap.values())
-      .sort((a, b) => b.amount - a.amount)
-      .map((cat, index) => ({
-        ...cat,
-        percent: total > 0 ? (cat.amount / total) * 100 : 0,
-        color: CATEGORY_COLORS[index % CATEGORY_COLORS.length]
-      }));
+
+    if (error || !data) return [];
+
+    const normalized: Array<{ name: string; icon: string; amount: number; count: number }> = data.map((row: any) => ({
+      name: String(row.category_name || 'Sin categoría'),
+      icon: String(row.category_icon || '❓'),
+      amount: Number(row.amount || 0),
+      count: Number(row.tx_count || 0),
+    }));
+    const total = normalized.reduce((sum: number, item) => sum + item.amount, 0);
+
+    return normalized.map((cat, index) => ({
+      ...cat,
+      percent: total > 0 ? (cat.amount / total) * 100 : 0,
+      color: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+    }));
   }
   
   async getMonthlyTrend(userId: string, months: number = 6): Promise<MonthlyData[]> {
@@ -95,99 +80,52 @@ class AnalyticsService {
     const startRange = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
     const endRange = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-    let qMonth = supabase
-      .from('transactions')
-      .select('type, amount_in_account_currency, transaction_date')
-      .eq('user_id', userId)
-      .gte('transaction_date', startRange.toISOString())
-      .lte('transaction_date', endRange.toISOString());
-    const activeIdsMonth = await accountsService.getActiveAccountIds(userId);
-    qMonth = applyArchivedAccountsTransactionFilter(qMonth, activeIdsMonth);
-    const { data: transactions } = await qMonth;
-
-    const bucket = new Map<string, { expenses: number; income: number }>();
-    for (let i = months - 1; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      bucket.set(key, { expenses: 0, income: 0 });
-    }
-
-    (transactions || []).forEach((t) => {
-      const d = new Date(t.transaction_date);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const entry = bucket.get(key);
-      if (!entry) return;
-      const amount = Number(t.amount_in_account_currency);
-      if (t.type === 'expense') entry.expenses += amount;
-      else if (t.type === 'income') entry.income += amount;
+    const { data, error } = await supabase.rpc('analytics_monthly_trend', {
+      p_user_id: userId,
+      p_start: startRange.toISOString(),
+      p_end: endRange.toISOString(),
     });
+    if (error || !data) return [];
 
-    const result: MonthlyData[] = [];
-    bucket.forEach((v, key) => {
+    return (data || []).map((row: any) => {
+      const key = String(row.month_key);
       const [year, monthStr] = key.split('-');
       const month = Number(monthStr) - 1;
-      result.push({
+      const expenses = Number(row.expenses || 0);
+      const income = Number(row.income || 0);
+      return {
         month: key,
         monthLabel: `${monthNames[month]} ${year.slice(2)}`,
-        expenses: v.expenses,
-        income: v.income,
-        balance: v.income - v.expenses,
-      });
+        expenses,
+        income,
+        balance: income - expenses,
+      };
     });
-
-    return result;
   }
   
   async getDailyTrend(userId: string, days: number = 30): Promise<DailyData[]> {
     const supabase = createServiceClientSync();
-    const result: DailyData[] = [];
-    
-    const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-    
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days + 1);
-    
-    let qDay = supabase
-      .from('transactions')
-      .select('type, amount_in_account_currency, transaction_date')
-      .eq('user_id', userId)
-      .gte('transaction_date', startDate.toISOString())
-      .lte('transaction_date', endDate.toISOString());
-    const activeIdsDay = await accountsService.getActiveAccountIds(userId);
-    qDay = applyArchivedAccountsTransactionFilter(qDay, activeIdsDay);
-    const { data: transactions } = await qDay;
 
-    const dailyMap = new Map<string, { expenses: number; income: number }>();
-    
-    for (let i = 0; i < days; i++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
-      const key = date.toISOString().split('T')[0];
-      dailyMap.set(key, { expenses: 0, income: 0 });
-    }
-    
-    (transactions || []).forEach(t => {
-      const dateKey = t.transaction_date.split('T')[0];
-      const existing = dailyMap.get(dateKey);
-      if (existing) {
-        const amount = Number(t.amount_in_account_currency);
-        if (t.type === 'expense') existing.expenses += amount;
-        else if (t.type === 'income') existing.income += amount;
-      }
+    const { data, error } = await supabase.rpc('analytics_daily_trend', {
+      p_user_id: userId,
+      p_start: startDate.toISOString(),
+      p_end: endDate.toISOString(),
     });
-    
-    dailyMap.forEach((data, dateStr) => {
+    if (error || !data) return [];
+
+    return (data || []).map((row: any) => {
+      const dateStr = String(row.day_key);
       const date = new Date(dateStr);
-      result.push({
+      return {
         date: dateStr,
         dayLabel: `${date.getDate()}/${date.getMonth() + 1}`,
-        expenses: data.expenses,
-        income: data.income
-      });
+        expenses: Number(row.expenses || 0),
+        income: Number(row.income || 0),
+      };
     });
-    
-    return result;
   }
   
   async getAccountBreakdown(
@@ -196,42 +134,26 @@ class AnalyticsService {
     endDate: Date
   ): Promise<AccountBreakdown[]> {
     const supabase = createServiceClientSync();
-    
-    let qAcc = supabase
-      .from('transactions')
-      .select('amount_in_account_currency, account:accounts!transactions_account_id_fkey(name, icon, color)')
-      .eq('user_id', userId)
-      .eq('type', 'expense')
-      .gte('transaction_date', startDate.toISOString())
-      .lte('transaction_date', endDate.toISOString());
-    const activeIdsAcc = await accountsService.getActiveAccountIds(userId);
-    qAcc = applyArchivedAccountsTransactionFilter(qAcc, activeIdsAcc);
-    const { data: transactions } = await qAcc;
 
-    if (!transactions) return [];
-    
-    const accountMap = new Map<string, { name: string; icon: string; amount: number; color: string }>();
-    let total = 0;
-    
-    transactions.forEach(t => {
-      const acc = t.account as unknown as { name: string; icon: string; color: string } | null;
-      const accName = acc?.name || 'Sin cuenta';
-      const accIcon = acc?.icon || '💳';
-      const accColor = acc?.color || '#6B7280';
-      const amount = Number(t.amount_in_account_currency);
-      
-      const existing = accountMap.get(accName) || { name: accName, icon: accIcon, amount: 0, color: accColor };
-      existing.amount += amount;
-      accountMap.set(accName, existing);
-      total += amount;
+    const { data, error } = await supabase.rpc('analytics_account_breakdown', {
+      p_user_id: userId,
+      p_start: startDate.toISOString(),
+      p_end: endDate.toISOString(),
     });
-    
-    return Array.from(accountMap.values())
-      .sort((a, b) => b.amount - a.amount)
-      .map(acc => ({
-        ...acc,
-        percent: total > 0 ? (acc.amount / total) * 100 : 0
-      }));
+
+    if (error || !data) return [];
+    const normalized: Array<{ name: string; icon: string; color: string; amount: number }> = data.map((row: any) => ({
+      name: String(row.account_name || 'Sin cuenta'),
+      icon: String(row.account_icon || '💳'),
+      color: String(row.account_color || '#6B7280'),
+      amount: Number(row.amount || 0),
+    }));
+    const total = normalized.reduce((sum: number, item) => sum + item.amount, 0);
+
+    return normalized.map((acc) => ({
+      ...acc,
+      percent: total > 0 ? (acc.amount / total) * 100 : 0,
+    }));
   }
   
   async getTopExpenses(
@@ -241,27 +163,29 @@ class AnalyticsService {
     limit: number = 10
   ) {
     const supabase = createServiceClientSync();
-    
-    let qTop = supabase
+
+    const { data: topRows, error } = await supabase.rpc('analytics_top_expenses', {
+      p_user_id: userId,
+      p_start: startDate.toISOString(),
+      p_end: endDate.toISOString(),
+      p_limit: limit,
+    });
+    if (error || !topRows || topRows.length === 0) return [];
+
+    const orderedIds = topRows.map((row: any) => String(row.id));
+    const { data: hydrated } = await supabase
       .from('transactions')
       .select('*, category:categories(name, icon), account:accounts!transactions_account_id_fkey(name)')
-      .eq('user_id', userId)
-      .eq('type', 'expense')
-      .gte('transaction_date', startDate.toISOString())
-      .lte('transaction_date', endDate.toISOString());
-    const activeIdsTop = await accountsService.getActiveAccountIds(userId);
-    qTop = applyArchivedAccountsTransactionFilter(qTop, activeIdsTop);
-    qTop = qTop
-      .order('amount_in_account_currency', { ascending: false })
-      .limit(limit);
-    const { data } = await qTop;
+      .in('id', orderedIds);
 
-    return data || [];
+    if (!hydrated) return [];
+    const byId = new Map(hydrated.map((row: any) => [row.id, row as TransactionWithCategory]));
+    return orderedIds
+      .map((id: string) => byId.get(id))
+      .filter((row: TransactionWithCategory | undefined): row is TransactionWithCategory => Boolean(row));
   }
   
-  async getAverages(userId: string) {
-    const monthlyData = await this.getMonthlyTrend(userId, 6);
-    
+  getAveragesFromMonthly(monthlyData: MonthlyData[]) {
     if (monthlyData.length === 0) {
       return { avgExpenses: 0, avgIncome: 0, avgBalance: 0 };
     }
@@ -275,6 +199,11 @@ class AnalyticsService {
       avgIncome: totalIncome / monthlyData.length,
       avgBalance: totalBalance / monthlyData.length
     };
+  }
+
+  async getAverages(userId: string) {
+    const monthlyData = await this.getMonthlyTrend(userId, 6);
+    return this.getAveragesFromMonthly(monthlyData);
   }
 }
 

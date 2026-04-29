@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { createClient } from '@/lib/supabase/server';
+import { getCachedUser } from '@/lib/auth/session';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
@@ -28,10 +28,7 @@ const AnomaliesWidget = dynamic(() => import('@/components/dashboard/AnomaliesWi
 });
 export default async function DashboardPage() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       redirect('/login');
@@ -109,7 +106,7 @@ export default async function DashboardPage() {
           <Suspense
             fallback={<div className="card h-80 animate-pulse bg-slate-100 dark:bg-slate-800" />}
           >
-            <DashboardSpendingAnalyzerSection userId={user.id} quotes={quotes} />
+            <DashboardSpendingAnalyzerSection quotes={quotes} />
           </Suspense>
 
           <CreditCardsWidget accounts={accounts} />

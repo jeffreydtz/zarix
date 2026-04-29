@@ -18,6 +18,8 @@ export async function GET(req: NextRequest) {
     const live = req.nextUrl.searchParams.get('live') === '1';
     const portfolio = await investmentsService.getPortfolioSummary(user.id, {
       forceRefreshQuotes: live,
+      skipQuoteRefresh: !live,
+      skipDailySnapshot: true,
     });
     return NextResponse.json(portfolio);
   } catch (error: any) {
