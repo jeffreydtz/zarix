@@ -168,6 +168,15 @@ CREATE INDEX idx_transactions_installment_group ON transactions(installment_grou
   WHERE installment_group_id IS NOT NULL;
 CREATE INDEX idx_transactions_tags ON transactions USING gin(tags);
 CREATE INDEX idx_transactions_search ON transactions USING gin(to_tsvector('spanish', description));
+CREATE INDEX IF NOT EXISTS idx_transactions_user_type_date_desc
+  ON transactions (user_id, type, transaction_date DESC);
+CREATE INDEX IF NOT EXISTS idx_transactions_user_account_date_desc
+  ON transactions (user_id, account_id, transaction_date DESC);
+CREATE INDEX IF NOT EXISTS idx_transactions_user_destination_date_desc
+  ON transactions (user_id, destination_account_id, transaction_date DESC)
+  WHERE destination_account_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_transactions_user_description_trgm
+  ON transactions USING gin ((COALESCE(description, '')) gin_trgm_ops);
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 5. RECURRING RULES (reglas de recurrencia)
@@ -325,6 +334,8 @@ CREATE INDEX idx_exchange_rates_lookup ON exchange_rates(
   from_currency, to_currency, timestamp DESC
 );
 CREATE INDEX idx_exchange_rates_timestamp ON exchange_rates(timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_exchange_rates_source_pair_timestamp_desc
+  ON exchange_rates (source, from_currency, to_currency, timestamp DESC);
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 10. BUDGET ALERTS (registro de alertas enviadas)
@@ -386,11 +397,38 @@ CREATE TRIGGER trigger_investments_updated_at BEFORE UPDATE ON investments
 CREATE OR REPLACE FUNCTION update_account_balance()
 RETURNS TRIGGER AS $$
 DECLARE
-  account_record accounts%ROWTYPE;
-  dest_account_record accounts%ROWTYPE;
   amount_delta NUMERIC(20, 8);
-  dest_amount_delta NUMERIC(20, 8);
+  old_is_secondary_adjustment BOOLEAN := FALSE;
+  new_is_secondary_adjustment BOOLEAN := FALSE;
 BEGIN
+  IF TG_OP IN ('DELETE', 'UPDATE') AND OLD.type = 'adjustment' THEN
+    SELECT COALESCE(
+      a.type = 'credit_card'
+      AND a.is_multicurrency = true
+      AND a.secondary_currency IS NOT NULL
+      AND upper(trim(COALESCE(OLD.currency, ''))) = upper(trim(a.secondary_currency)),
+      FALSE
+    )
+    INTO old_is_secondary_adjustment
+    FROM accounts a
+    WHERE a.id = OLD.account_id;
+    old_is_secondary_adjustment := COALESCE(old_is_secondary_adjustment, FALSE);
+  END IF;
+
+  IF TG_OP IN ('INSERT', 'UPDATE') AND NEW.type = 'adjustment' THEN
+    SELECT COALESCE(
+      a.type = 'credit_card'
+      AND a.is_multicurrency = true
+      AND a.secondary_currency IS NOT NULL
+      AND upper(trim(COALESCE(NEW.currency, ''))) = upper(trim(a.secondary_currency)),
+      FALSE
+    )
+    INTO new_is_secondary_adjustment
+    FROM accounts a
+    WHERE a.id = NEW.account_id;
+    new_is_secondary_adjustment := COALESCE(new_is_secondary_adjustment, FALSE);
+  END IF;
+
   IF TG_OP = 'DELETE' THEN
     IF OLD.type = 'expense' THEN
       UPDATE accounts SET balance = balance + OLD.amount_in_account_currency
@@ -406,8 +444,10 @@ BEGIN
         WHERE id = OLD.destination_account_id;
       END IF;
     ELSIF OLD.type = 'adjustment' THEN
-      UPDATE accounts SET balance = balance - OLD.amount_in_account_currency
-      WHERE id = OLD.account_id;
+      IF NOT old_is_secondary_adjustment THEN
+        UPDATE accounts SET balance = balance - OLD.amount_in_account_currency
+        WHERE id = OLD.account_id;
+      END IF;
     END IF;
     RETURN OLD;
   END IF;
@@ -419,6 +459,16 @@ BEGIN
       amount_delta = NEW.amount_in_account_currency - OLD.amount_in_account_currency;
     ELSIF OLD.type = 'transfer' THEN
       amount_delta = OLD.amount_in_account_currency - NEW.amount_in_account_currency;
+    ELSIF OLD.type = 'adjustment' AND NEW.type = 'adjustment' THEN
+      IF old_is_secondary_adjustment AND new_is_secondary_adjustment THEN
+        amount_delta = 0;
+      ELSIF old_is_secondary_adjustment AND NOT new_is_secondary_adjustment THEN
+        amount_delta = NEW.amount_in_account_currency;
+      ELSIF NOT old_is_secondary_adjustment AND new_is_secondary_adjustment THEN
+        amount_delta = -OLD.amount_in_account_currency;
+      ELSE
+        amount_delta = NEW.amount_in_account_currency - OLD.amount_in_account_currency;
+      END IF;
     ELSE
       amount_delta = NEW.amount_in_account_currency - OLD.amount_in_account_currency;
     END IF;
@@ -430,6 +480,13 @@ BEGIN
       ELSIF OLD.type = 'income' THEN
         UPDATE accounts SET balance = balance - OLD.amount_in_account_currency WHERE id = OLD.account_id;
         UPDATE accounts SET balance = balance + NEW.amount_in_account_currency WHERE id = NEW.account_id;
+      ELSIF OLD.type = 'adjustment' THEN
+        IF NOT old_is_secondary_adjustment THEN
+          UPDATE accounts SET balance = balance - OLD.amount_in_account_currency WHERE id = OLD.account_id;
+        END IF;
+        IF NEW.type = 'adjustment' AND NOT new_is_secondary_adjustment THEN
+          UPDATE accounts SET balance = balance + NEW.amount_in_account_currency WHERE id = NEW.account_id;
+        END IF;
       END IF;
     ELSE
       UPDATE accounts SET balance = balance + amount_delta WHERE id = NEW.account_id;
@@ -462,8 +519,10 @@ BEGIN
         WHERE id = NEW.destination_account_id;
       END IF;
     ELSIF NEW.type = 'adjustment' THEN
-      UPDATE accounts SET balance = balance + NEW.amount_in_account_currency
-      WHERE id = NEW.account_id;
+      IF NOT new_is_secondary_adjustment THEN
+        UPDATE accounts SET balance = balance + NEW.amount_in_account_currency
+        WHERE id = NEW.account_id;
+      END IF;
     END IF;
     RETURN NEW;
   END IF;
@@ -705,6 +764,396 @@ BEGIN
   RETURN group_id;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_multicurrency_balances(
+  p_user_id uuid,
+  p_account_ids uuid[]
+)
+RETURNS TABLE (
+  account_id uuid,
+  primary_balance numeric,
+  secondary_balance numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+WITH RECURSIVE multi_accounts AS (
+  SELECT
+    a.id,
+    upper(trim(a.currency)) AS primary_currency,
+    upper(trim(COALESCE(a.secondary_currency, ''))) AS secondary_currency
+  FROM accounts a
+  WHERE a.user_id = p_user_id
+    AND a.id = ANY(p_account_ids)
+    AND a.is_multicurrency = true
+    AND a.secondary_currency IS NOT NULL
+),
+source_entries AS (
+  SELECT
+    tx.account_id,
+    tx.transaction_date,
+    tx.id AS tx_id,
+    upper(trim(tx.currency)) AS tx_currency,
+    CASE
+      WHEN tx.type = 'expense' THEN -abs(tx.amount)
+      WHEN tx.type = 'income' THEN abs(tx.amount)
+      WHEN tx.type = 'adjustment' THEN sign(tx.amount_in_account_currency) * abs(tx.amount)
+      WHEN tx.type = 'transfer' THEN -abs(tx.amount)
+      ELSE 0
+    END AS signed_original_amount,
+    CASE
+      WHEN tx.type = 'expense' THEN -abs(tx.amount_in_account_currency)
+      WHEN tx.type = 'income' THEN abs(tx.amount_in_account_currency)
+      WHEN tx.type = 'adjustment' THEN tx.amount_in_account_currency
+      WHEN tx.type = 'transfer' THEN -abs(tx.amount_in_account_currency)
+      ELSE 0
+    END AS signed_primary_fallback,
+    false AS is_secondary_payment_waterfall,
+    NULL::numeric AS secondary_inflow_amount,
+    NULL::numeric AS secondary_to_primary_rate,
+    false AS is_primary_payment_waterfall,
+    NULL::numeric AS primary_inflow_amount,
+    NULL::numeric AS primary_to_secondary_rate
+  FROM transactions tx
+  JOIN multi_accounts ma ON ma.id = tx.account_id
+  WHERE tx.user_id = p_user_id
+),
+destination_entries AS (
+  SELECT
+    tx.destination_account_id AS account_id,
+    tx.transaction_date,
+    tx.id AS tx_id,
+    upper(trim(tx.currency)) AS tx_currency,
+    abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1) AS signed_original_amount,
+    abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1) AS signed_primary_fallback,
+    (
+      upper(trim(tx.currency)) = ma.secondary_currency
+      AND COALESCE(tx.exchange_rate, 1) <> 1
+    ) AS is_secondary_payment_waterfall,
+    CASE
+      WHEN upper(trim(tx.currency)) = ma.secondary_currency
+           AND COALESCE(tx.exchange_rate, 1) <> 1
+      THEN abs(tx.amount)
+      ELSE NULL::numeric
+    END AS secondary_inflow_amount,
+    CASE
+      WHEN upper(trim(tx.currency)) = ma.secondary_currency
+           AND COALESCE(tx.exchange_rate, 1) <> 1
+      THEN COALESCE(NULLIF(tx.exchange_rate, 0), 1)
+      ELSE NULL::numeric
+    END AS secondary_to_primary_rate,
+    (
+      upper(trim(tx.currency)) = ma.primary_currency
+      AND COALESCE(tx.exchange_rate, 1) <> 1
+    ) AS is_primary_payment_waterfall,
+    CASE
+      WHEN upper(trim(tx.currency)) = ma.primary_currency
+           AND COALESCE(tx.exchange_rate, 1) <> 1
+      THEN abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1)
+      ELSE NULL::numeric
+    END AS primary_inflow_amount,
+    CASE
+      WHEN upper(trim(tx.currency)) = ma.primary_currency
+           AND COALESCE(tx.exchange_rate, 1) <> 1
+      THEN 1 / COALESCE(NULLIF(tx.exchange_rate, 0), 1)
+      ELSE NULL::numeric
+    END AS primary_to_secondary_rate
+  FROM transactions tx
+  JOIN multi_accounts ma ON ma.id = tx.destination_account_id
+  WHERE tx.user_id = p_user_id
+    AND tx.type = 'transfer'
+),
+entries AS (
+  SELECT * FROM source_entries
+  UNION ALL
+  SELECT * FROM destination_entries
+),
+ordered_entries AS (
+  SELECT
+    e.*,
+    ROW_NUMBER() OVER (PARTITION BY e.account_id ORDER BY e.transaction_date, e.tx_id) AS rn
+  FROM entries e
+),
+walk AS (
+  SELECT
+    oe.account_id,
+    oe.rn,
+    CASE
+      WHEN oe.is_secondary_payment_waterfall THEN
+        oe.secondary_inflow_amount * COALESCE(oe.secondary_to_primary_rate, 1)
+      WHEN oe.is_primary_payment_waterfall THEN
+        oe.primary_inflow_amount
+      ELSE
+        CASE
+          WHEN oe.tx_currency = ma.primary_currency THEN oe.signed_original_amount
+          WHEN oe.tx_currency = ma.secondary_currency THEN 0
+          ELSE oe.signed_primary_fallback
+        END
+    END AS primary_balance,
+    CASE
+      WHEN oe.is_secondary_payment_waterfall THEN
+        0
+      WHEN oe.is_primary_payment_waterfall THEN
+        0
+      ELSE
+        CASE
+          WHEN oe.tx_currency = ma.secondary_currency THEN oe.signed_original_amount
+          ELSE 0
+        END
+    END AS secondary_balance
+  FROM ordered_entries oe
+  JOIN multi_accounts ma ON ma.id = oe.account_id
+  WHERE oe.rn = 1
+
+  UNION ALL
+
+  SELECT
+    oe.account_id,
+    oe.rn,
+    w.primary_balance +
+      CASE
+        WHEN oe.is_secondary_payment_waterfall THEN
+          (
+            oe.secondary_inflow_amount -
+            CASE
+              WHEN w.secondary_balance < 0 THEN LEAST(oe.secondary_inflow_amount, abs(w.secondary_balance))
+              ELSE 0
+            END
+          ) * COALESCE(oe.secondary_to_primary_rate, 1)
+        WHEN oe.is_primary_payment_waterfall THEN
+          CASE
+            WHEN w.primary_balance < 0 THEN LEAST(oe.primary_inflow_amount, abs(w.primary_balance))
+            ELSE 0
+          END
+        ELSE
+          CASE
+            WHEN oe.tx_currency = ma.primary_currency THEN oe.signed_original_amount
+            WHEN oe.tx_currency = ma.secondary_currency THEN 0
+            ELSE oe.signed_primary_fallback
+          END
+      END AS primary_balance,
+    w.secondary_balance +
+      CASE
+        WHEN oe.is_secondary_payment_waterfall THEN
+          CASE
+            WHEN w.secondary_balance < 0 THEN LEAST(oe.secondary_inflow_amount, abs(w.secondary_balance))
+            ELSE 0
+          END
+        WHEN oe.is_primary_payment_waterfall THEN
+          (
+            oe.primary_inflow_amount -
+            CASE
+              WHEN w.primary_balance < 0 THEN LEAST(oe.primary_inflow_amount, abs(w.primary_balance))
+              ELSE 0
+            END
+          ) * COALESCE(oe.primary_to_secondary_rate, 1)
+        ELSE
+          CASE
+            WHEN oe.tx_currency = ma.secondary_currency THEN oe.signed_original_amount
+            ELSE 0
+          END
+      END AS secondary_balance
+  FROM walk w
+  JOIN ordered_entries oe
+    ON oe.account_id = w.account_id
+   AND oe.rn = w.rn + 1
+  JOIN multi_accounts ma ON ma.id = oe.account_id
+),
+latest AS (
+  SELECT DISTINCT ON (account_id)
+    account_id,
+    primary_balance,
+    secondary_balance
+  FROM walk
+  ORDER BY account_id, rn DESC
+)
+SELECT
+  ma.id AS account_id,
+  COALESCE(l.primary_balance, 0) AS primary_balance,
+  COALESCE(l.secondary_balance, 0) AS secondary_balance
+FROM multi_accounts ma
+LEFT JOIN latest l ON l.account_id = ma.id;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_category_breakdown(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz,
+  p_type transaction_type
+)
+RETURNS TABLE (
+  category_id uuid,
+  category_name text,
+  category_icon text,
+  amount numeric,
+  tx_count bigint
+)
+LANGUAGE sql
+STABLE
+AS $$
+SELECT
+  t.category_id,
+  COALESCE(c.name, 'Sin categoría') AS category_name,
+  COALESCE(c.icon, '❓') AS category_icon,
+  SUM(t.amount_in_account_currency) AS amount,
+  COUNT(*) AS tx_count
+FROM transactions t
+LEFT JOIN categories c ON c.id = t.category_id
+JOIN accounts a ON a.id = t.account_id
+LEFT JOIN accounts da ON da.id = t.destination_account_id
+WHERE t.user_id = p_user_id
+  AND t.type = p_type
+  AND t.transaction_date >= p_start
+  AND t.transaction_date <= p_end
+  AND a.is_active = true
+  AND (t.destination_account_id IS NULL OR da.is_active = true)
+GROUP BY t.category_id, COALESCE(c.name, 'Sin categoría'), COALESCE(c.icon, '❓')
+ORDER BY amount DESC;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_monthly_trend(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz
+)
+RETURNS TABLE (
+  month_key text,
+  expenses numeric,
+  income numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+WITH series AS (
+  SELECT generate_series(
+    date_trunc('month', p_start),
+    date_trunc('month', p_end),
+    interval '1 month'
+  ) AS month_start
+),
+base AS (
+  SELECT
+    date_trunc('month', t.transaction_date) AS month_start,
+    SUM(CASE WHEN t.type = 'expense' THEN t.amount_in_account_currency ELSE 0 END) AS expenses,
+    SUM(CASE WHEN t.type = 'income' THEN t.amount_in_account_currency ELSE 0 END) AS income
+  FROM transactions t
+  JOIN accounts a ON a.id = t.account_id
+  LEFT JOIN accounts da ON da.id = t.destination_account_id
+  WHERE t.user_id = p_user_id
+    AND t.transaction_date >= p_start
+    AND t.transaction_date <= p_end
+    AND a.is_active = true
+    AND (t.destination_account_id IS NULL OR da.is_active = true)
+  GROUP BY date_trunc('month', t.transaction_date)
+)
+SELECT
+  to_char(s.month_start, 'YYYY-MM') AS month_key,
+  COALESCE(b.expenses, 0) AS expenses,
+  COALESCE(b.income, 0) AS income
+FROM series s
+LEFT JOIN base b ON b.month_start = s.month_start
+ORDER BY s.month_start ASC;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_daily_trend(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz
+)
+RETURNS TABLE (
+  day_key date,
+  expenses numeric,
+  income numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+WITH series AS (
+  SELECT generate_series(
+    date_trunc('day', p_start)::date,
+    date_trunc('day', p_end)::date,
+    interval '1 day'
+  )::date AS day_key
+),
+base AS (
+  SELECT
+    (t.transaction_date AT TIME ZONE 'UTC')::date AS day_key,
+    SUM(CASE WHEN t.type = 'expense' THEN t.amount_in_account_currency ELSE 0 END) AS expenses,
+    SUM(CASE WHEN t.type = 'income' THEN t.amount_in_account_currency ELSE 0 END) AS income
+  FROM transactions t
+  JOIN accounts a ON a.id = t.account_id
+  LEFT JOIN accounts da ON da.id = t.destination_account_id
+  WHERE t.user_id = p_user_id
+    AND t.transaction_date >= p_start
+    AND t.transaction_date <= p_end
+    AND a.is_active = true
+    AND (t.destination_account_id IS NULL OR da.is_active = true)
+  GROUP BY (t.transaction_date AT TIME ZONE 'UTC')::date
+)
+SELECT
+  s.day_key,
+  COALESCE(b.expenses, 0) AS expenses,
+  COALESCE(b.income, 0) AS income
+FROM series s
+LEFT JOIN base b ON b.day_key = s.day_key
+ORDER BY s.day_key ASC;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_account_breakdown(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz
+)
+RETURNS TABLE (
+  account_name text,
+  account_icon text,
+  account_color text,
+  amount numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+SELECT
+  COALESCE(a.name, 'Sin cuenta') AS account_name,
+  COALESCE(a.icon, '💳') AS account_icon,
+  COALESCE(a.color, '#6B7280') AS account_color,
+  SUM(t.amount_in_account_currency) AS amount
+FROM transactions t
+LEFT JOIN accounts a ON a.id = t.account_id
+LEFT JOIN accounts da ON da.id = t.destination_account_id
+WHERE t.user_id = p_user_id
+  AND t.type = 'expense'
+  AND t.transaction_date >= p_start
+  AND t.transaction_date <= p_end
+  AND a.is_active = true
+  AND (t.destination_account_id IS NULL OR da.is_active = true)
+GROUP BY COALESCE(a.name, 'Sin cuenta'), COALESCE(a.icon, '💳'), COALESCE(a.color, '#6B7280')
+ORDER BY amount DESC;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_top_expenses(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz,
+  p_limit integer DEFAULT 10
+)
+RETURNS SETOF transactions
+LANGUAGE sql
+STABLE
+AS $$
+SELECT t.*
+FROM transactions t
+JOIN accounts a ON a.id = t.account_id
+LEFT JOIN accounts da ON da.id = t.destination_account_id
+WHERE t.user_id = p_user_id
+  AND t.type = 'expense'
+  AND t.transaction_date >= p_start
+  AND t.transaction_date <= p_end
+  AND a.is_active = true
+  AND (t.destination_account_id IS NULL OR da.is_active = true)
+ORDER BY t.amount_in_account_currency DESC
+LIMIT GREATEST(1, LEAST(p_limit, 100));
+$$;
 
 -- Obtener gasto vs presupuesto del mes actual
 CREATE OR REPLACE FUNCTION get_budget_status(
