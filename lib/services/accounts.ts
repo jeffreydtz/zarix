@@ -414,60 +414,21 @@ class AccountsService {
 
     const primary = normalizeAccountCurrency(acc.currency);
     const secondary = normalizeAccountCurrency(acc.secondary_currency);
+    const { data: rows, error: rpcErr } = await supabase.rpc('get_multicurrency_balances', {
+      p_user_id: userId,
+      p_account_ids: [accountId],
+    });
+    if (rpcErr) throw rpcErr;
 
-    const { data: rows, error: txErr } = await supabase
-      .from('transactions')
-      .select(
-        'account_id,destination_account_id,type,amount,currency,amount_in_account_currency,exchange_rate'
-      )
-      .eq('user_id', userId)
-      .or(`account_id.eq.${accountId},destination_account_id.eq.${accountId}`);
+    const row = (rows || [])[0] as
+      | { primary_balance?: number | string | null; secondary_balance?: number | string | null }
+      | undefined;
 
-    if (txErr) throw txErr;
-
-    let primaryBal = 0;
-    let secondaryBal = 0;
-    const addSigned = (txCurRaw: string, signedOriginal: number, signedPrimaryFallback: number) => {
-      const txCur = normalizeAccountCurrency(txCurRaw);
-      if (txCur === primary) {
-        primaryBal += signedOriginal;
-        return;
-      }
-      if (txCur === secondary) {
-        secondaryBal += signedOriginal;
-        return;
-      }
-      primaryBal += signedPrimaryFallback;
+    return {
+      primary: Number(row?.primary_balance ?? 0),
+      secondary: Number(row?.secondary_balance ?? 0),
+      secondaryCurrency: secondary,
     };
-
-    for (const tx of rows || []) {
-      const amount = Number(tx.amount);
-      const ain = Number(tx.amount_in_account_currency);
-      const rate = Number(tx.exchange_rate ?? 1);
-      const sourceId = tx.account_id as string | null;
-      const destinationId = tx.destination_account_id as string | null;
-
-      if (sourceId === accountId) {
-        if (tx.type === 'expense') addSigned(tx.currency, -Math.abs(amount), -Math.abs(ain));
-        if (tx.type === 'income') addSigned(tx.currency, Math.abs(amount), Math.abs(ain));
-        if (tx.type === 'adjustment') {
-          const signedOriginal = Math.sign(ain || 0) * Math.abs(amount);
-          addSigned(tx.currency, signedOriginal, ain);
-        }
-        if (tx.type === 'transfer') addSigned(tx.currency, -Math.abs(amount), -Math.abs(ain));
-      }
-
-      if (destinationId === accountId && tx.type === 'transfer') {
-        const txCur = normalizeAccountCurrency(String(tx.currency || ''));
-        const credited = amount * (Number.isFinite(rate) && rate > 0 ? rate : 1);
-        let creditedCurrency = txCur;
-        if (txCur === primary && secondary && rate !== 1) creditedCurrency = secondary;
-        if (txCur === secondary && rate !== 1) creditedCurrency = primary;
-        addSigned(creditedCurrency, Math.abs(credited), Math.abs(credited));
-      }
-    }
-
-    return { primary: primaryBal, secondary: secondaryBal, secondaryCurrency: secondary };
   }
 
   async createSecondaryBalanceAdjustment(
