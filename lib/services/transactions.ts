@@ -398,11 +398,20 @@ class TransactionsService {
       const t = tx.type;
 
       if (aid === accountId) {
+        const isSecondaryAdjustmentOnMulticurrencyCard =
+          t === 'adjustment' &&
+          account.type === 'credit_card' &&
+          Boolean(account.is_multicurrency) &&
+          Boolean(account.secondary_currency) &&
+          String(tx.currency || '').trim().toUpperCase() ===
+            String(account.secondary_currency || '').trim().toUpperCase();
+
         if (t === 'expense') {
           balance -= Number(tx.amount_in_account_currency);
         } else if (t === 'income') {
           balance += Number(tx.amount_in_account_currency);
         } else if (t === 'adjustment') {
+          if (isSecondaryAdjustmentOnMulticurrencyCard) continue;
           balance += Number(tx.amount_in_account_currency);
         } else if (t === 'transfer') {
           balance -= Number(tx.amount_in_account_currency);

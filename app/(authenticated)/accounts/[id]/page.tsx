@@ -52,6 +52,9 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
       account.type === 'credit_card' &&
       account.is_multicurrency &&
       typeof enriched?.multicurrency_balance_secondary === 'number';
+    const primaryDisplayBalance = isMulticurrencyCard
+      ? Number(enriched?.multicurrency_balance_primary ?? balance)
+      : balance;
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
@@ -88,7 +91,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                   <div className="space-y-1">
                     <p className="text-3xl font-bold tabular-nums text-red-500">
                       -$
-                      {Math.abs(Number(balance)).toLocaleString('es-AR', {
+                      {Math.abs(primaryDisplayBalance).toLocaleString('es-AR', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}{' '}
@@ -132,7 +135,12 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                     <span className="text-lg font-medium text-slate-500">{account.currency}</span>
                   </p>
                 )}
-                {enriched && Math.abs(balance) > 1e-8 && (
+                {enriched &&
+                  (isMulticurrencyCard
+                    ? Math.abs(
+                        Number(enriched.multicurrency_total_ars_blue ?? enriched.balance_ars_blue ?? 0)
+                      ) > 1e-8
+                    : Math.abs(balance) > 1e-8) && (
                   <div className="mt-1">
                     <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5">
                       Referencia en otras monedas

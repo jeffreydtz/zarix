@@ -460,22 +460,14 @@ class AccountsService {
     const deltaSecondary = target - Number(breakdown.secondary);
     if (Math.abs(deltaSecondary) < 1e-8) return;
 
-    const rate = await cotizacionesService.getExchangeRate(
-      breakdown.secondaryCurrency,
-      normalizeAccountCurrency(acc.currency)
-    );
-    if (!Number.isFinite(rate) || rate <= 0) {
-      throw new Error('No se pudo obtener cotización para ajustar saldo secundario');
-    }
-
-    const signedInPrimary = deltaSecondary * rate;
     const { error: insErr } = await supabase.from('transactions').insert({
       user_id: userId,
       type: 'adjustment',
       account_id: accountId,
       amount: Math.abs(deltaSecondary),
       currency: breakdown.secondaryCurrency,
-      amount_in_account_currency: signedInPrimary,
+      // Conserva el signo del ajuste secundario y evita contaminar el saldo primario.
+      amount_in_account_currency: deltaSecondary,
       description: 'Ajuste de saldo moneda secundaria (edición de cuenta)',
       transaction_date: new Date().toISOString(),
     });
