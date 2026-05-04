@@ -19,6 +19,17 @@ function moneyNearlyEqual(a: number, b: number): boolean {
   return Math.abs(a - b) < 1e-6;
 }
 
+function getEditablePrimaryBalance(account: AccountWithBalance): number {
+  const isMulticurrencyCard =
+    account.type === 'credit_card' &&
+    account.is_multicurrency &&
+    typeof account.multicurrency_balance_primary === 'number';
+  if (isMulticurrencyCard) {
+    return Number(account.multicurrency_balance_primary);
+  }
+  return Number(account.balance);
+}
+
 export default function EditAccountModal({ account, onClose }: EditAccountModalProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -48,9 +59,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
   const [secondaryCurrency, setSecondaryCurrency] = useState(
     account.secondary_currency || 'USD'
   );
-  const [targetBalance, setTargetBalance] = useState(
-    String(Number(account.balance).toFixed(2))
-  );
+  const [targetBalance, setTargetBalance] = useState(String(getEditablePrimaryBalance(account).toFixed(2)));
   const [targetSecondaryBalance, setTargetSecondaryBalance] = useState(
     String(Number(account.multicurrency_balance_secondary ?? 0).toFixed(2))
   );
@@ -71,7 +80,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
     setLast4Digits(account.last_4_digits || '');
     setIsMulticurrency(account.is_multicurrency);
     setSecondaryCurrency(account.secondary_currency || 'USD');
-    setTargetBalance(String(Number(account.balance).toFixed(2)));
+    setTargetBalance(String(getEditablePrimaryBalance(account).toFixed(2)));
     setTargetSecondaryBalance(String(Number(account.multicurrency_balance_secondary ?? 0).toFixed(2)));
   }, [account]);
 
@@ -101,6 +110,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
       alert('Ingresá un saldo válido');
       return;
     }
+    const currentPrimary = getEditablePrimaryBalance(account);
     const currentSecondary = Number(account.multicurrency_balance_secondary ?? 0);
     const targetSecondary = parseFloat(targetSecondaryBalance.replace(',', '.'));
     const shouldHandleSecondary = isCreditCard && isMulticurrency;
@@ -155,7 +165,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
         throw new Error((data as { error?: string }).error || 'Error al guardar');
       }
 
-      if (!moneyNearlyEqual(target, Number(account.balance))) {
+      if (!moneyNearlyEqual(target, currentPrimary)) {
         const adj = await fetch(`/api/accounts/${account.id}/adjust-balance`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

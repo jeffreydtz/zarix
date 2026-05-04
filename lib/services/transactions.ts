@@ -463,7 +463,21 @@ class TransactionsService {
       throw new Error('Cuenta no encontrada');
     }
 
-    const current = Number(account.balance);
+    let current = Number(account.balance);
+    if (
+      account.type === 'credit_card' &&
+      Boolean(account.is_multicurrency) &&
+      Boolean(account.secondary_currency)
+    ) {
+      const { data: rows, error: rpcErr } = await supabase.rpc('get_multicurrency_balances', {
+        p_user_id: userId,
+        p_account_ids: [accountId],
+      });
+      if (rpcErr) throw rpcErr;
+      const row = (rows || [])[0] as { primary_balance?: number | string | null } | undefined;
+      current = Number(row?.primary_balance ?? 0);
+    }
+
     const target = Number(targetBalance);
     if (!Number.isFinite(target)) {
       throw new Error('Saldo inválido');
