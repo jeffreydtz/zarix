@@ -13,7 +13,7 @@ RETURNS TABLE (
 LANGUAGE sql
 STABLE
 AS $$
-WITH multi_accounts AS (
+WITH RECURSIVE multi_accounts AS (
   SELECT
     a.id,
     upper(trim(a.currency)) AS primary_currency,
