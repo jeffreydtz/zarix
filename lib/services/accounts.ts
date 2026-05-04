@@ -289,7 +289,17 @@ class AccountsService {
       if (a.include_in_total === false) continue;
 
       if (a.type === 'credit_card') {
-        totalCreditUsed += Math.abs(Number(a.balance));
+        const creditUsed = a.is_multicurrency
+          ? Math.abs(
+              Number(
+                a.multicurrency_total_ars_blue ??
+                  a.balance_ars_blue ??
+                  a.multicurrency_balance_primary ??
+                  a.balance
+              )
+            )
+          : Math.abs(Number(a.balance));
+        totalCreditUsed += creditUsed;
         totalCreditLimit += Number(a.credit_limit || 0);
       }
 

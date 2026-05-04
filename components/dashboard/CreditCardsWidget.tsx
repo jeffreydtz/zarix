@@ -29,7 +29,31 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
       </h3>
       <div className="space-y-4">
         {creditCards.map((card, index) => {
-          const used = Math.abs(card.balance);
+          const isMulticurrencyCard =
+            card.is_multicurrency &&
+            typeof card.multicurrency_balance_secondary === 'number';
+          const primaryDebt = Math.abs(
+            Number(card.multicurrency_balance_primary ?? card.balance)
+          );
+          const secondaryDebt = Math.abs(Number(card.multicurrency_balance_secondary ?? 0));
+          const totalArsBlueDebt = Math.abs(
+            Number(
+              card.multicurrency_total_ars_blue ??
+                card.balance_ars_blue ??
+                card.multicurrency_balance_primary ??
+                card.balance
+            )
+          );
+          const used = Math.abs(
+            card.is_multicurrency
+              ? Number(
+                  card.multicurrency_total_ars_blue ??
+                    card.balance_ars_blue ??
+                    card.multicurrency_balance_primary ??
+                    card.balance
+                )
+              : Number(card.balance)
+          );
           const limit = card.credit_limit || 0;
           const utilization = limit > 0 ? (used / limit) * 100 : 0;
           const available = limit - used;
@@ -70,26 +94,55 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                <div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Usado</p>
-                  <p className="font-bold text-slate-800 dark:text-slate-200">
-                    <AnimatedNumber value={used} prefix="$" decimals={0} />
-                  </p>
+              {isMulticurrencyCard ? (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Saldo ARS</p>
+                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                      <AnimatedNumber value={primaryDebt} prefix="$" decimals={0} />
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Saldo USD</p>
+                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                      <AnimatedNumber value={secondaryDebt} prefix="$" decimals={2} />
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Total ARS blue</p>
+                    <p className="font-bold text-orange-600 dark:text-orange-400">
+                      <AnimatedNumber value={totalArsBlueDebt} prefix="$" decimals={0} />
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Límite</p>
+                    <p className="font-semibold text-slate-600 dark:text-slate-300">
+                      <AnimatedNumber value={limit} prefix="$" decimals={0} />
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponible</p>
-                  <p className="font-bold text-green-600 dark:text-green-400">
-                    <AnimatedNumber value={available} prefix="$" decimals={0} />
-                  </p>
+              ) : (
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Usado</p>
+                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                      <AnimatedNumber value={used} prefix="$" decimals={0} />
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponible</p>
+                    <p className="font-bold text-green-600 dark:text-green-400">
+                      <AnimatedNumber value={available} prefix="$" decimals={0} />
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Límite</p>
+                    <p className="font-semibold text-slate-600 dark:text-slate-300">
+                      <AnimatedNumber value={limit} prefix="$" decimals={0} />
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Límite</p>
-                  <p className="font-semibold text-slate-600 dark:text-slate-300">
-                    <AnimatedNumber value={limit} prefix="$" decimals={0} />
-                  </p>
-                </div>
-              </div>
+              )}
 
               {used > 1e-8 && (
                 <>

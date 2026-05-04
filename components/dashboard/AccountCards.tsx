@@ -40,7 +40,18 @@ function AccountCards({ accounts }: AccountCardsProps) {
           const multicurrencyPrimaryBalance = Number(
             account.multicurrency_balance_primary ?? account.balance
           );
-          const creditUsed = isCreditCard ? Math.abs(account.balance) : 0;
+          const creditUsed = isCreditCard
+            ? Math.abs(
+                account.is_multicurrency
+                  ? Number(
+                      account.multicurrency_total_ars_blue ??
+                        account.balance_ars_blue ??
+                        account.multicurrency_balance_primary ??
+                        account.balance
+                    )
+                  : Number(account.balance)
+              )
+            : 0;
           const creditLimit = account.credit_limit || 0;
           const creditUtilization = creditLimit > 0 ? (creditUsed / creditLimit) * 100 : 0;
 
