@@ -13,6 +13,7 @@ import {
   coerceTransactionCurrency,
 } from '@/lib/constants/transaction-currencies';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
+import type { AccountType } from '@/types/database';
 
 type FxLite = {
   usdArs: number;
@@ -79,7 +80,7 @@ interface CreateTransactionButtonProps {
     name: string;
     currency: string;
     balance: number;
-    type?: string;
+    type?: AccountType;
     last_4_digits?: string | null;
     is_multicurrency?: boolean;
     multicurrency_balance_primary?: number;
