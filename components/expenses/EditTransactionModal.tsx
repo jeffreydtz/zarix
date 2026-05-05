@@ -31,49 +31,93 @@ export default function EditTransactionModal({
   onSave,
 }: EditTransactionModalProps) {
   const [loading, setLoading] = useState(false);
-  const [duplicating, setDuplicating] = useState(false);
+  const [duplicateDraftMode, setDuplicateDraftMode] = useState(false);
   const [formData, setFormData] = useState<{
     type: typeof transaction.type;
     amount: string;
     currency: TransactionCurrency;
     account_id: string;
+    destination_account_id: string;
     category_id: string;
     description: string;
     transaction_date: string;
     notes: string;
+    exchange_rate_override: string;
   }>({
     type: transaction.type,
     amount: transaction.amount.toString(),
     currency: coerceTransactionCurrency(transaction.currency),
     account_id: transaction.account_id || '',
+    destination_account_id: transaction.destination_account_id || '',
     category_id: transaction.category_id || '',
     description: transaction.description || '',
     transaction_date: isoToLocalDateInputValue(transaction.transaction_date),
     notes: transaction.notes || '',
+    exchange_rate_override:
+      typeof transaction.exchange_rate === 'number' &&
+      Number.isFinite(transaction.exchange_rate) &&
+      transaction.exchange_rate > 0
+        ? String(transaction.exchange_rate)
+        : '',
   });
 
   const filteredCategories = categories.filter(
     (c) => c.type === formData.type || formData.type === 'transfer'
   );
+  const destinationAccounts = accounts.filter((acc) => acc.id !== formData.account_id);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/transactions/${transaction.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          amount: parseFloat(formData.amount),
-          transaction_date: calendarDateToUtcNoonIso(formData.transaction_date),
-        }),
-      });
+      const payload: Record<string, unknown> = {
+        ...formData,
+        amount: parseFloat(formData.amount),
+        transaction_date: calendarDateToUtcNoonIso(formData.transaction_date),
+      };
+
+      if (formData.type === 'transfer') {
+        payload.destinationAccountId = formData.destination_account_id || undefined;
+        const rate = parseFloat(formData.exchange_rate_override.replace(',', '.'));
+        if (Number.isFinite(rate) && rate > 0) {
+          payload.exchangeRateOverride = rate;
+        }
+      }
+
+      const response = duplicateDraftMode
+        ? await fetch('/api/transactions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: formData.type,
+              accountId: formData.account_id,
+              destinationAccountId:
+                formData.type === 'transfer' ? formData.destination_account_id || undefined : undefined,
+              amount: parseFloat(formData.amount),
+              currency: formData.currency,
+              categoryId: formData.category_id || undefined,
+              description: formData.description || undefined,
+              notes: formData.notes || undefined,
+              tags: transaction.tags || undefined,
+              transactionDate: calendarDateToUtcNoonIso(formData.transaction_date),
+              ...(payload.exchangeRateOverride !== undefined
+                ? { exchangeRateOverride: payload.exchangeRateOverride }
+                : {}),
+            }),
+          })
+        : await fetch(`/api/transactions/${transaction.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Error updating transaction');
+        throw new Error(
+          error.error ||
+            (duplicateDraftMode ? 'Error al crear el duplicado' : 'Error updating transaction')
+        );
       }
 
       onSave();
@@ -108,50 +152,8 @@ export default function EditTransactionModal({
     }
   };
 
-  const handleDuplicate = async () => {
-    setDuplicating(true);
-    try {
-      const payload: Record<string, unknown> = {
-        type: formData.type,
-        accountId: formData.account_id,
-        amount: parseFloat(formData.amount),
-        currency: formData.currency,
-        categoryId: formData.category_id || undefined,
-        description: formData.description || undefined,
-        notes: formData.notes || undefined,
-        tags: transaction.tags || undefined,
-        transactionDate: calendarDateToUtcNoonIso(formData.transaction_date),
-      };
-
-      if (formData.type === 'transfer' && transaction.destination_account_id) {
-        payload.destinationAccountId = transaction.destination_account_id;
-        if (
-          typeof transaction.exchange_rate === 'number' &&
-          Number.isFinite(transaction.exchange_rate) &&
-          transaction.exchange_rate > 0
-        ) {
-          payload.exchangeRateOverride = transaction.exchange_rate;
-        }
-      }
-
-      const response = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Error al duplicar el movimiento');
-      }
-
-      onSave();
-    } catch (error: any) {
-      console.error('Error:', error);
-      alert(error.message || 'Error al duplicar el movimiento');
-    } finally {
-      setDuplicating(false);
-    }
+  const handleDuplicate = () => {
+    setDuplicateDraftMode(true);
   };
 
   return (
@@ -170,7 +172,7 @@ export default function EditTransactionModal({
       >
         <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">
-            Editar Movimiento
+            {duplicateDraftMode ? 'Duplicado (modo edición)' : 'Editar Movimiento'}
           </h2>
           <button
             onClick={onClose}
@@ -267,6 +269,46 @@ export default function EditTransactionModal({
             </select>
           </div>
 
+          {formData.type === 'transfer' && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Cuenta destino
+                </label>
+                <select
+                  value={formData.destination_account_id}
+                  onChange={(e) =>
+                    setFormData({ ...formData, destination_account_id: e.target.value })
+                  }
+                  className="input"
+                  required
+                >
+                  <option value="">Seleccioná una cuenta destino</option>
+                  {destinationAccounts.map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {formatAccountSelectLabel(acc)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Tipo de cambio (opcional)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  value={formData.exchange_rate_override}
+                  onChange={(e) =>
+                    setFormData({ ...formData, exchange_rate_override: e.target.value })
+                  }
+                  className="input"
+                  placeholder="Vacío = usar cotización automática"
+                />
+              </div>
+            </>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Categoria
@@ -327,25 +369,29 @@ export default function EditTransactionModal({
             <button
               type="button"
               onClick={handleDuplicate}
-              disabled={loading || duplicating}
+              disabled={loading || duplicateDraftMode}
               className="btn flex-1 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
             >
-              {duplicating ? 'Duplicando...' : 'Duplicar'}
+              {duplicateDraftMode ? 'Duplicado listo para guardar' : 'Duplicar'}
             </button>
             <button
               type="button"
               onClick={handleDelete}
-              disabled={loading || duplicating}
+              disabled={loading || duplicateDraftMode}
               className="btn btn-danger flex-1"
             >
               Eliminar
             </button>
             <button
               type="submit"
-              disabled={loading || duplicating}
+              disabled={loading}
               className="btn btn-primary flex-[2]"
             >
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
+              {loading
+                ? 'Guardando...'
+                : duplicateDraftMode
+                  ? 'Guardar duplicado'
+                  : 'Guardar Cambios'}
             </button>
           </div>
         </form>
