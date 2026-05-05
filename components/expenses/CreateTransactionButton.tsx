@@ -74,7 +74,16 @@ function formatAmountForNumberInput(n: number): string {
 }
 
 interface CreateTransactionButtonProps {
-  accounts: Array<{ id: string; name: string; currency: string; balance: number }>;
+  accounts: Array<{
+    id: string;
+    name: string;
+    currency: string;
+    balance: number;
+    type?: string;
+    last_4_digits?: string | null;
+    is_multicurrency?: boolean;
+    multicurrency_balance_primary?: number;
+  }>;
   categories: Array<{ id: string; name: string; icon: string; type: string }>;
   /** Solo transferencia (p. ej. desde Cuentas): sin selector Gasto/Ingreso */
   mode?: 'default' | 'transfer-only';
@@ -117,16 +126,28 @@ export default function CreateTransactionButton({
     if (isOpen) setTransactionDateYmd(todayLocalYmd());
   }, [isOpen]);
 
+  const selectableAccounts = useMemo(
+    () =>
+      accounts.map((a) => ({
+        ...a,
+        balance:
+          a.type === 'credit_card' && a.is_multicurrency
+            ? Number(a.multicurrency_balance_primary ?? a.balance)
+            : Number(a.balance),
+      })),
+    [accounts]
+  );
+
   const filteredCategories = categories.filter((c) => c.type === type || c.type === 'both');
-  const destinationAccounts = accounts.filter((a) => a.id !== accountId);
+  const destinationAccounts = selectableAccounts.filter((a) => a.id !== accountId);
 
   const sourceAccount = useMemo(
-    () => accounts.find((a) => a.id === accountId),
-    [accounts, accountId]
+    () => selectableAccounts.find((a) => a.id === accountId),
+    [selectableAccounts, accountId]
   );
   const destAccount = useMemo(
-    () => accounts.find((a) => a.id === destinationAccountId),
-    [accounts, destinationAccountId]
+    () => selectableAccounts.find((a) => a.id === destinationAccountId),
+    [selectableAccounts, destinationAccountId]
   );
 
   const crossCurrencyTransfer = useMemo(() => {
@@ -323,7 +344,7 @@ export default function CreateTransactionButton({
     if (type === 'transfer' && destinationAccountId === accountId) return;
     setLoading(true);
 
-    const account = accounts.find((a) => a.id === accountId);
+    const account = selectableAccounts.find((a) => a.id === accountId);
     if (!account) {
       setLoading(false);
       return;
@@ -502,7 +523,7 @@ export default function CreateTransactionButton({
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                     >
                       <option value="">Seleccioná una cuenta</option>
-                      {accounts.map((acc) => (
+                      {selectableAccounts.map((acc) => (
                         <option key={acc.id} value={acc.id}>
                           {formatAccountSelectLabel(acc)}
                         </option>
@@ -779,7 +800,7 @@ export default function CreateTransactionButton({
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                     >
                       <option value="">Seleccioná una cuenta</option>
-                      {accounts.map((acc) => (
+                      {selectableAccounts.map((acc) => (
                         <option key={acc.id} value={acc.id}>
                           {formatAccountSelectLabel(acc)}
                         </option>

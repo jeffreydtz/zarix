@@ -375,16 +375,21 @@ class AccountsService {
   async listReferenceAccounts(
     userId: string
   ): Promise<Array<Pick<Account, 'id' | 'name' | 'currency' | 'balance' | 'type' | 'last_4_digits'>>> {
-    const supabase = createServiceClientSync();
-    const { data, error } = await supabase
-      .from('accounts')
-      .select('id,name,currency,balance,type,last_4_digits')
-      .eq('user_id', userId)
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true });
-
-    if (error) throw error;
-    return (data ?? []).map((a) => ({ ...a, balance: Number(a.balance) }));
+    const accounts = await this.list(userId);
+    return accounts.map((a) => {
+      const balance =
+        a.type === 'credit_card' && a.is_multicurrency
+          ? Number(a.multicurrency_balance_primary ?? a.balance)
+          : Number(a.balance);
+      return {
+        id: a.id,
+        name: a.name,
+        currency: a.currency,
+        balance,
+        type: a.type,
+        last_4_digits: a.last_4_digits,
+      };
+    });
   }
 
   /**
