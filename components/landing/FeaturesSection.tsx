@@ -2,13 +2,20 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { BarChart2, MessageCircle, PieChart, RefreshCw, Target } from 'lucide-react';
+import {
+  BarChart2,
+  MessageCircle,
+  PieChart,
+  RefreshCw,
+  Target,
+  type LucideIcon,
+} from 'lucide-react';
 import FeatureMockup, { type FeatureItem } from '@/components/landing/FeatureMockup';
 
 const features: Array<
   FeatureItem & {
     description: string;
-    icon: React.ComponentType<{ size?: number; className?: string }>;
+    icon: LucideIcon;
   }
 > = [
   {
