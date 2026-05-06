@@ -20,20 +20,28 @@ type Snapshot = {
   rotation: { x: number; y: number; z: number };
 };
 
+type WithChildren = SPEObject & { children?: unknown[] };
+
 function pickMainGroup(objects: SPEObject[]) {
-  const candidates = objects.filter(
-    (object) =>
+  const candidates = objects.filter((object) => {
+    const maybeWithChildren = object as WithChildren;
+    return (
       object.visible &&
       object.rotation !== undefined &&
       !SKIP.test(object.name) &&
-      Array.isArray(object.children) &&
-      object.children.length > 0
-  );
+      Array.isArray(maybeWithChildren.children) &&
+      maybeWithChildren.children.length > 0
+    );
+  });
 
   if (candidates.length === 0) return null;
 
   // Pick the most likely root/group container of the whole money assembly.
-  return candidates.sort((a, b) => b.children.length - a.children.length)[0];
+  return candidates.sort((a, b) => {
+    const aChildren = (a as WithChildren).children?.length ?? 0;
+    const bChildren = (b as WithChildren).children?.length ?? 0;
+    return bChildren - aChildren;
+  })[0];
 }
 
 export default function BackgroundSpline() {
