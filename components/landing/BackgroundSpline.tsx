@@ -20,6 +20,22 @@ type Snapshot = {
   rotation: { x: number; y: number; z: number };
 };
 
+function pickMainGroup(objects: SPEObject[]) {
+  const candidates = objects.filter(
+    (object) =>
+      object.visible &&
+      object.rotation !== undefined &&
+      !SKIP.test(object.name) &&
+      Array.isArray(object.children) &&
+      object.children.length > 0
+  );
+
+  if (candidates.length === 0) return null;
+
+  // Pick the most likely root/group container of the whole money assembly.
+  return candidates.sort((a, b) => b.children.length - a.children.length)[0];
+}
+
 export default function BackgroundSpline() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const appRef = useRef<Application | null>(null);
@@ -61,8 +77,10 @@ export default function BackgroundSpline() {
             object.rotation !== undefined &&
             !SKIP.test(object.name)
         );
+        const mainGroup = pickMainGroup(rotatable);
+        const targets = mainGroup ? [mainGroup] : rotatable;
 
-        snapshotsRef.current = rotatable.map((object) => ({
+        snapshotsRef.current = targets.map((object) => ({
           object,
           rotation: {
             x: object.rotation.x,
@@ -72,8 +90,8 @@ export default function BackgroundSpline() {
         }));
 
         console.info(
-          `[BackgroundSpline] Scene loaded. Rotating ${rotatable.length} objects on local X.`,
-          rotatable.map((object) => object.name)
+          `[BackgroundSpline] Scene loaded. Rotating ${targets.length} target(s) on local X.`,
+          targets.map((object) => object.name)
         );
       })
       .catch((error) => {
