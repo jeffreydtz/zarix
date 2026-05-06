@@ -3,6 +3,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { CookieOptions } from '@supabase/ssr';
 
 export async function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
+  const isPublicAsset =
+    pathname === '/sw.js' ||
+    pathname === '/manifest.json' ||
+    pathname === '/favicon.ico' ||
+    pathname === '/apple-touch-icon.png' ||
+    pathname.startsWith('/logo-formats/');
+
+  if (isPublicAsset) {
+    return NextResponse.next({
+      request: req,
+    });
+  }
+
   let supabaseResponse = NextResponse.next({
     request: req,
   });
@@ -36,13 +50,10 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isPublicPath =
-    req.nextUrl.pathname === '/' ||
-    req.nextUrl.pathname === '/sw.js' ||
-    req.nextUrl.pathname === '/manifest.json' ||
-    req.nextUrl.pathname === '/favicon.ico' ||
-    req.nextUrl.pathname.startsWith('/login') ||
-    req.nextUrl.pathname.startsWith('/register') ||
-    req.nextUrl.pathname.startsWith('/auth');
+    pathname === '/' ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/auth');
 
   if (!user && !isPublicPath) {
     const url = req.nextUrl.clone();

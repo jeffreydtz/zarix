@@ -56,9 +56,9 @@ export default async function Home() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[rgb(var(--background))] text-[#F8F9FA] dark">
+    <main className="relative isolate min-h-screen overflow-x-hidden bg-[#06070A] text-[#F8F9FA] dark">
       <BackgroundSpline />
-      <div className="relative z-20">
+      <div className="relative z-10">
         <Navbar />
         <HeroSection />
         <TrustBar />
