@@ -20,6 +20,28 @@ type Snapshot = {
   rotation: { x: number; y: number; z: number };
 };
 
+function getRotationTargets(objects: SPEObject[]) {
+  const rotatable = objects.filter(
+    (object) =>
+      object.visible &&
+      object.rotation !== undefined &&
+      !SKIP.test(object.name)
+  );
+
+  const rootLike = rotatable.filter((object) => {
+    const parentName = object.parent?.name ?? '';
+    return !object.parent || SKIP.test(parentName);
+  });
+
+  // Prefer rotating only high-level groups so each "objetito"
+  // keeps all its internal pieces moving together.
+  if (rootLike.length >= 2) {
+    return rootLike.slice(0, 6);
+  }
+
+  return rotatable;
+}
+
 export default function BackgroundSpline() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const appRef = useRef<Application | null>(null);
@@ -56,12 +78,7 @@ export default function BackgroundSpline() {
         }
 
         const objects = app.getAllObjects();
-        const rotatable = objects.filter(
-          (object) =>
-            object.visible &&
-            object.rotation !== undefined &&
-            !SKIP.test(object.name)
-        );
+        const rotatable = getRotationTargets(objects);
 
         snapshotsRef.current = rotatable.map((object) => ({
           object,
@@ -97,7 +114,7 @@ export default function BackgroundSpline() {
     const snapshots = snapshotsRef.current;
     if (snapshots.length === 0) return;
 
-    const spin = progress * SPIN_RANGE;
+    const spin = -progress * SPIN_RANGE;
 
     for (const { object, rotation } of snapshots) {
       object.rotation.y = rotation.y + spin;
