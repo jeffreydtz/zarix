@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import BugReportWidget from '@/components/BugReportWidget';
 import SettingsForm from '@/components/settings/SettingsForm';
 import ExportImport from '@/components/settings/ExportImport';
 
@@ -40,9 +41,11 @@ export default async function SettingsPage() {
             appBaseUrl={appBaseUrl}
           />
         )}
-        
+
         <ExportImport />
       </div>
+
+      <BugReportWidget />
     </div>
   );
 }
