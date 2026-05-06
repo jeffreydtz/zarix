@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import Navbar from '@/components/landing/Navbar';
+import BackgroundSpline from '@/components/landing/BackgroundSpline';
 import HeroSection from '@/components/landing/HeroSection';
 import TrustBar from '@/components/landing/TrustBar';
 import ProblemSection from '@/components/landing/ProblemSection';
@@ -55,16 +56,19 @@ export default async function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[rgb(var(--background))] text-[#F8F9FA] dark">
-      <Navbar />
-      <HeroSection />
-      <TrustBar />
-      <ProblemSection />
-      <FeaturesSection />
-      <HowItWorks />
-      <PricingSection />
-      <FinalCTA />
-      <Footer />
+    <main className="relative min-h-screen bg-[rgb(var(--background))] text-[#F8F9FA] dark">
+      <BackgroundSpline />
+      <div className="relative z-10">
+        <Navbar />
+        <HeroSection />
+        <TrustBar />
+        <ProblemSection />
+        <FeaturesSection />
+        <HowItWorks />
+        <PricingSection />
+        <FinalCTA />
+        <Footer />
+      </div>
     </main>
   );
 }

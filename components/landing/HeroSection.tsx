@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import DashboardMockup from '@/components/landing/DashboardMockup';
 
 const fadeUpVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -15,12 +14,13 @@ const fadeUpVariants = {
 
 export default function HeroSection() {
   return (
-    <section className="mx-auto grid w-full max-w-6xl gap-12 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8 lg:pt-20">
+    <section className="mx-auto grid w-full max-w-6xl gap-12 px-4 pb-16 pt-14 sm:px-6 lg:px-8 lg:pt-20">
       <motion.div
         variants={fadeUpVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-80px' }}
+        className="max-w-3xl"
       >
         <h1 className="text-balance text-4xl font-bold leading-tight text-[#F8F9FA] sm:text-5xl md:text-6xl">
           Tu patrimonio real,
@@ -51,17 +51,6 @@ export default function HeroSection() {
           <span>✦ Gratis para siempre</span>
           <span>✦ PWA instalable</span>
         </div>
-      </motion.div>
-
-      <motion.div
-        variants={fadeUpVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-80px' }}
-        transition={{ delay: 0.1 }}
-        className="relative flex min-h-[420px] items-center justify-center"
-      >
-        <DashboardMockup />
       </motion.div>
     </section>
   );
