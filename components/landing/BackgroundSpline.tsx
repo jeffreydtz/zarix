@@ -1,20 +1,86 @@
 'use client';
 
 import Spline from '@splinetool/react-spline';
-import type { Application } from '@splinetool/runtime';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useCallback } from 'react';
+import type { Application, SPEObject } from '@splinetool/runtime';
+import {
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from 'framer-motion';
+import { useCallback, useRef } from 'react';
+
+type ObjectSnapshot = {
+  object: SPEObject;
+  rotation: { x: number; y: number; z: number };
+};
+
+const NON_ROTATING_OBJECT =
+  /camera|light|ambient|directional|spot|point|area|shadow|helper|control/i;
+const LIKELY_SCENE_CONTAINER =
+  /scene|root|group|model|container|main|wrapper|object|zarix/i;
+
+function getRotationTargets(objects: SPEObject[]) {
+  const transformableObjects = objects.filter(
+    (object) =>
+      object.visible &&
+      object.position &&
+      object.rotation &&
+      object.scale &&
+      !NON_ROTATING_OBJECT.test(object.name)
+  );
+
+  const containers = transformableObjects.filter((object) =>
+    LIKELY_SCENE_CONTAINER.test(object.name)
+  );
+
+  if (containers.length > 0) {
+    return containers.slice(0, 4);
+  }
+
+  const materialObjects = transformableObjects.filter((object) => object.material);
+  return (materialObjects.length > 0 ? materialObjects : transformableObjects).slice(0, 32);
+}
 
 export default function BackgroundSpline() {
+  const appRef = useRef<Application | null>(null);
+  const objectSnapshotsRef = useRef<ObjectSnapshot[]>([]);
   const { scrollYProgress } = useScroll();
-  const rotate = useTransform(scrollYProgress, [0, 1], [0, 36]);
   const scale = useTransform(scrollYProgress, [0, 1], [1.02, 1.14]);
   const y = useTransform(scrollYProgress, [0, 1], [0, -90]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 1], [0.95, 0.9, 0.78]);
 
-  const handleLoad = useCallback((app: Application) => {
-    app.setBackgroundColor('transparent');
+  const rotateScene = useCallback((progress: number) => {
+    const app = appRef.current;
+    const snapshots = objectSnapshotsRef.current;
+
+    if (!app || snapshots.length === 0) return;
+
+    const yaw = (progress - 0.5) * 1.1;
+    const pitch = Math.sin(progress * Math.PI) * 0.12;
+
+    snapshots.forEach(({ object, rotation }) => {
+      object.rotation.x = rotation.x + pitch;
+      object.rotation.y = rotation.y + yaw;
+      object.rotation.z = rotation.z;
+    });
+
+    app.requestRender();
   }, []);
+
+  useMotionValueEvent(scrollYProgress, 'change', rotateScene);
+
+  const handleLoad = useCallback((app: Application) => {
+    appRef.current = app;
+    app.setBackgroundColor('transparent');
+
+    objectSnapshotsRef.current = getRotationTargets(app.getAllObjects()).map((object) => ({
+      object,
+      rotation: { ...object.rotation },
+    }));
+
+    rotateScene(scrollYProgress.get());
+  }, [rotateScene, scrollYProgress]);
 
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#06070A]">
@@ -22,7 +88,7 @@ export default function BackgroundSpline() {
 
       <div className="absolute left-1/2 top-1/2 h-[132vh] min-h-[760px] w-[132vw] min-w-[760px] -translate-x-1/2 -translate-y-1/2">
         <motion.div
-          style={{ rotate, scale, y, opacity }}
+          style={{ scale, y, opacity }}
           className="h-full w-full transform-gpu will-change-transform"
         >
           <Spline

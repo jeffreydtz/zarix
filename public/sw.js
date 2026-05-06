@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zarix-v6';
+const CACHE_NAME = 'zarix-v7';
 const SYNC_TAG = 'zarix-sync';
 
 const STATIC_ASSETS = [
