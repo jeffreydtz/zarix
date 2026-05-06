@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.19.0",
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.12.92",
     "@supabase/ssr": "^0.4.0",
     "@supabase/supabase-js": "^2.43.4",
     "class-variance-authority": "^0.7.0",
