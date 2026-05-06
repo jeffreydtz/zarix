@@ -56,7 +56,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[rgb(var(--background))] text-[#F8F9FA] dark">
+    <main className="relative min-h-screen text-[#F8F9FA] dark">
       <BackgroundSpline />
       <div className="relative z-10">
         <Navbar />

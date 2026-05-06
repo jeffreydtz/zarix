@@ -37,6 +37,9 @@ export async function middleware(req: NextRequest) {
 
   const isPublicPath =
     req.nextUrl.pathname === '/' ||
+    req.nextUrl.pathname === '/sw.js' ||
+    req.nextUrl.pathname === '/manifest.json' ||
+    req.nextUrl.pathname === '/favicon.ico' ||
     req.nextUrl.pathname.startsWith('/login') ||
     req.nextUrl.pathname.startsWith('/register') ||
     req.nextUrl.pathname.startsWith('/auth');
@@ -52,6 +55,6 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api|login|register|auth).*)',
+    '/((?!_next/static|_next/image|favicon.ico|manifest.json|sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api|login|register|auth).*)',
   ],
 };
