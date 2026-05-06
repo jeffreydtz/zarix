@@ -1,9 +1,11 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useState } from 'react';
+import { brandAsset } from '@/lib/brand';
 
 const navLinks = [
   { label: 'Caracteristicas', href: '#features' },
@@ -23,8 +25,16 @@ export default function Navbar() {
       style={{ borderColor: navBorder, backgroundColor: navBg }}
     >
       <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-xl font-bold tracking-tight text-[#F8F9FA]">
-          Zarix
+        <Link href="/" className="inline-flex items-center gap-2 text-xl font-bold tracking-tight text-[#F8F9FA]">
+          <Image
+            src={brandAsset.logoSvg}
+            alt="Zarix"
+            width={24}
+            height={24}
+            className="h-6 w-6"
+            priority
+          />
+          <span>Zarix</span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
