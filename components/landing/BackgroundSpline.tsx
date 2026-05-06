@@ -36,7 +36,6 @@ function pickMainGroup(objects: SPEObject[]) {
 
   if (candidates.length === 0) return null;
 
-  // Pick the most likely root/group container of the whole money assembly.
   return candidates.sort((a, b) => {
     const aChildren = (a as WithChildren).children?.length ?? 0;
     const bChildren = (b as WithChildren).children?.length ?? 0;
@@ -96,11 +95,6 @@ export default function BackgroundSpline() {
             z: object.rotation.z,
           },
         }));
-
-        console.info(
-          `[BackgroundSpline] Scene loaded. Rotating ${targets.length} target(s) on local X.`,
-          targets.map((object) => object.name)
-        );
       })
       .catch((error) => {
         console.error('[BackgroundSpline] Failed to load scene:', error);
@@ -145,6 +139,18 @@ export default function BackgroundSpline() {
 
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,7,10,0)_0%,rgba(6,7,10,0)_45%,rgba(6,7,10,0.55)_100%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(6,7,10,0.55)_100%)]" />
+
+      <style jsx global>{`
+        a[href*='spline.design'],
+        a[title*='Spline'],
+        a[aria-label*='Spline'],
+        [class*='spline-watermark'] {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+      `}</style>
     </div>
   );
 }
