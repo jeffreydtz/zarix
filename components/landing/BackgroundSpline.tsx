@@ -13,7 +13,7 @@ import { useEffect, useRef } from 'react';
 
 const SCENE_URL = 'https://prod.spline.design/NXN3Wy3ZZe6uuzvr/scene.splinecode';
 const SKIP = /(camera|light|ambient|directional|spot|point|area|shadow|helper|control)/i;
-const ROLL_RANGE = Math.PI * 4;
+const SPIN_RANGE = Math.PI * 4;
 
 type Snapshot = {
   object: SPEObject;
@@ -97,10 +97,10 @@ export default function BackgroundSpline() {
     const snapshots = snapshotsRef.current;
     if (snapshots.length === 0) return;
 
-    const roll = -progress * ROLL_RANGE;
+    const spin = progress * SPIN_RANGE;
 
     for (const { object, rotation } of snapshots) {
-      object.rotation.z = rotation.z + roll;
+      object.rotation.y = rotation.y + spin;
     }
   });
 
