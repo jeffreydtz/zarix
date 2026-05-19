@@ -4,6 +4,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { motion, useReducedMotion } from 'framer-motion';
 import type { DailyData } from '@/lib/services/analytics';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+import { axisProps, gridProps, chartColors, animMs } from '@/lib/chart-theme';
+import ChartTooltip from '@/components/ui/ChartTooltip';
 
 interface Props {
   data: DailyData[];
@@ -51,64 +53,67 @@ export default function CashFlowChart({ data }: Props) {
 
       <div className="h-64 chart-shell p-2">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+          <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 4, bottom: 4 }}>
             <defs>
               <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
+                <stop offset="0%" stopColor={chartColors.expense} stopOpacity={0.35}/>
+                <stop offset="100%" stopColor={chartColors.expense} stopOpacity={0}/>
               </linearGradient>
               <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#22C55E" stopOpacity={0}/>
+                <stop offset="0%" stopColor={chartColors.income} stopOpacity={0.35}/>
+                <stop offset="100%" stopColor={chartColors.income} stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="4 4" stroke="rgb(148 163 184 / 0.25)" />
-            <XAxis 
-              dataKey="dayLabel" 
-              tick={{ fontSize: 10 }}
+            <CartesianGrid {...gridProps} />
+            <XAxis
+              dataKey="dayLabel"
+              {...axisProps}
               interval={4}
-              stroke="rgb(148 163 184 / 0.85)"
+              dy={4}
             />
-            <YAxis 
+            <YAxis
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-              tick={{ fontSize: 10 }}
-              stroke="rgb(148 163 184 / 0.85)"
+              {...axisProps}
+              width={44}
             />
             <Tooltip
-              formatter={(value: number, name: string) => [
-                `$${value.toLocaleString('es-AR')}`,
-                name === 'expenses' ? 'Gastos' : 'Ingresos'
-              ]}
-              contentStyle={{
-                backgroundColor: 'rgba(10, 12, 17, 0.95)',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
-                borderRadius: '12px',
-                color: '#F8FAFC',
-              }}
+              cursor={{ stroke: 'rgb(148 163 184 / 0.4)', strokeWidth: 1 }}
+              content={
+                <ChartTooltip
+                  formatter={(value, name) => [
+                    `$${value.toLocaleString('es-AR')}`,
+                    name === 'expenses' ? 'Gastos' : 'Ingresos',
+                  ]}
+                />
+              }
             />
-            <ReferenceLine 
-              y={avgDaily} 
-              stroke="#F59E0B" 
+            <ReferenceLine
+              y={avgDaily}
+              stroke={chartColors.accent}
               strokeDasharray="5 5"
-              label={{ value: 'Promedio', fill: '#F59E0B', fontSize: 10 }}
+              label={{ value: 'Promedio', fill: chartColors.accent, fontSize: 10, position: 'insideTopRight' }}
             />
-            <Area 
-              type="monotone" 
-              dataKey="expenses" 
-              stroke="#EF4444" 
+            <Area
+              type="monotone"
+              dataKey="expenses"
+              stroke={chartColors.expense}
+              strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorExpenses)"
               name="expenses"
-              animationDuration={shouldReduceMotion ? 0 : 680}
+              activeDot={{ r: 4, strokeWidth: 0 }}
+              animationDuration={animMs(shouldReduceMotion, 700)}
             />
-            <Area 
-              type="monotone" 
-              dataKey="income" 
-              stroke="#22C55E" 
+            <Area
+              type="monotone"
+              dataKey="income"
+              stroke={chartColors.income}
+              strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorIncome)"
               name="income"
-              animationDuration={shouldReduceMotion ? 0 : 620}
+              activeDot={{ r: 4, strokeWidth: 0 }}
+              animationDuration={animMs(shouldReduceMotion, 620)}
             />
           </AreaChart>
         </ResponsiveContainer>

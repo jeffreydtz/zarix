@@ -11,6 +11,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { axisProps, gridProps, chartColors } from '@/lib/chart-theme';
+import ChartTooltip from '@/components/ui/ChartTooltip';
 
 export interface PerformancePoint {
   snapshot_date: string;
@@ -116,10 +118,11 @@ export default function PortfolioPerformanceChart({
       <div className="h-72 w-full min-w-0">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-600" />
+            <CartesianGrid {...gridProps} />
             <XAxis
               dataKey="snapshot_date"
-              tick={{ fontSize: 11 }}
+              {...axisProps}
+              dy={4}
               tickFormatter={(v) => {
                 const d = new Date(String(v) + 'T12:00:00');
                 return Number.isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('es-AR', { month: 'short', day: 'numeric' });
@@ -128,38 +131,43 @@ export default function PortfolioPerformanceChart({
             <YAxis
               yAxisId="roi"
               width={44}
-              tick={{ fontSize: 11 }}
+              {...axisProps}
               tickFormatter={(v) => `${Number(v).toFixed(1)}%`}
-              label={{ value: 'ROI %', angle: -90, position: 'insideLeft', style: { fontSize: 11 } }}
+              label={{ value: 'ROI %', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: 'rgb(148 163 184)' } }}
             />
             <YAxis
               yAxisId="pnl"
               orientation="right"
               width={56}
-              tick={{ fontSize: 11 }}
+              {...axisProps}
               tickFormatter={(v) => `${Math.round(Number(v))}`}
-              label={{ value: 'PnL USD', angle: 90, position: 'insideRight', style: { fontSize: 11 } }}
+              label={{ value: 'PnL USD', angle: 90, position: 'insideRight', style: { fontSize: 11, fill: 'rgb(148 163 184)' } }}
             />
             <Tooltip
-              contentStyle={{ borderRadius: 12 }}
-              formatter={(value: number, name: string) => {
-                if (name === 'roi_percent') return [`${value.toFixed(2)}%`, 'ROI'];
-                if (name === 'unrealized_pnl_usd') return [formatUsd(value), 'PnL no realizado'];
-                if (name === 'cost_basis_usd') return [formatUsd(value), 'Capital invertido'];
-                if (name === 'market_value_usd') return [formatUsd(value), 'Valor mercado'];
-                return [value, name];
-              }}
-              labelFormatter={(label) => `Día ${label}`}
+              cursor={{ stroke: 'rgb(148 163 184 / 0.4)', strokeWidth: 1 }}
+              content={
+                <ChartTooltip
+                  labelFormatter={(label) => `Día ${label}`}
+                  formatter={(value, name) => {
+                    if (name === 'roi_percent') return [`${value.toFixed(2)}%`, 'ROI'];
+                    if (name === 'unrealized_pnl_usd') return [formatUsd(value), 'PnL no realizado'];
+                    if (name === 'cost_basis_usd') return [formatUsd(value), 'Capital invertido'];
+                    if (name === 'market_value_usd') return [formatUsd(value), 'Valor mercado'];
+                    return [String(value), name];
+                  }}
+                />
+              }
             />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
             <Line
               yAxisId="roi"
               type="monotone"
               dataKey="roi_percent"
               name="ROI %"
-              stroke="#7c3aed"
-              strokeWidth={2}
-              dot={{ r: 3 }}
+              stroke={chartColors.roi}
+              strokeWidth={2.5}
+              dot={false}
+              activeDot={{ r: 4, strokeWidth: 0 }}
               isAnimationActive={false}
             />
             <Line
@@ -167,9 +175,10 @@ export default function PortfolioPerformanceChart({
               type="monotone"
               dataKey="unrealized_pnl_usd"
               name="PnL USD"
-              stroke="#059669"
-              strokeWidth={2}
-              dot={{ r: 3 }}
+              stroke={chartColors.pnl}
+              strokeWidth={2.5}
+              dot={false}
+              activeDot={{ r: 4, strokeWidth: 0 }}
               isAnimationActive={false}
             />
           </ComposedChart>

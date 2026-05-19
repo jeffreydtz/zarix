@@ -1,6 +1,8 @@
 'use client';
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { paletteColor } from '@/lib/chart-theme';
+import ChartTooltip from '@/components/ui/ChartTooltip';
 
 interface ExpensesByCategoryProps {
   categories: Array<{
@@ -10,7 +12,6 @@ interface ExpensesByCategoryProps {
   }>;
 }
 
-const COLORS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
 
 export default function ExpensesByCategory({ categories }: ExpensesByCategoryProps) {
   if (categories.length === 0) {
@@ -41,17 +42,25 @@ export default function ExpensesByCategory({ categories }: ExpensesByCategoryPro
               cy="50%"
               labelLine={false}
               label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+              innerRadius={55}
               outerRadius={100}
-              fill="#8884d8"
+              paddingAngle={2}
+              cornerRadius={5}
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell key={`cell-${index}`} fill={paletteColor(index)} stroke="transparent" />
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number) =>
-                `$${value.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`
+              content={
+                <ChartTooltip
+                  hideLabel
+                  formatter={(value) => [
+                    `$${value.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`,
+                    '',
+                  ]}
+                />
               }
             />
           </PieChart>
@@ -65,7 +74,7 @@ export default function ExpensesByCategory({ categories }: ExpensesByCategoryPro
                 <div className="flex items-center gap-2">
                   <div
                     className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    style={{ backgroundColor: paletteColor(index) }}
                   />
                   <span className="text-sm">
                     {cat.icon} {cat.name}

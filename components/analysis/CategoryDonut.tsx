@@ -5,6 +5,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useState } from 'react';
 import type { CategoryBreakdown } from '@/lib/services/analytics';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+import { animMs } from '@/lib/chart-theme';
+import ChartTooltip from '@/components/ui/ChartTooltip';
 
 interface Props {
   data: CategoryBreakdown[];
@@ -45,42 +47,57 @@ export default function CategoryDonut({ data, title }: Props) {
         <span className="story-chip">Top: {topCategory.icon} {topCategory.name}</span>
       </div>
       
-      <div className="h-64 chart-shell p-2.5">
+      <div className="relative h-64 chart-shell p-2.5">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={95}
-              paddingAngle={2}
+              innerRadius="62%"
+              outerRadius="95%"
+              paddingAngle={3}
+              cornerRadius={6}
               dataKey="amount"
               nameKey="name"
               onMouseEnter={(_, idx) => setActiveName(data[idx]?.name ?? null)}
               onMouseLeave={() => setActiveName(null)}
-              animationDuration={shouldReduceMotion ? 0 : 700}
+              animationDuration={animMs(shouldReduceMotion, 750)}
             >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={entry.color}
-                  stroke={entry.name === activeCategory.name ? 'rgba(255,255,255,0.9)' : 'transparent'}
-                  strokeWidth={entry.name === activeCategory.name ? 2 : 0}
-                />
-              ))}
+              {data.map((entry, index) => {
+                const isActive = entry.name === activeCategory.name;
+                return (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.color}
+                    stroke={isActive ? 'rgb(var(--surface-glass))' : 'transparent'}
+                    strokeWidth={isActive ? 3 : 0}
+                    style={{
+                      filter: isActive ? 'brightness(1.08)' : 'none',
+                      opacity: activeName && !isActive ? 0.55 : 1,
+                      transition: 'opacity 0.2s, filter 0.2s',
+                    }}
+                  />
+                );
+              })}
             </Pie>
             <Tooltip
-              formatter={(value: number) => [`$${value.toLocaleString('es-AR')}`, 'Monto']}
-              contentStyle={{
-                backgroundColor: 'rgba(10, 12, 17, 0.95)',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
-                borderRadius: '12px',
-                color: '#F8FAFC',
-              }}
+              content={
+                <ChartTooltip
+                  formatter={(value) => [`$${value.toLocaleString('es-AR')}`, 'Monto']}
+                />
+              }
             />
           </PieChart>
         </ResponsiveContainer>
+        {/* Label central: categoría en foco */}
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span className="text-2xl leading-none">{activeCategory.icon}</span>
+          <span className="mt-1 text-xs font-medium text-muted-foreground">{activeCategory.name}</span>
+          <span className="text-sm font-semibold text-foreground zx-num">
+            {activeCategory.percent.toFixed(1)}%
+          </span>
+        </div>
       </div>
 
       <div className="mt-4 rounded-control border border-border/75 bg-surface-soft/65 p-3">

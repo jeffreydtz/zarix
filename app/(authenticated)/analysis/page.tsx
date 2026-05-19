@@ -5,12 +5,13 @@ import { analyticsService } from '@/lib/services/analytics';
 import ProjectionsWidget from '@/components/analysis/ProjectionsWidget';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
+import ChartSkeleton from '@/components/ui/ChartSkeleton';
 
-const CategoryDonut = dynamic(() => import('@/components/analysis/CategoryDonut'), { ssr: false });
-const MonthlyBarChart = dynamic(() => import('@/components/analysis/MonthlyBarChart'), { ssr: false });
-const CashFlowChart = dynamic(() => import('@/components/analysis/CashFlowChart'), { ssr: false });
-const TopExpenses = dynamic(() => import('@/components/analysis/TopExpenses'), { ssr: false });
-const AccountBreakdownChart = dynamic(() => import('@/components/analysis/AccountBreakdownChart'), { ssr: false });
+const CategoryDonut = dynamic(() => import('@/components/analysis/CategoryDonut'), { ssr: false, loading: () => <ChartSkeleton height={320} /> });
+const MonthlyBarChart = dynamic(() => import('@/components/analysis/MonthlyBarChart'), { ssr: false, loading: () => <ChartSkeleton height={320} /> });
+const CashFlowChart = dynamic(() => import('@/components/analysis/CashFlowChart'), { ssr: false, loading: () => <ChartSkeleton height={320} /> });
+const TopExpenses = dynamic(() => import('@/components/analysis/TopExpenses'), { ssr: false, loading: () => <ChartSkeleton height={240} /> });
+const AccountBreakdownChart = dynamic(() => import('@/components/analysis/AccountBreakdownChart'), { ssr: false, loading: () => <ChartSkeleton height={240} /> });
 
 export default async function AnalysisPage() {
   try {

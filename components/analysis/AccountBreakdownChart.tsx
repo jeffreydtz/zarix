@@ -4,6 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import { motion, useReducedMotion } from 'framer-motion';
 import type { AccountBreakdown } from '@/lib/services/analytics';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+import { axisProps, animMs } from '@/lib/chart-theme';
+import ChartTooltip from '@/components/ui/ChartTooltip';
 
 interface Props {
   data: AccountBreakdown[];
@@ -45,29 +47,26 @@ export default function AccountBreakdownChart({ data }: Props) {
             layout="vertical"
             margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
           >
-            <XAxis 
-              type="number" 
+            <XAxis
+              type="number"
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-              tick={{ fontSize: 10 }}
-              stroke="rgb(148 163 184 / 0.85)"
+              {...axisProps}
             />
-            <YAxis 
-              type="category" 
-              dataKey="name" 
+            <YAxis
+              type="category"
+              dataKey="name"
               width={100}
-              tick={{ fontSize: 11 }}
-              stroke="rgb(148 163 184 / 0.85)"
+              {...axisProps}
             />
             <Tooltip
-              formatter={(value: number) => [`$${value.toLocaleString('es-AR')}`, 'Gastos']}
-              contentStyle={{
-                backgroundColor: 'rgba(10, 12, 17, 0.95)',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
-                borderRadius: '12px',
-                color: '#F8FAFC',
-              }}
+              cursor={{ fill: 'rgb(148 163 184 / 0.08)' }}
+              content={
+                <ChartTooltip
+                  formatter={(value) => [`$${value.toLocaleString('es-AR')}`, 'Gastos']}
+                />
+              }
             />
-            <Bar dataKey="amount" radius={[0, 6, 6, 0]} animationDuration={shouldReduceMotion ? 0 : 650}>
+            <Bar dataKey="amount" radius={[0, 8, 8, 0]} maxBarSize={26} animationDuration={animMs(shouldReduceMotion, 700)}>
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}

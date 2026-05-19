@@ -4,6 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { motion, useReducedMotion } from 'framer-motion';
 import type { MonthlyData } from '@/lib/services/analytics';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+import { axisProps, gridProps, chartColors, animMs } from '@/lib/chart-theme';
+import ChartTooltip from '@/components/ui/ChartTooltip';
 
 interface Props {
   data: MonthlyData[];
@@ -63,35 +65,42 @@ export default function MonthlyBarChart({ data }: Props) {
 
       <div className="h-72 chart-shell p-2">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="4 4" stroke="rgb(148 163 184 / 0.25)" />
-            <XAxis 
-              dataKey="monthLabel" 
-              tick={{ fontSize: 12 }}
-              stroke="rgb(148 163 184 / 0.85)"
-            />
-            <YAxis 
+          <BarChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 4 }} barGap={4}>
+            <defs>
+              <linearGradient id="barExpenses" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={chartColors.expense} stopOpacity={0.95} />
+                <stop offset="100%" stopColor={chartColors.expense} stopOpacity={0.55} />
+              </linearGradient>
+              <linearGradient id="barIncome" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={chartColors.income} stopOpacity={0.95} />
+                <stop offset="100%" stopColor={chartColors.income} stopOpacity={0.55} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid {...gridProps} />
+            <XAxis dataKey="monthLabel" {...axisProps} dy={4} />
+            <YAxis
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-              tick={{ fontSize: 12 }}
-              stroke="rgb(148 163 184 / 0.85)"
+              {...axisProps}
+              width={44}
             />
             <Tooltip
-              formatter={(value: number, name: string) => [
-                `$${value.toLocaleString('es-AR')}`,
-                name === 'expenses' ? 'Gastos' : name === 'income' ? 'Ingresos' : 'Balance'
-              ]}
-              contentStyle={{
-                backgroundColor: 'rgba(10, 12, 17, 0.95)',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
-                borderRadius: '12px',
-                color: '#F8FAFC',
-              }}
+              cursor={{ fill: 'rgb(148 163 184 / 0.08)' }}
+              content={
+                <ChartTooltip
+                  formatter={(value, name) => [
+                    `$${value.toLocaleString('es-AR')}`,
+                    name === 'expenses' ? 'Gastos' : name === 'income' ? 'Ingresos' : 'Balance',
+                  ]}
+                />
+              }
             />
-            <Legend 
+            <Legend
+              iconType="circle"
+              wrapperStyle={{ fontSize: 12, paddingTop: 8 }}
               formatter={(value) => value === 'expenses' ? 'Gastos' : value === 'income' ? 'Ingresos' : 'Balance'}
             />
-            <Bar dataKey="expenses" fill="#EF4444" radius={[6, 6, 0, 0]} name="expenses" animationDuration={shouldReduceMotion ? 0 : 620} />
-            <Bar dataKey="income" fill="#22C55E" radius={[6, 6, 0, 0]} name="income" animationDuration={shouldReduceMotion ? 0 : 640} />
+            <Bar dataKey="expenses" fill="url(#barExpenses)" radius={[6, 6, 0, 0]} maxBarSize={48} name="expenses" animationDuration={animMs(shouldReduceMotion, 650)} />
+            <Bar dataKey="income" fill="url(#barIncome)" radius={[6, 6, 0, 0]} maxBarSize={48} name="income" animationDuration={animMs(shouldReduceMotion, 700)} />
           </BarChart>
         </ResponsiveContainer>
       </div>

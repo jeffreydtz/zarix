@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import ChartTooltip from '@/components/ui/ChartTooltip';
 import { CategoryIcon } from '@/lib/category-icons';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import EditTransactionModal from '@/components/expenses/EditTransactionModal';
@@ -884,7 +885,8 @@ export default function SpendingAnalyzer({
                           cy="50%"
                           innerRadius="58%"
                           outerRadius="88%"
-                          paddingAngle={1.5}
+                          paddingAngle={2}
+                          cornerRadius={5}
                           isAnimationActive={false}
                           cursor="pointer"
                           onClick={(_, index) => {
@@ -893,17 +895,20 @@ export default function SpendingAnalyzer({
                           }}
                         >
                           {displaySlices.map((s, i) => (
-                            <Cell key={`${s.name}-${i}`} fill={s.color} />
+                            <Cell key={`${s.name}-${i}`} fill={s.color} stroke="transparent" />
                           ))}
                         </Pie>
                         {chartTooltipEnabled && (
                           <Tooltip
-                            formatter={(v: number | string) =>
-                              typeof v === 'number'
-                                ? `$${v.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
-                                : String(v)
+                            content={
+                              <ChartTooltip
+                                hideLabel
+                                formatter={(v) => [
+                                  `$${Number(v).toLocaleString('es-AR', { maximumFractionDigits: 0 })}`,
+                                  '',
+                                ]}
+                              />
                             }
-                            contentStyle={{ borderRadius: 8 }}
                           />
                         )}
                       </PieChart>

@@ -2,15 +2,22 @@
 
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { Account } from '@/types/database';
 import type { InvestmentWithPnL, PortfolioSummaryPayload } from '@/lib/services/investments';
 import PortfolioSummary from '@/components/investments/PortfolioSummary';
 import InvestmentsList from '@/components/investments/InvestmentsList';
 import AddInvestmentPanel from '@/components/investments/AddInvestmentPanel';
-import PortfolioPerformanceChart from '@/components/investments/PortfolioPerformanceChart';
 import EditInvestmentDialog from '@/components/investments/EditInvestmentDialog';
+import ChartSkeleton from '@/components/ui/ChartSkeleton';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+
+// Recharts es pesado: se carga on-demand, no en el bundle inicial.
+const PortfolioPerformanceChart = dynamic(
+  () => import('@/components/investments/PortfolioPerformanceChart'),
+  { ssr: false, loading: () => <ChartSkeleton height={288} /> }
+);
 
 interface InvestmentsWorkspaceProps {
   initialPortfolio: PortfolioSummaryPayload;
