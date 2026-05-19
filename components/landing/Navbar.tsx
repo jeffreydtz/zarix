@@ -10,6 +10,7 @@ import { brandAsset } from '@/lib/brand';
 const navLinks = [
   { label: 'Caracteristicas', href: '#features' },
   { label: 'Precios', href: '#pricing' },
+  { label: 'Probar demo', href: '/demo' },
   { label: 'Iniciar sesion', href: '/login' },
 ];
 

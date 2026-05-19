@@ -91,7 +91,7 @@ export default function BalanceHeader({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-tour="balance">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <motion.div 
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}

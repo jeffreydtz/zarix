@@ -175,6 +175,7 @@ export default function FloatingAddButton() {
       {/* Floating Action Button */}
       <button
         type="button"
+        data-tour="add"
         onClick={() => setIsOpen(true)}
         className="fixed z-50 w-14 h-14 min-w-[56px] min-h-[56px] bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center transition-transform active:scale-95 touch-manipulation right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-6 md:right-6"
         title="Nuevo Movimiento"

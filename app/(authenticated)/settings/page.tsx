@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import BugReportWidget from '@/components/BugReportWidget';
 import SettingsForm from '@/components/settings/SettingsForm';
 import ExportImport from '@/components/settings/ExportImport';
+import ReplayTourButton from '@/components/onboarding/ReplayTourButton';
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -43,6 +44,8 @@ export default async function SettingsPage() {
         )}
 
         <ExportImport />
+
+        <ReplayTourButton />
       </div>
 
       <BugReportWidget />

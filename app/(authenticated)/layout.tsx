@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getCachedUser } from '@/lib/auth/session';
 import Navigation from '@/components/Navigation';
 import OfflineReferenceWarmup from '@/components/OfflineReferenceWarmup';
+import FirstStepsTour from '@/components/onboarding/FirstStepsTour';
 
 export default async function AuthenticatedLayout({
   children,
@@ -34,6 +35,7 @@ export default async function AuthenticatedLayout({
         </div>
       )}
       <Navigation>{children}</Navigation>
+      <FirstStepsTour />
     </div>
   );
 }

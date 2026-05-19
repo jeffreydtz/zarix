@@ -107,7 +107,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
               <span className="font-semibold tracking-tight text-lg text-primary">Zarix</span>
             </Link>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" data-tour="nav">
               {PRIMARY_LINKS.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -202,6 +202,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
 
       {/* ——— Mobile: barra inferior (thumb zone); en flujo flex para que no “flote” al scrollear (iOS/PWA) ——— */}
       <nav
+        data-tour="nav"
         className="md:hidden shrink-0 w-full z-40 bg-surface-glass/95 dark:bg-surface-glass/90 backdrop-blur-xl border-t border-border/80 pb-[env(safe-area-inset-bottom,0px)]"
         aria-label="Navegación principal"
       >
