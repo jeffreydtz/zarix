@@ -402,9 +402,11 @@ class CotizacionesService {
 
   /** Cotizaciones mínimas para movimientos (ARS / USD / EUR), sin crypto ni otros mercados. */
   async getTransactionsFxRates(): Promise<{ usdArs: number; eurArs: number }> {
-    const dolar = await this.getDolarQuotes();
+    const [dolar, eurUsd] = await Promise.all([
+      this.getDolarQuotes(),
+      this.getEurUsdRate(),
+    ]);
     const usdArs = dolar.blue.sell;
-    const eurUsd = await this.getEurUsdRate();
     const eurArs = eurUsd * usdArs;
     return { usdArs, eurArs };
   }

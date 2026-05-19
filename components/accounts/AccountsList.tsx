@@ -8,6 +8,7 @@ import { useState } from 'react';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import EditAccountModal from '@/components/accounts/EditAccountModal';
+import { useRouter } from 'next/navigation';
 
 interface AccountsListProps {
   accounts: AccountWithBalance[];
@@ -15,6 +16,7 @@ interface AccountsListProps {
 }
 
 export default function AccountsList({ accounts, aggregates }: AccountsListProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [editAccount, setEditAccount] = useState<AccountWithBalance | null>(null);
 
@@ -39,7 +41,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
         throw new Error(error.error || 'Error deleting account');
       }
 
-      window.location.reload();
+      router.refresh();
     } catch (error: unknown) {
       console.error('Error:', error);
       alert(error instanceof Error ? error.message : 'Error al eliminar la cuenta');

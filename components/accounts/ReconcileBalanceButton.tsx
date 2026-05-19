@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ReconcileBalanceButton({ accountId }: { accountId: string }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const run = async () => {
@@ -19,7 +21,7 @@ export default function ReconcileBalanceButton({ accountId }: { accountId: strin
       const res = await fetch(`/api/accounts/${accountId}/reconcile-balance`, { method: 'POST' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'No se pudo recalcular');
-      window.location.reload();
+      router.refresh();
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : 'Error');
       setLoading(false);

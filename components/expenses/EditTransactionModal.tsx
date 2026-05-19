@@ -168,7 +168,7 @@ export default function EditTransactionModal({
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full max-h-[90dvh] overflow-y-auto overscroll-contain shadow-2xl"
       >
         <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">
@@ -176,7 +176,8 @@ export default function EditTransactionModal({
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
+            aria-label="Cerrar"
+            className="p-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -190,18 +191,18 @@ export default function EditTransactionModal({
               Tipo
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {[
-                { value: 'expense', label: 'Gasto', color: 'red' },
-                { value: 'income', label: 'Ingreso', color: 'green' },
-                { value: 'transfer', label: 'Transfer', color: 'blue' },
-              ].map((type) => (
+              {([
+                { value: 'expense', label: 'Gasto', active: 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300' },
+                { value: 'income', label: 'Ingreso', active: 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' },
+                { value: 'transfer', label: 'Transfer', active: 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' },
+              ] as const).map((type) => (
                 <button
                   key={type.value}
                   type="button"
                   onClick={() => setFormData({ ...formData, type: type.value as any })}
                   className={`p-3 rounded-xl border-2 transition-all font-medium ${
                     formData.type === type.value
-                      ? `border-${type.color}-500 bg-${type.color}-50 dark:bg-${type.color}-900/20 text-${type.color}-700 dark:text-${type.color}-300`
+                      ? type.active
                       : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                   }`}
                 >
@@ -219,6 +220,7 @@ export default function EditTransactionModal({
               <div className="flex gap-2">
                 <input
                   type="number"
+                  inputMode="decimal"
                   step="0.01"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
@@ -297,6 +299,7 @@ export default function EditTransactionModal({
                 </label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   step="any"
                   value={formData.exchange_rate_override}
                   onChange={(e) =>
@@ -365,7 +368,7 @@ export default function EditTransactionModal({
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               type="button"
               onClick={handleDuplicate}

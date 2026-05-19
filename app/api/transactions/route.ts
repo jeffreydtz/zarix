@@ -117,6 +117,16 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Acción destructiva: exige confirmación explícita en el body para
+    // que no se dispare por accidente / request CSRF-shaped.
+    const body = await req.json().catch(() => ({}));
+    if (body?.confirm !== 'DELETE_ALL') {
+      return NextResponse.json(
+        { error: 'Confirmación requerida' },
+        { status: 400 }
+      );
+    }
+
     const serviceClient = createServiceClientSync();
 
     const { count, error } = await serviceClient

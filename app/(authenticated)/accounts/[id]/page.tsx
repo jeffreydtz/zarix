@@ -25,15 +25,13 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
       redirect('/login');
     }
 
-    const account = await accountsService.getById(params.id, user.id).catch(() => null);
-    if (!account) {
-      notFound();
-    }
-
-    const [accounts, transactions, categoriesResult, fxRates] = await Promise.all([
+    // params.id === account.id; usamos params.id en el filtro para poder
+    // resolver getById en paralelo con el resto (un round-trip menos).
+    const [account, accounts, transactions, categoriesResult, fxRates] = await Promise.all([
+      accountsService.getById(params.id, user.id).catch(() => null),
       accountsService.list(user.id).catch(() => []),
       transactionsService
-        .list(user.id, { involveAccountId: account.id, limit: 500 })
+        .list(user.id, { involveAccountId: params.id, limit: 500 })
         .catch(() => []),
       supabase
         .from('categories')
@@ -41,6 +39,10 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
         .or(`user_id.eq.${user.id},is_system.eq.true`),
       cotizacionesService.getTransactionsFxRates().catch(() => null),
     ]);
+
+    if (!account) {
+      notFound();
+    }
 
     const categories = categoriesResult.data || [];
 

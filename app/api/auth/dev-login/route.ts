@@ -6,10 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    if (
-      process.env.NODE_ENV === 'production' &&
-      process.env.ALLOW_DEV_LOGIN !== 'true'
-    ) {
+    // Backdoor solo en desarrollo. No hay override en producción
+    // (un único env var no debe poder habilitar login como cualquier email).
+    if (process.env.NODE_ENV === 'production') {
       return new NextResponse(null, { status: 404 });
     }
 

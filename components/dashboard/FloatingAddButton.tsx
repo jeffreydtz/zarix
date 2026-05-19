@@ -23,6 +23,7 @@ import {
 import type { AccountType } from '@/types/database';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 import InternalAiChat from '@/components/dashboard/InternalAiChat';
+import { useRouter } from 'next/navigation';
 
 interface Account {
   id: string;
@@ -41,6 +42,7 @@ interface Category {
 }
 
 export default function FloatingAddButton() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -133,7 +135,7 @@ export default function FloatingAddButton() {
       if (!res.ok) throw new Error('Error al crear el movimiento');
 
       handleClose();
-      window.location.reload();
+      router.refresh();
     } catch {
       // If network failed mid-submit, queue it for later
       if (!navigator.onLine) {

@@ -217,11 +217,13 @@ class AccountsService {
       throw new Error('Exchange rate not available');
     }
 
-    const usdRates = await this.buildUsdRates(
-      accounts.flatMap((a) => [a.currency, a.secondary_currency || '']),
-      blueRate
-    );
-    const multicurrencyBalances = await this.computeMulticurrencyBalances(userId, accounts as Account[]);
+    const [usdRates, multicurrencyBalances] = await Promise.all([
+      this.buildUsdRates(
+        accounts.flatMap((a) => [a.currency, a.secondary_currency || '']),
+        blueRate
+      ),
+      this.computeMulticurrencyBalances(userId, accounts as Account[]),
+    ]);
 
     const accountsWithConversion = accounts.map((account) => {
       const balance = Number(account.balance);

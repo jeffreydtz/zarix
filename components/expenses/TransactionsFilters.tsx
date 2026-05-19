@@ -87,7 +87,11 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
 
     setDeletingAll(true);
     try {
-      const response = await fetch('/api/transactions', { method: 'DELETE' });
+      const response = await fetch('/api/transactions', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm: 'DELETE_ALL' }),
+      });
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
         throw new Error(data.error || 'No se pudieron eliminar los movimientos');

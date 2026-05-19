@@ -49,7 +49,7 @@ export default function BugReportWidget() {
         type="button"
         aria-label="Reportar bug"
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-[90] inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#0F1117]/95 px-3 py-2 text-sm font-medium text-[#F8F9FA] shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl transition hover:border-white/20"
+        className="fixed right-4 z-[90] inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#0F1117]/95 px-3 py-2 text-sm font-medium text-[#F8F9FA] shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl transition hover:border-white/20 bottom-[calc(9.5rem+env(safe-area-inset-bottom,0px))] md:bottom-4"
       >
         <Bug size={16} className="text-blue-400" />
         Reportar bug
@@ -57,7 +57,7 @@ export default function BugReportWidget() {
 
       {open ? (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label="Reportar problema en Zarix">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0F1117] p-5 text-[#F8F9FA] shadow-2xl">
+          <div className="w-full max-w-lg max-h-[90dvh] overflow-y-auto overscroll-contain rounded-2xl border border-white/10 bg-[#0F1117] p-5 text-[#F8F9FA] shadow-2xl">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <p className="text-lg font-semibold">Contanos que se rompio</p>

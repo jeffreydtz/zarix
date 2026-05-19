@@ -17,17 +17,17 @@ export default async function AccountsPage() {
       redirect('/login');
     }
 
-    const [accounts, archivedAccounts] = await Promise.all([
+    const [accounts, archivedAccounts, categoriesRes] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       accountsService.listArchived(user.id).catch(() => []),
+      supabase
+        .from('categories')
+        .select('*')
+        .or(`user_id.eq.${user.id},is_system.eq.true`),
     ]);
     const aggregates =
       accounts.length > 0 ? accountsService.aggregateAccountTotals(accounts) : null;
-
-    const { data: categories } = await supabase
-      .from('categories')
-      .select('*')
-      .or(`user_id.eq.${user.id},is_system.eq.true`);
+    const categories = categoriesRes.data;
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors duration-300">

@@ -12,6 +12,7 @@ import {
   sumImpactInAccountCurrency,
 } from '@/lib/transaction-account-impact';
 import EditTransactionModal from './EditTransactionModal';
+import { useRouter } from 'next/navigation';
 
 function fmtMoney(n: number, currency: string) {
   const abs = Math.abs(n).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -147,6 +148,7 @@ export default function TransactionsList({
   emptySubmessage = 'Usa el bot de Telegram para registrar gastos e ingresos',
   viewAccountContext,
 }: TransactionsListProps) {
+  const router = useRouter();
   const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -177,7 +179,7 @@ export default function TransactionsList({
 
   const handleSave = () => {
     setEditingTx(null);
-    window.location.reload();
+    router.refresh();
   };
 
   const toggleSelection = (id: string) => {
@@ -225,7 +227,7 @@ export default function TransactionsList({
         throw new Error(data.error || 'No se pudo aplicar el cambio masivo');
       }
 
-      window.location.reload();
+      router.refresh();
     } catch (error: any) {
       console.error(error);
       alert(error.message || 'Error en edición masiva');
@@ -258,7 +260,7 @@ export default function TransactionsList({
         const data = await response.json().catch(() => ({}));
         throw new Error(data.error || 'No se pudieron eliminar los movimientos');
       }
-      window.location.reload();
+      router.refresh();
     } catch (error: unknown) {
       console.error(error);
       const message = error instanceof Error ? error.message : 'Error al eliminar';
@@ -530,7 +532,7 @@ export default function TransactionsList({
                     </div>
                   )}
                 </div>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="opacity-60 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>

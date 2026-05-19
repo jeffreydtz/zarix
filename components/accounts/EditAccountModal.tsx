@@ -211,7 +211,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}
@@ -220,7 +220,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
           initial={{ scale: 0.96, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.96, opacity: 0 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl border border-slate-200 dark:border-slate-700"
+          className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full max-h-[90dvh] overflow-y-auto overscroll-contain shadow-xl border border-slate-200 dark:border-slate-700"
           onClick={(ev) => ev.stopPropagation()}
         >
           <div className="sticky top-0 z-10 flex items-center justify-between gap-2 px-5 py-4 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-t-2xl">

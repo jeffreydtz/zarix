@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import * as XLSX from 'xlsx';
+import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
@@ -879,6 +881,25 @@ export async function POST(request: NextRequest) {
           ? { transactions: [], transfers: parsed.transfers }
           : { transactions: parsed.transactions, transfers: [] };
     }
+
+    // Saneo de filas provenientes del archivo (no confiar en el contenido):
+    // `type` y `currency` se fuerzan a valores permitidos antes de insertar.
+    const importedTxSchema = z.object({
+      date: z.string().min(1),
+      type: z.enum(['expense', 'income', 'transfer']).catch('expense'),
+      amount: z.coerce.number().finite().nonnegative().catch(0),
+      currency: z
+        .unknown()
+        .transform((c) => coerceTransactionCurrency(typeof c === 'string' ? c : undefined)),
+      account: z.string(),
+      category: z.string().optional(),
+      description: z.string().optional(),
+      notes: z.string().optional(),
+      amountInAccountCurrency: z.coerce.number().finite().nonnegative().optional(),
+    });
+    combined.transactions = combined.transactions.map(
+      (t) => importedTxSchema.parse(t) as (typeof combined.transactions)[number]
+    );
 
     const totalCount = combined.transactions.length + combined.transfers.length;
 

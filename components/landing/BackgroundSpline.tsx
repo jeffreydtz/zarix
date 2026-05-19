@@ -1,7 +1,6 @@
 'use client';
 
-import { Application } from '@splinetool/runtime';
-import type { SPEObject } from '@splinetool/runtime';
+import type { Application, SPEObject } from '@splinetool/runtime';
 import {
   motion,
   useMotionValueEvent,
@@ -63,38 +62,46 @@ export default function BackgroundSpline() {
     if (!canvas) return;
 
     let cancelled = false;
-    const app = new Application(canvas);
-    appRef.current = app;
 
-    app
-      .load(SCENE_URL)
-      .then(() => {
+    // Carga diferida del runtime de Spline (WebGL, pesado): se baja en
+    // un chunk aparte después del montaje, fuera del bundle inicial del landing.
+    import('@splinetool/runtime')
+      .then(({ Application }) => {
         if (cancelled) return;
 
-        try {
-          app.setBackgroundColor('transparent');
-        } catch {
-          // ignore
-        }
+        const app = new Application(canvas);
+        appRef.current = app;
 
-        const objects = app.getAllObjects();
-        const rotatable = objects.filter(
-          (object) =>
-            object.visible &&
-            object.rotation !== undefined &&
-            !SKIP.test(object.name)
-        );
-        const mainGroup = pickMainGroup(rotatable);
-        const targets = mainGroup ? [mainGroup] : rotatable;
+        return app
+          .load(SCENE_URL)
+          .then(() => {
+            if (cancelled) return;
 
-        snapshotsRef.current = targets.map((object) => ({
-          object,
-          rotation: {
-            x: object.rotation.x,
-            y: object.rotation.y,
-            z: object.rotation.z,
-          },
-        }));
+            try {
+              app.setBackgroundColor('transparent');
+            } catch {
+              // ignore
+            }
+
+            const objects = app.getAllObjects();
+            const rotatable = objects.filter(
+              (object) =>
+                object.visible &&
+                object.rotation !== undefined &&
+                !SKIP.test(object.name)
+            );
+            const mainGroup = pickMainGroup(rotatable);
+            const targets = mainGroup ? [mainGroup] : rotatable;
+
+            snapshotsRef.current = targets.map((object) => ({
+              object,
+              rotation: {
+                x: object.rotation.x,
+                y: object.rotation.y,
+                z: object.rotation.z,
+              },
+            }));
+          });
       })
       .catch((error) => {
         console.error('[BackgroundSpline] Failed to load scene:', error);
@@ -103,7 +110,7 @@ export default function BackgroundSpline() {
     return () => {
       cancelled = true;
       try {
-        app.dispose();
+        appRef.current?.dispose();
       } catch {
         // ignore
       }

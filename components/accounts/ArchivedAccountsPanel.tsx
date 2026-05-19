@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import type { Account } from '@/types/database';
+import { useRouter } from 'next/navigation';
 
 interface ArchivedAccountsPanelProps {
   accounts: Account[];
 }
 
 export default function ArchivedAccountsPanel({ accounts }: ArchivedAccountsPanelProps) {
+  const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   if (accounts.length === 0) return null;
@@ -24,7 +26,7 @@ export default function ArchivedAccountsPanel({ accounts }: ArchivedAccountsPane
         const data = await res.json().catch(() => ({}));
         throw new Error((data as { error?: string }).error || 'No se pudo restaurar');
       }
-      window.location.reload();
+      router.refresh();
     } catch (error: unknown) {
       alert(error instanceof Error ? error.message : 'Error al restaurar');
     } finally {

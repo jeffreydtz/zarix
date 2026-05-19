@@ -21,25 +21,26 @@ export default async function ExpensesPage({
       redirect('/login');
     }
 
-    const accounts = await accountsService.list(user.id).catch(() => []);
-
-    const { data: categories } = await supabase
-      .from('categories')
-      .select('*')
-      .or(`user_id.eq.${user.id},is_system.eq.true`);
-
-    const transactions = await transactionsService
-      .list(user.id, {
-        accountId: searchParams.accountId,
-        categoryId: searchParams.categoryId,
-        type: searchParams.type,
-        startDate: searchParams.startDate,
-        endDate: searchParams.endDate,
-        search: searchParams.search,
-        minAmount: searchParams.minAmount ? parseFloat(searchParams.minAmount) : undefined,
-        maxAmount: searchParams.maxAmount ? parseFloat(searchParams.maxAmount) : undefined,
-      })
-      .catch(() => []);
+    const [accounts, categoriesRes, transactions] = await Promise.all([
+      accountsService.list(user.id).catch(() => []),
+      supabase
+        .from('categories')
+        .select('*')
+        .or(`user_id.eq.${user.id},is_system.eq.true`),
+      transactionsService
+        .list(user.id, {
+          accountId: searchParams.accountId,
+          categoryId: searchParams.categoryId,
+          type: searchParams.type,
+          startDate: searchParams.startDate,
+          endDate: searchParams.endDate,
+          search: searchParams.search,
+          minAmount: searchParams.minAmount ? parseFloat(searchParams.minAmount) : undefined,
+          maxAmount: searchParams.maxAmount ? parseFloat(searchParams.maxAmount) : undefined,
+        })
+        .catch(() => []),
+    ]);
+    const categories = categoriesRes.data;
 
 
     return (

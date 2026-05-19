@@ -6,6 +6,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { CategoryIcon } from '@/lib/category-icons';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import EditTransactionModal from '@/components/expenses/EditTransactionModal';
+import { useRouter } from 'next/navigation';
 
 type RangeType = 'day' | 'week' | 'month' | 'year' | 'custom';
 type AnalyzerMode = 'expense' | 'income';
@@ -341,6 +342,7 @@ export default function SpendingAnalyzer({
   usdToArsBlue: usdToArsBlueProp,
   cryptoPriceArs: cryptoPriceArsProp,
 }: SpendingAnalyzerProps = {}) {
+  const router = useRouter();
   const [mode, setMode] = useState<AnalyzerMode>('expense');
   const [range, setRange] = useState<RangeType>('week');
   const [anchorDate, setAnchorDate] = useState(new Date());
@@ -677,8 +679,8 @@ export default function SpendingAnalyzer({
   const handleEditorSave = useCallback(() => {
     setEditingTx(null);
     setDetailCategory(null);
-    window.location.reload();
-  }, []);
+    router.refresh();
+  }, [router]);
 
   const movePeriod = useCallback((direction: -1 | 1) => {
     if (range === 'custom') return;

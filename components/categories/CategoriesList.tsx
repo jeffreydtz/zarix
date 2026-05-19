@@ -8,6 +8,7 @@ import {
   LUCIDE_ICON_OPTIONS,
   iconValueFromLucideName,
 } from '@/lib/category-icons';
+import { useRouter } from 'next/navigation';
 
 interface CategoriesListProps {
   categories: Category[];
@@ -16,6 +17,7 @@ interface CategoriesListProps {
 type TypeFilter = 'all' | 'expense' | 'income';
 
 export default function CategoriesList({ categories }: CategoriesListProps) {
+  const router = useRouter();
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -62,7 +64,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
         throw new Error(data.error || 'Error al actualizar la categoría');
       }
 
-      window.location.reload();
+      router.refresh();
     } catch (error: any) {
       console.error('Error:', error);
       alert(error.message || 'Error al actualizar la categoría');
@@ -85,7 +87,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
         throw new Error(error.error || 'Error deleting category');
       }
 
-      window.location.reload();
+      router.refresh();
     } catch (error: any) {
       console.error('Error:', error);
       alert(error.message || 'Error al eliminar la categoría');
@@ -120,7 +122,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
         throw new Error(data.error || 'No se pudo duplicar la categoría');
       }
 
-      window.location.reload();
+      router.refresh();
     } catch (error: any) {
       console.error('Error:', error);
       alert(error.message || 'Error al duplicar la categoría');

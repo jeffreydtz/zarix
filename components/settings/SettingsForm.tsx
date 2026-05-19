@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { User } from '@/types/database';
+import { useRouter } from 'next/navigation';
 
 interface SettingsFormProps {
   user: User;
@@ -27,6 +28,7 @@ export default function SettingsForm({
   webhookSecret,
   appBaseUrl,
 }: SettingsFormProps) {
+  const router = useRouter();
   const [telegramChatId, setTelegramChatId] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -188,7 +190,7 @@ export default function SettingsForm({
       }
 
       setMessage('✅ Telegram vinculado correctamente');
-      setTimeout(() => window.location.reload(), 1500);
+      setTimeout(() => router.refresh(), 1500);
     } catch (error: unknown) {
       const err = error as { message?: string };
       setMessage(`❌ ${err.message || 'Error al vincular Telegram'}`);
@@ -214,7 +216,7 @@ export default function SettingsForm({
       if (!response.ok) throw new Error(data.error || 'No se pudo guardar');
       setIntegMessage('✅ API Key de Gemini guardada.');
       setGeminiKey('');
-      setTimeout(() => window.location.reload(), 1500);
+      setTimeout(() => router.refresh(), 1500);
     } catch (error: unknown) {
       const err = error as { message?: string };
       setIntegMessage(`❌ ${err.message || 'Error'}`);
@@ -245,7 +247,7 @@ export default function SettingsForm({
       if (data.webhookUrl) setLastWebhookUrl(data.webhookUrl);
       setIntegMessage('✅ Configuración de Telegram guardada. Si usás bot propio, configurá el webhook con curl.');
       setCustomBotToken('');
-      setTimeout(() => window.location.reload(), 2000);
+      setTimeout(() => router.refresh(), 2000);
     } catch (error: unknown) {
       const err = error as { message?: string };
       setIntegMessage(`❌ ${err.message || 'Error'}`);
@@ -266,7 +268,7 @@ export default function SettingsForm({
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Error');
       setIntegMessage('✅ Clave de Gemini eliminada (se usará la del servidor si existe).');
-      setTimeout(() => window.location.reload(), 1500);
+      setTimeout(() => router.refresh(), 1500);
     } catch (error: unknown) {
       const err = error as { message?: string };
       setIntegMessage(`❌ ${err.message || 'Error'}`);

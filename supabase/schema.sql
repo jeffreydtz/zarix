@@ -1196,9 +1196,19 @@ CREATE OR REPLACE FUNCTION link_telegram_to_user(
 )
 RETURNS VOID AS $$
 BEGIN
+  -- SECURITY DEFINER: no confiar en el caller. Se vincula SIEMPRE al
+  -- usuario autenticado (auth.uid()); p_user_id se ignora salvo para
+  -- rechazar un intento de vincular a otra cuenta.
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'No autenticado';
+  END IF;
+  IF p_user_id IS NOT NULL AND p_user_id <> auth.uid() THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+
   UPDATE users
   SET telegram_chat_id = p_telegram_chat_id
-  WHERE id = p_user_id;
+  WHERE id = auth.uid();
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

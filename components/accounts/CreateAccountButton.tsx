@@ -7,8 +7,10 @@ import {
   ACCOUNT_FORM_ICONS,
   ACCOUNT_FORM_TYPES,
 } from '@/components/accounts/account-form-constants';
+import { useRouter } from 'next/navigation';
 
 export default function CreateAccountButton() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
@@ -89,7 +91,7 @@ export default function CreateAccountButton() {
       setIsMulticurrency(false);
       setSecondaryCurrency('USD');
       setIsOpen(false);
-      window.location.reload();
+      router.refresh();
     } catch (error: any) {
       console.error('Error:', error);
       alert(error.message || 'Error al crear la cuenta');

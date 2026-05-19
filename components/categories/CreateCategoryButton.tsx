@@ -7,8 +7,10 @@ import {
   LUCIDE_ICON_OPTIONS,
   iconValueFromLucideName,
 } from '@/lib/category-icons';
+import { useRouter } from 'next/navigation';
 
 export default function CreateCategoryButton() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
@@ -44,7 +46,7 @@ export default function CreateCategoryButton() {
       setSelectedIcon('🎯');
       setType('expense');
       setIsOpen(false);
-      window.location.reload();
+      router.refresh();
     } catch (error: any) {
       console.error('Error:', error);
       alert(error.message || 'Error al crear la categoría');
