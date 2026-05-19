@@ -36,6 +36,7 @@ CREATE TABLE users (
   daily_summary_enabled BOOLEAN DEFAULT TRUE,
   weekly_summary_enabled BOOLEAN DEFAULT TRUE,
   monthly_summary_enabled BOOLEAN DEFAULT TRUE,
+  onboarding_done BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

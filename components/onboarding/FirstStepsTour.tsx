@@ -2,7 +2,9 @@
 
 /**
  * Tour de primeros pasos. Se muestra una sola vez, en el primer ingreso al
- * dashboard. El "ya lo vio" se guarda en localStorage (sin tocar la DB).
+ * dashboard. El "ya lo vio" se persiste por usuario en la DB
+ * (`users.onboarding_done`, vía /api/user/onboarding); localStorage es solo
+ * cache anti-flicker — sobrevive limpiar cache/cookies del navegador.
  * Se puede volver a ver desde Configuración (ver ReplayTourButton).
  */
 
@@ -51,20 +53,50 @@ export default function FirstStepsTour() {
   const [stepIndex, setStepIndex] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
-  // Solo arranca en el dashboard y si nunca se vio.
+  // Solo arranca en el dashboard y si nunca se vio (verifica server).
   useEffect(() => {
     if (pathname !== '/dashboard') return;
-    let done = false;
+
+    // Cache local: si ya consta como visto, ni consultamos al server.
     try {
-      done = localStorage.getItem(TOUR_DONE_KEY) === 'true';
+      if (localStorage.getItem(TOUR_DONE_KEY) === 'true') return;
     } catch {
       /* ignore */
     }
-    if (!done) {
+
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    (async () => {
+      let done = false;
+      try {
+        const res = await fetch('/api/user/onboarding');
+        if (res.ok) {
+          done = (await res.json())?.done === true;
+        }
+      } catch {
+        /* sin red: no mostramos para no molestar */
+        done = true;
+      }
+      if (cancelled) return;
+      if (done) {
+        try {
+          localStorage.setItem(TOUR_DONE_KEY, 'true');
+        } catch {
+          /* ignore */
+        }
+        return;
+      }
       // Pequeño delay para que el dashboard termine de montar.
-      const t = setTimeout(() => setActive(true), 700);
-      return () => clearTimeout(t);
-    }
+      timer = setTimeout(() => {
+        if (!cancelled) setActive(true);
+      }, 700);
+    })();
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
   }, [pathname]);
 
   const measure = useCallback(() => {
@@ -97,6 +129,14 @@ export default function FirstStepsTour() {
     } catch {
       /* ignore */
     }
+    // Persiste en la DB (fire-and-forget).
+    fetch('/api/user/onboarding', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ done: true }),
+    }).catch(() => {
+      /* si falla, el cache local igual evita re-mostrarlo en este navegador */
+    });
     setActive(false);
   }
 

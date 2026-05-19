@@ -6,9 +6,19 @@ import { TOUR_DONE_KEY } from '@/components/onboarding/FirstStepsTour';
 export default function ReplayTourButton() {
   const router = useRouter();
 
-  function replay() {
+  async function replay() {
     try {
       localStorage.removeItem(TOUR_DONE_KEY);
+    } catch {
+      /* ignore */
+    }
+    // Resetea también el flag persistido en la DB, antes de volver al dashboard.
+    try {
+      await fetch('/api/user/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ done: false }),
+      });
     } catch {
       /* ignore */
     }
