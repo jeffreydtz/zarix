@@ -31,6 +31,8 @@ const EMPTY_PORTFOLIO: PortfolioSummaryPayload = {
   totalDailyPnLUsd: 0,
   totalDailyPnLPercent: 0,
   totalDailyPnLArsBlue: 0,
+  totalRealizedPnLUsd: 0,
+  totalRealizedPnLArsBlue: 0,
   byType: [],
 };
 

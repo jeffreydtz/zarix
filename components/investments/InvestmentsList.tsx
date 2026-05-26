@@ -10,6 +10,7 @@ import {
   CandlestickChart,
   Coins,
   Globe2,
+  HandCoins,
   LineChart,
   Pencil,
   PiggyBank,
@@ -25,6 +26,7 @@ interface InvestmentsListProps {
   investments: InvestmentWithPnL[];
   onArchived?: () => void;
   onEdit?: (inv: InvestmentWithPnL) => void;
+  onSell?: (inv: InvestmentWithPnL) => void;
 }
 
 const TYPE_ICON: Record<InvestmentType, typeof CandlestickChart> = {
@@ -70,7 +72,7 @@ function pnlColor(value: number): string {
   return 'text-muted-foreground';
 }
 
-export default function InvestmentsList({ investments, onArchived, onEdit }: InvestmentsListProps) {
+export default function InvestmentsList({ investments, onArchived, onEdit, onSell }: InvestmentsListProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [archivingId, setArchivingId] = useState<string | null>(null);
 
@@ -169,6 +171,18 @@ export default function InvestmentsList({ investments, onArchived, onEdit }: Inv
                       ) : null}
                     </div>
                   ) : null}
+                  {inv.sales_count > 0 ? (
+                    <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-2 py-0.5 text-[11px]">
+                      <HandCoins size={11} aria-hidden className="opacity-70" />
+                      <span className="text-muted-foreground">Realizado:</span>
+                      <span className={`font-semibold tabular-nums ${pnlColor(inv.realized_pnl_usd)}`}>
+                        {inv.realized_pnl_usd >= 0 ? '+' : ''}USD {inv.realized_pnl_usd.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                      </span>
+                      <span className="text-muted-foreground/70">
+                        · {inv.sales_count} {inv.sales_count === 1 ? 'venta' : 'ventas'}
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
               </div>
 
@@ -189,6 +203,18 @@ export default function InvestmentsList({ investments, onArchived, onEdit }: Inv
                 </div>
 
                 <div className="flex items-center gap-1">
+                  {onSell && (
+                    <button
+                      type="button"
+                      onClick={() => onSell(inv)}
+                      className="inline-flex h-8 items-center justify-center gap-1 rounded-control px-2.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
+                      aria-label="Vender posición"
+                      title="Vender"
+                    >
+                      <HandCoins size={13} aria-hidden />
+                      Vender
+                    </button>
+                  )}
                   {onEdit && (
                     <button
                       type="button"

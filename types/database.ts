@@ -66,6 +66,11 @@ export interface Database {
         Insert: Omit<PortfolioPerformanceSnapshot, 'id' | 'created_at'>;
         Update: Partial<Omit<PortfolioPerformanceSnapshot, 'id' | 'created_at'>>;
       };
+      investment_sales: {
+        Row: InvestmentSale;
+        Insert: Omit<InvestmentSale, 'id' | 'created_at'>;
+        Update: Partial<Omit<InvestmentSale, 'id' | 'created_at'>>;
+      };
       recurring_rules: {
         Row: RecurringRule;
         Insert: Omit<RecurringRule, 'id' | 'created_at'>;
@@ -217,6 +222,22 @@ export interface PortfolioPerformanceSnapshot {
   unrealized_pnl_usd: number;
   roi_percent: number;
   blue_ars_per_usd: number;
+  created_at: string;
+}
+
+export interface InvestmentSale {
+  id: string;
+  user_id: string;
+  investment_id: string;
+  quantity: number;
+  price: number;
+  currency: string;
+  sold_at: string;
+  purchase_price_at_sale: number;
+  realized_pnl_native: number;
+  realized_pnl_usd: number;
+  ars_per_usd: number;
+  notes: string | null;
   created_at: string;
 }
 

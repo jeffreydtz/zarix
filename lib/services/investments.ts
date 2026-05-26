@@ -2,7 +2,7 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
-import type { Investment, InvestmentType } from '@/types/database';
+import type { Investment, InvestmentSale, InvestmentType } from '@/types/database';
 
 export interface CreateInvestmentInput {
   userId: string;
@@ -48,6 +48,26 @@ export interface InvestmentWithPnL extends Investment {
   daily_change_pct: number | null;
   /** P&L del día en USD para esta posición. 0 si no hay variación. */
   daily_pnl_usd: number;
+  /** Ganancia realizada acumulada en USD por ventas previas. */
+  realized_pnl_usd: number;
+  /** Cantidad de ventas registradas para esta posición. */
+  sales_count: number;
+}
+
+export interface SellPositionInput {
+  userId: string;
+  investmentId: string;
+  quantity: number;
+  price: number;
+  currency: string;
+  soldAt: string;
+  notes?: string;
+}
+
+export interface SellPositionResult {
+  sale: InvestmentSale;
+  remainingQuantity: number;
+  positionClosed: boolean;
 }
 
 export interface PortfolioSummaryPayload {
@@ -70,6 +90,10 @@ export interface PortfolioSummaryPayload {
   totalDailyPnLPercent: number;
   /** P&L del día en ARS equivalente (blue). */
   totalDailyPnLArsBlue: number;
+  /** Ganancia realizada total del portafolio (USD), suma de todas las ventas. */
+  totalRealizedPnLUsd: number;
+  /** Ganancia realizada total en ARS equivalente (blue). */
+  totalRealizedPnLArsBlue: number;
   byType: Array<{ type: string; count: number; value: number; pnl: number }>;
 }
 
@@ -274,6 +298,21 @@ class InvestmentsService {
     if (error) throw error;
     const investments: Investment[] = investmentsRaw || [];
 
+    const investmentIds = investments.map((inv) => inv.id);
+    const salesByInvestment = new Map<string, { realized: number; count: number }>();
+    if (investmentIds.length > 0) {
+      const { data: salesRows } = await supabase
+        .from('investment_sales')
+        .select('investment_id, realized_pnl_usd')
+        .in('investment_id', investmentIds);
+      for (const row of salesRows || []) {
+        const cur = salesByInvestment.get(row.investment_id) || { realized: 0, count: 0 };
+        cur.realized += Number(row.realized_pnl_usd) || 0;
+        cur.count += 1;
+        salesByInvestment.set(row.investment_id, cur);
+      }
+    }
+
     const now = Date.now();
     const needsRefresh = !options?.skipQuoteRefresh;
     const candidatesForRefresh = needsRefresh
@@ -331,6 +370,8 @@ class InvestmentsService {
         }
       }
 
+      const realizedAgg = salesByInvestment.get(inv.id) || { realized: 0, count: 0 };
+
       return {
         ...inv,
         quantity: qty,
@@ -349,6 +390,8 @@ class InvestmentsService {
         profit_loss_percent: pnlPctUsd,
         daily_change_pct: dailyChangePct,
         daily_pnl_usd: dailyPnlUsd,
+        realized_pnl_usd: realizedAgg.realized,
+        sales_count: realizedAgg.count,
       };
     });
 
@@ -421,6 +464,114 @@ class InvestmentsService {
     if (error) throw error;
   }
 
+  /**
+   * Registra una venta (parcial o total) de una posición.
+   * Calcula ganancia realizada en USD usando el dólar blue actual y baja `quantity` del investment.
+   * Si la cantidad restante llega a 0, marca la posición como archivada.
+   */
+  async sell(input: SellPositionInput): Promise<SellPositionResult> {
+    if (!Number.isFinite(input.quantity) || input.quantity <= 0) {
+      throw new Error('La cantidad a vender debe ser mayor a 0.');
+    }
+    if (!Number.isFinite(input.price) || input.price <= 0) {
+      throw new Error('El precio de venta debe ser mayor a 0.');
+    }
+
+    const supabase = createServiceClientSync();
+
+    const { data: invRow, error: invErr } = await supabase
+      .from('investments')
+      .select('*')
+      .eq('id', input.investmentId)
+      .eq('user_id', input.userId)
+      .single();
+
+    if (invErr || !invRow) {
+      throw new Error('Posición no encontrada');
+    }
+
+    const currentQty = Number(invRow.quantity);
+    const purchasePrice = Number(invRow.purchase_price);
+
+    if (input.quantity > currentQty + 1e-9) {
+      throw new Error(`No podés vender más de lo que tenés (${currentQty}).`);
+    }
+
+    const dolar = await cotizacionesService.getDolarQuotes();
+    const arsPerUsd = arsPerUsdFromDolar(dolar.blue);
+
+    const saleCurrency = (input.currency || invRow.purchase_currency || 'USD').toUpperCase();
+    const realizedNative = (input.price - purchasePrice) * input.quantity;
+    const realizedUsd = amountToUsd(realizedNative, saleCurrency, arsPerUsd);
+
+    const { data: saleInserted, error: saleErr } = await supabase
+      .from('investment_sales')
+      .insert({
+        user_id: input.userId,
+        investment_id: input.investmentId,
+        quantity: input.quantity,
+        price: input.price,
+        currency: saleCurrency,
+        sold_at: input.soldAt,
+        purchase_price_at_sale: purchasePrice,
+        realized_pnl_native: realizedNative,
+        realized_pnl_usd: realizedUsd,
+        ars_per_usd: arsPerUsd,
+        notes: input.notes ?? null,
+      })
+      .select()
+      .single();
+
+    if (saleErr || !saleInserted) {
+      throw new Error(saleErr?.message || 'No se pudo registrar la venta');
+    }
+
+    const remainingQuantity = Math.max(0, currentQty - input.quantity);
+    const positionClosed = remainingQuantity <= 1e-9;
+
+    const updatePayload: Record<string, unknown> = {
+      quantity: positionClosed ? 0 : remainingQuantity,
+    };
+    if (positionClosed) {
+      updatePayload.is_active = false;
+    }
+
+    const { error: updErr } = await supabase
+      .from('investments')
+      .update(updatePayload)
+      .eq('id', input.investmentId)
+      .eq('user_id', input.userId);
+
+    if (updErr) {
+      // Rollback manual: borrar la venta para que el estado quede consistente.
+      await supabase.from('investment_sales').delete().eq('id', saleInserted.id);
+      throw new Error(updErr.message);
+    }
+
+    return {
+      sale: saleInserted as InvestmentSale,
+      remainingQuantity: positionClosed ? 0 : remainingQuantity,
+      positionClosed,
+    };
+  }
+
+  async listSales(userId: string, investmentId?: string): Promise<InvestmentSale[]> {
+    const supabase = createServiceClientSync();
+    let query = supabase
+      .from('investment_sales')
+      .select('*')
+      .eq('user_id', userId)
+      .order('sold_at', { ascending: false });
+
+    if (investmentId) {
+      query = query.eq('investment_id', investmentId);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []) as InvestmentSale[];
+  }
+
   private async recordDailySnapshot(userId: string, summary: PortfolioSummaryPayload): Promise<void> {
     const supabase = createServiceClientSync();
     const snapshotDate = new Date().toISOString().split('T')[0];
@@ -464,6 +615,17 @@ class InvestmentsService {
     const totalPnLArsBlue = usdToArsBlue(totalPnL, blueArsPerUsd);
     const totalDailyPnLArsBlue = usdToArsBlue(totalDailyPnLUsd, blueArsPerUsd);
 
+    const supabase = createServiceClientSync();
+    const { data: allSales } = await supabase
+      .from('investment_sales')
+      .select('realized_pnl_usd')
+      .eq('user_id', userId);
+    const totalRealizedPnLUsd = (allSales || []).reduce(
+      (sum, row) => sum + (Number(row.realized_pnl_usd) || 0),
+      0
+    );
+    const totalRealizedPnLArsBlue = usdToArsBlue(totalRealizedPnLUsd, blueArsPerUsd);
+
     const byType = investments.reduce((acc, inv) => {
       if (!acc[inv.type]) {
         acc[inv.type] = {
@@ -493,6 +655,8 @@ class InvestmentsService {
       totalDailyPnLUsd,
       totalDailyPnLPercent,
       totalDailyPnLArsBlue,
+      totalRealizedPnLUsd,
+      totalRealizedPnLArsBlue,
       byType: Object.values(byType),
       investments,
     };

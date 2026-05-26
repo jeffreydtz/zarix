@@ -11,6 +11,7 @@ import PortfolioSummary from '@/components/investments/PortfolioSummary';
 import InvestmentsList from '@/components/investments/InvestmentsList';
 import AddInvestmentPanel from '@/components/investments/AddInvestmentPanel';
 import EditInvestmentDialog from '@/components/investments/EditInvestmentDialog';
+import SellPositionDialog from '@/components/investments/SellPositionDialog';
 import ChartSkeleton from '@/components/ui/ChartSkeleton';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
@@ -48,6 +49,7 @@ export default function InvestmentsWorkspace({
   const [liveLoading, setLiveLoading] = useState(false);
   const [liveError, setLiveError] = useState<string | null>(null);
   const [editing, setEditing] = useState<InvestmentWithPnL | null>(null);
+  const [selling, setSelling] = useState<InvestmentWithPnL | null>(null);
   const [relativeLabel, setRelativeLabel] = useState(() => formatRelative(null));
 
   useEffect(() => {
@@ -138,6 +140,8 @@ export default function InvestmentsWorkspace({
           totalDailyPnLUsd={portfolio.totalDailyPnLUsd}
           totalDailyPnLPercent={portfolio.totalDailyPnLPercent}
           totalDailyPnLArsBlue={portfolio.totalDailyPnLArsBlue}
+          totalRealizedPnLUsd={portfolio.totalRealizedPnLUsd}
+          totalRealizedPnLArsBlue={portfolio.totalRealizedPnLArsBlue}
           byType={portfolio.byType}
         />
       </motion.div>
@@ -166,6 +170,7 @@ export default function InvestmentsWorkspace({
           investments={portfolio.investments}
           onArchived={onPortfolioChanged}
           onEdit={(inv) => setEditing(inv)}
+          onSell={(inv) => setSelling(inv)}
         />
       </motion.section>
 
@@ -174,6 +179,12 @@ export default function InvestmentsWorkspace({
         accounts={investmentAccounts}
         onClose={() => setEditing(null)}
         onSaved={onPortfolioChanged}
+      />
+
+      <SellPositionDialog
+        investment={selling}
+        onClose={() => setSelling(null)}
+        onSold={onPortfolioChanged}
       />
     </div>
   );

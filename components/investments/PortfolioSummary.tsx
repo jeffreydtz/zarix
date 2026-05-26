@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowDownRight, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, HandCoins, TrendingUp } from 'lucide-react';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface PortfolioSummaryProps {
@@ -14,6 +14,8 @@ interface PortfolioSummaryProps {
   totalDailyPnLUsd: number;
   totalDailyPnLPercent: number;
   totalDailyPnLArsBlue: number;
+  totalRealizedPnLUsd: number;
+  totalRealizedPnLArsBlue: number;
   byType: Array<{
     type: string;
     count: number;
@@ -68,11 +70,15 @@ export default function PortfolioSummary({
   totalDailyPnLUsd,
   totalDailyPnLPercent,
   totalDailyPnLArsBlue,
+  totalRealizedPnLUsd,
+  totalRealizedPnLArsBlue,
   byType,
 }: PortfolioSummaryProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const dayPositive = totalDailyPnLUsd >= 0;
   const totalPositive = totalPnL >= 0;
+  const realizedPositive = totalRealizedPnLUsd >= 0;
+  const hasRealized = Math.abs(totalRealizedPnLUsd) >= 0.005;
 
   return (
     <div className="space-y-4">
@@ -126,19 +132,36 @@ export default function PortfolioSummary({
           </div>
         </div>
 
-        <div className="mt-4 pt-3 border-t border-border/70 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <TrendingUp size={14} aria-hidden className="opacity-70" />
-            <span>P&L total desde la compra</span>
+        <div className="mt-4 pt-3 border-t border-border/70 space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <TrendingUp size={14} aria-hidden className="opacity-70" />
+              <span>P&L no realizado (vs. compra)</span>
+            </div>
+            <div className={`text-sm font-semibold tabular-nums ${pnlClass(totalPnL)}`}>
+              {totalPositive ? '+' : ''}USD {formatUsd(totalPnL)}
+              <span className="ml-1 text-xs opacity-80">({formatPct(totalPnLPercent)})</span>
+              <span className="ml-2 text-xs font-normal text-muted-foreground">
+                · ARS {totalPositive ? '+' : ''}
+                {formatArs(totalPnLArsBlue)}
+              </span>
+            </div>
           </div>
-          <div className={`text-sm font-semibold tabular-nums ${pnlClass(totalPnL)}`}>
-            {totalPositive ? '+' : ''}USD {formatUsd(totalPnL)}
-            <span className="ml-1 text-xs opacity-80">({formatPct(totalPnLPercent)})</span>
-            <span className="ml-2 text-xs font-normal text-muted-foreground">
-              · ARS {totalPositive ? '+' : ''}
-              {formatArs(totalPnLArsBlue)}
-            </span>
-          </div>
+          {hasRealized && (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <HandCoins size={14} aria-hidden className="opacity-70" />
+                <span>P&L realizado (ventas)</span>
+              </div>
+              <div className={`text-sm font-semibold tabular-nums ${pnlClass(totalRealizedPnLUsd)}`}>
+                {realizedPositive ? '+' : ''}USD {formatUsd(totalRealizedPnLUsd)}
+                <span className="ml-2 text-xs font-normal text-muted-foreground">
+                  · ARS {realizedPositive ? '+' : ''}
+                  {formatArs(totalRealizedPnLArsBlue)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </motion.div>
 
