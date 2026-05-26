@@ -22,11 +22,9 @@ export async function GET(req: NextRequest) {
       skipDailySnapshot: true,
     });
     return NextResponse.json(portfolio);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Portfolio GET error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al calcular el portfolio' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Error al calcular el portfolio';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

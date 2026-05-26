@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, useReducedMotion } from 'framer-motion';
+import { Loader2, RefreshCw } from 'lucide-react';
 import type { Account } from '@/types/database';
 import type { InvestmentWithPnL, PortfolioSummaryPayload } from '@/lib/services/investments';
 import PortfolioSummary from '@/components/investments/PortfolioSummary';
@@ -24,6 +25,18 @@ interface InvestmentsWorkspaceProps {
   investmentAccounts: Account[];
 }
 
+function formatRelative(date: Date | null): string {
+  if (!date) return 'datos del servidor';
+  const diffSec = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+  if (diffSec < 30) return 'hace unos segundos';
+  if (diffSec < 90) return 'hace 1 min';
+  const min = Math.floor(diffSec / 60);
+  if (min < 60) return `hace ${min} min`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `hace ${hr} h`;
+  return date.toLocaleString('es-AR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+
 export default function InvestmentsWorkspace({
   initialPortfolio,
   investmentAccounts,
@@ -33,22 +46,35 @@ export default function InvestmentsWorkspace({
   const [portfolio, setPortfolio] = useState(initialPortfolio);
   const [lastLiveAt, setLastLiveAt] = useState<Date | null>(null);
   const [liveLoading, setLiveLoading] = useState(false);
+  const [liveError, setLiveError] = useState<string | null>(null);
   const [editing, setEditing] = useState<InvestmentWithPnL | null>(null);
+  const [relativeLabel, setRelativeLabel] = useState(() => formatRelative(null));
 
   useEffect(() => {
     setPortfolio(initialPortfolio);
   }, [initialPortfolio]);
 
+  useEffect(() => {
+    setRelativeLabel(formatRelative(lastLiveAt));
+    if (!lastLiveAt) return;
+    const interval = setInterval(() => setRelativeLabel(formatRelative(lastLiveAt)), 30000);
+    return () => clearInterval(interval);
+  }, [lastLiveAt]);
+
   const refreshLive = useCallback(async () => {
     setLiveLoading(true);
+    setLiveError(null);
     try {
       const r = await fetch('/api/investments/portfolio?live=1', { cache: 'no-store' });
-      if (!r.ok) return;
+      if (!r.ok) {
+        const detail = await r.json().catch(() => ({}));
+        throw new Error(detail.error || 'No se pudo actualizar');
+      }
       const data = (await r.json()) as PortfolioSummaryPayload;
       setPortfolio(data);
       setLastLiveAt(new Date());
-    } catch {
-      /* ignore */
+    } catch (err) {
+      setLiveError(err instanceof Error ? err.message : 'No se pudo actualizar');
     } finally {
       setLiveLoading(false);
     }
@@ -67,25 +93,30 @@ export default function InvestmentsWorkspace({
         transition={maybeReduceTransition(shouldReduceMotion, motionTransition.smooth)}
         className="zx-panel p-4 md:p-5"
       >
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <AddInvestmentPanel investmentAccounts={investmentAccounts} onCreated={onPortfolioChanged} />
-          <div className="flex flex-col items-stretch sm:items-end gap-2 text-xs text-muted-foreground sm:text-right tabular-nums">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex-1 min-w-0">
+            <AddInvestmentPanel investmentAccounts={investmentAccounts} onCreated={onPortfolioChanged} />
+          </div>
+          <div className="flex flex-col items-stretch sm:items-end gap-2 sm:text-right">
             <button
               type="button"
               onClick={() => void refreshLive()}
               disabled={liveLoading}
-              className="rounded-control border border-border bg-surface px-3 py-2 text-sm font-medium text-foreground hover:bg-surface-soft disabled:opacity-50 transition-colors"
+              className="btn btn-secondary inline-flex items-center justify-center gap-1.5 text-sm disabled:opacity-50"
             >
-              {liveLoading ? 'Actualizando...' : 'Actualizar cotizaciones'}
+              {liveLoading ? (
+                <Loader2 size={14} aria-hidden className="animate-spin" />
+              ) : (
+                <RefreshCw size={14} aria-hidden />
+              )}
+              {liveLoading ? 'Actualizando…' : 'Actualizar cotizaciones'}
             </button>
-            {lastLiveAt ? (
-              <span>
-                Ultima actualizacion en vivo:{' '}
-                {lastLiveAt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            ) : (
-              <span>
-                Los datos iniciales vienen del servidor; toca el boton para forzar cotizaciones recientes.
+            <span className="text-xs text-muted-foreground tabular-nums">
+              Última actualización: <span className="font-medium text-foreground">{relativeLabel}</span>
+            </span>
+            {liveError && (
+              <span className="text-xs text-amber-600 dark:text-amber-400">
+                {liveError} · usando último precio guardado
               </span>
             )}
           </div>
@@ -104,6 +135,9 @@ export default function InvestmentsWorkspace({
           blueArsPerUsd={portfolio.blueArsPerUsd}
           totalValueArsBlue={portfolio.totalCurrentValueArsBlue}
           totalPnLArsBlue={portfolio.totalPnLArsBlue}
+          totalDailyPnLUsd={portfolio.totalDailyPnLUsd}
+          totalDailyPnLPercent={portfolio.totalDailyPnLPercent}
+          totalDailyPnLArsBlue={portfolio.totalDailyPnLArsBlue}
           byType={portfolio.byType}
         />
       </motion.div>
@@ -122,7 +156,12 @@ export default function InvestmentsWorkspace({
         transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.14 })}
         className="space-y-3"
       >
-        <h2 className="text-lg font-semibold text-foreground">Posiciones</h2>
+        <div className="flex items-baseline justify-between gap-2">
+          <h2 className="text-lg font-semibold text-foreground">Posiciones</h2>
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {portfolio.investments.length} {portfolio.investments.length === 1 ? 'activo' : 'activos'}
+          </span>
+        </div>
         <InvestmentsList
           investments={portfolio.investments}
           onArchived={onPortfolioChanged}

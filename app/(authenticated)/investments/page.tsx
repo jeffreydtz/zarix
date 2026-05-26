@@ -2,20 +2,36 @@ import { redirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { getCachedUser } from '@/lib/auth/session';
-import { investmentsService } from '@/lib/services/investments';
+import { investmentsService, type PortfolioSummaryPayload } from '@/lib/services/investments';
 import { accountsService } from '@/lib/services/accounts';
 import InvestmentsWorkspace from '@/components/investments/InvestmentsWorkspace';
-import type { Account } from '@/types/database';
+import type { Account, Investment, InvestmentType } from '@/types/database';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 
 const MarketDataWidget = dynamic(() => import('@/components/investments/MarketDataWidget'), { ssr: false });
 const InvestmentAccountsList = dynamic(() => import('@/components/investments/InvestmentAccountsList'), { ssr: false });
 
-const INVESTMENT_LABELS: Record<string, string> = {
+const INVESTMENT_LABELS: Partial<Record<InvestmentType, string>> = {
   plazo_fijo: 'Plazo Fijo',
   caucion: 'Caución',
   bond: 'Bono',
+};
+
+const EMPTY_PORTFOLIO: PortfolioSummaryPayload = {
+  investments: [],
+  totalCurrentValue: 0,
+  totalPurchaseValue: 0,
+  totalPnL: 0,
+  totalPnLPercent: 0,
+  blueArsPerUsd: 1,
+  totalCurrentValueArsBlue: 0,
+  totalPurchaseValueArsBlue: 0,
+  totalPnLArsBlue: 0,
+  totalDailyPnLUsd: 0,
+  totalDailyPnLPercent: 0,
+  totalDailyPnLArsBlue: 0,
+  byType: [],
 };
 
 export default async function InvestmentsPage() {
@@ -35,20 +51,9 @@ export default async function InvestmentsPage() {
       investmentsService.getPortfolioSummary(user.id, {
         skipDailySnapshot: true,
         skipQuoteRefresh: true,
-      }).catch(() => ({
-        investments: [],
-        totalCurrentValue: 0,
-        totalPurchaseValue: 0,
-        totalPnL: 0,
-        totalPnLPercent: 0,
-        blueArsPerUsd: 1,
-        totalCurrentValueArsBlue: 0,
-        totalPurchaseValueArsBlue: 0,
-        totalPnLArsBlue: 0,
-        byType: [],
-      })),
-      accountsService.listInvestmentAccounts(user.id).catch(() => []),
-      (async () => {
+      }).catch((): PortfolioSummaryPayload => EMPTY_PORTFOLIO),
+      accountsService.listInvestmentAccounts(user.id).catch((): Account[] => []),
+      (async (): Promise<Investment[]> => {
         const { data } = await supabase
           .from('investments')
           .select('*')
@@ -58,8 +63,8 @@ export default async function InvestmentsPage() {
           .gte('maturity_date', now.toISOString().split('T')[0])
           .lte('maturity_date', in30Days.toISOString().split('T')[0])
           .order('maturity_date', { ascending: true });
-        return data || [];
-      })().catch(() => []),
+        return (data ?? []) as Investment[];
+      })().catch((): Investment[] => []),
     ]);
 
     return (
@@ -74,14 +79,14 @@ export default async function InvestmentsPage() {
       >
         {investmentAccounts.length > 0 ? (
           <MotionSection delay={0.04} intensity="hero">
-            <InvestmentAccountsList accounts={investmentAccounts as any} />
+            <InvestmentAccountsList accounts={investmentAccounts} />
           </MotionSection>
         ) : null}
 
         <MotionSection delay={0.09} intensity="normal">
           <InvestmentsWorkspace
             initialPortfolio={portfolio}
-            investmentAccounts={investmentAccounts as Account[]}
+            investmentAccounts={investmentAccounts}
           />
         </MotionSection>
 
@@ -98,7 +103,8 @@ export default async function InvestmentsPage() {
               </span>
             </h2>
             <div className="space-y-3">
-              {upcomingMaturities.map((inv: any) => {
+              {upcomingMaturities.map((inv) => {
+                if (!inv.maturity_date) return null;
                 const maturityDate = new Date(inv.maturity_date + 'T00:00:00');
                 const daysLeft = Math.round((maturityDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                 const totalValue = Number(inv.quantity) * Number(inv.purchase_price);
@@ -129,8 +135,8 @@ export default async function InvestmentsPage() {
                         {inv.name}{inv.ticker ? ` (${inv.ticker})` : ''}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        {INVESTMENT_LABELS[inv.type] || inv.type}
-                        {inv.interest_rate && ` · TNA ${Number(inv.interest_rate).toFixed(2)}%`}
+                        {INVESTMENT_LABELS[inv.type] ?? inv.type}
+                        {inv.interest_rate ? ` · TNA ${Number(inv.interest_rate).toFixed(2)}%` : ''}
                         {' · '}{maturityDate.toLocaleDateString('es-AR')}
                       </div>
                     </div>

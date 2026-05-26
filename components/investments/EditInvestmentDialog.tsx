@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import type { Account } from '@/types/database';
-import type { InvestmentType } from '@/types/database';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, TriangleAlert, X } from 'lucide-react';
+import type { Account, InvestmentType } from '@/types/database';
 import type { InvestmentWithPnL } from '@/lib/services/investments';
 
 const TYPE_OPTIONS: { value: InvestmentType; label: string }[] = [
@@ -19,13 +20,7 @@ const TYPE_OPTIONS: { value: InvestmentType; label: string }[] = [
   { value: 'other', label: 'Otro' },
 ];
 
-const NEEDS_TICKER = new Set<InvestmentType>([
-  'stock_arg',
-  'cedear',
-  'stock_us',
-  'etf',
-  'crypto',
-]);
+const NEEDS_TICKER = new Set<InvestmentType>(['stock_arg', 'cedear', 'stock_us', 'etf', 'crypto']);
 
 interface EditInvestmentDialogProps {
   investment: InvestmentWithPnL | null;
@@ -70,10 +65,7 @@ export default function EditInvestmentDialog({
     setError(null);
   }, [investment]);
 
-  const accountChoices = useMemo(
-    () => accounts.filter((a) => a.type === 'investment'),
-    [accounts]
-  );
+  const accountChoices = useMemo(() => accounts.filter((a) => a.type === 'investment'), [accounts]);
 
   if (!investment) return null;
 
@@ -117,8 +109,7 @@ export default function EditInvestmentDialog({
         body.maturityDate = maturityDate || null;
         body.interestRate = interestPatch;
       }
-      if (needsTicker) body.ticker = ticker.trim().toUpperCase();
-      else body.ticker = null;
+      body.ticker = needsTicker ? ticker.trim().toUpperCase() : null;
 
       const r = await fetch(`/api/investments/${investment.id}`, {
         method: 'PATCH',
@@ -137,164 +128,195 @@ export default function EditInvestmentDialog({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="edit-inv-title"
-    >
-      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 shadow-xl">
-        <div className="sticky top-0 flex items-center justify-between gap-2 px-5 py-3 border-b border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800">
-          <h2 id="edit-inv-title" className="text-lg font-bold text-slate-900 dark:text-slate-50">
-            Editar posición
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
-            aria-label="Cerrar"
-          >
-            ✕
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          <label className="block text-sm">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">Cuenta</span>
-            <select
-              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-              value={accountId}
-              onChange={(e) => setAccountId(e.target.value)}
-              required
-            >
-              {accountChoices.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name} ({a.currency})
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block text-sm">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">Tipo</span>
-            <select
-              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-              value={type}
-              onChange={(e) => setType(e.target.value as InvestmentType)}
-            >
-              {TYPE_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {needsTicker && (
-            <label className="block text-sm">
-              <span className="text-slate-600 dark:text-slate-400 font-medium">Ticker</span>
-              <input
-                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-mono uppercase"
-                value={ticker}
-                onChange={(e) => setTicker(e.target.value.toUpperCase())}
-              />
-            </label>
-          )}
-
-          <label className="block text-sm">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">Nombre</span>
-            <input
-              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </label>
-
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block text-sm">
-              <span className="text-slate-600 dark:text-slate-400 font-medium">Cantidad</span>
-              <input
-                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm tabular-nums"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="text-slate-600 dark:text-slate-400 font-medium">Precio compra</span>
-              <input
-                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm tabular-nums"
-                value={purchasePrice}
-                onChange={(e) => setPurchasePrice(e.target.value)}
-              />
-            </label>
-          </div>
-
-          <label className="block text-sm">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">Moneda compra</span>
-            <select
-              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-              value={purchaseCurrency}
-              onChange={(e) => setPurchaseCurrency(e.target.value)}
-            >
-              <option value="USD">USD</option>
-              <option value="ARS">ARS</option>
-            </select>
-          </label>
-
-          <label className="block text-sm">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">Fecha compra</span>
-            <input
-              type="date"
-              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-              value={purchaseDate}
-              onChange={(e) => setPurchaseDate(e.target.value)}
-              required
-            />
-          </label>
-
-          {(type === 'plazo_fijo' || type === 'caucion' || type === 'bond') && (
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block text-sm">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">Vencimiento</span>
-                <input
-                  type="date"
-                  className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-                  value={maturityDate}
-                  onChange={(e) => setMaturityDate(e.target.value)}
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">TNA %</span>
-                <input
-                  className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(e.target.value)}
-                />
-              </label>
-            </div>
-          )}
-
-          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-
-          <div className="flex gap-2 pt-2">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold py-2.5"
-            >
-              {submitting ? 'Guardando…' : 'Guardar'}
-            </button>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-inv-title"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          onClick={(e) => e.stopPropagation()}
+          className="zx-panel w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-t-2xl sm:rounded-card"
+        >
+          <div className="sticky top-0 z-10 flex items-center justify-between gap-2 px-5 py-3 border-b border-border bg-surface-elevated/95 backdrop-blur">
+            <h2 id="edit-inv-title" className="text-base font-semibold text-foreground">
+              Editar posición
+            </h2>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-200 dark:border-slate-600 text-sm font-medium px-4 py-2.5 text-slate-700 dark:text-slate-200"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-control text-muted-foreground hover:text-foreground hover:bg-surface-soft transition-colors"
+              aria-label="Cerrar"
             >
-              Cancelar
+              <X size={16} aria-hidden />
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+
+          <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            <label className="block text-sm">
+              <span className="text-muted-foreground font-medium">Cuenta</span>
+              <div className="relative mt-1">
+                <select
+                  className="input pr-9 appearance-none"
+                  value={accountId}
+                  onChange={(e) => setAccountId(e.target.value)}
+                  required
+                >
+                  {accountChoices.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name} ({a.currency})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  aria-hidden
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+              </div>
+            </label>
+
+            <label className="block text-sm">
+              <span className="text-muted-foreground font-medium">Tipo</span>
+              <div className="relative mt-1">
+                <select
+                  className="input pr-9 appearance-none"
+                  value={type}
+                  onChange={(e) => setType(e.target.value as InvestmentType)}
+                >
+                  {TYPE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  aria-hidden
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+              </div>
+            </label>
+
+            {needsTicker && (
+              <label className="block text-sm">
+                <span className="text-muted-foreground font-medium">Ticker</span>
+                <input
+                  className="input mt-1 font-mono uppercase tracking-tight"
+                  value={ticker}
+                  onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                />
+              </label>
+            )}
+
+            <label className="block text-sm">
+              <span className="text-muted-foreground font-medium">Nombre</span>
+              <input
+                className="input mt-1"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block text-sm">
+                <span className="text-muted-foreground font-medium">Cantidad</span>
+                <input
+                  className="input mt-1 tabular-nums"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="text-muted-foreground font-medium">Precio compra</span>
+                <input
+                  className="input mt-1 tabular-nums"
+                  value={purchasePrice}
+                  onChange={(e) => setPurchasePrice(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <label className="block text-sm">
+              <span className="text-muted-foreground font-medium">Moneda compra</span>
+              <div className="relative mt-1">
+                <select
+                  className="input pr-9 appearance-none"
+                  value={purchaseCurrency}
+                  onChange={(e) => setPurchaseCurrency(e.target.value)}
+                >
+                  <option value="USD">USD</option>
+                  <option value="ARS">ARS</option>
+                </select>
+                <ChevronDown
+                  size={16}
+                  aria-hidden
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+              </div>
+            </label>
+
+            <label className="block text-sm">
+              <span className="text-muted-foreground font-medium">Fecha compra</span>
+              <input
+                type="date"
+                className="input mt-1"
+                value={purchaseDate}
+                onChange={(e) => setPurchaseDate(e.target.value)}
+                required
+              />
+            </label>
+
+            {(type === 'plazo_fijo' || type === 'caucion' || type === 'bond') && (
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block text-sm">
+                  <span className="text-muted-foreground font-medium">Vencimiento</span>
+                  <input
+                    type="date"
+                    className="input mt-1"
+                    value={maturityDate}
+                    onChange={(e) => setMaturityDate(e.target.value)}
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-muted-foreground font-medium">TNA %</span>
+                  <input
+                    className="input mt-1 tabular-nums"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(e.target.value)}
+                  />
+                </label>
+              </div>
+            )}
+
+            {error && (
+              <p className="text-sm text-red-500 dark:text-red-400 inline-flex items-center gap-1.5">
+                <TriangleAlert size={14} aria-hidden />
+                {error}
+              </p>
+            )}
+
+            <div className="flex gap-2 pt-2">
+              <button type="submit" disabled={submitting} className="btn btn-primary flex-1 text-sm">
+                {submitting ? 'Guardando…' : 'Guardar cambios'}
+              </button>
+              <button type="button" onClick={onClose} className="btn btn-ghost text-sm">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

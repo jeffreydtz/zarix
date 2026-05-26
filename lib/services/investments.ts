@@ -1,11 +1,13 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
-import type { Investment } from '@/types/database';
+import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
+import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
+import type { Investment, InvestmentType } from '@/types/database';
 
 export interface CreateInvestmentInput {
   userId: string;
   accountId: string;
-  type: string;
+  type: InvestmentType;
   ticker?: string;
   name: string;
   quantity: number;
@@ -17,10 +19,9 @@ export interface CreateInvestmentInput {
   notes?: string;
 }
 
-/** Actualización parcial (PATCH); `null` en ticker / fechas / tasa limpia en BD. */
 export type PatchInvestmentInput = {
   accountId?: string;
-  type?: string;
+  type?: InvestmentType;
   ticker?: string | null;
   name?: string;
   quantity?: number;
@@ -43,6 +44,10 @@ export interface InvestmentWithPnL extends Investment {
   profit_loss_usd: number;
   profit_loss_percent_usd: number;
   market_value_ars_blue: number;
+  /** Variación diaria del activo en %. NULL si no se pudo obtener. */
+  daily_change_pct: number | null;
+  /** P&L del día en USD para esta posición. 0 si no hay variación. */
+  daily_pnl_usd: number;
 }
 
 export interface PortfolioSummaryPayload {
@@ -59,10 +64,17 @@ export interface PortfolioSummaryPayload {
   totalCurrentValueArsBlue: number;
   totalPurchaseValueArsBlue: number;
   totalPnLArsBlue: number;
+  /** P&L del día agregado del portafolio (USD). */
+  totalDailyPnLUsd: number;
+  /** P&L del día como % sobre valor de mercado actual. */
+  totalDailyPnLPercent: number;
+  /** P&L del día en ARS equivalente (blue). */
+  totalDailyPnLArsBlue: number;
   byType: Array<{ type: string; count: number; value: number; pnl: number }>;
 }
 
 const STABLE_AS_USD = new Set(['USD', 'USDT', 'USDC', 'DAI', 'BUSD']);
+const QUOTE_REFRESH_MS = 15 * 60 * 1000;
 
 function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
   if (blue.sell > 0) return blue.sell;
@@ -85,8 +97,8 @@ function usdToArsBlue(usd: number, arsPerUsd: number): number {
   return usd * rate;
 }
 
-function marketCurrencyForInvestment(inv: Investment): string {
-  switch (inv.type) {
+function marketCurrencyForInvestment(type: InvestmentType, purchaseCurrency: string | null): string {
+  switch (type) {
     case 'stock_arg':
     case 'cedear':
       return 'ARS';
@@ -95,8 +107,23 @@ function marketCurrencyForInvestment(inv: Investment): string {
     case 'crypto':
       return 'USD';
     default:
-      return (inv.purchase_currency || 'USD').toUpperCase();
+      return (purchaseCurrency || 'USD').toUpperCase();
   }
+}
+
+/** Yahoo symbol convention: stock_arg/cedear use `.BA`; resto va sin sufijo. */
+function yahooSymbolFor(type: InvestmentType, ticker: string): string {
+  const t = ticker.trim().toUpperCase();
+  if (type === 'stock_arg' || type === 'cedear') {
+    return t.endsWith('.BA') ? t : `${t}.BA`;
+  }
+  return t;
+}
+
+interface QuoteResult {
+  price: number;
+  changePct: number | null;
+  currency: string;
 }
 
 function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
@@ -109,9 +136,7 @@ function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
   if (updates.purchasePrice !== undefined) row.purchase_price = updates.purchasePrice;
   if (updates.purchaseCurrency !== undefined) row.purchase_currency = updates.purchaseCurrency;
   if (updates.purchaseDate !== undefined) row.purchase_date = updates.purchaseDate;
-  if (updates.maturityDate !== undefined) {
-    row.maturity_date = updates.maturityDate;
-  }
+  if (updates.maturityDate !== undefined) row.maturity_date = updates.maturityDate;
   if (updates.interestRate !== undefined) {
     row.interest_rate = updates.interestRate === null ? null : updates.interestRate;
   }
@@ -128,7 +153,7 @@ class InvestmentsService {
       .insert({
         user_id: input.userId,
         account_id: input.accountId,
-        type: input.type as any,
+        type: input.type,
         ticker: input.ticker || null,
         name: input.name,
         quantity: input.quantity,
@@ -146,6 +171,90 @@ class InvestmentsService {
     return data;
   }
 
+  /**
+   * Pide precios para todos los tickers en una sola tanda por proveedor (batch real en Yahoo).
+   * Devuelve un mapa `cacheKey -> QuoteResult` que se consume por posición.
+   */
+  private async refreshQuotesForInvestments(
+    investments: Investment[]
+  ): Promise<Map<string, QuoteResult>> {
+    const out = new Map<string, QuoteResult>();
+
+    const yahooSymbolToCacheKey = new Map<string, string>();
+    const cryptoSymbols = new Set<string>();
+
+    for (const inv of investments) {
+      if (!inv.ticker) continue;
+      const ticker = inv.ticker.trim().toUpperCase();
+      if (inv.type === 'crypto') {
+        cryptoSymbols.add(ticker);
+        continue;
+      }
+      if (
+        inv.type === 'stock_us' ||
+        inv.type === 'etf' ||
+        inv.type === 'stock_arg' ||
+        inv.type === 'cedear'
+      ) {
+        const ySym = yahooSymbolFor(inv.type, ticker);
+        const key = `${inv.type}:${ticker}`;
+        yahooSymbolToCacheKey.set(ySym, key);
+      }
+    }
+
+    const yahooSymbols = Array.from(yahooSymbolToCacheKey.keys());
+    if (yahooSymbols.length > 0) {
+      const yMap = await fetchYahooStockQuotesMap(yahooSymbols);
+      const missingForStooq: string[] = [];
+
+      for (const [ySym, cacheKey] of yahooSymbolToCacheKey.entries()) {
+        const q = yMap.get(ySym);
+        if (q && q.price > 0) {
+          out.set(cacheKey, {
+            price: q.price,
+            changePct: Number.isFinite(q.changePct) ? q.changePct : null,
+            currency: q.currency,
+          });
+        } else {
+          missingForStooq.push(ySym);
+        }
+      }
+
+      for (const ySym of missingForStooq) {
+        const cacheKey = yahooSymbolToCacheKey.get(ySym);
+        if (!cacheKey) continue;
+        if (ySym.endsWith('.BA')) continue;
+        try {
+          const stooq = await fetchStooqUsQuote(ySym);
+          if (stooq && stooq.price > 0) {
+            out.set(cacheKey, {
+              price: stooq.price,
+              changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
+              currency: stooq.currency,
+            });
+          }
+        } catch {
+          /* sin Stooq: nos quedamos con el último precio guardado */
+        }
+      }
+    }
+
+    for (const sym of cryptoSymbols) {
+      try {
+        const q = await cotizacionesService.getCryptoQuote(sym);
+        out.set(`crypto:${sym}`, {
+          price: q.priceUSD,
+          changePct: Number.isFinite(q.change24h) ? q.change24h : null,
+          currency: 'USD',
+        });
+      } catch {
+        /* sin crypto: nos quedamos con el último guardado */
+      }
+    }
+
+    return out;
+  }
+
   private async loadInvestmentsNormalized(
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipQuoteRefresh?: boolean }
@@ -155,7 +264,7 @@ class InvestmentsService {
     const dolar = await cotizacionesService.getDolarQuotes();
     const blueArsPerUsd = arsPerUsdFromDolar(dolar.blue);
 
-    const { data: investments, error } = await supabase
+    const { data: investmentsRaw, error } = await supabase
       .from('investments')
       .select('*')
       .eq('user_id', userId)
@@ -163,79 +272,85 @@ class InvestmentsService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+    const investments: Investment[] = investmentsRaw || [];
 
     const now = Date.now();
-    const quoteCache = new Map<string, number>();
-    const updates: Array<{ id: string; price: number }> = [];
+    const needsRefresh = !options?.skipQuoteRefresh;
+    const candidatesForRefresh = needsRefresh
+      ? investments.filter((inv) => {
+          if (!inv.ticker) return false;
+          if (options?.forceRefreshQuotes) return true;
+          const lastUpdatedAt = inv.current_price_updated_at
+            ? new Date(inv.current_price_updated_at).getTime()
+            : 0;
+          return !lastUpdatedAt || now - lastUpdatedAt > QUOTE_REFRESH_MS;
+        })
+      : [];
 
-    const investmentsWithPnL: InvestmentWithPnL[] = await Promise.all(
-      (investments || []).map(async (inv) => {
-        let currentPrice = Number(inv.current_price || inv.purchase_price);
-        const lastUpdatedAt = inv.current_price_updated_at ? new Date(inv.current_price_updated_at).getTime() : 0;
-        const isStale =
-          Boolean(options?.forceRefreshQuotes) ||
-          (!options?.skipQuoteRefresh && (!lastUpdatedAt || now - lastUpdatedAt > 15 * 60 * 1000));
+    const quoteMap = candidatesForRefresh.length
+      ? await this.refreshQuotesForInvestments(candidatesForRefresh)
+      : new Map<string, QuoteResult>();
 
-        if (inv.ticker && isStale) {
-          try {
-            const cacheKey = `${inv.type}:${inv.ticker.toUpperCase()}`;
-            if (quoteCache.has(cacheKey)) {
-              currentPrice = quoteCache.get(cacheKey)!;
-            } else if (inv.type === 'crypto') {
-              const quote = await cotizacionesService.getCryptoQuote(inv.ticker);
-              currentPrice = quote.priceUSD;
-              quoteCache.set(cacheKey, currentPrice);
-            } else if (inv.type === 'stock_us' || inv.type === 'etf') {
-              const quote = await cotizacionesService.getStockQuote(inv.ticker, 'us');
-              currentPrice = quote.price;
-              quoteCache.set(cacheKey, currentPrice);
-            } else if (inv.type === 'stock_arg') {
-              const quote = await cotizacionesService.getStockQuote(inv.ticker, 'arg');
-              currentPrice = quote.price;
-              quoteCache.set(cacheKey, currentPrice);
-            } else if (inv.type === 'cedear') {
-              const quote = await cotizacionesService.getStockQuote(inv.ticker, 'cedear');
-              currentPrice = quote.price;
-              quoteCache.set(cacheKey, currentPrice);
-            }
+    const updates: Array<{ id: string; price: number; changePct: number | null }> = [];
 
-            updates.push({ id: inv.id, price: currentPrice });
-          } catch (error) {
-            console.error(`Error updating price for ${inv.ticker}:`, error);
-          }
+    const investmentsWithPnL: InvestmentWithPnL[] = investments.map((inv) => {
+      let currentPrice = Number(inv.current_price ?? inv.purchase_price);
+      let dailyChangePct: number | null =
+        inv.current_price_change_pct == null ? null : Number(inv.current_price_change_pct);
+
+      if (inv.ticker) {
+        const cacheKey = `${inv.type}:${inv.ticker.trim().toUpperCase()}`;
+        const fresh = quoteMap.get(cacheKey);
+        if (fresh && fresh.price > 0) {
+          currentPrice = fresh.price;
+          dailyChangePct = fresh.changePct;
+          updates.push({ id: inv.id, price: fresh.price, changePct: fresh.changePct });
         }
+      }
 
-        const qty = Number(inv.quantity);
-        const purchaseUnit = Number(inv.purchase_price);
-        const purchaseCur = (inv.purchase_currency || 'USD').toUpperCase();
-        const marketCur = marketCurrencyForInvestment(inv);
+      const qty = Number(inv.quantity);
+      const purchaseUnit = Number(inv.purchase_price);
+      const purchaseCur = (inv.purchase_currency || 'USD').toUpperCase();
+      const marketCur = marketCurrencyForInvestment(inv.type, inv.purchase_currency);
 
-        const costNative = qty * purchaseUnit;
-        const marketNative = qty * currentPrice;
+      const costNative = qty * purchaseUnit;
+      const marketNative = qty * currentPrice;
 
-        const costUsd = amountToUsd(costNative, purchaseCur, blueArsPerUsd);
-        const marketUsd = amountToUsd(marketNative, marketCur, blueArsPerUsd);
-        const pnlUsd = marketUsd - costUsd;
-        const pnlPctUsd = costUsd > 0 ? (pnlUsd / costUsd) * 100 : 0;
+      const costUsd = amountToUsd(costNative, purchaseCur, blueArsPerUsd);
+      const marketUsd = amountToUsd(marketNative, marketCur, blueArsPerUsd);
+      const pnlUsd = marketUsd - costUsd;
+      const pnlPctUsd = costUsd > 0 ? (pnlUsd / costUsd) * 100 : 0;
 
-        return {
-          ...inv,
-          quantity: qty,
-          purchase_price: purchaseUnit,
-          current_price: currentPrice,
-          interest_rate: inv.interest_rate ? Number(inv.interest_rate) : null,
-          market_price_currency: marketCur,
-          cost_basis_usd: costUsd,
-          market_value_usd: marketUsd,
-          profit_loss_usd: pnlUsd,
-          profit_loss_percent_usd: pnlPctUsd,
-          market_value_ars_blue: usdToArsBlue(marketUsd, blueArsPerUsd),
-          current_value: marketUsd,
-          profit_loss: pnlUsd,
-          profit_loss_percent: pnlPctUsd,
-        };
-      })
-    );
+      let dailyPnlUsd = 0;
+      if (dailyChangePct != null && Number.isFinite(dailyChangePct)) {
+        const denom = 100 + dailyChangePct;
+        if (denom !== 0) {
+          const previousMarketNative = marketNative * (100 / denom);
+          const previousMarketUsd = amountToUsd(previousMarketNative, marketCur, blueArsPerUsd);
+          dailyPnlUsd = marketUsd - previousMarketUsd;
+        }
+      }
+
+      return {
+        ...inv,
+        quantity: qty,
+        purchase_price: purchaseUnit,
+        current_price: currentPrice,
+        current_price_change_pct: dailyChangePct,
+        interest_rate: inv.interest_rate ? Number(inv.interest_rate) : null,
+        market_price_currency: marketCur,
+        cost_basis_usd: costUsd,
+        market_value_usd: marketUsd,
+        profit_loss_usd: pnlUsd,
+        profit_loss_percent_usd: pnlPctUsd,
+        market_value_ars_blue: usdToArsBlue(marketUsd, blueArsPerUsd),
+        current_value: marketUsd,
+        profit_loss: pnlUsd,
+        profit_loss_percent: pnlPctUsd,
+        daily_change_pct: dailyChangePct,
+        daily_pnl_usd: dailyPnlUsd,
+      };
+    });
 
     if (updates.length > 0) {
       const nowIso = new Date().toISOString();
@@ -246,6 +361,7 @@ class InvestmentsService {
             .update({
               current_price: u.price,
               current_price_updated_at: nowIso,
+              current_price_change_pct: u.changePct,
             })
             .eq('id', u.id)
         )
@@ -338,9 +454,15 @@ class InvestmentsService {
     const totalPnL = totalCurrentValue - totalPurchaseValue;
     const totalPnLPercent = totalPurchaseValue > 0 ? (totalPnL / totalPurchaseValue) * 100 : 0;
 
+    const totalDailyPnLUsd = investments.reduce((sum, inv) => sum + (inv.daily_pnl_usd || 0), 0);
+    const previousValueUsd = totalCurrentValue - totalDailyPnLUsd;
+    const totalDailyPnLPercent =
+      previousValueUsd > 0 ? (totalDailyPnLUsd / previousValueUsd) * 100 : 0;
+
     const totalCurrentValueArsBlue = usdToArsBlue(totalCurrentValue, blueArsPerUsd);
     const totalPurchaseValueArsBlue = usdToArsBlue(totalPurchaseValue, blueArsPerUsd);
     const totalPnLArsBlue = usdToArsBlue(totalPnL, blueArsPerUsd);
+    const totalDailyPnLArsBlue = usdToArsBlue(totalDailyPnLUsd, blueArsPerUsd);
 
     const byType = investments.reduce((acc, inv) => {
       if (!acc[inv.type]) {
@@ -368,6 +490,9 @@ class InvestmentsService {
       totalCurrentValueArsBlue,
       totalPurchaseValueArsBlue,
       totalPnLArsBlue,
+      totalDailyPnLUsd,
+      totalDailyPnLPercent,
+      totalDailyPnLArsBlue,
       byType: Object.values(byType),
       investments,
     };

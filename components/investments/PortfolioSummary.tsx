@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowDownRight, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface PortfolioSummaryProps {
@@ -10,6 +11,9 @@ interface PortfolioSummaryProps {
   blueArsPerUsd: number;
   totalValueArsBlue: number;
   totalPnLArsBlue: number;
+  totalDailyPnLUsd: number;
+  totalDailyPnLPercent: number;
+  totalDailyPnLArsBlue: number;
   byType: Array<{
     type: string;
     count: number;
@@ -32,6 +36,28 @@ const TYPE_LABELS: Record<string, string> = {
   other: 'Otros',
 };
 
+function formatUsd(value: number, fractionDigits = 2): string {
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  });
+}
+
+function formatArs(value: number): string {
+  return value.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+}
+
+function formatPct(value: number, fractionDigits = 2): string {
+  const sign = value >= 0 ? '+' : '';
+  return `${sign}${value.toFixed(fractionDigits)}%`;
+}
+
+function pnlClass(value: number): string {
+  if (value > 0) return 'text-emerald-500 dark:text-emerald-400';
+  if (value < 0) return 'text-red-500 dark:text-red-400';
+  return 'text-muted-foreground';
+}
+
 export default function PortfolioSummary({
   totalValue,
   totalPnL,
@@ -39,9 +65,14 @@ export default function PortfolioSummary({
   blueArsPerUsd,
   totalValueArsBlue,
   totalPnLArsBlue,
+  totalDailyPnLUsd,
+  totalDailyPnLPercent,
+  totalDailyPnLArsBlue,
   byType,
 }: PortfolioSummaryProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
+  const dayPositive = totalDailyPnLUsd >= 0;
+  const totalPositive = totalPnL >= 0;
 
   return (
     <div className="space-y-4">
@@ -49,43 +80,65 @@ export default function PortfolioSummary({
         initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={maybeReduceTransition(shouldReduceMotion, motionTransition.smooth)}
-        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm card-spotlight"
+        className="card card-spotlight"
       >
-        <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
-          Valor total del portafolio
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-          Totales en <strong>USD equivalente</strong>: el peso se convierte con dólar blue (venta{' '}
-          {blueArsPerUsd > 0 ? `~$${blueArsPerUsd.toLocaleString('es-AR', { maximumFractionDigits: 0 })}` : '—'} ARS
-          por USD) para unificar con acciones USA y crypto.
-        </p>
-        <div className="text-3xl font-bold text-slate-900 dark:text-slate-50 tabular-nums mb-1">
-          USD {totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-        </div>
-        <div className="text-sm text-slate-600 dark:text-slate-300 tabular-nums mb-3">
-          ≈ ARS{' '}
-          {totalValueArsBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })} (referencia blue)
-        </div>
-        <div
-          className={`text-lg font-medium tabular-nums ${
-            totalPnL >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
-          }`}
-        >
-          {totalPnL >= 0 ? '+' : ''}
-          USD {totalPnL.toLocaleString('en-US', { minimumFractionDigits: 2 })}{' '}
-          <span className="text-slate-500 dark:text-slate-400 font-normal">
-            ({totalPnLPercent.toFixed(2)}%)
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-wider font-medium text-muted-foreground">
+              Portafolio
+            </div>
+            <h2 className="text-base font-semibold text-foreground mt-1">Valor total</h2>
+          </div>
+          <span className="badge badge-primary">
+            blue ~${blueArsPerUsd > 0 ? formatArs(blueArsPerUsd) : '—'} / USD
           </span>
         </div>
-        <div className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-          PnL en ARS blue: {totalPnL >= 0 ? '+' : ''}
-          {totalPnLArsBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 sm:gap-6 items-end">
+          <div>
+            <div className="text-3xl sm:text-4xl font-bold text-foreground tabular-nums leading-tight">
+              USD {formatUsd(totalValue)}
+            </div>
+            <div className="text-sm text-muted-foreground tabular-nums mt-1">
+              ≈ ARS {formatArs(totalValueArsBlue)} <span className="opacity-70">(blue)</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1 sm:items-end">
+            <div className={`flex items-center gap-1.5 text-sm font-semibold tabular-nums ${pnlClass(totalDailyPnLUsd)}`}>
+              {dayPositive ? (
+                <ArrowUpRight size={16} aria-hidden />
+              ) : (
+                <ArrowDownRight size={16} aria-hidden />
+              )}
+              <span>
+                {dayPositive ? '+' : ''}USD {formatUsd(totalDailyPnLUsd)}
+              </span>
+              <span className="text-xs font-medium opacity-80">
+                ({formatPct(totalDailyPnLPercent)})
+              </span>
+            </div>
+            <div className="text-[11px] text-muted-foreground uppercase tracking-wide">P&L del día</div>
+            <div className="text-[11px] text-muted-foreground tabular-nums">
+              ARS {dayPositive ? '+' : ''}
+              {formatArs(totalDailyPnLArsBlue)}
+            </div>
+          </div>
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <span className="story-chip">Base de lectura: USD equivalente</span>
-          <span className={`story-chip ${totalPnL >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-500 dark:text-red-300'}`}>
-            Estado: {totalPnL >= 0 ? 'tracción positiva' : 'drawdown activo'}
-          </span>
+
+        <div className="mt-4 pt-3 border-t border-border/70 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <TrendingUp size={14} aria-hidden className="opacity-70" />
+            <span>P&L total desde la compra</span>
+          </div>
+          <div className={`text-sm font-semibold tabular-nums ${pnlClass(totalPnL)}`}>
+            {totalPositive ? '+' : ''}USD {formatUsd(totalPnL)}
+            <span className="ml-1 text-xs opacity-80">({formatPct(totalPnLPercent)})</span>
+            <span className="ml-2 text-xs font-normal text-muted-foreground">
+              · ARS {totalPositive ? '+' : ''}
+              {formatArs(totalPnLArsBlue)}
+            </span>
+          </div>
         </div>
       </motion.div>
 
@@ -94,28 +147,27 @@ export default function PortfolioSummary({
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.06 })}
-          className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm"
+          className="card"
         >
-          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">
-            Distribución por tipo
-          </h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">Distribución por tipo</h3>
           <div className="space-y-4">
             {byType.map((item) => {
               const percent = totalValue > 0 ? (item.value / totalValue) * 100 : 0;
+              const pnlSign = item.pnl >= 0 ? '+' : '';
               return (
                 <div key={item.type}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm font-medium text-foreground">
                       {TYPE_LABELS[item.type] || item.type}
                     </span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400 tabular-nums">
+                    <span className="text-sm text-muted-foreground tabular-nums">
                       {percent.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="w-full bg-slate-100 dark:bg-slate-700/80 rounded-full h-2.5 overflow-hidden">
+                  <div className="w-full bg-surface-soft rounded-full h-2 overflow-hidden">
                     <motion.div
-                      className="bg-emerald-500 dark:bg-emerald-500 rounded-full transition-all min-w-0"
-                      style={{ width: `${Math.min(100, percent)}%`, height: '100%', transformOrigin: '0% 50%' }}
+                      className="h-full bg-primary rounded-full"
+                      style={{ width: `${Math.min(100, percent)}%`, transformOrigin: '0% 50%' }}
                       initial={{ scaleX: shouldReduceMotion ? Math.min(100, percent) / 100 : 0 }}
                       animate={{ scaleX: Math.min(100, percent) / 100 }}
                       transition={maybeReduceTransition(shouldReduceMotion, {
@@ -125,13 +177,19 @@ export default function PortfolioSummary({
                       })}
                     />
                   </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      {item.count} posición{item.count !== 1 ? 'es' : ''}
+                  <div className="flex items-center justify-between mt-1.5">
+                    <span className="text-xs text-muted-foreground">
+                      {item.count} {item.count === 1 ? 'posición' : 'posiciones'}
                     </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-                      USD {item.value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                    </span>
+                    <div className="flex items-center gap-2 text-xs tabular-nums">
+                      <span className="text-muted-foreground">
+                        USD {item.value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                      </span>
+                      <span className={pnlClass(item.pnl)}>
+                        {pnlSign}
+                        {item.pnl.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );

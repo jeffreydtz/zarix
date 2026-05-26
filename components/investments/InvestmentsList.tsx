@@ -1,7 +1,25 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Bitcoin,
+  Building2,
+  CandlestickChart,
+  Coins,
+  Globe2,
+  LineChart,
+  Pencil,
+  PiggyBank,
+  Receipt,
+  Trash2,
+  Wallet,
+} from 'lucide-react';
+import type { InvestmentType } from '@/types/database';
 import type { InvestmentWithPnL } from '@/lib/services/investments';
+import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface InvestmentsListProps {
   investments: InvestmentWithPnL[];
@@ -9,21 +27,51 @@ interface InvestmentsListProps {
   onEdit?: (inv: InvestmentWithPnL) => void;
 }
 
-const TYPE_ICONS: Record<string, string> = {
-  stock_arg: '📊',
-  cedear: '📈',
-  stock_us: '🇺🇸',
-  etf: '📦',
-  crypto: '₿',
-  plazo_fijo: '🏦',
-  fci: '💼',
-  bond: '📜',
-  caucion: '🤝',
-  real_estate: '🏠',
-  other: '💰',
+const TYPE_ICON: Record<InvestmentType, typeof CandlestickChart> = {
+  stock_arg: CandlestickChart,
+  cedear: LineChart,
+  stock_us: Globe2,
+  etf: LineChart,
+  crypto: Bitcoin,
+  plazo_fijo: PiggyBank,
+  fci: Wallet,
+  bond: Receipt,
+  caucion: Coins,
+  real_estate: Building2,
+  other: Wallet,
 };
 
+function relativeFromNow(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const ts = new Date(iso).getTime();
+  if (!Number.isFinite(ts)) return null;
+  const diffMs = Date.now() - ts;
+  if (diffMs < 0) return 'recién';
+  const min = Math.floor(diffMs / 60000);
+  if (min < 1) return 'recién';
+  if (min < 60) return `hace ${min} min`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `hace ${hr} h`;
+  const day = Math.floor(hr / 24);
+  if (day < 7) return `hace ${day} d`;
+  return new Date(iso).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
+}
+
+function formatPrice(value: number, currency: string): string {
+  if (currency === 'ARS') {
+    return `ARS ${value.toLocaleString('es-AR', { maximumFractionDigits: 2 })}`;
+  }
+  return `${currency} ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function pnlColor(value: number): string {
+  if (value > 0) return 'text-emerald-500 dark:text-emerald-400';
+  if (value < 0) return 'text-red-500 dark:text-red-400';
+  return 'text-muted-foreground';
+}
+
 export default function InvestmentsList({ investments, onArchived, onEdit }: InvestmentsListProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [archivingId, setArchivingId] = useState<string | null>(null);
 
   const archive = async (id: string) => {
@@ -42,111 +90,134 @@ export default function InvestmentsList({ investments, onArchived, onEdit }: Inv
       setArchivingId(null);
     }
   };
+
   if (investments.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-center py-12 px-4 shadow-sm">
-        <p className="text-slate-600 dark:text-slate-300 mb-2">No tenés inversiones registradas</p>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Registrá acciones, crypto, plazos fijos y más para ver el valor y la ganancia aquí.
+      <div className="card text-center py-12 px-4">
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <LineChart size={22} aria-hidden />
+        </div>
+        <p className="text-foreground font-medium mb-1">No tenés posiciones cargadas</p>
+        <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+          Agregá acciones, CEDEARs, crypto o plazos fijos para ver valor de mercado y P&L acá.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      {investments.map((inv) => (
-        <div
-          key={inv.id}
-          className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="text-3xl">{TYPE_ICONS[inv.type] || '💰'}</div>
+    <div className="space-y-2.5">
+      {investments.map((inv, idx) => {
+        const Icon = TYPE_ICON[inv.type] ?? Wallet;
+        const dayPct = inv.daily_change_pct;
+        const dayKnown = dayPct != null && Number.isFinite(dayPct);
+        const dayPositive = dayKnown && dayPct >= 0;
+        const dayClass = dayKnown ? pnlColor(dayPct) : 'text-muted-foreground';
+        const totalPositive = inv.profit_loss_usd >= 0;
 
-              <div>
-                <div className="font-semibold text-lg text-slate-900 dark:text-slate-50">
-                  {inv.ticker ? `${inv.ticker} — ${inv.name}` : inv.name}
+        return (
+          <motion.div
+            key={inv.id}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={maybeReduceTransition(shouldReduceMotion, {
+              ...motionTransition.smooth,
+              delay: idx * 0.03,
+            })}
+            className="card hover:border-primary/30 transition-colors"
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex items-start gap-3 min-w-0 flex-1">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
+                  <Icon size={20} aria-hidden />
                 </div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">
-                  {inv.quantity.toLocaleString('es-AR', { maximumFractionDigits: 8 })} unidades
-                  • Compra: {inv.purchase_currency}{' '}
-                  {inv.purchase_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    {inv.ticker ? (
+                      <span className="font-semibold text-foreground font-mono tracking-tight">{inv.ticker}</span>
+                    ) : null}
+                    <span className="text-sm text-muted-foreground truncate">{inv.name}</span>
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground tabular-nums">
+                    {inv.quantity.toLocaleString('es-AR', { maximumFractionDigits: 8 })} unidades
+                    {' · '}
+                    Compra: {inv.purchase_currency} {inv.purchase_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </div>
+                  {inv.current_price ? (
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                      <span className="text-muted-foreground tabular-nums">
+                        Precio: {formatPrice(Number(inv.current_price), inv.market_price_currency)}
+                      </span>
+                      <span className={`inline-flex items-center gap-0.5 font-medium tabular-nums ${dayClass}`}>
+                        {dayKnown ? (
+                          <>
+                            {dayPositive ? (
+                              <ArrowUpRight size={12} aria-hidden />
+                            ) : (
+                              <ArrowDownRight size={12} aria-hidden />
+                            )}
+                            {Math.abs(dayPct).toFixed(2)}% hoy
+                          </>
+                        ) : (
+                          <span className="opacity-75">variación N/D</span>
+                        )}
+                      </span>
+                      {inv.current_price_updated_at ? (
+                        <span className="text-muted-foreground/80">
+                          · {relativeFromNow(inv.current_price_updated_at)}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
-                <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                  {new Date(inv.purchase_date).toLocaleDateString('es-AR', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
+              </div>
+
+              <div className="flex flex-row sm:flex-col items-end sm:items-end justify-between gap-2 sm:min-w-[180px] sm:text-right">
+                <div className="flex flex-col items-end gap-0.5">
+                  <div className="text-base sm:text-lg font-bold text-foreground tabular-nums">
+                    USD {inv.market_value_usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
+                  <div className="text-xs text-muted-foreground tabular-nums">
+                    ≈ ARS {inv.market_value_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                  </div>
+                  <div className={`text-sm font-semibold tabular-nums ${pnlColor(inv.profit_loss_usd)}`}>
+                    {totalPositive ? '+' : ''}USD {inv.profit_loss_usd.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    <span className="ml-1 text-xs opacity-80">
+                      ({totalPositive ? '+' : ''}{inv.profit_loss_percent_usd.toFixed(2)}%)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  {onEdit && (
+                    <button
+                      type="button"
+                      onClick={() => onEdit(inv)}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-control text-muted-foreground hover:text-foreground hover:bg-surface-soft transition-colors"
+                      aria-label="Editar posición"
+                      title="Editar"
+                    >
+                      <Pencil size={14} aria-hidden />
+                    </button>
+                  )}
+                  {onArchived && (
+                    <button
+                      type="button"
+                      onClick={() => void archive(inv.id)}
+                      disabled={archivingId === inv.id}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-control text-muted-foreground hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 transition-colors"
+                      aria-label="Archivar posición"
+                      title="Archivar"
+                    >
+                      <Trash2 size={14} aria-hidden />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
-
-            <div className="text-right shrink-0 flex flex-col items-end gap-2">
-              <div className="flex gap-2">
-                {onEdit && (
-                  <button
-                    type="button"
-                    onClick={() => onEdit(inv)}
-                    className="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
-                  >
-                    Editar
-                  </button>
-                )}
-                {onArchived && (
-                  <button
-                    type="button"
-                    onClick={() => void archive(inv.id)}
-                    disabled={archivingId === inv.id}
-                    className="text-xs font-medium text-slate-400 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
-                  >
-                    {archivingId === inv.id ? '…' : 'Archivar'}
-                  </button>
-                )}
-              </div>
-              <div className="text-xl font-bold text-slate-900 dark:text-slate-50 tabular-nums">
-                USD {inv.market_value_usd.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-                ≈ ARS{' '}
-                {inv.market_value_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })} blue
-              </div>
-              <div
-                className={`text-sm font-medium tabular-nums ${
-                  inv.profit_loss_usd >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
-                }`}
-              >
-                {inv.profit_loss_usd >= 0 ? '+' : ''}
-                USD {inv.profit_loss_usd.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </div>
-              <div
-                className={`text-xs tabular-nums ${
-                  inv.profit_loss_percent_usd >= 0
-                    ? 'text-emerald-600 dark:text-emerald-400'
-                    : 'text-red-600 dark:text-red-400'
-                }`}
-              >
-                {inv.profit_loss_percent_usd >= 0 ? '+' : ''}
-                {inv.profit_loss_percent_usd.toFixed(2)}%
-              </div>
-            </div>
-          </div>
-
-          {inv.current_price && (
-            <div className="mt-3 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700 pt-3">
-              Precio actual ({inv.market_price_currency}):{' '}
-              {inv.current_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              {inv.current_price_updated_at && (
-                <span className="ml-2">
-                  (actualizado{' '}
-                  {new Date(inv.current_price_updated_at).toLocaleDateString('es-AR')})
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      ))}
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

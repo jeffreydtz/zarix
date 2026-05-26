@@ -260,6 +260,7 @@ CREATE TABLE investments (
   purchase_date DATE NOT NULL,
   current_price NUMERIC(20, 8),
   current_price_updated_at TIMESTAMPTZ,
+  current_price_change_pct NUMERIC(10, 4),
   maturity_date DATE,
   interest_rate NUMERIC(8, 4),
   notes TEXT,
