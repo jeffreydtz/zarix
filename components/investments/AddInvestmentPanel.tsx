@@ -27,7 +27,7 @@ const TYPE_OPTIONS: { value: InvestmentType; label: string }[] = [
   { value: 'other', label: 'Otro' },
 ];
 
-const NEEDS_TICKER = new Set<InvestmentType>(['stock_arg', 'cedear', 'stock_us', 'etf', 'crypto']);
+const NEEDS_TICKER = new Set<InvestmentType>(['stock_arg', 'cedear', 'stock_us', 'etf', 'crypto', 'bond']);
 
 interface QuoteState {
   status: 'idle' | 'loading' | 'ok' | 'warn' | 'error';
@@ -215,10 +215,12 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
       ({
         stock_us: 'En Yahoo Finance buscá la empresa: el ticker suele ser 3–5 letras (AAPL, MSFT).',
         etf: 'Igual que acciones USA: SPY, VOO, QQQ.',
-        stock_arg: 'Las acciones locales en Yahoo llevan sufijo .BA (ej. GGAL.BA). Acá guardamos solo GGAL.',
+        stock_arg: 'Acciones panel líder Merval: GGAL, YPFD, PAMP, BMA, ALUA, TGSU2. Sin sufijo .BA.',
         cedear:
-          'CEDEARs cotizan en pesos con sufijo .BA; el ticker base es el mismo estilo (ej. AAPL.BA → podés guardar AAPL si tu broker muestra el CEDEAR con ese código).',
-        crypto: 'Usá el símbolo corto: BTC, ETH, USDT. CoinGecko resuelve varios IDs comunes.',
+          'CEDEARs por BYMA: AAPL, MSFT, NVDA, MELI, GLOB, KO. Búsqueda incluye catálogo curado de los clásicos.',
+        crypto: 'Símbolo corto: BTC, ETH, USDT. CoinGecko resuelve los IDs comunes.',
+        bond:
+          'Bonos soberanos: AL30, GD30, AL35, GD35, AE38; CER: TX26, TX28. Búsqueda contra panel BYMA + clásicos. Vencimiento/TNA son opcionales.',
       }) as Partial<Record<InvestmentType, string>>,
     []
   );

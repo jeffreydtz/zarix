@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
+import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
 import type { InvestmentType } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
@@ -11,6 +12,7 @@ const QUOTE_TYPES: InvestmentType[] = [
   'stock_us',
   'etf',
   'crypto',
+  'bond',
 ];
 
 export async function GET(req: NextRequest) {
@@ -39,19 +41,54 @@ export async function GET(req: NextRequest) {
         price: q.priceUSD,
         currency: 'USD',
         changePct: q.change24h,
+        source: 'coingecko',
       });
     }
 
-    const market: 'us' | 'arg' | 'cedear' =
-      type === 'stock_arg' ? 'arg' : type === 'cedear' ? 'cedear' : 'us';
+    if (type === 'stock_arg' || type === 'cedear' || type === 'bond') {
+      try {
+        const arg = await loadArgentineQuotes();
+        const src =
+          type === 'stock_arg'
+            ? arg.byStock
+            : type === 'cedear'
+              ? arg.byCedear
+              : arg.byBond;
+        const hit = src.get(symbol.toUpperCase());
+        if (hit && hit.price > 0) {
+          return NextResponse.json({
+            ok: true,
+            symbol: hit.symbol,
+            price: hit.price,
+            currency: hit.currency,
+            changePct: hit.changePct,
+            source: 'data912',
+          });
+        }
+      } catch {
+        /* sigue a Yahoo */
+      }
 
-    const q = await cotizacionesService.getStockQuote(symbol, market);
+      const market: 'arg' | 'cedear' = type === 'stock_arg' ? 'arg' : 'cedear';
+      const q = await cotizacionesService.getStockQuote(symbol, market);
+      return NextResponse.json({
+        ok: true,
+        symbol: q.ticker,
+        price: q.price,
+        currency: q.currency,
+        changePct: q.change,
+        source: 'yahoo',
+      });
+    }
+
+    const q = await cotizacionesService.getStockQuote(symbol, 'us');
     return NextResponse.json({
       ok: true,
       symbol: q.ticker,
       price: q.price,
       currency: q.currency,
       changePct: q.change,
+      source: 'yahoo',
     });
   } catch (error: unknown) {
     console.error('investments quote error:', error);

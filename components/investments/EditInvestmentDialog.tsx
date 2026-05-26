@@ -20,7 +20,7 @@ const TYPE_OPTIONS: { value: InvestmentType; label: string }[] = [
   { value: 'other', label: 'Otro' },
 ];
 
-const NEEDS_TICKER = new Set<InvestmentType>(['stock_arg', 'cedear', 'stock_us', 'etf', 'crypto']);
+const NEEDS_TICKER = new Set<InvestmentType>(['stock_arg', 'cedear', 'stock_us', 'etf', 'crypto', 'bond']);
 
 interface EditInvestmentDialogProps {
   investment: InvestmentWithPnL | null;

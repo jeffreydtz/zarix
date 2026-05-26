@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import YahooFinance from 'yahoo-finance2';
 import { createClient } from '@/lib/supabase/server';
 import type { InvestmentType } from '@/types/database';
+import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
+import { catalogLookup, searchCatalog, type CatalogEntry } from '@/lib/market-data/argentine-catalog';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +15,7 @@ const TICKER_TYPES: InvestmentType[] = [
   'stock_us',
   'etf',
   'crypto',
+  'bond',
 ];
 
 interface SearchHit {
@@ -59,7 +62,7 @@ function mapQuotesForType(quotes: unknown[], investmentType: InvestmentType): Se
       continue;
     }
 
-    if (investmentType === 'stock_arg' || investmentType === 'cedear') {
+    if (investmentType === 'stock_arg' || investmentType === 'cedear' || investmentType === 'bond') {
       if (symbol.toUpperCase().endsWith('.BA') && (qt === 'EQUITY' || qt === 'ETF')) {
         const base = symbol.replace(/\.BA$/i, '').toUpperCase();
         out.push({ symbol: base, name: String(name), exchange });
@@ -84,6 +87,51 @@ function mapQuotesForType(quotes: unknown[], investmentType: InvestmentType): Se
   return dedupeBySymbol(out);
 }
 
+function catalogTypeFor(t: InvestmentType): CatalogEntry['type'] | null {
+  if (t === 'stock_arg' || t === 'cedear' || t === 'bond') return t;
+  return null;
+}
+
+async function searchArgentineUniverse(
+  type: 'stock_arg' | 'cedear' | 'bond',
+  query: string
+): Promise<SearchHit[]> {
+  const upper = query.trim().toUpperCase();
+  const hits: SearchHit[] = [];
+
+  // 1) Catálogo curado (instantáneo, sin red).
+  for (const entry of searchCatalog(type, upper, 20)) {
+    hits.push({ symbol: entry.symbol, name: entry.name });
+  }
+
+  // 2) data912: si está cargado, agrega símbolos que matchean prefix aunque no estén en catálogo.
+  try {
+    const universe = await loadArgentineQuotes();
+    const source =
+      type === 'stock_arg'
+        ? universe.byStock
+        : type === 'cedear'
+          ? universe.byCedear
+          : universe.byBond;
+
+    for (const [symbol] of source) {
+      if (!upper || symbol.startsWith(upper) || symbol.includes(upper)) {
+        const fromCatalog = catalogLookup(type, symbol);
+        hits.push({
+          symbol,
+          name: fromCatalog?.name || symbol,
+          exchange: 'BYMA',
+        });
+      }
+      if (hits.length >= 40) break;
+    }
+  } catch {
+    /* data912 caído — el catálogo ya cubrió */
+  }
+
+  return dedupeBySymbol(hits).slice(0, 20);
+}
+
 export async function GET(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -103,10 +151,38 @@ export async function GET(req: NextRequest) {
     }
 
     if (q.length < 1) {
+      if (type === 'stock_arg' || type === 'cedear' || type === 'bond') {
+        const seeded = searchCatalog(type, '', 12).map((e) => ({ symbol: e.symbol, name: e.name }));
+        return NextResponse.json({ results: seeded });
+      }
       return NextResponse.json({ results: [] as SearchHit[] });
     }
 
-    const region = type === 'stock_arg' || type === 'cedear' ? 'AR' : 'US';
+    const catType = catalogTypeFor(type);
+    if (catType) {
+      const argHits = await searchArgentineUniverse(catType, q);
+
+      // Yahoo backup en paralelo para no perder coverage.
+      let yahooHits: SearchHit[] = [];
+      try {
+        const result = await yahooFinance.search(q, {
+          quotesCount: 16,
+          newsCount: 0,
+          region: 'AR',
+          lang: 'es-AR',
+        });
+        const quotes = Array.isArray(result.quotes) ? result.quotes : [];
+        yahooHits = mapQuotesForType(quotes, type);
+      } catch {
+        /* Yahoo abajo: usamos lo que ya tenemos */
+      }
+
+      const merged = dedupeBySymbol([...argHits, ...yahooHits]).slice(0, 20);
+      return NextResponse.json({ results: merged });
+    }
+
+    // Resto: Yahoo como antes.
+    const region = 'US';
     const result = await yahooFinance.search(q, {
       quotesCount: 16,
       newsCount: 0,

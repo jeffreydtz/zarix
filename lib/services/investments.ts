@@ -2,6 +2,7 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
+import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
 import type { Investment, InvestmentSale, InvestmentType } from '@/types/database';
 
 export interface CreateInvestmentInput {
@@ -126,6 +127,9 @@ function marketCurrencyForInvestment(type: InvestmentType, purchaseCurrency: str
     case 'stock_arg':
     case 'cedear':
       return 'ARS';
+    case 'bond':
+      // Bonos: precio de mercado en ARS salvo que el usuario haya comprado en USD (D/C).
+      return (purchaseCurrency || 'ARS').toUpperCase();
     case 'stock_us':
     case 'etf':
     case 'crypto':
@@ -196,7 +200,8 @@ class InvestmentsService {
   }
 
   /**
-   * Pide precios para todos los tickers en una sola tanda por proveedor (batch real en Yahoo).
+   * Pide precios para todos los tickers en una sola tanda por proveedor (batch real).
+   * Estrategia: data912 (ARG/CEDEAR/bond) → Yahoo (US/ETF + fallback ARG) → Stooq (fallback US) → CoinGecko (crypto).
    * Devuelve un mapa `cacheKey -> QuoteResult` que se consume por posición.
    */
   private async refreshQuotesForInvestments(
@@ -204,6 +209,7 @@ class InvestmentsService {
   ): Promise<Map<string, QuoteResult>> {
     const out = new Map<string, QuoteResult>();
 
+    const argSymbols: Array<{ type: 'stock_arg' | 'cedear' | 'bond'; ticker: string; cacheKey: string }> = [];
     const yahooSymbolToCacheKey = new Map<string, string>();
     const cryptoSymbols = new Set<string>();
 
@@ -214,15 +220,44 @@ class InvestmentsService {
         cryptoSymbols.add(ticker);
         continue;
       }
-      if (
-        inv.type === 'stock_us' ||
-        inv.type === 'etf' ||
-        inv.type === 'stock_arg' ||
-        inv.type === 'cedear'
-      ) {
+      if (inv.type === 'stock_arg' || inv.type === 'cedear' || inv.type === 'bond') {
+        argSymbols.push({ type: inv.type, ticker, cacheKey: `${inv.type}:${ticker}` });
+        continue;
+      }
+      if (inv.type === 'stock_us' || inv.type === 'etf') {
         const ySym = yahooSymbolFor(inv.type, ticker);
         const key = `${inv.type}:${ticker}`;
         yahooSymbolToCacheKey.set(ySym, key);
+      }
+    }
+
+    if (argSymbols.length > 0) {
+      try {
+        const arg = await loadArgentineQuotes();
+        for (const { type, ticker, cacheKey } of argSymbols) {
+          const src =
+            type === 'stock_arg'
+              ? arg.byStock
+              : type === 'cedear'
+                ? arg.byCedear
+                : arg.byBond;
+          const hit = src.get(ticker);
+          if (hit && hit.price > 0) {
+            out.set(cacheKey, {
+              price: hit.price,
+              changePct: hit.changePct,
+              currency: hit.currency,
+            });
+          } else {
+            // No matcheó data912: derivar a Yahoo .BA como fallback.
+            yahooSymbolToCacheKey.set(yahooSymbolFor(type, ticker), cacheKey);
+          }
+        }
+      } catch {
+        // data912 abajo: todo a Yahoo fallback.
+        for (const { type, ticker, cacheKey } of argSymbols) {
+          yahooSymbolToCacheKey.set(yahooSymbolFor(type, ticker), cacheKey);
+        }
       }
     }
 
