@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Trash2 } from 'lucide-react';
 import type { AccountWithBalance } from '@/lib/services/accounts';
 import { getAccountDisplayName } from '@/lib/account-display-name';
+import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments-privacy';
 
 interface InvestmentAccountsListProps {
   accounts: AccountWithBalance[];
@@ -11,6 +13,7 @@ interface InvestmentAccountsListProps {
 
 export default function InvestmentAccountsList({ accounts }: InvestmentAccountsListProps) {
   const router = useRouter();
+  const { hidden } = useInvestmentsPrivacy();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (account: AccountWithBalance) => {
@@ -21,9 +24,7 @@ export default function InvestmentAccountsList({ accounts }: InvestmentAccountsL
 
     setDeletingId(account.id);
     try {
-      const response = await fetch(`/api/accounts/${account.id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(`/api/accounts/${account.id}`, { method: 'DELETE' });
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
@@ -31,57 +32,68 @@ export default function InvestmentAccountsList({ accounts }: InvestmentAccountsL
       }
 
       router.refresh();
-    } catch (error: any) {
-      alert(error?.message || 'Error al eliminar la cuenta de inversión');
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : 'Error al eliminar la cuenta de inversión');
     } finally {
       setDeletingId(null);
     }
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-      <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Cuentas de inversión</h2>
-      <div className="space-y-3">
-        {accounts.map((account) => (
-          <div
-            key={account.id}
-            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-100 dark:border-slate-600/50"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="text-2xl">{account.icon || '📈'}</span>
-              <div className="min-w-0">
-                <div className="font-semibold truncate text-slate-900 dark:text-slate-50">
-                  {getAccountDisplayName(account)}
-                </div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">{account.currency}</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <div className="text-lg font-bold text-slate-900 dark:text-slate-50 tabular-nums">
-                  ${account.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                </div>
-                {account.currency !== 'ARS' && Number(account.balance) !== 0 && (
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {account.balance_ars_blue != null && account.balance_ars_blue !== 0 ? (
-                      <>≈ ${account.balance_ars_blue.toLocaleString('es-AR')} ARS</>
-                    ) : (
-                      <>Sin cotización a ARS</>
-                    )}
+    <div className="card">
+      <h2 className="text-base font-semibold text-foreground mb-4">Cuentas de inversión</h2>
+      <div className="space-y-2.5">
+        {accounts.map((account) => {
+          const balanceText = hidden
+            ? `${PRIVACY_MASK}`
+            : `$${account.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+          const showArsEquivalent =
+            account.currency !== 'ARS' && Number(account.balance) !== 0;
+          const arsEquivalentText = hidden
+            ? `≈ ${PRIVACY_MASK} ARS`
+            : account.balance_ars_blue != null && account.balance_ars_blue !== 0
+              ? `≈ $${account.balance_ars_blue.toLocaleString('es-AR')} ARS`
+              : 'Sin cotización a ARS';
+
+          return (
+            <div
+              key={account.id}
+              className="flex items-center justify-between gap-3 p-3 rounded-control bg-surface-soft border border-border/60"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-2xl" aria-hidden>{account.icon || '📈'}</span>
+                <div className="min-w-0">
+                  <div className="font-semibold truncate text-foreground">
+                    {getAccountDisplayName(account)}
                   </div>
-                )}
+                  <div className="text-xs text-muted-foreground">{account.currency}</div>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => handleDelete(account)}
-                disabled={deletingId === account.id}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
-              >
-                {deletingId === account.id ? 'Eliminando...' : 'Eliminar'}
-              </button>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <div className="text-base sm:text-lg font-bold text-foreground tabular-nums">
+                    {balanceText}
+                  </div>
+                  {showArsEquivalent && (
+                    <div className="text-xs text-muted-foreground tabular-nums">
+                      {arsEquivalentText}
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(account)}
+                  disabled={deletingId === account.id}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-control text-muted-foreground hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 transition-colors"
+                  aria-label={`Archivar ${getAccountDisplayName(account)}`}
+                  title="Archivar cuenta"
+                >
+                  <Trash2 size={14} aria-hidden />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

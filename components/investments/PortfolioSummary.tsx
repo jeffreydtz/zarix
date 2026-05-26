@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDownRight, ArrowUpRight, HandCoins, TrendingUp } from 'lucide-react';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments-privacy';
 
 interface PortfolioSummaryProps {
   totalValue: number;
@@ -75,6 +76,7 @@ export default function PortfolioSummary({
   byType,
 }: PortfolioSummaryProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
+  const { hidden } = useInvestmentsPrivacy();
   const dayPositive = totalDailyPnLUsd >= 0;
   const totalPositive = totalPnL >= 0;
   const realizedPositive = totalRealizedPnLUsd >= 0;
@@ -103,10 +105,14 @@ export default function PortfolioSummary({
         <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 sm:gap-6 items-end">
           <div>
             <div className="text-3xl sm:text-4xl font-bold text-foreground tabular-nums leading-tight">
-              USD {formatUsd(totalValue)}
+              {hidden ? <span aria-label="Monto oculto">USD {PRIVACY_MASK}</span> : <>USD {formatUsd(totalValue)}</>}
             </div>
             <div className="text-sm text-muted-foreground tabular-nums mt-1">
-              ≈ ARS {formatArs(totalValueArsBlue)} <span className="opacity-70">(blue)</span>
+              {hidden ? (
+                <>≈ ARS {PRIVACY_MASK} <span className="opacity-70">(blue)</span></>
+              ) : (
+                <>≈ ARS {formatArs(totalValueArsBlue)} <span className="opacity-70">(blue)</span></>
+              )}
             </div>
           </div>
 

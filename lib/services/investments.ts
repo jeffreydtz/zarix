@@ -101,6 +101,14 @@ export interface PortfolioSummaryPayload {
 const STABLE_AS_USD = new Set(['USD', 'USDT', 'USDC', 'DAI', 'BUSD']);
 const QUOTE_REFRESH_MS = 15 * 60 * 1000;
 
+/**
+ * Bonos argentinos cotizan POR VN 100 (lámina nominal de 100). El valor de tenencia es
+ * `qty_VN × precio / 100`. Para acciones / CEDEARs / crypto el factor es 1 (precio por unidad).
+ */
+function priceFactorForType(type: InvestmentType): number {
+  return type === 'bond' ? 100 : 1;
+}
+
 function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
   if (blue.sell > 0) return blue.sell;
   if (blue.buy > 0) return blue.buy;
@@ -386,9 +394,10 @@ class InvestmentsService {
       const purchaseUnit = Number(inv.purchase_price);
       const purchaseCur = (inv.purchase_currency || 'USD').toUpperCase();
       const marketCur = marketCurrencyForInvestment(inv.type, inv.purchase_currency);
+      const priceFactor = priceFactorForType(inv.type);
 
-      const costNative = qty * purchaseUnit;
-      const marketNative = qty * currentPrice;
+      const costNative = (qty * purchaseUnit) / priceFactor;
+      const marketNative = (qty * currentPrice) / priceFactor;
 
       const costUsd = amountToUsd(costNative, purchaseCur, blueArsPerUsd);
       const marketUsd = amountToUsd(marketNative, marketCur, blueArsPerUsd);
@@ -536,7 +545,8 @@ class InvestmentsService {
     const arsPerUsd = arsPerUsdFromDolar(dolar.blue);
 
     const saleCurrency = (input.currency || invRow.purchase_currency || 'USD').toUpperCase();
-    const realizedNative = (input.price - purchasePrice) * input.quantity;
+    const priceFactor = priceFactorForType(invRow.type as InvestmentType);
+    const realizedNative = ((input.price - purchasePrice) * input.quantity) / priceFactor;
     const realizedUsd = amountToUsd(realizedNative, saleCurrency, arsPerUsd);
 
     const { data: saleInserted, error: saleErr } = await supabase

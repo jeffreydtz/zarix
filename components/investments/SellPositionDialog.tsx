@@ -44,7 +44,8 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
     const p = Number(price);
     if (!Number.isFinite(qty) || qty <= 0) return null;
     if (!Number.isFinite(p) || p <= 0) return null;
-    return (p - Number(investment.purchase_price)) * qty;
+    const factor = investment.type === 'bond' ? 100 : 1;
+    return ((p - Number(investment.purchase_price)) * qty) / factor;
   }, [quantity, price, investment]);
 
   const maxQty = investment?.quantity ?? 0;
@@ -149,7 +150,9 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
             <label className="block text-sm">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <span className="text-muted-foreground font-medium">Cantidad a vender</span>
+                <span className="text-muted-foreground font-medium">
+                  {investment.type === 'bond' ? 'Cantidad a vender (VN)' : 'Cantidad a vender'}
+                </span>
                 <div className="flex gap-1">
                   <button
                     type="button"
@@ -180,7 +183,9 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
 
             <div className="grid grid-cols-2 gap-3">
               <label className="block text-sm">
-                <span className="text-muted-foreground font-medium">Precio por unidad</span>
+                <span className="text-muted-foreground font-medium">
+                  {investment.type === 'bond' ? 'Precio venta (por VN 100)' : 'Precio por unidad'}
+                </span>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -191,6 +196,7 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
                 />
                 <span className="block text-[11px] text-muted-foreground mt-1">
                   Precio promedio: {Number(investment.purchase_price).toLocaleString('en-US', { maximumFractionDigits: 4 })}
+                  {investment.type === 'bond' ? ' / VN 100' : ''}
                 </span>
               </label>
 

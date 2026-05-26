@@ -12,6 +12,7 @@ import InvestmentsList from '@/components/investments/InvestmentsList';
 import AddInvestmentPanel from '@/components/investments/AddInvestmentPanel';
 import EditInvestmentDialog from '@/components/investments/EditInvestmentDialog';
 import SellPositionDialog from '@/components/investments/SellPositionDialog';
+import PrivacyToggle from '@/components/investments/PrivacyToggle';
 import ChartSkeleton from '@/components/ui/ChartSkeleton';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
@@ -100,19 +101,22 @@ export default function InvestmentsWorkspace({
             <AddInvestmentPanel investmentAccounts={investmentAccounts} onCreated={onPortfolioChanged} />
           </div>
           <div className="flex flex-col items-stretch sm:items-end gap-2 sm:text-right">
-            <button
-              type="button"
-              onClick={() => void refreshLive()}
-              disabled={liveLoading}
-              className="btn btn-secondary inline-flex items-center justify-center gap-1.5 text-sm disabled:opacity-50"
-            >
-              {liveLoading ? (
-                <Loader2 size={14} aria-hidden className="animate-spin" />
-              ) : (
-                <RefreshCw size={14} aria-hidden />
-              )}
-              {liveLoading ? 'Actualizando…' : 'Actualizar cotizaciones'}
-            </button>
+            <div className="flex items-center gap-2 justify-stretch sm:justify-end">
+              <PrivacyToggle />
+              <button
+                type="button"
+                onClick={() => void refreshLive()}
+                disabled={liveLoading}
+                className="btn btn-secondary inline-flex items-center justify-center gap-1.5 text-sm disabled:opacity-50"
+              >
+                {liveLoading ? (
+                  <Loader2 size={14} aria-hidden className="animate-spin" />
+                ) : (
+                  <RefreshCw size={14} aria-hidden />
+                )}
+                {liveLoading ? 'Actualizando…' : 'Actualizar cotizaciones'}
+              </button>
+            </div>
             <span className="text-xs text-muted-foreground tabular-nums">
               Última actualización: <span className="font-medium text-foreground">{relativeLabel}</span>
             </span>

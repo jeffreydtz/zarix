@@ -220,7 +220,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
           'CEDEARs por BYMA: AAPL, MSFT, NVDA, MELI, GLOB, KO. Búsqueda incluye catálogo curado de los clásicos.',
         crypto: 'Símbolo corto: BTC, ETH, USDT. CoinGecko resuelve los IDs comunes.',
         bond:
-          'Bonos soberanos: AL30, GD30, AL35, GD35, AE38; CER: TX26, TX28. Búsqueda contra panel BYMA + clásicos. Vencimiento/TNA son opcionales.',
+          'Bonos soberanos: AL30, GD30, AL35, AE38; CER: TX26, TX28. Variantes D=MEP, C=CCL (ej. AL30D). IMPORTANTE: cotizan por VN 100. Cargá Cantidad = VN total (ej. 1000) y Precio = precio cotizado (ej. 91980 ARS por VN 100). Vencimiento/TNA son opcionales.',
       }) as Partial<Record<InvestmentType, string>>,
     []
   );
@@ -440,7 +440,9 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
 
             <div className="grid sm:grid-cols-3 gap-3">
               <label className="block text-sm">
-                <span className="text-muted-foreground font-medium">Cantidad</span>
+                <span className="text-muted-foreground font-medium">
+                  {type === 'bond' ? 'Cantidad (VN total)' : 'Cantidad'}
+                </span>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -451,7 +453,9 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
                 />
               </label>
               <label className="block text-sm">
-                <span className="text-muted-foreground font-medium">Precio compra</span>
+                <span className="text-muted-foreground font-medium">
+                  {type === 'bond' ? 'Precio compra (por VN 100)' : 'Precio compra'}
+                </span>
                 <input
                   type="text"
                   inputMode="decimal"

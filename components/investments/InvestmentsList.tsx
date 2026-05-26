@@ -21,6 +21,7 @@ import {
 import type { InvestmentType } from '@/types/database';
 import type { InvestmentWithPnL } from '@/lib/services/investments';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments-privacy';
 
 interface InvestmentsListProps {
   investments: InvestmentWithPnL[];
@@ -74,6 +75,7 @@ function pnlColor(value: number): string {
 
 export default function InvestmentsList({ investments, onArchived, onEdit, onSell }: InvestmentsListProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
+  const { hidden } = useInvestmentsPrivacy();
   const [archivingId, setArchivingId] = useState<string | null>(null);
 
   const archive = async (id: string) => {
@@ -141,14 +143,21 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                     <span className="text-sm text-muted-foreground truncate">{inv.name}</span>
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground tabular-nums">
-                    {inv.quantity.toLocaleString('es-AR', { maximumFractionDigits: 8 })} unidades
+                    {inv.type === 'bond' ? 'VN ' : ''}
+                    {inv.quantity.toLocaleString('es-AR', { maximumFractionDigits: 8 })}
+                    {inv.type !== 'bond' ? ' unidades' : ''}
                     {' · '}
-                    Compra: {inv.purchase_currency} {inv.purchase_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    Compra: {inv.purchase_currency}{' '}
+                    {hidden
+                      ? PRIVACY_MASK
+                      : inv.purchase_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    {inv.type === 'bond' ? ' / VN 100' : ''}
                   </div>
                   {inv.current_price ? (
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
                       <span className="text-muted-foreground tabular-nums">
                         Precio: {formatPrice(Number(inv.current_price), inv.market_price_currency)}
+                        {inv.type === 'bond' ? <span className="opacity-70"> / VN 100</span> : null}
                       </span>
                       <span className={`inline-flex items-center gap-0.5 font-medium tabular-nums ${dayClass}`}>
                         {dayKnown ? (
@@ -189,10 +198,14 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
               <div className="flex flex-row sm:flex-col items-end sm:items-end justify-between gap-2 sm:min-w-[180px] sm:text-right">
                 <div className="flex flex-col items-end gap-0.5">
                   <div className="text-base sm:text-lg font-bold text-foreground tabular-nums">
-                    USD {inv.market_value_usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {hidden
+                      ? `USD ${PRIVACY_MASK}`
+                      : `USD ${inv.market_value_usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                   </div>
                   <div className="text-xs text-muted-foreground tabular-nums">
-                    ≈ ARS {inv.market_value_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                    {hidden
+                      ? `≈ ARS ${PRIVACY_MASK}`
+                      : `≈ ARS ${inv.market_value_ars_blue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`}
                   </div>
                   <div className={`text-sm font-semibold tabular-nums ${pnlColor(inv.profit_loss_usd)}`}>
                     {totalPositive ? '+' : ''}USD {inv.profit_loss_usd.toLocaleString('en-US', { minimumFractionDigits: 2 })}
