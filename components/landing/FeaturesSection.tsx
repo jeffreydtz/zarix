@@ -12,46 +12,70 @@ import {
 } from 'lucide-react';
 import FeatureMockup, { type FeatureItem } from '@/components/landing/FeatureMockup';
 
-const features: Array<
-  FeatureItem & {
-    description: string;
-    icon: LucideIcon;
-  }
-> = [
+interface FeatureCard extends FeatureItem {
+  description: string;
+  icon: LucideIcon;
+  /** Preview compacto para mobile (no aparece en desktop, evita stack de mockups grandes). */
+  preview: { label: string; value: string }[];
+}
+
+const features: FeatureCard[] = [
   {
     key: 'quotes',
-    title: 'Dolar blue, MEP y CCL nativos',
+    title: 'Dólar blue, MEP y CCL nativos',
     description:
-      'No un widget generico. Las cotizaciones son parte del core de Zarix. Tu patrimonio siempre expresado al tipo de cambio real.',
+      'No es un widget genérico. Las cotizaciones son parte del core de Zarix y tu patrimonio siempre se expresa al tipo de cambio real.',
     icon: RefreshCw,
+    preview: [
+      { label: 'Blue', value: '$1.085' },
+      { label: 'MEP', value: '$1.071' },
+      { label: 'CCL', value: '$1.092' },
+    ],
   },
   {
     key: 'portfolio',
-    title: 'Tu patrimonio en ARS y USD simultaneo',
+    title: 'Tu patrimonio en ARS y USD simultáneo',
     description:
-      'Ve cuanto tenes en pesos y cuanto en dolares al mismo tiempo. Distribucion por cuenta, por activo, por categoria.',
+      'Cuánto tenés en pesos y cuánto en dólares al mismo tiempo. Distribución por cuenta, por activo y por categoría.',
     icon: PieChart,
+    preview: [
+      { label: 'ARS', value: '$2.847.320' },
+      { label: 'USD', value: '2.619' },
+    ],
   },
   {
     key: 'telegram',
-    title: 'Registra un gasto en 5 segundos',
+    title: 'Registrá un gasto en 5 segundos',
     description:
-      'Mandale un mensaje a tu bot personal de Zarix y listo. Sin abrir la app. Sin formularios. Tambien parsea tickets por foto con IA.',
+      'Mandale un mensaje a tu bot personal de Zarix y listo. Sin abrir la app, sin formularios. También parsea tickets por foto con IA.',
     icon: MessageCircle,
+    preview: [
+      { label: 'Mensaje', value: '«Gasté 15.000 en nafta»' },
+      { label: 'Categorizado', value: 'Transporte −$15.000' },
+    ],
   },
   {
     key: 'stocks',
-    title: 'GGAL, YPF, AAPL en un solo lugar',
+    title: 'GGAL, YPF, AAPL y bonos en un solo lugar',
     description:
-      'Portafolio de acciones argentinas y americanas con P&L en tiempo real. Precio promedio de compra, variacion del dia, valor total de la posicion.',
+      'Portafolio de acciones argentinas, CEDEARs y bonos soberanos con P&L en vivo. Precio promedio, variación del día y valor total por posición.',
     icon: BarChart2,
+    preview: [
+      { label: 'GGAL', value: '+3,2%' },
+      { label: 'AL30', value: '+0,5%' },
+      { label: 'AAPL', value: '+0,8%' },
+    ],
   },
   {
     key: 'budget',
     title: 'Alertas antes de que te pases',
     description:
-      'Defini limites por categoria. Zarix te avisa cuando llegas al 80% antes de que sea tarde. Seguimiento semanal automatico.',
+      'Definí límites por categoría. Zarix te avisa al 80% antes de que sea tarde. Resumen semanal automático por Telegram.',
     icon: Target,
+    preview: [
+      { label: 'Restaurantes', value: '91% del límite' },
+      { label: 'Supermercado', value: '76% del límite' },
+    ],
   },
 ];
 
@@ -63,7 +87,7 @@ export default function FeaturesSection() {
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
-  const leftGlow = useTransform(scrollYProgress, [0, 0.5, 1], [0.15, 0.3, 0.15]);
+  const leftGlow = useTransform(scrollYProgress, [0, 0.5, 1], [0.12, 0.28, 0.12]);
 
   const activeItem = useMemo(() => features[activeFeature] ?? features[0], [activeFeature]);
 
@@ -89,24 +113,40 @@ export default function FeaturesSection() {
   }, []);
 
   return (
-    <section id="features" ref={sectionRef} className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="mx-auto mb-12 max-w-3xl text-center">
-        <h2 className="text-balance text-3xl font-semibold text-[#F8F9FA] sm:text-5xl">Producto pensado para Argentina, no adaptado despues.</h2>
+    <section
+      id="features"
+      ref={sectionRef}
+      className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8"
+    >
+      <div className="mx-auto mb-14 max-w-2xl text-center sm:mb-20">
+        <span className="inline-flex items-center rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-300">
+          Producto local
+        </span>
+        <h2 className="mt-4 text-balance text-3xl font-semibold leading-tight text-[#F8F9FA] sm:text-5xl">
+          Pensado para Argentina, no adaptado después.
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-[#8B949E] sm:text-lg">
+          Cinco piezas que cambian cómo ves tu plata cuando vivís entre pesos y dólares.
+        </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
         <div className="hidden lg:block">
           <div className="sticky top-24">
-            <motion.div className="pointer-events-none absolute inset-0 rounded-3xl bg-blue-500/10 blur-3xl" style={{ opacity: leftGlow }} />
+            <motion.div
+              className="pointer-events-none absolute inset-0 rounded-3xl bg-blue-500/10 blur-3xl"
+              style={{ opacity: leftGlow }}
+            />
             <div className="relative">
               <FeatureMockup feature={activeItem} />
             </div>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {features.map((feature, index) => {
             const Icon = feature.icon;
+            const isActive = activeFeature === index;
             return (
               <div
                 key={feature.key}
@@ -114,24 +154,49 @@ export default function FeaturesSection() {
                   itemRefs.current[index] = node;
                 }}
                 data-index={index}
-                className={`rounded-2xl border p-5 transition ${
-                  activeFeature === index
-                    ? 'border-white/[0.18] bg-[#10141c]'
-                    : 'border-white/[0.06] bg-[#0F1117]'
+                className={`group relative overflow-hidden rounded-2xl border p-5 sm:p-6 transition-all duration-300 ${
+                  isActive
+                    ? 'border-white/[0.16] bg-[#10141c] shadow-[0_20px_60px_-30px_rgba(59,130,246,0.45)]'
+                    : 'border-white/[0.06] bg-[#0F1117] hover:border-white/[0.12] hover:bg-[#11151d]'
                 }`}
               >
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 rounded-lg border border-blue-500/30 bg-blue-500/10 p-2 text-blue-400">
-                    <Icon size={18} />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#F8F9FA]">{feature.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-[#8B949E]">{feature.description}</p>
-                  </div>
-                </div>
+                <span
+                  aria-hidden
+                  className={`absolute left-0 top-5 h-[calc(100%-2.5rem)] w-[3px] rounded-r-full transition-opacity duration-300 ${
+                    isActive ? 'bg-blue-400 opacity-100' : 'bg-blue-400/0 opacity-0'
+                  }`}
+                />
 
-                <div className="mt-4 lg:hidden">
-                  <FeatureMockup feature={feature} />
+                <div className="flex items-start gap-4">
+                  <div
+                    className={`mt-0.5 shrink-0 rounded-xl border p-2.5 transition-colors ${
+                      isActive
+                        ? 'border-blue-500/40 bg-blue-500/15 text-blue-300'
+                        : 'border-white/[0.08] bg-white/[0.03] text-[#8B949E] group-hover:text-blue-300'
+                    }`}
+                  >
+                    <Icon size={18} aria-hidden />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-lg font-semibold leading-snug text-[#F8F9FA]">
+                      {feature.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[#8B949E]">
+                      {feature.description}
+                    </p>
+
+                    <div className="mt-4 flex flex-wrap gap-2 lg:hidden">
+                      {feature.preview.map((p) => (
+                        <span
+                          key={p.label}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-1 text-[11px]"
+                        >
+                          <span className="text-[#8B949E]">{p.label}</span>
+                          <span className="font-semibold text-[#F8F9FA] tabular-nums">{p.value}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             );

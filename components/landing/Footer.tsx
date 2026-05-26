@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { Globe, Linkedin, Mail, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -10,26 +9,28 @@ export default function Footer() {
   return (
     <>
       <footer className="border-t border-white/[0.06]">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-[#8B949E] sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <div>
-            <p className="text-base font-bold text-[#F8F9FA]">Zarix</p>
-            <p className="mt-1">© 2026 Zarix · Hecho en Argentina 🇦🇷</p>
+        <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 text-sm text-[#8B949E] sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-base font-bold text-[#F8F9FA]">Zarix</p>
+              <p className="mt-1">© 2026 Zarix · Hecho en Argentina 🇦🇷</p>
+            </div>
+            <div className="flex items-center gap-5">
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="transition hover:text-[#F8F9FA]"
+              >
+                Contacto
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-5">
-            <Link href="#" className="transition hover:text-[#F8F9FA]">
-              Terminos
-            </Link>
-            <Link href="#" className="transition hover:text-[#F8F9FA]">
-              Privacidad
-            </Link>
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              className="transition hover:text-[#F8F9FA]"
-            >
-              Contacto
-            </button>
-          </div>
+          <p className="mt-6 max-w-3xl text-xs leading-relaxed text-[#6F7682]">
+            Las cotizaciones (dólar blue, MEP, CCL, acciones, CEDEARs, bonos, cripto) provienen de fuentes públicas
+            (DolarApi, data912.com, CoinGecko, Yahoo Finance) y se muestran con fines informativos. Pueden tener
+            demoras o errores y no constituyen recomendación de inversión. Zarix no opera mercados ni custodia
+            activos: registrás tus propias tenencias y movimientos.
+          </p>
         </div>
       </footer>
 
