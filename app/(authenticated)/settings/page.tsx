@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import BugReportWidget from '@/components/BugReportWidget';
 import SettingsForm from '@/components/settings/SettingsForm';
+import PasskeysSection from '@/components/settings/PasskeysSection';
 import ExportImport from '@/components/settings/ExportImport';
 import ReplayTourButton from '@/components/onboarding/ReplayTourButton';
 
@@ -42,6 +43,8 @@ export default async function SettingsPage() {
             appBaseUrl={appBaseUrl}
           />
         )}
+
+        <PasskeysSection />
 
         <ExportImport />
 

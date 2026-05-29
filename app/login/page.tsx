@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { translateSupabaseAuthError } from '@/lib/auth/auth-error-messages';
+import { translateSupabaseAuthError, translatePasskeyError } from '@/lib/auth/auth-error-messages';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,10 +15,17 @@ function LoginForm() {
   const [message, setMessage] = useState('');
   const [showResendConfirmation, setShowResendConfirmation] = useState(false);
   const [mode, setMode] = useState<'magiclink' | 'password'>('password');
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [passkeySupported, setPasskeySupported] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    setPasskeySupported(
+      typeof window !== 'undefined' &&
+        typeof window.PublicKeyCredential !== 'undefined'
+    );
+
     const supabase = createClient();
 
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -72,6 +79,23 @@ function LoginForm() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasskeyLogin = async () => {
+    setPasskeyLoading(true);
+    setMessage('');
+    setShowResendConfirmation(false);
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPasskey();
+      if (error) throw error;
+      router.push('/dashboard');
+    } catch (error: unknown) {
+      setMessage(`Error: ${translatePasskeyError(error)}`);
+    } finally {
+      setPasskeyLoading(false);
     }
   };
 
@@ -249,6 +273,26 @@ function LoginForm() {
             )}
           </motion.button>
         </form>
+
+        {passkeySupported && (
+          <div className="mt-4">
+            <div className="flex items-center gap-3 my-4">
+              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+              <span className="text-xs text-slate-400 dark:text-slate-500">o</span>
+              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+            </div>
+            <motion.button
+              type="button"
+              onClick={handlePasskeyLogin}
+              disabled={passkeyLoading}
+              whileTap={{ scale: 0.97 }}
+              className="w-full btn py-3.5 text-lg flex items-center justify-center gap-2 border border-slate-300 dark:border-slate-600"
+            >
+              <span>🔑</span>
+              {passkeyLoading ? 'Verificando...' : 'Ingresar con passkey'}
+            </motion.button>
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {message && (
