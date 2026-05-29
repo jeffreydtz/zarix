@@ -1,6 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr';
 
-export function createClient() {
+function buildClient() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -35,4 +35,14 @@ export function createClient() {
       },
     }
   );
+}
+
+// Singleton: un solo browser client por pestaña. Crear varios genera múltiples
+// GoTrueClient que compiten por el mismo lock (LockManager) y storage de sesión,
+// lo que vuelve lento/inestable el auth (incluido el flujo de passkeys).
+let browserClient: ReturnType<typeof buildClient> | undefined;
+
+export function createClient() {
+  if (!browserClient) browserClient = buildClient();
+  return browserClient;
 }

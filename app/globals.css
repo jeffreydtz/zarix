@@ -162,6 +162,21 @@ summary {
   }
 }
 
+/* Mobile: backdrop-filter recompone en cada frame de scroll y es caro en GPUs
+   de celular. Bajamos el radio (no lo eliminamos) para mantener el look glass
+   moderno pero con mucho menos costo de composición. */
+@media (max-width: 767px) {
+  .zx-panel {
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+
+  .glass {
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

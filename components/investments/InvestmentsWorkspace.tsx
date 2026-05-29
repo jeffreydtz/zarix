@@ -39,6 +39,21 @@ function formatRelative(date: Date | null): string {
   return date.toLocaleString('es-AR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
+// El label se actualiza cada 30s. Aislado en su propio componente para que el
+// tick no re-renderice todo el workspace (resumen, gráfico y lista de posiciones).
+function LiveUpdatedLabel({ lastLiveAt }: { lastLiveAt: Date | null }) {
+  const [label, setLabel] = useState(() => formatRelative(lastLiveAt));
+
+  useEffect(() => {
+    setLabel(formatRelative(lastLiveAt));
+    if (!lastLiveAt) return;
+    const interval = setInterval(() => setLabel(formatRelative(lastLiveAt)), 30000);
+    return () => clearInterval(interval);
+  }, [lastLiveAt]);
+
+  return <span className="font-medium text-foreground">{label}</span>;
+}
+
 export default function InvestmentsWorkspace({
   initialPortfolio,
   investmentAccounts,
@@ -51,18 +66,10 @@ export default function InvestmentsWorkspace({
   const [liveError, setLiveError] = useState<string | null>(null);
   const [editing, setEditing] = useState<InvestmentWithPnL | null>(null);
   const [selling, setSelling] = useState<InvestmentWithPnL | null>(null);
-  const [relativeLabel, setRelativeLabel] = useState(() => formatRelative(null));
 
   useEffect(() => {
     setPortfolio(initialPortfolio);
   }, [initialPortfolio]);
-
-  useEffect(() => {
-    setRelativeLabel(formatRelative(lastLiveAt));
-    if (!lastLiveAt) return;
-    const interval = setInterval(() => setRelativeLabel(formatRelative(lastLiveAt)), 30000);
-    return () => clearInterval(interval);
-  }, [lastLiveAt]);
 
   const refreshLive = useCallback(async () => {
     setLiveLoading(true);
@@ -118,7 +125,7 @@ export default function InvestmentsWorkspace({
               </button>
             </div>
             <span className="text-xs text-muted-foreground tabular-nums">
-              Última actualización: <span className="font-medium text-foreground">{relativeLabel}</span>
+              Última actualización: <LiveUpdatedLabel lastLiveAt={lastLiveAt} />
             </span>
             {liveError && (
               <span className="text-xs text-amber-600 dark:text-amber-400">

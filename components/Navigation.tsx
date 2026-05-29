@@ -64,7 +64,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
   return (
     <>
       {/* ——— Mobile: barra superior compacta ——— */}
-      <header className="md:hidden shrink-0 z-40 bg-surface-glass/90 dark:bg-surface-glass/85 backdrop-blur-xl border-b border-border/75 pt-[env(safe-area-inset-top,0px)]">
+      <header className="md:hidden shrink-0 z-40 bg-surface-glass/95 dark:bg-surface-glass/95 border-b border-border/75 pt-[env(safe-area-inset-top,0px)]">
         <div className="flex items-center justify-between h-14 px-4">
           <Link
             href="/dashboard"
@@ -203,7 +203,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
       {/* ——— Mobile: barra inferior (thumb zone); en flujo flex para que no “flote” al scrollear (iOS/PWA) ——— */}
       <nav
         data-tour="nav"
-        className="md:hidden shrink-0 w-full z-40 bg-surface-glass/95 dark:bg-surface-glass/90 backdrop-blur-xl border-t border-border/80 pb-[env(safe-area-inset-bottom,0px)]"
+        className="md:hidden shrink-0 w-full z-40 bg-surface-glass/95 dark:bg-surface-glass/95 border-t border-border/80 pb-[env(safe-area-inset-bottom,0px)]"
         aria-label="Navegación principal"
       >
         <div className="flex items-stretch justify-around h-14 max-w-lg mx-auto px-1">

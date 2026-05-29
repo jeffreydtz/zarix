@@ -61,6 +61,11 @@ export default function BackgroundSpline() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Mobile: el runtime WebGL de Spline (descarga + render 3D continuo) es caro
+    // en CPU/GPU/batería. Dejamos solo el fondo con gradientes (CSS), que ya luce
+    // moderno. El render 3D queda para desktop.
+    if (window.matchMedia('(max-width: 767px)').matches) return;
+
     let cancelled = false;
 
     // Carga diferida del runtime de Spline (WebGL, pesado): se baja en
