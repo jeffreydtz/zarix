@@ -4,6 +4,7 @@ import BugReportWidget from '@/components/BugReportWidget';
 import SettingsForm from '@/components/settings/SettingsForm';
 import PasskeysSection from '@/components/settings/PasskeysSection';
 import ExportImport from '@/components/settings/ExportImport';
+import LogoutButton from '@/components/settings/LogoutButton';
 import ReplayTourButton from '@/components/onboarding/ReplayTourButton';
 
 export default async function SettingsPage() {
@@ -49,6 +50,8 @@ export default async function SettingsPage() {
         <ExportImport />
 
         <ReplayTourButton />
+
+        <LogoutButton />
       </div>
 
       <BugReportWidget />
