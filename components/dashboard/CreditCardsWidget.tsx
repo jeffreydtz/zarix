@@ -6,6 +6,7 @@ import type { AccountWithBalance } from '@/lib/services/accounts';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import ProgressBar from '@/components/ui/ProgressBar';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
+import SettleCardButton from '@/components/dashboard/SettleCardButton';
 
 interface CreditCardsWidgetProps {
   accounts: AccountWithBalance[];
@@ -58,6 +59,25 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
           const utilization = limit > 0 ? (used / limit) * 100 : 0;
           const available = limit - used;
 
+          // Cuentas de la misma moneda con saldo a favor para saldar la deuda principal.
+          const fundingAccounts = accounts
+            .filter(
+              (a) =>
+                a.type !== 'credit_card' &&
+                a.type !== 'investment' &&
+                !a.is_debt &&
+                a.currency === card.currency &&
+                Number(a.balance) > 0
+            )
+            .map((a) => ({
+              id: a.id,
+              name: a.name,
+              currency: a.currency,
+              balance: Number(a.balance),
+              type: a.type,
+              last_4_digits: a.last_4_digits,
+            }));
+
           return (
             <motion.div 
               key={card.id} 
@@ -83,15 +103,23 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
                     )}
                   </div>
                 </div>
-                <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
-                  utilization > 80 
-                    ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
-                    : utilization > 50 
-                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'
-                    : 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
-                }`}>
-                  {utilization.toFixed(0)}%
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
+                    utilization > 80
+                      ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                      : utilization > 50
+                      ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'
+                      : 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
+                  }`}>
+                    {utilization.toFixed(0)}%
+                  </span>
+                  <SettleCardButton
+                    card={{ id: card.id, name: card.name, currency: card.currency }}
+                    primaryDebt={primaryDebt}
+                    isMulticurrency={isMulticurrencyCard}
+                    fundingAccounts={fundingAccounts}
+                  />
+                </div>
               </div>
 
               {isMulticurrencyCard ? (
