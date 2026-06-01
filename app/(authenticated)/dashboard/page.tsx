@@ -1,15 +1,15 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { getCachedUser } from '@/lib/auth/session';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
+import { investmentsService } from '@/lib/services/investments';
 import BalanceHeader from '@/components/dashboard/BalanceHeader';
+import DashboardHeroStats from '@/components/dashboard/DashboardHeroStats';
 import FloatingAddButton from '@/components/dashboard/FloatingAddButton';
 import DashboardSpendingAnalyzerSection from '@/components/dashboard/DashboardSpendingAnalyzerSection';
-import { brandAsset } from '@/lib/brand';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 
@@ -36,9 +36,14 @@ export default async function DashboardPage() {
       redirect('/login');
     }
 
-    const [accounts, recentTransactions, quotes] = await Promise.all([
+    const [accounts, recentTransactions, portfolio, quotes] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       transactionsService.list(user.id, { limit: 5 }).catch(() => []),
+      // Inversiones del dashboard = valor del portafolio (posiciones), no el saldo
+      // de la cuenta. Precios guardados (sin refresh) para no demorar el dashboard.
+      investmentsService
+        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true })
+        .catch(() => null),
       cotizacionesService.getAllQuotes().catch(() => ({
         dolar: {
           blue: { type: 'blue' as const, buy: 0, sell: 0, timestamp: new Date() },
@@ -70,6 +75,14 @@ export default async function DashboardPage() {
             creditUtilization: 0,
           };
 
+    // Inversiones = valor del portafolio (posiciones). Reemplaza la contribución
+    // de las cuentas tipo investment en el total para no duplicar.
+    const investmentsUSD = portfolio?.totalCurrentValue ?? 0;
+    const investmentsARSBlue = portfolio?.totalCurrentValueArsBlue ?? 0;
+    const totalUSD = balances.totalUSD - balances.investmentsUSD + investmentsUSD;
+    const totalARSBlue = balances.totalARSBlue - balances.investmentsARSBlue + investmentsARSBlue;
+    const investmentsDailyPct = portfolio?.totalDailyPnLPercent ?? null;
+
     return (
       <PageScaffold
         hero={(
@@ -78,23 +91,11 @@ export default async function DashboardPage() {
             title="Centro de control financiero"
             subtitle="Visión en tiempo real de patrimonio, liquidez y alertas para decidir con claridad."
             rightSlot={(
-              <div className="flex items-center gap-3 rounded-card border border-border bg-surface-soft/70 px-3 py-2">
-                <div className="w-11 h-11 rounded-control overflow-hidden border border-border shadow-sm bg-surface flex items-center justify-center p-1">
-                  <Image
-                    src={brandAsset.logoSvg}
-                    alt="Zarix"
-                    width={40}
-                    height={40}
-                    className="w-10 h-10 object-contain"
-                    priority
-                    unoptimized
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Zarix</p>
-                  <p className="text-xs text-muted-foreground">Resumen inteligente del dia</p>
-                </div>
-              </div>
+              <DashboardHeroStats
+                liquidARSBlue={balances.liquidARSBlue}
+                investmentsARSBlue={investmentsARSBlue}
+                dailyPct={investmentsDailyPct}
+              />
             )}
           />
         )}
@@ -103,10 +104,10 @@ export default async function DashboardPage() {
           <BalanceHeader
             liquidUSD={balances.liquidUSD}
             liquidARSBlue={balances.liquidARSBlue}
-            investmentsUSD={balances.investmentsUSD}
-            investmentsARSBlue={balances.investmentsARSBlue}
-            totalUSD={balances.totalUSD}
-            totalARSBlue={balances.totalARSBlue}
+            investmentsUSD={investmentsUSD}
+            investmentsARSBlue={investmentsARSBlue}
+            totalUSD={totalUSD}
+            totalARSBlue={totalARSBlue}
             totalCreditUsed={balances.totalCreditUsed}
             totalCreditLimit={balances.totalCreditLimit}
             creditUtilization={balances.creditUtilization}
