@@ -39,6 +39,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
     }
 
+    // La cuenta (y categoría) deben ser del usuario: la regla materializa
+    // movimientos sobre account_id vía cron, así que validar el dueño acá.
+    const { data: acc } = await supabase
+      .from('accounts')
+      .select('id')
+      .eq('id', body.accountId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (!acc) {
+      return NextResponse.json({ error: 'Cuenta inválida' }, { status: 400 });
+    }
+    if (body.categoryId) {
+      const { data: cat } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('id', body.categoryId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (!cat) {
+        return NextResponse.json({ error: 'Categoría inválida' }, { status: 400 });
+      }
+    }
+
     const { data, error } = await supabase
       .from('recurring_rules')
       .insert({

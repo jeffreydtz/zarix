@@ -145,7 +145,7 @@ export default function TransactionsList({
   transactions, 
   accounts = [], 
   categories = [],
-  emptySubmessage = 'Usa el bot de Telegram para registrar gastos e ingresos',
+  emptySubmessage = 'Usá el bot de Telegram para registrar gastos e ingresos',
   viewAccountContext,
 }: TransactionsListProps) {
   const router = useRouter();
@@ -465,7 +465,7 @@ export default function TransactionsList({
 
                 <div>
                   <div className="font-medium text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {tx.description || tx.category?.name || 'Sin descripcion'}
+                    {tx.description || tx.category?.name || 'Sin descripción'}
                   </div>
                   <div className="text-sm text-slate-500 dark:text-slate-400">
                     {tx.account?.name} • {dateMeta?.dateLabel ?? '—'} • {dateMeta?.distanceLabel ?? '—'}

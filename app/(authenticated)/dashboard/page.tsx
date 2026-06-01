@@ -75,12 +75,14 @@ export default async function DashboardPage() {
             creditUtilization: 0,
           };
 
-    // Inversiones = valor del portafolio (posiciones). Reemplaza la contribución
-    // de las cuentas tipo investment en el total para no duplicar.
-    const investmentsUSD = portfolio?.totalCurrentValue ?? 0;
-    const investmentsARSBlue = portfolio?.totalCurrentValueArsBlue ?? 0;
-    const totalUSD = balances.totalUSD - balances.investmentsUSD + investmentsUSD;
-    const totalARSBlue = balances.totalARSBlue - balances.investmentsARSBlue + investmentsARSBlue;
+    // Inversiones = posiciones del portafolio + efectivo de las cuentas de inversión.
+    // No se descarta el cash del broker; las posiciones son filas aparte (sin doble conteo).
+    const portfolioUSD = portfolio?.totalCurrentValue ?? 0;
+    const portfolioARSBlue = portfolio?.totalCurrentValueArsBlue ?? 0;
+    const investmentsUSD = balances.investmentsUSD + portfolioUSD;
+    const investmentsARSBlue = balances.investmentsARSBlue + portfolioARSBlue;
+    const totalUSD = balances.totalUSD + portfolioUSD;
+    const totalARSBlue = balances.totalARSBlue + portfolioARSBlue;
     const investmentsDailyPct = portfolio?.totalDailyPnLPercent ?? null;
 
     return (

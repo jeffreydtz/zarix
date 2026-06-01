@@ -75,12 +75,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const amount = Number(body.amount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json({ error: 'Monto inválido' }, { status: 400 });
+    }
+
     const transaction = await transactionsService.create({
       userId: user.id,
       type: body.type,
       accountId: body.accountId,
       destinationAccountId: body.destinationAccountId,
-      amount: body.amount,
+      amount,
       currency: cur,
       categoryId: body.categoryId,
       description: body.description,

@@ -62,7 +62,7 @@ export default async function AnalysisPage() {
         hero={(
           <PageHero
             eyebrow="Inteligencia financiera"
-            title="Analisis financiero"
+            title="Análisis financiero"
             subtitle={`Tendencias y patrones de ${currentMonthName} ${now.getFullYear()} para anticiparte con mejores decisiones.`}
           />
         )}
@@ -76,7 +76,7 @@ export default async function AnalysisPage() {
               </div>
               {previousMonthData ? (
                 <div className={`text-xs mt-1 ${expensesDiff <= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                  {expensesDiff >= 0 ? 'Subio' : 'Bajo'} {Math.abs(expensesDiff).toFixed(0)}% vs mes anterior
+                  {expensesDiff >= 0 ? 'Subió' : 'Bajó'} {Math.abs(expensesDiff).toFixed(0)}% vs mes anterior
                 </div>
               ) : null}
             </div>
@@ -107,7 +107,7 @@ export default async function AnalysisPage() {
 
         <MotionSection delay={0.09} intensity="normal">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6">
-            <CategoryDonut data={categoryBreakdown} title="Gastos por categoria" />
+            <CategoryDonut data={categoryBreakdown} title="Gastos por categoría" />
             <MonthlyBarChart data={monthlyTrend} />
           </div>
         </MotionSection>
@@ -125,25 +125,25 @@ export default async function AnalysisPage() {
 
         {incomeBreakdown.length > 0 ? (
           <MotionSection delay={0.23} intensity="subtle">
-            <CategoryDonut data={incomeBreakdown} title="Ingresos por categoria" />
+            <CategoryDonut data={incomeBreakdown} title="Ingresos por categoría" />
           </MotionSection>
         ) : null}
 
         <MotionSection delay={0.26} intensity="subtle" className="card border-primary/30 bg-gradient-to-br from-primary/10 via-surface to-indigo-100/60 dark:to-indigo-900/20">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <span>Analisis rapido</span>
+            <span>Análisis rápido</span>
           </h3>
           <div className="space-y-3 text-sm">
             {totalExpenses > totalIncome ? (
               <div className="flex items-start gap-2 p-3 rounded-control border border-red-200/70 dark:border-red-900/50 bg-red-100/80 dark:bg-red-900/25">
-                <span>Gastaste mas que tus ingresos este mes. Diferencia: ${(totalExpenses - totalIncome).toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
+                <span>Gastaste más que tus ingresos este mes. Diferencia: ${(totalExpenses - totalIncome).toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
               </div>
             ) : null}
 
             {categoryBreakdown.length > 0 ? (
               <div className="flex items-start gap-2 p-3 rounded-control border border-border bg-surface-soft/70">
                 <span>
-                  Categoria dominante: <strong>{categoryBreakdown[0].icon} {categoryBreakdown[0].name}</strong> con ${categoryBreakdown[0].amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ({categoryBreakdown[0].percent.toFixed(0)}% del total).
+                  Categoría dominante: <strong>{categoryBreakdown[0].icon} {categoryBreakdown[0].name}</strong> con ${categoryBreakdown[0].amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ({categoryBreakdown[0].percent.toFixed(0)}% del total).
                 </span>
               </div>
             ) : null}

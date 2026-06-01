@@ -64,9 +64,9 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
         >
           🏦
         </motion.div>
-        <p className="text-slate-500 dark:text-slate-400 mb-2 text-lg">No tenes cuentas todavia</p>
+        <p className="text-slate-500 dark:text-slate-400 mb-2 text-lg">No tenés cuentas todavía</p>
         <p className="text-sm text-slate-400 dark:text-slate-500">
-          Crea tu primera cuenta para empezar a trackear tus finanzas
+          Creá tu primera cuenta para empezar a trackear tus finanzas
         </p>
       </motion.div>
     );
@@ -255,7 +255,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                 >
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
-                      <p className="text-slate-500 dark:text-slate-400 text-xs mb-0.5">Limite</p>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs mb-0.5">Límite</p>
                       <p className="font-semibold text-slate-700 dark:text-slate-300">
                         ${account.credit_limit.toLocaleString('es-AR')}
                       </p>

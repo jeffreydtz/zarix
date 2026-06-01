@@ -53,6 +53,32 @@ export async function PATCH(req: NextRequest) {
     }
 
     const serviceClient = createServiceClientSync();
+
+    // Verificar que la cuenta/categoría destino pertenezcan al usuario antes de
+    // re-apuntar movimientos (evita re-asignar a recursos de otro usuario).
+    if (updates.account_id) {
+      const { data: acc } = await serviceClient
+        .from('accounts')
+        .select('id')
+        .eq('id', updates.account_id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (!acc) {
+        return NextResponse.json({ error: 'Cuenta inválida' }, { status: 400 });
+      }
+    }
+    if (updates.category_id) {
+      const { data: cat } = await serviceClient
+        .from('categories')
+        .select('id')
+        .eq('id', updates.category_id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (!cat) {
+        return NextResponse.json({ error: 'Categoría inválida' }, { status: 400 });
+      }
+    }
+
     const { data, error } = await serviceClient
       .from('transactions')
       .update(updates)

@@ -314,14 +314,14 @@ export default function EditTransactionModal({
 
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Categoria
+              Categoría
             </label>
             <select
               value={formData.category_id}
               onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
               className="input"
             >
-              <option value="">Sin categoria</option>
+              <option value="">Sin categoría</option>
               {filteredCategories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.icon} {cat.name}

@@ -17,9 +17,9 @@ const freeFeatures = [
   'Dashboard completo',
   'Movimientos ilimitados',
   '2 cuentas conectadas',
-  'Cotizaciones dolar blue / MEP / CCL',
-  'Presupuestos basicos',
-  'Analisis mensual',
+  'Cotizaciones dólar blue / MEP / CCL',
+  'Presupuestos básicos',
+  'Análisis mensual',
 ];
 
 const premiumFeatures = [

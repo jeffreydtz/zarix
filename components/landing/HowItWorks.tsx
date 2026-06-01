@@ -6,8 +6,8 @@ import { CircleUserRound, Layers3, ScanSearch } from 'lucide-react';
 const steps = [
   {
     number: '01',
-    title: 'Crea tu cuenta gratis',
-    description: 'Sin tarjeta. Sin burocracia. En 30 segundos ya tenes tu panel.',
+    title: 'Creá tu cuenta gratis',
+    description: 'Sin tarjeta. Sin burocracia. En 30 segundos ya tenés tu panel.',
     icon: CircleUserRound,
   },
   {

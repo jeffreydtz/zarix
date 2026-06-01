@@ -119,6 +119,17 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
       return;
     }
 
+    // Cambiar la moneda NO convierte el saldo: el número guardado se reinterpreta
+    // en la nueva moneda. Avisar para que el usuario ajuste el saldo si hace falta.
+    if (currency !== account.currency && Math.abs(getEditablePrimaryBalance(account)) > 1e-6) {
+      const ok = window.confirm(
+        `Vas a cambiar la moneda de ${account.currency} a ${currency}.\n\n` +
+          `El saldo NO se convierte solo: ${getEditablePrimaryBalance(account)} se va a interpretar como ${currency}. ` +
+          `Si el monto correcto en ${currency} es otro, ajustá "Saldo en Zarix" antes de guardar.\n\n¿Continuar?`
+      );
+      if (!ok) return;
+    }
+
     let minBal: number | null = null;
     if (minBalance.trim() !== '') {
       const m = parseFloat(minBalance.replace(',', '.'));

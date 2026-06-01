@@ -225,17 +225,20 @@ class CotizacionesService {
 
       const data = await response.json();
 
+      // CriptoYa: `bid` = compra (lo que la casa te paga por 1 USD), `ask` = venta
+      // (lo que te cuesta comprar 1 USD). Convención de la app: buy=compra, sell=venta
+      // (igual que el path DolarApi). Antes estaban invertidos.
       const quotes: Record<string, DolarQuote> = {
         blue: {
           type: 'blue',
-          buy: data.blue?.ask || data.blue || 0,
-          sell: data.blue?.bid || data.blue || 0,
+          buy: data.blue?.bid || data.blue || 0,
+          sell: data.blue?.ask || data.blue || 0,
           timestamp: new Date(),
         },
         oficial: {
           type: 'oficial',
-          buy: data.oficial?.ask || data.oficial || 0,
-          sell: data.oficial?.bid || data.oficial || 0,
+          buy: data.oficial?.bid || data.oficial || 0,
+          sell: data.oficial?.ask || data.oficial || 0,
           timestamp: new Date(),
         },
         mep: {
@@ -251,6 +254,12 @@ class CotizacionesService {
           timestamp: new Date(),
         },
       };
+
+      // Si el blue vino en 0 (respuesta degradada), tratarlo como fallo y caer al
+      // fallback (DolarApi → DB) en vez de cachear ceros que rompen toda conversión.
+      if (!(quotes.blue.sell > 0) || !(quotes.blue.buy > 0)) {
+        throw new Error('CriptoYa: dólar blue en 0');
+      }
 
       return persistAndReturn(quotes);
     } catch (error) {
@@ -426,13 +435,17 @@ class CotizacionesService {
     if (fromU === 'USD' && toU === 'ARS') {
       const dolar = await this.getDolarQuotes();
       const rate = dolar.blue.sell;
+      if (!(rate > 0)) return 0;
       this.setCache(cacheKey, rate);
       return rate;
     }
 
     if (fromU === 'ARS' && toU === 'USD') {
       const dolar = await this.getDolarQuotes();
-      const rate = 1 / dolar.blue.buy;
+      const buy = dolar.blue.buy;
+      // Evitar Infinity/NaN si el blue viene en 0; 0 = "tasa no disponible".
+      if (!(buy > 0)) return 0;
+      const rate = 1 / buy;
       this.setCache(cacheKey, rate);
       return rate;
     }

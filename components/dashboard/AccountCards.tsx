@@ -147,7 +147,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
                     />
                   </div>
                   <div className="text-xs mt-2 opacity-75 font-medium">
-                    Limite: ${creditLimit.toLocaleString('es-AR')}
+                    Límite: ${creditLimit.toLocaleString('es-AR')}
                   </div>
                 </div>
               )}
@@ -169,7 +169,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
             >
               🏦
             </motion.div>
-            <p className="text-slate-500 dark:text-slate-400 mb-4">No tenes cuentas todavia</p>
+            <p className="text-slate-500 dark:text-slate-400 mb-4">No tenés cuentas todavía</p>
             <Link href="/accounts" className="btn btn-primary">
               Crear cuenta
             </Link>

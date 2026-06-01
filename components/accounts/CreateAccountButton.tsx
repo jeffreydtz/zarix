@@ -251,7 +251,7 @@ export default function CreateAccountButton() {
                         <div className="space-y-3">
                           <div>
                             <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                              Limite de credito *
+                              Límite de crédito *
                             </label>
                             <input
                               type="number"

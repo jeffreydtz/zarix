@@ -47,7 +47,7 @@ export default function CashFlowChart({ data }: Props) {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h3 className="text-lg font-semibold">Flujo de Caja (últimos 30 días)</h3>
         <span className={`story-chip ${net >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-500 dark:text-red-300'}`}>
-          Neto del periodo: {net >= 0 ? '+' : ''}${net.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+          Neto del período: {net >= 0 ? '+' : ''}${net.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
         </span>
       </div>
 

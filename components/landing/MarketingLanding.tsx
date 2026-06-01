@@ -40,7 +40,7 @@ const plans = [
     name: 'Plan Normal',
     price: 'Gratis',
     description: 'Ideal para ordenar tus finanzas personales y empezar hoy.',
-    bullets: ['Dashboard completo', 'Categorias y presupuestos', 'Analisis base mensual'],
+    bullets: ['Dashboard completo', 'Categorías y presupuestos', 'Análisis base mensual'],
     cta: 'Comenzar gratis',
     href: '/register?plan=normal',
     highlighted: false,

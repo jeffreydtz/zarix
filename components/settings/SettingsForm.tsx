@@ -374,14 +374,14 @@ export default function SettingsForm({
 
       {isGracePeriod && (
         <div className="rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-800 p-4 text-amber-900 dark:text-amber-200">
-          <div className="font-semibold">Aviso de pago: estas en periodo de gracia</div>
+          <div className="font-semibold">Aviso de pago: estás en período de gracia</div>
           <p className="text-sm mt-1">
-            El ultimo cobro de tu suscripcion fallo. Podes seguir usando la IA temporalmente, pero
-            necesitas actualizar el metodo de pago para no perder acceso.
+            El último cobro de tu suscripción falló. Podés seguir usando la IA temporalmente, pero
+            necesitás actualizar el método de pago para no perder acceso.
           </p>
           {gracePeriodEnd && (
             <p className="text-xs mt-2">
-              Limite de gracia: {new Date(gracePeriodEnd).toLocaleString('es-AR')}
+              Límite de gracia: {new Date(gracePeriodEnd).toLocaleString('es-AR')}
             </p>
           )}
         </div>

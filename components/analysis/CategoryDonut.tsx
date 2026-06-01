@@ -42,7 +42,7 @@ export default function CategoryDonut({ data, title }: Props) {
       <div className="flex items-start justify-between gap-2 mb-4">
         <div>
           <h3 className="text-lg font-semibold mb-1">{title}</h3>
-          <p className="text-xs text-muted-foreground">Distribucion por categoria en el periodo seleccionado.</p>
+          <p className="text-xs text-muted-foreground">Distribución por categoría en el período seleccionado.</p>
         </div>
         <span className="story-chip">Top: {topCategory.icon} {topCategory.name}</span>
       </div>
@@ -101,7 +101,7 @@ export default function CategoryDonut({ data, title }: Props) {
       </div>
 
       <div className="mt-4 rounded-control border border-border/75 bg-surface-soft/65 p-3">
-        <p className="text-xs text-muted-foreground mb-1">Categoria en foco</p>
+        <p className="text-xs text-muted-foreground mb-1">Categoría en foco</p>
         <p className="font-semibold text-sm text-foreground">
           {activeCategory.icon} {activeCategory.name} concentra {activeCategory.percent.toFixed(1)}% (${activeCategory.amount.toLocaleString('es-AR')}).
         </p>

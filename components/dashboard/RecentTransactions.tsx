@@ -60,10 +60,10 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
             💸
           </motion.div>
           <p className="text-slate-500 dark:text-slate-400 mb-2">
-            No tenes movimientos todavia
+            No tenés movimientos todavía
           </p>
           <p className="text-sm text-slate-400 dark:text-slate-500">
-            Usa el bot de Telegram para registrar gastos
+            Usá el bot de Telegram para registrar gastos
           </p>
         </motion.div>
       ) : (
@@ -90,7 +90,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
                 </motion.div>
                 <div className="min-w-0 flex-1">
                   <div className="font-medium text-slate-800 dark:text-slate-200 truncate">
-                    {tx.description || tx.category?.name || 'Sin descripcion'}
+                    {tx.description || tx.category?.name || 'Sin descripción'}
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                     <span className="truncate">{tx.account?.name}</span>

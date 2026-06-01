@@ -128,6 +128,9 @@ export default function EditInvestmentDialog({
       body.marketCurrency = manualPrice ? marketCurrency || purchaseCurrency : marketCurrency || null;
       if (manualPrice) {
         body.currentPrice = Number(currentPrice);
+      } else if (investment.is_manual_price) {
+        // Salió de precio manual: limpiar el precio guardado para forzar refresh desde la API.
+        body.currentPrice = null;
       }
 
       const r = await fetch(`/api/investments/${investment.id}`, {

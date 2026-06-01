@@ -67,12 +67,14 @@ export default function BalanceHeader({
   const hasCreditCards = totalCreditLimit > 0;
   const hasInvestments = investmentsUSD > 0 || investmentsARSBlue > 0;
 
-  const [showInvestmentPatrimony, setShowInvestmentPatrimony] = useState(false);
+  // Patrimonio con inversiones visible por defecto (app de patrimonio).
+  // Respeta la preferencia guardada si el usuario lo ocultó explícitamente.
+  const [showInvestmentPatrimony, setShowInvestmentPatrimony] = useState(true);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(LS_SHOW_INVESTMENT_PATRIMONY);
-      if (stored === 'true') setShowInvestmentPatrimony(true);
+      if (stored !== null) setShowInvestmentPatrimony(stored === 'true');
     } catch {
       /* ignore */
     }

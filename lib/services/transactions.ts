@@ -93,6 +93,7 @@ class TransactionsService {
       .from('accounts')
       .select('*')
       .eq('id', input.accountId)
+      .eq('user_id', input.userId)
       .single();
 
     if (account.error || !account.data) {
@@ -144,6 +145,7 @@ class TransactionsService {
         .from('accounts')
         .select('*')
         .eq('id', input.destinationAccountId)
+        .eq('user_id', input.userId)
         .single();
 
       if (destAccount.error || !destAccount.data) {

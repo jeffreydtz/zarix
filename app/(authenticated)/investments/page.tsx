@@ -99,9 +99,9 @@ export default async function InvestmentsPage() {
         {upcomingMaturities.length > 0 ? (
           <MotionSection delay={0.2} intensity="subtle" className="card border-amber-200 dark:border-amber-700/60 bg-gradient-to-br from-amber-50/90 via-white to-amber-100/65 dark:from-amber-900/20 dark:via-surface-elevated dark:to-amber-900/10">
             <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <span>Proximos vencimientos</span>
+              <span>Próximos vencimientos</span>
               <span className="ml-auto text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full font-semibold">
-                {upcomingMaturities.length} en 30 dias
+                {upcomingMaturities.length} en 30 días
               </span>
             </h2>
             <div className="space-y-3">
