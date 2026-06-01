@@ -159,25 +159,33 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                         Precio: {formatPrice(Number(inv.current_price), inv.market_price_currency)}
                         {inv.type === 'bond' ? <span className="opacity-70"> / VN 100</span> : null}
                       </span>
-                      <span className={`inline-flex items-center gap-0.5 font-medium tabular-nums ${dayClass}`}>
-                        {dayKnown ? (
-                          <>
-                            {dayPositive ? (
-                              <ArrowUpRight size={12} aria-hidden />
-                            ) : (
-                              <ArrowDownRight size={12} aria-hidden />
-                            )}
-                            {Math.abs(dayPct).toFixed(2)}% hoy
-                          </>
-                        ) : (
-                          <span className="opacity-75">variación N/D</span>
-                        )}
-                      </span>
-                      {inv.current_price_updated_at ? (
-                        <span className="text-muted-foreground/80">
-                          · {relativeFromNow(inv.current_price_updated_at)}
+                      {inv.is_manual_price ? (
+                        <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                          Manual
                         </span>
-                      ) : null}
+                      ) : (
+                        <>
+                          <span className={`inline-flex items-center gap-0.5 font-medium tabular-nums ${dayClass}`}>
+                            {dayKnown ? (
+                              <>
+                                {dayPositive ? (
+                                  <ArrowUpRight size={12} aria-hidden />
+                                ) : (
+                                  <ArrowDownRight size={12} aria-hidden />
+                                )}
+                                {Math.abs(dayPct).toFixed(2)}% hoy
+                              </>
+                            ) : (
+                              <span className="opacity-75">variación N/D</span>
+                            )}
+                          </span>
+                          {inv.current_price_updated_at ? (
+                            <span className="text-muted-foreground/80">
+                              · {relativeFromNow(inv.current_price_updated_at)}
+                            </span>
+                          ) : null}
+                        </>
+                      )}
                     </div>
                   ) : null}
                   {inv.sales_count > 0 ? (

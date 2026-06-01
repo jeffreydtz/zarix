@@ -261,6 +261,10 @@ CREATE TABLE investments (
   current_price NUMERIC(20, 8),
   current_price_updated_at TIMESTAMPTZ,
   current_price_change_pct NUMERIC(10, 4),
+  -- Override de moneda de cotización (USD/ARS). NULL = default por tipo.
+  market_currency TEXT,
+  -- Si TRUE, el precio actual lo carga el usuario a mano y no se refresca desde la API.
+  is_manual_price BOOLEAN NOT NULL DEFAULT FALSE,
   maturity_date DATE,
   interest_rate NUMERIC(8, 4),
   notes TEXT,

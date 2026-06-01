@@ -91,6 +91,23 @@ export async function POST(req: NextRequest) {
         : Number(interestRateRaw);
     const notes = typeof body.notes === 'string' ? body.notes : undefined;
 
+    const isManualPrice = body.isManualPrice === true;
+    let currentPrice: number | undefined;
+    if (isManualPrice) {
+      const cp = Number(body.currentPrice);
+      if (!Number.isFinite(cp) || cp <= 0) {
+        return NextResponse.json({ error: 'Precio actual inválido' }, { status: 400 });
+      }
+      currentPrice = cp;
+    }
+    const marketCurrencyRaw = body.marketCurrency;
+    const marketCurrency =
+      typeof marketCurrencyRaw === 'string' && marketCurrencyRaw.trim().length > 0
+        ? marketCurrencyRaw.trim().toUpperCase()
+        : isManualPrice
+          ? purchaseCurrency.toUpperCase()
+          : undefined;
+
     const investment = await investmentsService.create({
       userId: user.id,
       accountId,
@@ -104,6 +121,9 @@ export async function POST(req: NextRequest) {
       maturityDate,
       interestRate: Number.isFinite(interestRate) ? interestRate : undefined,
       notes,
+      marketCurrency,
+      isManualPrice,
+      currentPrice,
     });
 
     return NextResponse.json(investment, { status: 201 });

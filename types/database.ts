@@ -205,6 +205,8 @@ export interface Investment {
   current_price: number | null;
   current_price_updated_at: string | null;
   current_price_change_pct: number | null;
+  market_currency: string | null;
+  is_manual_price: boolean;
   maturity_date: string | null;
   interest_rate: number | null;
   notes: string | null;

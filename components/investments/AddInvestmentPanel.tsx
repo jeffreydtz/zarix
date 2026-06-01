@@ -51,6 +51,9 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
   const [purchaseDate, setPurchaseDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [maturityDate, setMaturityDate] = useState('');
   const [interestRate, setInterestRate] = useState('');
+  const [marketCurrency, setMarketCurrency] = useState('');
+  const [manualPrice, setManualPrice] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchHits, setSearchHits] = useState<TickerHit[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -59,6 +62,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
   const [quoteState, setQuoteState] = useState<QuoteState>({ status: 'idle', message: null });
 
   const needsTicker = NEEDS_TICKER.has(type);
+  const allowsCurrencyOverride = type === 'cedear' || type === 'stock_arg' || type === 'bond';
 
   useEffect(() => {
     if (investmentAccounts.length === 0) return;
@@ -145,6 +149,9 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setMaturityDate('');
     setInterestRate('');
+    setMarketCurrency('');
+    setManualPrice(false);
+    setCurrentPrice('');
     setSearchQuery('');
     setSearchHits([]);
     setError(null);
@@ -177,6 +184,13 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
       setError('El precio de compra debe ser un número mayor a 0.');
       return;
     }
+    if (manualPrice) {
+      const cp = Number(currentPrice);
+      if (!Number.isFinite(cp) || cp <= 0) {
+        setError('El precio de hoy debe ser un número mayor a 0.');
+        return;
+      }
+    }
 
     setSubmitting(true);
     try {
@@ -194,6 +208,11 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
           purchaseDate,
           maturityDate: maturityDate || undefined,
           interestRate: interestRate ? Number(interestRate) : undefined,
+          isManualPrice: manualPrice,
+          currentPrice: manualPrice ? Number(currentPrice) : undefined,
+          marketCurrency: manualPrice
+            ? marketCurrency || purchaseCurrency
+            : marketCurrency || undefined,
         }),
       });
       const data = await r.json();
@@ -317,6 +336,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
                       setTicker('');
                       setSearchQuery('');
                       setSearchHits([]);
+                      setMarketCurrency('');
                       setQuoteState({ status: 'idle', message: null });
                     }}
                   >
@@ -483,6 +503,80 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
                   />
                 </div>
               </label>
+            </div>
+
+            <div className="space-y-2.5 rounded-control border border-border/70 bg-surface-soft/50 p-3">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-border"
+                  checked={manualPrice}
+                  onChange={(e) => setManualPrice(e.target.checked)}
+                />
+                <span className="font-medium text-foreground">Cargar precio manual</span>
+              </label>
+              <p className="text-xs text-muted-foreground">
+                {manualPrice
+                  ? 'Se usa este precio de hoy para calcular el ROI. No se refresca solo desde la API.'
+                  : 'Si el ticker o fondo no está en la API, activá esto y cargá el precio de hoy a mano.'}
+              </p>
+
+              {manualPrice ? (
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <label className="block text-sm">
+                    <span className="text-muted-foreground font-medium">Precio de hoy</span>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      className="input mt-1 tabular-nums"
+                      value={currentPrice}
+                      onChange={(e) => setCurrentPrice(e.target.value)}
+                      placeholder="Ej. 12500"
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    <span className="text-muted-foreground font-medium">Moneda del precio</span>
+                    <div className="relative mt-1">
+                      <select
+                        className="input pr-9 appearance-none"
+                        value={marketCurrency || purchaseCurrency}
+                        onChange={(e) => setMarketCurrency(e.target.value)}
+                      >
+                        <option value="USD">USD</option>
+                        <option value="ARS">ARS</option>
+                      </select>
+                      <ChevronDown
+                        size={16}
+                        aria-hidden
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                      />
+                    </div>
+                  </label>
+                </div>
+              ) : allowsCurrencyOverride ? (
+                <label className="block text-sm">
+                  <span className="text-muted-foreground font-medium">Moneda de cotización</span>
+                  <div className="relative mt-1">
+                    <select
+                      className="input pr-9 appearance-none"
+                      value={marketCurrency}
+                      onChange={(e) => setMarketCurrency(e.target.value)}
+                    >
+                      <option value="">Automática (según tipo)</option>
+                      <option value="USD">USD</option>
+                      <option value="ARS">ARS</option>
+                    </select>
+                    <ChevronDown
+                      size={16}
+                      aria-hidden
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    />
+                  </div>
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    Para tickers en dólares como AAPLD (CEDEAR D), elegí USD.
+                  </span>
+                </label>
+              ) : null}
             </div>
 
             <label className="block text-sm">

@@ -18,6 +18,12 @@ export interface CreateInvestmentInput {
   maturityDate?: string;
   interestRate?: number;
   notes?: string;
+  /** Override de moneda de cotización (USD/ARS). */
+  marketCurrency?: string;
+  /** Si true, el precio actual se carga a mano y no se refresca de la API. */
+  isManualPrice?: boolean;
+  /** Precio actual cargado a mano (requerido si isManualPrice). */
+  currentPrice?: number;
 }
 
 export type PatchInvestmentInput = {
@@ -32,6 +38,9 @@ export type PatchInvestmentInput = {
   maturityDate?: string | null;
   interestRate?: number | null;
   notes?: string;
+  marketCurrency?: string | null;
+  isManualPrice?: boolean;
+  currentPrice?: number | null;
 };
 
 export interface InvestmentWithPnL extends Investment {
@@ -177,6 +186,14 @@ function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
     row.interest_rate = updates.interestRate === null ? null : updates.interestRate;
   }
   if (updates.notes !== undefined) row.notes = updates.notes ?? null;
+  if (updates.marketCurrency !== undefined) row.market_currency = updates.marketCurrency;
+  if (updates.isManualPrice !== undefined) row.is_manual_price = updates.isManualPrice;
+  if (updates.currentPrice !== undefined) {
+    row.current_price = updates.currentPrice;
+    // Precio cargado a mano: marcar como recién actualizado y limpiar variación diaria.
+    row.current_price_updated_at = updates.currentPrice == null ? null : new Date().toISOString();
+    row.current_price_change_pct = null;
+  }
   return row;
 }
 
@@ -199,6 +216,10 @@ class InvestmentsService {
         maturity_date: input.maturityDate || null,
         interest_rate: input.interestRate || null,
         notes: input.notes || null,
+        market_currency: input.marketCurrency || null,
+        is_manual_price: input.isManualPrice ?? false,
+        current_price: input.currentPrice ?? null,
+        current_price_updated_at: input.currentPrice != null ? new Date().toISOString() : null,
       })
       .select()
       .single();
@@ -361,6 +382,7 @@ class InvestmentsService {
     const candidatesForRefresh = needsRefresh
       ? investments.filter((inv) => {
           if (!inv.ticker) return false;
+          if (inv.is_manual_price) return false;
           if (options?.forceRefreshQuotes) return true;
           const lastUpdatedAt = inv.current_price_updated_at
             ? new Date(inv.current_price_updated_at).getTime()
@@ -379,13 +401,15 @@ class InvestmentsService {
       let currentPrice = Number(inv.current_price ?? inv.purchase_price);
       let dailyChangePct: number | null =
         inv.current_price_change_pct == null ? null : Number(inv.current_price_change_pct);
+      let liveCurrency: string | null = null;
 
-      if (inv.ticker) {
+      if (inv.ticker && !inv.is_manual_price) {
         const cacheKey = `${inv.type}:${inv.ticker.trim().toUpperCase()}`;
         const fresh = quoteMap.get(cacheKey);
         if (fresh && fresh.price > 0) {
           currentPrice = fresh.price;
           dailyChangePct = fresh.changePct;
+          liveCurrency = fresh.currency;
           updates.push({ id: inv.id, price: fresh.price, changePct: fresh.changePct });
         }
       }
@@ -393,7 +417,12 @@ class InvestmentsService {
       const qty = Number(inv.quantity);
       const purchaseUnit = Number(inv.purchase_price);
       const purchaseCur = (inv.purchase_currency || 'USD').toUpperCase();
-      const marketCur = marketCurrencyForInvestment(inv.type, inv.purchase_currency);
+      // Moneda de mercado: override manual del usuario > moneda real de la cotización
+      // en vivo (no para bonos: data912 hardcodea ARS y rompería un bono en USD) >
+      // default por tipo.
+      const typeDefaultCur = marketCurrencyForInvestment(inv.type, inv.purchase_currency);
+      const autoCur = inv.type !== 'bond' ? liveCurrency : null;
+      const marketCur = (inv.market_currency || autoCur || typeDefaultCur).toUpperCase();
       const priceFactor = priceFactorForType(inv.type);
 
       const costNative = (qty * purchaseUnit) / priceFactor;

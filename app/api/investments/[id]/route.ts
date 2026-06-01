@@ -60,6 +60,26 @@ export async function PATCH(
       }
     }
     if (body.notes !== undefined) patch.notes = body.notes;
+    if ('marketCurrency' in body) {
+      patch.marketCurrency =
+        body.marketCurrency == null || String(body.marketCurrency).trim() === ''
+          ? null
+          : String(body.marketCurrency).trim().toUpperCase();
+    }
+    if ('isManualPrice' in body) {
+      patch.isManualPrice = body.isManualPrice === true;
+    }
+    if ('currentPrice' in body) {
+      if (body.currentPrice === null || body.currentPrice === '') {
+        patch.currentPrice = null;
+      } else {
+        const cp = Number(body.currentPrice);
+        if (!Number.isFinite(cp) || cp <= 0) {
+          return NextResponse.json({ error: 'Precio actual inválido' }, { status: 400 });
+        }
+        patch.currentPrice = cp;
+      }
+    }
 
     const investment = await investmentsService.update(params.id, user.id, patch);
 

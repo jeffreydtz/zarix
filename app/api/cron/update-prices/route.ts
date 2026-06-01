@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
     .from('investments')
     .select('id, type, ticker, purchase_currency')
     .eq('is_active', true)
+    .eq('is_manual_price', false)
     .in('type', ['crypto', 'stock_us', 'etf', 'cedear']);
 
   if (error) {
