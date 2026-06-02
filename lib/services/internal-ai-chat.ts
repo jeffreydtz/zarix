@@ -25,13 +25,56 @@ export function preferFullTierForMessage(message: string): boolean {
   return false;
 }
 
+/**
+ * El bot viejo (antes de function calling) respondía con JSON
+ * `{ action, transaction(s), response }`. Esos turnos quedaron guardados en
+ * bot_sessions; al reinyectarlos como historial le enseñan al modelo a volver a
+ * responder JSON en vez de llamar tools. Lo detectamos para neutralizarlo.
+ */
+type LegacyAction = {
+  /** Tool de escritura a ejecutar, o '' si la acción no escribe datos. */
+  tool: '' | 'create_transaction' | 'create_transactions';
+  args: Record<string, unknown>;
+  /** Texto humano que traía el JSON (campo `response`). */
+  response: string;
+};
+
+function parseLegacyActionJson(text: string): LegacyAction | null {
+  const t = text
+    .trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/```\s*$/, '')
+    .trim();
+  if (!t.startsWith('{')) return null;
+
+  let obj: any;
+  try {
+    obj = JSON.parse(t);
+  } catch {
+    return null;
+  }
+  if (!obj || typeof obj !== 'object' || !('action' in obj)) return null;
+
+  const response = typeof obj.response === 'string' ? obj.response : '';
+  if (obj.action === 'create_transaction' && obj.transaction && typeof obj.transaction === 'object') {
+    return { tool: 'create_transaction', args: obj.transaction, response };
+  }
+  if (obj.action === 'create_transactions' && Array.isArray(obj.transactions)) {
+    return { tool: 'create_transactions', args: { transactions: obj.transactions }, response };
+  }
+  return { tool: '', args: {}, response };
+}
+
 export function mapHistoryToGemini(history: InternalAiChatHistoryItem[] = []): Content[] {
-  return history
-    .filter((h) => h?.text?.trim())
-    .map((h) => ({
-      role: h.role,
-      parts: [{ text: h.text }],
-    }));
+  const out: Content[] = [];
+  for (const h of history) {
+    const raw = h?.text?.trim();
+    if (!raw) continue;
+    // Turnos del modelo en formato JSON viejo → quedarnos solo con el texto.
+    const text = h.role === 'model' ? parseLegacyActionJson(raw)?.response ?? raw : raw;
+    if (text.trim()) out.push({ role: h.role, parts: [{ text }] });
+  }
+  return out;
 }
 
 function executionSummaryLine(executed: ExecutedTransactionSummary): string {
@@ -70,16 +113,42 @@ export async function processInternalAiChatMessage(input: {
     },
   });
 
+  let assistantText = text;
+
+  // Red de seguridad: si el modelo no llamó ninguna tool y devolvió JSON viejo
+  // {action, transaction, response} (por historial heredado del bot anterior),
+  // lo ejecutamos a mano para no perder el movimiento ni mostrarle JSON crudo.
+  if (toolsUsed.length === 0 && executed.length === 0 && assistantText) {
+    const legacy = parseLegacyActionJson(assistantText);
+    if (legacy?.tool) {
+      try {
+        const out = await executeBotTool(legacy.tool, legacy.args, {
+          userId: input.userId,
+          financialContext: input.financialContext,
+        });
+        if (out.executed?.length) executed.push(...out.executed);
+        toolsUsed.push(legacy.tool);
+        assistantText = ''; // usamos el resumen real de `executed`
+      } catch {
+        assistantText = legacy.response;
+      }
+    } else if (legacy) {
+      assistantText = legacy.response; // acción sin escritura: mostrar solo el texto
+    }
+  }
+
   const didWrite = executed.length > 0 || toolsUsed.some((t) => BOT_WRITE_TOOLS.has(t));
 
   const fallback = executed.length
     ? executed.map(executionSummaryLine).join('\n')
     : 'Listo.';
 
+  const message = assistantText || fallback;
+
   return {
     mode: didWrite ? 'executed' : 'chat',
-    assistant_message: text || fallback,
+    assistant_message: message,
     executed: executed.length ? executed : undefined,
-    raw_response: text,
+    raw_response: message,
   };
 }
