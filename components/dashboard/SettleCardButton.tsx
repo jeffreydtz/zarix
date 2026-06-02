@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { useRouter } from 'next/navigation';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
@@ -45,6 +46,7 @@ export default function SettleCardButton({
 }: SettleCardButtonProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
   const [fundingId, setFundingId] = useState('');
   const [amount, setAmount] = useState('');

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { ChevronDown, Loader2, TriangleAlert, X } from 'lucide-react';
 import type { InvestmentWithPnL } from '@/lib/services/investments';
 
@@ -16,6 +17,7 @@ function todayIso(): string {
 }
 
 export default function SellPositionDialog({ investment, onClose, onSold }: SellPositionDialogProps) {
+  useBodyScrollLock(Boolean(investment));
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
   const [currency, setCurrency] = useState('USD');

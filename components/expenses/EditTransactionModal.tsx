@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
 import {
@@ -30,6 +31,7 @@ export default function EditTransactionModal({
   onClose,
   onSave,
 }: EditTransactionModalProps) {
+  useBodyScrollLock();
   const [loading, setLoading] = useState(false);
   const [duplicateDraftMode, setDuplicateDraftMode] = useState(false);
   const [formData, setFormData] = useState<{

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 
 interface Category {
   id: string;
@@ -23,6 +24,7 @@ export default function CreateBudgetModal({
   onClose,
   onCreated,
 }: CreateBudgetModalProps) {
+  useBodyScrollLock();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     categoryId: '',

@@ -105,10 +105,10 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
               className="card hover:shadow-lg transition-shadow"
             >
               <div className="flex flex-col gap-2">
-                <div className="flex flex-row items-start gap-2 sm:gap-3">
+                <div className="flex flex-wrap items-start gap-2 sm:flex-nowrap sm:gap-3">
                   <Link
                     href={`/accounts/${account.id}`}
-                    className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0 rounded-xl -m-1 p-2 hover:bg-slate-50/90 dark:hover:bg-slate-700/50 transition-colors group"
+                    className="order-1 flex items-start gap-3 sm:gap-4 flex-1 min-w-0 rounded-xl -m-1 p-2 hover:bg-slate-50/90 dark:hover:bg-slate-700/50 transition-colors group"
                   >
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
@@ -120,7 +120,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                     </motion.div>
 
                     <div className="flex-1 min-w-0 pr-1">
-                      <div className="font-semibold text-lg text-slate-800 dark:text-slate-200 leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                      <div className="font-semibold text-lg text-slate-800 dark:text-slate-200 leading-snug break-words group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
                         {getAccountDisplayName(account)}
                       </div>
                       <div className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
@@ -134,7 +134,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                     </div>
                   </Link>
 
-                  <div className="flex flex-col items-end justify-start gap-1 text-right shrink-0 min-w-[7.5rem]">
+                  <div className="order-3 sm:order-2 w-full sm:w-auto flex flex-col items-end justify-start gap-1 text-right shrink-0 sm:min-w-[7.5rem]">
                     {isMulticurrencyCard ? (
                       <div className="text-right space-y-0.5">
                         <div className="text-base sm:text-lg font-bold tabular-nums text-red-500">
@@ -189,7 +189,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                     )}
                   </div>
 
-                  <div className="flex gap-1 shrink-0 self-start pt-1">
+                  <div className="order-2 sm:order-3 flex gap-1 shrink-0 self-start pt-1">
                     <motion.button
                       type="button"
                       whileTap={{ scale: 0.9 }}

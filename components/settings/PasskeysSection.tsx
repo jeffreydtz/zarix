@@ -27,6 +27,7 @@ export default function PasskeysSection() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
 
@@ -57,11 +58,13 @@ export default function PasskeysSection() {
   const handleRegister = async () => {
     setBusy(true);
     setError('');
+    setSuccess('');
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.registerPasskey();
       if (error) throw error;
       await loadPasskeys();
+      setSuccess('✅ Passkey agregada');
     } catch (err) {
       setError(translatePasskeyError(err));
     } finally {
@@ -77,12 +80,14 @@ export default function PasskeysSection() {
     }
     setBusy(true);
     setError('');
+    setSuccess('');
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.passkey.update({ passkeyId, friendlyName });
       if (error) throw error;
       setEditingId(null);
       await loadPasskeys();
+      setSuccess('✅ Nombre actualizado');
     } catch (err) {
       setError(translatePasskeyError(err));
     } finally {
@@ -97,11 +102,13 @@ export default function PasskeysSection() {
     }
     setBusy(true);
     setError('');
+    setSuccess('');
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.passkey.delete({ passkeyId: passkey.id });
       if (error) throw error;
       await loadPasskeys();
+      setSuccess('✅ Passkey eliminada');
     } catch (err) {
       setError(translatePasskeyError(err));
     } finally {
@@ -135,6 +142,12 @@ export default function PasskeysSection() {
           {error && (
             <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
               {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-sm text-green-700 dark:text-green-400">
+              {success}
             </div>
           )}
 
@@ -221,8 +234,14 @@ export default function PasskeysSection() {
           <button
             onClick={handleRegister}
             disabled={busy || loading}
-            className="btn btn-primary px-4 py-2 text-sm"
+            className="btn btn-primary px-4 py-2 text-sm inline-flex items-center gap-2"
           >
+            {busy && (
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+            )}
             {busy ? 'Procesando...' : '➕ Agregar passkey'}
           </button>
         </div>

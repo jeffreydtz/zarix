@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { ChevronDown, TriangleAlert, X } from 'lucide-react';
 import type { Account, InvestmentType } from '@/types/database';
 import type { InvestmentWithPnL } from '@/lib/services/investments';
@@ -35,6 +36,7 @@ export default function EditInvestmentDialog({
   onClose,
   onSaved,
 }: EditInvestmentDialogProps) {
+  useBodyScrollLock(Boolean(investment));
   const [accountId, setAccountId] = useState('');
   const [type, setType] = useState<InvestmentType>('stock_us');
   const [ticker, setTicker] = useState('');

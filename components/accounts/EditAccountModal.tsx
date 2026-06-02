@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { useRouter } from 'next/navigation';
 import type { AccountWithBalance } from '@/lib/services/accounts';
 import {
@@ -31,6 +32,7 @@ function getEditablePrimaryBalance(account: AccountWithBalance): number {
 }
 
 export default function EditAccountModal({ account, onClose }: EditAccountModalProps) {
+  useBodyScrollLock();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 

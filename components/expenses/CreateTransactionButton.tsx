@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useOfflineQueue } from '@/lib/hooks/useOfflineQueue';
 import type { QueuedTransaction } from '@/lib/hooks/useOfflineQueue';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
 import {
   calendarDateToUtcNoonIso,
@@ -103,6 +104,7 @@ export default function CreateTransactionButton({
   const router = useRouter();
   const transferOnly = mode === 'transfer-only';
   const [isOpen, setIsOpen] = useState(false);
+  useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState<'expense' | 'income' | 'transfer'>(
     transferOnly ? 'transfer' : 'expense'

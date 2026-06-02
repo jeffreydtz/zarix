@@ -228,7 +228,7 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                     <button
                       type="button"
                       onClick={() => onSell(inv)}
-                      className="inline-flex h-8 items-center justify-center gap-1 rounded-control px-2.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
+                      className="inline-flex h-11 items-center justify-center gap-1 rounded-control px-3 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
                       aria-label="Vender posición"
                       title="Vender"
                     >
@@ -240,7 +240,7 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                     <button
                       type="button"
                       onClick={() => onEdit(inv)}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-control text-muted-foreground hover:text-foreground hover:bg-surface-soft transition-colors"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-control text-muted-foreground hover:text-foreground hover:bg-surface-soft transition-colors"
                       aria-label="Editar posición"
                       title="Editar"
                     >
@@ -252,7 +252,7 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                       type="button"
                       onClick={() => void archive(inv.id)}
                       disabled={archivingId === inv.id}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-control text-muted-foreground hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 transition-colors"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-control text-muted-foreground hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 transition-colors"
                       aria-label="Archivar posición"
                       title="Archivar"
                     >

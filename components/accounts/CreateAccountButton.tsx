@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import {
   ACCOUNT_FORM_CURRENCIES,
   ACCOUNT_FORM_ICONS,
@@ -12,6 +13,7 @@ import { useRouter } from 'next/navigation';
 export default function CreateAccountButton() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('💳');

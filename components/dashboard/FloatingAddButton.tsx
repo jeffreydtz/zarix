@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useOfflineQueue } from '@/lib/hooks/useOfflineQueue';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
 import {
   calendarDateToUtcNoonIso,
@@ -44,6 +45,7 @@ interface Category {
 export default function FloatingAddButton() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
