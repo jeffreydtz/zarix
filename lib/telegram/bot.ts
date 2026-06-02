@@ -20,7 +20,7 @@ import { subscriptionsService } from '@/lib/services/subscriptions';
 import {
   processInternalAiChatMessage,
 } from '@/lib/services/internal-ai-chat';
-import { parseBotTransactionDateInput } from '@/lib/transaction-date';
+import { escapeMd } from '@/lib/telegram/markdown';
 import { buildTelegramSummaryScheduleLines } from '@/lib/notification-schedule';
 import type { SubscriptionStatus } from '@/types/database';
 import type { InternalAiChatHistoryItem } from '@/types/internal-ai-chat';
@@ -86,11 +86,12 @@ function coerceSummaryBool(v: unknown, fallback: boolean): boolean {
 async function getFinancialContext(userId: string): Promise<FinancialContext> {
   const supabase = createServiceClientSync();
 
-  const [userResult, accounts, categories, monthSummary] = await Promise.all([
+  // El asistente consulta gastos/saldos vía tools (get_spending, get_accounts…),
+  // así que el contexto base solo necesita usuario + cuentas + categorías.
+  const [userResult, accounts, categories] = await Promise.all([
     supabase.from('users').select('*').eq('id', userId).single(),
     accountsService.list(userId),
     supabase.from('categories').select('*').or(`user_id.eq.${userId},is_system.eq.true`),
-    transactionsService.getMonthSummary(userId, new Date()),
   ]);
 
   if (userResult.error) throw userResult.error;
@@ -100,7 +101,6 @@ async function getFinancialContext(userId: string): Promise<FinancialContext> {
     user: userResult.data,
     accounts,
     categories: categories.data,
-    monthSummary,
   };
 }
 
@@ -124,16 +124,19 @@ function registerBotHandlers(bot: Telegraf) {
   if (existingUser) {
     return ctx.reply(
       `¡Ya estás vinculado! 🎉\n\n` +
-        `/cuentas → saldos\n` +
-        `/resumenes → avisos semanal y mensual por Telegram\n` +
-        `O escribime: "gasté 5000 en el super"`
+        `Escribime natural:\n` +
+        `• "gasté 5000 en el super"\n` +
+        `• "cuánto gasté en comida este mes?"\n` +
+        `• "cómo va mi cartera?"\n\n` +
+        `O usá /help para ver todo lo que puedo hacer.`
     );
   }
 
   return ctx.reply(
-    `¡Hola! Para vincular tu cuenta, andá a la app web y pegá este código:\n\n` +
+    `¡Hola! Soy el asistente de Zarix.\n\n` +
+      `Para vincular tu cuenta, entrá a la app web → Configuración → Telegram y pegá este código:\n\n` +
       `\`${telegramChatId}\`\n\n` +
-      `O decime tu user ID de Supabase y te vinculo manual.`
+      `Cuando lo vincules, volvé acá y mandame /start.`
   );
 });
 
@@ -150,7 +153,7 @@ bot.command('cuentas', async (ctx) => {
 
   accounts.forEach((acc) => {
     const sign = acc.is_debt ? '-' : '';
-    message += `${acc.icon || '💳'} *${acc.name}*\n`;
+    message += `${acc.icon || '💳'} *${escapeMd(acc.name)}*\n`;
     message += `   ${sign}$${acc.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })} ${acc.currency}\n`;
 
     if (acc.currency !== 'ARS') {
@@ -207,7 +210,7 @@ bot.command('resumen', async (ctx) => {
   if (summary.topCategories.length > 0) {
     message += `*Top categorías:*\n`;
     summary.topCategories.forEach((cat, i) => {
-      message += `${i + 1}. ${cat.icon} ${cat.name}: $${cat.amount.toLocaleString('es-AR')}\n`;
+      message += `${i + 1}. ${cat.icon} ${escapeMd(cat.name)}: $${cat.amount.toLocaleString('es-AR')}\n`;
     });
   }
 
@@ -215,27 +218,35 @@ bot.command('resumen', async (ctx) => {
 });
 
 bot.command('help', async (ctx) => {
-  const message = `🤖 *COMANDOS DISPONIBLES*
+  const message = `🤖 *ASISTENTE DE ZARIX*
 
-/cuentas → ver saldos de todas tus cuentas
-/cotizaciones → dólar blue, MEP, BTC, ETH
-/resumen → resumen del mes actual (al instante)
-/resumenes → activar/desactivar *avisos* semanal y mensual por Telegram
-/reset → borrar memoria del chat con el bot (no borra tus movimientos)
+*Comandos rápidos:*
+/cuentas → saldos de todas tus cuentas
+/cotizaciones → dólar blue, MEP, CCL, BTC, ETH
+/resumen → resumen del mes (al instante)
+/resumenes → avisos semanal y mensual por Telegram
+/reset → borrar la memoria del chat (no borra tus movimientos)
 /help → esta ayuda
 
-*LENGUAJE NATURAL:*
-También podés hablarme natural:
-
+*Hablame natural — registro:*
 • "gasté 5000 en el super"
 • "me depositaron el sueldo, 800 lucas"
 • "pagué netflix con la visa, 15 dólares"
 • "compré 100 dólares a 1250"
-• "cuánto gasté en comida este mes?"
-• "a cómo está el blue?"
-• Varios gastos en un mensaje: "500 en el súper, 200 de nafta y 80 de café"
+• "500 en el súper, 200 de nafta y 80 de café"
+• 📷 Mandame la *foto de un ticket* o un 🎤 *audio*
 
-¡Probá y te entiendo! 🚀`;
+*Hablame natural — consultas:*
+• "cuánto gasté en comida este mes?"
+• "mostrame mis últimos gastos"
+• "cómo voy con el presupuesto?"
+• "cómo va mi cartera?"
+• "cuánto tengo en total?"
+• "a cómo está el blue?"
+
+*Corregir:* "borrá el último" · "eran 5000 no 500"
+
+Solo me ocupo de tus finanzas en Zarix. 🚀`;
 
   ctx.reply(message, { parse_mode: 'Markdown' });
 });
@@ -434,53 +445,43 @@ Si no es un ticket/factura o no podés extraer información:
       return ctx.reply(parsed.message || 'No encontré información de gasto en la imagen. ¿Es un ticket de compra?');
     }
 
-    let account = financialContext.accounts.find(
-      a => a.name.toLowerCase() === parsed.suggestedAccount?.toLowerCase()
-    );
-    if (!account) {
-      account = financialContext.accounts.find(
-        a => a.currency === parsed.currency && a.type !== 'credit_card'
-      );
+    const amount = Number(parsed.amount);
+    if (!amount || amount <= 0) {
+      return ctx.reply('Detecté un ticket pero no pude leer el monto. ¿Me lo escribís?');
     }
 
-    if (!account) {
-      return ctx.reply(`Encontré un gasto de $${parsed.amount} pero no tenés cuentas en ${parsed.currency}. ¿Querés crear una?`);
-    }
+    const currency = String(parsed.currency || 'ARS').toUpperCase();
+    const merchant = parsed.merchant || 'comercio';
+    const description = parsed.description || merchant;
+    const category = parsed.category || null;
+    const suggestedAccount = parsed.suggestedAccount || null;
+    const confidenceEmoji =
+      parsed.confidence === 'high' ? '✅' : parsed.confidence === 'medium' ? '⚠️' : '❓';
 
-    let category = financialContext.categories.find(
-      c => c.name.toLowerCase() === parsed.category?.toLowerCase()
+    const confirmMessage =
+      `${confidenceEmoji} *Encontré este gasto:*\n\n` +
+      `💰 Monto: $${amount.toLocaleString('es-AR')} ${currency}\n` +
+      `🏪 Comercio: ${escapeMd(merchant)}\n` +
+      `📅 Fecha: ${escapeMd(parsed.date || 'hoy')}\n` +
+      `🏷️ Categoría: ${escapeMd(category || 'a definir')}\n` +
+      (suggestedAccount ? `💳 Cuenta: ${escapeMd(suggestedAccount)}\n` : '') +
+      `\n¿Lo registro? Respondé *sí* para confirmar, o corregime cualquier dato.`;
+
+    // Guardamos la propuesta en la memoria de la conversación. Si el usuario
+    // responde "sí" (o corrige algo), el modelo la lee del historial y la
+    // registra con create_transaction. Sin estado en `global` (no sobrevive a
+    // serverless: cada request puede ser una instancia distinta).
+    const memoryTurn =
+      `Analicé la foto de un ticket y detecté un gasto para confirmar: ` +
+      `monto ${amount} ${currency}` +
+      (suggestedAccount ? `, cuenta sugerida "${suggestedAccount}"` : '') +
+      (category ? `, categoría "${category}"` : '') +
+      `, descripción "${description}"` +
+      (parsed.date ? `, fecha ${parsed.date}` : '') +
+      `. Le pregunté al usuario si lo registro; si confirma, registrá este gasto con estos datos.`;
+    await appendBotTurn(user.id, ctx.chat.id, '[Foto de un ticket de compra]', memoryTurn).catch(
+      () => {}
     );
-
-    const confidenceEmoji = parsed.confidence === 'high' ? '✅' : parsed.confidence === 'medium' ? '⚠️' : '❓';
-
-    const confirmMessage = `${confidenceEmoji} *Encontré este gasto:*
-
-💰 Monto: $${parsed.amount.toLocaleString('es-AR')} ${parsed.currency}
-🏪 Comercio: ${parsed.merchant || 'No detectado'}
-📅 Fecha: ${parsed.date || 'Hoy'}
-🏷️ Categoría: ${category?.icon || '❓'} ${parsed.category || 'Sin categoría'}
-💳 Cuenta: ${account.icon} ${account.name}
-
-¿Lo registro? Respondé *sí* para confirmar o corregime los datos.`;
-
-    const pendingKey = `pending_photo_${ctx.chat.id}`;
-    const pendingData = {
-      amount: parsed.amount,
-      currency: parsed.currency,
-      accountId: account.id,
-      accountName: account.name,
-      categoryId: category?.id,
-      categoryName: parsed.category,
-      description: parsed.description || parsed.merchant,
-      date: parsed.date,
-      userId: user.id
-    };
-    
-    (global as any)[pendingKey] = pendingData;
-    
-    setTimeout(() => {
-      delete (global as any)[pendingKey];
-    }, 5 * 60 * 1000);
 
     return ctx.reply(confirmMessage, { parse_mode: 'Markdown' });
 
@@ -587,55 +588,10 @@ bot.on(message('text'), async (ctx) => {
   }
 
   const userMessage = ctx.message.text;
-  
-  const pendingKey = `pending_photo_${ctx.chat.id}`;
-  const pendingData = (global as any)[pendingKey];
-  
-  if (pendingData && ['sí', 'si', 'ok', 'dale', 'confirmar', 'yes'].includes(userMessage.toLowerCase().trim())) {
-    try {
-      await transactionsService.create({
-        userId: pendingData.userId,
-        type: 'expense',
-        accountId: pendingData.accountId,
-        amount: pendingData.amount,
-        currency: pendingData.currency,
-        categoryId: pendingData.categoryId,
-        description: pendingData.description,
-        transactionDate:
-          parseBotTransactionDateInput(pendingData.date) ?? new Date().toISOString(),
-      });
-      
-      delete (global as any)[pendingKey];
-      
-      return ctx.reply(
-        `✅ Listo! Registré $${pendingData.amount.toLocaleString('es-AR')} ${pendingData.currency} en ${pendingData.accountName}` +
-        (pendingData.categoryName ? ` (${pendingData.categoryName})` : '')
-      );
-    } catch (error) {
-      console.error('Error saving photo transaction:', error);
-      return ctx.reply('Hubo un error guardando el gasto. ¿Podés intentar de nuevo?');
-    }
-  }
-  
-  if (pendingData && ['no', 'cancelar', 'cancel'].includes(userMessage.toLowerCase().trim())) {
-    delete (global as any)[pendingKey];
-    return ctx.reply('Ok, cancelado. Podés mandarme otra foto o escribirme el gasto.');
-  }
 
-  const offTopicKeywords = [
-    'chiste', 'poema', 'canción', 'receta', 'clima', 'tiempo',
-    'horóscopo', 'serie',
-    'traduci', 'traducir', 'código', 'programar', 'html', 'javascript',
-  ];
-
-  const lowerMessage = userMessage.toLowerCase();
-  const isOffTopic = offTopicKeywords.some(keyword => lowerMessage.includes(keyword));
-
-  if (isOffTopic) {
-    return ctx.reply(
-      'Solo ayudo con finanzas personales. ¿Necesitás registrar un gasto, consultar saldos o analizar tus gastos?'
-    );
-  }
+  // El alcance (solo finanzas) y la confirmación de tickets las maneja el modelo
+  // con su system prompt + memoria de conversación. No hay blocklist de keywords
+  // (daba falsos positivos) ni estado de confirmación en `global`.
 
   try {
     const financialContext = await getFinancialContext(user.id);
@@ -684,6 +640,16 @@ bot.on(message('text'), async (ctx) => {
     ctx.reply('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
   }
 });
+
+  // Red de captura global: cualquier error no manejado en un handler cae acá.
+  bot.catch(async (err, ctx) => {
+    console.error('Telegram handler error:', err);
+    try {
+      await ctx.reply('Uy, algo falló de mi lado. Probá de nuevo en un toque.');
+    } catch {
+      // ignorar: no podemos responder
+    }
+  });
 }
 
 const sharedToken = process.env.TELEGRAM_BOT_TOKEN;

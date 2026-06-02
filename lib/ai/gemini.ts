@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, Content } from '@google/generative-ai';
+import { GoogleGenerativeAI, Content, type FunctionDeclaration } from '@google/generative-ai';
 import { createServiceClientSync } from '@/lib/supabase/server';
 
 const GEMINI_LITE_MODEL = process.env.GEMINI_MODEL_LITE || 'gemini-2.5-flash-lite';
@@ -85,6 +85,77 @@ export class GeminiClient {
 
     const result = await chat.sendMessage(message);
     return result.response.text();
+  }
+
+  /**
+   * Chat con function calling. El modelo decide qué tools llamar; ejecutamos cada
+   * una con `onToolCall` y le devolvemos el resultado, en loop, hasta que produzca
+   * texto final (o se agoten las rondas). No usa responseMimeType JSON: el output
+   * final es prosa en rioplatense.
+   */
+  async chatWithTools(
+    message: string,
+    options: {
+      tier?: GeminiTier;
+      history?: Content[];
+      systemInstruction?: string;
+      functionDeclarations: FunctionDeclaration[];
+      onToolCall: (name: string, args: Record<string, unknown>) => Promise<Record<string, unknown>>;
+      maxTokens?: number;
+      maxRounds?: number;
+    }
+  ): Promise<{ text: string; toolsUsed: string[] }> {
+    const {
+      tier = 'lite',
+      history = [],
+      systemInstruction,
+      functionDeclarations,
+      onToolCall,
+      maxTokens = 2048,
+      maxRounds = 6,
+    } = options;
+
+    const modelName = tier === 'lite' ? GEMINI_LITE_MODEL : GEMINI_FULL_MODEL;
+    const model = this.genAI.getGenerativeModel({
+      model: modelName,
+      systemInstruction,
+      tools: [{ functionDeclarations }],
+    });
+
+    const chat = model.startChat({
+      history,
+      generationConfig: { maxOutputTokens: maxTokens, temperature: 0.3 },
+    });
+
+    const toolsUsed: string[] = [];
+    let result = await chat.sendMessage(message);
+
+    for (let round = 0; round < maxRounds; round++) {
+      const calls = result.response.functionCalls();
+      if (!calls || calls.length === 0) break;
+
+      const responses = [];
+      for (const call of calls) {
+        toolsUsed.push(call.name);
+        let toolResult: Record<string, unknown>;
+        try {
+          toolResult = await onToolCall(call.name, (call.args as Record<string, unknown>) ?? {});
+        } catch (e) {
+          toolResult = { error: (e as Error)?.message || 'tool_error' };
+        }
+        responses.push({ functionResponse: { name: call.name, response: toolResult ?? {} } });
+      }
+
+      result = await chat.sendMessage(responses);
+    }
+
+    let text = '';
+    try {
+      text = result.response.text();
+    } catch {
+      text = '';
+    }
+    return { text: text.trim(), toolsUsed };
   }
 
   async chatWithImage(
