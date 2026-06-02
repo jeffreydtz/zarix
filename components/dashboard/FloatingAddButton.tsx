@@ -47,6 +47,7 @@ export default function FloatingAddButton() {
   const [isOpen, setIsOpen] = useState(false);
   useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
@@ -102,6 +103,7 @@ export default function FloatingAddButton() {
   };
 
   const handleCreate = async () => {
+    setError('');
     if (!amount || !accountId) return;
     setLoading(true);
 
@@ -144,7 +146,7 @@ export default function FloatingAddButton() {
         await enqueue(payload);
         handleClose();
       } else {
-        alert('Error al crear el movimiento');
+        setError('Error al crear el movimiento');
       }
     } finally {
       setLoading(false);
@@ -180,7 +182,7 @@ export default function FloatingAddButton() {
       <button
         type="button"
         data-tour="add"
-        onClick={() => setIsOpen(true)}
+        onClick={() => { setError(''); setIsOpen(true); }}
         className="fixed z-50 w-14 h-14 min-w-[56px] min-h-[56px] bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center transition-transform active:scale-95 touch-manipulation right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-6 md:right-6"
         title="Nuevo Movimiento"
         aria-label="Nuevo Movimiento"
@@ -223,6 +225,12 @@ export default function FloatingAddButton() {
                 </svg>
               </button>
             </div>
+
+            {error && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+                {error}
+              </div>
+            )}
 
             <div className="mb-4 rounded-xl bg-slate-100 p-1 dark:bg-slate-700/60">
               <div className="grid grid-cols-2 gap-1">

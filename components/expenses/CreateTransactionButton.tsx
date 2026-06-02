@@ -106,6 +106,7 @@ export default function CreateTransactionButton({
   const [isOpen, setIsOpen] = useState(false);
   useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [type, setType] = useState<'expense' | 'income' | 'transfer'>(
     transferOnly ? 'transfer' : 'expense'
   );
@@ -344,6 +345,7 @@ export default function CreateTransactionButton({
   };
 
   const handleCreate = async () => {
+    setError('');
     if (!amount || !accountId) return;
     if (type === 'transfer' && !destinationAccountId) return;
     if (type === 'transfer' && destinationAccountId === accountId) return;
@@ -408,7 +410,7 @@ export default function CreateTransactionButton({
         await enqueue(payload);
         handleClose();
       } else {
-        alert('Error al crear el movimiento');
+        setError('Error al crear el movimiento');
       }
     } finally {
       setLoading(false);
@@ -440,7 +442,7 @@ export default function CreateTransactionButton({
     <>
       <button
         type="button"
-        onClick={() => canTransfer && setIsOpen(true)}
+        onClick={() => { if (canTransfer) { setError(''); setIsOpen(true); } }}
         disabled={transferOnly && !canTransfer}
         title={transferOnly && !canTransfer ? 'Creá al menos dos cuentas para transferir' : undefined}
         className={`${openButtonClass}${transferOnly && !canTransfer ? ' opacity-50 cursor-not-allowed' : ''}`}
@@ -475,6 +477,11 @@ export default function CreateTransactionButton({
             </div>
 
             <div className="space-y-4">
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+                  {error}
+                </div>
+              )}
               {!transferOnly && (
                 <div>
                   <label className="block text-sm font-medium mb-2">Tipo</label>

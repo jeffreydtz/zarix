@@ -35,6 +35,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
   useBodyScrollLock();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [name, setName] = useState(account.name);
   const [type, setType] = useState<string>(account.type);
@@ -91,25 +92,26 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     if (!name.trim()) {
-      alert('El nombre es requerido');
+      setError('El nombre es requerido');
       return;
     }
     if (isCreditCard) {
       const lim = parseFloat(creditLimit.replace(',', '.'));
       if (!Number.isFinite(lim) || lim <= 0) {
-        alert('Ingresá un límite de crédito válido para la tarjeta');
+        setError('Ingresá un límite de crédito válido para la tarjeta');
         return;
       }
     }
     if (last4Digits && !/^\d{4}$/.test(last4Digits)) {
-      alert('Los últimos 4 dígitos deben ser exactamente 4 números o vacío');
+      setError('Los últimos 4 dígitos deben ser exactamente 4 números o vacío');
       return;
     }
 
     const target = parseFloat(targetBalance.replace(',', '.'));
     if (!Number.isFinite(target)) {
-      alert('Ingresá un saldo válido');
+      setError('Ingresá un saldo válido');
       return;
     }
     const currentPrimary = getEditablePrimaryBalance(account);
@@ -117,7 +119,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
     const targetSecondary = parseFloat(targetSecondaryBalance.replace(',', '.'));
     const shouldHandleSecondary = isCreditCard && isMulticurrency;
     if (shouldHandleSecondary && !Number.isFinite(targetSecondary)) {
-      alert('Ingresá un saldo secundario válido');
+      setError('Ingresá un saldo secundario válido');
       return;
     }
 
@@ -212,7 +214,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
       onClose();
       router.refresh();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Error al guardar');
+      setError(err instanceof Error ? err.message : 'Error al guardar');
     } finally {
       setLoading(false);
     }
@@ -258,6 +260,11 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
           </div>
 
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            {error && (
+              <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+                {error}
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Nombre

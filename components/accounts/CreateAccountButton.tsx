@@ -15,6 +15,7 @@ export default function CreateAccountButton() {
   const [isOpen, setIsOpen] = useState(false);
   useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [name, setName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('💳');
   const [selectedType, setSelectedType] = useState('bank');
@@ -34,13 +35,14 @@ export default function CreateAccountButton() {
   const isInvestment = selectedType === 'investment';
 
   const handleCreate = async () => {
+    setError('');
     if (!name.trim()) {
-      alert('El nombre es requerido');
+      setError('El nombre es requerido');
       return;
     }
 
     if (isCreditCard && !creditLimit) {
-      alert('El limite de credito es requerido para tarjetas');
+      setError('El limite de credito es requerido para tarjetas');
       return;
     }
 
@@ -96,7 +98,7 @@ export default function CreateAccountButton() {
       router.refresh();
     } catch (error: any) {
       console.error('Error:', error);
-      alert(error.message || 'Error al crear la cuenta');
+      setError(error.message || 'Error al crear la cuenta');
     } finally {
       setLoading(false);
     }
@@ -107,7 +109,7 @@ export default function CreateAccountButton() {
       <motion.button 
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        onClick={() => setIsOpen(true)} 
+        onClick={() => { setError(''); setIsOpen(true); }}
         className="btn btn-primary flex items-center gap-2"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,6 +148,11 @@ export default function CreateAccountButton() {
               </div>
 
               <div className="p-6 space-y-5">
+                {error && (
+                  <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+                    {error}
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nombre</label>
                   <input

@@ -2,6 +2,7 @@
 
 import { AlertCircle, Bug, Send, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 
 type Severity = 'Bajo' | 'Medio' | 'Alto' | 'Critico';
 
@@ -9,6 +10,7 @@ const SUPPORT_EMAIL = 'jef_dietz@hotmail.com';
 
 export default function BugReportWidget() {
   const [open, setOpen] = useState(false);
+  useBodyScrollLock(open);
   const [title, setTitle] = useState('');
   const [details, setDetails] = useState('');
   const [steps, setSteps] = useState('');

@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { brandAsset } from '@/lib/brand';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 
 const PRIMARY_LINKS = [
   { href: '/dashboard', label: 'Inicio', icon: '🏠' },
@@ -29,6 +30,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
+  useBodyScrollLock(moreSheetOpen);
   const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

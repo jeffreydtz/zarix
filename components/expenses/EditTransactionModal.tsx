@@ -33,6 +33,7 @@ export default function EditTransactionModal({
 }: EditTransactionModalProps) {
   useBodyScrollLock();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [duplicateDraftMode, setDuplicateDraftMode] = useState(false);
   const [formData, setFormData] = useState<{
     type: typeof transaction.type;
@@ -70,6 +71,7 @@ export default function EditTransactionModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
 
     try {
@@ -125,7 +127,7 @@ export default function EditTransactionModal({
       onSave();
     } catch (error: any) {
       console.error('Error:', error);
-      alert(error.message || 'Error al actualizar');
+      setError(error.message || 'Error al actualizar');
     } finally {
       setLoading(false);
     }
@@ -134,6 +136,7 @@ export default function EditTransactionModal({
   const handleDelete = async () => {
     if (!confirm('¿Eliminar este movimiento?')) return;
 
+    setError('');
     setLoading(true);
     try {
       const response = await fetch(`/api/transactions/${transaction.id}`, {
@@ -148,7 +151,7 @@ export default function EditTransactionModal({
       onSave();
     } catch (error: any) {
       console.error('Error:', error);
-      alert(error.message || 'Error al eliminar el movimiento');
+      setError(error.message || 'Error al eliminar el movimiento');
     } finally {
       setLoading(false);
     }
@@ -188,6 +191,11 @@ export default function EditTransactionModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {error && (
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+              {error}
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Tipo

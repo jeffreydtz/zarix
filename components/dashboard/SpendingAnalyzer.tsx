@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import ChartTooltip from '@/components/ui/ChartTooltip';
 import { CategoryIcon } from '@/lib/category-icons';
@@ -358,6 +359,7 @@ export default function SpendingAnalyzer({
   /** 'all' = todas las monedas (general). */
   const [currencyFilter, setCurrencyFilter] = useState<string>('all');
   const [detailCategory, setDetailCategory] = useState<string | null>(null);
+  useBodyScrollLock(Boolean(detailCategory));
   const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(null);
   const [editAccounts, setEditAccounts] = useState<
     Array<{ id: string; name: string; currency: string; balance: number }>

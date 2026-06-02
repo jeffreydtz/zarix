@@ -48,6 +48,7 @@ export default function SettleCardButton({
   const [isOpen, setIsOpen] = useState(false);
   useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [fundingId, setFundingId] = useState('');
   const [amount, setAmount] = useState('');
 
@@ -68,6 +69,7 @@ export default function SettleCardButton({
   if (primaryDebt <= 0) return null;
 
   const openModal = () => {
+    setError('');
     const first = fundingAccounts[0];
     setFundingId(first?.id ?? '');
     const initialMax = first ? Math.min(primaryDebt, availableFromSource(first.balance)) : 0;
@@ -95,6 +97,7 @@ export default function SettleCardButton({
 
   const handleSettle = async () => {
     if (!fundingId || !amountValid) return;
+    setError('');
     setLoading(true);
     try {
       const response = await fetch('/api/transactions', {
@@ -114,7 +117,7 @@ export default function SettleCardButton({
       router.refresh();
     } catch {
       setLoading(false);
-      alert('No se pudo saldar la tarjeta');
+      setError('No se pudo saldar la tarjeta');
     }
   };
 
@@ -156,6 +159,11 @@ export default function SettleCardButton({
             </div>
 
             <div className="space-y-4">
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+                  {error}
+                </div>
+              )}
               <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-900/15 px-3 py-2.5">
                 <p className="text-sm text-slate-700 dark:text-slate-200">
                   Deuda actual:{' '}
