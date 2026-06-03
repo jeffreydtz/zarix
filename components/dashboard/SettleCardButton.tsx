@@ -205,9 +205,8 @@ export default function SettleCardButton({
                 <label className="block text-sm font-medium mb-2">Monto a saldar</label>
                 <div className="flex flex-col gap-2">
                   <input
-                    type="number"
+                    type="text"
                     inputMode="decimal"
-                    step="0.01"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0.00"

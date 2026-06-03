@@ -116,7 +116,7 @@ export default function FloatingAddButton() {
     const payload = {
       type,
       accountId,
-      amount: parseFloat(amount),
+      amount: parseFloat(amount.replace(',', '.')),
       currency: amountCurrency,
       categoryId: categoryId || null,
       description,
@@ -305,9 +305,8 @@ export default function FloatingAddButton() {
                   </label>
                   <div className="flex gap-2">
                     <input
-                      type="number"
+                      type="text"
                       inputMode="decimal"
-                      step="0.01"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       placeholder="0.00"

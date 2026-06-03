@@ -47,7 +47,7 @@ export default function CreateBudgetModal({
         body: JSON.stringify({
           categoryId: form.categoryId || null,
           month,
-          amount: Number(form.amount),
+          amount: parseFloat(form.amount.replace(',', '.')),
           currency: form.currency,
           alertAtPercent: form.alertAtPercent,
           rolloverEnabled: form.rolloverEnabled,
@@ -117,7 +117,8 @@ export default function CreateBudgetModal({
                   Monto límite
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   required
                   value={form.amount}
                   onChange={(e) => setForm({ ...form, amount: e.target.value })}

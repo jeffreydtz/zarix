@@ -56,13 +56,13 @@ export default function CreateAccountButton() {
         icon: selectedIcon,
         color: selectedTypeData?.color || '#3B82F6',
         isDebt: isCreditCard || isDebt,
-        initialBalance: parseFloat(initialBalance) || 0,
+        initialBalance: parseFloat(initialBalance.replace(',', '.')) || 0,
         includeInTotal: !isCreditCard,
         includeInLiquid: isInvestment ? true : includeInLiquid,
       };
 
       if (isCreditCard) {
-        payload.creditLimit = parseFloat(creditLimit);
+        payload.creditLimit = parseFloat(creditLimit.replace(',', '.'));
         if (closingDay) payload.closingDay = parseInt(closingDay);
         if (dueDay) payload.dueDay = parseInt(dueDay);
         if (isMulticurrency) {
@@ -235,8 +235,8 @@ export default function CreateAccountButton() {
                     Saldo inicial
                   </label>
                   <input
-                    type="number"
-                    step="0.01"
+                    type="text"
+                    inputMode="decimal"
                     value={initialBalance}
                     onChange={(e) => setInitialBalance(e.target.value)}
                     placeholder="0.00"
@@ -263,8 +263,8 @@ export default function CreateAccountButton() {
                               Límite de crédito *
                             </label>
                             <input
-                              type="number"
-                              step="0.01"
+                              type="text"
+                              inputMode="decimal"
                               value={creditLimit}
                               onChange={(e) => setCreditLimit(e.target.value)}
                               placeholder="100000"

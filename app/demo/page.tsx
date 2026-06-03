@@ -113,7 +113,7 @@ export default function DemoPage() {
   }
 
   function handleCreate() {
-    const value = parseFloat(amount);
+    const value = parseFloat(amount.replace(',', '.'));
     if (!value || value <= 0) return;
     const account = accounts.find((a) => a.id === accountId);
     if (!account) return;
@@ -344,9 +344,8 @@ export default function DemoPage() {
                   Monto ({selectedAccount.currency})
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  step="0.01"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
@@ -404,7 +403,7 @@ export default function DemoPage() {
 
               <button
                 onClick={handleCreate}
-                disabled={!amount || parseFloat(amount) <= 0}
+                disabled={!amount || parseFloat(amount.replace(',', '.')) <= 0}
                 className="w-full py-3 rounded-xl font-semibold text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Crear Movimiento

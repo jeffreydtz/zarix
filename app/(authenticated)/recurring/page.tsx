@@ -321,7 +321,7 @@ export default function RecurringPage() {
       const payload = {
         type: form.kind === 'subscription' ? 'expense' : form.type,
         accountId: form.accountId,
-        amount: form.amount,
+        amount: form.amount.replace(',', '.'),
         currency: form.currency,
         categoryId: form.categoryId,
         description: form.description,
@@ -563,9 +563,8 @@ export default function RecurringPage() {
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Monto</label>
                       <input
                         required
-                        type="number"
-                        step="0.01"
-                        min="0.01"
+                        type="text"
+                        inputMode="decimal"
                         value={form.amount}
                         onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
                         className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"

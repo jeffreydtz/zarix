@@ -255,17 +255,19 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Monto</label>
                 <div className="flex gap-2">
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     placeholder="Min"
                     value={searchParams.get('minAmount') || ''}
-                    onChange={(e) => updateParams({ minAmount: e.target.value })}
+                    onChange={(e) => updateParams({ minAmount: e.target.value.replace(',', '.') })}
                     className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     placeholder="Max"
                     value={searchParams.get('maxAmount') || ''}
-                    onChange={(e) => updateParams({ maxAmount: e.target.value })}
+                    onChange={(e) => updateParams({ maxAmount: e.target.value.replace(',', '.') })}
                     className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                 </div>

@@ -611,9 +611,8 @@ export default function CreateTransactionButton({
                     </label>
                     <div className="flex flex-col gap-2">
                       <input
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="0.01"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder={sourceAccount ? 'Máximo saldo' : '0.00'}
@@ -716,9 +715,8 @@ export default function CreateTransactionButton({
                       </label>
                       {useManualExchangeRate && (
                         <input
-                          type="number"
+                          type="text"
                           inputMode="decimal"
-                          step="any"
                           value={manualExchangeRate}
                           onChange={(e) => setManualExchangeRate(e.target.value)}
                           placeholder={
@@ -738,9 +736,8 @@ export default function CreateTransactionButton({
                     <label className="block text-sm font-medium mb-2">Monto</label>
                     <div className="flex gap-2">
                       <input
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="0.01"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="0.00"

@@ -77,7 +77,7 @@ export default function EditTransactionModal({
     try {
       const payload: Record<string, unknown> = {
         ...formData,
-        amount: parseFloat(formData.amount),
+        amount: parseFloat(formData.amount.replace(',', '.')),
         transaction_date: calendarDateToUtcNoonIso(formData.transaction_date),
       };
 
@@ -98,7 +98,7 @@ export default function EditTransactionModal({
               accountId: formData.account_id,
               destinationAccountId:
                 formData.type === 'transfer' ? formData.destination_account_id || undefined : undefined,
-              amount: parseFloat(formData.amount),
+              amount: parseFloat(formData.amount.replace(',', '.')),
               currency: formData.currency,
               categoryId: formData.category_id || undefined,
               description: formData.description || undefined,
@@ -229,9 +229,8 @@ export default function EditTransactionModal({
               </label>
               <div className="flex gap-2">
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  step="0.01"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                   className="input flex-1 min-w-0"
@@ -308,9 +307,8 @@ export default function EditTransactionModal({
                   Tipo de cambio (opcional)
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  step="any"
                   value={formData.exchange_rate_override}
                   onChange={(e) =>
                     setFormData({ ...formData, exchange_rate_override: e.target.value })
