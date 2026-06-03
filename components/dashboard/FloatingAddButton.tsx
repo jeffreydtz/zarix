@@ -74,7 +74,8 @@ export default function FloatingAddButton() {
     const online = typeof navigator !== 'undefined' && navigator.onLine;
 
     Promise.all([
-      fetchReferenceList<Account>('/api/accounts?lite=1', { ttlMs: 2 * 60 * 1000 }),
+      // Saldos cambian con cada movimiento: refetch siempre (offline cae al snapshot).
+      fetchReferenceList<Account>('/api/accounts?lite=1', { force: true }),
       fetchReferenceList<Category>('/api/categories', { ttlMs: 2 * 60 * 1000 }),
     ]).then(([accsRaw, catsRaw]) => {
       maybePersistAccountsSnapshot(accsRaw, online);
