@@ -113,6 +113,19 @@ export async function processInternalAiChatMessage(input: {
     },
   });
 
+  // DIAG TEMPORAL: confirmar si el modelo realmente llama tools de escritura.
+  // Quitar una vez diagnosticado el "responde bien pero no impacta".
+  console.log(
+    '[bot-tx-diag]',
+    JSON.stringify({
+      tier,
+      msg: input.message.slice(0, 80),
+      toolsUsed,
+      executedCount: executed.length,
+      textLen: text.length,
+    })
+  );
+
   let assistantText = text;
 
   // Red de seguridad: si el modelo no llamó ninguna tool y devolvió JSON viejo
