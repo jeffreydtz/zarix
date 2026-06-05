@@ -41,8 +41,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No billing plans configured' }, { status: 500 });
     }
 
+    // Solo aceptamos back_url propio (mismo origen): un back_url arbitrario del
+    // body sería una superficie de open-redirect al volver de Mercado Pago.
+    const safeBackUrl = (() => {
+      if (!body.back_url) return null;
+      try {
+        const u = new URL(body.back_url, req.nextUrl.origin);
+        return u.origin === req.nextUrl.origin ? u.toString() : null;
+      } catch {
+        return null;
+      }
+    })();
     const backUrl =
-      body.back_url || process.env.MP_SUBSCRIPTION_BACK_URL || `${req.nextUrl.origin}/settings`;
+      safeBackUrl || process.env.MP_SUBSCRIPTION_BACK_URL || `${req.nextUrl.origin}/settings`;
 
     const preapproval = await mercadoPagoService.createPreapproval({
       userId: user.id,

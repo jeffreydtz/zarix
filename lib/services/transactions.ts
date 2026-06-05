@@ -116,6 +116,15 @@ class TransactionsService {
     }
 
     if (input.installments && input.installments > 1) {
+      // El RPC create_installment_transactions guarda amount_in_account_currency
+      // 1:1 sin convertir. Permitir cuotas en moneda distinta a la cuenta
+      // descuadra el saldo (ej: 100 USD restados como 100 ARS). Hasta que el RPC
+      // soporte FX, exigimos misma moneda.
+      if (normalizeCurrency(input.currency) !== normalizeCurrency(account.data.currency)) {
+        throw new Error(
+          'Las compras en cuotas deben estar en la misma moneda que la cuenta. Convertí el monto o usá una cuenta en esa moneda.'
+        );
+      }
       const { data, error } = await supabase.rpc('create_installment_transactions', {
         p_user_id: input.userId,
         p_account_id: input.accountId,
@@ -250,6 +259,8 @@ class TransactionsService {
       maxAmount?: number;
       limit?: number;
       offset?: number;
+      /** Ordenar por created_at (orden de carga) en vez de transaction_date. Para "el último que cargué". */
+      orderByCreated?: boolean;
     } = {}
   ): Promise<TransactionWithCategory[]> {
     const supabase = createServiceClientSync();
@@ -312,9 +323,9 @@ class TransactionsService {
       query = query.lte('amount', options.maxAmount);
     }
 
-    query = query
-      .order('transaction_date', { ascending: false })
-      .order('id', { ascending: false });
+    query = options.orderByCreated
+      ? query.order('created_at', { ascending: false }).order('id', { ascending: false })
+      : query.order('transaction_date', { ascending: false }).order('id', { ascending: false });
 
     query = query.limit(options.limit || 100);
 
@@ -522,15 +533,36 @@ class TransactionsService {
     const expenses = transactions.filter((t) => t.type === 'expense');
     const income = transactions.filter((t) => t.type === 'income');
 
-    const totalExpenses = expenses.reduce((sum, t) => sum + t.amount_in_account_currency, 0);
-    const totalIncome = income.reduce((sum, t) => sum + t.amount_in_account_currency, 0);
+    // Normalizamos TODO a ARS. Sumar amount_in_account_currency mezclaba ARS, USD,
+    // EUR, etc. en un total sin sentido para cualquier usuario multi-moneda (el
+    // caso central de la app). Convertimos el monto original de cada movimiento.
+    const currencies = Array.from(
+      new Set(transactions.map((t) => (t.currency || 'ARS').toUpperCase()))
+    );
+    const rateToArs = new Map<string, number>();
+    for (const c of currencies) {
+      if (c === 'ARS') {
+        rateToArs.set(c, 1);
+        continue;
+      }
+      try {
+        rateToArs.set(c, await cotizacionesService.getExchangeRate(c, 'ARS'));
+      } catch {
+        rateToArs.set(c, 1);
+      }
+    }
+    const toArs = (t: { amount: number; currency: string | null }) =>
+      Number(t.amount) * (rateToArs.get((t.currency || 'ARS').toUpperCase()) ?? 1);
+
+    const totalExpenses = expenses.reduce((sum, t) => sum + toArs(t), 0);
+    const totalIncome = income.reduce((sum, t) => sum + toArs(t), 0);
 
     const categoryMap = new Map<string, { name: string; icon: string; amount: number }>();
     expenses.forEach((t) => {
       if (t.category) {
         const cat = t.category as { name: string; icon: string };
         const existing = categoryMap.get(cat.name) || { name: cat.name, icon: cat.icon, amount: 0 };
-        existing.amount += t.amount_in_account_currency;
+        existing.amount += toArs(t);
         categoryMap.set(cat.name, existing);
       }
     });

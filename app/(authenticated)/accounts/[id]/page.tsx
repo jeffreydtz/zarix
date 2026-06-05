@@ -190,6 +190,16 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
       </div>
     );
   } catch (error) {
+    // notFound() y redirect() lanzan errores de control de Next (digest NEXT_*).
+    // Si los tragamos acá, un account inexistente termina redirigido a /login en
+    // vez de mostrar el 404. Re-lanzamos esos para que Next los maneje.
+    const digest =
+      error && typeof error === 'object' && 'digest' in error
+        ? (error as { digest?: unknown }).digest
+        : undefined;
+    if (typeof digest === 'string' && digest.startsWith('NEXT_')) {
+      throw error;
+    }
     console.error('Account detail page error:', error);
     redirect('/login');
   }

@@ -59,7 +59,43 @@ export async function PATCH(
       );
     }
 
+    const amount = Number(body.amount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json(
+        { error: 'El monto debe ser un número mayor a 0' },
+        { status: 400 }
+      );
+    }
+
     const serviceClient = createServiceClientSync();
+
+    // Cargamos el movimiento existente (scoped por usuario) para validar el tipo.
+    // El trigger de saldos calcula el delta a partir de OLD.type; cambiar el tipo
+    // o editar transfer/adjustment desde acá descuadra el balance silenciosamente.
+    const { data: existing, error: existingErr } = await serviceClient
+      .from('transactions')
+      .select('type')
+      .eq('id', params.id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (existingErr || !existing) {
+      return NextResponse.json({ error: 'Movimiento no encontrado' }, { status: 404 });
+    }
+
+    if (existing.type === 'transfer' || existing.type === 'adjustment') {
+      return NextResponse.json(
+        { error: 'Las transferencias y ajustes no se editan desde acá: borralos y recrealos.' },
+        { status: 400 }
+      );
+    }
+
+    if (body.type && body.type !== existing.type) {
+      return NextResponse.json(
+        { error: 'No se puede cambiar el tipo de un movimiento. Borralo y creá uno nuevo.' },
+        { status: 400 }
+      );
+    }
 
     const { data: accRow, error: accErr } = await serviceClient
       .from('accounts')
@@ -73,9 +109,9 @@ export async function PATCH(
     }
 
     let amountPatch: Record<string, unknown> = {};
-    if (body.type === 'expense' || body.type === 'income') {
+    if (existing.type === 'expense' || existing.type === 'income') {
       const rec = await transactionsService.recomputeExpenseIncomeAmountFields(
-        Number(body.amount),
+        amount,
         cur,
         accRow.currency
       );
@@ -88,8 +124,8 @@ export async function PATCH(
     const { data, error } = await serviceClient
       .from('transactions')
       .update({
-        type: body.type,
-        amount: body.amount,
+        type: existing.type,
+        amount,
         currency: cur,
         account_id: body.account_id,
         category_id: body.category_id || null,

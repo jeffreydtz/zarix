@@ -41,15 +41,18 @@ function shouldExecuteToday(rule: any): boolean {
   }
 
   if (frequency === 'monthly') {
-    const dayOfMonth = startDate.getDate();
-    return today.getDate() === dayOfMonth;
+    // Clamp al último día del mes: una regla del 31 debe ejecutarse el 30/28
+    // en meses más cortos en vez de saltearse el mes entero.
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const targetDay = Math.min(startDate.getDate(), lastDay);
+    return today.getDate() === targetDay;
   }
 
   if (frequency === 'yearly') {
-    return (
-      today.getDate() === startDate.getDate() &&
-      today.getMonth() === startDate.getMonth()
-    );
+    if (today.getMonth() !== startDate.getMonth()) return false;
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const targetDay = Math.min(startDate.getDate(), lastDay); // 29/2 → 28/2 en años no bisiestos
+    return today.getDate() === targetDay;
   }
 
   return false;
@@ -84,7 +87,19 @@ export async function GET(request: NextRequest) {
   for (const rule of rules) {
     if (!shouldExecuteToday(rule)) continue;
 
+    // No generar movimientos contra una cuenta desactivada (el usuario la
+    // considera cerrada). La regla sigue activa pero se saltea.
+    if (rule.account && rule.account.is_active === false) continue;
+
     try {
+      // "Reclamamos" el día ANTES de crear: si la creación o un retry fallan a
+      // medias, el próximo cron del mismo día ve last_executed_date == hoy y NO
+      // vuelve a crear. Un duplicado de plata es peor que saltear una ocurrencia.
+      await supabase
+        .from('recurring_rules')
+        .update({ last_executed_date: new Date().toISOString().split('T')[0] })
+        .eq('id', rule.id);
+
       await transactionsService.create({
         userId: rule.user_id,
         type: rule.type,
@@ -95,12 +110,6 @@ export async function GET(request: NextRequest) {
         description: rule.description,
         transactionDate: new Date().toISOString(),
       });
-
-      // Update last_executed_date
-      await supabase
-        .from('recurring_rules')
-        .update({ last_executed_date: new Date().toISOString().split('T')[0] })
-        .eq('id', rule.id);
 
       executed++;
 

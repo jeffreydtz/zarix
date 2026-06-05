@@ -16,8 +16,11 @@ export const maxDuration = 30;
 function verifyMercadoPagoSignature(req: NextRequest): boolean {
   const secret = process.env.MP_WEBHOOK_SECRET;
   if (!secret) {
-    console.error('MP_WEBHOOK_SECRET no configurado: validación de firma deshabilitada');
-    return true;
+    // Fail-closed: sin secret no se puede validar la firma. Aceptar igual dejaría
+    // el endpoint que controla el estado de suscripción (acceso pago) abierto a
+    // spoofing. MP_WEBHOOK_SECRET es obligatorio en prod.
+    console.error('MP_WEBHOOK_SECRET no configurado: se rechazan los webhooks de Mercado Pago');
+    return false;
   }
 
   const xSignature = req.headers.get('x-signature');
@@ -128,6 +131,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  // MP también notifica por GET; debe validar firma igual que POST. Sin esto, un
+  // GET sin firma podía forzar transiciones de suscripción de cualquier usuario.
+  if (!verifyMercadoPagoSignature(req)) {
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+  }
   void processWebhook({ payload: null, searchParams: req.nextUrl.searchParams }).catch((error) => {
     console.error('Mercado Pago webhook processing error:', error);
   });

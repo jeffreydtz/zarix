@@ -48,7 +48,9 @@ export async function POST(req: NextRequest) {
         .order('sort_order', { ascending: true }),
       supabase.from('categories').select('*').eq('user_id', user.id),
       supabase.from('categories').select('*').eq('is_system', true),
-      transactionsService.getMonthSummary(user.id, new Date()),
+      // El resumen es contexto opcional: si falla (p.ej. cotizaciones caídas) no
+      // debe tumbar todo el chat.
+      transactionsService.getMonthSummary(user.id, new Date()).catch(() => undefined),
     ]);
 
     if (

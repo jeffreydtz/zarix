@@ -74,9 +74,17 @@ class CategoriesService {
       throw new Error('Cannot update system category');
     }
 
+    // Whitelist explícito: nunca volcar el body crudo (evita mass-assignment de
+    // user_id / is_system / id, que escalaría privilegios o regalaría la categoría).
+    const safe: Record<string, unknown> = {};
+    if (updates.name !== undefined) safe.name = updates.name;
+    if (updates.type !== undefined) safe.type = updates.type;
+    if (updates.icon !== undefined) safe.icon = updates.icon;
+    if (updates.parentId !== undefined) safe.parent_id = updates.parentId || null;
+
     const { data, error } = await supabase
       .from('categories')
-      .update(updates as any)
+      .update(safe)
       .eq('id', id)
       .eq('user_id', userId)
       .select()

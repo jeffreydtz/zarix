@@ -333,7 +333,10 @@ export async function executeBotTool(
     }
 
     case 'delete_last_transaction': {
-      const [last] = await transactionsService.list(userId, { limit: 1 });
+      // "El último" = el último que el usuario cargó (orden de creación), no el de
+      // fecha más reciente: si cargó un gasto de ayer, "borrá el último" debe
+      // borrar ESE, no otro movimiento con transaction_date más nuevo.
+      const [last] = await transactionsService.list(userId, { limit: 1, orderByCreated: true });
       if (!last) return { response: { success: false, error: 'No hay movimientos para borrar.' } };
       await transactionsService.delete(last.id, userId);
       return {
@@ -351,7 +354,8 @@ export async function executeBotTool(
     }
 
     case 'edit_last_transaction': {
-      const [last] = await transactionsService.list(userId, { limit: 1 });
+      // Mismo criterio que delete: el último cargado (orden de creación).
+      const [last] = await transactionsService.list(userId, { limit: 1, orderByCreated: true });
       if (!last) return { response: { success: false, error: 'No encontré un movimiento reciente para editar.' } };
       if (last.type === 'transfer') {
         return { response: { success: false, error: 'No puedo editar transferencias desde acá. Borrala y recreala.' } };

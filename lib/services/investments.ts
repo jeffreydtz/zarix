@@ -368,6 +368,7 @@ class InvestmentsService {
       const { data: salesRows } = await supabase
         .from('investment_sales')
         .select('investment_id, realized_pnl_usd')
+        .eq('user_id', userId)
         .in('investment_id', investmentIds);
       for (const row of salesRows || []) {
         const cur = salesByInvestment.get(row.investment_id) || { realized: 0, count: 0 };
@@ -574,9 +575,16 @@ class InvestmentsService {
     const arsPerUsd = arsPerUsdFromDolar(dolar.blue);
 
     const saleCurrency = (input.currency || invRow.purchase_currency || 'USD').toUpperCase();
+    const basisCurrency = (invRow.purchase_currency || saleCurrency).toUpperCase();
     const priceFactor = priceFactorForType(invRow.type as InvestmentType);
-    const realizedNative = ((input.price - purchasePrice) * input.quantity) / priceFactor;
-    const realizedUsd = amountToUsd(realizedNative, saleCurrency, arsPerUsd);
+    // La moneda de venta puede diferir de la de compra (el diálogo deja elegir).
+    // Pasamos ambos precios a USD antes de restar para no mezclar monedas
+    // (restar un precio ARS de uno USD daba un P&L disparatado).
+    const saleUsdPerUnit = amountToUsd(input.price, saleCurrency, arsPerUsd);
+    const purchaseUsdPerUnit = amountToUsd(purchasePrice, basisCurrency, arsPerUsd);
+    const realizedUsd = ((saleUsdPerUnit - purchaseUsdPerUnit) * input.quantity) / priceFactor;
+    const realizedNative =
+      saleCurrency === 'ARS' ? usdToArsBlue(realizedUsd, arsPerUsd) : realizedUsd;
 
     const { data: saleInserted, error: saleErr } = await supabase
       .from('investment_sales')

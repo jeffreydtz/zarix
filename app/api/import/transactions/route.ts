@@ -822,7 +822,15 @@ export async function POST(request: NextRequest) {
 
     if (lowerName.endsWith('.json')) {
       const text = await file.text();
-      const json = JSON.parse(text);
+      let json: any;
+      try {
+        json = JSON.parse(text);
+      } catch {
+        return NextResponse.json(
+          { error: 'El archivo JSON no es válido o está corrupto.' },
+          { status: 400 }
+        );
+      }
       if (Array.isArray(json)) {
         combined = {
           transfers: [],

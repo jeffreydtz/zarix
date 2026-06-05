@@ -27,7 +27,18 @@ export async function POST(req: NextRequest) {
       p_telegram_chat_id: telegramChatId,
     });
 
-    if (error) throw error;
+    if (error) {
+      const msg = (error as { message?: string }).message || '';
+      const code = (error as { code?: string }).code || '';
+      // Chat ya vinculado a otra cuenta: unique violation → mensaje claro, no 500.
+      if (code === '23505' || /duplicate|unique|already|exist|vincul/i.test(msg)) {
+        return NextResponse.json(
+          { error: 'Ese chat de Telegram ya está vinculado a otra cuenta.' },
+          { status: 409 }
+        );
+      }
+      throw error;
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {

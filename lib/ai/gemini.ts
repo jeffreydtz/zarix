@@ -112,7 +112,7 @@ export class GeminiClient {
       functionDeclarations,
       onToolCall,
       maxTokens = 2048,
-      maxRounds = 6,
+      maxRounds = 8,
     } = options;
 
     const modelName = tier === 'lite' ? GEMINI_LITE_MODEL : GEMINI_FULL_MODEL;

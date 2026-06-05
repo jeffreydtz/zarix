@@ -1,5 +1,5 @@
 import type { Content } from '@google/generative-ai';
-import { getGeminiForUser, getTierForRequest } from '@/lib/ai/gemini';
+import { getGeminiForUser } from '@/lib/ai/gemini';
 import { buildBotSystemPrompt, type FinancialContext } from '@/lib/ai/prompts';
 import {
   BOT_FUNCTION_DECLARATIONS,
@@ -89,9 +89,10 @@ export async function processInternalAiChatMessage(input: {
   history?: InternalAiChatHistoryItem[];
 }): Promise<InternalAiChatSuccessResponse> {
   const systemPrompt = buildBotSystemPrompt(input.financialContext);
-  const tier = preferFullTierForMessage(input.message)
-    ? 'full'
-    : getTierForRequest(input.message, false);
+  // Siempre 'full' (gemini-2.5-flash): el modelo lite es poco confiable para
+  // function-calling y deja de llamar create_transaction (movimiento "responde
+  // bien pero no impacta"). El costo extra es despreciable para este volumen.
+  const tier = 'full' as const;
 
   const gemini = await getGeminiForUser(input.userId);
 
@@ -112,19 +113,6 @@ export async function processInternalAiChatMessage(input: {
       return out.response;
     },
   });
-
-  // DIAG TEMPORAL: confirmar si el modelo realmente llama tools de escritura.
-  // Quitar una vez diagnosticado el "responde bien pero no impacta".
-  console.log(
-    '[bot-tx-diag]',
-    JSON.stringify({
-      tier,
-      msg: input.message.slice(0, 80),
-      toolsUsed,
-      executedCount: executed.length,
-      textLen: text.length,
-    })
-  );
 
   let assistantText = text;
 
@@ -158,10 +146,19 @@ export async function processInternalAiChatMessage(input: {
 
   const message = assistantText || fallback;
 
+  // Historial (memoria del bot): si se ejecutó una tool de escritura, dejamos
+  // una marca explícita. Sin esto, lo guardado es pura prosa de confirmación y
+  // "entrena" al modelo a confirmar SIN volver a llamar la tool → el próximo
+  // movimiento no se persiste. No se muestra al usuario (solo va al history).
+  const writeToolsUsed = toolsUsed.filter((t) => BOT_WRITE_TOOLS.has(t));
+  const historyText = writeToolsUsed.length
+    ? `${message}\n⟦ejecuté ${writeToolsUsed.join(', ')} y registré el/los movimiento(s)⟧`
+    : message;
+
   return {
     mode: didWrite ? 'executed' : 'chat',
     assistant_message: message,
     executed: executed.length ? executed : undefined,
-    raw_response: message,
+    raw_response: historyText,
   };
 }

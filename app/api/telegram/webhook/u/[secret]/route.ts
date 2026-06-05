@@ -3,6 +3,9 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { handleCustomTelegramUpdate } from '@/lib/telegram/bot';
 
 export const dynamic = 'force-dynamic';
+// Igual que el webhook compartido: damos margen al loop de Gemini para que la
+// función no se corte y Telegram no re-entregue (evita movimientos duplicados).
+export const maxDuration = 60;
 
 export async function POST(
   req: NextRequest,
