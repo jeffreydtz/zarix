@@ -42,6 +42,11 @@ export async function createServiceClient() {
           // No-op for service client
         },
       },
+      // Evita que el Data Cache de Next sirva respuestas viejas de Supabase
+      // en rutas sin cookies (ej: páginas públicas por share_token).
+      global: {
+        fetch: (url, init) => fetch(url, { ...init, cache: 'no-store' }),
+      },
     }
   );
 }
@@ -59,6 +64,11 @@ export function createServiceClientSync() {
         setAll() {
           // No-op for service client
         },
+      },
+      // Evita que el Data Cache de Next sirva respuestas viejas de Supabase
+      // en rutas sin cookies (ej: páginas públicas por share_token).
+      global: {
+        fetch: (url, init) => fetch(url, { ...init, cache: 'no-store' }),
       },
     }
   );
