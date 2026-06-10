@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { handleCustomTelegramUpdate } from '@/lib/telegram/bot';
+import { timingSafeStringEqual } from '@/lib/secure-compare';
 
 export const dynamic = 'force-dynamic';
 // Igual que el webhook compartido: damos margen al loop de Gemini para que la
@@ -15,12 +16,17 @@ export async function POST(
   const supabase = createServiceClientSync();
   const { data: row } = await supabase
     .from('users')
-    .select('telegram_bot_token')
+    .select('telegram_bot_token, telegram_webhook_secret')
     .eq('telegram_webhook_secret', secret)
     .maybeSingle();
 
-  if (!row?.telegram_bot_token) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  // Defensa en profundidad: el .eq() de la DB no es timing-safe, re-validamos
+  // el secret con comparación en tiempo constante (mismo patrón que el webhook compartido).
+  if (
+    !row?.telegram_bot_token ||
+    !timingSafeStringEqual(secret, row.telegram_webhook_secret)
+  ) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   // Tras validar el secret del path, SIEMPRE 200: un 500 hace que Telegram

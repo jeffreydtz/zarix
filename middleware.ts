@@ -54,7 +54,10 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/demo') ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/register') ||
-    pathname.startsWith('/auth');
+    pathname.startsWith('/auth') ||
+    // Gastos compartidos: /shared/[token] es público (invitados sin cuenta);
+    // /shared (exacto, listado del dueño) sigue requiriendo sesión.
+    pathname.startsWith('/shared/');
 
   if (!user && !isPublicPath) {
     const url = req.nextUrl.clone();

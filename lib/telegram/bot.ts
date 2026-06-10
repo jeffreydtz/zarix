@@ -91,7 +91,7 @@ async function getFinancialContext(userId: string): Promise<FinancialContext> {
   const [userResult, accounts, categories] = await Promise.all([
     supabase.from('users').select('*').eq('id', userId).single(),
     accountsService.list(userId),
-    supabase.from('categories').select('*').or(`user_id.eq.${userId},is_system.eq.true`),
+    supabase.from('categories').select('*').or(`user_id.eq."${userId.replace(/"/g, '\\"')}",is_system.eq.true`),
   ]);
 
   if (userResult.error) throw userResult.error;
@@ -371,13 +371,29 @@ bot.on(message('photo'), async (ctx) => {
   }
 
   try {
+    let gPhoto;
+    try {
+      gPhoto = await getGeminiForUser(user.id);
+    } catch (e) {
+      if (e instanceof GeminiMissingKeyError) {
+        return ctx.reply(GEMINI_SETUP_MSG);
+      }
+      throw e;
+    }
+
     await ctx.reply('📷 Analizando la imagen...');
-    
+
     const photo = ctx.message.photo[ctx.message.photo.length - 1];
     const fileLink = await ctx.telegram.getFileLink(photo.file_id);
-    
+
     const response = await fetch(fileLink.href);
+    if (!response.ok) {
+      throw new Error(`Error descargando la imagen de Telegram: ${response.status}`);
+    }
     const arrayBuffer = await response.arrayBuffer();
+    if (arrayBuffer.byteLength > 10 * 1024 * 1024) {
+      return ctx.reply('La imagen es muy pesada (máximo 10 MB). ¿Podés mandar una más liviana?');
+    }
     const base64 = Buffer.from(arrayBuffer).toString('base64');
     
     const financialContext = await getFinancialContext(user.id);
@@ -415,16 +431,6 @@ Si no es un ticket/factura o no podés extraer información:
   "found": false,
   "message": "razón"
 }`;
-
-    let gPhoto;
-    try {
-      gPhoto = await getGeminiForUser(user.id);
-    } catch (e) {
-      if (e instanceof GeminiMissingKeyError) {
-        return ctx.reply(GEMINI_SETUP_MSG);
-      }
-      throw e;
-    }
 
     const result = await gPhoto.chatWithImage(
       prompt,
@@ -480,7 +486,7 @@ Si no es un ticket/factura o no podés extraer información:
       (parsed.date ? `, fecha ${parsed.date}` : '') +
       `. Le pregunté al usuario si lo registro; si confirma, registrá este gasto con estos datos.`;
     await appendBotTurn(user.id, ctx.chat.id, '[Foto de un ticket de compra]', memoryTurn).catch(
-      () => {}
+      (err) => console.error('[telegram] appendBotTurn failed', err)
     );
 
     return ctx.reply(confirmMessage, { parse_mode: 'Markdown' });
@@ -504,16 +510,6 @@ bot.on(message('voice'), async (ctx) => {
   }
 
   try {
-    await ctx.reply('🎤 Transcribiendo audio...');
-
-    const voice = ctx.message.voice;
-    const fileLink = await ctx.telegram.getFileLink(voice.file_id);
-
-    // Download OGG audio
-    const audioResponse = await fetch(fileLink.href);
-    const audioBuffer = await audioResponse.arrayBuffer();
-    const audioBase64 = Buffer.from(audioBuffer).toString('base64');
-
     let gVoice;
     try {
       gVoice = await getGeminiForUser(user.id);
@@ -523,6 +519,22 @@ bot.on(message('voice'), async (ctx) => {
       }
       throw e;
     }
+
+    await ctx.reply('🎤 Transcribiendo audio...');
+
+    const voice = ctx.message.voice;
+    const fileLink = await ctx.telegram.getFileLink(voice.file_id);
+
+    // Download OGG audio
+    const audioResponse = await fetch(fileLink.href);
+    if (!audioResponse.ok) {
+      throw new Error(`Error descargando el audio de Telegram: ${audioResponse.status}`);
+    }
+    const audioBuffer = await audioResponse.arrayBuffer();
+    if (audioBuffer.byteLength > 20 * 1024 * 1024) {
+      return ctx.reply('El audio es muy pesado (máximo 20 MB). ¿Podés mandar uno más corto?');
+    }
+    const audioBase64 = Buffer.from(audioBuffer).toString('base64');
 
     const transcriptResult = await gVoice.chatWithImage(
       `Transcribí exactamente este mensaje de voz en español. 
@@ -564,7 +576,9 @@ bot.on(message('voice'), async (ctx) => {
       return ctx.reply(result.assistant_message);
     } finally {
       if (rawResponse) {
-        await appendBotTurn(user.id, ctx.chat.id, transcribed, rawResponse).catch(() => {});
+        await appendBotTurn(user.id, ctx.chat.id, transcribed, rawResponse).catch((err) =>
+          console.error('[telegram] appendBotTurn failed', err)
+        );
       }
     }
   } catch (error) {
@@ -619,7 +633,9 @@ bot.on(message('text'), async (ctx) => {
       return ctx.reply(result.assistant_message);
     } finally {
       if (rawResponse) {
-        await appendBotTurn(user.id, ctx.chat.id, userMessage, rawResponse).catch(() => {});
+        await appendBotTurn(user.id, ctx.chat.id, userMessage, rawResponse).catch((err) =>
+          console.error('[telegram] appendBotTurn failed', err)
+        );
       }
     }
   } catch (error: any) {
@@ -637,7 +653,7 @@ bot.on(message('text'), async (ctx) => {
       return ctx.reply('No encontré esa cuenta. Usá /cuentas para ver cuáles tenés disponibles.');
     }
     
-    ctx.reply('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
+    return ctx.reply('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
   }
 });
 

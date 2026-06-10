@@ -23,6 +23,7 @@ La web de Zarix te permite:
 - administrar cuentas y categorias,
 - seguir inversiones,
 - consultar cotizaciones y mercados,
+- dividir gastos con amigos (grupos compartidos estilo Tricount),
 - importar y exportar tus datos.
 
 ## Secciones principales
@@ -55,6 +56,12 @@ La web de Zarix te permite:
 ### Presupuestos y recurrentes
 - Presupuestos por categoria.
 - Reglas de movimientos recurrentes.
+
+### Gastos compartidos
+- Grupos para dividir gastos entre varias personas (viajes, asados, hogar).
+- Los invitados NO necesitan cuenta: entran con un link e indican nombre + email o telefono.
+- Cada gasto registra quien pago y entre quienes se divide (partes iguales).
+- Saldos por persona y sugerencia de pagos para saldar cuentas (quien le paga a quien).
 
 ### Configuracion
 - Preferencias de usuario.
@@ -108,6 +115,7 @@ Zarix
 ├── Cuentas y Tarjetas
 ├── Inversiones
 ├── Analisis
+├── Gastos compartidos (publico via link)
 └── Import / Export
 ```
 
@@ -154,9 +162,11 @@ Para compartir este repositorio o mostrarlo publicamente sin comprometer tus dat
 ## Funcionalidad base
 
 - Registro manual en web.
-- Soporte de carga por bot de Telegram.
+- Soporte de carga por bot de Telegram (texto, voz y foto de tickets).
+- Bot con consultas y altas de recurrentes por lenguaje natural.
 - Parseo de tickets por imagen (con confirmacion).
 - Multi-moneda: ARS, USD, USDT, BTC, ETH.
+- Gastos compartidos con acceso por link (sin cuenta para invitados).
 
 ## FAQ
 

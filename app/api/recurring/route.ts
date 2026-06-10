@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 
 export async function GET(req: NextRequest) {
   try {
@@ -39,6 +40,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
     }
 
+    if (body.type !== 'expense' && body.type !== 'income') {
+      return NextResponse.json({ error: 'Tipo inválido (debe ser gasto o ingreso)' }, { status: 400 });
+    }
+
+    if (!['daily', 'weekly', 'monthly', 'yearly'].includes(body.frequency)) {
+      return NextResponse.json({ error: 'Frecuencia inválida' }, { status: 400 });
+    }
+
+    const cur = String(body.currency ?? '').trim().toUpperCase();
+    if (!isTransactionCurrency(cur)) {
+      return NextResponse.json(
+        { error: 'Solo se permiten monedas ARS, USD o EUR en reglas recurrentes' },
+        { status: 400 }
+      );
+    }
+
     // La cuenta (y categoría) deben ser del usuario: la regla materializa
     // movimientos sobre account_id vía cron, así que validar el dueño acá.
     const { data: acc } = await supabase
@@ -69,7 +86,7 @@ export async function POST(req: NextRequest) {
         account_id: body.accountId,
         type: body.type,
         amount,
-        currency: body.currency,
+        currency: cur,
         category_id: body.categoryId || null,
         description: body.description,
         is_subscription: Boolean(body.isSubscription),

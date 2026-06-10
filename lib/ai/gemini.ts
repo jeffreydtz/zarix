@@ -152,7 +152,8 @@ export class GeminiClient {
     let text = '';
     try {
       text = result.response.text();
-    } catch {
+    } catch (err) {
+      console.error('[gemini] failed to extract response text', err);
       text = '';
     }
     return { text: text.trim(), toolsUsed };

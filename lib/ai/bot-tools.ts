@@ -7,6 +7,9 @@ import { budgetsService } from '@/lib/services/budgets';
 import { investmentsService } from '@/lib/services/investments';
 import { analyticsService } from '@/lib/services/analytics';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
+import { recurringService } from '@/lib/services/recurring';
+import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import type { RecurrenceFrequency, RecurringRule } from '@/types/database';
 import type { ExecutedTransactionSummary } from '@/types/internal-ai-chat';
 
 /**
@@ -37,6 +40,7 @@ export const BOT_WRITE_TOOLS: ReadonlySet<string> = new Set([
   'create_account',
   'delete_last_transaction',
   'edit_last_transaction',
+  'create_recurring',
 ]);
 
 const MAX_BATCH = 12;
@@ -113,6 +117,65 @@ function resolvePeriod(period?: string): ResolvedPeriod {
       return { start, end: now, label: 'este mes' };
     }
   }
+}
+
+// ─── Próxima ocurrencia de reglas recurrentes ────────────────────────────────
+
+const DAY_MS = 86400000;
+
+/** Día clampeado al último del mes (regla del 31 → 30/28), como el cron. */
+function monthlyCandidateUtc(y: number, mIndex: number, day: number): number {
+  const lastDay = new Date(Date.UTC(y, mIndex + 1, 0)).getUTCDate();
+  return Date.UTC(y, mIndex, Math.min(day, lastDay));
+}
+
+/** Próxima fecha (YYYY-MM-DD) en que la regla se ejecutaría, o null si terminó. */
+function nextOccurrenceYMD(
+  rule: Pick<RecurringRule, 'frequency' | 'start_date' | 'end_date' | 'last_executed_date'>
+): string | null {
+  const { y, m, d } = arTodayParts();
+  let from = Date.UTC(y, m - 1, d);
+  const fromYMD = new Date(from).toISOString().slice(0, 10);
+  // Si ya se ejecutó hoy, la próxima es a partir de mañana.
+  if (rule.last_executed_date?.slice(0, 10) === fromYMD) from += DAY_MS;
+
+  const [sy, sm, sd] = rule.start_date.slice(0, 10).split('-').map(Number);
+  const start = Date.UTC(sy, sm - 1, sd);
+
+  let next: number;
+  if (start >= from) {
+    next = start;
+  } else {
+    switch (rule.frequency) {
+      case 'daily':
+        next = from;
+        break;
+      case 'weekly': {
+        const targetDow = new Date(start).getUTCDay();
+        const fromDow = new Date(from).getUTCDay();
+        next = from + ((targetDow - fromDow + 7) % 7) * DAY_MS;
+        break;
+      }
+      case 'monthly': {
+        const f = new Date(from);
+        next = monthlyCandidateUtc(f.getUTCFullYear(), f.getUTCMonth(), sd);
+        if (next < from) next = monthlyCandidateUtc(f.getUTCFullYear(), f.getUTCMonth() + 1, sd);
+        break;
+      }
+      case 'yearly': {
+        const f = new Date(from);
+        next = monthlyCandidateUtc(f.getUTCFullYear(), sm - 1, sd);
+        if (next < from) next = monthlyCandidateUtc(f.getUTCFullYear() + 1, sm - 1, sd);
+        break;
+      }
+      default:
+        return null;
+    }
+  }
+
+  const nextYMD = new Date(next).toISOString().slice(0, 10);
+  if (rule.end_date && nextYMD > rule.end_date.slice(0, 10)) return null;
+  return nextYMD;
 }
 
 // ─── Declaraciones de funciones para Gemini ──────────────────────────────────
@@ -256,6 +319,45 @@ export const BOT_FUNCTION_DECLARATIONS: FunctionDeclaration[] = [
     description: 'Cotizaciones de mercado: dólar (blue, oficial, MEP, CCL) y cripto (BTC, ETH, USDT). Para "a cómo está el blue".',
     parameters: { type: SchemaType.OBJECT, properties: {} },
   },
+  {
+    name: 'list_recurring',
+    description: 'Lista las reglas recurrentes activas (gastos/ingresos fijos, suscripciones). Para "qué pagos automáticos tengo", "mis gastos fijos", "mis suscripciones".',
+    parameters: { type: SchemaType.OBJECT, properties: {} },
+  },
+  {
+    name: 'create_recurring',
+    description: 'Crea una regla recurrente que registra un movimiento automáticamente. Para "cargame el alquiler todos los meses", "Netflix 15000 por mes", "mi sueldo cada mes".',
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        description: { type: SchemaType.STRING, description: 'Qué es (alquiler, Netflix, sueldo...).' },
+        amount: { type: SchemaType.NUMBER, description: 'Monto, siempre > 0.' },
+        currency: { type: SchemaType.STRING, description: 'ARS, USD, EUR. Default ARS.' },
+        type: {
+          type: SchemaType.STRING,
+          format: 'enum',
+          enum: ['expense', 'income'],
+          description: 'Gasto (expense) o ingreso (income). Default expense.',
+        },
+        frequency: {
+          type: SchemaType.STRING,
+          format: 'enum',
+          enum: ['daily', 'weekly', 'monthly', 'yearly'],
+          description: 'Cada cuánto se repite.',
+        },
+        category: { type: SchemaType.STRING, description: 'Nombre de categoría (opcional).' },
+        account: {
+          type: SchemaType.STRING,
+          description: 'Nombre de cuenta tal como lo dijo el usuario (el sistema busca similitudes). Omitir si no la mencionó.',
+        },
+        startDate: {
+          type: SchemaType.STRING,
+          description: 'YYYY-MM-DD de la primera ocurrencia. SOLO si el usuario lo dijo; default hoy.',
+        },
+      },
+      required: ['description', 'amount', 'frequency'],
+    },
+  },
 ];
 
 // ─── Ejecución ───────────────────────────────────────────────────────────────
@@ -327,7 +429,8 @@ export async function executeBotTool(
           icon: type === 'bank' ? '🏦' : '💵',
         });
         return { response: { success: true, name: accountName } };
-      } catch {
+      } catch (error) {
+        console.error('[bot-tools] create_account failed', error);
         return { response: { success: false, error: 'No pude crear la cuenta.' } };
       }
     }
@@ -534,6 +637,123 @@ export async function executeBotTool(
           },
         },
       };
+    }
+
+    case 'list_recurring': {
+      const rules = await recurringService.listActive(userId);
+      if (!rules.length) return { response: { recurring: [], note: 'No hay reglas recurrentes activas.' } };
+      return {
+        response: {
+          recurring: rules.map((r) => ({
+            description: r.description,
+            type: r.type,
+            amount: round(r.amount, 2),
+            currency: r.currency,
+            frequency: r.frequency,
+            account: r.account?.name ?? null,
+            category: r.category?.name ?? null,
+            nextDate: nextOccurrenceYMD(r),
+          })),
+        },
+      };
+    }
+
+    case 'create_recurring': {
+      const description = str(args.description);
+      if (!description) return { response: { success: false, error: 'Falta la descripción de la regla recurrente.' } };
+      const amount = num(args.amount);
+      if (!amount || amount <= 0) {
+        return { response: { success: false, error: 'No pude entender el monto. ¿Podés ser más específico?' } };
+      }
+      const frequency = (str(args.frequency) || '').toLowerCase() as RecurrenceFrequency;
+      if (!['daily', 'weekly', 'monthly', 'yearly'].includes(frequency)) {
+        return { response: { success: false, error: 'La frecuencia puede ser diaria, semanal, mensual o anual.' } };
+      }
+      const type = str(args.type) === 'income' ? 'income' : 'expense';
+      const currency = coerceTransactionCurrency(str(args.currency) || 'ARS');
+
+      // Cuenta: misma resolución fuzzy que los movimientos.
+      let accountId = '';
+      let accountName = '';
+      const account = str(args.account);
+      if (account) {
+        const fuzzy = await accountsService.findByNameFuzzy(userId, account);
+        if (fuzzy.account && (fuzzy.confidence === 'exact' || fuzzy.confidence === 'high' || fuzzy.confidence === 'medium')) {
+          accountId = fuzzy.account.id;
+          accountName = fuzzy.account.name;
+        } else {
+          const accountsList = financialContext.accounts
+            .slice(0, 5)
+            .map((a) => `• ${a.icon || '💳'} ${a.name}`)
+            .join('\n');
+          return {
+            response: {
+              success: false,
+              error: `No encontré la cuenta "${account}". Tus cuentas son:\n\n${accountsList}`,
+            },
+          };
+        }
+      } else {
+        const defaultAccount = financialContext.accounts.find(
+          (a) => a.currency === currency && a.type !== 'credit_card'
+        );
+        if (!defaultAccount) {
+          return { response: { success: false, error: `No tenés cuentas en ${currency}. Creá una primero.` } };
+        }
+        accountId = defaultAccount.id;
+        accountName = defaultAccount.name;
+      }
+
+      // Categoría: igual que los movimientos (match exacto case-insensitive).
+      let categoryId: string | null = null;
+      let categoryName: string | undefined;
+      const category = str(args.category);
+      if (category) {
+        const cat = financialContext.categories.find((c) => c.name.toLowerCase() === category.toLowerCase());
+        if (cat) {
+          categoryId = cat.id;
+          categoryName = cat.name;
+        }
+      }
+
+      // Fecha de inicio: la que dijo el usuario o hoy (calendario AR).
+      let startDate = str(args.startDate)?.slice(0, 10);
+      if (!startDate || !/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+        const { y, m, d } = arTodayParts();
+        startDate = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      }
+
+      try {
+        const rule = await recurringService.create({
+          userId,
+          accountId,
+          type,
+          amount,
+          currency,
+          categoryId,
+          description,
+          frequency,
+          startDate,
+        });
+        return {
+          response: {
+            success: true,
+            rule: {
+              description,
+              type,
+              amount,
+              currency,
+              frequency,
+              account: accountName,
+              category: categoryName ?? null,
+              nextDate: nextOccurrenceYMD(rule),
+            },
+          },
+        };
+      } catch (error) {
+        console.error('[bot-tools] create_recurring failed', error);
+        return { response: { success: false, error: 'No pude crear la regla recurrente.' } };
+      }
     }
 
     default:

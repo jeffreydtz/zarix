@@ -14,17 +14,6 @@ import type {
 
 export const MAX_BATCH_TRANSACTIONS = 12;
 
-/** Mensajes "pesados" (listas, varios montos) van al modelo full por confiabilidad. */
-export function preferFullTierForMessage(message: string): boolean {
-  const newlines = (message.match(/\n/g) || []).length;
-  if (message.length > 400) return true;
-  if (newlines >= 2) return true;
-  if (/^\s*[-•*]\s/m.test(message) || /;\s/.test(message)) return true;
-  const nums = message.match(/\d[\d.,]*/g);
-  if (nums && nums.length >= 4) return true;
-  return false;
-}
-
 /**
  * El bot viejo (antes de function calling) respondía con JSON
  * `{ action, transaction(s), response }`. Esos turnos quedaron guardados en

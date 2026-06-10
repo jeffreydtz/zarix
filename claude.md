@@ -111,21 +111,32 @@ Verificación sin tests: `npx tsc --noEmit` → `npm run build` → smoke en `np
 app/
   page.tsx              landing (público) + components/landing/
   demo/                 demo aislada pública (sin Supabase, estado en memoria)
+  shared/[token]/       PÚBLICO: gastos compartidos por link (estilo Tricount);
+                        invitados sin cuenta, token 32-hex = capability
   (authenticated)/      rutas con login: dashboard, expenses, accounts,
                         investments, analysis, budgets, recurring,
-                        categories, settings
+                        categories, settings, shared (gestión de grupos)
   api/                  route handlers (transactions, accounts, ...)
+    shared-groups/      CRUD de grupos compartidos (sesión, solo dueño)
+    shared/[token]/     API pública de invitados (GET grupo, POST unirse,
+                        POST/DELETE gastos) — autorizada SOLO por share_token
   auth/ login/ register/
 components/              UI por feature + components/ui/ (primitivas)
 lib/
   services/             acceso a datos (transactionsService, accountsService,
-                        cotizacionesService) — capa principal de DB
+                        cotizacionesService, sharedExpensesService,
+                        recurringService) — capa principal de DB
   supabase/             clients: server.ts (cookies + service role), client.ts
   auth/                 getCachedUser() — sesión cacheada server
-  telegram/ ai/ market-data/ constants/ hooks/
+  telegram/             bot Telegraf: bot.ts (handlers texto/foto/voz),
+                        executeBotTransaction.ts, send.ts
+  ai/                   gemini.ts (client + function-calling loop),
+                        bot-tools.ts (tools del bot/chat), prompts.ts
+  market-data/ constants/ hooks/
 middleware.ts           refresh de sesión + guard de rutas (rutas públicas
-                        listadas en isPublicPath)
-supabase/schema.sql     esquema + RLS
+                        listadas en isPublicPath; /shared/[token] es pública,
+                        /shared exacto requiere login)
+supabase/schema.sql     esquema + RLS (mantener espejado con supabase/migrations/)
 types/                  tipos de DB
 ```
 
@@ -160,8 +171,20 @@ Nunca commitear `.env.local` ni imprimir secretos.
   DEBE filtrar por `user_id` (o `auth.uid()`); una sola query sin ese filtro =
   fuga total entre usuarios. Migrar al client con RLS es grande/riesgoso —
   no hacerlo sin pedir.
-- **PENDIENTE CRÍTICO — webhook MercadoPago:**
-  `app/api/webhooks/mercado-pago/route.ts` NO valida firma `x-signature`;
-  un POST falso puede spoofear estado de suscripción de cualquier usuario.
-  Reportado, sin arreglar (falta confirmar el env var del secret de MP).
-  Priorizar cuando se retome seguridad.
+- **Gastos compartidos (estilo Tricount):** el acceso de invitados se basa
+  SOLO en `share_token` (32 hex, único, validar con `isValidShareToken`).
+  No hay sesión para invitados: todo handler nuevo bajo
+  `app/api/shared/[token]/` DEBE resolver el grupo vía token y scopear cada
+  query por `group_id` (nunca confiar en IDs sueltos del body). No loguear ni
+  exponer `share_token` ajenos. RLS solo cubre al dueño autenticado; los
+  invitados pasan por service role. Lógica de saldos/liquidación en
+  `lib/services/sharedExpenses.ts` (`computeBalances`/`computeSettlements`).
+- **Bot/chat AI — tools:** las herramientas viven en `lib/ai/bot-tools.ts`
+  (`BOT_FUNCTION_DECLARATIONS` + `executeBotTool`); el system prompt que las
+  lista está en `lib/ai/prompts.ts` — mantener AMBOS sincronizados al agregar
+  una tool, y agregar tools de escritura a `BOT_WRITE_TOOLS`. Todo dato de
+  usuario interpolado en prompts pasa por `sanitizeForPrompt`
+  (anti prompt-injection) — no quitarlo.
+- **Webhook MercadoPago:** valida firma `x-signature` (HMAC) y es fail-closed:
+  sin `MP_WEBHOOK_SECRET` en prod responde 401. No debilitar; configurar el
+  env var en cada entorno.

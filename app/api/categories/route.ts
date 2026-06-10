@@ -37,6 +37,19 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
+    // La categoría padre debe ser del usuario (o del sistema, visibles para todos).
+    if (body.parentId) {
+      const { data: parent } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('id', body.parentId)
+        .or(`user_id.eq.${user.id},is_system.eq.true`)
+        .maybeSingle();
+      if (!parent) {
+        return NextResponse.json({ error: 'Categoría padre inválida' }, { status: 400 });
+      }
+    }
+
     const category = await categoriesService.create({
       userId: user.id,
       name: body.name,

@@ -34,25 +34,27 @@ export interface FinancialContext {
   };
 }
 
+const sanitizeForPrompt = (s: string) => s.replace(/[\r\n]+/g, ' ').slice(0, 80);
+
 export function buildBotSystemPrompt(context: FinancialContext): string {
   const { user, accounts, categories } = context;
 
   const accountsList = accounts
     .filter((a) => a.is_active)
-    .map((a) => `- ${a.name} (${a.currency})`)
+    .map((a) => `- ${sanitizeForPrompt(a.name)} (${sanitizeForPrompt(a.currency)})`)
     .join('\n');
 
   const expenseCategories = categories
     .filter((c) => c.type === 'expense')
-    .map((c) => `${c.icon} ${c.name}`)
+    .map((c) => `${sanitizeForPrompt(c.icon)} ${sanitizeForPrompt(c.name)}`)
     .join(', ');
 
   const incomeCategories = categories
     .filter((c) => c.type === 'income')
-    .map((c) => `${c.icon} ${c.name}`)
+    .map((c) => `${sanitizeForPrompt(c.icon)} ${sanitizeForPrompt(c.name)}`)
     .join(', ');
 
-  return `Sos el asistente financiero de Zarix, una app de finanzas personales argentina. Tu usuario es ${user.telegram_username || 'el usuario'}.
+  return `Sos el asistente financiero de Zarix, una app de finanzas personales argentina. Tu usuario es ${user.telegram_username ? sanitizeForPrompt(user.telegram_username) : 'el usuario'}.
 
 FECHA/HORA DE REFERENCIA (Argentina — usala para interpretar "hoy", "ayer", "anteayer", "el viernes", "15/3"):
 ${argentinaNowContext()}
@@ -78,6 +80,8 @@ Tenés herramientas (functions). Para CUALQUIER acción o dato real, LLAMÁ a la
 - Patrimonio total → get_net_worth
 - Saldos de cuentas → get_accounts
 - Cotizaciones (dólar, cripto) → get_quotes
+- Ver pagos/ingresos recurrentes activos → list_recurring
+- Crear un recurrente ("todos los meses pago 50k de alquiler") → create_recurring
 
 ⚠️ CRÍTICO: confirmar en texto SIN llamar la herramienta NO guarda nada. Para registrar, borrar o editar un movimiento SIEMPRE tenés que LLAMAR la herramienta correspondiente en ESTE turno. Nunca respondas "listo, registré..." / "ya lo borré" / "lo corregí" si no llamaste la tool. Si el usuario pide registrar un gasto/ingreso, tu PRIMER paso es llamar create_transaction (o create_transactions), no escribir la confirmación.
 
@@ -92,7 +96,7 @@ Recibís el historial con este usuario. Usalo para mensajes cortos de seguimient
 Pasá a la herramienta el nombre de cuenta tal como lo dijo el usuario (el sistema busca similitudes). Pistas: "efectivo"→cuenta con "efectivo"; "banco"→Brubank/Galicia/BBVA; "visa"/"master"→tarjeta de crédito; "mp"/"mercadopago"→Mercado Pago. Si no menciona cuenta, omití el campo (se usa la cuenta por defecto de esa moneda).
 Cuentas del usuario:
 ${accountsList || '(sin cuentas todavía)'}
-Moneda principal: ${user.default_currency}
+Moneda principal: ${sanitizeForPrompt(user.default_currency)}
 
 ═══ FECHAS ═══
 Incluí transactionDate (YYYY-MM-DD, calendario argentino) SOLO si el usuario dijo cuándo ocurrió (ayer, el lunes, 15/3...). Si no lo dijo, omitilo. Nunca inventes fechas.

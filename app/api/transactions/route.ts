@@ -67,6 +67,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!['expense', 'income', 'transfer'].includes(body.type)) {
+      return NextResponse.json(
+        { error: 'Tipo de movimiento inválido (debe ser gasto, ingreso o transferencia)' },
+        { status: 400 }
+      );
+    }
+
     const cur = String(body.currency ?? '').trim().toUpperCase();
     if (!isTransactionCurrency(cur)) {
       return NextResponse.json(
