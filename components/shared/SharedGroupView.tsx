@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { brandAsset } from '@/lib/brand';
 import { formatCurrency } from '@/lib/utils/currency';
 import type { SharedGroupDetail, SharedGroupMember } from '@/lib/services/sharedExpenses';
@@ -65,10 +66,12 @@ export default function SharedGroupView({ token, initialData }: Props) {
     <div className="min-h-screen bg-background text-foreground">
       <header className="bg-surface-glass/95 border-b border-border/75 sticky top-0 z-30 backdrop-blur-xl">
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-control overflow-hidden bg-surface border border-border flex items-center justify-center p-0.5">
-            <Image src={brandAsset.logoSvg} alt="" width={24} height={24} className="w-6 h-6 object-contain" unoptimized />
-          </div>
-          <span className="font-semibold tracking-tight text-primary">Zarix</span>
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" aria-label="Ir a Zarix">
+            <div className="w-8 h-8 rounded-control overflow-hidden bg-surface border border-border flex items-center justify-center p-0.5">
+              <Image src={brandAsset.logoSvg} alt="" width={24} height={24} className="w-6 h-6 object-contain" unoptimized />
+            </div>
+            <span className="font-semibold tracking-tight text-primary">Zarix</span>
+          </Link>
           <span className="text-xs text-muted-foreground ml-auto">Gastos compartidos</span>
         </div>
       </header>
