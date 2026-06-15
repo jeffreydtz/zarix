@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { brandAsset } from '@/lib/brand';
 import { formatCurrency } from '@/lib/utils/currency';
-import type { SharedGroupDetail, SharedGroupMember } from '@/lib/services/sharedExpenses';
+import type { SharedExpense, SharedGroupDetail, SharedGroupMember } from '@/lib/services/sharedExpenses';
 
 interface Props {
   token: string;
@@ -283,6 +283,7 @@ function ExpensesTab({
   onChanged: () => Promise<void>;
 }) {
   const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState<SharedExpense | null>(null);
   const memberName = (id: string) =>
     data.members.find((m) => m.id === id)?.display_name || '¿?';
 
@@ -294,16 +295,21 @@ function ExpensesTab({
 
   return (
     <div className="space-y-3">
-      {adding ? (
-        <AddExpenseForm
+      {adding || editing ? (
+        <ExpenseForm
           token={token}
           data={data}
           meId={meId}
+          expense={editing}
           onDone={async () => {
             setAdding(false);
+            setEditing(null);
             await onChanged();
           }}
-          onCancel={() => setAdding(false)}
+          onCancel={() => {
+            setAdding(false);
+            setEditing(null);
+          }}
         />
       ) : (
         <button
@@ -332,13 +338,25 @@ function ExpensesTab({
           </div>
           <div className="text-right shrink-0">
             <p className="font-semibold text-sm">{formatCurrency(e.amount, data.group.currency)}</p>
-            <button
-              type="button"
-              onClick={() => deleteExpense(e.id)}
-              className="text-xs text-muted-foreground hover:text-red-500 mt-1"
-            >
-              Eliminar
-            </button>
+            <div className="flex gap-2 justify-end mt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setAdding(false);
+                  setEditing(e);
+                }}
+                className="text-xs text-muted-foreground hover:text-primary"
+              >
+                Editar
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteExpense(e.id)}
+                className="text-xs text-muted-foreground hover:text-red-500"
+              >
+                Eliminar
+              </button>
+            </div>
           </div>
         </div>
       ))}
@@ -346,24 +364,29 @@ function ExpensesTab({
   );
 }
 
-function AddExpenseForm({
+function ExpenseForm({
   token,
   data,
   meId,
+  expense,
   onDone,
   onCancel,
 }: {
   token: string;
   data: SharedGroupDetail;
   meId: string | null;
+  expense: SharedExpense | null;
   onDone: () => Promise<void>;
   onCancel: () => void;
 }) {
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [paidBy, setPaidBy] = useState(meId || data.members[0]?.id || '');
+  const isEdit = expense !== null;
+  const [description, setDescription] = useState(expense?.description ?? '');
+  const [amount, setAmount] = useState(expense ? String(expense.amount) : '');
+  const [paidBy, setPaidBy] = useState(
+    expense?.paid_by_member_id || meId || data.members[0]?.id || ''
+  );
   const [participants, setParticipants] = useState<Set<string>>(
-    new Set(data.members.map((m) => m.id))
+    new Set(expense ? expense.splits.map((s) => s.member_id) : data.members.map((m) => m.id))
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -386,8 +409,11 @@ function AddExpenseForm({
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch(`/api/shared/${token}/expenses`, {
-        method: 'POST',
+      const url = isEdit
+        ? `/api/shared/${token}/expenses/${expense!.id}`
+        : `/api/shared/${token}/expenses`;
+      const res = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           description: description.trim(),
@@ -397,7 +423,7 @@ function AddExpenseForm({
         }),
       });
       const body = await res.json();
-      if (!res.ok) throw new Error(body.error || 'Error al agregar el gasto');
+      if (!res.ok) throw new Error(body.error || 'Error al guardar el gasto');
       await onDone();
     } catch (e: any) {
       setError(e.message);
@@ -407,7 +433,7 @@ function AddExpenseForm({
 
   return (
     <div className="card p-4 space-y-3">
-      <h3 className="font-semibold text-sm">Nuevo gasto</h3>
+      <h3 className="font-semibold text-sm">{isEdit ? 'Editar gasto' : 'Nuevo gasto'}</h3>
       <input
         value={description}
         onChange={(e) => setDescription(e.target.value)}
@@ -466,7 +492,7 @@ function AddExpenseForm({
           onClick={submit}
           className="flex-1 py-2.5 rounded-control bg-primary text-white text-sm font-medium disabled:opacity-50"
         >
-          {saving ? 'Guardando…' : 'Guardar gasto'}
+          {saving ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Guardar gasto'}
         </button>
         <button
           type="button"
