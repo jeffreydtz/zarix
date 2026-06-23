@@ -113,6 +113,8 @@ export default function CreateTransactionButton({
   const [amount, setAmount] = useState('');
   /** Moneda en la que está expresado el monto (gasto/ingreso); se alinea con la cuenta al elegirla. */
   const [amountCurrency, setAmountCurrency] = useState('ARS');
+  /** El usuario eligió la moneda a mano: no pisar su elección al elegir la cuenta. */
+  const [currencyTouched, setCurrencyTouched] = useState(false);
   const [accountId, setAccountId] = useState('');
   const [destinationAccountId, setDestinationAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -165,12 +167,12 @@ export default function CreateTransactionButton({
 
   const currencyOptions = useMemo(() => [...TRANSACTION_CURRENCIES], []);
 
-  /** Al elegir cuenta en gasto/ingreso, la moneda del monto sigue la de la cuenta por defecto. */
+  /** Al elegir cuenta en gasto/ingreso, la moneda del monto sigue la de la cuenta por defecto (salvo que el usuario ya la haya cambiado). */
   useEffect(() => {
-    if (type === 'transfer' || !accountId) return;
+    if (type === 'transfer' || !accountId || currencyTouched) return;
     const a = accounts.find((x) => x.id === accountId);
     if (a) setAmountCurrency(coerceTransactionCurrency(a.currency));
-  }, [accountId, type, accounts]);
+  }, [accountId, type, accounts, currencyTouched]);
 
   const transferPayloadCurrency = useMemo(() => {
     if (type !== 'transfer' || !sourceAccount) return sourceAccount?.currency ?? 'ARS';
@@ -336,6 +338,7 @@ export default function CreateTransactionButton({
     setUseManualExchangeRate(false);
     setManualExchangeRate('');
     setAmountCurrency('ARS');
+    setCurrencyTouched(false);
     setTransactionDateYmd(todayLocalYmd());
   };
 
@@ -746,7 +749,10 @@ export default function CreateTransactionButton({
                       <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
                       <select
                         value={amountCurrency}
-                        onChange={(e) => setAmountCurrency(e.target.value)}
+                        onChange={(e) => {
+                          setAmountCurrency(e.target.value);
+                          setCurrencyTouched(true);
+                        }}
                         className="w-[5.5rem] shrink-0 px-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-medium"
                         title="Moneda del monto"
                       >

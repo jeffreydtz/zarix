@@ -56,6 +56,8 @@ export default function FloatingAddButton() {
   const [type, setType] = useState<'expense' | 'income'>('expense');
   const [amount, setAmount] = useState('');
   const [amountCurrency, setAmountCurrency] = useState<TransactionCurrency>('ARS');
+  /** El usuario eligió la moneda a mano: no pisar su elección al elegir la cuenta. */
+  const [currencyTouched, setCurrencyTouched] = useState(false);
   const [accountId, setAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
@@ -91,6 +93,7 @@ export default function FloatingAddButton() {
     setType('expense');
     setAmount('');
     setAmountCurrency('ARS');
+    setCurrencyTouched(false);
     setAccountId('');
     setCategoryId('');
     setDescription('');
@@ -317,7 +320,10 @@ export default function FloatingAddButton() {
                     <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
                     <select
                       value={amountCurrency}
-                      onChange={(e) => setAmountCurrency(coerceTransactionCurrency(e.target.value))}
+                      onChange={(e) => {
+                        setAmountCurrency(coerceTransactionCurrency(e.target.value));
+                        setCurrencyTouched(true);
+                      }}
                       className="w-[5.5rem] shrink-0 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                       title="Moneda del monto"
                     >
@@ -340,9 +346,11 @@ export default function FloatingAddButton() {
                     onChange={(e) => {
                       const selectedAccountId = e.target.value;
                       setAccountId(selectedAccountId);
-                      const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
-                      if (selectedAccount) {
-                        setAmountCurrency(coerceTransactionCurrency(selectedAccount.currency));
+                      if (!currencyTouched) {
+                        const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
+                        if (selectedAccount) {
+                          setAmountCurrency(coerceTransactionCurrency(selectedAccount.currency));
+                        }
                       }
                     }}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
