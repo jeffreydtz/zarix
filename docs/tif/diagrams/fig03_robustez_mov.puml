@@ -1,0 +1,62 @@
+@startuml D-ROB-MOV-001 — Diagrama de Robustez: Registrar Movimiento
+title ZARIX — Diagrama de Robustez - Registrar Movimiento (CU-001)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam linetype ortho
+skinparam backgroundColor white
+
+actor "Usuario" as U
+actor "Bot de Telegram" as BT
+
+boundary "Pantalla Nuevo Movimiento\n(TransactionForm)" as B_Form
+boundary "POST /api/transactions\n(route handler)" as B_API
+boundary "Webhook Telegram\n(parser de mensaje)" as B_Bot
+boundary "Confirmación / Error\n(toast)" as B_Msg
+
+control "Validar Sesión\n(auth.getUser)" as C_Auth
+control "Validar Datos\n(tipo, moneda, monto)" as C_Val
+control "transactionsService.create()" as C_Create
+control "Conversor de Moneda\n(computeAmountInAccountCurrency)" as C_Conv
+control "Trigger update_account_balance()" as C_Saldo
+
+entity "accounts" as E_Cta
+entity "transactions" as E_Mov
+entity "categories" as E_Cat
+
+U --> B_Form : 1. Completa monto, cuenta, categoría
+B_Form --> B_API : 2. Envía POST /api/transactions
+B_API --> C_Auth : 3. Valida sesión
+B_API --> C_Val : 4. Valida tipo, moneda y monto
+
+alt Si datos válidos
+    B_API --> C_Create : 5a. Crea movimiento
+    C_Create --> E_Cta : 6a. Lee cuenta (eq user_id)
+    C_Create --> C_Conv : 7a. Convierte a moneda de la cuenta
+    C_Create --> E_Mov : 8a. Inserta transaction (con category_id)
+    C_Create --> E_Cat : 9a. Referencia categoría (FK)
+    E_Mov --> C_Saldo : 10a. Dispara trigger AFTER INSERT
+    C_Saldo --> E_Cta : 11a. Actualiza balance
+    C_Create --> B_Msg : 12a. Devuelve 201 Created
+    B_Msg --> U : 13a. Muestra confirmación
+else Si datos inválidos
+    C_Val --> B_Msg : 5b. Devuelve 400 / mensaje
+    B_Msg --> U : 6b. Muestra error
+end
+
+opt Flujo alternativo: registro por Telegram
+    BT --> B_Bot : Envía "gasto 5000 super"
+    B_Bot --> C_Create : Crea movimiento (executeBotTransaction)
+    C_Create --> E_Mov : Inserta transaction
+end
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+CU asociado: CU-001 Registrar Movimiento
+Boundary (vista/API) | Control (lógica) | Entity (tabla)
+endlegend
+
+@enduml

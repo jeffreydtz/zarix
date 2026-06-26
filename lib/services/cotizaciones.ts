@@ -38,15 +38,184 @@ interface DolarApiRow {
   venta: number;
 }
 
+/**
+ * Patrón Strategy: cada fuente de cotización del dólar es una estrategia
+ * intercambiable que cumple esta interfaz. CotizacionesService (Context) las
+ * recorre en orden hasta obtener una cotización válida (fallback). Agregar una
+ * fuente nueva = implementar esta interfaz y sumarla al arreglo `dolarProviders`.
+ */
+interface DolarRateProvider {
+  readonly name: string;
+  /** Devuelve blue/oficial/mep/ccl o lanza si la fuente no está disponible. */
+  fetch(): Promise<Record<string, DolarQuote>>;
+}
+
+/** Estrategia primaria: API de CriptoYa. */
+class CriptoYaProvider implements DolarRateProvider {
+  readonly name = 'criptoya';
+  constructor(private readonly baseURL: string) {}
+
+  async fetch(): Promise<Record<string, DolarQuote>> {
+    const response = await fetch(`${this.baseURL}/dolar`, {
+      next: { revalidate: 300 },
+    });
+
+    if (!response.ok) {
+      throw new Error(`CriptoYa API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // CriptoYa: `bid` = compra (lo que la casa te paga por 1 USD), `ask` = venta
+    // (lo que te cuesta comprar 1 USD). Convención de la app: buy=compra, sell=venta.
+    const quotes: Record<string, DolarQuote> = {
+      blue: {
+        type: 'blue',
+        buy: data.blue?.bid || data.blue || 0,
+        sell: data.blue?.ask || data.blue || 0,
+        timestamp: new Date(),
+      },
+      oficial: {
+        type: 'oficial',
+        buy: data.oficial?.bid || data.oficial || 0,
+        sell: data.oficial?.ask || data.oficial || 0,
+        timestamp: new Date(),
+      },
+      mep: {
+        type: 'mep',
+        buy: data.mep?.al30?.['24hs']?.price || 0,
+        sell: data.mep?.al30?.['24hs']?.price || 0,
+        timestamp: new Date(),
+      },
+      ccl: {
+        type: 'ccl',
+        buy: data.ccl?.al30?.['24hs']?.price || 0,
+        sell: data.ccl?.al30?.['24hs']?.price || 0,
+        timestamp: new Date(),
+      },
+    };
+
+    // Si el blue vino en 0 (respuesta degradada), tratarlo como fallo para caer
+    // al siguiente proveedor en vez de cachear ceros que rompen toda conversión.
+    if (!(quotes.blue.sell > 0) || !(quotes.blue.buy > 0)) {
+      throw new Error('CriptoYa: dólar blue en 0');
+    }
+
+    return quotes;
+  }
+}
+
+/** Estrategia de respaldo: API pública de DolarApi (sin API key). */
+class DolarApiProvider implements DolarRateProvider {
+  readonly name = 'dolarapi';
+  constructor(private readonly baseURL: string) {}
+
+  async fetch(): Promise<Record<string, DolarQuote>> {
+    const response = await fetch(`${this.baseURL}/dolares`, {
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!response.ok) {
+      throw new Error(`DolarApi error: ${response.status}`);
+    }
+
+    const rows = (await response.json()) as unknown;
+    if (!Array.isArray(rows)) {
+      throw new Error('DolarApi: respuesta inválida');
+    }
+
+    const byCasa = new Map<string, DolarApiRow>();
+    for (const r of rows) {
+      if (r && typeof r === 'object' && 'casa' in r) {
+        const row = r as DolarApiRow;
+        byCasa.set(row.casa, row);
+      }
+    }
+
+    const blue = byCasa.get('blue');
+    const oficial = byCasa.get('oficial');
+    const bolsa = byCasa.get('bolsa');
+    const ccl = byCasa.get('contadoconliqui');
+    const timestamp = new Date();
+
+    return {
+      blue: { type: 'blue', buy: Number(blue?.compra) || 0, sell: Number(blue?.venta) || 0, timestamp },
+      oficial: { type: 'oficial', buy: Number(oficial?.compra) || 0, sell: Number(oficial?.venta) || 0, timestamp },
+      mep: { type: 'mep', buy: Number(bolsa?.compra) || 0, sell: Number(bolsa?.venta) || 0, timestamp },
+      ccl: { type: 'ccl', buy: Number(ccl?.compra) || 0, sell: Number(ccl?.venta) || 0, timestamp },
+    };
+  }
+}
+
+/** Estrategia de último recurso: último valor persistido en exchange_rates. */
+class DbCacheProvider implements DolarRateProvider {
+  readonly name = 'db';
+
+  async fetch(): Promise<Record<string, DolarQuote>> {
+    const supabase = createServiceClientSync();
+    const sources = ['blue', 'oficial', 'mep', 'ccl'];
+
+    const queries = await Promise.all(
+      sources.map(async (source) => {
+        const { data } = await supabase
+          .from('exchange_rates')
+          .select('rate, timestamp')
+          .eq('source', source)
+          .eq('from_currency', 'USD')
+          .eq('to_currency', 'ARS')
+          .order('timestamp', { ascending: false })
+          .limit(1)
+          .single();
+
+        return { source, data };
+      })
+    );
+
+    const hasAny = queries.some((q) => q.data?.rate);
+    if (!hasAny) {
+      throw new Error('Sin cotizaciones previas en exchange_rates');
+    }
+
+    const result: Record<string, DolarQuote> = {
+      blue: { type: 'blue', buy: 0, sell: 0, timestamp: new Date() },
+      oficial: { type: 'oficial', buy: 0, sell: 0, timestamp: new Date() },
+      mep: { type: 'mep', buy: 0, sell: 0, timestamp: new Date() },
+      ccl: { type: 'ccl', buy: 0, sell: 0, timestamp: new Date() },
+    };
+
+    for (const q of queries) {
+      if (q.data?.rate) {
+        result[q.source] = {
+          type: q.source as DolarQuote['type'],
+          buy: Number(q.data.rate),
+          sell: Number(q.data.rate),
+          timestamp: new Date(q.data.timestamp),
+        };
+      }
+    }
+
+    return result;
+  }
+}
+
 class CotizacionesService {
   private criptoyaBaseURL: string;
   private coingeckoBaseURL: string;
   private dolarApiBaseURL: string;
+  /** Estrategias de cotización del dólar, en orden de preferencia (fallback). */
+  private dolarProviders: DolarRateProvider[];
 
   constructor() {
     this.criptoyaBaseURL = process.env.CRIPTOYA_API_URL || 'https://criptoya.com/api';
     this.coingeckoBaseURL = process.env.COINGECKO_API_URL || 'https://api.coingecko.com/api/v3';
     this.dolarApiBaseURL = process.env.DOLARAPI_URL || 'https://dolarapi.com/v1';
+    this.dolarProviders = [
+      new CriptoYaProvider(this.criptoyaBaseURL),
+      new DolarApiProvider(this.dolarApiBaseURL),
+      new DbCacheProvider(),
+    ];
   }
 
   private getCacheKey(source: string, from: string, to: string): string {
@@ -92,114 +261,6 @@ class CotizacionesService {
     }
   }
 
-  private async getLatestDolarQuotesFromDB(): Promise<Record<string, DolarQuote> | null> {
-    try {
-      const supabase = createServiceClientSync();
-      const sources = ['blue', 'oficial', 'mep', 'ccl'];
-
-      const queries = await Promise.all(
-        sources.map(async (source) => {
-          const { data } = await supabase
-            .from('exchange_rates')
-            .select('rate, timestamp')
-            .eq('source', source)
-            .eq('from_currency', 'USD')
-            .eq('to_currency', 'ARS')
-            .order('timestamp', { ascending: false })
-            .limit(1)
-            .single();
-
-          return { source, data };
-        })
-      );
-
-      const hasAny = queries.some((q) => q.data?.rate);
-      if (!hasAny) return null;
-
-      const result: Record<string, DolarQuote> = {
-        blue: { type: 'blue', buy: 0, sell: 0, timestamp: new Date() },
-        oficial: { type: 'oficial', buy: 0, sell: 0, timestamp: new Date() },
-        mep: { type: 'mep', buy: 0, sell: 0, timestamp: new Date() },
-        ccl: { type: 'ccl', buy: 0, sell: 0, timestamp: new Date() },
-      };
-
-      for (const q of queries) {
-        if (q.data?.rate) {
-          result[q.source] = {
-            type: q.source as DolarQuote['type'],
-            buy: Number(q.data.rate),
-            sell: Number(q.data.rate),
-            timestamp: new Date(q.data.timestamp),
-          };
-        }
-      }
-
-      return result;
-    } catch (error) {
-      console.error('Error reading latest dollar quotes from DB:', error);
-      return null;
-    }
-  }
-
-  /** Respaldo sin API key: https://dolarapi.com/v1/dolares */
-  private async fetchDolarQuotesFromDolarApi(): Promise<Record<string, DolarQuote>> {
-    const response = await fetch(`${this.dolarApiBaseURL}/dolares`, {
-      headers: { Accept: 'application/json' },
-      next: { revalidate: 300 },
-      signal: AbortSignal.timeout(8000),
-    });
-
-    if (!response.ok) {
-      throw new Error(`DolarApi error: ${response.status}`);
-    }
-
-    const rows = (await response.json()) as unknown;
-    if (!Array.isArray(rows)) {
-      throw new Error('DolarApi: respuesta inválida');
-    }
-
-    const byCasa = new Map<string, DolarApiRow>();
-    for (const r of rows) {
-      if (r && typeof r === 'object' && 'casa' in r) {
-        const row = r as DolarApiRow;
-        byCasa.set(row.casa, row);
-      }
-    }
-
-    const blue = byCasa.get('blue');
-    const oficial = byCasa.get('oficial');
-    const bolsa = byCasa.get('bolsa');
-    const ccl = byCasa.get('contadoconliqui');
-    const timestamp = new Date();
-
-    return {
-      blue: {
-        type: 'blue',
-        buy: Number(blue?.compra) || 0,
-        sell: Number(blue?.venta) || 0,
-        timestamp,
-      },
-      oficial: {
-        type: 'oficial',
-        buy: Number(oficial?.compra) || 0,
-        sell: Number(oficial?.venta) || 0,
-        timestamp,
-      },
-      mep: {
-        type: 'mep',
-        buy: Number(bolsa?.compra) || 0,
-        sell: Number(bolsa?.venta) || 0,
-        timestamp,
-      },
-      ccl: {
-        type: 'ccl',
-        buy: Number(ccl?.compra) || 0,
-        sell: Number(ccl?.venta) || 0,
-        timestamp,
-      },
-    };
-  }
-
   async getDolarQuotes(): Promise<Record<string, DolarQuote>> {
     const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
     const cached = this.getFromCache<Record<string, DolarQuote>>(cacheKey);
@@ -208,75 +269,25 @@ class CotizacionesService {
       return cached;
     }
 
-    const persistAndReturn = (quotes: Record<string, DolarQuote>) => {
-      this.setCache(cacheKey, quotes);
-      void this.saveLatestDolarQuotes(quotes);
-      return quotes;
-    };
-
-    try {
-      const response = await fetch(`${this.criptoyaBaseURL}/dolar`, {
-        next: { revalidate: 300 },
-      });
-
-      if (!response.ok) {
-        throw new Error(`CriptoYa API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // CriptoYa: `bid` = compra (lo que la casa te paga por 1 USD), `ask` = venta
-      // (lo que te cuesta comprar 1 USD). Convención de la app: buy=compra, sell=venta
-      // (igual que el path DolarApi). Antes estaban invertidos.
-      const quotes: Record<string, DolarQuote> = {
-        blue: {
-          type: 'blue',
-          buy: data.blue?.bid || data.blue || 0,
-          sell: data.blue?.ask || data.blue || 0,
-          timestamp: new Date(),
-        },
-        oficial: {
-          type: 'oficial',
-          buy: data.oficial?.bid || data.oficial || 0,
-          sell: data.oficial?.ask || data.oficial || 0,
-          timestamp: new Date(),
-        },
-        mep: {
-          type: 'mep',
-          buy: data.mep?.al30?.['24hs']?.price || 0,
-          sell: data.mep?.al30?.['24hs']?.price || 0,
-          timestamp: new Date(),
-        },
-        ccl: {
-          type: 'ccl',
-          buy: data.ccl?.al30?.['24hs']?.price || 0,
-          sell: data.ccl?.al30?.['24hs']?.price || 0,
-          timestamp: new Date(),
-        },
-      };
-
-      // Si el blue vino en 0 (respuesta degradada), tratarlo como fallo y caer al
-      // fallback (DolarApi → DB) en vez de cachear ceros que rompen toda conversión.
-      if (!(quotes.blue.sell > 0) || !(quotes.blue.buy > 0)) {
-        throw new Error('CriptoYa: dólar blue en 0');
-      }
-
-      return persistAndReturn(quotes);
-    } catch (error) {
-      console.error('Error fetching dolar quotes (CriptoYa):', error);
+    // Patrón Strategy + fallback: recorre los proveedores en orden hasta que uno
+    // devuelve una cotización válida. Solo se persisten las fuentes en vivo
+    // (no el proveedor de respaldo en BD, que ya lee de exchange_rates).
+    let lastError: unknown;
+    for (const provider of this.dolarProviders) {
       try {
-        const fromApi = await this.fetchDolarQuotesFromDolarApi();
-        return persistAndReturn(fromApi);
-      } catch (dolarApiErr) {
-        console.error('Error fetching dolar quotes (DolarApi):', dolarApiErr);
+        const quotes = await provider.fetch();
+        this.setCache(cacheKey, quotes);
+        if (provider.name !== 'db') {
+          void this.saveLatestDolarQuotes(quotes);
+        }
+        return quotes;
+      } catch (error) {
+        console.error(`Dolar provider "${provider.name}" failed:`, error);
+        lastError = error;
       }
-      const fallbackFromDb = await this.getLatestDolarQuotesFromDB();
-      if (fallbackFromDb) {
-        this.setCache(cacheKey, fallbackFromDb);
-        return fallbackFromDb;
-      }
-      throw error;
     }
+
+    throw lastError ?? new Error('No hay proveedor de cotización disponible');
   }
 
   async getCryptoQuote(symbol: string): Promise<CryptoQuote> {

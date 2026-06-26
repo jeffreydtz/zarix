@@ -1,0 +1,72 @@
+@startuml D-ARQ-PKG-001 — Diagrama de Paquetes de Zarix
+title ZARIX — Diagrama de Paquetes (Arquitectura por Capas)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+skinparam packageStyle rectangle
+
+package "Capa 1: Presentación (UI)" {
+    package "app/(authenticated)" as Pages
+    package "components/ (por feature + ui/)" as Components
+    package "app/page.tsx (landing) · app/shared" as Public
+}
+
+package "Capa 2: Routing y Middleware" {
+    package "middleware.ts (guard de sesión)" as Middleware
+    package "app/api/** (route handlers)" as ApiRoutes
+}
+
+package "Capa 3: Servicios (lógica de dominio)" {
+    package "transactionsService · accountsService" as SvcCore
+    package "cotizacionesService · investmentsService" as SvcMarket
+    package "budgets · recurring · sharedExpenses" as SvcOther
+}
+
+package "Capa 4: Integración / Infraestructura" {
+    package "lib/supabase (server/client)" as SupaClients
+    package "lib/ai (Gemini · bot-tools)" as AiLib
+    package "lib/telegram (Telegraf bot)" as TgLib
+    package "lib/market-data" as MarketLib
+}
+
+package "Capa 5: Persistencia" {
+    database "Supabase\n(PostgreSQL + Auth + RLS)" as Supabase
+}
+
+package "Capa 6: Servicios Externos" {
+    node "CriptoYa · DolarApi · CoinGecko" as ApiDolar
+    node "Yahoo Finance" as ApiYahoo
+    node "Telegram · Gemini · Mercado Pago" as ApiOther
+}
+
+Pages --> Components : usa
+Pages --> ApiRoutes : fetch
+Public --> ApiRoutes : fetch
+Middleware --> SupaClients : refresca sesión
+ApiRoutes --> SvcCore : invoca
+ApiRoutes --> SvcMarket : invoca
+ApiRoutes --> SvcOther : invoca
+ApiRoutes --> AiLib : chat / anomalías
+TgLib --> SvcCore : registra movimientos
+TgLib --> AiLib : function-calling
+SvcCore --> SupaClients : queries
+SvcMarket --> SupaClients : queries
+SvcOther --> SupaClients : queries
+SvcMarket --> MarketLib : usa
+SupaClients --> Supabase : SQL (service-role / RLS)
+SvcMarket --> ApiDolar : HTTP
+SvcMarket --> ApiYahoo : HTTP
+AiLib --> ApiOther : HTTP
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+Dependencias dirigidas hacia adentro: UI -> Rutas -> Servicios ->
+Infraestructura -> Persistencia. Los externos se acceden por la Capa 3/4.
+endlegend
+
+@enduml

@@ -1,0 +1,111 @@
+@startuml D-CLA-INT-001 — Diagrama de Clases Técnico de Zarix
+title ZARIX — Diagrama de Clases Técnico (Servicios + Entidades)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+skinparam classAttributeIconSize 0
+
+' ─── Capa de Servicios (lógica / control) ───
+class "TransactionsService" as TS {
+    +create(input): Transaction
+    +list(filters): TransactionWithCategory[]
+    +getById(id, userId): TransactionWithCategory
+    +createBalanceAdjustment(userId, accountId, targetBalance): void
+    +delete(id, userId): void
+}
+class "AccountsService" as AS {
+    +list(userId, options?): AccountWithBalance[]
+    +aggregateAccountTotals(accounts): AccountAggregates
+    +getTotalBalance(userId): { totalUSD, totalARSBlue, accountCount, ... }
+}
+class "CotizacionesService" as CS {
+    -dolarProviders: DolarRateProvider[]
+    +getDolarQuotes(): Record<string, DolarQuote>
+    +getExchangeRate(from, to): number
+    +getCryptoQuote(symbol): CryptoQuote
+    +getStockQuote(ticker, market): StockQuote
+}
+class "InvestmentsService" as IS {
+    +list(userId, options?): InvestmentWithPnL[]
+    +getPortfolioSummary(userId): PortfolioSummaryPayload
+    +sell(input): SellPositionResult
+}
+
+' ─── Entidades (datos tipados) ───
+class "Account" as Account {
+    +id: UUID
+    +userId: UUID
+    +name: string
+    +type: AccountType
+    +currency: string
+    +balance: number
+    +isDebt: boolean
+    +creditLimit?: number
+}
+class "Transaction" as Tx {
+    +id: UUID
+    +userId: UUID
+    +type: TransactionType
+    +amount: number
+    +currency: string
+    +amountInAccountCurrency: number
+    +exchangeRate?: number
+    +transactionDate: Date
+}
+class "Category" as Cat {
+    +id: UUID
+    +name: string
+    +type: 'expense' | 'income'
+    +parentId?: UUID
+}
+class "Investment" as Inv {
+    +id: UUID
+    +ticker?: string
+    +type: InvestmentType
+    +quantity: number
+    +purchasePrice: number
+    +currentPrice?: number
+}
+class "RecurringRule" as RR {
+    +id: UUID
+    +frequency: Frequency
+    +amount: number
+    +startDate: Date
+    +isActive: boolean
+}
+class "Budget" as Bud {
+    +id: UUID
+    +month: Date
+    +amount: number
+    +alertAtPercent: number
+}
+
+' ─── Dependencias de servicios ───
+TS ..> Tx : crea
+TS ..> Account : lee / dispara trigger
+TS ..> CS : convierte moneda
+AS ..> Account : agrega saldos
+AS ..> CS : valúa en USD/ARS
+IS ..> Inv : gestiona posiciones
+IS ..> CS : precios de mercado
+
+' ─── Relaciones entre entidades (FKs) ───
+Account "1" *-- "*" Tx : account_id
+Account "1" *-- "*" Inv : account_id
+Account "1" *-- "*" RR : account_id
+Cat "1" o-- "*" Tx : category_id
+Cat "0..1" o-- "*" Cat : parent_id
+Cat "1" o-- "*" Bud : category_id
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+La lógica vive en los *Service (TypeScript); las entidades son
+los tipos de `types/` espejados de las tablas Supabase.
+endlegend
+
+@enduml

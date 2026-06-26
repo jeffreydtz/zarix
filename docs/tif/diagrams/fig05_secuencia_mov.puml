@@ -1,0 +1,61 @@
+@startuml D-SEC-MOV-001 — Diagrama de Secuencia: Registrar Movimiento
+title ZARIX — Diagrama de Secuencia - Registrar Movimiento (CU-001)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam linetype ortho
+skinparam backgroundColor white
+
+actor "Usuario" as U
+participant "TransactionForm\n(boundary)" as Form
+participant "POST /api/transactions\n(route handler)" as API
+participant "transactionsService" as SVC
+participant "cotizacionesService" as COT
+database "PostgreSQL\n(Supabase)" as DB
+
+U -> Form : 1. Completa monto, cuenta, categoría
+activate Form
+Form -> API : 2. POST { type, accountId, amount, currency }
+activate API
+
+API -> API : 3. auth.getUser() valida sesión
+API -> API : 4. Valida tipo, moneda y monto
+
+alt Datos válidos
+    API -> SVC : 5. create(input)
+    activate SVC
+    SVC -> DB : 6. SELECT * FROM accounts WHERE id=? AND user_id=?
+    DB --> SVC : 7. account
+
+    opt Moneda del movimiento <> moneda de la cuenta
+        SVC -> COT : 8. getExchangeRate(currency, account.currency)
+        activate COT
+        COT -> COT : 9. getDolarQuotes() (caché 300s o API)
+        COT --> SVC : 10. exchangeRate
+        deactivate COT
+    end
+
+    SVC -> DB : 11. INSERT INTO transactions (amount_in_account_currency, exchange_rate, ...)
+    DB -> DB : 12. TRIGGER update_account_balance(): UPDATE accounts SET balance = balance +/- monto
+    DB --> SVC : 13. transaction
+    SVC --> API : 14. Transaction
+    deactivate SVC
+    API --> Form : 15. 201 Created
+    Form --> U : 16. Muestra confirmación
+else Datos inválidos
+    API --> Form : 5b. 400 Bad Request (mensaje)
+    Form --> U : 6b. Muestra error
+end
+deactivate API
+deactivate Form
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+CU asociado: CU-001 — El saldo se actualiza por TRIGGER en la BD,
+no por código de aplicación (fuente única de verdad).
+endlegend
+
+@enduml

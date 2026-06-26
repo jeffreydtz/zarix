@@ -1,0 +1,63 @@
+@startuml D-ARQ-DEP-001 — Diagrama de Despliegue de Zarix
+title ZARIX — Diagrama de Despliegue (Serverless Cloud-Native)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+
+node "Dispositivo del Usuario" as Device {
+    artifact "PWA (navegador)\nReact + Service Worker" as PWA
+}
+
+node "Telegram" as Tg {
+    artifact "Bot API" as TgBot
+}
+
+cloud "Vercel (Edge Network)" as Vercel {
+    node "Next.js 14 (Serverless / Fluid)" as Next {
+        artifact "Frontend (SSR/CSR)" as FE
+        artifact "Route Handlers\n(app/api/**)" as BE
+        artifact "Webhook Telegram" as WH
+    }
+    node "Cron Jobs" as CronNode {
+        artifact "recurring · update-prices\nweekly-summary · monthly-summary\nmaturity-alerts · subscription-grace" as CronJobs
+    }
+}
+
+cloud "Supabase" as Supa {
+    database "PostgreSQL\n(+ RLS, triggers)" as PG
+    node "Auth (JWT)" as Auth
+}
+
+cloud "APIs Externas" as Ext {
+    artifact "CriptoYa · DolarApi\nCoinGecko · Yahoo Finance" as Mkt
+    artifact "Google Gemini\n(IA / anomalías)" as Gem
+}
+
+cloud "Mercado Pago" as MpCloud {
+    artifact "Preapproval + Webhook" as MpApi
+}
+
+PWA --> FE : HTTPS
+PWA ..> BE : fetch / JSON
+TgBot --> WH : HTTPS (webhook + secret)
+FE --> Auth : JWT
+BE --> PG : supabase-js (service-role / RLS)
+BE ..> Mkt : HTTPS (cotizaciones)
+BE ..> Gem : HTTPS (IA / anomalías)
+BE ..> MpApi : suscripciones
+MpApi ..> BE : webhook (x-signature HMAC)
+CronJobs --> PG : ejecuta tareas
+CronJobs ..> Mkt : refresca precios
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+Sin servidores propios: cómputo en Vercel (serverless),
+datos en Supabase, integraciones por HTTPS. Costo ~ USD 0 en free tier.
+endlegend
+
+@enduml

@@ -188,3 +188,33 @@ Nunca commitear `.env.local` ni imprimir secretos.
 - **Webhook MercadoPago:** valida firma `x-signature` (HMAC) y es fail-closed:
   sin `MP_WEBHOOK_SECRET` en prod responde 401. No debilitar; configurar el
   env var en cada entorno.
+
+## Contexto académico (TIF UAI)
+
+Zarix es también el caso del **Trabajo Integrador Final** (UAI, Facultad de
+Tecnología Informática). El documento `Zarix TIF v2.docx` (raíz del repo) cubre el
+plan de negocio + la solución técnica con metodología **ICONIX**. La sección 10 y el
+Anexo D contienen 12 diagramas (casos de uso con include/extend, modelo de dominio,
+robustez, secuencia, clases, ER, paquetes, componentes, despliegue, patrón de diseño
+y estilos arquitectónicos).
+
+- **Fuentes editables** de los diagramas: `docs/tif/diagrams/*.puml` (PlantUML) y
+  `docs/tif/png/`. Cómo regenerarlos e incrustarlos en el `.docx`:
+  ver `docs/tif/README.md`. Los diagramas se derivan del **código real**; si cambiás
+  el modelo de datos, una ruta o un servicio, actualizá el `.puml` correspondiente.
+- **Material de cátedra** (ICONIX aplicado a Odoo, plantillas y checklists de
+  calidad por tipo de diagrama): `https://github.com/cursos-uai/sap_tfi_2026`.
+- Convención de los diagramas: título `ZARIX — … (CU-xxx)`, leyenda abajo a la
+  derecha, `linetype ortho`, robustez con boundary/control/entity en voz activa,
+  secuencia con `database PostgreSQL` y SQL explícito.
+
+## Patrones de diseño aplicados
+
+- **Strategy** — `lib/services/cotizaciones.ts`: la cotización del dólar se resuelve
+  con un arreglo ordenado de estrategias `DolarRateProvider` (`CriptoYaProvider` →
+  `DolarApiProvider` → `DbCacheProvider`). `getDolarQuotes()` (el *Context*) las recorre
+  con fallback hasta obtener una cotización válida, cachea (TTL 300s) y persiste solo las
+  fuentes en vivo en `exchange_rates`. **Agregar una fuente = implementar
+  `DolarRateProvider` y sumarla a `dolarProviders` en el constructor; no tocar
+  `getDolarQuotes()`** (principio Open/Closed). Documentado en el Anexo D del TIF
+  (`docs/tif/diagrams/fig11_patron_strategy.puml`).

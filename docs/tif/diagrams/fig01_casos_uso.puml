@@ -1,0 +1,92 @@
+@startuml D-CU-GEN-001 — Diagrama de Casos de Uso de Zarix
+title ZARIX — Casos de Uso Principales (con <<include>> y <<extend>>)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam linetype ortho
+skinparam backgroundColor white
+
+left to right direction
+skinparam actorStyle awesome
+
+' ─── Actores ───
+actor "Usuario" as U
+actor "Bot de Telegram" as BT
+actor "Vercel Cron\n(Programador)" as CRON
+actor "Sistema\n(Auth)" as S
+
+' ─── CU principales agrupados por módulo ───
+rectangle "Módulo Movimientos" {
+    usecase "CU-001\nRegistrar Movimiento" as CU1
+}
+rectangle "Módulo Cuentas" {
+    usecase "CU-002\nGestionar Cuentas" as CU2
+}
+rectangle "Módulo Dashboard" {
+    usecase "CU-003\nVisualizar Dashboard" as CU3
+}
+rectangle "Módulo Inversiones" {
+    usecase "CU-004\nGestionar Portafolio\nde Inversiones" as CU4
+}
+rectangle "Módulo Datos" {
+    usecase "CU-005\nImportar / Exportar\nDatos" as CU5
+}
+rectangle "Módulo Recurrencia" {
+    usecase "CU-006\nGestionar Reglas\nRecurrentes" as CU6
+}
+
+' ─── CU incluidos (sub-flujos obligatorios) ───
+usecase "CU-AUTH-001\nValidar Sesión\n(getUser)" as CU_AUTH
+usecase "CU-001-I1\nValidar Datos\ndel Movimiento" as CU_VAL
+usecase "CU-001-I2\nActualizar Saldo\nde Cuenta" as CU_SALDO
+usecase "CU-003-I1\nObtener\nCotizaciones" as CU_COT
+usecase "CU-003-I2\nCalcular\nPatrimonio" as CU_PAT
+usecase "CU-004-I1\nActualizar Precios\nde Mercado" as CU_PRICE
+
+' ─── CU que extienden (sub-flujos opcionales) ───
+usecase "CU-001-E1\nRegistrar por\nTelegram" as CU_TG
+usecase "CU-001-E2\nParsear Ticket\n(OCR/Gemini)" as CU_OCR
+usecase "CU-003-E1\nConsultar\nAsistente IA" as CU_IA
+usecase "CU-003-E2\nDetectar\nAnomalías" as CU_ANOM
+usecase "CU-006-E1\nEjecutar Reglas\nAutomáticamente" as CU_CRON
+
+' ─── Asociaciones actor-CU ───
+U --> CU1 : registra
+U --> CU2 : administra
+U --> CU3 : consulta
+U --> CU4 : opera
+U --> CU5 : importa/exporta
+U --> CU6 : configura
+BT --> CU_TG : envía gasto
+BT --> CU_OCR : envía foto
+S --> CU_AUTH : autentica
+CRON --> CU_CRON : dispara
+CRON --> CU_PRICE : refresca
+
+' ─── Includes (sub-flujos obligatorios) ───
+CU1 ..> CU_AUTH : <<include>>
+CU1 ..> CU_VAL : <<include>>
+CU1 ..> CU_SALDO : <<include>>
+CU2 ..> CU_AUTH : <<include>>
+CU3 ..> CU_AUTH : <<include>>
+CU3 ..> CU_COT : <<include>>
+CU3 ..> CU_PAT : <<include>>
+CU4 ..> CU_PRICE : <<include>>
+
+' ─── Extends (sub-flujos opcionales) ───
+CU_TG ..> CU1 : <<extend>>
+CU_OCR ..> CU1 : <<extend>>
+CU_IA ..> CU3 : <<extend>>
+CU_ANOM ..> CU3 : <<extend>>
+CU_CRON ..> CU6 : <<extend>>
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+Fuente: Ingeniería del código real (Next.js 14 + Supabase)
+<<include>>: sub-flujo obligatorio | <<extend>>: sub-flujo opcional
+endlegend
+
+@enduml

@@ -1,0 +1,110 @@
+@startuml D-ERD-001 — Diagrama Entidad-Relación de Zarix
+title ZARIX — Diagrama Entidad-Relación (PostgreSQL + RLS)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+
+entity "users" as users {
+    *id : UUID <<PK>>
+    --
+    default_currency : TEXT
+    status : subscription_status
+    telegram_chat_id : BIGINT
+}
+entity "accounts" as accounts {
+    *id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    name : TEXT
+    type : account_type
+    currency : TEXT
+    balance : NUMERIC
+}
+entity "categories" as categories {
+    *id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    parent_id : UUID <<FK>>
+    name : TEXT
+    type : category_type
+}
+entity "transactions" as transactions {
+    *id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    account_id : UUID <<FK>>
+    destination_account_id : UUID <<FK>>
+    category_id : UUID <<FK>>
+    recurring_rule_id : UUID <<logical>>
+    amount : NUMERIC
+    amount_in_account_currency : NUMERIC
+}
+entity "recurring_rules" as recurring {
+    *id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    account_id : UUID <<FK>>
+    category_id : UUID <<FK>>
+    frequency : recurrence_frequency
+}
+entity "budgets" as budgets {
+    *id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    category_id : UUID <<FK>>
+    month : DATE
+    amount : NUMERIC
+}
+entity "investments" as investments {
+    *id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    account_id : UUID <<FK>>
+    ticker : TEXT
+    quantity : NUMERIC
+}
+entity "exchange_rates" as rates {
+    *id : UUID <<PK>>
+    --
+    source : TEXT
+    from_currency : TEXT
+    to_currency : TEXT
+    rate : NUMERIC
+}
+
+users ||--o{ accounts
+users ||--o{ categories
+users ||--o{ transactions
+users ||--o{ recurring
+users ||--o{ budgets
+users ||--o{ investments
+accounts ||--o{ transactions
+accounts ||--o{ investments
+accounts ||--o{ recurring
+categories ||--o{ transactions
+categories ||--o{ budgets
+categories ||--o{ recurring
+categories |o--o{ categories
+
+note bottom of rates
+  exchange_rates es global (sin user_id):
+  histórico de cotizaciones compartido.
+end note
+
+note bottom of transactions
+  recurring_rule_id es un vínculo lógico
+  (sin constraint FK declarado en el schema).
+end note
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+8 tablas core. RLS activo: cada política filtra por
+auth.uid() = user_id (aislamiento entre usuarios).
+endlegend
+
+@enduml

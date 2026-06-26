@@ -1,0 +1,82 @@
+@startuml D-PAT-STRATEGY-001 — Patrón Strategy aplicado a Cotizaciones
+title ZARIX — Patrón Strategy aplicado a la obtención de cotizaciones (multi-fuente con fallback)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+' ──────────────────── Patrón Strategy (GoF) ────────────────────
+package "Patrón Strategy (GoF)" {
+    interface "Strategy" as Strat {
+        +algorithm()
+    }
+    class "Context" as Ctx {
+        -strategy: Strategy
+        +execute()
+    }
+    class "ConcreteStrategyA" as CSA {
+        +algorithm()
+    }
+    class "ConcreteStrategyB" as CSB {
+        +algorithm()
+    }
+
+    Ctx o--> Strat : delega
+    Strat <|.. CSA
+    Strat <|.. CSB
+}
+
+' ──────────────────── Aplicación en Zarix ────────────────────
+package "Aplicación: proveedores de cotización del dólar" {
+    interface "<DolarRateProvider>\n(interfaz)" as Provider {
+        +name: string
+        +fetch(): Promise<Record<string, DolarQuote>>
+    }
+    class "<CotizacionesService>\n(Context)" as Service {
+        -providers: DolarRateProvider[]
+        -cache: Record<string, CacheEntry>
+        +getDolarQuotes(): Record<string, DolarQuote>
+    }
+    class "<CriptoYaProvider>\n(fuente primaria)" as CriptoYa {
+        +name = "criptoya"
+        +fetch()
+    }
+    class "<DolarApiProvider>\n(fallback HTTP)" as DolarApi {
+        +name = "dolarapi"
+        +fetch()
+    }
+    class "<DbCacheProvider>\n(último valor en BD)" as DbCache {
+        +name = "db"
+        +fetch()
+    }
+
+    Service o--> "*" Provider : itera en orden\n(fallback)
+    Provider <|.. CriptoYa
+    Provider <|.. DolarApi
+    Provider <|.. DbCache
+}
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Patrón: Strategy (Gamma et al., 2003)
+Aplicado a: obtención de cotizaciones con múltiples fuentes
+Motivación: encapsular cada fuente de datos (CriptoYa, DolarApi,
+caché en BD) como una estrategia intercambiable; el Context las
+recorre en orden hasta obtener una cotización válida.
+
+Beneficios:
+- Agregar una fuente = una clase nueva (Open/Closed)
+- Elimina el try/catch anidado del método original
+- Cada proveedor es testeable de forma aislada
+- El orden de fallback es explícito y configurable
+
+Trade-offs:
+- Más clases que el if/try original
+- El Context debe conocer la lista de estrategias
+endlegend
+
+@enduml

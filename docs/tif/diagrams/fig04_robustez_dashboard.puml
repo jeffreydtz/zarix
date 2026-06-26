@@ -1,0 +1,59 @@
+@startuml D-ROB-DASH-003 — Diagrama de Robustez: Visualizar Dashboard
+title ZARIX — Diagrama de Robustez - Visualizar Dashboard (CU-003)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam linetype ortho
+skinparam backgroundColor white
+
+actor "Usuario" as U
+
+boundary "Pantalla Dashboard" as B_Dash
+boundary "Widget Patrimonio" as W_Pat
+boundary "Widget Cotizaciones" as W_Cot
+boundary "Widget Últimos\nMovimientos" as W_Mov
+boundary "APIs Externas\n(CriptoYa / DolarApi)" as B_Ext
+
+control "Controlador Dashboard\n(page server component)" as C_Ctrl
+control "Gestor de Cotizaciones\n(cotizacionesService)" as C_Cot
+control "Calculador de Patrimonio\n(aggregateAccountTotals)" as C_Pat
+control "Gestor de Inversiones\n(investmentsService.getPortfolioSummary)" as C_Inv
+control "Gestor de Caché\n(in-memory TTL 300s)" as C_Cache
+
+entity "accounts" as E_Cta
+entity "investments" as E_Inv
+entity "transactions" as E_Mov
+entity "exchange_rates" as E_Rate
+
+U --> B_Dash : 1. Abre el dashboard
+B_Dash --> C_Ctrl : 2. Solicita datos consolidados
+C_Ctrl --> C_Cot : 3. Pide cotizaciones del dólar
+C_Cot --> C_Cache : 4. Busca en caché
+
+alt Caché válido (< 300s)
+    C_Cache --> C_Cot : 5a. Devuelve cotización cacheada
+else Caché vencido o vacío
+    C_Cot --> B_Ext : 5b. Consulta API de dólar
+    B_Ext --> C_Cot : 6b. Devuelve cotizaciones
+    C_Cot --> E_Rate : 7b. Persiste en exchange_rates
+end
+
+C_Ctrl --> C_Pat : 8. Agrega saldos (función pura sobre cuentas)
+C_Pat --> E_Cta : 9. Lee cuentas (eq user_id)
+C_Ctrl --> C_Inv : 10. Pide resumen de portafolio
+C_Inv --> E_Inv : 11. Lee posiciones de inversión
+C_Pat --> W_Pat : 12. Renderiza patrimonio (USD y ARS)
+C_Ctrl --> E_Mov : 13. Lee últimos movimientos
+E_Mov --> W_Mov : 14. Renderiza últimos 5
+C_Cot --> W_Cot : 15. Renderiza cotizaciones (blue/MEP/CCL)
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+CU asociado: CU-003 Visualizar Dashboard
+Caché en memoria evita golpear las APIs externas en cada carga
+endlegend
+
+@enduml

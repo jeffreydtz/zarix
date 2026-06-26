@@ -1,0 +1,100 @@
+@startuml D-CLA-CON-001 — Modelo de Dominio Conceptual de Zarix
+title ZARIX — Modelo de Dominio Conceptual
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+skinparam classAttributeIconSize 0
+
+' ─── Conceptos del dominio (lenguaje natural, sin campos técnicos) ───
+
+class "Usuario" as Usuario {
+    +email: Texto
+    +monedaPorDefecto: Moneda
+    +zonaHoraria: Texto
+    +estadoSuscripcion: Estado
+}
+
+class "Cuenta" as Cuenta {
+    +nombre: Texto
+    +tipo: TipoCuenta
+    +moneda: Moneda
+    +saldo: Dinero
+    +esDeuda: Boolean
+    +incluirEnTotal: Boolean
+}
+
+class "Movimiento" as Movimiento {
+    +tipo: TipoMovimiento
+    +monto: Dinero
+    +moneda: Moneda
+    +montoEnMonedaCuenta: Dinero
+    +tipoDeCambio: Decimal
+    +descripcion: Texto
+    +fecha: FechaHora
+}
+
+class "Categoria" as Categoria {
+    +nombre: Texto
+    +tipo: gasto | ingreso
+    +icono: Texto
+}
+
+class "Inversion" as Inversion {
+    +ticker: Texto
+    +nombre: Texto
+    +tipo: TipoInversion
+    +cantidad: Decimal
+    +precioCompra: Dinero
+    +precioActual: Dinero
+}
+
+class "ReglaRecurrente" as Regla {
+    +descripcion: Texto
+    +monto: Dinero
+    +frecuencia: Frecuencia
+    +fechaInicio: Fecha
+    +activa: Boolean
+}
+
+class "Presupuesto" as Presupuesto {
+    +mes: Fecha
+    +monto: Dinero
+    +moneda: Moneda
+    +alertaAlPorcentaje: Entero
+}
+
+class "Cotizacion" as Cotizacion {
+    +fuente: Texto
+    +monedaOrigen: Moneda
+    +monedaDestino: Moneda
+    +valor: Decimal
+    +fecha: FechaHora
+}
+
+' ─── Relaciones (con cardinalidad y rol) ───
+Usuario "1" --> "*" Cuenta : posee
+Usuario "1" --> "*" Movimiento : registra
+Usuario "1" --> "*" Categoria : define
+Usuario "1" --> "*" Presupuesto : planifica
+Cuenta "1" --> "*" Movimiento : es origen de
+Cuenta "0..1" --> "*" Movimiento : es destino de
+Cuenta "1" --> "*" Inversion : contiene
+Cuenta "1" --> "*" Regla : alimenta
+Categoria "1" --> "*" Movimiento : clasifica
+Categoria "0..1" --> "*" Categoria : agrupa (subcategoría)
+Categoria "1" --> "*" Presupuesto : limita
+Regla "1" --> "*" Movimiento : genera
+Movimiento ..> Cotizacion : registra tipo de cambio
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+Modelo conceptual (separado del técnico / ER)
+8 entidades del dominio financiero personal
+endlegend
+
+@enduml

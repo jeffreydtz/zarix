@@ -1,0 +1,59 @@
+@startuml D-ARQ-COMP-001 — Diagrama de Componentes de Zarix
+title ZARIX — Diagrama de Componentes
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+skinparam componentStyle uml2
+
+package "Vercel (Next.js 14)" {
+    component "PWA Frontend\n(React / App Router)" as Front
+    component "Route Handlers\n(app/api/**)" as Api
+    component "Capa de Servicios\n(lib/services)" as Svc
+    component "Bot de Telegram\n(Telegraf)" as Bot
+    component "Motor de IA\n(Gemini · function-calling)" as Ai
+    component "Cron Jobs\n(6 tareas programadas)" as Cron
+}
+
+package "Supabase (BaaS)" {
+    database "PostgreSQL\n+ RLS" as Db
+    component "Auth (JWT)" as Auth
+}
+
+cloud "APIs Externas" {
+    component "CriptoYa / DolarApi\n/ CoinGecko" as Dolar
+    component "Yahoo Finance" as Yahoo
+    component "Telegram Bot API" as TgApi
+    component "Mercado Pago" as Mp
+}
+
+' ─── Interfaces provistas/requeridas ───
+interface "HTTP/REST" as IHttp
+interface "supabase-js" as ISupa
+
+Front --> IHttp
+IHttp - Api
+Api --> Svc : usa
+Api --> Ai : chat / anomalías
+Bot --> Svc : registra movimientos
+Bot --> Ai : interpreta texto / foto (OCR base64)
+Cron --> Svc : ejecuta recurrentes / precios
+Svc --> ISupa
+ISupa - Db
+Svc --> Auth : valida sesión
+Bot ..> TgApi : webhook + descarga foto
+Svc ..> Dolar : cotizaciones
+Svc ..> Yahoo : precios de acciones
+Api ..> Mp : suscripciones / webhook
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+Frontend, API, Servicios, Bot, IA y Cron corren en Vercel;
+los datos y la auth en Supabase; integraciones vía HTTP.
+endlegend
+
+@enduml
