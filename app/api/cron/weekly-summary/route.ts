@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
 import { getGeminiForUser, GeminiMissingKeyError } from '@/lib/ai/gemini';
 import { sendTelegramDm } from '@/lib/telegram/send';
-import { verifyCronBearer } from '@/lib/cron-auth';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -199,55 +199,55 @@ function formatWeekMessage(
   return msg;
 }
 
-export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (!verifyCronBearer(authHeader, process.env.CRON_SECRET)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+class WeeklySummaryJob extends IterativeCronJob<any> {
+  readonly name = 'weekly-summary';
 
-  try {
-    const supabase = createServiceClientSync();
-    const { data: users } = await supabase
+  private weekStart!: Date;
+  private weekEnd!: Date;
+  private prev!: { start: Date; end: Date };
+  private labelRange = '';
+
+  protected async fetchItems(supabase: ServiceClient): Promise<any[]> {
+    const { data: users, error } = await supabase
       .from('users')
       .select('id, telegram_chat_id, weekly_summary_enabled, telegram_bot_token')
       .eq('weekly_summary_enabled', true)
       .not('telegram_chat_id', 'is', null);
 
-    if (!users || users.length === 0) {
-      return NextResponse.json({ message: 'No users to notify' });
-    }
-
-    const asOfMonday = new Date();
-    const { start: weekStart, end: weekEnd } = getCompletedWeekRangeUtc(asOfMonday);
-    const prev = previousWeekRange(weekStart);
-
-    const labelRange = `${weekStart.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })} – ${weekEnd.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}`;
-
-    let sent = 0;
-
-    for (const user of users) {
-      try {
-        const currentWeekData = await getTransactionsInRange(user.id, weekStart, weekEnd);
-        const previousWeekData = await getTransactionsInRange(user.id, prev.start, prev.end);
-
-        if (currentWeekData.length === 0) continue;
-
-        const analysis = await analyzeWeek(currentWeekData, previousWeekData, user.id);
-        const message = formatWeekMessage(analysis, labelRange);
-
-        await sendTelegramDm(user.telegram_chat_id, message, {
-          parse_mode: 'Markdown',
-          botToken: user.telegram_bot_token,
-        });
-        sent++;
-      } catch (e) {
-        console.error(`Weekly summary error user ${user.id}:`, e);
-      }
-    }
-
-    return NextResponse.json({ success: true, sent, total: users.length });
-  } catch (error) {
-    console.error('Weekly summary cron:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    if (error) throw error;
+    return users || [];
   }
+
+  protected async beforeAll(): Promise<void> {
+    const asOfMonday = new Date();
+    const { start, end } = getCompletedWeekRangeUtc(asOfMonday);
+    this.weekStart = start;
+    this.weekEnd = end;
+    this.prev = previousWeekRange(start);
+    this.labelRange = `${start.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })} – ${end.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}`;
+  }
+
+  protected async processItem(_supabase: ServiceClient, user: any): Promise<boolean> {
+    const currentWeekData = await getTransactionsInRange(user.id, this.weekStart, this.weekEnd);
+    const previousWeekData = await getTransactionsInRange(user.id, this.prev.start, this.prev.end);
+
+    if (currentWeekData.length === 0) return false;
+
+    const analysis = await analyzeWeek(currentWeekData, previousWeekData, user.id);
+    const message = formatWeekMessage(analysis, this.labelRange);
+
+    await sendTelegramDm(user.telegram_chat_id, message, {
+      parse_mode: 'Markdown',
+      botToken: user.telegram_bot_token,
+    });
+    return true;
+  }
+
+  protected emptyMessage(): string {
+    return 'No users to notify';
+  }
+}
+
+export async function GET(request: NextRequest) {
+  return new WeeklySummaryJob().run(request);
 }

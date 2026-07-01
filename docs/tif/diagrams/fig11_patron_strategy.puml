@@ -62,6 +62,9 @@ package "Aplicación: proveedores de cotización del dólar" {
 
 legend right
 Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+Fuente: lib/services/cotizaciones.ts (código real)
 Patrón: Strategy (Gamma et al., 2003)
 Aplicado a: obtención de cotizaciones con múltiples fuentes
 Motivación: encapsular cada fuente de datos (CriptoYa, DolarApi,

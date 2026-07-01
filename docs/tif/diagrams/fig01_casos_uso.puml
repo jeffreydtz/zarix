@@ -38,18 +38,23 @@ rectangle "Módulo Recurrencia" {
 
 ' ─── CU incluidos (sub-flujos obligatorios) ───
 usecase "CU-AUTH-001\nValidar Sesión\n(getUser)" as CU_AUTH
-usecase "CU-001-I1\nValidar Datos\ndel Movimiento" as CU_VAL
-usecase "CU-001-I2\nActualizar Saldo\nde Cuenta" as CU_SALDO
+usecase "CU-001-I1\nActualizar Saldo\nde Cuenta" as CU_SALDO
+usecase "CU-001-I2\nValidar Datos\ndel Movimiento" as CU_VAL
+usecase "CU-002-I1\nCalcular Saldo\nTotal por Moneda" as CU_TOT
 usecase "CU-003-I1\nObtener\nCotizaciones" as CU_COT
 usecase "CU-003-I2\nCalcular\nPatrimonio" as CU_PAT
 usecase "CU-004-I1\nActualizar Precios\nde Mercado" as CU_PRICE
+usecase "CU-004-I2\nCalcular P&L\nde Posición" as CU_PNL
+usecase "CU-005-I1\nValidar Formato\nde Archivo" as CU_FMT
+usecase "CU-005-I2\nMapear Categorías\ny Cuentas" as CU_MAP
+usecase "CU-006-I1\nEjecutar Transacción\nRecurrente" as CU_EXEC
 
 ' ─── CU que extienden (sub-flujos opcionales) ───
 usecase "CU-001-E1\nRegistrar por\nTelegram" as CU_TG
 usecase "CU-001-E2\nParsear Ticket\n(OCR/Gemini)" as CU_OCR
+usecase "CU-002-E1\nConfigurar Tarjeta\nBi-Moneda" as CU_BIM
 usecase "CU-003-E1\nConsultar\nAsistente IA" as CU_IA
 usecase "CU-003-E2\nDetectar\nAnomalías" as CU_ANOM
-usecase "CU-006-E1\nEjecutar Reglas\nAutomáticamente" as CU_CRON
 
 ' ─── Asociaciones actor-CU ───
 U --> CU1 : registra
@@ -61,7 +66,7 @@ U --> CU6 : configura
 BT --> CU_TG : envía gasto
 BT --> CU_OCR : envía foto
 S --> CU_AUTH : autentica
-CRON --> CU_CRON : dispara
+CRON --> CU_EXEC : dispara
 CRON --> CU_PRICE : refresca
 
 ' ─── Includes (sub-flujos obligatorios) ───
@@ -69,17 +74,22 @@ CU1 ..> CU_AUTH : <<include>>
 CU1 ..> CU_VAL : <<include>>
 CU1 ..> CU_SALDO : <<include>>
 CU2 ..> CU_AUTH : <<include>>
+CU2 ..> CU_TOT : <<include>>
 CU3 ..> CU_AUTH : <<include>>
 CU3 ..> CU_COT : <<include>>
 CU3 ..> CU_PAT : <<include>>
 CU4 ..> CU_PRICE : <<include>>
+CU4 ..> CU_PNL : <<include>>
+CU5 ..> CU_FMT : <<include>>
+CU5 ..> CU_MAP : <<include>>
+CU6 ..> CU_EXEC : <<include>>
 
 ' ─── Extends (sub-flujos opcionales) ───
 CU_TG ..> CU1 : <<extend>>
 CU_OCR ..> CU1 : <<extend>>
+CU_BIM ..> CU2 : <<extend>>
 CU_IA ..> CU3 : <<extend>>
 CU_ANOM ..> CU3 : <<extend>>
-CU_CRON ..> CU6 : <<extend>>
 
 legend right
 Proyecto: ZARIX — TIF UAI 2026
@@ -87,6 +97,7 @@ Autor: Jeffrey Dietz
 Metodología: ICONIX
 Fuente: Ingeniería del código real (Next.js 14 + Supabase)
 <<include>>: sub-flujo obligatorio | <<extend>>: sub-flujo opcional
+Flecha include: CU base → CU incluido | Flecha extend: CU que extiende → CU base
 endlegend
 
 @enduml

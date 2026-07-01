@@ -103,6 +103,7 @@ legend right
 Proyecto: ZARIX — TIF UAI 2026
 Autor: Jeffrey Dietz
 Metodología: ICONIX
+Fuente: supabase/schema.sql (código real)
 8 tablas core. RLS activo: cada política filtra por
 auth.uid() = user_id (aislamiento entre usuarios).
 endlegend

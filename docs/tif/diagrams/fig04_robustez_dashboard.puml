@@ -32,20 +32,20 @@ C_Ctrl --> C_Cot : 3. Pide cotizaciones del dólar
 C_Cot --> C_Cache : 4. Busca en caché
 
 alt Caché válido (< 300s)
-    C_Cache --> C_Cot : 5a. Devuelve cotización cacheada
+    C_Cache --> C_Cot : 5a. Retorna cotización cacheada
 else Caché vencido o vacío
     C_Cot --> B_Ext : 5b. Consulta API de dólar
-    B_Ext --> C_Cot : 6b. Devuelve cotizaciones
-    C_Cot --> E_Rate : 7b. Persiste en exchange_rates
+    B_Ext --> C_Cot : 6b. Retorna cotizaciones
+    C_Cot --> E_Rate : 7b. Escribe en exchange_rates
 end
 
-C_Ctrl --> C_Pat : 8. Agrega saldos (función pura sobre cuentas)
+C_Ctrl --> C_Pat : 8. Pide agregado de saldos (función pura)
 C_Pat --> E_Cta : 9. Lee cuentas (eq user_id)
 C_Ctrl --> C_Inv : 10. Pide resumen de portafolio
 C_Inv --> E_Inv : 11. Lee posiciones de inversión
 C_Pat --> W_Pat : 12. Renderiza patrimonio (USD y ARS)
 C_Ctrl --> E_Mov : 13. Lee últimos movimientos
-E_Mov --> W_Mov : 14. Renderiza últimos 5
+C_Ctrl --> W_Mov : 14. Renderiza últimos 5
 C_Cot --> W_Cot : 15. Renderiza cotizaciones (blue/MEP/CCL)
 
 legend right
@@ -53,6 +53,8 @@ Proyecto: ZARIX — TIF UAI 2026
 Autor: Jeffrey Dietz
 Metodología: ICONIX
 CU asociado: CU-003 Visualizar Dashboard
+Fuente: Ingeniería del código real (Next.js 14 + Supabase)
+Boundary (vista/API) | Control (lógica) | Entity (tabla)
 Caché en memoria evita golpear las APIs externas en cada carga
 endlegend
 

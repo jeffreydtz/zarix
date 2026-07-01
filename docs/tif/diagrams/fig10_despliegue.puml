@@ -56,6 +56,7 @@ legend right
 Proyecto: ZARIX — TIF UAI 2026
 Autor: Jeffrey Dietz
 Metodología: ICONIX
+Fuente: Ingeniería del código real (vercel.json + código)
 Sin servidores propios: cómputo en Vercel (serverless),
 datos en Supabase, integraciones por HTTPS. Costo ~ USD 0 en free tier.
 endlegend

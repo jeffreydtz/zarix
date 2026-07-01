@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
@@ -7,7 +8,6 @@ import {
   GeminiMissingKeyError,
 } from '@/lib/ai/gemini';
 import { sendTelegramDm } from '@/lib/telegram/send';
-import { verifyCronBearer } from '@/lib/cron-auth';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -28,10 +28,10 @@ interface MonthlyAnalysis {
 
 async function getMonthData(userId: string, year: number, month: number) {
   const supabase = createServiceClientSync();
-  
+
   const startDate = new Date(year, month, 1);
   const endDate = new Date(year, month + 1, 0, 23, 59, 59);
-  
+
   let txQ = supabase
     .from('transactions')
     .select('*, category:categories(name, icon)')
@@ -54,12 +54,12 @@ async function analyzeMonth(
   const income = currentMonth.filter(t => t.type === 'income');
   const prevExpenses = previousMonth.filter(t => t.type === 'expense');
   const prevIncome = previousMonth.filter(t => t.type === 'income');
-  
+
   const totalGastos = expenses.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
   const totalIngresos = income.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
   const prevTotalGastos = prevExpenses.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
   const prevTotalIngresos = prevIncome.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
-  
+
   const categoryMap = new Map<string, { name: string; icon: string; amount: number }>();
   expenses.forEach(t => {
     if (t.category) {
@@ -69,7 +69,7 @@ async function analyzeMonth(
       categoryMap.set(cat.name, existing);
     }
   });
-  
+
   const topCategorias = Array.from(categoryMap.values())
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 5)
@@ -77,10 +77,10 @@ async function analyzeMonth(
       ...c,
       percent: totalGastos > 0 ? (c.amount / totalGastos) * 100 : 0
     }));
-  
+
   const gastosDiff = totalGastos - prevTotalGastos;
   const gastosPercent = prevTotalGastos > 0 ? ((gastosDiff / prevTotalGastos) * 100) : 0;
-  
+
   const prompt = `
 Analizá estos datos financieros del mes y dame insights útiles en español rioplatense.
 Sé directo, práctico y enfocate en lo accionable.
@@ -109,7 +109,7 @@ Las sugerencias deben ser acciones concretas para mejorar.
 
   let insights: string[] = [];
   let sugerencias: string[] = [];
-  
+
   try {
     const gemini = await getGeminiForUser(userId);
     const result = await gemini.chat(prompt);
@@ -136,7 +136,7 @@ Las sugerencias deben ser acciones concretas para mejorar.
       sugerencias = ['Revisá tus gastos más grandes para encontrar oportunidades de ahorro'];
     }
   }
-  
+
   return {
     totalGastos,
     totalIngresos,
@@ -154,21 +154,21 @@ Las sugerencias deben ser acciones concretas para mejorar.
 
 function formatMessage(analysis: MonthlyAnalysis, monthName: string): string {
   const { totalGastos, totalIngresos, balance, topCategorias, comparativaAnterior, insights, sugerencias } = analysis;
-  
+
   const balanceEmoji = balance >= 0 ? '✅' : '🔴';
   const trendEmoji = comparativaAnterior.gastosDiff <= 0 ? '📉' : '📈';
-  
+
   let msg = `📊 *RESUMEN DE ${monthName.toUpperCase()}*\n\n`;
-  
+
   msg += `💰 *Balance del mes*\n`;
   msg += `├ Ingresos: $${totalIngresos.toLocaleString('es-AR')}\n`;
   msg += `├ Gastos: $${totalGastos.toLocaleString('es-AR')}\n`;
   msg += `└ ${balanceEmoji} Resultado: $${balance.toLocaleString('es-AR')}\n\n`;
-  
+
   msg += `${trendEmoji} *vs mes anterior*\n`;
   const diffText = comparativaAnterior.gastosDiff >= 0 ? '+' : '';
   msg += `└ Gastos: ${diffText}${comparativaAnterior.gastosPercent.toFixed(1)}%\n\n`;
-  
+
   if (topCategorias.length > 0) {
     msg += `🏷️ *Top categorías*\n`;
     topCategorias.forEach((cat, i) => {
@@ -177,7 +177,7 @@ function formatMessage(analysis: MonthlyAnalysis, monthName: string): string {
     });
     msg += '\n';
   }
-  
+
   if (insights.length > 0) {
     msg += `💡 *Observaciones*\n`;
     insights.forEach((insight, i) => {
@@ -185,83 +185,75 @@ function formatMessage(analysis: MonthlyAnalysis, monthName: string): string {
     });
     msg += '\n';
   }
-  
+
   if (sugerencias.length > 0) {
     msg += `🎯 *Sugerencias*\n`;
     sugerencias.forEach((sug, i) => {
       msg += `• ${sug}\n`;
     });
   }
-  
+
   return msg;
 }
 
-export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (!verifyCronBearer(authHeader, process.env.CRON_SECRET)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  
-  try {
-    const supabase = createServiceClientSync();
-    
-    const { data: users } = await supabase
+class MonthlySummaryJob extends IterativeCronJob<any> {
+  readonly name = 'monthly-summary';
+
+  private prevMonth = 0;
+  private prevYear = 0;
+  private monthName = '';
+
+  protected async fetchItems(supabase: ServiceClient): Promise<any[]> {
+    const { data: users, error } = await supabase
       .from('users')
       .select('id, telegram_chat_id, monthly_summary_enabled, telegram_bot_token')
       .eq('monthly_summary_enabled', true)
       .not('telegram_chat_id', 'is', null);
-    
-    if (!users || users.length === 0) {
-      return NextResponse.json({ message: 'No users to notify' });
-    }
-    
+
+    if (error) throw error;
+    return users || [];
+  }
+
+  protected async beforeAll(): Promise<void> {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
-    const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-    
+    this.prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    this.prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
     const monthNames = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
-    const monthName = monthNames[prevMonth];
-    
-    let sent = 0;
-    
-    for (const user of users) {
-      try {
-        const currentMonthData = await getMonthData(user.id, prevYear, prevMonth);
-        const previousMonthData = await getMonthData(
-          user.id,
-          prevMonth === 0 ? prevYear - 1 : prevYear,
-          prevMonth === 0 ? 11 : prevMonth - 1
-        );
-        
-        if (currentMonthData.length === 0) continue;
-        
-        const analysis = await analyzeMonth(currentMonthData, previousMonthData, user.id);
-        const message = formatMessage(analysis, monthName);
-        
-        await sendTelegramDm(user.telegram_chat_id, message, {
-          parse_mode: 'Markdown',
-          botToken: user.telegram_bot_token,
-        });
-        
-        sent++;
-      } catch (e) {
-        console.error(`Error sending to user ${user.id}:`, e);
-      }
-    }
-    
-    return NextResponse.json({ 
-      success: true, 
-      sent,
-      total: users.length 
-    });
-    
-  } catch (error) {
-    console.error('Monthly summary error:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    this.monthName = monthNames[this.prevMonth];
   }
+
+  protected async processItem(_supabase: ServiceClient, user: any): Promise<boolean> {
+    const currentMonthData = await getMonthData(user.id, this.prevYear, this.prevMonth);
+    const previousMonthData = await getMonthData(
+      user.id,
+      this.prevMonth === 0 ? this.prevYear - 1 : this.prevYear,
+      this.prevMonth === 0 ? 11 : this.prevMonth - 1
+    );
+
+    if (currentMonthData.length === 0) return false;
+
+    const analysis = await analyzeMonth(currentMonthData, previousMonthData, user.id);
+    const message = formatMessage(analysis, this.monthName);
+
+    await sendTelegramDm(user.telegram_chat_id, message, {
+      parse_mode: 'Markdown',
+      botToken: user.telegram_bot_token,
+    });
+
+    return true;
+  }
+
+  protected emptyMessage(): string {
+    return 'No users to notify';
+  }
+}
+
+export async function GET(request: NextRequest) {
+  return new MonthlySummaryJob().run(request);
 }

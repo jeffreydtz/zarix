@@ -132,6 +132,8 @@ lib/
                         executeBotTransaction.ts, send.ts
   ai/                   gemini.ts (client + function-calling loop),
                         bot-tools.ts (tools del bot/chat), prompts.ts
+  cron/                 cron-job.ts: clases base CronJob / IterativeCronJob
+                        (patrón Template Method) para app/api/cron/**
   market-data/ constants/ hooks/
 middleware.ts           refresh de sesión + guard de rutas (rutas públicas
                         listadas en isPublicPath; /shared/[token] es pública,
@@ -194,19 +196,29 @@ Nunca commitear `.env.local` ni imprimir secretos.
 Zarix es también el caso del **Trabajo Integrador Final** (UAI, Facultad de
 Tecnología Informática). El documento `Zarix TIF v2.docx` (raíz del repo) cubre el
 plan de negocio + la solución técnica con metodología **ICONIX**. La sección 10 y el
-Anexo D contienen 12 diagramas (casos de uso con include/extend, modelo de dominio,
-robustez, secuencia, clases, ER, paquetes, componentes, despliegue, patrón de diseño
-y estilos arquitectónicos).
+Anexo D contienen 13 diagramas (casos de uso con include/extend, modelo de dominio,
+robustez, secuencia, clases, ER, paquetes, componentes, despliegue, 2 patrones de
+diseño y estilos arquitectónicos), más reglas de negocio (RN-xxx) y matriz de
+trazabilidad (10.5.15).
 
 - **Fuentes editables** de los diagramas: `docs/tif/diagrams/*.puml` (PlantUML) y
-  `docs/tif/png/`. Cómo regenerarlos e incrustarlos en el `.docx`:
+  `docs/tif/png/`. Cómo regenerarlos (render LOCAL con plantuml.jar + JRE portable;
+  no subir los .puml a servidores externos) e incrustarlos en el `.docx`:
   ver `docs/tif/README.md`. Los diagramas se derivan del **código real**; si cambiás
-  el modelo de datos, una ruta o un servicio, actualizá el `.puml` correspondiente.
+  el modelo de datos, una ruta o un servicio, actualizá el `.puml` correspondiente
+  Y la tabla equivalente en el `.docx` (deben contar la misma historia).
 - **Material de cátedra** (ICONIX aplicado a Odoo, plantillas y checklists de
   calidad por tipo de diagrama): `https://github.com/cursos-uai/sap_tfi_2026`.
+  Los diagramas de Zarix siguen sus checklists; puntos que el profesor valida:
+  include/extend con flecha correcta (base→incluido; extensor→base), robustez SOLO
+  con mensajes actor→boundary→control→entity (un entity nunca inicia mensajes;
+  verbos: Invoca/Pide/Solicita hacia control, Lee/Escribe/Crea/Actualiza hacia
+  entity), secuencia con SQL explícito + activate/deactivate + alt/opt, modelo de
+  dominio conceptual sin campos técnicos, y patrones documentados en formato
+  FCEIA-UNR (Cristia 2015: `Pattern X based on Y because... where... comments`).
 - Convención de los diagramas: título `ZARIX — … (CU-xxx)`, leyenda abajo a la
-  derecha, `linetype ortho`, robustez con boundary/control/entity en voz activa,
-  secuencia con `database PostgreSQL` y SQL explícito.
+  derecha (Proyecto/Autor/Metodología/Fuente), `linetype ortho`, fondo blanco,
+  Arial.
 
 ## Patrones de diseño aplicados
 
@@ -216,5 +228,14 @@ y estilos arquitectónicos).
   con fallback hasta obtener una cotización válida, cachea (TTL 300s) y persiste solo las
   fuentes en vivo en `exchange_rates`. **Agregar una fuente = implementar
   `DolarRateProvider` y sumarla a `dolarProviders` en el constructor; no tocar
-  `getDolarQuotes()`** (principio Open/Closed). Documentado en el Anexo D del TIF
+  `getDolarQuotes()`** (principio Open/Closed). Documentado en el Anexo D.1 del TIF
   (`docs/tif/diagrams/fig11_patron_strategy.puml`).
+- **Template Method** — `lib/cron/cron-job.ts`: los 6 cron jobs de `app/api/cron/**`
+  extienden `CronJob` (o `IterativeCronJob<TItem>`). `run()` es el template method:
+  valida el bearer de Vercel Cron, crea el service client y envuelve todo en JSON
+  uniforme; las subclases implementan `fetchItems()`/`processItem()` y los hooks
+  `shouldProcess`/`beforeAll`/`afterAll`. **Agregar un cron = una subclase + un GET
+  de una línea (`return new XxxJob().run(request)`); NO redefinir `run()` ni volver
+  a validar el secreto a mano.** Instanciar un job nuevo por request (las subclases
+  guardan estado por corrida y Vercel reutiliza el módulo). Documentado en el Anexo
+  D.2 del TIF (`docs/tif/diagrams/fig13_patron_template_method.puml`).

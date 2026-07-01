@@ -104,6 +104,7 @@ legend right
 Proyecto: ZARIX — TIF UAI 2026
 Autor: Jeffrey Dietz
 Metodología: ICONIX
+Fuente: Ingeniería del código real (Next.js 14 + Supabase)
 La lógica vive en los *Service (TypeScript); las entidades son
 los tipos de `types/` espejados de las tablas Supabase.
 endlegend

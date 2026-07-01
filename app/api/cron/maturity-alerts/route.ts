@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServiceClientSync } from '@/lib/supabase/server';
+import { NextRequest } from 'next/server';
+import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { sendTelegramDm } from '@/lib/telegram/send';
-import { verifyCronBearer } from '@/lib/cron-auth';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -20,52 +19,44 @@ const INVESTMENT_TYPE_LABELS: Record<string, string> = {
   other: 'Otro',
 };
 
-export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (!verifyCronBearer(authHeader, process.env.CRON_SECRET)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+class MaturityAlertsJob extends IterativeCronJob<any> {
+  readonly name = 'maturity-alerts';
+
+  private today = new Date();
+
+  protected async fetchItems(supabase: ServiceClient): Promise<any[]> {
+    const in3Days = new Date(this.today);
+    in3Days.setDate(in3Days.getDate() + 3);
+
+    const todayStr = this.today.toISOString().split('T')[0];
+    const in3DaysStr = in3Days.toISOString().split('T')[0];
+
+    // Get investments with maturity dates in the next 3 days
+    const { data: investments, error } = await supabase
+      .from('investments')
+      .select('*, user:users(telegram_chat_id, telegram_bot_token)')
+      .eq('is_active', true)
+      .not('maturity_date', 'is', null)
+      .gte('maturity_date', todayStr)
+      .lte('maturity_date', in3DaysStr);
+
+    if (error) throw error;
+    return investments || [];
   }
 
-  const supabase = createServiceClientSync();
-
-  const today = new Date();
-  const in3Days = new Date(today);
-  in3Days.setDate(in3Days.getDate() + 3);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const todayStr = today.toISOString().split('T')[0];
-  const in3DaysStr = in3Days.toISOString().split('T')[0];
-
-  // Get investments with maturity dates in the next 3 days
-  const { data: investments, error } = await supabase
-    .from('investments')
-    .select('*, user:users(telegram_chat_id, telegram_bot_token)')
-    .eq('is_active', true)
-    .not('maturity_date', 'is', null)
-    .gte('maturity_date', todayStr)
-    .lte('maturity_date', in3DaysStr);
-
-  if (error) {
-    console.error('Error fetching maturing investments:', error);
-    return NextResponse.json({ error: 'DB error' }, { status: 500 });
-  }
-
-  if (!investments || investments.length === 0) {
-    return NextResponse.json({ message: 'No upcoming maturities', notified: 0 });
-  }
-
-  let notified = 0;
-
-  for (const inv of investments) {
+  protected shouldProcess(inv: any): boolean {
     const user = inv.user as any;
-    if (!user?.telegram_chat_id) continue;
+    return Boolean(user?.telegram_chat_id);
+  }
+
+  protected async processItem(_supabase: ServiceClient, inv: any): Promise<void> {
+    const user = inv.user as any;
 
     const maturityDate = new Date(inv.maturity_date + 'T00:00:00');
-    const daysUntilMaturity = Math.round((maturityDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+    const daysUntilMaturity = Math.round((maturityDate.getTime() - this.today.getTime()) / (1000 * 60 * 60 * 24));
+
     const typeLabel = INVESTMENT_TYPE_LABELS[inv.type] || inv.type;
-    
+
     let daysText = '';
     if (daysUntilMaturity === 0) {
       daysText = '⚡ ¡*VENCE HOY!*';
@@ -78,7 +69,7 @@ export async function GET(request: NextRequest) {
     const totalValue = Number(inv.quantity) * Number(inv.purchase_price);
     let returnAmount = 0;
     if (inv.interest_rate) {
-      const daysDuration = inv.purchase_date 
+      const daysDuration = inv.purchase_date
         ? Math.round((maturityDate.getTime() - new Date(inv.purchase_date).getTime()) / (1000 * 60 * 60 * 24))
         : 30;
       returnAmount = totalValue * (Number(inv.interest_rate) / 100) * (daysDuration / 365);
@@ -95,20 +86,17 @@ export async function GET(request: NextRequest) {
       `📅 Fecha: ${maturityDate.toLocaleDateString('es-AR')}\n\n` +
       `¿Renovás o retirás? Avisame para actualizar tu portafolio.`;
 
-    try {
-      await sendTelegramDm(user.telegram_chat_id, message, {
-        parse_mode: 'Markdown',
-        botToken: user.telegram_bot_token,
-      });
-      notified++;
-    } catch (e) {
-      console.error(`Error notifying user ${inv.user_id}:`, e);
-    }
+    await sendTelegramDm(user.telegram_chat_id, message, {
+      parse_mode: 'Markdown',
+      botToken: user.telegram_bot_token,
+    });
   }
 
-  return NextResponse.json({
-    success: true,
-    upcoming: investments.length,
-    notified,
-  });
+  protected emptyMessage(): string {
+    return 'No upcoming maturities';
+  }
+}
+
+export async function GET(request: NextRequest) {
+  return new MaturityAlertsJob().run(request);
 }

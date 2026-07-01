@@ -25,29 +25,32 @@ material de cátedra (PlantUML, leyenda, checklists por tipo de diagrama).
 | 10 | `fig10_despliegue` | Despliegue | serverless cloud-native |
 | 11 | `fig11_patron_strategy` | Patrón GoF | Strategy en `cotizaciones.ts` |
 | 12 | `fig12_estilos` | Estilos Arquitectónicos | 8 estilos |
+| 13 | `fig13_patron_template_method` | Patrón GoF | Template Method en `lib/cron/cron-job.ts` |
 
 - `diagrams/*.puml` — código fuente PlantUML (editable).
 - `png/*.png` — versiones renderizadas (las que van incrustadas en el `.docx`).
 
 ## Regenerar
 
-No hay un runtime de Java local. Los diagramas se renderizan contra el
-servidor público de PlantUML:
+Render **local** (preferido: los diagramas derivan del código privado, no
+subirlos a servidores externos). No hace falta Java instalado: se usa un JRE
+portable + `plantuml.jar` con el layout Smetana (sin Graphviz):
 
 ```bash
-pip3 install plantuml requests six httplib2
-python3 - <<'PY'
-import plantuml, requests, glob, os
-s = plantuml.PlantUML(url='http://www.plantuml.com/plantuml/png/')
-for f in glob.glob('docs/tif/diagrams/*.puml'):
-    url = s.get_url(open(f, encoding='utf-8').read())
-    out = f'docs/tif/png/{os.path.splitext(os.path.basename(f))[0]}.png'
-    open(out, 'wb').write(requests.get(url, timeout=60).content)
-    print('rendered', out)
-PY
+# una sola vez, en un dir temporal:
+curl -sL -o jre.tar.gz "https://api.adoptium.net/v3/binary/latest/21/ga/mac/aarch64/jre/hotspot/normal/eclipse"
+tar xzf jre.tar.gz
+curl -sL -o plantuml.jar "https://github.com/plantuml/plantuml/releases/download/v1.2025.2/plantuml-1.2025.2.jar"
+
+# render (el JAVA es el bin dentro del JRE extraído):
+$JAVA -Djava.awt.headless=true -jar plantuml.jar -Playout=smetana -tpng \
+  -o docs/tif/png docs/tif/diagrams/*.puml
 ```
 
-(El header `X-PlantUML-Diagram-Error` en la respuesta indica errores de sintaxis.)
+Ojo: PlantUML nombra el PNG según el nombre del `@startuml` (`D-XXX-...`);
+renombrar a `figNN_*.png` después de renderizar. Alternativa histórica: el
+servidor público de PlantUML (`www.plantuml.com`) — evitarlo para no exponer
+la arquitectura interna.
 
 ## Convenciones (cátedra)
 

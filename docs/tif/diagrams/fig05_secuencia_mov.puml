@@ -54,7 +54,9 @@ legend right
 Proyecto: ZARIX — TIF UAI 2026
 Autor: Jeffrey Dietz
 Metodología: ICONIX
-CU asociado: CU-001 — El saldo se actualiza por TRIGGER en la BD,
+Fuente: Ingeniería del código real (Next.js 14 + Supabase)
+CU asociado: CU-001 Registrar Movimiento
+El saldo se actualiza por TRIGGER en la BD,
 no por código de aplicación (fuente única de verdad).
 endlegend
 

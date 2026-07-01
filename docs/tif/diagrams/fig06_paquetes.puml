@@ -65,6 +65,7 @@ legend right
 Proyecto: ZARIX — TIF UAI 2026
 Autor: Jeffrey Dietz
 Metodología: ICONIX
+Fuente: Ingeniería del código real (Next.js 14 + Supabase)
 Dependencias dirigidas hacia adentro: UI -> Rutas -> Servicios ->
 Infraestructura -> Persistencia. Los externos se acceden por la Capa 3/4.
 endlegend

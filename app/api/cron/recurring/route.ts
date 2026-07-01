@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServiceClientSync } from '@/lib/supabase/server';
+import { NextRequest } from 'next/server';
+import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { transactionsService } from '@/lib/services/transactions';
 import { sendTelegramDm } from '@/lib/telegram/send';
-import { verifyCronBearer } from '@/lib/cron-auth';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -58,96 +57,82 @@ function shouldExecuteToday(rule: any): boolean {
   return false;
 }
 
-export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (!verifyCronBearer(authHeader, process.env.CRON_SECRET)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+class RecurringRulesJob extends IterativeCronJob<any> {
+  readonly name = 'recurring';
+
+  protected async fetchItems(supabase: ServiceClient): Promise<any[]> {
+    // Get all active recurring rules with their accounts
+    const { data: rules, error } = await supabase
+      .from('recurring_rules')
+      .select('*, account:accounts(name, currency, is_active)')
+      .eq('is_active', true);
+
+    if (error) throw error;
+    return rules || [];
   }
 
-  const supabase = createServiceClientSync();
-
-  // Get all active recurring rules with their accounts
-  const { data: rules, error } = await supabase
-    .from('recurring_rules')
-    .select('*, account:accounts(name, currency, is_active)')
-    .eq('is_active', true);
-
-  if (error) {
-    console.error('Error fetching recurring rules:', error);
-    return NextResponse.json({ error: 'DB error' }, { status: 500 });
-  }
-
-  if (!rules || rules.length === 0) {
-    return NextResponse.json({ message: 'No active recurring rules', executed: 0 });
-  }
-
-  let executed = 0;
-  let errors = 0;
-
-  for (const rule of rules) {
-    if (!shouldExecuteToday(rule)) continue;
+  protected shouldProcess(rule: any): boolean {
+    if (!shouldExecuteToday(rule)) return false;
 
     // No generar movimientos contra una cuenta desactivada (el usuario la
     // considera cerrada). La regla sigue activa pero se saltea.
-    if (rule.account && rule.account.is_active === false) continue;
+    if (rule.account && rule.account.is_active === false) return false;
 
-    try {
-      // "Reclamamos" el día ANTES de crear: si la creación o un retry fallan a
-      // medias, el próximo cron del mismo día ve last_executed_date == hoy y NO
-      // vuelve a crear. Un duplicado de plata es peor que saltear una ocurrencia.
-      await supabase
-        .from('recurring_rules')
-        .update({ last_executed_date: new Date().toISOString().split('T')[0] })
-        .eq('id', rule.id);
+    return true;
+  }
 
-      await transactionsService.create({
-        userId: rule.user_id,
-        type: rule.type,
-        accountId: rule.account_id,
-        amount: rule.amount,
-        currency: rule.currency,
-        categoryId: rule.category_id,
-        description: rule.description,
-        transactionDate: new Date().toISOString(),
-      });
+  protected async processItem(supabase: ServiceClient, rule: any): Promise<void> {
+    // "Reclamamos" el día ANTES de crear: si la creación o un retry fallan a
+    // medias, el próximo cron del mismo día ve last_executed_date == hoy y NO
+    // vuelve a crear. Un duplicado de plata es peor que saltear una ocurrencia.
+    await supabase
+      .from('recurring_rules')
+      .update({ last_executed_date: new Date().toISOString().split('T')[0] })
+      .eq('id', rule.id);
 
-      executed++;
+    await transactionsService.create({
+      userId: rule.user_id,
+      type: rule.type,
+      accountId: rule.account_id,
+      amount: rule.amount,
+      currency: rule.currency,
+      categoryId: rule.category_id,
+      description: rule.description,
+      transactionDate: new Date().toISOString(),
+    });
 
-      // Send Telegram notification
-      const { data: user } = await supabase
-        .from('users')
-        .select('telegram_chat_id, telegram_bot_token')
-        .eq('id', rule.user_id)
-        .single();
+    // Send Telegram notification
+    const { data: user } = await supabase
+      .from('users')
+      .select('telegram_chat_id, telegram_bot_token')
+      .eq('id', rule.user_id)
+      .single();
 
-      if (rule.notification_enabled && user?.telegram_chat_id) {
-        const typeEmoji = rule.type === 'expense' ? '💸' : '💰';
-        const typeLabel = rule.type === 'expense' ? 'Gasto' : 'Ingreso';
-        const freqLabel = {
-          daily: 'diario',
-          weekly: 'semanal',
-          monthly: 'mensual',
-          yearly: 'anual',
-        }[rule.frequency as string] || rule.frequency;
+    if (rule.notification_enabled && user?.telegram_chat_id) {
+      const typeEmoji = rule.type === 'expense' ? '💸' : '💰';
+      const typeLabel = rule.type === 'expense' ? 'Gasto' : 'Ingreso';
+      const freqLabel = {
+        daily: 'diario',
+        weekly: 'semanal',
+        monthly: 'mensual',
+        yearly: 'anual',
+      }[rule.frequency as string] || rule.frequency;
 
-        await sendTelegramDm(
-          user.telegram_chat_id,
-          `🔄 *Transacción recurrente ejecutada*\n\n` +
-          `${typeEmoji} ${typeLabel} ${freqLabel}: *${rule.description}*\n` +
-          `💰 $${Number(rule.amount).toLocaleString('es-AR')} ${rule.currency}`,
-          { parse_mode: 'Markdown', botToken: user.telegram_bot_token }
-        ).catch(() => {});
-      }
-    } catch (e) {
-      console.error(`Error executing rule ${rule.id}:`, e);
-      errors++;
+      await sendTelegramDm(
+        user.telegram_chat_id,
+        `🔄 *Transacción recurrente ejecutada*\n\n` +
+        `${typeEmoji} ${typeLabel} ${freqLabel}: *${rule.description}*\n` +
+        `💰 $${Number(rule.amount).toLocaleString('es-AR')} ${rule.currency}`,
+        { parse_mode: 'Markdown', botToken: user.telegram_bot_token }
+      ).catch(() => {});
     }
   }
 
-  return NextResponse.json({
-    success: true,
-    total: rules.length,
-    executed,
-    errors,
-  });
+  protected emptyMessage(): string {
+    return 'No active recurring rules';
+  }
+}
+
+export async function GET(request: NextRequest) {
+  return new RecurringRulesJob().run(request);
 }
