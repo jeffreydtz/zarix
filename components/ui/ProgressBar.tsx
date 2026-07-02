@@ -25,9 +25,10 @@ export default function ProgressBar({
 
   const getColorClass = () => {
     if (colorClass !== 'bg-emerald-500') return colorClass;
-    if (percentage > 80) return 'bg-gradient-to-r from-red-500 to-red-600';
-    if (percentage > 50) return 'bg-gradient-to-r from-yellow-500 to-orange-500';
-    return 'bg-gradient-to-r from-green-500 to-emerald-500';
+    // Auto-color sobre tokens semánticos (ver DESIGN.md): success → warning → destructive.
+    if (percentage > 80) return 'bg-destructive';
+    if (percentage > 50) return 'bg-warning';
+    return 'bg-success';
   };
 
   return (

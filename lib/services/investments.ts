@@ -567,6 +567,8 @@ class InvestmentsService {
     const currentQty = Number(invRow.quantity);
     const purchasePrice = Number(invRow.purchase_price);
 
+    // Validación temprana para un mensaje amigable; la garantía real contra
+    // oversell (doble click / ventas concurrentes) la da el RPC atómico.
     if (input.quantity > currentQty + 1e-9) {
       throw new Error(`No podés vender más de lo que tenés (${currentQty}).`);
     }
@@ -586,54 +588,51 @@ class InvestmentsService {
     const realizedNative =
       saleCurrency === 'ARS' ? usdToArsBlue(realizedUsd, arsPerUsd) : realizedUsd;
 
-    const { data: saleInserted, error: saleErr } = await supabase
-      .from('investment_sales')
-      .insert({
-        user_id: input.userId,
-        investment_id: input.investmentId,
-        quantity: input.quantity,
-        price: input.price,
-        currency: saleCurrency,
-        sold_at: input.soldAt,
-        purchase_price_at_sale: purchasePrice,
-        realized_pnl_native: realizedNative,
-        realized_pnl_usd: realizedUsd,
-        ars_per_usd: arsPerUsd,
-        notes: input.notes ?? null,
-      })
-      .select()
-      .single();
+    // RPC atómico (una transacción): descuenta quantity SOLO si alcanza e
+    // inserta la venta. Elimina la carrera lectura-validación-escritura que
+    // permitía sobrevender con dos requests simultáneos.
+    const { data: rpcData, error: rpcErr } = await supabase.rpc('sell_investment_position', {
+      p_user_id: input.userId,
+      p_investment_id: input.investmentId,
+      p_quantity: input.quantity,
+      p_price: input.price,
+      p_currency: saleCurrency,
+      p_sold_at: input.soldAt,
+      p_realized_pnl_native: realizedNative,
+      p_realized_pnl_usd: realizedUsd,
+      p_ars_per_usd: arsPerUsd,
+      p_notes: input.notes ?? null,
+    });
 
-    if (saleErr || !saleInserted) {
-      throw new Error(saleErr?.message || 'No se pudo registrar la venta');
+    if (rpcErr) {
+      if (rpcErr.message?.includes('CANTIDAD_INSUFICIENTE')) {
+        throw new Error(
+          'No podés vender más de lo que tenés (la posición cambió o ya se vendió en otra operación).'
+        );
+      }
+      if (rpcErr.message?.includes('CANTIDAD_INVALIDA')) {
+        throw new Error('La cantidad a vender debe ser mayor a 0.');
+      }
+      if (rpcErr.message?.includes('PRECIO_INVALIDO')) {
+        throw new Error('El precio de venta debe ser mayor a 0.');
+      }
+      throw new Error(rpcErr.message || 'No se pudo registrar la venta');
     }
 
-    const remainingQuantity = Math.max(0, currentQty - input.quantity);
-    const positionClosed = remainingQuantity <= 1e-9;
+    const payload = rpcData as {
+      sale: InvestmentSale;
+      remaining_quantity: number | string;
+      position_closed: boolean;
+    } | null;
 
-    const updatePayload: Record<string, unknown> = {
-      quantity: positionClosed ? 0 : remainingQuantity,
-    };
-    if (positionClosed) {
-      updatePayload.is_active = false;
-    }
-
-    const { error: updErr } = await supabase
-      .from('investments')
-      .update(updatePayload)
-      .eq('id', input.investmentId)
-      .eq('user_id', input.userId);
-
-    if (updErr) {
-      // Rollback manual: borrar la venta para que el estado quede consistente.
-      await supabase.from('investment_sales').delete().eq('id', saleInserted.id);
-      throw new Error(updErr.message);
+    if (!payload?.sale) {
+      throw new Error('No se pudo registrar la venta');
     }
 
     return {
-      sale: saleInserted as InvestmentSale,
-      remainingQuantity: positionClosed ? 0 : remainingQuantity,
-      positionClosed,
+      sale: payload.sale,
+      remainingQuantity: Number(payload.remaining_quantity ?? 0),
+      positionClosed: Boolean(payload.position_closed),
     };
   }
 

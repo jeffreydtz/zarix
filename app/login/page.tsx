@@ -155,7 +155,7 @@ function LoginForm() {
   const displayMessage = message.replace('success:', '').replace('Error: ', '');
 
   return (
-    <div className="min-h-dvh min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <div className="min-h-dvh min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-primary/15 via-background to-background p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
       <motion.div 
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -175,7 +175,7 @@ function LoginForm() {
           >
             💰
           </motion.div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold text-primary mb-2">
             Zarix
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
@@ -322,7 +322,7 @@ function LoginForm() {
               type="button"
               onClick={handleResendConfirmation}
               disabled={resendLoading}
-              className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+              className="text-sm font-medium text-primary hover:underline disabled:opacity-50"
             >
               {resendLoading ? 'Enviando…' : 'Reenviar correo de confirmación'}
             </button>
@@ -333,7 +333,7 @@ function LoginForm() {
           ¿No tenés cuenta?{' '}
           <Link
             href="/register"
-            className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            className="font-semibold text-primary hover:underline"
           >
             Registrate
           </Link>
@@ -367,7 +367,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/15 via-background to-background">
         <motion.div
           animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 1.5, repeat: Infinity }}

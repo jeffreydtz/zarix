@@ -175,8 +175,8 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
           placeholder="Escribí un movimiento..."
           className={`flex-1 rounded-xl border px-4 py-2.5 text-sm outline-none transition focus:ring-2 ${
             embedded
-              ? 'border-slate-600 bg-slate-900 text-slate-100 placeholder:text-slate-400 focus:ring-emerald-500'
-              : 'border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 focus:ring-emerald-500'
+              ? 'border-slate-600 bg-slate-900 text-slate-100 placeholder:text-slate-400 focus:ring-ring'
+              : 'border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400 focus:ring-ring'
           }`}
           disabled={loading || blockedStatus !== null}
         />

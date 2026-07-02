@@ -56,7 +56,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[#06070A] text-[#F8F9FA] dark">
+    <main className="dark relative min-h-screen bg-background text-foreground">
       <BackgroundSpline />
       <div className="relative z-10">
         <Navbar />

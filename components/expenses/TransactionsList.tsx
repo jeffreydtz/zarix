@@ -121,7 +121,7 @@ function AccountMovementsSummaryCard({
           </span>
         </p>
       )}
-      <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+      <p className="text-xs text-muted-foreground mt-2">
         La suma usa el mismo criterio que el saldo (incluye conversiones y transferencias). Si hay más
         movimientos fuera de esta lista, no coincidirá con el saldo actual.
       </p>
@@ -285,7 +285,7 @@ export default function TransactionsList({
           💸
         </motion.div>
         <p className="text-slate-500 dark:text-slate-400 mb-2">No hay movimientos</p>
-        <p className="text-sm text-slate-400 dark:text-slate-500">{emptySubmessage}</p>
+        <p className="text-sm text-muted-foreground">{emptySubmessage}</p>
       </motion.div>
     );
   }
@@ -398,7 +398,7 @@ export default function TransactionsList({
             💸
           </motion.div>
           <p className="text-slate-500 dark:text-slate-400 mb-2">No hay movimientos</p>
-          <p className="text-sm text-slate-400 dark:text-slate-500">{emptySubmessage}</p>
+          <p className="text-sm text-muted-foreground">{emptySubmessage}</p>
         </motion.div>
       )}
 
@@ -471,7 +471,7 @@ export default function TransactionsList({
                     {tx.account?.name} • {dateMeta?.dateLabel ?? '—'} • {dateMeta?.distanceLabel ?? '—'}
                   </div>
                   {tx.notes && (
-                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">{tx.notes}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{tx.notes}</div>
                   )}
                   {tx.tags && tx.tags.length > 0 && (
                     <div className="flex gap-1 mt-2">
@@ -527,7 +527,7 @@ export default function TransactionsList({
                     </>
                   )}
                   {tx.installment_number && tx.installment_total && (
-                    <div className="text-xs text-slate-400 mt-1">
+                    <div className="text-xs text-muted-foreground mt-1">
                       Cuota {tx.installment_number}/{tx.installment_total}
                     </div>
                   )}

@@ -389,7 +389,7 @@ export default function RecurringPage() {
   }, [activeSubscriptions]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#06070A] transition-colors">
+    <div className="min-h-screen bg-background transition-colors">
       <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -409,7 +409,7 @@ export default function RecurringPage() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowForm(!showForm)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-purple-500/20 transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:brightness-95 text-primary-foreground rounded-xl font-semibold text-sm shadow-lg shadow-primary/20 transition-colors"
             >
               <span>{showForm ? '✕' : '+'}</span> {showForm ? 'Cerrar' : 'Nueva regla recurrente'}
             </motion.button>
@@ -421,19 +421,19 @@ export default function RecurringPage() {
             title="Servicios externos activos"
             value={String(activeSubscriptions.length)}
             caption={`${activeSubscriptions.filter((rule) => rule.notification_enabled).length} con notificación`}
-            gradient="from-fuchsia-500/10 to-purple-500/10"
+            gradient="from-accent-invest/10 to-accent-invest/5"
           />
           <StatCard
             title="Costo mensual estimado"
             value={<CurrencyBreakdown totals={monthlyByCurrency} />}
             caption="Gastos estimados separados por moneda"
-            gradient="from-sky-500/10 to-indigo-500/10"
+            gradient="from-info/10 to-info/5"
           />
           <StatCard
             title="Costo anual estimado"
             value={<CurrencyBreakdown totals={yearlyByCurrency} />}
             caption={`${upcomingRenewals.length} renovaciones en 14 días`}
-            gradient="from-emerald-500/10 to-teal-500/10"
+            gradient="from-primary/10 to-primary/5"
           />
         </div>
 
@@ -516,7 +516,7 @@ export default function RecurringPage() {
                           required
                           value={form.serviceId}
                           onChange={(e) => setForm((prev) => ({ ...prev, serviceId: e.target.value, planId: '' }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                         >
                           <option value="">Elegí una plataforma</option>
                           {SUBSCRIPTION_SERVICES.map((service) => (
@@ -534,7 +534,7 @@ export default function RecurringPage() {
                           value={form.planId}
                           onChange={(e) => setForm((prev) => ({ ...prev, planId: e.target.value }))}
                           disabled={!selectedService}
-                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 disabled:opacity-60 focus:ring-2 focus:ring-purple-500 outline-none"
+                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 disabled:opacity-60 focus:ring-2 focus:ring-ring outline-none"
                         >
                           <option value="">Elegí un paquete</option>
                           {(selectedService?.plans || []).map((plan) => (
@@ -554,7 +554,7 @@ export default function RecurringPage() {
                       value={form.description}
                       onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
                       placeholder={form.kind === 'subscription' ? 'ej: Netflix Premium' : 'ej: Alquiler, Sueldo'}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                     />
                   </div>
 
@@ -567,7 +567,7 @@ export default function RecurringPage() {
                         inputMode="decimal"
                         value={form.amount}
                         onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                       />
                     </div>
                     <div className="w-28">
@@ -575,7 +575,7 @@ export default function RecurringPage() {
                       <select
                         value={form.currency}
                         onChange={(e) => setForm((prev) => ({ ...prev, currency: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                       >
                         <option value="ARS">ARS</option>
                         <option value="USD">USD</option>
@@ -590,7 +590,7 @@ export default function RecurringPage() {
                         <select
                           value={form.type}
                           onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                         >
                           <option value="expense">💸 Gasto</option>
                           <option value="income">💰 Ingreso</option>
@@ -602,7 +602,7 @@ export default function RecurringPage() {
                         <select
                           value={form.categoryId}
                           onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                         >
                           <option value="">Sin categoría</option>
                           {categories
@@ -623,7 +623,7 @@ export default function RecurringPage() {
                       <select
                         value={form.categoryId}
                         onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                       >
                         <option value="">Sin categoría</option>
                         {categories
@@ -643,7 +643,7 @@ export default function RecurringPage() {
                       required
                       value={form.accountId}
                       onChange={(e) => setForm((prev) => ({ ...prev, accountId: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                     >
                       <option value="">Seleccionar cuenta</option>
                       {accounts.map((account) => (
@@ -659,7 +659,7 @@ export default function RecurringPage() {
                     <select
                       value={form.frequency}
                       onChange={(e) => setForm((prev) => ({ ...prev, frequency: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                     >
                       <option value="daily">📅 Diaria</option>
                       <option value="weekly">📆 Semanal</option>
@@ -676,7 +676,7 @@ export default function RecurringPage() {
                       type="date"
                       value={form.startDate}
                       onChange={(e) => setForm((prev) => ({ ...prev, startDate: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                     />
                   </div>
 
@@ -686,7 +686,7 @@ export default function RecurringPage() {
                       type="date"
                       value={form.endDate}
                       onChange={(e) => setForm((prev) => ({ ...prev, endDate: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500 outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                     />
                   </div>
 
@@ -705,7 +705,7 @@ export default function RecurringPage() {
                     <button
                       type="submit"
                       disabled={saving}
-                      className="w-full py-3 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-xl font-semibold transition-colors disabled:opacity-60"
+                      className="w-full py-3 bg-primary hover:brightness-95 text-primary-foreground rounded-xl font-semibold transition-colors disabled:opacity-60"
                     >
                       {saving ? 'Guardando...' : 'Guardar regla'}
                     </button>
@@ -891,7 +891,7 @@ function RuleCard({
       }`}
     >
       <div className="flex items-center gap-4">
-        <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 ${rule.is_subscription ? 'bg-fuchsia-100 dark:bg-fuchsia-900/30' : 'bg-purple-100 dark:bg-purple-900/30'}`}>
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 ${rule.is_subscription ? 'bg-accent-invest/10 dark:bg-accent-invest/20' : 'bg-primary/10 dark:bg-primary/20'}`}>
           {rule.is_subscription ? '📺' : freqIcon}
         </div>
         <div className="flex-1 min-w-0">
@@ -937,7 +937,7 @@ function RuleCard({
         <div className="flex items-center gap-2">
           <button
             onClick={() => onToggle(rule)}
-            className={`relative w-11 h-6 rounded-full transition-colors ${rule.is_active ? 'bg-purple-500' : 'bg-slate-300 dark:bg-slate-600'}`}
+            className={`relative w-11 h-6 rounded-full transition-colors ${rule.is_active ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'}`}
             title={rule.is_active ? 'Pausar' : 'Activar'}
           >
             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${rule.is_active ? 'translate-x-5' : ''}`} />

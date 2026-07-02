@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import ChartTooltip from '@/components/ui/ChartTooltip';
+import { paletteColor } from '@/lib/chart-theme';
 import { CategoryIcon } from '@/lib/category-icons';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import EditTransactionModal from '@/components/expenses/EditTransactionModal';
@@ -36,10 +37,6 @@ interface CategorySlice {
   color: string;
 }
 
-const COLORS = [
-  '#34D399', '#60A5FA', '#A78BFA', '#F59E0B', '#FB7185',
-  '#22D3EE', '#4ADE80', '#FBBF24', '#818CF8', '#2DD4BF',
-];
 const MAX_PIE_SLICES = 8;
 
 function toInputDate(date: Date) {
@@ -576,7 +573,7 @@ export default function SpendingAnalyzer({
         icon: v.icon,
         amount: v.amount,
         percent: totalAmount > 0 ? (v.amount / totalAmount) * 100 : 0,
-        color: COLORS[i % COLORS.length],
+        color: paletteColor(i),
       }))
       .sort((a, b) => b.amount - a.amount);
 
@@ -941,7 +938,7 @@ export default function SpendingAnalyzer({
                 type="button"
                 key={`${s.name}-${idx}`}
                 onClick={() => openCategoryDetail(s.name)}
-                className="flex min-h-[52px] w-full touch-manipulation items-center justify-between gap-3 rounded-xl border border-transparent bg-slate-100/90 px-3 py-3 text-left transition-colors hover:bg-slate-200/80 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 active:bg-slate-200 dark:bg-slate-800/90 dark:hover:bg-slate-700/80 dark:active:bg-slate-700 sm:min-h-0 sm:py-3"
+                className="flex min-h-[52px] w-full touch-manipulation items-center justify-between gap-3 rounded-xl border border-transparent bg-slate-100/90 px-3 py-3 text-left transition-colors hover:bg-slate-200/80 focus:outline-none focus:ring-2 focus:ring-ring/40 active:bg-slate-200 dark:bg-slate-800/90 dark:hover:bg-slate-700/80 dark:active:bg-slate-700 sm:min-h-0 sm:py-3"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <span

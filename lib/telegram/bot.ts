@@ -5,7 +5,7 @@ import {
   getGeminiForUser,
   GeminiMissingKeyError,
 } from '@/lib/ai/gemini';
-import { transactionsService } from '@/lib/services/transactions';
+import { transactionsService, excludedCurrenciesNote } from '@/lib/services/transactions';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { createServiceClientSync } from '@/lib/supabase/server';
@@ -212,6 +212,11 @@ bot.command('resumen', async (ctx) => {
     summary.topCategories.forEach((cat, i) => {
       message += `${i + 1}. ${cat.icon} ${escapeMd(cat.name)}: $${cat.amount.toLocaleString('es-AR')}\n`;
     });
+  }
+
+  const excludedNote = excludedCurrenciesNote(summary.excludedCurrencies);
+  if (excludedNote) {
+    message += `\n${excludedNote}\n`;
   }
 
   ctx.reply(message, { parse_mode: 'Markdown' });

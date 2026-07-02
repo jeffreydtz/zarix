@@ -350,7 +350,7 @@ export default function DemoPage() {
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
                   autoFocus
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
 
@@ -361,7 +361,7 @@ export default function DemoPage() {
                 <select
                   value={accountId}
                   onChange={(e) => setAccountId(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   {accounts.map((a) => (
                     <option key={a.id} value={a.id}>
@@ -378,7 +378,7 @@ export default function DemoPage() {
                 <select
                   value={categoryName}
                   onChange={(e) => setCategoryName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c.name} value={c.name}>
@@ -397,7 +397,7 @@ export default function DemoPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="ej: Compra en supermercado"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
 

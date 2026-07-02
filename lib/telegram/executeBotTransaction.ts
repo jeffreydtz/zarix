@@ -149,7 +149,28 @@ export async function executeBotTransaction(
     const destResult = await accountsService.findByNameFuzzy(userId, txData.destinationAccount);
     if (destResult.account) {
       destinationAccountId = destResult.account.id;
+    } else if (txType === 'transfer') {
+      // Sin destino resuelto, la transferencia se crearía de un solo lado y la
+      // plata "desaparecería" del origen. Abortamos con mensaje claro.
+      const accountsList = financialContext.accounts
+        .slice(0, 5)
+        .map((a) => `• ${a.icon || '💳'} ${a.name}`)
+        .join('\n');
+
+      return {
+        kind: 'abort',
+        reply:
+          `No encontré la cuenta destino "${txData.destinationAccount}". Tus cuentas son:\n\n${accountsList}\n\n` +
+          `Decime el nombre exacto de la cuenta a la que transferiste.`,
+      };
     }
+  }
+
+  if (txType === 'transfer' && !destinationAccountId) {
+    return {
+      kind: 'abort',
+      reply: 'Para registrar una transferencia necesito la cuenta destino. ¿A qué cuenta transferiste?',
+    };
   }
 
   const resolvedDate =

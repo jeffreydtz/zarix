@@ -51,25 +51,25 @@ export default function BugReportWidget() {
         type="button"
         aria-label="Reportar bug"
         onClick={() => setOpen(true)}
-        className="fixed right-4 z-[90] inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#0F1117]/95 px-3 py-2 text-sm font-medium text-[#F8F9FA] shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl transition hover:border-white/20 bottom-[calc(9.5rem+env(safe-area-inset-bottom,0px))] md:bottom-4"
+        className="fixed right-4 z-[90] inline-flex items-center gap-2 rounded-xl border border-border bg-card/95 px-3 py-2 text-sm font-medium text-foreground shadow-[0_10px_30px_rgba(var(--shadow-strong),0.35)] backdrop-blur-xl transition hover:border-primary/40 bottom-[calc(9.5rem+env(safe-area-inset-bottom,0px))] md:bottom-4"
       >
-        <Bug size={16} className="text-blue-400" />
+        <Bug size={16} className="text-primary" />
         Reportar bug
       </button>
 
       {open ? (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label="Reportar problema en Zarix">
-          <div className="w-full max-w-lg max-h-[90dvh] overflow-y-auto overscroll-contain rounded-2xl border border-white/10 bg-[#0F1117] p-5 text-[#F8F9FA] shadow-2xl">
+          <div className="w-full max-w-lg max-h-[90dvh] overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-5 text-foreground shadow-2xl">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <p className="text-lg font-semibold">Contanos que se rompio</p>
-                <p className="mt-1 text-sm text-[#8B949E]">Vamos a abrir tu mail con el reporte listo para enviar.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Vamos a abrir tu mail con el reporte listo para enviar.</p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar reporte de bug"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-[#8B949E] transition hover:text-[#F8F9FA]"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:text-foreground"
               >
                 <X size={16} />
               </button>
@@ -77,7 +77,7 @@ export default function BugReportWidget() {
 
             <div className="space-y-3">
               <div>
-                <label className="mb-1 block text-sm text-[#8B949E]" htmlFor="bug-title">
+                <label className="mb-1 block text-sm text-muted-foreground" htmlFor="bug-title">
                   Titulo corto
                 </label>
                 <input
@@ -85,12 +85,12 @@ export default function BugReportWidget() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ej: No carga el dashboard"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none transition focus:border-blue-400"
+                  className="w-full rounded-lg border border-border bg-surface-soft px-3 py-2 text-sm outline-none transition focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm text-[#8B949E]" htmlFor="bug-details">
+                <label className="mb-1 block text-sm text-muted-foreground" htmlFor="bug-details">
                   Que paso?
                 </label>
                 <textarea
@@ -99,12 +99,12 @@ export default function BugReportWidget() {
                   onChange={(e) => setDetails(e.target.value)}
                   rows={4}
                   placeholder="Explica brevemente el error"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none transition focus:border-blue-400"
+                  className="w-full rounded-lg border border-border bg-surface-soft px-3 py-2 text-sm outline-none transition focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm text-[#8B949E]" htmlFor="bug-steps">
+                <label className="mb-1 block text-sm text-muted-foreground" htmlFor="bug-steps">
                   Como lo reproduzco?
                 </label>
                 <textarea
@@ -113,19 +113,19 @@ export default function BugReportWidget() {
                   onChange={(e) => setSteps(e.target.value)}
                   rows={3}
                   placeholder="Paso 1... Paso 2..."
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none transition focus:border-blue-400"
+                  className="w-full rounded-lg border border-border bg-surface-soft px-3 py-2 text-sm outline-none transition focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm text-[#8B949E]" htmlFor="bug-severity">
+                <label className="mb-1 block text-sm text-muted-foreground" htmlFor="bug-severity">
                   Severidad
                 </label>
                 <select
                   id="bug-severity"
                   value={severity}
                   onChange={(e) => setSeverity(e.target.value as Severity)}
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none transition focus:border-blue-400"
+                  className="w-full rounded-lg border border-border bg-surface-soft px-3 py-2 text-sm outline-none transition focus:border-primary"
                 >
                   <option value="Bajo">Bajo</option>
                   <option value="Medio">Medio</option>
@@ -136,7 +136,7 @@ export default function BugReportWidget() {
             </div>
 
             <div className="mt-4 flex items-center justify-between gap-3">
-              <div className="inline-flex items-center gap-2 text-xs text-[#8B949E]">
+              <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
                 <AlertCircle size={14} />
                 Se adjunta pagina, fecha y navegador automaticamente.
               </div>
@@ -144,7 +144,7 @@ export default function BugReportWidget() {
                 type="button"
                 onClick={handleSend}
                 disabled={!canSend}
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send size={14} />
                 Enviar reporte

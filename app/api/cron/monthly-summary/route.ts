@@ -2,7 +2,11 @@ import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
-import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
+import {
+  applyArchivedAccountsTransactionFilter,
+  buildToArsConverter,
+  excludedCurrenciesNote,
+} from '@/lib/services/transactions';
 import {
   getGeminiForUser,
   GeminiMissingKeyError,
@@ -24,6 +28,8 @@ interface MonthlyAnalysis {
   };
   insights: string[];
   sugerencias: string[];
+  /** Monedas sin cotización: sus movimientos no están en los totales. */
+  excludedCurrencies: string[];
 }
 
 async function getMonthData(userId: string, year: number, month: number) {
@@ -55,17 +61,24 @@ async function analyzeMonth(
   const prevExpenses = previousMonth.filter(t => t.type === 'expense');
   const prevIncome = previousMonth.filter(t => t.type === 'income');
 
-  const totalGastos = expenses.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
-  const totalIngresos = income.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
-  const prevTotalGastos = prevExpenses.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
-  const prevTotalIngresos = prevIncome.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
+  // Normalizar a ARS por movimiento (misma regla que getMonthSummary): sumar
+  // amount_in_account_currency crudo mezclaba ARS/USD/EUR en un total sin sentido.
+  const { toArs, excludedCurrencies } = await buildToArsConverter([
+    ...currentMonth,
+    ...previousMonth,
+  ]);
+
+  const totalGastos = expenses.reduce((sum, t) => sum + toArs(t), 0);
+  const totalIngresos = income.reduce((sum, t) => sum + toArs(t), 0);
+  const prevTotalGastos = prevExpenses.reduce((sum, t) => sum + toArs(t), 0);
+  const prevTotalIngresos = prevIncome.reduce((sum, t) => sum + toArs(t), 0);
 
   const categoryMap = new Map<string, { name: string; icon: string; amount: number }>();
   expenses.forEach(t => {
     if (t.category) {
       const cat = t.category as { name: string; icon: string };
       const existing = categoryMap.get(cat.name) || { name: cat.name, icon: cat.icon, amount: 0 };
-      existing.amount += Number(t.amount_in_account_currency);
+      existing.amount += toArs(t);
       categoryMap.set(cat.name, existing);
     }
   });
@@ -148,7 +161,8 @@ Las sugerencias deben ser acciones concretas para mejorar.
       ingresosDiff: totalIngresos - prevTotalIngresos
     },
     insights,
-    sugerencias
+    sugerencias,
+    excludedCurrencies,
   };
 }
 
@@ -191,6 +205,11 @@ function formatMessage(analysis: MonthlyAnalysis, monthName: string): string {
     sugerencias.forEach((sug, i) => {
       msg += `• ${sug}\n`;
     });
+  }
+
+  const excludedNote = excludedCurrenciesNote(analysis.excludedCurrencies);
+  if (excludedNote) {
+    msg += `\n${excludedNote}\n`;
   }
 
   return msg;

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
+import { normalizeCurrency } from '@/lib/transaction-exchange';
 import type { ImportSkippedDetail } from '@/types/import';
 
 const MAX_SKIPPED_DETAILS = 250;
@@ -13,7 +15,7 @@ const MAX_IMPORT_FILE_BYTES = 12 * 1024 * 1024;
 
 interface ImportedTransaction {
   date: string;
-  type: 'expense' | 'income' | 'transfer';
+  type: 'expense' | 'income' | 'transfer' | 'adjustment';
   amount: number;
   currency: string;
   account: string;
@@ -60,9 +62,17 @@ function parseCSVLine(line: string, delimiter: ',' | ';'): string[] {
   const values: string[] = [];
   let current = '';
   let inQuotes = false;
-  for (const char of line) {
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
     if (char === '"') {
-      inQuotes = !inQuotes;
+      // RFC 4180: dentro de una celda entre comillas, `""` es una comilla literal
+      // (el export propio escribe descripciones/notas así).
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
     } else if (char === delimiter && !inQuotes) {
       values.push(current.trim());
       current = '';
@@ -72,6 +82,16 @@ function parseCSVLine(line: string, delimiter: ',' | ';'): string[] {
   }
   values.push(current.trim());
   return values;
+}
+
+/**
+ * El export antepone `'` a celdas que parecen fórmula (=, +, -, @, tab) para
+ * mitigar inyección de fórmulas CSV. Al importar columnas de TEXTO, sacamos
+ * UNA comilla simple inicial solo en ese caso, para que export→import
+ * devuelva el texto exacto.
+ */
+function stripFormulaGuardApostrophe(s: string): string {
+  return /^'[=+\-@\t]/.test(s) ? s.slice(1) : s;
 }
 
 function parseCSVFile(text: string): { headers: string[]; rows: string[][] } {
@@ -276,16 +296,31 @@ function parseImportAmount(amountValue: unknown): number | null {
   return null;
 }
 
+/** Contexto legible de una fila cruda para el detalle de omitidos en parseo. */
+function formatRawRowContext(rawDate: string, rawAmount: string, extra?: string): string {
+  const parts = [
+    rawDate ? `Fecha: ${rawDate}` : null,
+    rawAmount ? `Monto: ${rawAmount}` : null,
+    extra || null,
+  ].filter(Boolean);
+  return parts.join(' · ');
+}
+
 function parseStandardCSV(
   headers: string[],
   rows: string[][],
-  parseOpts: ParseImportDateOpts
+  parseOpts: ParseImportDateOpts,
+  skips: ImportSkippedDetail[]
 ): ImportedTransaction[] {
   const h = headers.map(normalizeHeader);
 
   const dateIdx = h.findIndex((x) => ['fecha', 'date'].includes(x));
   const typeIdx = h.findIndex((x) => ['tipo', 'type'].includes(x));
   const amountIdx = h.findIndex((x) => ['monto', 'amount'].includes(x));
+  // Columna del export propio: equivalente en moneda de la cuenta.
+  const amountInAccountIdx = h.findIndex((x) =>
+    ['monto en cuenta', 'amount in account'].includes(x)
+  );
   const currencyIdx = h.findIndex((x) => ['moneda', 'currency'].includes(x));
   const accountIdx = h.findIndex((x) => ['cuenta', 'account'].includes(x));
   const categoryIdx = h.findIndex((x) =>
@@ -304,27 +339,67 @@ function parseStandardCSV(
   const getValue = (row: string[], idx: number) =>
     idx >= 0 && idx < row.length ? row[idx] : '';
 
+  // Columnas de TEXTO: revertir la comilla anti-fórmula del export (ver stripFormulaGuardApostrophe).
+  const getText = (row: string[], idx: number) => stripFormulaGuardApostrophe(getValue(row, idx));
+
   for (const row of rows) {
+    // Fila totalmente vacía (ej. ",,,,,"): ignorar sin contarla como omitida.
+    if (row.every((c) => !String(c ?? '').trim())) continue;
+
     const rawType = getValue(row, typeIdx).toLowerCase();
-    let type: 'expense' | 'income' | 'transfer' = 'expense';
+    let type: 'expense' | 'income' | 'transfer' | 'adjustment' = 'expense';
     if (['ingreso', 'income'].includes(rawType)) type = 'income';
     else if (['transferencia', 'transfer'].includes(rawType)) type = 'transfer';
+    else if (['ajuste', 'adjustment'].includes(rawType)) type = 'adjustment';
 
-    const amount = parseImportAmount(getValue(row, amountIdx));
-    if (amount === null || amount === 0) continue;
+    const rawAmount = getValue(row, amountIdx);
+    const rawDate = getValue(row, dateIdx);
+    const rowContext = formatRawRowContext(
+      rawDate,
+      rawAmount,
+      getText(row, descriptionIdx) ? `Desc.: ${getText(row, descriptionIdx)}` : undefined
+    );
 
-    const parsedDate = parseImportDate(getValue(row, dateIdx), parseOpts);
-    if (!parsedDate) continue;
+    const amount = parseImportAmount(rawAmount);
+    if (amount === null || amount === 0) {
+      skips.push({
+        title: 'Fila omitida — monto inválido',
+        reason: `No se pudo interpretar el monto "${rawAmount || '(vacío)'}" o es cero.`,
+        suggestion:
+          'Usá un monto numérico mayor a 0 (ej. 1234,56 o 1234.56) en la columna "Monto" y reintentá.',
+        context: rowContext,
+      });
+      continue;
+    }
+
+    const parsedDate = parseImportDate(rawDate, parseOpts);
+    if (!parsedDate) {
+      skips.push({
+        title: 'Fila omitida — fecha inválida',
+        reason: `No se pudo interpretar la fecha "${rawDate || '(vacía)'}".`,
+        suggestion:
+          'Usá un formato de fecha reconocible (ej. 2024-01-15 o 15/01/2024) en la columna "Fecha" y reintentá.',
+        context: rowContext,
+      });
+      continue;
+    }
+
+    const amountInAccount =
+      amountInAccountIdx >= 0
+        ? parseImportAmount(getValue(row, amountInAccountIdx))
+        : null;
 
     transactions.push({
       date: parsedDate.toISOString(),
       type,
       amount,
       currency: getValue(row, currencyIdx) || 'ARS',
-      account: getValue(row, accountIdx) || '',
-      category: getValue(row, categoryIdx) || undefined,
-      description: getValue(row, descriptionIdx) || undefined,
-      notes: getValue(row, notesIdx) || undefined,
+      account: getText(row, accountIdx) || '',
+      category: getText(row, categoryIdx) || undefined,
+      description: getText(row, descriptionIdx) || undefined,
+      notes: getText(row, notesIdx) || undefined,
+      amountInAccountCurrency:
+        amountInAccount !== null && amountInAccount > 0 ? amountInAccount : undefined,
     });
   }
 
@@ -334,7 +409,8 @@ function parseStandardCSV(
 function tryParseTransferCSV(
   headers: string[],
   rows: string[][],
-  parseOpts: ParseImportDateOpts
+  parseOpts: ParseImportDateOpts,
+  skips: ImportSkippedDetail[]
 ): ImportedTransferRow[] | null {
   const dateIdx = findColumnIndex(headers, [
     /^fecha y hora$/,
@@ -410,17 +486,52 @@ function tryParseTransferCSV(
     idx >= 0 && idx < row.length ? row[idx] : '';
 
   for (const row of rows) {
+    // Fila totalmente vacía: ignorar sin contarla como omitida.
+    if (row.every((c) => !String(c ?? '').trim())) continue;
+
     const outgoingName = getValue(row, outgoingIdx).trim();
     const incomingName = getValue(row, incomingIdx).trim();
-    const amountOutgoing = parseImportAmount(getValue(row, amountOutIdx));
+    const rawAmountOut = getValue(row, amountOutIdx);
+    const rawDate = getValue(row, dateIdx);
+    const amountOutgoing = parseImportAmount(rawAmountOut);
     const currencyOutgoing = getValue(row, currencyOutIdx).trim() || 'ARS';
+    const rowContext = formatRawRowContext(
+      rawDate,
+      rawAmountOut ? `${rawAmountOut} ${currencyOutgoing}` : '',
+      outgoingName || incomingName ? `${outgoingName || '(vacío)'} → ${incomingName || '(vacío)'}` : undefined
+    );
 
-    if (!outgoingName || !incomingName || amountOutgoing === null || amountOutgoing === 0) {
+    if (!outgoingName || !incomingName) {
+      skips.push({
+        title: 'Transferencia omitida — falta cuenta de origen o destino',
+        reason: 'La fila no tiene nombre en la columna de origen o de destino.',
+        suggestion:
+          'Completá ambas columnas (origen y destino) con nombres de cuentas y reintentá.',
+        context: rowContext,
+      });
+      continue;
+    }
+    if (amountOutgoing === null || amountOutgoing === 0) {
+      skips.push({
+        title: 'Transferencia omitida — monto inválido',
+        reason: `No se pudo interpretar el monto "${rawAmountOut || '(vacío)'}" o es cero.`,
+        suggestion: 'Usá un monto numérico mayor a 0 en la columna de monto de origen y reintentá.',
+        context: rowContext,
+      });
       continue;
     }
 
-    const parsedDate = parseImportDate(getValue(row, dateIdx), parseOpts);
-    if (!parsedDate) continue;
+    const parsedDate = parseImportDate(rawDate, parseOpts);
+    if (!parsedDate) {
+      skips.push({
+        title: 'Transferencia omitida — fecha inválida',
+        reason: `No se pudo interpretar la fecha "${rawDate || '(vacía)'}".`,
+        suggestion:
+          'Usá un formato de fecha reconocible (ej. 2024-01-15 o 15/01/2024) y reintentá.',
+        context: rowContext,
+      });
+      continue;
+    }
 
     let amountIncoming: number | undefined;
     if (amountInIdx >= 0) {
@@ -454,7 +565,8 @@ function tryParseTransferCSV(
 function parseUnifiedFromGrid(
   headers: string[],
   rows: string[][],
-  parseOpts: ParseImportDateOpts
+  parseOpts: ParseImportDateOpts,
+  skips: ImportSkippedDetail[]
 ):
   | { kind: 'standard'; transactions: ImportedTransaction[] }
   | { kind: 'transfer'; transfers: ImportedTransferRow[] } {
@@ -462,12 +574,12 @@ function parseUnifiedFromGrid(
     return { kind: 'standard', transactions: [] };
   }
 
-  const transferRows = tryParseTransferCSV(headers, rows, parseOpts);
+  const transferRows = tryParseTransferCSV(headers, rows, parseOpts, skips);
   if (transferRows !== null) {
     return { kind: 'transfer', transfers: transferRows };
   }
 
-  return { kind: 'standard', transactions: parseStandardCSV(headers, rows, parseOpts) };
+  return { kind: 'standard', transactions: parseStandardCSV(headers, rows, parseOpts, skips) };
 }
 
 /** Formato Airtable / export multi-hoja: Date and time, Category, Account, Amount in account currency, Account currency, Comment… */
@@ -482,7 +594,8 @@ function tryParseAirtableExpenseIncome(
   headers: string[],
   rows: string[][],
   sheetName: string,
-  parseOpts: ParseImportDateOpts
+  parseOpts: ParseImportDateOpts,
+  skips: ImportSkippedDetail[]
 ): ImportedTransaction[] | null {
   const amountInAcctIdx = findColumnIndex(headers, [/^amount in account currency$/i]);
   const currencyAcctIdx = findColumnIndex(headers, [/^account currency$/i]);
@@ -517,10 +630,26 @@ function tryParseAirtableExpenseIncome(
     idx >= 0 && idx < row.length ? row[idx] : '';
 
   for (const row of rows) {
-    const parsedDate = parseImportDate(getValue(row, dateIdx), parseOpts);
-    if (!parsedDate) continue;
+    // Fila totalmente vacía: ignorar sin contarla como omitida.
+    if (row.every((c) => !String(c ?? '').trim())) continue;
 
-    const acctAmt = parseImportAmount(getValue(row, amountInAcctIdx));
+    const rawDate = getValue(row, dateIdx);
+    const rawAcctAmt = getValue(row, amountInAcctIdx);
+    const rowContext = formatRawRowContext(rawDate, rawAcctAmt);
+
+    const parsedDate = parseImportDate(rawDate, parseOpts);
+    if (!parsedDate) {
+      skips.push({
+        title: 'Fila omitida — fecha inválida',
+        reason: `No se pudo interpretar la fecha "${rawDate || '(vacía)'}".`,
+        suggestion:
+          'Usá un formato de fecha reconocible (ej. 2024-01-15 o 15/01/2024) y reintentá.',
+        context: rowContext,
+      });
+      continue;
+    }
+
+    const acctAmt = parseImportAmount(rawAcctAmt);
     const acctCurRaw = getValue(row, currencyAcctIdx).trim();
     const acctCode = normalizeCurrencyCode(acctCurRaw);
     const acctCurNorm = acctCode || acctCurRaw.toUpperCase() || 'ARS';
@@ -546,7 +675,16 @@ function tryParseAirtableExpenseIncome(
         }
       }
     } else {
-      if (acctAmt === null || acctAmt === 0) continue;
+      if (acctAmt === null || acctAmt === 0) {
+        skips.push({
+          title: 'Fila omitida — monto inválido',
+          reason: `No se pudo interpretar el monto "${rawAcctAmt || '(vacío)'}" o es cero.`,
+          suggestion:
+            'Usá un monto numérico mayor a 0 en la columna de monto en moneda de la cuenta y reintentá.',
+          context: rowContext,
+        });
+        continue;
+      }
       amount = acctAmt;
       currency = acctCurNorm;
     }
@@ -589,12 +727,48 @@ function sheetCellToString(v: unknown): string {
   }
   if (v instanceof Date) {
     if (Number.isNaN(v.getTime())) return '';
-    const y = v.getFullYear();
-    const m = String(v.getMonth() + 1).padStart(2, '0');
-    const d = String(v.getDate()).padStart(2, '0');
+    // exceljs materializa las celdas de fecha como Date en UTC (medianoche UTC
+    // del día calendario): leer con getters UTC evita correr un día según la
+    // zona horaria del servidor.
+    const y = v.getUTCFullYear();
+    const m = String(v.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(v.getUTCDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
   }
   return String(v).trim();
+}
+
+type SheetCellRaw = string | number | Date | null;
+
+/**
+ * Normaliza el valor crudo de una celda de exceljs a string/number/Date,
+ * cubriendo rich text, hipervínculos y resultados de fórmulas (equivalente
+ * al comportamiento previo de sheet_to_json de xlsx: encabezados y celdas
+ * vacías → '', fechas → Date, números → number).
+ */
+function excelCellValueToRaw(v: ExcelJS.CellValue): SheetCellRaw {
+  if (v === null || v === undefined) return null;
+  if (typeof v === 'string' || typeof v === 'number') return v;
+  if (v instanceof Date) return v;
+  if (typeof v === 'boolean') return v ? 'TRUE' : 'FALSE';
+  if (typeof v === 'object') {
+    if ('richText' in v && Array.isArray(v.richText)) {
+      return v.richText.map((rt) => rt?.text ?? '').join('');
+    }
+    if ('text' in v && v.text != null) {
+      // Hipervínculo: nos quedamos con el texto visible.
+      const t = (v as ExcelJS.CellHyperlinkValue).text;
+      return typeof t === 'string' ? t : excelCellValueToRaw(t as ExcelJS.CellValue);
+    }
+    if ('result' in v) {
+      const r = (v as ExcelJS.CellFormulaValue).result;
+      if (r === null || r === undefined) return null;
+      if (typeof r === 'string' || typeof r === 'number' || r instanceof Date) return r;
+      return null; // resultado de error (#REF!, etc.)
+    }
+    if ('error' in v) return null;
+  }
+  return null;
 }
 
 /** Salta filas tipo "expenses list" hasta la fila de encabezados reales */
@@ -616,23 +790,35 @@ function findHeaderRowIndex(rows: string[][]): number {
 interface ParsedImport {
   transactions: ImportedTransaction[];
   transfers: ImportedTransferRow[];
+  /** Filas descartadas durante el parseo (fecha/monto ilegibles): se reportan como omitidas. */
+  skips: ImportSkippedDetail[];
 }
 
-function parseXlsxWorkbook(buffer: ArrayBuffer, parseOpts: ParseImportDateOpts): ParsedImport {
-  const out: ParsedImport = { transactions: [], transfers: [] };
-  const wb = XLSX.read(buffer, { type: 'array', cellDates: true });
-
-  for (const sheetName of wb.SheetNames) {
-    const sheet = wb.Sheets[sheetName];
-    const matrix = XLSX.utils.sheet_to_json<(string | number | Date | null | undefined)[]>(sheet, {
-      header: 1,
-      defval: '',
-      raw: false,
-    }) as unknown[][];
-
-    const asStrings = matrix.map((row) =>
-      (Array.isArray(row) ? row : []).map((cell) => sheetCellToString(cell))
+async function parseXlsxWorkbook(
+  buffer: ArrayBuffer,
+  parseOpts: ParseImportDateOpts
+): Promise<ParsedImport> {
+  const out: ParsedImport = { transactions: [], transfers: [], skips: [] };
+  const wb = new ExcelJS.Workbook();
+  try {
+    await wb.xlsx.load(buffer);
+  } catch {
+    throw new Error(
+      'No se pudo leer el archivo .xlsx. Verificá que sea un Excel válido y no esté dañado.'
     );
+  }
+
+  for (const sheet of wb.worksheets) {
+    const asStrings: string[][] = [];
+    sheet.eachRow({ includeEmpty: false }, (row) => {
+      const cells: string[] = [];
+      const cellCount = row.cellCount;
+      for (let c = 1; c <= cellCount; c++) {
+        cells.push(sheetCellToString(excelCellValueToRaw(row.getCell(c).value)));
+      }
+      asStrings.push(cells);
+    });
+
     const nonEmpty = asStrings.filter((r) => r.some((c) => c.length > 0));
     if (nonEmpty.length < 2) continue;
 
@@ -642,20 +828,26 @@ function parseXlsxWorkbook(buffer: ArrayBuffer, parseOpts: ParseImportDateOpts):
     const headers = nonEmpty[headerIdx].map((h) => String(h));
     const dataRows = nonEmpty.slice(headerIdx + 1);
 
-    const transferRows = tryParseTransferCSV(headers, dataRows, parseOpts);
+    const transferRows = tryParseTransferCSV(headers, dataRows, parseOpts, out.skips);
     if (transferRows !== null) {
       out.transfers.push(...transferRows);
       continue;
     }
 
-    const airtable = tryParseAirtableExpenseIncome(headers, dataRows, sheetName, parseOpts);
+    const airtable = tryParseAirtableExpenseIncome(
+      headers,
+      dataRows,
+      sheet.name,
+      parseOpts,
+      out.skips
+    );
     if (airtable !== null) {
       out.transactions.push(...airtable);
       continue;
     }
 
     try {
-      const unified = parseUnifiedFromGrid(headers, dataRows, parseOpts);
+      const unified = parseUnifiedFromGrid(headers, dataRows, parseOpts, out.skips);
       if (unified.kind === 'transfer') {
         out.transfers.push(...unified.transfers);
       } else {
@@ -671,12 +863,13 @@ function parseXlsxWorkbook(buffer: ArrayBuffer, parseOpts: ParseImportDateOpts):
 
 function parseCSVUnified(
   text: string,
-  parseOpts: ParseImportDateOpts
+  parseOpts: ParseImportDateOpts,
+  skips: ImportSkippedDetail[]
 ):
   | { kind: 'standard'; transactions: ImportedTransaction[] }
   | { kind: 'transfer'; transfers: ImportedTransferRow[] } {
   const { headers, rows } = parseCSVFile(text);
-  return parseUnifiedFromGrid(headers, rows, parseOpts);
+  return parseUnifiedFromGrid(headers, rows, parseOpts, skips);
 }
 
 function collectUnresolvedAccountNames(
@@ -831,41 +1024,57 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+      // Fechas inválidas o faltantes: la fila se OMITE con detalle (antes se
+      // asignaba silenciosamente la fecha de hoy, distorsionando los datos).
+      const jsonDateSkip = (rawDate: unknown, tx: any): ImportSkippedDetail => ({
+        title: `Movimiento omitido — ${tx?.description || 'sin descripción'}`,
+        reason: `La fecha "${rawDate ? String(rawDate) : '(vacía)'}" no se pudo interpretar.`,
+        suggestion:
+          'Corregí el campo de fecha en el JSON (formato ISO, ej. 2024-01-15 o 2024-01-15T12:00:00Z) y reintentá.',
+        context: tx?.amount != null ? `Monto: ${tx.amount} ${tx.currency || 'ARS'}` : undefined,
+      });
+
       if (Array.isArray(json)) {
-        combined = {
-          transfers: [],
-          transactions: json.map((tx: any) => {
-            const amt = parseImportAmount(tx.amount) || 0;
-            const amtAcct =
-              typeof tx.amount_in_account_currency === 'number' &&
-              Number.isFinite(tx.amount_in_account_currency)
-                ? Math.abs(tx.amount_in_account_currency)
-                : typeof tx.amountInAccountCurrency === 'number' &&
-                    Number.isFinite(tx.amountInAccountCurrency)
-                  ? Math.abs(tx.amountInAccountCurrency)
-                  : undefined;
-            return {
-              date:
-                parseImportDate(tx.date || tx.transaction_date || '', dateParseOpts)?.toISOString() ||
-                new Date().toISOString(),
-              type: tx.type || 'expense',
-              amount: amt,
-              currency: tx.currency || 'ARS',
-              account: tx.account || tx.accountName || '',
-              category: tx.category || tx.categoryName,
-              description: tx.description,
-              notes: tx.notes,
-              amountInAccountCurrency: amtAcct,
-            };
-          }),
-        };
+        combined = { transfers: [], transactions: [], skips: [] };
+        for (const tx of json as any[]) {
+          const rawDate = tx.date || tx.transaction_date || '';
+          const parsedDate = parseImportDate(rawDate, dateParseOpts);
+          if (!parsedDate) {
+            combined.skips.push(jsonDateSkip(rawDate, tx));
+            continue;
+          }
+          const amt = parseImportAmount(tx.amount) || 0;
+          const amtAcct =
+            typeof tx.amount_in_account_currency === 'number' &&
+            Number.isFinite(tx.amount_in_account_currency)
+              ? Math.abs(tx.amount_in_account_currency)
+              : typeof tx.amountInAccountCurrency === 'number' &&
+                  Number.isFinite(tx.amountInAccountCurrency)
+                ? Math.abs(tx.amountInAccountCurrency)
+                : undefined;
+          combined.transactions.push({
+            date: parsedDate.toISOString(),
+            type: tx.type || 'expense',
+            amount: amt,
+            currency: tx.currency || 'ARS',
+            account: tx.account || tx.accountName || '',
+            category: tx.category || tx.categoryName,
+            description: tx.description,
+            notes: tx.notes,
+            amountInAccountCurrency: amtAcct,
+          });
+        }
       } else if (json.data?.transactions) {
-        combined = {
-          transfers: [],
-          transactions: json.data.transactions.map((tx: any) => ({
-            date:
-              parseImportDate(tx.transaction_date || '', dateParseOpts)?.toISOString() ||
-              new Date().toISOString(),
+        combined = { transfers: [], transactions: [], skips: [] };
+        for (const tx of json.data.transactions as any[]) {
+          const rawDate = tx.transaction_date || '';
+          const parsedDate = parseImportDate(rawDate, dateParseOpts);
+          if (!parsedDate) {
+            combined.skips.push(jsonDateSkip(rawDate, tx));
+            continue;
+          }
+          combined.transactions.push({
+            date: parsedDate.toISOString(),
             type: tx.type || 'expense',
             amount: parseImportAmount(tx.amount) || 0,
             currency: tx.currency || 'ARS',
@@ -873,28 +1082,55 @@ export async function POST(request: NextRequest) {
             category: undefined,
             description: tx.description,
             notes: tx.notes,
-          })),
-        };
+          });
+        }
       } else {
         return NextResponse.json({ error: 'Invalid JSON format' }, { status: 400 });
       }
-    } else if (lowerName.endsWith('.xlsx') || lowerName.endsWith('.xls')) {
+    } else if (lowerName.endsWith('.xls') && !lowerName.endsWith('.xlsx')) {
+      // exceljs no lee el formato binario .xls (Excel 97-2003).
+      return NextResponse.json(
+        {
+          error:
+            'Los archivos .xls (Excel 97-2003) ya no son compatibles. Abrí el archivo en Excel o Google Sheets, guardalo como .xlsx o CSV, y volvé a intentar.',
+        },
+        { status: 400 }
+      );
+    } else if (lowerName.endsWith('.xlsx')) {
       const buffer = await file.arrayBuffer();
-      combined = parseXlsxWorkbook(buffer, dateParseOpts);
+      try {
+        combined = await parseXlsxWorkbook(buffer, dateParseOpts);
+      } catch (e) {
+        // Archivo inválido/dañado: error del usuario, no del servidor.
+        return NextResponse.json(
+          { error: e instanceof Error ? e.message : 'No se pudo leer el archivo .xlsx.' },
+          { status: 400 }
+        );
+      }
     } else {
       const text = await file.text();
-      const parsed = parseCSVUnified(text, dateParseOpts);
+      const parseSkips: ImportSkippedDetail[] = [];
+      let parsed;
+      try {
+        parsed = parseCSVUnified(text, dateParseOpts, parseSkips);
+      } catch (e) {
+        // CSV sin columnas requeridas u otro problema de formato: 400, no 500.
+        return NextResponse.json(
+          { error: e instanceof Error ? e.message : 'No se pudo leer el archivo CSV.' },
+          { status: 400 }
+        );
+      }
       combined =
         parsed.kind === 'transfer'
-          ? { transactions: [], transfers: parsed.transfers }
-          : { transactions: parsed.transactions, transfers: [] };
+          ? { transactions: [], transfers: parsed.transfers, skips: parseSkips }
+          : { transactions: parsed.transactions, transfers: [], skips: parseSkips };
     }
 
     // Saneo de filas provenientes del archivo (no confiar en el contenido):
     // `type` y `currency` se fuerzan a valores permitidos antes de insertar.
     const importedTxSchema = z.object({
       date: z.string().min(1),
-      type: z.enum(['expense', 'income', 'transfer']).catch('expense'),
+      type: z.enum(['expense', 'income', 'transfer', 'adjustment']).catch('expense'),
       amount: z.coerce.number().finite().nonnegative().catch(0),
       currency: z
         .unknown()
@@ -912,6 +1148,16 @@ export async function POST(request: NextRequest) {
     const totalCount = combined.transactions.length + combined.transfers.length;
 
     if (totalCount === 0) {
+      if (combined.skips.length > 0) {
+        return NextResponse.json(
+          {
+            error:
+              'No se pudo importar ninguna fila: todas fueron omitidas por fecha o monto ilegibles.',
+            skippedDetails: combined.skips.slice(0, MAX_SKIPPED_DETAILS),
+          },
+          { status: 400 }
+        );
+      }
       return NextResponse.json({ error: 'No transactions found in file' }, { status: 400 });
     }
 
@@ -934,6 +1180,7 @@ export async function POST(request: NextRequest) {
 
     const accountMap = buildImportLookupMap(accounts || []);
     const validAccountIds = new Set(accounts.map((a) => a.id));
+    const accountCurrencyById = new Map(accounts.map((a) => [a.id, a.currency]));
     const categoryMap = buildImportLookupMap(categories || []);
 
     const unresolvedTransfers = collectUnresolvedForTransfers(accountMap, combined.transfers);
@@ -977,6 +1224,12 @@ export async function POST(request: NextRequest) {
         skippedDetails.push(detail);
       }
     };
+
+    // Filas descartadas durante el parseo (fecha/monto ilegibles): cuentan
+    // como omitidas con su detalle, igual que los errores de inserción.
+    for (const parseSkip of combined.skips) {
+      pushSkip(parseSkip);
+    }
 
     for (const tr of combined.transfers) {
       const outRes = resolveAccountId(
@@ -1137,13 +1390,53 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
+        if (tx.type === 'adjustment') {
+          pushSkip({
+            title: 'Movimiento omitido — ajuste de saldo',
+            reason:
+              'Esta fila es un ajuste de saldo; los ajustes se generan automáticamente al editar el saldo de una cuenta y no se importan como movimientos.',
+            suggestion:
+              'Si necesitás replicar ese saldo, editá el saldo de la cuenta en Zarix, o cambiá el tipo a Gasto/Ingreso si corresponde.',
+            context: formatTxContext(tx),
+          });
+          continue;
+        }
+
+        // Moneda del movimiento distinta a la de la cuenta y sin equivalente en el
+        // archivo: convertir con cotización de mercado (misma regla que
+        // transactionsService.create). Nunca insertar 1:1 entre monedas distintas.
+        let amountInAccountCurrency = tx.amountInAccountCurrency;
+        let exchangeRate: number | null = null;
+        const accountCurrency = accountId ? accountCurrencyById.get(accountId) : null;
+        if (
+          amountInAccountCurrency == null &&
+          accountCurrency &&
+          normalizeCurrency(tx.currency) !== normalizeCurrency(accountCurrency)
+        ) {
+          try {
+            const rate = await cotizacionesService.getExchangeRate(tx.currency, accountCurrency);
+            amountInAccountCurrency = tx.amount * rate;
+            exchangeRate = rate !== 1 ? rate : null;
+          } catch {
+            pushSkip({
+              title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
+              reason: `No se pudo obtener la cotización ${tx.currency}→${accountCurrency} para convertir el monto a la moneda de la cuenta.`,
+              suggestion:
+                'Reintentá el import más tarde, o agregá la columna "Monto en Cuenta" con el equivalente en la moneda de la cuenta.',
+              context: formatTxContext(tx),
+            });
+            continue;
+          }
+        }
+
         const { error: insertError } = await serviceSupabase.from('transactions').insert({
           user_id: user.id,
           type: tx.type,
           account_id: accountId,
           amount: tx.amount,
           currency: tx.currency,
-          amount_in_account_currency: tx.amountInAccountCurrency ?? tx.amount,
+          amount_in_account_currency: amountInAccountCurrency ?? tx.amount,
+          exchange_rate: exchangeRate,
           category_id: category?.id || null,
           description,
           notes,
@@ -1181,7 +1474,8 @@ export async function POST(request: NextRequest) {
       success: true,
       imported,
       skipped,
-      total: totalCount,
+      // Incluye las filas descartadas en el parseo para que imported + skipped = total.
+      total: totalCount + combined.skips.length,
       importKind: importKindPreview,
       /** @deprecated Preferir skippedDetails */
       errors: errorsLegacy,

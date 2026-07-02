@@ -160,25 +160,32 @@ async function fetchCryptoTop5(): Promise<CryptoQuote[]> {
   const url =
     'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=5&page=1&sparkline=false&price_change_percentage=24h';
 
-  const res = await fetch(url, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 300 },
-    signal: AbortSignal.timeout(5000),
-  });
+  // Un timeout/red caída de CoinGecko no debe tirar todo el endpoint (mismo
+  // criterio que el fallback de stooq): devolver [] y que mergeWithCache use la caché.
+  try {
+    const res = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(5000),
+    });
 
-  if (!res.ok) return [];
+    if (!res.ok) return [];
 
-  const data: any[] = await res.json();
+    const data: any[] = await res.json();
 
-  return data.map((c) => ({
-    id: c.id,
-    symbol: c.symbol.toUpperCase(),
-    name: c.name,
-    price: c.current_price,
-    change24h: c.price_change_percentage_24h ?? 0,
-    marketCap: c.market_cap,
-    image: c.image,
-  }));
+    return data.map((c) => ({
+      id: c.id,
+      symbol: c.symbol.toUpperCase(),
+      name: c.name,
+      price: c.current_price,
+      change24h: c.price_change_percentage_24h ?? 0,
+      marketCap: c.market_cap,
+      image: c.image,
+    }));
+  } catch (error) {
+    console.error('Error fetching crypto top 5:', error);
+    return [];
+  }
 }
 
 function jsonResponse(

@@ -357,7 +357,7 @@ export default function CreateAccountButton() {
                         id="isDebt"
                         checked={isDebt}
                         onChange={(e) => setIsDebt(e.target.checked)}
-                        className="w-5 h-5 text-emerald-600 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                        className="w-5 h-5 text-emerald-600 rounded-lg focus:ring-2 focus:ring-ring"
                       />
                       <label htmlFor="isDebt" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Es una deuda (mostrar saldo negativo)
@@ -377,7 +377,7 @@ export default function CreateAccountButton() {
                         id="includeInLiquid"
                         checked={includeInLiquid}
                         onChange={(e) => setIncludeInLiquid(e.target.checked)}
-                        className="w-5 h-5 text-emerald-600 rounded-lg focus:ring-2 focus:ring-emerald-500 mt-0.5"
+                        className="w-5 h-5 text-emerald-600 rounded-lg focus:ring-2 focus:ring-ring mt-0.5"
                       />
                       <div>
                         <label htmlFor="includeInLiquid" className="text-sm font-medium text-slate-700 dark:text-slate-300">

@@ -140,12 +140,20 @@ class DolarApiProvider implements DolarRateProvider {
     const ccl = byCasa.get('contadoconliqui');
     const timestamp = new Date();
 
-    return {
+    const quotes: Record<string, DolarQuote> = {
       blue: { type: 'blue', buy: Number(blue?.compra) || 0, sell: Number(blue?.venta) || 0, timestamp },
       oficial: { type: 'oficial', buy: Number(oficial?.compra) || 0, sell: Number(oficial?.venta) || 0, timestamp },
       mep: { type: 'mep', buy: Number(bolsa?.compra) || 0, sell: Number(bolsa?.venta) || 0, timestamp },
       ccl: { type: 'ccl', buy: Number(ccl?.compra) || 0, sell: Number(ccl?.venta) || 0, timestamp },
     };
+
+    // Igual que CriptoYa: blue en 0 = respuesta degradada → fallar para caer al
+    // siguiente proveedor en vez de cachear/persistir ceros que rompen conversiones.
+    if (!(quotes.blue.sell > 0) || !(quotes.blue.buy > 0)) {
+      throw new Error('DolarApi: dólar blue en 0');
+    }
+
+    return quotes;
   }
 }
 
@@ -247,13 +255,18 @@ class CotizacionesService {
       const supabase = createServiceClientSync();
       const nowIso = new Date().toISOString();
 
-      const rows = Object.values(quotes).map((q) => ({
-        source: q.type,
-        from_currency: 'USD',
-        to_currency: 'ARS',
-        rate: q.sell || q.buy || 0,
-        timestamp: nowIso,
-      }));
+      // Nunca persistir tasas <= 0: quedan en exchange_rates y las lee DbCacheProvider.
+      const rows = Object.values(quotes)
+        .map((q) => ({
+          source: q.type,
+          from_currency: 'USD',
+          to_currency: 'ARS',
+          rate: q.sell || q.buy || 0,
+          timestamp: nowIso,
+        }))
+        .filter((r) => r.rate > 0);
+
+      if (rows.length === 0) return;
 
       await supabase.from('exchange_rates').insert(rows);
     } catch (error) {
@@ -446,7 +459,11 @@ class CotizacionesService {
     if (fromU === 'USD' && toU === 'ARS') {
       const dolar = await this.getDolarQuotes();
       const rate = dolar.blue.sell;
-      if (!(rate > 0)) return 0;
+      // Lanzar en vez de devolver 0: un 0 silencioso se multiplica aguas arriba
+      // y guarda movimientos con amount_in_account_currency = 0.
+      if (!(rate > 0)) {
+        throw new Error('Cotización USD→ARS no disponible');
+      }
       this.setCache(cacheKey, rate);
       return rate;
     }
@@ -454,8 +471,10 @@ class CotizacionesService {
     if (fromU === 'ARS' && toU === 'USD') {
       const dolar = await this.getDolarQuotes();
       const buy = dolar.blue.buy;
-      // Evitar Infinity/NaN si el blue viene en 0; 0 = "tasa no disponible".
-      if (!(buy > 0)) return 0;
+      // Evitar Infinity/NaN si el blue viene en 0.
+      if (!(buy > 0)) {
+        throw new Error('Cotización ARS→USD no disponible');
+      }
       const rate = 1 / buy;
       this.setCache(cacheKey, rate);
       return rate;
@@ -464,6 +483,9 @@ class CotizacionesService {
     if (fromU === 'EUR' && toU === 'ARS') {
       const eurUsd = await this.getEurUsdRate();
       const dolar = await this.getDolarQuotes();
+      if (!(dolar.blue.sell > 0)) {
+        throw new Error('Cotización EUR→ARS no disponible');
+      }
       const rate = eurUsd * dolar.blue.sell;
       this.setCache(cacheKey, rate);
       return rate;

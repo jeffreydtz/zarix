@@ -45,7 +45,7 @@ export default function HowItWorks() {
         viewport={{ once: true, margin: '-80px' }}
         className="mx-auto max-w-3xl text-center"
       >
-        <h2 className="text-3xl font-semibold text-[#F8F9FA] sm:text-5xl">Arrancas en menos de 2 minutos</h2>
+        <h2 className="text-3xl font-semibold text-foreground sm:text-5xl">Arrancas en menos de 2 minutos</h2>
       </motion.div>
 
       <div className="mt-10 grid gap-4 md:grid-cols-3">
@@ -59,14 +59,14 @@ export default function HowItWorks() {
               whileInView="visible"
               viewport={{ once: true, margin: '-80px' }}
               transition={{ delay: index * 0.1 }}
-              className="rounded-2xl border border-white/[0.06] bg-[#0F1117] p-6"
+              className="rounded-2xl border border-border/60 bg-card p-6"
             >
-              <p className="text-4xl font-bold text-blue-400/70">{step.number}</p>
-              <div className="mt-4 inline-flex rounded-lg border border-blue-500/30 bg-blue-500/10 p-2 text-blue-400">
+              <p className="text-4xl font-bold text-primary/70">{step.number}</p>
+              <div className="mt-4 inline-flex rounded-lg border border-primary/30 bg-primary/10 p-2 text-primary">
                 <Icon size={18} />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-[#F8F9FA]">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#8B949E]">{step.description}</p>
+              <h3 className="mt-4 text-lg font-semibold text-foreground">{step.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
             </motion.article>
           );
         })}

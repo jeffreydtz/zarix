@@ -26,7 +26,7 @@ export default function Navbar() {
       style={{ borderColor: navBorder, backgroundColor: navBg }}
     >
       <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="inline-flex items-center gap-2 text-xl font-bold tracking-tight text-[#F8F9FA]">
+        <Link href="/" className="inline-flex items-center gap-2 text-xl font-bold tracking-tight text-foreground">
           <Image
             src={brandAsset.logoSvg}
             alt="Zarix"
@@ -43,14 +43,14 @@ export default function Navbar() {
             <Link
               key={link.label}
               href={link.href}
-              className="text-sm font-medium text-[#8B949E] transition-colors hover:text-[#F8F9FA]"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
             </Link>
           ))}
           <Link
             href="/register"
-            className="rounded-xl bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_30px_rgba(59,130,246,0.25)] transition hover:bg-blue-400"
+            className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[0_0_30px_rgba(34,197,94,0.25)] transition hover:brightness-110"
           >
             Comenzar gratis
           </Link>
@@ -59,7 +59,7 @@ export default function Navbar() {
         <button
           type="button"
           aria-label={open ? 'Cerrar menu' : 'Abrir menu'}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-[#F8F9FA] md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border/90 text-foreground md:hidden"
           onClick={() => setOpen((prev) => !prev)}
         >
           {open ? <X size={18} /> : <Menu size={18} />}
@@ -67,13 +67,13 @@ export default function Navbar() {
       </nav>
 
       {open ? (
-        <div className="border-t border-white/10 bg-[#06070A]/95 px-4 py-4 md:hidden">
+        <div className="border-t border-border bg-background/95 px-4 py-4 md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col gap-3">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="rounded-lg px-2 py-2 text-sm text-[#8B949E] transition hover:bg-white/5 hover:text-[#F8F9FA]"
+                className="rounded-lg px-2 py-2 text-sm text-muted-foreground transition hover:bg-white/5 hover:text-foreground"
                 onClick={() => setOpen(false)}
               >
                 {link.label}
@@ -81,7 +81,7 @@ export default function Navbar() {
             ))}
             <Link
               href="/register"
-              className="mt-2 inline-flex items-center justify-center rounded-xl bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white"
+              className="mt-2 inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
               onClick={() => setOpen(false)}
             >
               Comenzar gratis

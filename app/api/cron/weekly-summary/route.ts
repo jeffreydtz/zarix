@@ -2,7 +2,11 @@ import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
-import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
+import {
+  applyArchivedAccountsTransactionFilter,
+  buildToArsConverter,
+  excludedCurrenciesNote,
+} from '@/lib/services/transactions';
 import { getGeminiForUser, GeminiMissingKeyError } from '@/lib/ai/gemini';
 import { sendTelegramDm } from '@/lib/telegram/send';
 
@@ -17,6 +21,8 @@ interface WeekAnalysis {
   comparativaAnterior: { gastosDiff: number; gastosPercent: number };
   insights: string[];
   sugerencias: string[];
+  /** Monedas sin cotización: sus movimientos no están en los totales. */
+  excludedCurrencies: string[];
 }
 
 async function getTransactionsInRange(
@@ -70,17 +76,24 @@ async function analyzeWeek(
   const prevExpenses = previousWeek.filter((t) => t.type === 'expense');
   const prevIncome = previousWeek.filter((t) => t.type === 'income');
 
-  const totalGastos = expenses.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
-  const totalIngresos = income.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
-  const prevTotalGastos = prevExpenses.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
-  const prevTotalIngresos = prevIncome.reduce((sum, t) => sum + Number(t.amount_in_account_currency), 0);
+  // Normalizar a ARS por movimiento (misma regla que getMonthSummary): sumar
+  // amount_in_account_currency crudo mezclaba ARS/USD/EUR en un total sin sentido.
+  const { toArs, excludedCurrencies } = await buildToArsConverter([
+    ...currentWeek,
+    ...previousWeek,
+  ]);
+
+  const totalGastos = expenses.reduce((sum, t) => sum + toArs(t), 0);
+  const totalIngresos = income.reduce((sum, t) => sum + toArs(t), 0);
+  const prevTotalGastos = prevExpenses.reduce((sum, t) => sum + toArs(t), 0);
+  const prevTotalIngresos = prevIncome.reduce((sum, t) => sum + toArs(t), 0);
 
   const categoryMap = new Map<string, { name: string; icon: string; amount: number }>();
   expenses.forEach((t) => {
     if (t.category) {
       const cat = t.category as { name: string; icon: string };
       const existing = categoryMap.get(cat.name) || { name: cat.name, icon: cat.icon, amount: 0 };
-      existing.amount += Number(t.amount_in_account_currency);
+      existing.amount += toArs(t);
       categoryMap.set(cat.name, existing);
     }
   });
@@ -147,6 +160,7 @@ Respondé en JSON:
     comparativaAnterior: { gastosDiff, gastosPercent },
     insights,
     sugerencias,
+    excludedCurrencies,
   };
 }
 
@@ -195,6 +209,11 @@ function formatWeekMessage(
     sugerencias.forEach((x) => {
       msg += `• ${x}\n`;
     });
+  }
+
+  const excludedNote = excludedCurrenciesNote(analysis.excludedCurrencies);
+  if (excludedNote) {
+    msg += `\n${excludedNote}\n`;
   }
   return msg;
 }

@@ -99,7 +99,7 @@ export default function CreateBudgetModal({
               <select
                 value={form.categoryId}
                 onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
               >
                 <option value="">General (sin categoría)</option>
                 {expenseCategories.map((cat) => (
@@ -123,7 +123,7 @@ export default function CreateBudgetModal({
                   value={form.amount}
                   onChange={(e) => setForm({ ...form, amount: e.target.value })}
                   placeholder="80.000"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                 />
               </div>
               <div className="w-28">
@@ -133,7 +133,7 @@ export default function CreateBudgetModal({
                 <select
                   value={form.currency}
                   onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
                 >
                   <option value="ARS">ARS</option>
                   <option value="USD">USD</option>

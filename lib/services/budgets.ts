@@ -75,14 +75,19 @@ class BudgetsService {
 
     if (!status) return;
 
-    // Get the budget record to find the budget ID and alert threshold
-    const { data: budget } = await supabase
+    // Get the budget record to find the budget ID and alert threshold.
+    // PostgREST: para comparar contra NULL hay que usar `is`, no `eq`
+    // (eq('category_id', null) genera `category_id=eq.null` y no matchea nada).
+    let budgetQuery = supabase
       .from('budgets')
       .select('*')
       .eq('user_id', userId)
-      .eq('category_id', categoryId)
-      .eq('month', month)
-      .single();
+      .eq('month', month);
+    budgetQuery =
+      categoryId === null
+        ? budgetQuery.is('category_id', null)
+        : budgetQuery.eq('category_id', categoryId);
+    const { data: budget } = await budgetQuery.single();
 
     if (!budget) return;
 

@@ -95,9 +95,14 @@ export async function GET(request: NextRequest) {
       ];
     });
 
+    // Mitiga inyección de fórmulas CSV: si la celda empieza con =, +, -, @ o tab,
+    // Excel/Sheets la ejecutaría como fórmula al abrir el archivo.
+    const sanitizeCsvCell = (cell: string) =>
+      /^[=+\-@\t]/.test(cell) ? `'${cell}` : cell;
+
     const csvContent = [
       headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
+      ...rows.map(row => row.map(cell => `"${sanitizeCsvCell(cell)}"`).join(',')),
     ].join('\n');
 
     const BOM = '\uFEFF';

@@ -129,7 +129,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
             placeholder="Buscar descripción..."
             value={searchParams.get('search') || ''}
             onChange={(e) => updateParams({ search: e.target.value })}
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
           />
         </div>
 
@@ -138,7 +138,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value={searchParams.get('type') || ''}
             onChange={(e) => updateParams({ type: e.target.value })}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
           >
             <option value="">Todos los tipos</option>
             <option value="expense">💸 Gastos</option>
@@ -152,7 +152,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value={searchParams.get('accountId') || ''}
             onChange={(e) => updateParams({ accountId: e.target.value })}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
           >
             <option value="">Todas las cuentas</option>
             {accounts.map((acc) => (
@@ -168,7 +168,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value=""
             onChange={(e) => handlePreset(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
           >
             <option value="">Período rápido</option>
             <option value="today">Hoy</option>
@@ -218,7 +218,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                 <select
                   value={searchParams.get('categoryId') || ''}
                   onChange={(e) => updateParams({ categoryId: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
                 >
                   <option value="">Todas las categorías</option>
                   <option value="uncategorized">Sin categoría</option>
@@ -235,7 +235,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                   type="date"
                   value={searchParams.get('startDate') || ''}
                   onChange={(e) => updateParams({ startDate: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
                 />
               </div>
 
@@ -246,7 +246,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                   type="date"
                   value={searchParams.get('endDate') || ''}
                   onChange={(e) => updateParams({ endDate: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
                 />
               </div>
 
@@ -260,7 +260,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                     placeholder="Min"
                     value={searchParams.get('minAmount') || ''}
                     onChange={(e) => updateParams({ minAmount: e.target.value.replace(',', '.') })}
-                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
                   />
                   <input
                     type="text"
@@ -268,7 +268,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                     placeholder="Max"
                     value={searchParams.get('maxAmount') || ''}
                     onChange={(e) => updateParams({ maxAmount: e.target.value.replace(',', '.') })}
-                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
                   />
                 </div>
               </div>

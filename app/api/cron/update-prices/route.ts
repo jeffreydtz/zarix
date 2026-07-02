@@ -25,7 +25,7 @@ class UpdatePricesJob extends IterativeCronJob<any> {
       .select('id, type, ticker, purchase_currency')
       .eq('is_active', true)
       .eq('is_manual_price', false)
-      .in('type', ['crypto', 'stock_us', 'etf', 'cedear']);
+      .in('type', ['crypto', 'stock_us', 'etf', 'cedear', 'stock_arg']);
 
     if (error) throw error;
     return investments || [];
@@ -149,6 +149,12 @@ class UpdatePricesJob extends IterativeCronJob<any> {
 
       for (const [ticker, price] of Object.entries(this.priceCache)) {
         if (ticker === 'USD_ARS') continue;
+        // Solo cotizaciones de MONEDAS cripto van a exchange_rates. Las claves
+        // de acciones/CEDEARs van prefijadas (US:AAPL, ARG:GGAL, CEDEAR:...) y
+        // NO son monedas: persistirlas contaminaba la tabla con filas basura.
+        if (ticker.includes(':')) continue;
+        // Nunca persistir tasas <= 0 en exchange_rates.
+        if (!(price > 0)) continue;
         await supabase.from('exchange_rates').upsert({
           source: 'coingecko',
           from_currency: ticker,

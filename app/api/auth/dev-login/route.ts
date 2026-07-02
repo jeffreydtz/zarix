@@ -12,6 +12,12 @@ export async function GET(req: NextRequest) {
       return new NextResponse(null, { status: 404 });
     }
 
+    // Además del entorno, exige opt-in explícito: sin ALLOW_DEV_LOGIN=true el
+    // endpoint no existe (fail closed también fuera de producción).
+    if (process.env.ALLOW_DEV_LOGIN !== 'true') {
+      return new NextResponse(null, { status: 404 });
+    }
+
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
     const secret = searchParams.get('secret');

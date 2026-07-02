@@ -18,7 +18,7 @@ function Frame({ tag, children }: { tag: string; children: React.ReactNode }) {
       style={{ minHeight: MOCKUP_MIN_HEIGHT }}
     >
       <div className="flex items-center gap-2">
-        <span className="inline-flex items-center rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-300">
+        <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
           {tag}
         </span>
         <span className="h-px flex-1 bg-white/[0.06]" />
@@ -44,12 +44,12 @@ function StatRow({
       ? 'text-emerald-400'
       : trailTone === 'negative'
         ? 'text-red-400'
-        : 'text-[#8B949E]';
+        : 'text-muted-foreground';
   return (
-    <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5">
+    <div className="flex items-center justify-between rounded-xl border border-border/60 bg-white/[0.02] px-3.5 py-2.5">
       <span className="text-sm font-medium text-[#E6E8EC]">{label}</span>
       <div className="flex items-baseline gap-2">
-        <span className="tabular-nums text-sm font-semibold text-[#F8F9FA]">{value}</span>
+        <span className="tabular-nums text-sm font-semibold text-foreground">{value}</span>
         {trail ? <span className={`tabular-nums text-xs ${tone}`}>{trail}</span> : null}
       </div>
     </div>
@@ -77,20 +77,20 @@ function QuotesMockup() {
 
 function PortfolioMockup() {
   const slices = [
-    { label: 'Pesos ARS', value: 42, color: 'bg-blue-500' },
-    { label: 'USD MEP / blue', value: 33, color: 'bg-blue-400' },
-    { label: 'Inversiones', value: 18, color: 'bg-blue-300' },
-    { label: 'Cripto', value: 7, color: 'bg-blue-200' },
+    { label: 'Pesos ARS', value: 42, color: 'bg-primary' },
+    { label: 'USD MEP / blue', value: 33, color: 'bg-primary/70' },
+    { label: 'Inversiones', value: 18, color: 'bg-primary/45' },
+    { label: 'Cripto', value: 7, color: 'bg-primary/25' },
   ];
 
   return (
     <Frame tag="Patrimonio multi-moneda">
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="rounded-2xl border border-border/60 bg-white/[0.02] p-4">
         <div className="flex items-baseline justify-between">
           <div>
-            <p className="text-xs uppercase tracking-wider text-[#8B949E]">Saldo total</p>
-            <p className="mt-1 text-2xl font-semibold text-[#F8F9FA] tabular-nums">$2.847.320 ARS</p>
-            <p className="text-sm text-blue-300 tabular-nums">≈ USD 2.619</p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Saldo total</p>
+            <p className="mt-1 text-2xl font-semibold text-foreground tabular-nums">$2.847.320 ARS</p>
+            <p className="text-sm text-primary tabular-nums">≈ USD 2.619</p>
           </div>
         </div>
         <div className="mt-4 space-y-2">
@@ -98,7 +98,7 @@ function PortfolioMockup() {
             <div key={s.label}>
               <div className="mb-1 flex items-center justify-between text-xs">
                 <span className="text-[#E6E8EC]">{s.label}</span>
-                <span className="text-[#8B949E] tabular-nums">{s.value}%</span>
+                <span className="text-muted-foreground tabular-nums">{s.value}%</span>
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
                 <div className={`h-full ${s.color}`} style={{ width: `${s.value}%` }} />
@@ -114,21 +114,21 @@ function PortfolioMockup() {
 function TelegramMockup() {
   return (
     <Frame tag="Bot personal en Telegram">
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="rounded-2xl border border-border/60 bg-white/[0.02] p-4">
         <div className="space-y-2.5">
-          <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-blue-500/25 px-3.5 py-2 text-sm text-[#F8F9FA]">
+          <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-primary/20 px-3.5 py-2 text-sm text-foreground">
             Gasté 15.000 en nafta
           </div>
-          <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-white/[0.08] bg-white/[0.04] px-3.5 py-2 text-sm text-[#E6E8EC]">
-            Cargado en <span className="font-semibold text-blue-300">Transporte</span> por
-            <span className="ml-1 tabular-nums text-[#F8F9FA]">−$15.000 ARS</span>
+          <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-border/70 bg-white/[0.04] px-3.5 py-2 text-sm text-[#E6E8EC]">
+            Cargado en <span className="font-semibold text-primary">Transporte</span> por
+            <span className="ml-1 tabular-nums text-foreground">−$15.000 ARS</span>
           </div>
-          <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-blue-500/25 px-3.5 py-2 text-sm text-[#F8F9FA]">
+          <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-primary/20 px-3.5 py-2 text-sm text-foreground">
             📎 ticket-super.jpg
           </div>
-          <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-white/[0.08] bg-white/[0.04] px-3.5 py-2 text-sm text-[#E6E8EC]">
-            Leí el ticket: <span className="font-semibold text-blue-300">Supermercado</span> por
-            <span className="ml-1 tabular-nums text-[#F8F9FA]">−$48.720 ARS</span>
+          <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-border/70 bg-white/[0.04] px-3.5 py-2 text-sm text-[#E6E8EC]">
+            Leí el ticket: <span className="font-semibold text-primary">Supermercado</span> por
+            <span className="ml-1 tabular-nums text-foreground">−$48.720 ARS</span>
           </div>
         </div>
       </div>
@@ -150,14 +150,14 @@ function StocksMockup() {
         {rows.map((r) => (
           <div
             key={r.symbol}
-            className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5"
+            className="flex items-center justify-between rounded-xl border border-border/60 bg-white/[0.02] px-3.5 py-2.5"
           >
             <div className="flex flex-col">
-              <span className="font-mono text-sm font-semibold text-[#F8F9FA]">{r.symbol}</span>
-              <span className="text-[11px] text-[#8B949E]">{r.name}</span>
+              <span className="font-mono text-sm font-semibold text-foreground">{r.symbol}</span>
+              <span className="text-[11px] text-muted-foreground">{r.name}</span>
             </div>
             <div className="flex flex-col items-end">
-              <span className="tabular-nums text-sm font-semibold text-[#F8F9FA]">{r.value}</span>
+              <span className="tabular-nums text-sm font-semibold text-foreground">{r.value}</span>
               <span
                 className={`tabular-nums text-[11px] font-medium ${
                   r.tone === 'positive' ? 'text-emerald-400' : 'text-red-400'
@@ -188,28 +188,28 @@ function BudgetMockup() {
           return (
             <div
               key={r.label}
-              className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-3"
+              className="rounded-xl border border-border/60 bg-white/[0.02] px-3.5 py-3"
             >
               <div className="mb-1.5 flex items-baseline justify-between text-sm">
                 <span className="font-medium text-[#E6E8EC]">{r.label}</span>
-                <span className="tabular-nums text-[#8B949E]">
+                <span className="tabular-nums text-muted-foreground">
                   {r.amount} <span className="opacity-60">/ {r.limit}</span>
                 </span>
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
                 <div
-                  className={`h-full ${danger ? 'bg-red-400' : 'bg-blue-500'}`}
+                  className={`h-full ${danger ? 'bg-red-400' : 'bg-primary'}`}
                   style={{ width: `${r.pct}%` }}
                 />
               </div>
               <div className="mt-1 flex items-center justify-between text-[11px]">
-                <span className={`tabular-nums ${danger ? 'text-red-400' : 'text-[#8B949E]'}`}>
+                <span className={`tabular-nums ${danger ? 'text-red-400' : 'text-muted-foreground'}`}>
                   {r.pct}%
                 </span>
                 {danger ? (
                   <span className="text-red-400">Alerta enviada</span>
                 ) : (
-                  <span className="text-[#8B949E]">En rango</span>
+                  <span className="text-muted-foreground">En rango</span>
                 )}
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function FeatureMockup({ feature }: FeatureMockupProps) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -14 }}
         transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-        className="rounded-3xl border border-white/[0.08] bg-[#0F1117] p-5 sm:p-6 shadow-[0_30px_80px_-40px_rgba(59,130,246,0.4)]"
+        className="rounded-3xl border border-border/70 bg-card p-5 sm:p-6 shadow-[0_30px_80px_-40px_rgba(34,197,94,0.4)]"
       >
         {feature.key === 'quotes' ? <QuotesMockup /> : null}
         {feature.key === 'portfolio' ? <PortfolioMockup /> : null}

@@ -124,9 +124,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
   const payload = await req.json().catch(() => null);
-  void processWebhook({ payload, searchParams: req.nextUrl.searchParams }).catch((error) => {
+  // Esperar el procesamiento: en Vercel un fire-and-forget puede cortarse al
+  // responder, y contestar 200 igual perdía activaciones pagas. Con 500, MP
+  // reintenta (el mapeo de estados es idempotente).
+  try {
+    await processWebhook({ payload, searchParams: req.nextUrl.searchParams });
+  } catch (error) {
     console.error('Mercado Pago webhook processing error:', error);
-  });
+    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }
 
@@ -136,8 +142,11 @@ export async function GET(req: NextRequest) {
   if (!verifyMercadoPagoSignature(req)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
-  void processWebhook({ payload: null, searchParams: req.nextUrl.searchParams }).catch((error) => {
+  try {
+    await processWebhook({ payload: null, searchParams: req.nextUrl.searchParams });
+  } catch (error) {
     console.error('Mercado Pago webhook processing error:', error);
-  });
+    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }

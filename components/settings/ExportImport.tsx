@@ -288,7 +288,7 @@ export default function ExportImport() {
                   {/* Excel multi-hoja / Airtable */}
                   <div>
                     <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
-                      📗 Excel (.xlsx / .xls) con varias hojas
+                      📗 Excel (.xlsx) con varias hojas
                     </h4>
                     <p className="text-slate-600 dark:text-slate-400 mb-2">
                       Podés subir un libro con hojas <strong>Expenses</strong>, <strong>Income</strong> y <strong>Transfers</strong>. Se ignoran filas de título (p. ej. &quot;expenses list&quot;) hasta la fila de encabezados. En un solo archivo se importan <strong>gastos, ingresos y transferencias</strong>.
@@ -473,7 +473,7 @@ export default function ExportImport() {
           <input
             type="file"
             ref={fileInputRef}
-            accept=".csv,.json,.xlsx,.xls"
+            accept=".csv,.json,.xlsx"
             onChange={handleImport}
             className="hidden"
             id="import-file"
@@ -494,7 +494,7 @@ export default function ExportImport() {
           </label>
 
           <p className="text-xs text-slate-500 mt-2">
-              Aceptamos .csv, .xlsx / .xls y .json (mismas columnas que el CSV de ejemplo)
+              Aceptamos .csv, .xlsx y .json (los .xls viejos: guardalos como .xlsx primero)
           </p>
 
           {reviewStep && unresolvedAccounts.length > 0 && (

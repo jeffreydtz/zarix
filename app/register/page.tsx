@@ -79,7 +79,7 @@ function RegisterForm() {
   const displayMessage = message.replace('Error: ', '');
 
   return (
-    <div className="min-h-dvh min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <div className="min-h-dvh min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-primary/15 via-background to-background p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -93,7 +93,7 @@ function RegisterForm() {
           transition={{ delay: 0.2 }}
         >
           <div className="text-6xl mb-4">💰</div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold text-primary mb-2">
             Crear cuenta
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
@@ -191,7 +191,7 @@ function RegisterForm() {
           ¿Ya tenés cuenta?{' '}
           <Link
             href="/login"
-            className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            className="font-semibold text-primary hover:underline"
           >
             Iniciar sesión
           </Link>
@@ -205,7 +205,7 @@ export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/15 via-background to-background">
           <div className="text-6xl">💰</div>
         </div>
       }

@@ -34,6 +34,55 @@ export function applyArchivedAccountsTransactionFilter(query: any, activeIds: st
     .or(`destination_account_id.is.null,destination_account_id.in.(${inList})`);
 }
 
+export interface ToArsConverter {
+  /** Convierte el monto original del movimiento a ARS. Devuelve 0 para monedas excluidas. */
+  toArs: (t: { amount: number; currency: string | null }) => number;
+  /**
+   * Monedas cuya cotización no se pudo obtener: sus movimientos se EXCLUYEN de
+   * los totales (sumar 1:1 contaba 100 USD como 100 ARS). Los consumidores
+   * deben mostrar una aclaración cuando no esté vacío.
+   */
+  excludedCurrencies: string[];
+}
+
+/**
+ * Conversor a ARS por movimiento (monto original × cotización actual). Sumar
+ * amount_in_account_currency mezcla ARS, USD, EUR, etc. en un total sin sentido
+ * para usuarios multi-moneda; usar esto en resúmenes (dashboard y crons).
+ * Si una cotización falla, esa moneda se excluye de los totales y queda
+ * listada en `excludedCurrencies` para que el consumidor lo aclare.
+ */
+export async function buildToArsConverter(
+  transactions: Array<{ currency: string | null }>
+): Promise<ToArsConverter> {
+  const currencies = Array.from(
+    new Set(transactions.map((t) => (t.currency || 'ARS').toUpperCase()))
+  );
+  const rateToArs = new Map<string, number>();
+  const excludedCurrencies: string[] = [];
+  for (const c of currencies) {
+    if (c === 'ARS') {
+      rateToArs.set(c, 1);
+      continue;
+    }
+    try {
+      rateToArs.set(c, await cotizacionesService.getExchangeRate(c, 'ARS'));
+    } catch {
+      excludedCurrencies.push(c);
+    }
+  }
+  return {
+    toArs: (t) => Number(t.amount) * (rateToArs.get((t.currency || 'ARS').toUpperCase()) ?? 0),
+    excludedCurrencies,
+  };
+}
+
+/** Aclaración estándar (es-AR) cuando hay monedas sin cotización en un resumen. */
+export function excludedCurrenciesNote(excludedCurrencies: string[]): string | null {
+  if (excludedCurrencies.length === 0) return null;
+  return `⚠️ Sin cotización para ${excludedCurrencies.join(', ')}: esos movimientos no están incluidos en los totales.`;
+}
+
 /** Misma regla que transferencias: cotización de mercado entre moneda del comprobante y moneda de la cuenta. */
 async function computeAmountInAccountCurrencyForAccount(
   amount: number,
@@ -98,6 +147,12 @@ class TransactionsService {
 
     if (account.error || !account.data) {
       throw new Error('Account not found');
+    }
+
+    // Sin cuenta destino, una "transferencia" caería al insert genérico y la plata
+    // desaparecería del origen sin acreditarse en ningún lado.
+    if (input.type === 'transfer' && !input.destinationAccountId) {
+      throw new Error('Las transferencias requieren una cuenta destino.');
     }
 
     const isTransfer = input.type === 'transfer' && Boolean(input.destinationAccountId);
@@ -536,23 +591,8 @@ class TransactionsService {
     // Normalizamos TODO a ARS. Sumar amount_in_account_currency mezclaba ARS, USD,
     // EUR, etc. en un total sin sentido para cualquier usuario multi-moneda (el
     // caso central de la app). Convertimos el monto original de cada movimiento.
-    const currencies = Array.from(
-      new Set(transactions.map((t) => (t.currency || 'ARS').toUpperCase()))
-    );
-    const rateToArs = new Map<string, number>();
-    for (const c of currencies) {
-      if (c === 'ARS') {
-        rateToArs.set(c, 1);
-        continue;
-      }
-      try {
-        rateToArs.set(c, await cotizacionesService.getExchangeRate(c, 'ARS'));
-      } catch {
-        rateToArs.set(c, 1);
-      }
-    }
-    const toArs = (t: { amount: number; currency: string | null }) =>
-      Number(t.amount) * (rateToArs.get((t.currency || 'ARS').toUpperCase()) ?? 1);
+    // Monedas sin cotización quedan fuera de los totales (ver excludedCurrencies).
+    const { toArs, excludedCurrencies } = await buildToArsConverter(transactions);
 
     const totalExpenses = expenses.reduce((sum, t) => sum + toArs(t), 0);
     const totalIncome = income.reduce((sum, t) => sum + toArs(t), 0);
@@ -577,6 +617,8 @@ class TransactionsService {
       balance: totalIncome - totalExpenses,
       topCategories,
       transactionCount: transactions.length,
+      /** Monedas sin cotización: sus movimientos no están en los totales. */
+      excludedCurrencies,
     };
   }
 

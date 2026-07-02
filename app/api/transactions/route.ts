@@ -74,6 +74,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (body.type === 'transfer' && !body.destinationAccountId) {
+      return NextResponse.json(
+        { error: 'Las transferencias requieren una cuenta destino.' },
+        { status: 400 }
+      );
+    }
+
     const cur = String(body.currency ?? '').trim().toUpperCase();
     if (!isTransactionCurrency(cur)) {
       return NextResponse.json(

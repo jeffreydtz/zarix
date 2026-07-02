@@ -7,16 +7,16 @@
 
 // Colores semánticos.
 export const chartColors = {
-  income: '#10B981', // esmeralda — alineado a --primary
+  income: '#22C55E', // verde — mismo valor que --primary (34 197 94)
   expense: '#F43F5E', // rosa/rojo (más suave que el rojo puro)
   accent: '#F59E0B', // ámbar — promedios / líneas de referencia
   roi: '#8B5CF6', // violeta
-  pnl: '#10B981',
+  pnl: '#22C55E', // mismo verde que income/--primary
 } as const;
 
 // Paleta categórica armónica (pies, donuts, breakdowns sin color propio).
 export const chartPalette = [
-  '#10B981',
+  '#22C55E',
   '#3B82F6',
   '#8B5CF6',
   '#F59E0B',

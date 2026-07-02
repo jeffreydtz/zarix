@@ -25,17 +25,17 @@ interface BudgetCardProps {
   onRefresh: () => void;
 }
 
+// Umbrales sobre tokens semánticos (ver DESIGN.md): success → warning → destructive.
 function getProgressColor(percent: number): string {
-  if (percent >= 100) return '#EF4444'; // red-500
-  if (percent >= 80) return '#F59E0B'; // amber-500
-  if (percent >= 60) return '#3B82F6'; // blue-500
-  return '#10B981'; // emerald-500
+  if (percent >= 100) return 'rgb(var(--destructive))';
+  if (percent >= 80) return 'rgb(var(--warning))';
+  return 'rgb(var(--success))';
 }
 
 function getProgressBg(percent: number): string {
-  if (percent >= 100) return 'bg-red-100 dark:bg-red-900/20';
-  if (percent >= 80) return 'bg-amber-100 dark:bg-amber-900/20';
-  return 'bg-emerald-100 dark:bg-emerald-900/20';
+  if (percent >= 100) return 'bg-destructive/10 dark:bg-destructive/20';
+  if (percent >= 80) return 'bg-warning/10 dark:bg-warning/20';
+  return 'bg-primary/10 dark:bg-primary/20';
 }
 
 export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardProps) {

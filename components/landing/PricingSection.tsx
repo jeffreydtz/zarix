@@ -43,19 +43,19 @@ export default function PricingSection() {
         viewport={{ once: true, margin: '-80px' }}
         className="mx-auto max-w-3xl text-center"
       >
-        <h2 className="text-3xl font-semibold text-[#F8F9FA] sm:text-5xl">Empeza gratis. Escala cuando quieras.</h2>
+        <h2 className="text-3xl font-semibold text-foreground sm:text-5xl">Empeza gratis. Escala cuando quieras.</h2>
       </motion.div>
 
       <div className="mx-auto mt-10 grid max-w-4xl gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-white/[0.08] bg-[#0F1117] p-6">
-          <span className="inline-flex rounded-full border border-white/[0.12] px-3 py-1 text-xs font-semibold text-[#8B949E]">
+        <article className="rounded-2xl border border-border/70 bg-card p-6">
+          <span className="inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
             Gratis
           </span>
-          <h3 className="mt-4 text-xl font-semibold text-[#F8F9FA]">Plan Free</h3>
-          <p className="mt-1 text-[#8B949E]">Gratis para siempre</p>
+          <h3 className="mt-4 text-xl font-semibold text-foreground">Plan Free</h3>
+          <p className="mt-1 text-muted-foreground">Gratis para siempre</p>
           <ul className="mt-5 space-y-2">
             {freeFeatures.map((feature) => (
-              <li key={feature} className="flex items-center gap-2 text-sm text-[#F8F9FA]">
+              <li key={feature} className="flex items-center gap-2 text-sm text-foreground">
                 <Check size={16} className="text-[#10B981]" />
                 {feature}
               </li>
@@ -63,22 +63,22 @@ export default function PricingSection() {
           </ul>
           <Link
             href="/register?plan=normal"
-            className="mt-6 inline-flex rounded-xl border border-white/[0.12] px-4 py-2.5 text-sm font-semibold text-[#F8F9FA] transition hover:border-white/[0.2] hover:bg-white/[0.04]"
+            className="mt-6 inline-flex rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-muted-foreground/40 hover:bg-white/[0.04]"
           >
             Comenzar gratis
           </Link>
         </article>
 
-        <article className="rounded-2xl border-[1.5px] border-blue-500 bg-[#0F1117] p-6 shadow-[0_0_35px_rgba(59,130,246,0.18)]">
-          <span className="inline-flex rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-300">
+        <article className="rounded-2xl border-[1.5px] border-primary bg-card p-6 shadow-[0_0_35px_rgba(34,197,94,0.18)]">
+          <span className="inline-flex rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
             Mas popular
           </span>
-          <h3 className="mt-4 text-xl font-semibold text-[#F8F9FA]">Plan Premium</h3>
-          <p className="mt-1 text-2xl font-bold text-[#F8F9FA]">USD 8/mes</p>
-          <p className="text-sm text-[#8B949E]">Pro</p>
+          <h3 className="mt-4 text-xl font-semibold text-foreground">Plan Premium</h3>
+          <p className="mt-1 text-2xl font-bold text-foreground">USD 8/mes</p>
+          <p className="text-sm text-muted-foreground">Pro</p>
           <ul className="mt-5 space-y-2">
             {premiumFeatures.map((feature) => (
-              <li key={feature} className="flex items-center gap-2 text-sm text-[#F8F9FA]">
+              <li key={feature} className="flex items-center gap-2 text-sm text-foreground">
                 <Check size={16} className="text-[#10B981]" />
                 {feature}
               </li>
@@ -86,14 +86,14 @@ export default function PricingSection() {
           </ul>
           <Link
             href="/register?plan=premium"
-            className="mt-6 inline-flex rounded-xl bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-400"
+            className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
           >
             Quiero Premium
           </Link>
         </article>
       </div>
 
-      <p className="mt-6 text-center text-sm text-[#8B949E]">
+      <p className="mt-6 text-center text-sm text-muted-foreground">
         Cobro en ARS al tipo de cambio oficial · Sin permanencia · Cancela cuando quieras
       </p>
     </section>

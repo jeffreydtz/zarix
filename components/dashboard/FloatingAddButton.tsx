@@ -187,7 +187,7 @@ export default function FloatingAddButton() {
         type="button"
         data-tour="add"
         onClick={() => { setError(''); setIsOpen(true); }}
-        className="fixed z-50 w-14 h-14 min-w-[56px] min-h-[56px] bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center transition-transform active:scale-95 touch-manipulation right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-6 md:right-6"
+        className="fixed z-50 w-14 h-14 min-w-[56px] min-h-[56px] bg-primary hover:brightness-95 text-primary-foreground rounded-2xl shadow-lg shadow-primary/30 flex items-center justify-center transition-transform active:scale-95 touch-manipulation right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-6 md:right-6"
         title="Nuevo Movimiento"
         aria-label="Nuevo Movimiento"
       >
@@ -315,7 +315,7 @@ export default function FloatingAddButton() {
                       onChange={(e) => setAmount(e.target.value)}
                       placeholder="0.00"
                       autoFocus
-                      className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
                     <select
@@ -324,7 +324,7 @@ export default function FloatingAddButton() {
                         setAmountCurrency(coerceTransactionCurrency(e.target.value));
                         setCurrencyTouched(true);
                       }}
-                      className="w-[5.5rem] shrink-0 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-[5.5rem] shrink-0 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring"
                       title="Moneda del monto"
                     >
                       {TRANSACTION_CURRENCIES.map((currency) => (
@@ -353,7 +353,7 @@ export default function FloatingAddButton() {
                         }
                       }
                     }}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Seleccioná una cuenta</option>
                     {accounts.map((acc) => (
@@ -372,7 +372,7 @@ export default function FloatingAddButton() {
                   <select
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Sin categoría</option>
                     {filteredCategories.map((cat) => (
@@ -391,7 +391,7 @@ export default function FloatingAddButton() {
                     type="date"
                     value={transactionDateYmd}
                     onChange={(e) => setTransactionDateYmd(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
 
@@ -405,14 +405,14 @@ export default function FloatingAddButton() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="ej: Compra en supermercado"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
 
                 <button
                   onClick={handleCreate}
                   disabled={loading || !amount || !accountId}
-                  className="w-full py-3 rounded-xl font-semibold text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full py-3 rounded-xl font-semibold text-primary-foreground bg-primary hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading
                     ? 'Guardando...'

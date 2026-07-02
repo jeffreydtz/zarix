@@ -2,43 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { CreditCard, Eye, EyeOff, TrendingUp, Wallet } from 'lucide-react';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 const LS_SHOW_INVESTMENT_PATRIMONY = 'zarix-dashboard-show-investment-patrimony';
-
-function EyeIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-      />
-    </svg>
-  );
-}
-
-function EyeSlashIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-      />
-    </svg>
-  );
-}
 
 interface BalanceHeaderProps {
   liquidUSD: number;
@@ -102,12 +71,12 @@ export default function BalanceHeader({
           className="card bg-emerald-50/85 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25"
         >
           <div className="flex items-center gap-2 mb-3">
-            <motion.span 
-              className="text-2xl"
+            <motion.span
+              className="inline-flex text-emerald-600 dark:text-emerald-400"
               animate={shouldReduceMotion ? undefined : { scale: [1, 1.08, 1] }}
               transition={shouldReduceMotion ? undefined : { duration: 2.3, repeat: Infinity, repeatDelay: 3.5 }}
             >
-              💰
+              <Wallet className="w-6 h-6" aria-hidden />
             </motion.span>
             <div>
               <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -139,24 +108,24 @@ export default function BalanceHeader({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.05 })}
-            className="card bg-violet-50/85 dark:bg-violet-500/10 border-violet-200 dark:border-violet-500/25 relative"
+            className="card bg-accent-invest/5 dark:bg-accent-invest/10 border-accent-invest/25 relative"
             >
               <button
                 type="button"
                 onClick={toggleInvestmentPatrimony}
-                className="absolute top-3 right-3 p-2 rounded-xl text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-300 hover:bg-purple-100/80 dark:hover:bg-purple-900/40 transition-colors"
+                className="absolute top-3 right-3 p-2 rounded-xl text-slate-500 hover:text-accent-invest dark:text-slate-400 dark:hover:text-accent-invest hover:bg-accent-invest/10 dark:hover:bg-accent-invest/20 transition-colors"
                 title="Ocultar patrimonio de inversiones"
                 aria-label="Ocultar patrimonio de inversiones"
               >
-                <EyeIcon className="w-5 h-5" />
+                <Eye className="w-5 h-5" aria-hidden />
               </button>
               <div className="flex items-center gap-2 mb-3 pr-10">
                 <motion.span
-                  className="text-2xl"
+                  className="inline-flex text-accent-invest"
                   animate={shouldReduceMotion ? undefined : { y: [0, -3, 0] }}
                   transition={shouldReduceMotion ? undefined : { duration: 1.8, repeat: Infinity, repeatDelay: 2.4 }}
                 >
-                  📈
+                  <TrendingUp className="w-6 h-6" aria-hidden />
                 </motion.span>
                 <div>
                   <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -167,7 +136,7 @@ export default function BalanceHeader({
               </div>
               <div className="space-y-2">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                  <span className="text-3xl font-bold text-accent-invest">
                     <AnimatedNumber value={totalARSBlue} prefix="$" decimals={0} />
                   </span>
                   <span className="text-sm font-medium text-slate-500">ARS</span>
@@ -177,7 +146,7 @@ export default function BalanceHeader({
                     <AnimatedNumber value={totalUSD} prefix="USD " decimals={2} />
                   </span>
                 </div>
-                <div className="text-xs text-purple-600 dark:text-purple-400 mt-3 pt-3 border-t border-purple-200 dark:border-purple-800 flex items-center gap-1">
+                <div className="text-xs text-accent-invest mt-3 pt-3 border-t border-accent-invest/25 dark:border-accent-invest/30 flex items-center gap-1">
                   <span>Inversiones:</span>
                   <span className="font-semibold">
                     <AnimatedNumber value={investmentsARSBlue} prefix="$" decimals={0} /> ARS
@@ -190,16 +159,16 @@ export default function BalanceHeader({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.05 })}
-              className="card border-2 border-dashed border-purple-200 dark:border-purple-800 bg-purple-50/40 dark:bg-purple-950/20 flex flex-col items-center justify-center gap-3 py-8 px-4 text-center min-h-[180px]"
+              className="card border-2 border-dashed border-accent-invest/25 dark:border-accent-invest/30 bg-accent-invest/5 dark:bg-accent-invest/10 flex flex-col items-center justify-center gap-3 py-8 px-4 text-center min-h-[180px]"
             >
               <button
                 type="button"
                 onClick={toggleInvestmentPatrimony}
-                className="p-3 rounded-2xl text-purple-600 dark:text-purple-300 bg-purple-100/80 dark:bg-purple-900/40 hover:bg-purple-200/90 dark:hover:bg-purple-900/60 transition-colors"
+                className="p-3 rounded-2xl text-accent-invest bg-accent-invest/10 dark:bg-accent-invest/20 hover:bg-accent-invest/20 dark:hover:bg-accent-invest/30 transition-colors"
                 title="Mostrar patrimonio de inversiones"
                 aria-label="Mostrar patrimonio de inversiones"
               >
-                <EyeSlashIcon className="w-8 h-8" />
+                <EyeOff className="w-8 h-8" aria-hidden />
               </button>
               <div>
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -219,7 +188,7 @@ export default function BalanceHeader({
             className="card border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-800/50"
           >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl opacity-50">📈</span>
+              <TrendingUp className="w-6 h-6 text-slate-400 dark:text-slate-500" aria-hidden />
               <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Sin inversiones aún
               </h2>
@@ -240,7 +209,7 @@ export default function BalanceHeader({
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">💳</span>
+              <CreditCard className="w-6 h-6 text-warning" aria-hidden />
               <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                 Tarjetas de Crédito
               </h2>
@@ -249,7 +218,7 @@ export default function BalanceHeader({
               creditUtilization > 80
                 ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
                 : creditUtilization > 50
-                ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'
+                ? 'bg-warning/15 text-amber-700 dark:bg-warning/20 dark:text-warning'
                 : 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
             }`}>
               {creditUtilization.toFixed(0)}% usado
@@ -259,7 +228,7 @@ export default function BalanceHeader({
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Usado</p>
-              <p className="text-xl font-bold text-orange-600 dark:text-orange-400">
+              <p className="text-xl font-bold text-amber-700 dark:text-warning">
                 <AnimatedNumber value={totalCreditUsed} prefix="$" decimals={0} />
               </p>
             </div>

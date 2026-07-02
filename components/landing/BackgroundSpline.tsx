@@ -138,9 +138,9 @@ export default function BackgroundSpline() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#06070A]"
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-background"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_25%,rgba(59,130,246,0.22),transparent_45%),radial-gradient(circle_at_20%_75%,rgba(16,185,129,0.12),transparent_40%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_25%,rgba(34,197,94,0.22),transparent_45%),radial-gradient(circle_at_20%_75%,rgba(34,197,94,0.10),transparent_40%)]" />
 
       <motion.div
         style={{ y: parallaxY, opacity: parallaxOpacity }}
@@ -149,8 +149,8 @@ export default function BackgroundSpline() {
         <canvas ref={canvasRef} className="block h-full w-full" />
       </motion.div>
 
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,7,10,0)_0%,rgba(6,7,10,0)_45%,rgba(6,7,10,0.55)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(6,7,10,0.55)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(var(--background)/0)_0%,rgb(var(--background)/0)_45%,rgb(var(--background)/0.55)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgb(var(--background)/0.55)_100%)]" />
 
       <style jsx global>{`
         a[href*='spline.design'],
