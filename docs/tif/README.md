@@ -24,8 +24,8 @@ material de cátedra (PlantUML, leyenda, checklists por tipo de diagrama).
 | 9 | `fig09_er` | Entidad-Relación | 8 tablas + RLS |
 | 10 | `fig10_despliegue` | Despliegue | serverless cloud-native |
 | 11 | `fig11_patron_strategy` | Patrón GoF | Strategy en `cotizaciones.ts` |
-| 12 | `fig12_estilos` | Estilos Arquitectónicos | 8 estilos |
-| 13 | `fig13_patron_template_method` | Patrón GoF | Template Method en `lib/cron/cron-job.ts` |
+| 12 | `fig12_patron_template_method` | Patrón GoF | Template Method en `lib/cron/cron-job.ts` |
+| 13 | `fig13_estilos` | Estilos Arquitectónicos | 8 estilos |
 
 - `diagrams/*.puml` — código fuente PlantUML (editable).
 - `png/*.png` — versiones renderizadas (las que van incrustadas en el `.docx`).

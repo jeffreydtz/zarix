@@ -506,6 +506,7 @@ Metodología para responder EN VIVO: (1) clasificarlo (¿nuevo CU? ¿cambio de d
 - **"¿Por qué Gemini y no OpenAI/Claude?"** — Costo (tier gratuito generoso), multimodal nativo (OCR + audio en el mismo cliente), function-calling maduro, y opción de que cada usuario traiga su propia API key (`users.gemini_api_key`) para escalar costo a cero.
 - **"¿Qué es exactamente amount_in_account_currency?"** — El monto ya convertido a la moneda de la cuenta al TC del momento (RN-MOV-002). Es lo único que consume el trigger; `amount`+`currency` guardan el valor original para auditoría/export.
 - **"¿Qué pasa si el usuario paga y MP tarda en avisar?"** — El estado se actualiza al llegar el webhook (idempotente, con retries de MP). Si el pago se rechaza estando activo → GRACE_PERIOD 7 días con banner; el cron subscription-grace degrada a PAST_DUE al vencer.
+- **"El mapa de navegación dice que Inversiones/Análisis/Presupuestos son Premium, pero puedo entrar sin pagar."** — El plan comercial (10.5.1 y 6.5) define esos módulos como premium; el **enforcement** hoy está implementado en los de mayor costo variable (asistente IA y bot, vía `hasOrchestratorAccess`/`ensureOrchestratorAccess`). El gating del resto se activa al lanzar la monetización — es un toggle por módulo sobre el mismo `subscriptionsService`, no un cambio de arquitectura. Ídem límite de 2 cuentas del plan Free: definido comercialmente, enforcement pendiente.
 
 ---
 
