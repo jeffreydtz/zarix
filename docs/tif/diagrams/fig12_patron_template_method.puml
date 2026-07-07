@@ -1,0 +1,211 @@
+@startuml D-PAT-TEMPLATE-001 — Patrón Template Method aplicado a Cron Jobs
+title ZARIX — Patrón Template Method aplicado a los cron jobs (esqueleto común + hooks)
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+skinparam handwritten false
+' ══ Identidad visual Zarix — paleta esmeralda (DESIGN.md) sobre convención de cátedra ══
+skinparam roundCorner 10
+skinparam TitleFontColor #065F46
+skinparam TitleFontSize 15
+skinparam TitleFontStyle bold
+skinparam ArrowColor #334155
+skinparam ArrowFontColor #475569
+skinparam ArrowThickness 1.2
+skinparam actor {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam usecase {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #94A3B8
+  FontColor #334155
+}
+skinparam boundary {
+  BackgroundColor #DBEAFE
+  BorderColor #2563EB
+  FontColor #1E3A8A
+}
+skinparam control {
+  BackgroundColor #FEF9C3
+  BorderColor #CA8A04
+  FontColor #713F12
+}
+skinparam entity {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam class {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  HeaderBackgroundColor #DCFCE7
+  FontColor #052E16
+  AttributeFontColor #334155
+  StereotypeFontColor #16A34A
+}
+skinparam package {
+  BackgroundColor #F8FAFC
+  BorderColor #16A34A
+  FontColor #064E3B
+  FontStyle bold
+}
+skinparam node {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam database {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam component {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam cloud {
+  BackgroundColor #EFF6FF
+  BorderColor #3B82F6
+  FontColor #1E3A8A
+}
+skinparam participant {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam sequence {
+  LifeLineBorderColor #94A3B8
+  LifeLineBackgroundColor #F0FDF4
+  GroupBackgroundColor #DCFCE7
+  GroupBorderColor #16A34A
+  GroupFontColor #064E3B
+}
+skinparam note {
+  BackgroundColor #FEFCE8
+  BorderColor #EAB308
+  FontColor #713F12
+}
+skinparam legend {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+' ──────────────────── Patrón Template Method (GoF) ────────────────────
+package "Patrón Template Method (GoF)" {
+    abstract class "AbstractClass" as AC {
+        +templateMethod()
+        #{abstract} primitiveOperation1()
+        #{abstract} primitiveOperation2()
+        #hook()
+    }
+    class "ConcreteClass" as CC {
+        #primitiveOperation1()
+        #primitiveOperation2()
+    }
+
+    AC <|-- CC
+    note right of AC
+      templateMethod() fija el
+      esqueleto del algoritmo e
+      invoca las operaciones
+      primitivas y los hooks.
+    end note
+}
+
+' ──────────────────── Aplicación en Zarix ────────────────────
+package "Aplicación: cron jobs (app/api/cron/**)" {
+    abstract class "<CronJob>\n(lib/cron/cron-job.ts)" as Base {
+        +{abstract} name: string
+        +run(request): NextResponse
+        #{abstract} execute(supabase)
+    }
+    abstract class "<IterativeCronJob<TItem>>" as Iter {
+        #execute(supabase)
+        #{abstract} fetchItems(supabase)
+        #{abstract} processItem(supabase, item)
+        #shouldProcess(item) <<hook>>
+        #beforeAll(supabase, items) <<hook>>
+        #afterAll(supabase, items) <<hook>>
+        #emptyMessage() <<hook>>
+    }
+    class "<RecurringRulesJob>" as Rec {
+        #fetchItems(): reglas activas
+        #shouldProcess(): ¿toca hoy?
+        #processItem(): crea transacción
+    }
+    class "<UpdatePricesJob>" as Upd {
+        #beforeAll(): precarga precios
+        #processItem(): actualiza precio
+        #afterAll(): persiste histórico
+    }
+    class "<WeeklySummaryJob>" as Wk {
+        #processItem(): analiza + DM
+    }
+    class "<MonthlySummaryJob>" as Mo {
+        #processItem(): analiza + DM
+    }
+    class "<MaturityAlertsJob>" as Mat {
+        #processItem(): notifica vencimiento
+    }
+    class "<BudgetAlertsJob>" as Bud {
+        #processItem(): alerta presupuesto
+    }
+    class "<SubscriptionGraceJob>" as Sub {
+        #execute(): UPDATE atómico único
+    }
+
+    Base <|-- Iter
+    Iter <|-- Rec
+    Iter <|-- Upd
+    Iter <|-- Wk
+    Iter <|-- Mo
+    Iter <|-- Mat
+    Iter <|-- Bud
+    Base <|-- Sub
+
+    note bottom of Base
+      run() = template method:
+      1. valida bearer de Vercel Cron
+      2. crea service client
+      3. execute() (primitiva)
+      4. envuelve resultado/error en JSON
+    end note
+}
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX
+Fuente: lib/cron/cron-job.ts + app/api/cron/** (código real)
+Patrón: Template Method (Gamma et al., 1995)
+Aplicado a: los 7 cron jobs de Vercel (recurring, update-prices,
+weekly-summary, monthly-summary, maturity-alerts,
+subscription-grace, budget-alerts)
+
+Beneficios:
+- Elimina ~80 líneas de andamiaje duplicado por ruta
+- Auth + manejo de errores uniformes e imposibles de olvidar
+- Un error en un ítem no corta el lote (try/catch por ítem)
+- Agregar un cron = una subclase (Open/Closed)
+
+Trade-offs:
+- Jerarquía de herencia (vs. funciones sueltas)
+- El flujo se lee "invertido" (Hollywood principle)
+endlegend
+
+@enduml

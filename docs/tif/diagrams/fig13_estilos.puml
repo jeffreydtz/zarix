@@ -1,0 +1,159 @@
+@startuml D-ARQ-EST-001 — Estilos Arquitectónicos de Zarix
+title ZARIX — Arquitectura con Estilos Arquitectónicos Identificados
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam linetype ortho
+skinparam backgroundColor white
+skinparam handwritten false
+' ══ Identidad visual Zarix — paleta esmeralda (DESIGN.md) sobre convención de cátedra ══
+skinparam roundCorner 10
+skinparam TitleFontColor #065F46
+skinparam TitleFontSize 15
+skinparam TitleFontStyle bold
+skinparam ArrowColor #334155
+skinparam ArrowFontColor #475569
+skinparam ArrowThickness 1.2
+skinparam actor {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam usecase {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #94A3B8
+  FontColor #334155
+}
+skinparam boundary {
+  BackgroundColor #DBEAFE
+  BorderColor #2563EB
+  FontColor #1E3A8A
+}
+skinparam control {
+  BackgroundColor #FEF9C3
+  BorderColor #CA8A04
+  FontColor #713F12
+}
+skinparam entity {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam class {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  HeaderBackgroundColor #DCFCE7
+  FontColor #052E16
+  AttributeFontColor #334155
+  StereotypeFontColor #16A34A
+}
+skinparam package {
+  BackgroundColor #F8FAFC
+  BorderColor #16A34A
+  FontColor #064E3B
+  FontStyle bold
+}
+skinparam node {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam database {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam component {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam cloud {
+  BackgroundColor #EFF6FF
+  BorderColor #3B82F6
+  FontColor #1E3A8A
+}
+skinparam participant {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam sequence {
+  LifeLineBorderColor #94A3B8
+  LifeLineBackgroundColor #F0FDF4
+  GroupBackgroundColor #DCFCE7
+  GroupBorderColor #16A34A
+  GroupFontColor #064E3B
+}
+skinparam note {
+  BackgroundColor #FEFCE8
+  BorderColor #EAB308
+  FontColor #713F12
+}
+skinparam legend {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+
+
+note as N1
+  Estilos arquitectónicos identificados en Zarix:
+  - Cliente-Servidor (navegador <-> Vercel)
+  - N-Tier (UI / API / Servicios / Datos)
+  - Layered (capas en lib/services)
+  - Serverless / FaaS (funciones + cron en Vercel)
+  - BaaS (Supabase: DB + Auth + Storage)
+  - Repository (servicios encapsulan supabase-js)
+  - Event-Driven (triggers BD, cron, webhooks)
+  - Strategy / Adapter (proveedores de cotización)
+end note
+
+package "Cliente\n[Cliente-Servidor · PWA]" {
+    node "PWA (React)\nService Worker" as PWA
+}
+
+package "Capa API\n[N-Tier · Serverless/FaaS]" {
+    node "Route Handlers\n(app/api/**)" as Api
+    node "Cron Jobs\n[Event-Driven]" as Cron
+    node "Webhook Telegram / MP\n[Event-Driven]" as Hooks
+}
+
+package "Capa de Servicios\n[Layered · Repository]" {
+    node "transactionsService\naccountsService" as Svc
+    node "cotizacionesService\n[Strategy/Adapter]" as Cot
+}
+
+package "Persistencia\n[BaaS · Repository]" {
+    database "Supabase PostgreSQL\n[Event-Driven: triggers]" as DB
+    node "Auth (JWT) · Storage" as Auth
+}
+
+package "Integración Externa\n[Cliente-Servidor inverso]" {
+    node "APIs de mercado\n(CriptoYa, Yahoo...)" as Ext
+}
+
+PWA --> Api : HTTPS (Cliente-Servidor)
+PWA --> Auth : JWT
+Api --> Svc : invoca (Layered)
+Cron --> Svc : dispara (Event-Driven)
+Hooks --> Svc : notifica (Event-Driven)
+Svc --> DB : supabase-js (Repository)
+Cot --> Ext : fetch con fallback (Strategy)
+DB --> DB : triggers (Event-Driven)
+
+legend right
+Proyecto: ZARIX — TIF UAI 2026
+Autor: Jeffrey Dietz
+Metodología: ICONIX — análisis de estilos (apunte de la materia)
+Fuente: Ingeniería del código real (Next.js 14 + Supabase)
+8 estilos combinados, igual que sistemas complejos reales.
+endlegend
+
+@enduml

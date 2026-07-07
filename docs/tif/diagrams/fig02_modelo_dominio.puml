@@ -6,6 +6,102 @@ skinparam defaultFontName Arial
 skinparam defaultFontSize 11
 skinparam linetype ortho
 skinparam backgroundColor white
+skinparam handwritten false
+' ══ Identidad visual Zarix — paleta esmeralda (DESIGN.md) sobre convención de cátedra ══
+skinparam roundCorner 10
+skinparam TitleFontColor #065F46
+skinparam TitleFontSize 15
+skinparam TitleFontStyle bold
+skinparam ArrowColor #334155
+skinparam ArrowFontColor #475569
+skinparam ArrowThickness 1.2
+skinparam actor {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam usecase {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #94A3B8
+  FontColor #334155
+}
+skinparam boundary {
+  BackgroundColor #DBEAFE
+  BorderColor #2563EB
+  FontColor #1E3A8A
+}
+skinparam control {
+  BackgroundColor #FEF9C3
+  BorderColor #CA8A04
+  FontColor #713F12
+}
+skinparam entity {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam class {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  HeaderBackgroundColor #DCFCE7
+  FontColor #052E16
+  AttributeFontColor #334155
+  StereotypeFontColor #16A34A
+}
+skinparam package {
+  BackgroundColor #F8FAFC
+  BorderColor #16A34A
+  FontColor #064E3B
+  FontStyle bold
+}
+skinparam node {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam database {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam component {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #052E16
+}
+skinparam cloud {
+  BackgroundColor #EFF6FF
+  BorderColor #3B82F6
+  FontColor #1E3A8A
+}
+skinparam participant {
+  BackgroundColor #DCFCE7
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+skinparam sequence {
+  LifeLineBorderColor #94A3B8
+  LifeLineBackgroundColor #F0FDF4
+  GroupBackgroundColor #DCFCE7
+  GroupBorderColor #16A34A
+  GroupFontColor #064E3B
+}
+skinparam note {
+  BackgroundColor #FEFCE8
+  BorderColor #EAB308
+  FontColor #713F12
+}
+skinparam legend {
+  BackgroundColor #F0FDF4
+  BorderColor #16A34A
+  FontColor #064E3B
+}
+
 skinparam classAttributeIconSize 0
 
 ' ─── Conceptos del dominio (lenguaje natural, sin campos técnicos) ───
