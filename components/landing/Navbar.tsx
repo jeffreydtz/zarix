@@ -17,12 +17,14 @@ const navLinks = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { scrollY } = useScroll();
-  const navBorder = useTransform(scrollY, [0, 50], ['rgba(255,255,255,0)', 'rgba(255,255,255,0.06)']);
-  const navBg = useTransform(scrollY, [0, 80], ['rgba(6,7,10,0.4)', 'rgba(6,7,10,0.88)']);
+  // Light chrome (Margin-style): transparent over the illustrated hero sky,
+  // solidifying to an off-white bar on scroll. Values = --background light.
+  const navBorder = useTransform(scrollY, [0, 50], ['rgba(217,223,233,0)', 'rgba(217,223,233,0.8)']);
+  const navBg = useTransform(scrollY, [0, 80], ['rgba(247,248,251,0)', 'rgba(247,248,251,0.9)']);
 
   return (
     <motion.header
-      className="sticky top-0 z-50 border-b backdrop-blur-xl"
+      className="light sticky top-0 z-50 border-b text-foreground backdrop-blur-xl"
       style={{ borderColor: navBorder, backgroundColor: navBg }}
     >
       <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -50,7 +52,7 @@ export default function Navbar() {
           ))}
           <Link
             href="/register"
-            className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[0_0_30px_rgba(34,197,94,0.25)] transition hover:brightness-110"
+            className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition hover:brightness-95"
           >
             Comenzar gratis
           </Link>
@@ -73,7 +75,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="rounded-lg px-2 py-2 text-sm text-muted-foreground transition hover:bg-white/5 hover:text-foreground"
+                className="rounded-lg px-2 py-2 text-sm text-muted-foreground transition hover:bg-surface-soft hover:text-foreground"
                 onClick={() => setOpen(false)}
               >
                 {link.label}

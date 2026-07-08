@@ -62,10 +62,20 @@ properties in `app/globals.css`, exposed as Tailwind utilities via
 `tailwind.config.ts`. There is exactly one source of truth per color — no
 parallel palettes per page.
 
-The marketing landing (`app/page.tsx` + `components/landing/*`) is permanently
-dark: it sets the `dark` class on its root and consumes the same tokens
-(`bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`,
-`bg-primary`) — it is the same system, pinned to the dark theme, not a fork.
+The marketing landing (`app/page.tsx` + `components/landing/*`) pins the
+`dark` class on its root and consumes the same tokens (`bg-background`,
+`bg-card`, `text-foreground`, `text-muted-foreground`, `bg-primary`) — same
+system, not a fork. Exception (2026-07-08): the hero and navbar are scoped
+`light` (a `.light` class in `globals.css` re-applies the light token set
+inside a dark root) over a full-bleed illustrated daylight scenery
+(`HeroScenery.tsx`); every section below stays dark.
+
+**Landing hero illustration** — `components/landing/HeroScenery.tsx` is
+artwork (layered SVG alpine landscape, emerald-family palette). Its literal
+SVG colors are exempt from the no-hex rule; all UI rendered on top of it
+(headline, CTAs, browser-frame preview) keeps using tokens. The dashboard
+preview inside the hero (`HeroDashboardPreview.tsx`) nests a `.dark` wrapper
+so the app mock renders with real dark tokens.
 
 ## Colors
 
