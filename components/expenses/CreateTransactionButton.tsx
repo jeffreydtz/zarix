@@ -14,6 +14,7 @@ import {
   coerceTransactionCurrency,
 } from '@/lib/constants/transaction-currencies';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
+import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
 import type { AccountType } from '@/types/database';
 import { useRouter } from 'next/navigation';
 
@@ -617,7 +618,7 @@ export default function CreateTransactionButton({
                         type="text"
                         inputMode="decimal"
                         value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
+                        onChange={(e) => setAmount(sanitizeAmountInput(e.target.value))}
                         placeholder={sourceAccount ? 'Máximo saldo' : '0.00'}
                         className="w-full min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                       />
@@ -721,7 +722,7 @@ export default function CreateTransactionButton({
                           type="text"
                           inputMode="decimal"
                           value={manualExchangeRate}
-                          onChange={(e) => setManualExchangeRate(e.target.value)}
+                          onChange={(e) => setManualExchangeRate(sanitizeAmountInput(e.target.value))}
                           placeholder={
                             transferAmountBasis === 'source'
                               ? `Ej: cuántos ${destAccount.currency} por 1 ${sourceAccount.currency}`
@@ -742,7 +743,7 @@ export default function CreateTransactionButton({
                         type="text"
                         inputMode="decimal"
                         value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
+                        onChange={(e) => setAmount(sanitizeAmountInput(e.target.value))}
                         placeholder="0.00"
                         className="flex-1 min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                       />

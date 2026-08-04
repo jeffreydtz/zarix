@@ -15,6 +15,7 @@ import {
   type TransactionCurrency,
 } from '@/lib/constants/transaction-currencies';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
+import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
 
 interface EditTransactionModalProps {
   transaction: TransactionWithCategory;
@@ -232,7 +233,7 @@ export default function EditTransactionModal({
                   type="text"
                   inputMode="decimal"
                   value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, amount: sanitizeAmountInput(e.target.value) })}
                   className="input flex-1 min-w-0"
                   required
                 />
@@ -311,7 +312,7 @@ export default function EditTransactionModal({
                   inputMode="decimal"
                   value={formData.exchange_rate_override}
                   onChange={(e) =>
-                    setFormData({ ...formData, exchange_rate_override: e.target.value })
+                    setFormData({ ...formData, exchange_rate_override: sanitizeAmountInput(e.target.value) })
                   }
                   className="input"
                   placeholder="Vacío = usar cotización automática"
