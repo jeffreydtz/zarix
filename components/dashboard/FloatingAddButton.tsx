@@ -24,6 +24,12 @@ import {
 import type { AccountType } from '@/types/database';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 import InternalAiChat from '@/components/dashboard/InternalAiChat';
+import {
+  QUICK_CREATE_OPTION,
+  QuickCreateAccountPanel,
+  QuickCreateCategoryPanel,
+} from '@/components/expenses/InlineQuickCreate';
+import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
 import { useRouter } from 'next/navigation';
 
 interface Account {
@@ -60,6 +66,8 @@ export default function FloatingAddButton() {
   const [currencyTouched, setCurrencyTouched] = useState(false);
   const [accountId, setAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  /** Panel inline "crear nueva cuenta/categoría" abierto dentro del form. */
+  const [quickCreate, setQuickCreate] = useState<'account' | 'category' | null>(null);
   const [description, setDescription] = useState('');
   const [transactionDateYmd, setTransactionDateYmd] = useState(() => todayLocalYmd());
 
@@ -96,6 +104,7 @@ export default function FloatingAddButton() {
     setCurrencyTouched(false);
     setAccountId('');
     setCategoryId('');
+    setQuickCreate(null);
     setDescription('');
     setTransactionDateYmd(todayLocalYmd());
   };
@@ -312,7 +321,7 @@ export default function FloatingAddButton() {
                       type="text"
                       inputMode="decimal"
                       value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
+                      onChange={(e) => setAmount(sanitizeAmountInput(e.target.value))}
                       placeholder="0.00"
                       autoFocus
                       className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
@@ -345,7 +354,12 @@ export default function FloatingAddButton() {
                     value={accountId}
                     onChange={(e) => {
                       const selectedAccountId = e.target.value;
+                      if (selectedAccountId === QUICK_CREATE_OPTION) {
+                        setQuickCreate('account');
+                        return;
+                      }
                       setAccountId(selectedAccountId);
+                      setQuickCreate(null);
                       if (!currencyTouched) {
                         const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
                         if (selectedAccount) {
@@ -361,7 +375,21 @@ export default function FloatingAddButton() {
                         {formatAccountSelectLabel(acc)}
                       </option>
                     ))}
+                    <option value={QUICK_CREATE_OPTION}>＋ Nueva cuenta…</option>
                   </select>
+                  {quickCreate === 'account' && (
+                    <QuickCreateAccountPanel
+                      onCreated={(acc) => {
+                        setAccounts((prev) => [...prev, acc as Account]);
+                        setAccountId(acc.id);
+                        if (!currencyTouched) {
+                          setAmountCurrency(coerceTransactionCurrency(acc.currency));
+                        }
+                        setQuickCreate(null);
+                      }}
+                      onCancel={() => setQuickCreate(null)}
+                    />
+                  )}
                 </div>
 
                 {/* Category */}
@@ -371,7 +399,14 @@ export default function FloatingAddButton() {
                   </label>
                   <select
                     value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
+                    onChange={(e) => {
+                      if (e.target.value === QUICK_CREATE_OPTION) {
+                        setQuickCreate('category');
+                        return;
+                      }
+                      setCategoryId(e.target.value);
+                      setQuickCreate(null);
+                    }}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Sin categoría</option>
@@ -380,7 +415,21 @@ export default function FloatingAddButton() {
                         {cat.icon} {cat.name}
                       </option>
                     ))}
+                    <option value={QUICK_CREATE_OPTION}>＋ Nueva categoría…</option>
                   </select>
+                  {quickCreate === 'category' && (
+                    <QuickCreateCategoryPanel
+                      type={type}
+                      onCreated={(cat) => {
+                        setCategories((prev) => [...prev, cat]);
+                        setCategoryId(cat.id);
+                        setQuickCreate(null);
+                        // Refresca el cache TTL para que la nueva categoría no desaparezca al reabrir.
+                        fetchReferenceList<Category>('/api/categories', { force: true }).catch(() => {});
+                      }}
+                      onCancel={() => setQuickCreate(null)}
+                    />
+                  )}
                 </div>
 
                 <div>

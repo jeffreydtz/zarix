@@ -15,6 +15,11 @@ import {
 } from '@/lib/constants/transaction-currencies';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
+import {
+  QUICK_CREATE_OPTION,
+  QuickCreateAccountPanel,
+  QuickCreateCategoryPanel,
+} from '@/components/expenses/InlineQuickCreate';
 import type { AccountType } from '@/types/database';
 import { useRouter } from 'next/navigation';
 
@@ -119,6 +124,10 @@ export default function CreateTransactionButton({
   const [accountId, setAccountId] = useState('');
   const [destinationAccountId, setDestinationAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  /** Cuentas/categorías creadas inline desde este form; conviven con las props hasta el próximo refresh del server. */
+  const [extraAccounts, setExtraAccounts] = useState<CreateTransactionButtonProps['accounts']>([]);
+  const [extraCategories, setExtraCategories] = useState<CreateTransactionButtonProps['categories']>([]);
+  const [quickCreate, setQuickCreate] = useState<'account' | 'category' | null>(null);
   const [description, setDescription] = useState('');
   /** Si origen y destino tienen moneda distinta: el monto está en origen o en destino. */
   const [transferAmountBasis, setTransferAmountBasis] = useState<'source' | 'destination'>('source');
@@ -137,17 +146,23 @@ export default function CreateTransactionButton({
 
   const selectableAccounts = useMemo(
     () =>
-      accounts.map((a) => ({
-        ...a,
-        balance:
-          a.type === 'credit_card' && a.is_multicurrency
-            ? Number(a.multicurrency_balance_primary ?? a.balance)
-            : Number(a.balance),
-      })),
-    [accounts]
+      [...accounts, ...extraAccounts.filter((e) => !accounts.some((a) => a.id === e.id))].map(
+        (a) => ({
+          ...a,
+          balance:
+            a.type === 'credit_card' && a.is_multicurrency
+              ? Number(a.multicurrency_balance_primary ?? a.balance)
+              : Number(a.balance),
+        })
+      ),
+    [accounts, extraAccounts]
   );
 
-  const filteredCategories = categories.filter((c) => c.type === type || c.type === 'both');
+  const allCategories = [
+    ...categories,
+    ...extraCategories.filter((e) => !categories.some((c) => c.id === e.id)),
+  ];
+  const filteredCategories = allCategories.filter((c) => c.type === type || c.type === 'both');
   const destinationAccounts = selectableAccounts.filter((a) => a.id !== accountId);
 
   const sourceAccount = useMemo(
@@ -171,9 +186,9 @@ export default function CreateTransactionButton({
   /** Al elegir cuenta en gasto/ingreso, la moneda del monto sigue la de la cuenta por defecto (salvo que el usuario ya la haya cambiado). */
   useEffect(() => {
     if (type === 'transfer' || !accountId || currencyTouched) return;
-    const a = accounts.find((x) => x.id === accountId);
+    const a = selectableAccounts.find((x) => x.id === accountId);
     if (a) setAmountCurrency(coerceTransactionCurrency(a.currency));
-  }, [accountId, type, accounts, currencyTouched]);
+  }, [accountId, type, selectableAccounts, currencyTouched]);
 
   const transferPayloadCurrency = useMemo(() => {
     if (type !== 'transfer' || !sourceAccount) return sourceAccount?.currency ?? 'ARS';
@@ -345,6 +360,7 @@ export default function CreateTransactionButton({
 
   const handleClose = () => {
     setIsOpen(false);
+    setQuickCreate(null);
     resetForm();
   };
 
@@ -421,7 +437,7 @@ export default function CreateTransactionButton({
     }
   };
 
-  const canTransfer = accounts.length >= 2;
+  const canTransfer = selectableAccounts.length >= 2;
   const openButtonLabel = triggerLabel ?? (transferOnly ? 'Transferir entre cuentas' : '+ Nuevo Movimiento');
   const openButtonClass = triggerClassName ?? 'btn btn-primary';
 
@@ -813,7 +829,14 @@ export default function CreateTransactionButton({
                     <label className="block text-sm font-medium mb-2">Cuenta</label>
                     <select
                       value={accountId}
-                      onChange={(e) => setAccountId(e.target.value)}
+                      onChange={(e) => {
+                        if (e.target.value === QUICK_CREATE_OPTION) {
+                          setQuickCreate('account');
+                          return;
+                        }
+                        setAccountId(e.target.value);
+                        setQuickCreate(null);
+                      }}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                     >
                       <option value="">Seleccioná una cuenta</option>
@@ -822,14 +845,33 @@ export default function CreateTransactionButton({
                           {formatAccountSelectLabel(acc)}
                         </option>
                       ))}
+                      <option value={QUICK_CREATE_OPTION}>＋ Nueva cuenta…</option>
                     </select>
+                    {quickCreate === 'account' && (
+                      <QuickCreateAccountPanel
+                        onCreated={(acc) => {
+                          setExtraAccounts((prev) => [...prev, acc]);
+                          setAccountId(acc.id);
+                          setQuickCreate(null);
+                          router.refresh();
+                        }}
+                        onCancel={() => setQuickCreate(null)}
+                      />
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-2">Categoría</label>
                     <select
                       value={categoryId}
-                      onChange={(e) => setCategoryId(e.target.value)}
+                      onChange={(e) => {
+                        if (e.target.value === QUICK_CREATE_OPTION) {
+                          setQuickCreate('category');
+                          return;
+                        }
+                        setCategoryId(e.target.value);
+                        setQuickCreate(null);
+                      }}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                     >
                       <option value="">Sin categoría</option>
@@ -838,7 +880,20 @@ export default function CreateTransactionButton({
                           {cat.icon} {cat.name}
                         </option>
                       ))}
+                      <option value={QUICK_CREATE_OPTION}>＋ Nueva categoría…</option>
                     </select>
+                    {quickCreate === 'category' && (
+                      <QuickCreateCategoryPanel
+                        type={type === 'income' ? 'income' : 'expense'}
+                        onCreated={(cat) => {
+                          setExtraCategories((prev) => [...prev, cat]);
+                          setCategoryId(cat.id);
+                          setQuickCreate(null);
+                          router.refresh();
+                        }}
+                        onCancel={() => setQuickCreate(null)}
+                      />
+                    )}
                   </div>
                 </>
               )}
