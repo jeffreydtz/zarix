@@ -686,7 +686,10 @@ class AccountsService {
     return { ...data, balance: Number(data.balance) };
   }
 
-  async findByNameFuzzy(userId: string, searchName: string): Promise<{
+  async findByNameFuzzy(userId: string, searchName: string, options?: {
+    /** Moneda del movimiento (ej. 'ARS'): desempata entre cuentas homónimas si el nombre no trae moneda. */
+    currency?: string;
+  }): Promise<{
     account: Account | null;
     confidence: 'exact' | 'high' | 'medium' | 'low' | 'none';
     suggestions?: Account[];
@@ -705,15 +708,25 @@ class AccountsService {
 
     const normalizedSearch = this.normalizeAccountName(searchName);
 
+    // La moneda dicha dentro del nombre ("naranja x usd") pesa más que la del movimiento.
+    const currencyHint =
+      this.extractCurrencyHint(searchName) ??
+      (options?.currency ? options.currency.trim().toUpperCase() : null);
+
     const scored = accounts.map(acc => {
       const normalizedName = this.normalizeAccountName(acc.name);
       const score = this.calculateSimilarity(normalizedSearch, normalizedName);
-      return { account: { ...acc, balance: Number(acc.balance) }, score };
+      const currencyMatch = currencyHint ? this.accountSupportsCurrency(acc, currencyHint) : true;
+      return { account: { ...acc, balance: Number(acc.balance) }, score, currencyMatch };
     });
 
     scored.sort((a, b) => b.score - a.score);
 
-    const best = scored[0];
+    // "Naranja X ARS" y "Naranja X USD" normalizan idéntico y empatan en score:
+    // entre los casi-empatados con el mejor, preferimos la cuenta cuya moneda coincide.
+    const TIE_MARGIN = 0.05;
+    const best =
+      scored.find(s => s.currencyMatch && s.score >= scored[0].score - TIE_MARGIN) ?? scored[0];
 
     if (best.score >= 0.9) {
       return { account: best.account, confidence: 'exact' };
@@ -733,6 +746,28 @@ class AccountsService {
     }
 
     return { account: null, confidence: 'none' };
+  }
+
+  /** Detecta una moneda mencionada dentro del texto ("naranja x usd" → 'USD'). */
+  private extractCurrencyHint(name: string): string | null {
+    const tokens = name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .split(/[^a-z]+/);
+    if (tokens.some(t => ['usd', 'dolar', 'dolares', 'dollar', 'dollars'].includes(t))) return 'USD';
+    if (tokens.some(t => ['ars', 'peso', 'pesos'].includes(t))) return 'ARS';
+    return null;
+  }
+
+  private accountSupportsCurrency(
+    account: { currency?: string | null; is_multicurrency?: boolean | null; secondary_currency?: string | null },
+    currency: string
+  ): boolean {
+    return (
+      account.currency === currency ||
+      Boolean(account.is_multicurrency && account.secondary_currency === currency)
+    );
   }
 
   private normalizeAccountName(name: string): string {

@@ -55,7 +55,9 @@ export async function executeBotTransaction(
   let selectedAccount: (typeof financialContext.accounts)[0] | null = null;
 
   if (txData.account) {
-    const fuzzyResult = await accountsService.findByNameFuzzy(userId, txData.account);
+    const fuzzyResult = await accountsService.findByNameFuzzy(userId, txData.account, {
+      currency: txCurrency,
+    });
 
     if (fuzzyResult.confidence === 'exact' || fuzzyResult.confidence === 'high') {
       accountId = fuzzyResult.account!.id;

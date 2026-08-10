@@ -191,7 +191,7 @@ const TX_PROPS = {
   currency: { type: SchemaType.STRING, description: 'ARS, USD, EUR. Default ARS.' },
   account: {
     type: SchemaType.STRING,
-    description: 'Nombre de cuenta tal como lo dijo el usuario (el sistema busca similitudes). Omitir si no la mencionó.',
+    description: 'Nombre de cuenta tal como lo dijo el usuario, INCLUYENDO la moneda si la mencionó (ej: "naranja x usd" — puede haber cuentas homónimas que solo difieren en moneda). El sistema busca similitudes. Omitir si no la mencionó.',
   },
   category: { type: SchemaType.STRING, description: 'Nombre de categoría.' },
   description: { type: SchemaType.STRING, description: 'Texto libre corto.' },
@@ -348,7 +348,7 @@ export const BOT_FUNCTION_DECLARATIONS: FunctionDeclaration[] = [
         category: { type: SchemaType.STRING, description: 'Nombre de categoría (opcional).' },
         account: {
           type: SchemaType.STRING,
-          description: 'Nombre de cuenta tal como lo dijo el usuario (el sistema busca similitudes). Omitir si no la mencionó.',
+          description: 'Nombre de cuenta tal como lo dijo el usuario, INCLUYENDO la moneda si la mencionó (ej: "naranja x usd" — puede haber cuentas homónimas que solo difieren en moneda). El sistema busca similitudes. Omitir si no la mencionó.',
         },
         startDate: {
           type: SchemaType.STRING,
@@ -677,7 +677,7 @@ export async function executeBotTool(
       let accountName = '';
       const account = str(args.account);
       if (account) {
-        const fuzzy = await accountsService.findByNameFuzzy(userId, account);
+        const fuzzy = await accountsService.findByNameFuzzy(userId, account, { currency });
         if (fuzzy.account && (fuzzy.confidence === 'exact' || fuzzy.confidence === 'high' || fuzzy.confidence === 'medium')) {
           accountId = fuzzy.account.id;
           accountName = fuzzy.account.name;
