@@ -138,6 +138,11 @@ class TransactionsService {
   async create(input: CreateTransactionInput): Promise<Transaction> {
     const supabase = createServiceClientSync();
 
+    // Normalizamos la moneda a mayúsculas antes de cualquier insert: el CHECK
+    // `currency = upper(currency)` (migración data_integrity) lo exige, y evita
+    // los mismatches por comparación de strings aguas abajo.
+    input = { ...input, currency: (input.currency || 'ARS').trim().toUpperCase() };
+
     const account = await supabase
       .from('accounts')
       .select('*')

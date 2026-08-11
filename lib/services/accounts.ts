@@ -145,6 +145,15 @@ class AccountsService {
   async create(input: CreateAccountInput): Promise<Account> {
     const supabase = createServiceClientSync();
 
+    // Moneda normalizada a mayúsculas (CHECK accounts_currency_upper).
+    input = {
+      ...input,
+      currency: (input.currency || 'ARS').trim().toUpperCase(),
+      secondaryCurrency: input.secondaryCurrency
+        ? input.secondaryCurrency.trim().toUpperCase()
+        : input.secondaryCurrency,
+    };
+
     const { data: accounts } = await supabase
       .from('accounts')
       .select('sort_order')
@@ -622,7 +631,13 @@ class AccountsService {
         AccountsService.ACCOUNT_PATCH_CAMEL_TO_SNAKE[key] ??
         (AccountsService.ACCOUNT_PATCH_COLUMNS.has(key) ? key : null);
       if (!col) continue;
-      out[col] = value;
+      // Moneda normalizada a mayúsculas (CHECK accounts_currency_upper /
+      // accounts_secondary_currency_upper).
+      if ((col === 'currency' || col === 'secondary_currency') && typeof value === 'string') {
+        out[col] = value.trim().toUpperCase();
+      } else {
+        out[col] = value;
+      }
     }
     return out;
   }

@@ -23,7 +23,7 @@ class BudgetsService {
         category_id: input.categoryId,
         month: input.month,
         amount: input.amount,
-        currency: input.currency,
+        currency: (input.currency || 'ARS').trim().toUpperCase(),
         rollover_enabled: input.rolloverEnabled || false,
         alert_at_percent: input.alertAtPercent || 80,
       })
