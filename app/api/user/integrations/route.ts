@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
@@ -37,7 +37,11 @@ export async function POST(req: NextRequest) {
       updates.telegram_bot_token = null;
       updates.telegram_webhook_secret = null;
     } else if (telegram_mode === 'custom') {
-      const { data: existing } = await supabase
+      // telegram_bot_token está revocado para el rol authenticated (no vuelve
+      // al cliente). Lo leemos con el service client, server-side, solo para
+      // preservar el token existente si el usuario guarda sin reingresarlo.
+      const serviceClient = await createServiceClient();
+      const { data: existing } = await serviceClient
         .from('users')
         .select('telegram_bot_token, telegram_webhook_secret')
         .eq('id', user.id)
