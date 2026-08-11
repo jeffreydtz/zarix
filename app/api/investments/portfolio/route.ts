@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { investmentsService } from '@/lib/services/investments';
+import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(portfolio);
   } catch (error: unknown) {
     console.error('Portfolio GET error:', error);
-    const message = error instanceof Error ? error.message : 'Error al calcular el portfolio';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

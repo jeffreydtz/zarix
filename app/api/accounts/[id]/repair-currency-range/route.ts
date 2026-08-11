@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
+import { errorResponse } from '@/lib/api-handler';
 
 function isYmd(s: unknown): s is string {
   return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
@@ -51,8 +52,7 @@ export async function POST(
 
     return NextResponse.json(result);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Error al recalcular conversiones';
     console.error('repair-currency-range error:', error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

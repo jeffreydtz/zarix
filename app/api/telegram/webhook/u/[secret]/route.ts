@@ -16,7 +16,7 @@ export async function POST(
   const supabase = createServiceClientSync();
   const { data: row } = await supabase
     .from('users')
-    .select('telegram_bot_token, telegram_webhook_secret')
+    .select('id, telegram_chat_id, telegram_bot_token, telegram_webhook_secret')
     .eq('telegram_webhook_secret', secret)
     .maybeSingle();
 
@@ -33,7 +33,12 @@ export async function POST(
   // reintente el update y se dupliquen transacciones.
   try {
     const update = await req.json();
-    await handleCustomTelegramUpdate(update, row.telegram_bot_token);
+    // SEGURIDAD (fix cross-tenant): el bot propio actúa SIEMPRE como su dueño
+    // (resuelto por el secret), nunca por el chat.id del payload.
+    await handleCustomTelegramUpdate(update, row.telegram_bot_token, {
+      userId: row.id,
+      chatId: row.telegram_chat_id ?? null,
+    });
   } catch (error) {
     console.error('Custom Telegram webhook error:', error);
   }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
+import { errorResponse } from '@/lib/api-handler';
 
 export const maxDuration = 60;
 
@@ -169,10 +170,7 @@ export async function PATCH(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('Bulk transactions PATCH error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al actualizar movimientos masivamente' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -240,8 +238,7 @@ export async function DELETE(req: NextRequest) {
       deleted: data?.length ?? 0,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Error al eliminar movimientos';
     console.error('Bulk transactions DELETE error:', error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

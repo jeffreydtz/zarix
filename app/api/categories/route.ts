@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { categoriesService } from '@/lib/services/categories';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,10 +18,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(categories);
   } catch (error: any) {
     console.error('Categories GET error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al obtener las categorías' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -61,9 +59,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(category, { status: 201 });
   } catch (error: any) {
     console.error('Categories POST error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al crear la categoría' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

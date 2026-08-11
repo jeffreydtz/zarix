@@ -161,6 +161,9 @@ class AccountsService {
       initial
     );
 
+    // El saldo inicial se registra como un movimiento `adjustment` (abajo), no
+    // escribiendo balance directo: así el ledger es la única fuente de verdad y
+    // recomputeAccountBalanceFromLedger reproduce el saldo (antes lo borraba).
     const { data, error } = await supabase
       .from('accounts')
       .insert({
@@ -168,7 +171,7 @@ class AccountsService {
         name: input.name,
         type: input.type as any,
         currency: input.currency,
-        balance: balanceStored,
+        balance: 0,
         icon: input.icon || null,
         color: input.color || '#3B82F6',
         is_debt: input.isDebt || false,
@@ -187,6 +190,24 @@ class AccountsService {
       .single();
 
     if (error) throw error;
+
+    // Saldo inicial como movimiento de ajuste (fuente única = ledger). El trigger
+    // de saldo lleva accounts.balance de 0 a balanceStored.
+    if (balanceStored !== 0) {
+      const { error: adjErr } = await supabase.from('transactions').insert({
+        user_id: input.userId,
+        type: 'adjustment',
+        account_id: data.id,
+        amount: Math.abs(balanceStored),
+        currency: input.currency,
+        amount_in_account_currency: balanceStored,
+        description: 'Saldo inicial',
+        transaction_date: new Date().toISOString(),
+      });
+      if (adjErr) throw adjErr;
+      return { ...data, balance: balanceStored };
+    }
+
     return data;
   }
 

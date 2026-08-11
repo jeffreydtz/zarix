@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sharedExpensesService, isValidShareToken } from '@/lib/services/sharedExpenses';
+import { errorResponse } from '@/lib/api-handler';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -55,10 +56,7 @@ export async function PUT(
     return NextResponse.json(expense);
   } catch (error: any) {
     console.error('Shared expense PUT error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al editar el gasto' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -82,9 +80,6 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Shared expense DELETE error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al eliminar el gasto' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

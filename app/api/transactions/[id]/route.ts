@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService } from '@/lib/services/transactions';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(
   req: NextRequest,
@@ -22,7 +23,7 @@ export async function GET(
   } catch (error: any) {
     console.error('Transaction GET error:', error);
     return NextResponse.json(
-      { error: error.message || 'Movimiento no encontrado' },
+      { error: 'Movimiento no encontrado' },
       { status: 404 }
     );
   }
@@ -144,10 +145,7 @@ export async function PATCH(
     return NextResponse.json(data);
   } catch (error: any) {
     console.error('Transaction PATCH error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al actualizar el movimiento' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -170,9 +168,6 @@ export async function DELETE(
     return new NextResponse(null, { status: 204 });
   } catch (error: any) {
     console.error('Transaction DELETE error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al eliminar el movimiento' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

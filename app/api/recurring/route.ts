@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(data);
   } catch (error: any) {
     console.error('Recurring GET error:', error);
-    return NextResponse.json({ error: error.message || 'Error al obtener las reglas recurrentes' }, { status: 500 });
+    return errorResponse(error);
   }
 }
 
@@ -105,6 +106,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data, { status: 201 });
   } catch (error: any) {
     console.error('Recurring POST error:', error);
-    return NextResponse.json({ error: error.message || 'Error al crear la regla recurrente' }, { status: 500 });
+    return errorResponse(error);
   }
 }

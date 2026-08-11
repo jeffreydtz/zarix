@@ -109,7 +109,18 @@ export function useOfflineQueue() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(item.payload),
           });
-          if (res.ok) await dbRemove(item.id);
+          if (res.ok) {
+            await dbRemove(item.id);
+          } else if (res.status >= 400 && res.status < 500) {
+            // 4xx: request inválida (nunca va a andar). La sacamos para no
+            // envenenar la cola con reintentos infinitos en cada sync.
+            console.error(
+              `[offline-queue] descartando ítem con status ${res.status}`
+            );
+            await dbRemove(item.id);
+          }
+          // 5xx: error transitorio del server → se deja en la cola y se
+          // reintenta en el próximo sync.
         } catch {
           // Still offline — stop processing the queue
           break;

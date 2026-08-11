@@ -105,7 +105,7 @@ Técnica alta (stack probado, founder capacitado), comercial alta (demanda compr
 - **10.5.15:** matriz de trazabilidad RF → CU → RN → diagramas → tablas → CP.
 
 ### C. Anexos
-- **11.1 Normas de calidad:** TypeScript strict, ESLint+Prettier, testing planificado (Jest+RTL+Playwright; hoy smoke manual `npm run test:bot`), git flow con PR, RLS en todas las tablas, mitigaciones OWASP Top 10.
+- **11.1 Normas de calidad:** TypeScript strict, ESLint+Prettier, **CI en GitHub Actions** que corre lint + typecheck + tests + build en cada push/PR (git flow con PR ahora respaldado por el pipeline), **suite de tests unitarios risk-based con Vitest** enfocada en la lógica monetaria pura (waterfall multi-moneda, cálculo de saldos, settlements de gastos compartidos; ver ADR 0005 — reemplaza el "testing planificado" del docx, que solo tenía el smoke manual `npm run test:bot`), RLS en todas las tablas, mitigaciones OWASP Top 10. *(Estado nuevo respecto del docx: CI + tests ya existen; el TIF impreso los describía como "planificados".)*
 - **Anexo A:** 16 tablas (enumerarlas: users, accounts, categories, transactions, recurring_rules, budgets, investments, portfolio_performance_snapshots, investment_sales, bot_sessions, exchange_rates, budget_alerts, shared_groups, shared_group_members, shared_expenses, shared_expense_splits). Todas con UUID, created_at/updated_at con trigger, RLS.
 - **Anexo B:** formato CSV import/export (columnas ES/EN, ida y vuelta sin pérdida; errores por fila sin abortar el lote).
 - **11.3 Bibliografía:** Larman, Fowler (PoEAA), Evans (DDD), GoF, Cristiá (formato de documentación de patrones FCEIA-UNR), Porter, Kotler, Ries.
@@ -146,7 +146,7 @@ zarix/
 **Públicas:**
 | Ruta | Tipo | Qué hace |
 |---|---|---|
-| `/` | server | Landing marketing (Hero, Features, Pricing, Spline 3D). Si hay sesión → redirect `/dashboard` (`app/page.tsx:50-55`). |
+| `/` | server | Landing marketing (Hero ilustrado "daylight" con escenografía SVG alpina — `components/landing/HeroScenery.tsx` + `HeroDashboardPreview.tsx`, light-scoped —, Features, Pricing). **Ya NO usa Spline 3D** (rediseño commit 693b44a, 2026-07-08: se removieron los componentes Spline y las deps `@splinetool/*`). Si hay sesión → redirect `/dashboard` (`app/page.tsx:50-55`). |
 | `/login` | client | Password, magic link, passkey (WebAuthn) y reenvío de confirmación. |
 | `/register` | client | `signUp` con `emailRedirectTo=/auth/callback`; valida password ≥6. |
 | `/demo` | client | Demo 100% en memoria (useState, sin Supabase). TC fijo 1000, datos semilla. |
@@ -206,9 +206,9 @@ Otros módulos de `lib/`:
 - `lib/auth/session.ts`: `getCachedUser()` con `react.cache`.
 - `lib/cron-auth.ts` + `lib/secure-compare.ts`: `verifyCronBearer` y `timingSafeStringEqual` (comparación en tiempo constante; fail-closed sin secret).
 - `lib/cron/cron-job.ts`: clases `CronJob` / `IterativeCronJob` (Template Method — §7.2).
-- `lib/telegram/bot.ts` (708 líneas): Telegraf; bot compartido + bots propios por usuario (`Map<token, Telegraf>`); comandos `/start /cuentas /cotizaciones /resumen /help /reset /resumenes`; handlers de foto (OCR), voz (transcripción) y texto (IA).
+- `lib/telegram/bot.ts` (708 líneas): Telegraf; bot compartido + bots propios por usuario (`Map<token, Telegraf>`); **8 comandos** `/start /cuentas /cotizaciones /resumen /resumenes /notificaciones /reset /help`; handlers de foto (OCR), voz (transcripción) y texto (IA).
 - `lib/ai/gemini.ts`: `GeminiClient` con modelos `gemini-2.5-flash` (full) y `flash-lite`; `chatWithTools()` = loop de function-calling hasta 8 rondas; API key: primero la del usuario (`users.gemini_api_key`), luego env.
-- `lib/ai/bot-tools.ts`: **15 tools** declaradas (create_transaction, create_account, get_spending, get_portfolio, get_net_worth, list_recurring, create_recurring, …), ejecutadas por `executeBotTool` siempre scoped por userId.
+- `lib/ai/bot-tools.ts`: **14 tools** declaradas (create_transaction, create_transactions, create_account, delete_last_transaction, edit_last_transaction, get_spending, list_transactions, get_budget_status, get_portfolio, get_net_worth, get_accounts, get_quotes, list_recurring, create_recurring), ejecutadas por `executeBotTool` (14 `case`) siempre scoped por userId.
 - `lib/ai/prompts.ts`: system prompt con regla de alcance (solo finanzas), jerga argentina, sanitización de inputs.
 - `lib/market-data/`, `yahoo-finance-quotes.ts`, `stooq-us-quote.ts`: precios de mercado (Yahoo, Stooq fallback, catálogo argentino data912).
 - `lib/chart-theme.ts`: paleta única de charts (regla del DESIGN.md).
@@ -375,7 +375,7 @@ Server Component: `getCachedUser()` → `Promise.all(accounts.list, transactions
 ### 6.3 Bot Telegram + IA (CU-001-E1, CU-001-E2, RF10)
 1. Telegram → `POST /api/telegram/webhook` con header `x-telegram-bot-api-secret-token`; se valida timing-safe; tras autenticar **siempre responde 200** (evita re-entregas).
 2. `getUserFromTelegramId` (tabla users por chat_id). Gate de suscripción (`hasOrchestratorAccess`).
-3. Texto → `processInternalAiChatMessage` → Gemini `chatWithTools` (hasta 8 rondas de function-calling) → `executeBotTool` (15 tools, scoped por userId) → p.ej. `create_transaction` → `executeBotTransaction` que resuelve la cuenta con `findByNameFuzzy` (confianza exact/high/medium acepta; low → sugiere; sin match → aborta).
+3. Texto → `processInternalAiChatMessage` → Gemini `chatWithTools` (hasta 8 rondas de function-calling) → `executeBotTool` (14 tools, scoped por userId) → p.ej. `create_transaction` → `executeBotTransaction` que resuelve la cuenta con `findByNameFuzzy` (confianza exact/high/medium acepta; low → sugiere; sin match → aborta).
 4. Foto → Gemini `chatWithImage` extrae JSON (monto/comercio/fecha/categoría) → guarda propuesta en `bot_sessions` → pide confirmación → el "sí" dispara la tool. Voz → transcripción → mismo flujo de texto.
 5. Memoria conversacional en `bot_sessions.context` (tope 24 mensajes).
 
@@ -427,7 +427,7 @@ Server Component: `getCachedUser()` → `Promise.all(accounts.list, transactions
 
 Trade-off declarado en el doc: la dispersión entre capas y servicios externos exige disciplina en el filtrado por user_id (la seguridad no depende solo del RLS).
 
-Otros patrones presentes si pregunta "¿algún otro?": **Singleton** (todos los servicios y el browser client), **Facade** (cada service es fachada de su agregado), **function-calling/Command** (las 15 bot tools despachadas por nombre).
+Otros patrones presentes si pregunta "¿algún otro?": **Singleton** (todos los servicios y el browser client), **Facade** (cada service es fachada de su agregado), **function-calling/Command** (las 14 bot tools despachadas por nombre).
 
 ---
 
@@ -500,12 +500,13 @@ Metodología para responder EN VIVO: (1) clasificarlo (¿nuevo CU? ¿cambio de d
 - **"¿Cómo evitás que el cron duplique un gasto recurrente?"** — Reclama `last_executed_date` con un UPDATE **antes** de crear el movimiento (RN-REC-001); si el cron corre dos veces, la segunda no encuentra la regla pendiente.
 - **"Veo zustand en package.json pero no lo usás."** — Correcto: quedó de una iteración anterior; el estado de servidor vive en Server Components y el local en useState. Candidata a remover.
 - **"types/database.ts no tiene onboarding_done y la tabla sí."** — Discrepancia menor conocida: el campo se consulta con query directa en su ruta; el tipo global no lo modela aún. Se corrige agregándolo a la interfaz User.
-- **"¿No hay tests?"** — Declarado en 11.1: planificados Jest+RTL+Playwright; hoy smoke manual (`npm run test:bot`) + revisión de código. Prioridad de testeo: trigger de saldos y funciones puras.
+- **"¿No hay tests? ¿Dónde está tu CI?"** — *(Estado nuevo respecto del docx impreso.)* Sí hay: una **suite de tests unitarios con Vitest** enfocada en la lógica monetaria pura (waterfall multi-moneda, saldos, settlements de gastos compartidos) — estrategia **risk-based**, no una pirámide completa, porque es un proyecto unipersonal y el mayor riesgo está en la aritmética del dinero (ver ADR 0005). Corre con `npm test`. Además hay **CI en GitHub Actions** que ejecuta lint + typecheck + tests + build en cada push/PR, así que la integración no depende de correr los checks a mano. El smoke manual `npm run test:bot` sigue existiendo como prueba de humo del flujo de Telegram. Debilidad honesta: cobertura E2E acotada (Playwright queda como trabajo futuro).
 - **"¿Anomalías y proyecciones usan IA?"** — No: son **heurísticas algorítmicas** (ratio ≥2× vs promedio 3 meses; proyección lineal). Gemini se usa en chat/tools, OCR, transcripción de voz y redacción de resúmenes. RF11 se cumple con estadística simple — decisión defendible por costo y determinismo.
 - **"¿Los invitados de gastos compartidos no violan el RLS?"** — No tienen sesión ni política: acceden solo por la API que valida el `share_token` (capability token de 32 hex) usando service role. Patrón capability en vez de identidad.
 - **"¿Por qué Gemini y no OpenAI/Claude?"** — Costo (tier gratuito generoso), multimodal nativo (OCR + audio en el mismo cliente), function-calling maduro, y opción de que cada usuario traiga su propia API key (`users.gemini_api_key`) para escalar costo a cero.
 - **"¿Qué es exactamente amount_in_account_currency?"** — El monto ya convertido a la moneda de la cuenta al TC del momento (RN-MOV-002). Es lo único que consume el trigger; `amount`+`currency` guardan el valor original para auditoría/export.
 - **"¿Qué pasa si el usuario paga y MP tarda en avisar?"** — El estado se actualiza al llegar el webhook (idempotente, con retries de MP). Si el pago se rechaza estando activo → GRACE_PERIOD 7 días con banner; el cron subscription-grace degrada a PAST_DUE al vencer.
+- **"¿Cuál es tu estrategia de rollback de migraciones?"** — Tres capas (ver ADR 0006): (1) **migraciones versionadas** en `supabase/migrations/` (14, timestamped, con `schema.sql` como espejo del estado) — cada cambio queda en git y se revierte con una migración inversa, no editando la anterior; (2) para cambios de esquema riesgosos, **expand-contract** (agregar columna/tabla nueva y backfillear → migrar lectura/escritura → recién después eliminar lo viejo), de modo que en ningún momento el código desplegado depende de un esquema que todavía no existe o que ya se borró; (3) ante un incidente de datos, **PITR (Point-In-Time Recovery) de Supabase** para restaurar a un instante previo. El drift entre `schema.sql` y la BD se detecta en CI. *(La deuda conocida: hoy las migraciones se aplicaron manualmente y la BD no tiene historial CLI; el plan de baseline con `supabase db pull` + historial versionado está en ADR 0006.)*
 - **"El mapa de navegación dice que Inversiones/Análisis/Presupuestos son Premium, pero puedo entrar sin pagar."** — El plan comercial (10.5.1 y 6.5) define esos módulos como premium; el **enforcement** hoy está implementado en los de mayor costo variable (asistente IA y bot, vía `hasOrchestratorAccess`/`ensureOrchestratorAccess`). El gating del resto se activa al lanzar la monetización — es un toggle por módulo sobre el mismo `subscriptionsService`, no un cambio de arquitectura. Ídem límite de 2 cuentas del plan Free: definido comercialmente, enforcement pendiente.
 
 ---
@@ -522,8 +523,8 @@ Metodología para responder EN VIVO: (1) clasificarlo (¿nuevo CU? ¿cambio de d
 | Reglas de negocio | 8 (RN-MOV/CTA/REC/COT/SEG) |
 | Casos de prueba | 11 (CP-xxx) |
 | Figuras del TIF | 13 |
-| Bot tools (function-calling) | 15 |
-| Comandos del bot | /start /cuentas /cotizaciones /resumen /help /reset /resumenes |
+| Bot tools (function-calling) | 14 |
+| Comandos del bot | 8: /start /cuentas /cotizaciones /resumen /resumenes /notificaciones /reset /help |
 | TTL caché cotizaciones | 300 s |
 | Memoria del bot | 24 mensajes (~12 intercambios) |
 | Gracia de suscripción | 7 días |

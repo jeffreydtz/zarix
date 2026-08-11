@@ -11,6 +11,9 @@ Zarix es una app de finanzas personales para uso individual, enfocada en Argenti
 - [Stack tecnologico](#stack-tecnologico)
 - [Arquitectura y flujo](#arquitectura-y-flujo)
 - [Instalacion local](#instalacion-local)
+- [Variables de entorno](#variables-de-entorno)
+- [Testing](#testing)
+- [CI](#ci)
 - [Buenas practicas de seguridad](#buenas-practicas-de-seguridad)
 - [FAQ](#faq)
 
@@ -143,6 +146,52 @@ npm run db:push          # aplica cambios de DB en Supabase
 npm run db:reset         # resetea DB local/sandbox
 npm run telegram:webhook # configura webhook de Telegram
 ```
+
+## Variables de entorno
+
+Todas las variables estan documentadas en [`.env.example`](./.env.example) (con
+placeholders, sin valores reales). Copia ese archivo a `.env.local` y completa
+los valores. Grupos:
+
+- **Supabase** (requeridas): `NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY` (ambas expuestas al cliente, el acceso lo
+  limita RLS) y `SUPABASE_SERVICE_ROLE_KEY` (solo server, secreta).
+- **Telegram** (requeridas para el bot): `TELEGRAM_BOT_TOKEN`,
+  `TELEGRAM_WEBHOOK_SECRET`.
+- **Google Gemini** (opcional, con BYO-key por usuario): `GEMINI_API_KEY`
+  (fallback del server), `GEMINI_MODEL_FULL`, `GEMINI_MODEL_LITE`.
+- **Mercado Pago / billing** (requeridas para cobrar): `MP_ACCESS_TOKEN`,
+  `MP_WEBHOOK_SECRET` y los `MP_SUBSCRIPTION_*` / `MP_API_BASE_URL` (opcionales,
+  con defaults).
+- **Datos de mercado** (opcionales, tienen default): `DOLARAPI_URL`,
+  `CRIPTOYA_API_URL`, `COINGECKO_API_URL`, `EXCHANGE_RATE_CACHE_TTL`. Yahoo
+  Finance y Stooq no necesitan key.
+- **App / ops**: `CRON_SECRET` (requerida en prod: sin ella los `/api/cron/*`
+  quedan cerrados), `DEV_LOGIN_SECRET` + `ALLOW_DEV_LOGIN` (login de desarrollo),
+  `NEXT_PUBLIC_APP_URL`, `COMPARE_USER_ID`.
+
+> Las variables `NEXT_PUBLIC_*` se exponen en el bundle del navegador: nunca
+> pongas secretos ahi.
+
+## Testing
+
+Los tests corren con **Vitest**:
+
+```bash
+npm test
+```
+
+La suite sigue una estrategia **basada en riesgo** (ver `docs/adr/0005-...`):
+se prioriza la logica monetaria pura (calculo de saldos, waterfall multi-moneda,
+settlements de gastos compartidos) por sobre una piramide de tests completa,
+razonable para un proyecto unipersonal. `npm run test:bot` sigue disponible como
+smoke test manual del flujo de Telegram.
+
+## CI
+
+Hay integracion continua con **GitHub Actions**: en cada push y pull request se
+ejecuta lint + typecheck + tests + build. Un PR no se mergea con esos checks en
+rojo.
 
 ## Buenas practicas de seguridad
 

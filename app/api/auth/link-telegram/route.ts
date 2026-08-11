@@ -1,51 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const body = await req.json();
-    const { telegramChatId } = body;
-
-    if (!telegramChatId || typeof telegramChatId !== 'number') {
-      return NextResponse.json(
-        { error: 'telegramChatId required (number)' },
-        { status: 400 }
-      );
-    }
-    
-    const { error } = await supabase.rpc('link_telegram_to_user', {
-      p_user_id: user.id,
-      p_telegram_chat_id: telegramChatId,
-    });
-
-    if (error) {
-      const msg = (error as { message?: string }).message || '';
-      const code = (error as { code?: string }).code || '';
-      // Chat ya vinculado a otra cuenta: unique violation → mensaje claro, no 500.
-      if (code === '23505' || /duplicate|unique|already|exist|vincul/i.test(msg)) {
-        return NextResponse.json(
-          { error: 'Ese chat de Telegram ya está vinculado a otra cuenta.' },
-          { status: 409 }
-        );
-      }
-      throw error;
-    }
-
-    return NextResponse.json({ ok: true });
-  } catch (error) {
-    console.error('Link Telegram error:', error);
-    return NextResponse.json(
-      { error: 'Internal error' },
-      { status: 500 }
-    );
-  }
+// DEPRECADO (2026-08-11). El flujo viejo vinculaba un telegram_chat_id enviado
+// por el body, usando el chat_id como su propia "prueba" — sin prueba de
+// posesión, permitía vincular el chat de una víctima (griefing / desvío de
+// mensajes). Reemplazado por el flujo con código de un solo uso:
+//   1) POST /api/auth/telegram-link-code  → genera el código
+//   2) el usuario lo envía al bot          → lib/telegram/bot.ts redeemLinkCode
+export async function POST() {
+  return NextResponse.json(
+    {
+      error:
+        'Este método de vinculación fue reemplazado. Generá un código en Configuración → Telegram y envialo al bot.',
+    },
+    { status: 410 }
+  );
 }

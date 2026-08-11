@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { budgetsService } from '@/lib/services/budgets';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest) {
   try {
@@ -21,10 +22,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(budgets);
   } catch (error: any) {
     console.error('Budgets GET error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al obtener los presupuestos' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -90,9 +88,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(budget, { status: 201 });
   } catch (error: any) {
     console.error('Budgets POST error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al crear el presupuesto' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

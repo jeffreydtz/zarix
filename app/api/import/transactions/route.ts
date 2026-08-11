@@ -8,6 +8,7 @@ import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
 import type { ImportSkippedDetail } from '@/types/import';
+import { errorResponse } from '@/lib/api-handler';
 
 const MAX_SKIPPED_DETAILS = 250;
 /** Límite de tamaño de archivo de import (mitiga DoS y reduce superficie de bugs en parsers). */
@@ -1484,8 +1485,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Import error:', error);
-    return NextResponse.json({
-      error: error instanceof Error ? error.message : 'Import failed',
-    }, { status: 500 });
+    return errorResponse(error);
   }
 }

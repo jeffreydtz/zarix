@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(
   req: NextRequest,
@@ -24,7 +25,7 @@ export async function GET(
   } catch (error: any) {
     console.error('Account GET error:', error);
     return NextResponse.json(
-      { error: error.message || 'Cuenta no encontrada' },
+      { error: 'Cuenta no encontrada' },
       { status: 404 }
     );
   }
@@ -51,10 +52,7 @@ export async function PATCH(
     return NextResponse.json(account);
   } catch (error: any) {
     console.error('Account PATCH error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al actualizar la cuenta' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -78,9 +76,6 @@ export async function DELETE(
     return new NextResponse(null, { status: 204 });
   } catch (error: any) {
     console.error('Account DELETE error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al eliminar la cuenta' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

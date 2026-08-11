@@ -6,6 +6,7 @@ import {
   getNextWeeklySendUtc,
   formatSendInUserTimezone,
 } from '@/lib/notification-schedule';
+import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -81,7 +82,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.from('users').update(updates).eq('id', user.id);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return errorResponse(error);
     }
 
     const { data: row } = await supabase

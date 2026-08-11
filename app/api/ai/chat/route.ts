@@ -12,6 +12,8 @@ import type {
   InternalAiChatRequest,
   InternalAiChatSuccessResponse,
 } from '@/types/internal-ai-chat';
+import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
+import type { User } from '@/types/database';
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,7 +41,7 @@ export async function POST(req: NextRequest) {
     }
 
     const [userProfile, accountsResult, userCategories, systemCategories, monthSummary] = await Promise.all([
-      supabase.from('users').select('*').eq('id', user.id).single(),
+      supabase.from('users').select(USER_CLIENT_SAFE_COLUMNS).eq('id', user.id).single(),
       supabase
         .from('accounts')
         .select('*')
@@ -74,7 +76,7 @@ export async function POST(req: NextRequest) {
     const categories = [...(userCategories.data ?? []), ...(systemCategories.data ?? [])];
 
     const financialContext = {
-      user: userProfile.data,
+      user: userProfile.data as unknown as User,
       accounts: accountsResult.data ?? [],
       categories,
       monthSummary,

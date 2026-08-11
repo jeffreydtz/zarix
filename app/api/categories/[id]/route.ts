@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { categoriesService } from '@/lib/services/categories';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(
   req: NextRequest,
@@ -21,7 +22,7 @@ export async function GET(
   } catch (error: any) {
     console.error('Category GET error:', error);
     return NextResponse.json(
-      { error: error.message || 'Categoría no encontrada' },
+      { error: 'Categoría no encontrada' },
       { status: 404 }
     );
   }
@@ -84,10 +85,7 @@ export async function PATCH(
     return NextResponse.json(category);
   } catch (error: any) {
     console.error('Category PATCH error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al actualizar la categoría' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -111,9 +109,6 @@ export async function DELETE(
     return new NextResponse(null, { status: 204 });
   } catch (error: any) {
     console.error('Category DELETE error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al eliminar la categoría' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
