@@ -2,6 +2,14 @@
 -- ZARIX - SCHEMA SUPABASE
 -- Aplicación financiera personal para mercado argentino
 -- Optimizado para tier gratuito (500MB DB, suficiente para años)
+--
+-- NOTA (2026-08-11): la fuente de verdad son los archivos de supabase/migrations/
+-- aplicados en orden. Este schema.sql es un espejo de referencia. Cambios
+-- recientes NO reflejados aquí en su totalidad viven en:
+--   20260811120000_security_hardening.sql  (exchange_rates policy, revokes, link code)
+--   20260811130000_data_integrity.sql       (guard trigger, ajuste atómico, cuotas,
+--                                             currency checks, get_budget_status)
+-- Ver docs/adr/0006-migraciones-supabase-baseline.md para el proceso de baseline.
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 -- Extensions
@@ -37,6 +45,10 @@ CREATE TABLE users (
   weekly_summary_enabled BOOLEAN DEFAULT TRUE,
   monthly_summary_enabled BOOLEAN DEFAULT TRUE,
   onboarding_done BOOLEAN NOT NULL DEFAULT FALSE,
+  -- Vinculación de Telegram con prueba de posesión (código de un solo uso).
+  -- Ver migración 20260811120000_security_hardening.sql.
+  telegram_link_code TEXT,
+  telegram_link_code_expires_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -639,10 +651,11 @@ CREATE POLICY investments_all ON investments FOR ALL USING (auth.uid() = user_id
 -- Bot sessions: solo las propias
 CREATE POLICY bot_sessions_all ON bot_sessions FOR ALL USING (auth.uid() = user_id);
 
--- Exchange rates: lectura pública (no hay datos sensibles)
+-- Exchange rates: lectura para authenticated; escritura SOLO service_role
+-- (fix rate poisoning — antes el INSERT estaba abierto a anon/authenticated).
 ALTER TABLE exchange_rates ENABLE ROW LEVEL SECURITY;
 CREATE POLICY exchange_rates_select ON exchange_rates FOR SELECT TO authenticated USING (true);
-CREATE POLICY exchange_rates_insert ON exchange_rates FOR INSERT WITH CHECK (true);
+CREATE POLICY exchange_rates_insert ON exchange_rates FOR INSERT TO service_role WITH CHECK (true);
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- SEED DATA — Categorías del sistema (argentinas)

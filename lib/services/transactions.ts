@@ -138,6 +138,11 @@ class TransactionsService {
   async create(input: CreateTransactionInput): Promise<Transaction> {
     const supabase = createServiceClientSync();
 
+    // Normalizamos la moneda a mayúsculas antes de cualquier insert: el CHECK
+    // `currency = upper(currency)` (migración data_integrity) lo exige, y evita
+    // los mismatches por comparación de strings aguas abajo.
+    input = { ...input, currency: (input.currency || 'ARS').trim().toUpperCase() };
+
     const account = await supabase
       .from('accounts')
       .select('*')
@@ -518,56 +523,26 @@ class TransactionsService {
     accountId: string,
     targetBalance: number
   ): Promise<void> {
-    const supabase = createServiceClientSync();
-
-    const { data: account, error: accErr } = await supabase
-      .from('accounts')
-      .select('*')
-      .eq('id', accountId)
-      .eq('user_id', userId)
-      .single();
-
-    if (accErr || !account) {
-      throw new Error('Cuenta no encontrada');
-    }
-
-    let current = Number(account.balance);
-    if (
-      account.type === 'credit_card' &&
-      Boolean(account.is_multicurrency) &&
-      Boolean(account.secondary_currency)
-    ) {
-      const { data: rows, error: rpcErr } = await supabase.rpc('get_multicurrency_balances', {
-        p_user_id: userId,
-        p_account_ids: [accountId],
-      });
-      if (rpcErr) throw rpcErr;
-      const row = (rows || [])[0] as { primary_balance?: number | string | null } | undefined;
-      current = Number(row?.primary_balance ?? 0);
-    }
-
     const target = Number(targetBalance);
     if (!Number.isFinite(target)) {
       throw new Error('Saldo inválido');
     }
 
-    const delta = target - current;
-    if (Math.abs(delta) < 1e-8) {
-      return;
-    }
-
-    const { error: insErr } = await supabase.from('transactions').insert({
-      user_id: userId,
-      type: 'adjustment',
-      account_id: accountId,
-      amount: Math.abs(delta),
-      currency: account.currency,
-      amount_in_account_currency: delta,
-      description: 'Ajuste de saldo (edición de cuenta)',
-      transaction_date: new Date().toISOString(),
+    const supabase = createServiceClientSync();
+    // Atómico con FOR UPDATE dentro del RPC: evita la carrera read-then-write
+    // (dos ajustes concurrentes leían el mismo saldo y lo duplicaban).
+    const { error } = await supabase.rpc('create_balance_adjustment', {
+      p_user_id: userId,
+      p_account_id: accountId,
+      p_target_balance: target,
     });
 
-    if (insErr) throw insErr;
+    if (error) {
+      if ((error as { message?: string }).message?.includes('Cuenta no encontrada')) {
+        throw new Error('Cuenta no encontrada');
+      }
+      throw error;
+    }
   }
 
   async getMonthSummary(userId: string, month: Date) {

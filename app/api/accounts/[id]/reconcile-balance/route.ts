@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
+import { errorResponse } from '@/lib/api-handler';
 
 /**
  * Recalcula el saldo de la cuenta desde el libro de movimientos (misma lógica que el trigger).
@@ -27,8 +28,7 @@ export async function POST(
       after: result.after,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Error al recalcular saldo';
     console.error('reconcile-balance:', error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

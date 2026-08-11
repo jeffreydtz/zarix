@@ -23,7 +23,7 @@ export async function GET() {
       supabase.from('categories').select('*').or(`user_id.eq.${user.id},is_system.eq.true`),
       supabase.from('budgets').select('*').eq('user_id', user.id),
       supabase.from('investments').select('*').eq('user_id', user.id),
-      supabase.from('users').select('*').eq('id', user.id).single(),
+      supabase.from('users').select('default_currency, timezone').eq('id', user.id).single(),
     ]);
 
     const backup = {

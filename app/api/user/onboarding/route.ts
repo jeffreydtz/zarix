@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
       .eq('id', user.id);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return errorResponse(error);
     }
 
     return NextResponse.json({ ok: true, done });

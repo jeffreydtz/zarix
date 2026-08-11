@@ -107,6 +107,9 @@ export interface User {
   daily_summary_enabled: boolean;
   weekly_summary_enabled: boolean;
   monthly_summary_enabled: boolean;
+  onboarding_done: boolean;
+  telegram_link_code: string | null;
+  telegram_link_code_expires_at: string | null;
   created_at: string;
   updated_at: string;
 }

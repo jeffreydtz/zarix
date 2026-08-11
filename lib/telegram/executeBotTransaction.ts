@@ -220,25 +220,10 @@ export async function executeBotTransaction(
     };
   } catch (txError: unknown) {
     console.error('Transaction error:', txError);
-    const err = txError as { code?: string; message?: string };
-
-    if (err.code === '23514' && err.message?.includes('positive_balance')) {
-      const account = financialContext.accounts.find((a) => a.id === accountId);
-      const currentBalance = account?.balance || 0;
-
-      return {
-        kind: 'abort',
-        reply:
-          `No pude registrar el gasto porque tu cuenta "${accountName}" quedaría en negativo.\n\n` +
-          `Saldo actual: $${currentBalance.toLocaleString('es-AR')}\n` +
-          `Gasto: $${txData.amount.toLocaleString('es-AR')}\n\n` +
-          `Opciones:\n` +
-          `• Usá otra cuenta con más saldo\n` +
-          `• Agregá fondos a esta cuenta primero\n` +
-          `• Usá una tarjeta de crédito para este gasto`,
-      };
-    }
-
+    // Nota: no bloqueamos saldos negativos — las cuentas de deuda / tarjetas de
+    // crédito quedan en negativo por diseño. (Antes había un handler para un
+    // constraint `positive_balance` que no existe en el schema: código muerto,
+    // removido 2026-08-11.)
     return {
       kind: 'abort',
       reply: 'Hubo un error al registrar la transacción. ¿Podés intentar de nuevo?',

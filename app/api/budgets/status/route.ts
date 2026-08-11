@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { budgetsService } from '@/lib/services/budgets';
+import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +24,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(status);
   } catch (error: any) {
     console.error('Budget status error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al calcular el estado de los presupuestos' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

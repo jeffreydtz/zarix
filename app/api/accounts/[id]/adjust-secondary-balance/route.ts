@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function POST(
   req: NextRequest,
@@ -25,8 +26,7 @@ export async function POST(
     await accountsService.createSecondaryBalanceAdjustment(user.id, params.id, Number(target));
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Error al ajustar saldo secundario';
     console.error('adjust-secondary-balance error:', error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

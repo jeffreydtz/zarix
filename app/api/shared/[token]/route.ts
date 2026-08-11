@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sharedExpensesService, isValidShareToken } from '@/lib/services/sharedExpenses';
+import { errorResponse } from '@/lib/api-handler';
 
 // Acceso público por token (link compartible). El token de 32 hex chars
 // actúa como capability: sin token válido no hay datos.
@@ -72,9 +73,6 @@ export async function POST(
     return NextResponse.json(member, { status: 201 });
   } catch (error: any) {
     console.error('Shared group join POST error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al unirse al grupo' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import type { InvestmentType } from '@/types/database';
 import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
 import { catalogLookup, searchCatalog, type CatalogEntry } from '@/lib/market-data/argentine-catalog';
+import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -196,7 +197,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ results });
   } catch (error: unknown) {
     console.error('ticker-search error:', error);
-    const message = error instanceof Error ? error.message : 'Error en búsqueda';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { PatchInvestmentInput } from '@/lib/services/investments';
 import { investmentsService } from '@/lib/services/investments';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function PATCH(
   req: NextRequest,
@@ -86,8 +87,7 @@ export async function PATCH(
     return NextResponse.json(investment);
   } catch (error: unknown) {
     console.error('investments PATCH error:', error);
-    const message = error instanceof Error ? error.message : 'Error al actualizar';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }
 
@@ -109,7 +109,6 @@ export async function DELETE(
     return NextResponse.json({ ok: true });
   } catch (error: unknown) {
     console.error('investments DELETE error:', error);
-    const message = error instanceof Error ? error.message : 'Error al archivar';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

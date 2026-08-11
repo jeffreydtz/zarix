@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { verifyCronBearer } from '@/lib/cron-auth';
+import { alertAdmin } from '@/lib/observability/alert';
 
 export type ServiceClient = ReturnType<typeof createServiceClientSync>;
 
@@ -30,9 +31,20 @@ export abstract class CronJob {
 
     try {
       const payload = await this.execute(supabase);
+      // Alerta cuando un job iterativo terminó con ítems fallidos (no lanza,
+      // pero no debe pasar inadvertido — p. ej. actualización de precios).
+      const errorCount = Number((payload as { errors?: number }).errors ?? 0);
+      if (errorCount > 0) {
+        await alertAdmin(
+          `Cron "${this.name}" terminó con ${errorCount} ítem(es) fallido(s).`
+        );
+      }
       return NextResponse.json({ success: true, job: this.name, ...payload });
     } catch (e) {
       console.error(`[cron:${this.name}] error:`, e);
+      await alertAdmin(
+        `Cron "${this.name}" FALLÓ: ${e instanceof Error ? e.message : String(e)}`
+      );
       return NextResponse.json({ error: 'Internal error' }, { status: 500 });
     }
   }

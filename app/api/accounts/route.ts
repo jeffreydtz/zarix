@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest) {
   try {
@@ -20,10 +21,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(accounts);
   } catch (error: any) {
     console.error('Accounts GET error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al obtener las cuentas' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -64,9 +62,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(account, { status: 201 });
   } catch (error: any) {
     console.error('Accounts POST error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al crear la cuenta' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

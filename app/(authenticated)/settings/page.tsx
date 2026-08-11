@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
 import BugReportWidget from '@/components/BugReportWidget';
 import SettingsForm from '@/components/settings/SettingsForm';
+import type { User } from '@/types/database';
 import PasskeysSection from '@/components/settings/PasskeysSection';
 import ExportImport from '@/components/settings/ExportImport';
 import LogoutButton from '@/components/settings/LogoutButton';
@@ -17,9 +19,22 @@ export default async function SettingsPage() {
     redirect('/login');
   }
 
-  const { data: user } = await supabase
+  const { data: userRow } = await supabase
     .from('users')
-    .select('*')
+    .select(USER_CLIENT_SAFE_COLUMNS)
+    .eq('id', authUser.id)
+    .single();
+  // El select con proyección segura devuelve un subconjunto de columnas; el
+  // cliente nunca lee los secretos (revocados a nivel columna).
+  const user = userRow as unknown as User | null;
+
+  // Los secretos (gemini_api_key, telegram_bot_token) están revocados para el rol
+  // authenticated. Solo necesitamos saber si están configurados, no su valor:
+  // lo resolvemos server-side con el service client.
+  const serviceClient = await createServiceClient();
+  const { data: secretsState } = await serviceClient
+    .from('users')
+    .select('gemini_api_key, telegram_bot_token')
     .eq('id', authUser.id)
     .single();
 
@@ -38,8 +53,8 @@ export default async function SettingsPage() {
         {user && (
           <SettingsForm
             user={user}
-            geminiConfigured={!!user.gemini_api_key}
-            telegramCustomMode={!!user.telegram_bot_token}
+            geminiConfigured={!!secretsState?.gemini_api_key}
+            telegramCustomMode={!!secretsState?.telegram_bot_token}
             webhookSecret={user.telegram_webhook_secret}
             appBaseUrl={appBaseUrl}
           />

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function PUT(
   req: NextRequest,
@@ -33,7 +34,7 @@ export async function PUT(
     return NextResponse.json(data);
   } catch (error: any) {
     console.error('Recurring PUT error:', error);
-    return NextResponse.json({ error: error.message || 'Error al actualizar la regla recurrente' }, { status: 500 });
+    return errorResponse(error);
   }
 }
 
@@ -56,6 +57,6 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Recurring DELETE error:', error);
-    return NextResponse.json({ error: error.message || 'Error al eliminar la regla recurrente' }, { status: 500 });
+    return errorResponse(error);
   }
 }

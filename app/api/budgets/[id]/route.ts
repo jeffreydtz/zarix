@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { budgetsService } from '@/lib/services/budgets';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function PUT(
   req: NextRequest,
@@ -28,7 +29,7 @@ export async function PUT(
     return NextResponse.json(budget);
   } catch (error: any) {
     console.error('Budget PUT error:', error);
-    return NextResponse.json({ error: error.message || 'Error al actualizar el presupuesto' }, { status: 500 });
+    return errorResponse(error);
   }
 }
 
@@ -50,6 +51,6 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Budget DELETE error:', error);
-    return NextResponse.json({ error: error.message || 'Error al eliminar el presupuesto' }, { status: 500 });
+    return errorResponse(error);
   }
 }

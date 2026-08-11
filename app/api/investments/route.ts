@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { investmentsService } from '@/lib/services/investments';
+import { errorResponse } from '@/lib/api-handler';
 import type { InvestmentType } from '@/types/database';
 
 const INVESTMENT_TYPES: ReadonlySet<InvestmentType> = new Set<InvestmentType>([
@@ -17,10 +18,6 @@ const INVESTMENT_TYPES: ReadonlySet<InvestmentType> = new Set<InvestmentType>([
   'other',
 ]);
 
-function errorMessage(error: unknown, fallback: string): string {
-  return error instanceof Error ? error.message : fallback;
-}
-
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -36,10 +33,7 @@ export async function GET() {
     return NextResponse.json(investments);
   } catch (error: unknown) {
     console.error('Investments GET error:', error);
-    return NextResponse.json(
-      { error: errorMessage(error, 'Error al obtener las inversiones') },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -129,9 +123,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(investment, { status: 201 });
   } catch (error: unknown) {
     console.error('Investments POST error:', error);
-    return NextResponse.json(
-      { error: errorMessage(error, 'Error al registrar la inversión') },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

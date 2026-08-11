@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { sharedExpensesService } from '@/lib/services/sharedExpenses';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET() {
   try {
@@ -18,10 +19,7 @@ export async function GET() {
     return NextResponse.json(groups);
   } catch (error: any) {
     console.error('Shared groups GET error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al obtener los grupos compartidos' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -73,9 +71,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(group, { status: 201 });
   } catch (error: any) {
     console.error('Shared groups POST error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al crear el grupo compartido' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

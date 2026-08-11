@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sharedExpensesService, isValidShareToken } from '@/lib/services/sharedExpenses';
+import { errorResponse } from '@/lib/api-handler';
 
 // Agregar un gasto al grupo (público, validado por token).
 export async function POST(
@@ -55,9 +56,6 @@ export async function POST(
     return NextResponse.json(expense, { status: 201 });
   } catch (error: any) {
     console.error('Shared expense POST error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al agregar el gasto' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

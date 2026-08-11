@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService } from '@/lib/services/transactions';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest) {
   try {
@@ -39,10 +40,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(transactions);
   } catch (error: any) {
     console.error('Transactions GET error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al obtener los movimientos' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -118,10 +116,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(transaction, { status: 201 });
   } catch (error: any) {
     console.error('Transactions POST error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al crear el movimiento' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -161,9 +156,6 @@ export async function DELETE(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('Transactions DELETE ALL error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Error al eliminar todos los movimientos' },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

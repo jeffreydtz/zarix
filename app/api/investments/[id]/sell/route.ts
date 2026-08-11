@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { investmentsService } from '@/lib/services/investments';
+import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,7 +90,6 @@ export async function GET(
     return NextResponse.json({ sales });
   } catch (error: unknown) {
     console.error('investments sales list error:', error);
-    const message = error instanceof Error ? error.message : 'Error al cargar ventas';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

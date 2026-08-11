@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
+import { errorResponse } from '@/lib/api-handler';
 
 export async function POST(
   _req: NextRequest,
@@ -33,8 +34,7 @@ export async function POST(
       after: result.after,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Error al corregir el saldo';
     console.error('correct-debt-sign error:', error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return errorResponse(error);
   }
 }

@@ -29,6 +29,11 @@ interface BotContext extends Context {
   userId?: string;
 }
 
+// Estado por-update inyectado por el guard de bots propios (ver más abajo).
+interface CustomBotState {
+  forcedUserId?: string;
+}
+
 const GEMINI_SETUP_MSG =
   'No tenés configurada tu API Key de Google Gemini. Entrá a la app web → Configuración → Google Gemini y seguí el instructivo.';
 
@@ -54,6 +59,70 @@ async function getUserFromTelegramId(telegramChatId: number) {
   if (error || !user) return null;
   return user;
 }
+
+async function getUserById(userId: string) {
+  const supabase = createServiceClientSync();
+  const { data: user, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', userId)
+    .single();
+  if (error || !user) return null;
+  return user;
+}
+
+// Resuelve el usuario que actúa en este update.
+//
+// SEGURIDAD (fix cross-tenant): en un bot PROPIO (custom) el dueño está fijado
+// por el secret del webhook, no por el `chat.id` del payload (que es controlable
+// por el atacante). Si el guard fijó `forcedUserId`, actuamos SIEMPRE como ese
+// dueño. En el bot compartido no hay dueño fijo: se resuelve por chat.id (cada
+// usuario habla con el mismo bot), que ya está vinculado con prueba de posesión.
+async function resolveActingUser(ctx: BotContext) {
+  const forcedId = (ctx.state as CustomBotState | undefined)?.forcedUserId;
+  if (forcedId) return getUserById(forcedId);
+  const chatId = ctx.chat?.id;
+  if (chatId == null) return null;
+  return getUserFromTelegramId(chatId);
+}
+
+// Canje del código de vinculación de un solo uso (prueba de posesión del chat:
+// quien envía el código controla este chat_id porque Telegram lo entregó).
+async function redeemLinkCode(
+  code: string,
+  telegramChatId: number,
+  username?: string
+): Promise<'ok' | 'invalid' | 'taken'> {
+  const supabase = createServiceClientSync();
+  const normalized = code.toUpperCase().trim();
+  const { data: match } = await supabase
+    .from('users')
+    .select('id')
+    .eq('telegram_link_code', normalized)
+    .gt('telegram_link_code_expires_at', new Date().toISOString())
+    .maybeSingle();
+
+  if (!match) return 'invalid';
+
+  const { error } = await supabase
+    .from('users')
+    .update({
+      telegram_chat_id: telegramChatId,
+      telegram_username: username || null,
+      telegram_link_code: null,
+      telegram_link_code_expires_at: null,
+    })
+    .eq('id', match.id);
+
+  if (error) {
+    // UNIQUE(telegram_chat_id): el chat ya está vinculado a otra cuenta.
+    if ((error as { code?: string }).code === '23505') return 'taken';
+    throw error;
+  }
+  return 'ok';
+}
+
+const LINK_CODE_RE = /^[A-F0-9]{8}$/;
 
 async function linkUserToTelegram(userId: string, telegramChatId: number, username?: string) {
   const supabase = createServiceClientSync();
@@ -116,10 +185,7 @@ function toInternalHistoryItems(history: Array<{ role?: string; parts?: Array<{ 
 
 function registerBotHandlers(bot: Telegraf) {
   bot.command('start', async (ctx) => {
-  const telegramChatId = ctx.chat.id;
-  const username = ctx.from?.username;
-
-  const existingUser = await getUserFromTelegramId(telegramChatId);
+  const existingUser = await resolveActingUser(ctx);
 
   if (existingUser) {
     return ctx.reply(
@@ -134,14 +200,16 @@ function registerBotHandlers(bot: Telegraf) {
 
   return ctx.reply(
     `¡Hola! Soy el asistente de Zarix.\n\n` +
-      `Para vincular tu cuenta, entrá a la app web → Configuración → Telegram y pegá este código:\n\n` +
-      `\`${telegramChatId}\`\n\n` +
-      `Cuando lo vincules, volvé acá y mandame /start.`
+      `Para vincular tu cuenta de forma segura:\n` +
+      `1️⃣ Entrá a la app web → Configuración → Telegram → *Generar código*.\n` +
+      `2️⃣ Pegá acá el código (8 caracteres, vale 10 minutos).\n\n` +
+      `Cuando lo mandes, quedás vinculado al toque.`,
+    { parse_mode: 'Markdown' }
   );
 });
 
 bot.command('cuentas', async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
+  const user = await resolveActingUser(ctx);
   if (!user) {
     return ctx.reply('No estás vinculado. Usá /start primero.');
   }
@@ -195,7 +263,7 @@ bot.command('cotizaciones', async (ctx) => {
 });
 
 bot.command('resumen', async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
+  const user = await resolveActingUser(ctx);
   if (!user) {
     return ctx.reply('No estás vinculado. Usá /start primero.');
   }
@@ -257,7 +325,7 @@ Solo me ocupo de tus finanzas en Zarix. 🚀`;
 });
 
 bot.command('reset', async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
+  const user = await resolveActingUser(ctx);
   if (!user) {
     return ctx.reply('No estás vinculado. Usá /start primero.');
   }
@@ -266,7 +334,7 @@ bot.command('reset', async (ctx) => {
 });
 
 bot.command('resumenes', async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
+  const user = await resolveActingUser(ctx);
   if (!user) {
     return ctx.reply('No estás vinculado. Usá /start y vinculá tu chat desde la app.');
   }
@@ -283,7 +351,7 @@ bot.command('resumenes', async (ctx) => {
 });
 
 bot.command('notificaciones', async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
+  const user = await resolveActingUser(ctx);
   if (!user) {
     return ctx.reply('No estás vinculado. Usá /start y vinculá tu chat desde la app.');
   }
@@ -306,7 +374,7 @@ bot.action(/^sum:(weekly|monthly)$/, async (ctx) => {
     return;
   }
 
-  const user = await getUserFromTelegramId(chatId);
+  const user = await resolveActingUser(ctx);
   if (!user) {
     await ctx.answerCbQuery('No vinculado');
     return;
@@ -334,7 +402,7 @@ bot.action(/^sum:(weekly|monthly)$/, async (ctx) => {
 
   await ctx.answerCbQuery(nextVal ? 'Activado' : 'Desactivado');
 
-  const fresh = await getUserFromTelegramId(chatId);
+  const fresh = await resolveActingUser(ctx);
   if (!fresh) return;
 
   const weekly = coerceSummaryBool(fresh.weekly_summary_enabled, true);
@@ -367,7 +435,7 @@ bot.action(/^sum:(weekly|monthly)$/, async (ctx) => {
 });
 
 bot.on(message('photo'), async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
+  const user = await resolveActingUser(ctx);
   if (!user) {
     return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
   }
@@ -506,7 +574,7 @@ Si no es un ticket/factura o no podés extraer información:
 });
 
 bot.on(message('voice'), async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
+  const user = await resolveActingUser(ctx);
   if (!user) {
     return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
   }
@@ -596,10 +664,32 @@ bot.on(message('voice'), async (ctx) => {
 });
 
 bot.on(message('text'), async (ctx) => {
-  const user = await getUserFromTelegramId(ctx.chat.id);
+  const user = await resolveActingUser(ctx);
   if (!user) {
+    // Usuario no vinculado en el bot compartido: intentamos canjear un código
+    // de vinculación (prueba de posesión del chat). Acepta "/vincular ABCD1234"
+    // o el código pelado.
+    const candidate = ctx.message.text
+      .trim()
+      .replace(/^\/vincular\s+/i, '')
+      .trim()
+      .toUpperCase();
+    if (LINK_CODE_RE.test(candidate)) {
+      const result = await redeemLinkCode(candidate, ctx.chat.id, ctx.from?.username);
+      if (result === 'ok') {
+        return ctx.reply(
+          '✅ ¡Listo! Tu cuenta quedó vinculada. Escribime "gasté 500 en el súper" para empezar.'
+        );
+      }
+      if (result === 'taken') {
+        return ctx.reply('Ese chat de Telegram ya está vinculado a otra cuenta.');
+      }
+      return ctx.reply(
+        'Código inválido o vencido. Generá uno nuevo en la app → Configuración → Telegram.'
+      );
+    }
     return ctx.reply(
-      'No estás vinculado todavía. Usá /start para vincular tu cuenta.'
+      'No estás vinculado todavía. Entrá a la app → Configuración → Telegram, generá un código y pegámelo acá.'
     );
   }
   if (!subscriptionsService.hasOrchestratorAccess(user.status)) {
@@ -684,9 +774,38 @@ const sharedBot = sharedToken
 
 const customBots = new Map<string, Telegraf>();
 
+// Contexto del dueño por token de bot propio (un token = un dueño). Se refresca
+// en cada update porque el chat vinculado del dueño puede cambiar con el tiempo.
+interface CustomBotOwner {
+  userId: string;
+  chatId: number | null;
+}
+const customBotOwners = new Map<string, CustomBotOwner>();
+
 function getBotForTelegramToken(token: string): Telegraf {
   if (!customBots.has(token)) {
     const t = new Telegraf(token);
+    // Guard de aislamiento por dueño (fix cross-tenant): un bot propio SOLO
+    // atiende a su dueño. El usuario actuante se fija por el secret del webhook
+    // (customBotOwners), nunca por el chat.id del payload.
+    t.use(async (ctx, next) => {
+      const owner = customBotOwners.get(token);
+      if (!owner) return; // sin contexto de dueño: no procesar
+      const chatId = ctx.chat?.id;
+      if (chatId == null) return;
+      // Si el dueño ya vinculó su chat, el bot ignora a cualquier otro chat.
+      if (owner.chatId != null && chatId !== owner.chatId) return;
+      (ctx.state as CustomBotState).forcedUserId = owner.userId;
+      // Primer contacto del dueño con su bot propio: vinculamos su chat (sabemos
+      // que es el dueño porque posee el secret del webhook).
+      if (owner.chatId == null) {
+        await linkUserToTelegram(owner.userId, chatId, ctx.from?.username).catch(
+          (err) => console.error('[telegram] auto-link owner failed', err)
+        );
+        owner.chatId = chatId;
+      }
+      return next();
+    });
     registerBotHandlers(t);
     customBots.set(token, t);
   }
@@ -701,7 +820,12 @@ export async function handleTelegramUpdate(update: any) {
   await sharedBot.handleUpdate(update);
 }
 
-export async function handleCustomTelegramUpdate(update: any, botToken: string) {
+export async function handleCustomTelegramUpdate(
+  update: any,
+  botToken: string,
+  owner: CustomBotOwner
+) {
+  customBotOwners.set(botToken, owner);
   const b = getBotForTelegramToken(botToken);
   await b.handleUpdate(update);
 }

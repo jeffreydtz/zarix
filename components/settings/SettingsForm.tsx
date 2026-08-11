@@ -29,7 +29,7 @@ export default function SettingsForm({
   appBaseUrl,
 }: SettingsFormProps) {
   const router = useRouter();
-  const [telegramChatId, setTelegramChatId] = useState('');
+  const [linkCode, setLinkCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -171,29 +171,24 @@ export default function SettingsForm({
       ? `${appBaseUrl}/api/telegram/webhook/u/${webhookSecret}`
       : null);
 
-  const handleLinkTelegram = async () => {
-    if (!telegramChatId) return;
-
+  const handleGenerateLinkCode = async () => {
     setLoading(true);
     setMessage('');
+    setLinkCode(null);
 
     try {
-      const response = await fetch('/api/auth/link-telegram', {
+      const response = await fetch('/api/auth/telegram-link-code', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ telegramChatId: parseInt(telegramChatId, 10) }),
       });
-
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Error al vincular Telegram');
+        throw new Error(data.error || 'No se pudo generar el código');
       }
-
-      setMessage('✅ Telegram vinculado correctamente');
-      setTimeout(() => router.refresh(), 1500);
+      setLinkCode(data.code);
+      setMessage('✅ Código generado. Enviámelo al bot en los próximos 10 minutos.');
     } catch (error: unknown) {
       const err = error as { message?: string };
-      setMessage(`❌ ${err.message || 'Error al vincular Telegram'}`);
+      setMessage(`❌ ${err.message || 'No se pudo generar el código'}`);
     } finally {
       setLoading(false);
     }
@@ -615,27 +610,27 @@ export default function SettingsForm({
         ) : (
           <div className="space-y-4">
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              Abrí el bot (el de Zarix o el tuyo si ya configuraste webhook), enviá /start y pegá el
-              número acá:
-            </div>
-
-            <div>
-              <input
-                type="text"
-                value={telegramChatId}
-                onChange={(e) => setTelegramChatId(e.target.value)}
-                placeholder="123456789"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-              />
+              Generá un código y envialo al bot (el de Zarix o el tuyo si ya configuraste
+              webhook) enviando <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">/start</code> y
+              pegándolo en el chat. El código vale 10 minutos.
             </div>
 
             <button
-              onClick={handleLinkTelegram}
-              disabled={loading || !telegramChatId}
+              onClick={handleGenerateLinkCode}
+              disabled={loading}
               className="w-full btn btn-primary disabled:opacity-50"
             >
-              {loading ? 'Vinculando...' : 'Vincular Telegram'}
+              {loading ? 'Generando...' : 'Generar código de vinculación'}
             </button>
+
+            {linkCode && (
+              <div className="text-center">
+                <div className="text-xs text-gray-500 mb-1">Tu código (enviáselo al bot):</div>
+                <div className="font-mono text-2xl font-bold tracking-widest select-all">
+                  {linkCode}
+                </div>
+              </div>
+            )}
 
             {message && (
               <div
