@@ -462,7 +462,7 @@ export default function CreateTransactionButton({
     <>
       <button
         type="button"
-        onClick={() => { if (canTransfer) { setError(''); setIsOpen(true); } }}
+        onClick={() => { if (!transferOnly || canTransfer) { setError(''); setIsOpen(true); } }}
         disabled={transferOnly && !canTransfer}
         title={transferOnly && !canTransfer ? 'Creá al menos dos cuentas para transferir' : undefined}
         className={`${openButtonClass}${transferOnly && !canTransfer ? ' opacity-50 cursor-not-allowed' : ''}`}

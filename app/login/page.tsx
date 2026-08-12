@@ -17,6 +17,9 @@ function LoginForm() {
   const [mode, setMode] = useState<'magiclink' | 'password'>('password');
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const [passkeySupported, setPasskeySupported] = useState(false);
+  // La navegación al dashboard (Promise.all pesado del server) tarda ~2s: mientras
+  // tanto mostramos un overlay de "entrando" para que no parezca colgado.
+  const [redirecting, setRedirecting] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,10 +29,14 @@ function LoginForm() {
         typeof window.PublicKeyCredential !== 'undefined'
     );
 
+    // Warm-up del dashboard para acortar la espera post-login.
+    router.prefetch('/dashboard');
+
     const supabase = createClient();
 
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
+        setRedirecting(true);
         router.push('/dashboard');
       }
     });
@@ -71,13 +78,15 @@ function LoginForm() {
         throw error;
       }
 
+      // Éxito: mantenemos el overlay hasta que el dashboard termine de renderizar
+      // (no reseteamos loading; el componente se desmonta al navegar).
+      setRedirecting(true);
       router.push('/dashboard');
     } catch (error: unknown) {
       const err = error as { message?: string };
       setMessage(
         `Error: ${translateSupabaseAuthError(err.message ?? 'Error al iniciar sesión')}`
       );
-    } finally {
       setLoading(false);
     }
   };
@@ -91,10 +100,10 @@ function LoginForm() {
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPasskey();
       if (error) throw error;
+      setRedirecting(true);
       router.push('/dashboard');
     } catch (error: unknown) {
       setMessage(`Error: ${translatePasskeyError(error)}`);
-    } finally {
       setPasskeyLoading(false);
     }
   };
@@ -155,6 +164,36 @@ function LoginForm() {
   const displayMessage = message.replace('success:', '').replace('Error: ', '');
 
   return (
+    <>
+    <AnimatePresence>
+      {redirecting && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-gradient-to-br from-primary/20 via-background to-background"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.12, 1], rotate: [0, -6, 6, 0] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+            className="text-7xl"
+          >
+            💰
+          </motion.div>
+          <div className="text-center">
+            <p className="text-lg font-semibold text-primary">Entrando a Zarix…</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Preparando tu tablero</p>
+          </div>
+          <div className="h-1 w-40 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+            <motion.div
+              className="h-full w-1/2 rounded-full bg-primary"
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
     <div className="min-h-dvh min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-primary/15 via-background to-background p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
       <motion.div 
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -361,6 +400,7 @@ function LoginForm() {
         </motion.div>
       </motion.div>
     </div>
+    </>
   );
 }
 
