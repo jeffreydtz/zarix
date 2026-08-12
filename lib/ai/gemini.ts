@@ -6,6 +6,16 @@ const GEMINI_FULL_MODEL = process.env.GEMINI_MODEL_FULL || 'gemini-2.5-flash';
 
 export type GeminiTier = 'lite' | 'full';
 
+// Gemini exige que el historial empiece con un turno `user` (y alterne).
+// Un historial que arranca con `model` (p. ej. un saludo del asistente como
+// primer mensaje) tira: "First content should be with role 'user', got model".
+// Recortamos los turnos `model` iniciales; el mensaje nuevo pasa a ser el
+// primer `user` si no quedó ninguno.
+function trimHistoryToUserStart(history: Content[]): Content[] {
+  const firstUser = history.findIndex((c) => c.role === 'user');
+  return firstUser === -1 ? [] : history.slice(firstUser);
+}
+
 export interface GeminiChatOptions {
   tier?: GeminiTier;
   history?: Content[];
@@ -76,7 +86,7 @@ export class GeminiClient {
     });
 
     const chat = model.startChat({
-      history,
+      history: trimHistoryToUserStart(history),
       generationConfig: {
         maxOutputTokens: maxTokens,
         temperature: 0.7,
@@ -123,7 +133,7 @@ export class GeminiClient {
     });
 
     const chat = model.startChat({
-      history,
+      history: trimHistoryToUserStart(history),
       generationConfig: { maxOutputTokens: maxTokens, temperature: 0.3 },
     });
 
@@ -180,7 +190,7 @@ export class GeminiClient {
     });
 
     const chat = model.startChat({
-      history,
+      history: trimHistoryToUserStart(history),
       generationConfig: {
         maxOutputTokens: maxTokens,
         temperature: 0.7,
