@@ -29,9 +29,6 @@ function LoginForm() {
         typeof window.PublicKeyCredential !== 'undefined'
     );
 
-    // Warm-up del dashboard para acortar la espera post-login.
-    router.prefetch('/dashboard');
-
     const supabase = createClient();
 
     supabase.auth.getUser().then(({ data: { user } }) => {
