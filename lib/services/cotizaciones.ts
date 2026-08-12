@@ -274,12 +274,31 @@ class CotizacionesService {
     }
   }
 
-  async getDolarQuotes(): Promise<Record<string, DolarQuote>> {
+  async getDolarQuotes(
+    opts?: { preferCache?: boolean }
+  ): Promise<Record<string, DolarQuote>> {
     const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
     const cached = this.getFromCache<Record<string, DolarQuote>>(cacheKey);
 
     if (cached) {
       return cached;
+    }
+
+    // Camino rápido (dashboard): última cotización persistida en DB en vez de
+    // esperar a las APIs externas en vivo (que en frío tardan segundos). La
+    // frescura la mantiene el cron update-prices. Si no hay cache en DB, cae al
+    // camino en vivo. El caller (dashboard) lo envuelve en un timeout duro.
+    if (opts?.preferCache) {
+      const dbProvider = this.dolarProviders.find((p) => p.name === 'db');
+      if (dbProvider) {
+        try {
+          const quotes = await dbProvider.fetch();
+          this.setCache(cacheKey, quotes);
+          return quotes;
+        } catch {
+          // sin cache previa en DB → seguimos al camino en vivo
+        }
+      }
     }
 
     // Patrón Strategy + fallback: recorre los proveedores en orden hasta que uno

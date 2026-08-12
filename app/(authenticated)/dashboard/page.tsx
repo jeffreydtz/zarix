@@ -36,6 +36,15 @@ export default async function DashboardPage() {
       redirect('/login');
     }
 
+    // Pre-calienta la cache de cotización con la última persistida en DB (rápido)
+    // para que accounts.list (conversión de saldos) y getAllQuotes no esperen a
+    // las APIs externas en vivo en el render en frío. Timeout duro de 1.5s: si la
+    // DB no responde a tiempo, seguimos al camino en vivo (nunca cuelga el SSR).
+    await Promise.race([
+      cotizacionesService.getDolarQuotes({ preferCache: true }),
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+    ]).catch(() => {});
+
     const [accounts, recentTransactions, portfolio, quotes] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       transactionsService.list(user.id, { limit: 5 }).catch(() => []),
