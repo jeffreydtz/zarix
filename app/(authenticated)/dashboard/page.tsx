@@ -36,13 +36,6 @@ export default async function DashboardPage() {
       redirect('/login');
     }
 
-    // Pre-calienta la cache de cotización con la última persistida en DB (rápido)
-    // para que accounts.list (conversión de saldos) y getAllQuotes no esperen a
-    // las APIs externas en vivo en el render del dashboard. Comparten la misma
-    // cache en memoria dentro del request; el cron update-prices mantiene la
-    // frescura. Sin bloquear si no hay cache: cae al camino en vivo.
-    await cotizacionesService.getDolarQuotes({ preferCache: true }).catch(() => {});
-
     const [accounts, recentTransactions, portfolio, quotes] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       transactionsService.list(user.id, { limit: 5 }).catch(() => []),
