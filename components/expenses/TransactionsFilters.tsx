@@ -118,18 +118,18 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
     searchParams.get('maxAmount');
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+    <div className="bg-card rounded-2xl border border-border overflow-hidden">
       {/* Basic filters row */}
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
         {/* Search */}
         <div className="sm:col-span-2 md:col-span-1 relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">🔍</span>
           <input
             type="text"
             placeholder="Buscar descripción..."
             value={searchParams.get('search') || ''}
             onChange={(e) => updateParams({ search: e.target.value })}
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
           />
         </div>
 
@@ -138,7 +138,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value={searchParams.get('type') || ''}
             onChange={(e) => updateParams({ type: e.target.value })}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
           >
             <option value="">Todos los tipos</option>
             <option value="expense">💸 Gastos</option>
@@ -152,7 +152,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value={searchParams.get('accountId') || ''}
             onChange={(e) => updateParams({ accountId: e.target.value })}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
           >
             <option value="">Todas las cuentas</option>
             {accounts.map((acc) => (
@@ -168,7 +168,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           <select
             value=""
             onChange={(e) => handlePreset(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
           >
             <option value="">Período rápido</option>
             <option value="today">Hoy</option>
@@ -185,7 +185,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-xs text-emerald-500 hover:text-emerald-600 font-medium flex items-center gap-1"
+            className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1"
           >
             {showAdvanced ? '▲' : '▼'} Filtros avanzados
           </button>
@@ -194,7 +194,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
           {hasActiveFilters && (
             <button
               onClick={handleReset}
-              className="text-xs text-slate-500 hover:text-red-500 font-medium flex items-center gap-1 transition-colors"
+              className="text-xs text-muted-foreground hover:text-destructive font-medium flex items-center gap-1 transition-colors"
             >
               ✕ Limpiar filtros
             </button>
@@ -209,16 +209,16 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-t border-slate-100 dark:border-slate-700"
+            className="overflow-hidden border-t border-border"
           >
             <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               {/* Category */}
               <div>
-                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Categoría</label>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Categoría</label>
                 <select
                   value={searchParams.get('categoryId') || ''}
                   onChange={(e) => updateParams({ categoryId: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
                 >
                   <option value="">Todas las categorías</option>
                   <option value="uncategorized">Sin categoría</option>
@@ -230,29 +230,29 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
 
               {/* Date from */}
               <div>
-                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Desde</label>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Desde</label>
                 <input
                   type="date"
                   value={searchParams.get('startDate') || ''}
                   onChange={(e) => updateParams({ startDate: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
                 />
               </div>
 
               {/* Date to */}
               <div>
-                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Hasta</label>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Hasta</label>
                 <input
                   type="date"
                   value={searchParams.get('endDate') || ''}
                   onChange={(e) => updateParams({ endDate: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
                 />
               </div>
 
               {/* Amount range */}
               <div>
-                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Monto</label>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Monto</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -260,7 +260,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                     placeholder="Min"
                     value={searchParams.get('minAmount') || ''}
                     onChange={(e) => updateParams({ minAmount: e.target.value.replace(',', '.') })}
-                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+                    className="w-1/2 px-2 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
                   />
                   <input
                     type="text"
@@ -268,18 +268,18 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                     placeholder="Max"
                     value={searchParams.get('maxAmount') || ''}
                     onChange={(e) => updateParams({ maxAmount: e.target.value.replace(',', '.') })}
-                    className="w-1/2 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-ring outline-none"
+                    className="w-1/2 px-2 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-ring outline-none"
                   />
                 </div>
               </div>
 
-              <details className="sm:col-span-2 md:col-span-4 mt-1 rounded-xl border border-slate-200/80 dark:border-slate-600/80 bg-slate-50/50 dark:bg-slate-800/30 px-3 py-2">
-                <summary className="text-xs text-slate-400 dark:text-slate-500 cursor-pointer select-none list-none flex items-center gap-2 [&::-webkit-details-marker]:hidden">
-                  <span className="text-slate-300 dark:text-slate-600">▸</span>
+              <details className="sm:col-span-2 md:col-span-4 mt-1 rounded-xl border border-border bg-secondary/50 px-3 py-2">
+                <summary className="text-xs text-muted-foreground cursor-pointer select-none list-none flex items-center gap-2 [&::-webkit-details-marker]:hidden">
+                  <span className="text-muted-foreground">▸</span>
                   Mantenimiento del historial (avanzado)
                 </summary>
-                <div className="pt-3 pb-1 border-t border-slate-200/60 dark:border-slate-600/60 mt-2">
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
+                <div className="pt-3 pb-1 border-t border-border mt-2">
+                  <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
                     Borra <strong>todos</strong> los movimientos de todas las cuentas. No se puede
                     deshacer.
                   </p>
@@ -287,7 +287,7 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
                     type="button"
                     onClick={handleDeleteAll}
                     disabled={deletingAll}
-                    className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium py-1.5 px-2 rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50/80 dark:bg-red-950/20 transition-colors disabled:opacity-50"
+                    className="text-xs text-destructive hover:text-destructive/80 font-medium py-1.5 px-2 rounded-lg border border-destructive/30 bg-destructive/10 transition-colors disabled:opacity-50"
                   >
                     {deletingAll ? 'Eliminando…' : 'Eliminar todos los movimientos'}
                   </button>
@@ -302,39 +302,39 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
       {hasActiveFilters && (
         <div className="px-4 pb-3 flex flex-wrap gap-2">
           {searchParams.get('search') && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs rounded-full">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/10 text-primary text-xs rounded-full">
               🔍 &quot;{searchParams.get('search')}&quot;
-              <button onClick={() => updateParams({ search: '' })} className="hover:text-emerald-900 ml-0.5">✕</button>
+              <button onClick={() => updateParams({ search: '' })} className="hover:text-primary/80 ml-0.5">✕</button>
             </span>
           )}
           {searchParams.get('startDate') && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-full">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-secondary text-muted-foreground text-xs rounded-full">
               📅 Desde {searchParams.get('startDate')}
-              <button onClick={() => updateParams({ startDate: '' })} className="hover:text-red-500 ml-0.5">✕</button>
+              <button onClick={() => updateParams({ startDate: '' })} className="hover:text-destructive ml-0.5">✕</button>
             </span>
           )}
           {searchParams.get('endDate') && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-full">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-secondary text-muted-foreground text-xs rounded-full">
               📅 Hasta {searchParams.get('endDate')}
-              <button onClick={() => updateParams({ endDate: '' })} className="hover:text-red-500 ml-0.5">✕</button>
+              <button onClick={() => updateParams({ endDate: '' })} className="hover:text-destructive ml-0.5">✕</button>
             </span>
           )}
           {searchParams.get('minAmount') && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-full">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-secondary text-muted-foreground text-xs rounded-full">
               💰 Min ${searchParams.get('minAmount')}
-              <button onClick={() => updateParams({ minAmount: '' })} className="hover:text-red-500 ml-0.5">✕</button>
+              <button onClick={() => updateParams({ minAmount: '' })} className="hover:text-destructive ml-0.5">✕</button>
             </span>
           )}
           {searchParams.get('maxAmount') && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-full">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-secondary text-muted-foreground text-xs rounded-full">
               💰 Max ${searchParams.get('maxAmount')}
-              <button onClick={() => updateParams({ maxAmount: '' })} className="hover:text-red-500 ml-0.5">✕</button>
+              <button onClick={() => updateParams({ maxAmount: '' })} className="hover:text-destructive ml-0.5">✕</button>
             </span>
           )}
           {searchParams.get('categoryId') === 'uncategorized' && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-full">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-secondary text-muted-foreground text-xs rounded-full">
               🏷️ Sin categoría
-              <button onClick={() => updateParams({ categoryId: '' })} className="hover:text-red-500 ml-0.5">✕</button>
+              <button onClick={() => updateParams({ categoryId: '' })} className="hover:text-destructive ml-0.5">✕</button>
             </span>
           )}
         </div>

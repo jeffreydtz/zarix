@@ -132,14 +132,14 @@ export default function CreateAccountButton() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-700"
+              className="bg-card rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-border"
             >
-              <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between rounded-t-3xl">
-                <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Nueva Cuenta</h2>
+              <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between rounded-t-3xl">
+                <h2 className="text-xl font-bold text-foreground">Nueva Cuenta</h2>
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
+                  className="p-2 rounded-xl hover:bg-secondary text-muted-foreground"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -149,12 +149,12 @@ export default function CreateAccountButton() {
 
               <div className="p-6 space-y-5">
                 {error && (
-                  <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+                  <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
                     {error}
                   </div>
                 )}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nombre</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">Nombre</label>
                   <input
                     type="text"
                     value={name}
@@ -166,7 +166,7 @@ export default function CreateAccountButton() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Tipo</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">Tipo</label>
                   <div className="grid grid-cols-2 gap-2">
                     {ACCOUNT_FORM_TYPES.map((type) => (
                       <motion.button
@@ -176,19 +176,19 @@ export default function CreateAccountButton() {
                         onClick={() => setSelectedType(type.value)}
                         className={`p-3 rounded-xl border-2 transition-all text-left flex items-center gap-2 ${
                           selectedType === type.value
-                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                            : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:border-border'
                         }`}
                       >
                         <span className="text-xl">{type.icon}</span>
-                        <span className="font-medium text-sm text-slate-700 dark:text-slate-300">{type.label}</span>
+                        <span className="font-medium text-sm text-muted-foreground">{type.label}</span>
                       </motion.button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Icono</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">Icono</label>
                   <div className="grid grid-cols-6 gap-2">
                     {ACCOUNT_FORM_ICONS.map((icon) => (
                       <motion.button
@@ -198,8 +198,8 @@ export default function CreateAccountButton() {
                         onClick={() => setSelectedIcon(icon)}
                         className={`p-2.5 text-2xl rounded-xl border-2 transition-all ${
                           selectedIcon === icon
-                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                            : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:border-border'
                         }`}
                       >
                         {icon}
@@ -209,7 +209,7 @@ export default function CreateAccountButton() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Moneda</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">Moneda</label>
                   <div className="grid grid-cols-5 gap-2">
                     {ACCOUNT_FORM_CURRENCIES.map((currency) => (
                       <motion.button
@@ -219,19 +219,19 @@ export default function CreateAccountButton() {
                         onClick={() => setSelectedCurrency(currency.value)}
                         className={`p-2 rounded-xl border-2 transition-all text-center ${
                           selectedCurrency === currency.value
-                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                            : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:border-border'
                         }`}
                       >
                         <div className="text-lg">{currency.flag}</div>
-                        <div className="text-xs font-medium text-slate-600 dark:text-slate-400">{currency.value}</div>
+                        <div className="text-xs font-medium text-muted-foreground">{currency.value}</div>
                       </motion.button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
                     Saldo inicial
                   </label>
                   <input
@@ -252,14 +252,14 @@ export default function CreateAccountButton() {
                       exit={{ opacity: 0, height: 0 }}
                       className="space-y-4 overflow-hidden"
                     >
-                      <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
-                        <p className="text-sm text-amber-700 dark:text-amber-300 font-medium mb-3">
+                      <div className="p-4 bg-warning/10 rounded-xl border border-warning/30">
+                        <p className="text-sm text-warning font-medium mb-3">
                           Datos de la tarjeta
                         </p>
                         
                         <div className="space-y-3">
                           <div>
-                            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">
                               Límite de crédito *
                             </label>
                             <input
@@ -274,7 +274,7 @@ export default function CreateAccountButton() {
 
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                              <label className="block text-xs font-medium text-muted-foreground mb-1">
                                 Dia de cierre
                               </label>
                               <input
@@ -289,7 +289,7 @@ export default function CreateAccountButton() {
                             </div>
 
                             <div>
-                              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                              <label className="block text-xs font-medium text-muted-foreground mb-1">
                                 Dia de vencimiento
                               </label>
                               <input
@@ -304,19 +304,19 @@ export default function CreateAccountButton() {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-amber-200 dark:border-amber-700">
+                          <div className="flex items-center gap-3 p-3 bg-card rounded-lg border border-warning/30">
                             <input
                               type="checkbox"
                               id="isMulticurrency"
                               checked={isMulticurrency}
                               onChange={(e) => setIsMulticurrency(e.target.checked)}
-                              className="w-5 h-5 text-amber-600 rounded-lg focus:ring-2 focus:ring-amber-500"
+                              className="w-5 h-5 text-warning rounded-lg focus:ring-2 focus:ring-warning"
                             />
                             <div className="flex-1">
-                              <label htmlFor="isMulticurrency" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                              <label htmlFor="isMulticurrency" className="text-sm font-medium text-muted-foreground">
                                 Tarjeta bi-moneda
                               </label>
-                              <p className="text-xs text-slate-500 dark:text-slate-400">
+                              <p className="text-xs text-muted-foreground">
                                 Acepta gastos en otra moneda sin convertir
                               </p>
                             </div>
@@ -324,7 +324,7 @@ export default function CreateAccountButton() {
 
                           {isMulticurrency && (
                             <div>
-                              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                              <label className="block text-xs font-medium text-muted-foreground mb-1">
                                 Segunda moneda
                               </label>
                               <select
@@ -350,16 +350,16 @@ export default function CreateAccountButton() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl"
+                      className="flex items-center gap-3 p-3 bg-secondary rounded-xl"
                     >
                       <input
                         type="checkbox"
                         id="isDebt"
                         checked={isDebt}
                         onChange={(e) => setIsDebt(e.target.checked)}
-                        className="w-5 h-5 text-emerald-600 rounded-lg focus:ring-2 focus:ring-ring"
+                        className="w-5 h-5 text-primary rounded-lg focus:ring-2 focus:ring-ring"
                       />
-                      <label htmlFor="isDebt" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <label htmlFor="isDebt" className="text-sm font-medium text-muted-foreground">
                         Es una deuda (mostrar saldo negativo)
                       </label>
                     </motion.div>
@@ -370,20 +370,20 @@ export default function CreateAccountButton() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl"
+                      className="flex items-start gap-3 p-3 bg-secondary rounded-xl"
                     >
                       <input
                         type="checkbox"
                         id="includeInLiquid"
                         checked={includeInLiquid}
                         onChange={(e) => setIncludeInLiquid(e.target.checked)}
-                        className="w-5 h-5 text-emerald-600 rounded-lg focus:ring-2 focus:ring-ring mt-0.5"
+                        className="w-5 h-5 text-primary rounded-lg focus:ring-2 focus:ring-ring mt-0.5"
                       />
                       <div>
-                        <label htmlFor="includeInLiquid" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        <label htmlFor="includeInLiquid" className="text-sm font-medium text-muted-foreground">
                           Contar en patrimonio líquido
                         </label>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           Desmarcá si no querés que sume al “liquidez” del panel (sigue en el total).
                         </p>
                       </div>

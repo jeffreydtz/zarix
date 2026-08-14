@@ -59,13 +59,13 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
       : balance;
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
+      <div className="min-h-screen bg-background transition-colors">
         <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <Link
                 href="/accounts"
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline mb-2 inline-block"
+                className="text-sm text-info hover:underline mb-2 inline-block"
               >
                 ← Volver a cuentas
               </Link>
@@ -77,41 +77,41 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                   {account.icon || '💳'}
                 </span>
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
                     {getAccountDisplayName(account)}
                   </h1>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     {typeLabel} · {account.currency}
                   </p>
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground mb-0.5">
                   Saldo actual
                 </p>
                 {isMulticurrencyCard ? (
                   <div className="space-y-1">
-                    <p className="text-3xl font-bold tabular-nums text-red-500">
+                    <p className="text-3xl font-bold tabular-nums text-destructive">
                       -$
                       {Math.abs(primaryDisplayBalance).toLocaleString('es-AR', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}{' '}
-                      <span className="text-lg font-medium text-slate-500">{account.currency}</span>
+                      <span className="text-lg font-medium text-muted-foreground">{account.currency}</span>
                     </p>
-                    <p className="text-3xl font-bold tabular-nums text-red-500">
+                    <p className="text-3xl font-bold tabular-nums text-destructive">
                       -$
                       {Math.abs(Number(enriched.multicurrency_balance_secondary)).toLocaleString('es-AR', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}{' '}
-                      <span className="text-lg font-medium text-slate-500">
+                      <span className="text-lg font-medium text-muted-foreground">
                         {account.secondary_currency}
                       </span>
                     </p>
-                    <p className="text-sm font-medium tabular-nums text-slate-500 dark:text-slate-400">
+                    <p className="text-sm font-medium tabular-nums text-muted-foreground">
                       Total (ARS blue):{' '}
-                      <span className="font-semibold text-red-500">
+                      <span className="font-semibold text-destructive">
                         -$
                         {Math.abs(
                           Number(enriched.multicurrency_total_ars_blue ?? enriched.balance_ars_blue ?? 0)
@@ -126,7 +126,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                 ) : (
                   <p
                     className={`text-3xl font-bold tabular-nums ${
-                      account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-100'
+                      account.is_debt ? 'text-destructive' : 'text-foreground'
                     }`}
                   >
                     {account.is_debt ? '-' : ''}$
@@ -134,7 +134,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}{' '}
-                    <span className="text-lg font-medium text-slate-500">{account.currency}</span>
+                    <span className="text-lg font-medium text-muted-foreground">{account.currency}</span>
                   </p>
                 )}
                 {enriched &&
@@ -144,14 +144,14 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
                       ) > 1e-8
                     : Math.abs(balance) > 1e-8) && (
                   <div className="mt-1">
-                    <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-0.5">
                       Referencia en otras monedas
                     </p>
                     <AccountBalanceEquivalents account={enriched} variant="detail" />
                   </div>
                 )}
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 max-w-xl">
+              <p className="text-sm text-muted-foreground mt-3 max-w-xl">
                 Incluye gastos, ingresos y transferencias donde esta cuenta es origen o destino.
               </p>
               <div className="mt-4 max-w-xl flex flex-col gap-2">

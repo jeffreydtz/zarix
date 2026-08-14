@@ -68,33 +68,33 @@ export default function BalanceHeader({
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={maybeReduceTransition(shouldReduceMotion, motionTransition.smooth)}
-          className="card bg-emerald-50/85 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25"
+          className="card bg-primary/10 border-primary/25"
         >
           <div className="flex items-center gap-2 mb-3">
             <motion.span
-              className="inline-flex text-emerald-600 dark:text-emerald-400"
+              className="inline-flex text-primary"
               animate={shouldReduceMotion ? undefined : { scale: [1, 1.08, 1] }}
               transition={shouldReduceMotion ? undefined : { duration: 2.3, repeat: Infinity, repeatDelay: 3.5 }}
             >
               <Wallet className="w-6 h-6" aria-hidden />
             </motion.span>
             <div>
-              <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+              <h2 className="text-sm font-semibold text-foreground">
                 Patrimonio Líquido
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 Para gastar hoy
               </p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="text-3xl font-bold text-primary">
                 <AnimatedNumber value={liquidARSBlue} prefix="$" decimals={0} />
               </span>
-              <span className="text-sm font-medium text-slate-500">ARS</span>
+              <span className="text-sm font-medium text-muted-foreground">ARS</span>
             </div>
-            <div className="flex items-baseline gap-2 text-slate-600 dark:text-slate-400">
+            <div className="flex items-baseline gap-2 text-muted-foreground">
               <span className="text-lg font-semibold">
                 <AnimatedNumber value={liquidUSD} prefix="USD " decimals={2} />
               </span>
@@ -113,7 +113,7 @@ export default function BalanceHeader({
               <button
                 type="button"
                 onClick={toggleInvestmentPatrimony}
-                className="absolute top-3 right-3 p-2 rounded-xl text-slate-500 hover:text-accent-invest dark:text-slate-400 dark:hover:text-accent-invest hover:bg-accent-invest/10 dark:hover:bg-accent-invest/20 transition-colors"
+                className="absolute top-3 right-3 p-2 rounded-xl text-muted-foreground hover:text-accent-invest hover:bg-accent-invest/10 dark:hover:bg-accent-invest/20 transition-colors"
                 title="Ocultar patrimonio de inversiones"
                 aria-label="Ocultar patrimonio de inversiones"
               >
@@ -128,10 +128,10 @@ export default function BalanceHeader({
                   <TrendingUp className="w-6 h-6" aria-hidden />
                 </motion.span>
                 <div>
-                  <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  <h2 className="text-sm font-semibold text-foreground">
                     Patrimonio Total
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Con inversiones</p>
+                  <p className="text-xs text-muted-foreground">Con inversiones</p>
                 </div>
               </div>
               <div className="space-y-2">
@@ -139,9 +139,9 @@ export default function BalanceHeader({
                   <span className="text-3xl font-bold text-accent-invest">
                     <AnimatedNumber value={totalARSBlue} prefix="$" decimals={0} />
                   </span>
-                  <span className="text-sm font-medium text-slate-500">ARS</span>
+                  <span className="text-sm font-medium text-muted-foreground">ARS</span>
                 </div>
-                <div className="flex items-baseline gap-2 text-slate-600 dark:text-slate-400">
+                <div className="flex items-baseline gap-2 text-muted-foreground">
                   <span className="text-lg font-semibold">
                     <AnimatedNumber value={totalUSD} prefix="USD " decimals={2} />
                   </span>
@@ -171,10 +171,10 @@ export default function BalanceHeader({
                 <EyeOff className="w-8 h-8" aria-hidden />
               </button>
               <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                <p className="text-sm font-medium text-foreground">
                   Patrimonio de inversiones oculto
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Tocá el ojo para ver totales con inversiones
                 </p>
               </div>
@@ -185,15 +185,15 @@ export default function BalanceHeader({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.05 })}
-            className="card border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-800/50"
+            className="card border-2 border-dashed border-border bg-secondary/50"
           >
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-6 h-6 text-slate-400 dark:text-slate-500" aria-hidden />
-              <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              <TrendingUp className="w-6 h-6 text-muted-foreground" aria-hidden />
+              <h2 className="text-sm font-medium text-muted-foreground">
                 Sin inversiones aún
               </h2>
             </div>
-            <p className="text-xs text-slate-400 dark:text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Creá una cuenta tipo &quot;Inversión&quot; para trackear tu patrimonio invertido
             </p>
           </motion.div>
@@ -205,21 +205,21 @@ export default function BalanceHeader({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.12 })}
-          className="card bg-amber-50/85 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/25"
+          className="card bg-warning/10 border-warning/25"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <CreditCard className="w-6 h-6 text-warning" aria-hidden />
-              <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+              <h2 className="text-sm font-semibold text-foreground">
                 Tarjetas de Crédito
               </h2>
             </div>
             <span className={`text-xs font-bold px-3 py-1 rounded-full ${
               creditUtilization > 80
-                ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                ? 'bg-destructive/15 text-destructive'
                 : creditUtilization > 50
-                ? 'bg-warning/15 text-amber-700 dark:bg-warning/20 dark:text-warning'
-                : 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
+                ? 'bg-warning/15 text-warning'
+                : 'bg-success/15 text-success'
             }`}>
               {creditUtilization.toFixed(0)}% usado
             </span>
@@ -227,14 +227,14 @@ export default function BalanceHeader({
           
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Usado</p>
-              <p className="text-xl font-bold text-amber-700 dark:text-warning">
+              <p className="text-xs text-muted-foreground mb-1">Usado</p>
+              <p className="text-xl font-bold text-warning">
                 <AnimatedNumber value={totalCreditUsed} prefix="$" decimals={0} />
               </p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Límite</p>
-              <p className="text-xl font-semibold text-slate-700 dark:text-slate-300">
+              <p className="text-xs text-muted-foreground mb-1">Límite</p>
+              <p className="text-xl font-semibold text-muted-foreground">
                 <AnimatedNumber value={totalCreditLimit} prefix="$" decimals={0} />
               </p>
             </div>

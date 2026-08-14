@@ -181,9 +181,9 @@ function LoginForm() {
           </motion.div>
           <div className="text-center">
             <p className="text-lg font-semibold text-primary">Entrando a Zarix…</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Preparando tu tablero</p>
+            <p className="text-sm text-muted-foreground">Preparando tu tablero</p>
           </div>
-          <div className="h-1 w-40 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+          <div className="h-1 w-40 overflow-hidden rounded-full bg-secondary">
             <motion.div
               className="h-full w-1/2 rounded-full bg-primary"
               animate={{ x: ['-100%', '200%'] }}
@@ -198,7 +198,7 @@ function LoginForm() {
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700"
+        className="bg-card rounded-3xl shadow-2xl p-8 w-full max-w-md border border-border"
       >
         <motion.div 
           className="text-center mb-8"
@@ -216,19 +216,19 @@ function LoginForm() {
           <h1 className="text-4xl font-bold text-primary mb-2">
             Zarix
           </h1>
-          <p className="text-slate-500 dark:text-slate-400">
+          <p className="text-muted-foreground">
             Tus finanzas personales en un solo lugar
           </p>
         </motion.div>
 
-        <div className="flex gap-2 mb-6 p-1 bg-slate-100 dark:bg-slate-700 rounded-xl">
+        <div className="flex gap-2 mb-6 p-1 bg-secondary rounded-xl">
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => setMode('password')}
             className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
               mode === 'password'
-                ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                ? 'bg-card text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Contrasena
@@ -238,8 +238,8 @@ function LoginForm() {
             onClick={() => setMode('magiclink')}
             className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
               mode === 'magiclink'
-                ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                ? 'bg-card text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Magic Link
@@ -252,7 +252,7 @@ function LoginForm() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-muted-foreground mb-2">
               Email
             </label>
             <input
@@ -275,7 +275,7 @@ function LoginForm() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-muted-foreground mb-2">
                   Contrasena
                 </label>
                 <div className="relative">
@@ -293,7 +293,7 @@ function LoginForm() {
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                     title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                    className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -326,16 +326,16 @@ function LoginForm() {
         {passkeySupported && (
           <div className="mt-4">
             <div className="flex items-center gap-3 my-4">
-              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-              <span className="text-xs text-slate-400 dark:text-slate-500">o</span>
-              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs text-muted-foreground">o</span>
+              <div className="flex-1 h-px bg-border" />
             </div>
             <motion.button
               type="button"
               onClick={handlePasskeyLogin}
               disabled={passkeyLoading}
               whileTap={{ scale: 0.97 }}
-              className="w-full btn py-3.5 text-lg flex items-center justify-center gap-2 border border-slate-300 dark:border-slate-600"
+              className="w-full btn py-3.5 text-lg flex items-center justify-center gap-2 border border-border"
             >
               <span>🔑</span>
               {passkeyLoading ? 'Verificando...' : 'Ingresar con passkey'}
@@ -351,8 +351,8 @@ function LoginForm() {
               exit={{ opacity: 0, y: -10 }}
               className={`mt-4 p-4 rounded-xl text-sm font-medium ${
                 isSuccess
-                  ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800'
-                  : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 border border-red-200 dark:border-red-800'
+                  ? 'bg-success/10 text-success border border-success/30'
+                  : 'bg-destructive/10 text-destructive border border-destructive/30'
               }`}
             >
               <span className="mr-2">{isSuccess ? '✓' : '!'}</span>
@@ -378,7 +378,7 @@ function LoginForm() {
           </motion.div>
         )}
 
-        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           ¿No tenés cuenta?{' '}
           <Link
             href="/register"
@@ -394,17 +394,17 @@ function LoginForm() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-2">
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-2">
             <span className="text-lg">🇦🇷</span>
             <span>Optimizado para Argentina</span>
           </div>
-          <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
             <span>Blue</span>
-            <span className="text-slate-300">•</span>
+            <span className="text-muted-foreground">•</span>
             <span>MEP</span>
-            <span className="text-slate-300">•</span>
+            <span className="text-muted-foreground">•</span>
             <span>CCL</span>
-            <span className="text-slate-300">•</span>
+            <span className="text-muted-foreground">•</span>
             <span>Crypto</span>
           </div>
         </motion.div>

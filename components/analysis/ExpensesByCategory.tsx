@@ -17,7 +17,7 @@ export default function ExpensesByCategory({ categories }: ExpensesByCategoryPro
   if (categories.length === 0) {
     return (
       <div className="card text-center py-12">
-        <p className="text-gray-500">No hay gastos este mes</p>
+        <p className="text-muted-foreground">No hay gastos este mes</p>
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function ExpensesByCategory({ categories }: ExpensesByCategoryPro
                   <div className="text-sm font-semibold">
                     ${cat.amount.toLocaleString('es-AR')}
                   </div>
-                  <div className="text-xs text-gray-500">{percent.toFixed(1)}%</div>
+                  <div className="text-xs text-muted-foreground">{percent.toFixed(1)}%</div>
                 </div>
               </div>
             );

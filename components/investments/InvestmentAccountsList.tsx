@@ -84,7 +84,7 @@ export default function InvestmentAccountsList({ accounts }: InvestmentAccountsL
                   type="button"
                   onClick={() => handleDelete(account)}
                   disabled={deletingId === account.id}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-control text-muted-foreground hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 transition-colors"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-control text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-50 transition-colors"
                   aria-label={`Archivar ${getAccountDisplayName(account)}`}
                   title="Archivar cuenta"
                 >

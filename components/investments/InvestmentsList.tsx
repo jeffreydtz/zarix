@@ -68,8 +68,8 @@ function formatPrice(value: number, currency: string): string {
 }
 
 function pnlColor(value: number): string {
-  if (value > 0) return 'text-emerald-500 dark:text-emerald-400';
-  if (value < 0) return 'text-red-500 dark:text-red-400';
+  if (value > 0) return 'text-success';
+  if (value < 0) return 'text-destructive';
   return 'text-muted-foreground';
 }
 
@@ -160,7 +160,7 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                         {inv.type === 'bond' ? <span className="opacity-70"> / VN 100</span> : null}
                       </span>
                       {inv.is_manual_price ? (
-                        <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                        <span className="rounded-full bg-warning/20 px-1.5 py-0.5 text-[10px] font-medium text-warning">
                           Manual
                         </span>
                       ) : (
@@ -252,7 +252,7 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                       type="button"
                       onClick={() => void archive(inv.id)}
                       disabled={archivingId === inv.id}
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-control text-muted-foreground hover:text-red-500 hover:bg-red-500/10 disabled:opacity-50 transition-colors"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-control text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-50 transition-colors"
                       aria-label="Archivar posición"
                       title="Archivar"
                     >

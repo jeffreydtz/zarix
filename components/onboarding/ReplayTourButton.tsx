@@ -36,7 +36,7 @@ export default function ReplayTourButton() {
       <button
         type="button"
         onClick={replay}
-        className="shrink-0 px-4 py-2 rounded-control text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+        className="shrink-0 px-4 py-2 rounded-control text-sm font-semibold text-white bg-info hover:brightness-95 transition-colors"
       >
         Ver de nuevo
       </button>

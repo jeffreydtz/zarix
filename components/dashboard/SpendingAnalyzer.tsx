@@ -292,8 +292,8 @@ function AnalyzerTotalSummary({
 }) {
   const amountClass =
     variant === 'belowChart'
-      ? 'text-base sm:text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 tabular-nums leading-tight break-words [overflow-wrap:anywhere]'
-      : 'text-lg font-bold text-slate-700 dark:text-slate-200 tabular-nums leading-tight';
+      ? 'text-base sm:text-xl font-bold tracking-tight text-foreground tabular-nums leading-tight break-words [overflow-wrap:anywhere]'
+      : 'text-lg font-bold text-foreground tabular-nums leading-tight';
   const showFootnote = variant === 'inline';
   const rows = buildSummaryRows(totalsByCurrency, currencyFilter);
 
@@ -305,7 +305,7 @@ function AnalyzerTotalSummary({
           : 'text-center px-3 max-w-[min(220px,82vw)] mx-auto'
       }
     >
-      <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+      <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground">
         Total
       </div>
       <div className="mt-1 space-y-0.5">
@@ -316,7 +316,7 @@ function AnalyzerTotalSummary({
         ))}
       </div>
       {showFootnote && (
-        <div className="text-[10px] sm:text-[11px] text-slate-400 mt-1 leading-snug">
+        <div className="text-[10px] sm:text-[11px] text-muted-foreground mt-1 leading-snug">
           {analyzerCurrencyFootnote(currencyFilter, false)}
         </div>
       )}
@@ -702,17 +702,17 @@ export default function SpendingAnalyzer({
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
         <div className="min-w-0">
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Analizador de gastos</h3>
-          <p className="sm:hidden text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+          <h3 className="text-lg font-semibold text-foreground">Analizador de gastos</h3>
+          <p className="sm:hidden text-xs text-muted-foreground mt-1 leading-relaxed">
             Tocá el gráfico o una categoría para ver movimientos. Moneda y cuenta: filtros abajo.
           </p>
-          <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-xl">
+          <p className="hidden sm:block text-xs text-muted-foreground mt-0.5 max-w-xl">
             Vista general: se suman <strong>todas las cuentas</strong>; con “Todas las monedas” el total se expresa en{' '}
             <strong>pesos equivalentes (dólar blue)</strong> para incluir ingresos en USD. Filtrá por moneda o cuenta si necesitás
             ver solo una moneda. Tocá una categoría para ver los movimientos del período.
           </p>
           {initialTransactionsTruncated && (
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+            <p className="text-xs text-warning mt-0.5">
               Se muestran los últimos movimientos cargados; períodos muy antiguos pueden estar incompletos.
             </p>
           )}
@@ -723,7 +723,7 @@ export default function SpendingAnalyzer({
               <button
                 type="button"
                 onClick={() => movePeriod(-1)}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-slate-300 dark:border-slate-700 text-base text-slate-700 dark:text-slate-200 active:bg-slate-200 dark:active:bg-slate-700 touch-manipulation"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border text-base text-foreground active:bg-secondary touch-manipulation"
                 aria-label="Período anterior"
               >
                 ‹
@@ -731,14 +731,14 @@ export default function SpendingAnalyzer({
               <button
                 type="button"
                 onClick={() => movePeriod(1)}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-slate-300 dark:border-slate-700 text-base text-slate-700 dark:text-slate-200 active:bg-slate-200 dark:active:bg-slate-700 touch-manipulation"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border text-base text-foreground active:bg-secondary touch-manipulation"
                 aria-label="Período siguiente"
               >
                 ›
               </button>
             </>
           )}
-          <span className="text-xs text-slate-500 dark:text-slate-400 px-1">{periodLabel}</span>
+          <span className="text-xs text-muted-foreground px-1">{periodLabel}</span>
         </div>
       </div>
 
@@ -748,8 +748,8 @@ export default function SpendingAnalyzer({
           onClick={() => setMode('expense')}
           className={`min-h-11 flex-1 sm:flex-none rounded-lg px-4 text-sm font-medium touch-manipulation active:opacity-90 ${
             mode === 'expense'
-              ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100'
-              : 'text-slate-600 dark:text-slate-300'
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground'
           }`}
         >
           Gastos
@@ -759,8 +759,8 @@ export default function SpendingAnalyzer({
           onClick={() => setMode('income')}
           className={`min-h-11 flex-1 sm:flex-none rounded-lg px-4 text-sm font-medium touch-manipulation active:opacity-90 ${
             mode === 'income'
-              ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100'
-              : 'text-slate-600 dark:text-slate-300'
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground'
           }`}
         >
           Ingresos
@@ -781,8 +781,8 @@ export default function SpendingAnalyzer({
             onClick={() => setRange(t.id as RangeType)}
             className={`min-h-10 touch-manipulation rounded-xl border px-3 text-sm transition-colors active:opacity-90 ${
               range === t.id
-                ? 'bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950 border-transparent'
-                : 'border-slate-200 bg-white text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                ? 'bg-primary text-primary-foreground border-transparent'
+                : 'border-border bg-card text-muted-foreground'
             }`}
           >
             {t.label}
@@ -799,7 +799,7 @@ export default function SpendingAnalyzer({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 mb-3">
         <label className="flex flex-col gap-0.5">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">Moneda (opcional)</span>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Moneda (opcional)</span>
           <select
             value={currencyFilter}
             onChange={(e) => setCurrencyFilter(e.target.value)}
@@ -814,7 +814,7 @@ export default function SpendingAnalyzer({
           </select>
         </label>
         <label className="flex flex-col gap-0.5">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">Cuenta (opcional)</span>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Cuenta (opcional)</span>
           <select value={accountFilter} onChange={(e) => setAccountFilter(e.target.value)} className="input">
             <option value="all">Todas las cuentas</option>
             {availableAccounts.map((a) => (
@@ -825,22 +825,22 @@ export default function SpendingAnalyzer({
           </select>
         </label>
         <div className="zx-kpi text-xs">
-          <div className="text-slate-500">Movimientos</div>
-          <div className="font-semibold text-slate-700 dark:text-slate-200">{txCount}</div>
+          <div className="text-muted-foreground">Movimientos</div>
+          <div className="font-semibold text-foreground">{txCount}</div>
         </div>
         <div className="zx-kpi text-xs">
-          <div className="text-slate-500">Vs período anterior</div>
+          <div className="text-muted-foreground">Vs período anterior</div>
           <div
             className={`font-semibold ${
               variationPct === null
-                ? 'text-slate-500 dark:text-slate-400'
+                ? 'text-muted-foreground'
                 : mode === 'expense'
                   ? variationPct >= 0
-                    ? 'text-red-500'
-                    : 'text-green-500'
+                    ? 'text-destructive'
+                    : 'text-success'
                   : variationPct >= 0
-                    ? 'text-green-500'
-                    : 'text-red-500'
+                    ? 'text-success'
+                    : 'text-destructive'
             }`}
           >
             {variationPct === null
@@ -851,15 +851,15 @@ export default function SpendingAnalyzer({
       </div>
 
       {loading ? (
-        <div className="h-64 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+        <div className="h-64 rounded-2xl bg-secondary animate-pulse" />
       ) : error ? (
-        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">{error}</div>
+        <div className="p-4 rounded-xl bg-destructive/10 text-destructive text-sm">{error}</div>
       ) : (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
           <div className="zx-panel p-3 sm:p-4">
             {displaySlices.length === 0 ? (
               <div className="min-h-[256px] flex flex-col items-center justify-center gap-4 text-center px-2 py-4 sm:py-0">
-                <p className="text-slate-400 dark:text-slate-500 text-sm leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {mode === 'expense'
                     ? 'No hay gastos en este período con los filtros actuales.'
                     : 'No hay ingresos en este período con los filtros actuales.'}
@@ -919,7 +919,7 @@ export default function SpendingAnalyzer({
                     variant="belowChart"
                   />
                 </div>
-                <p className="mt-1.5 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400 px-1 sm:px-2">
+                <p className="mt-1.5 text-center text-[11px] leading-snug text-muted-foreground px-1 sm:px-2">
                   {analyzerCurrencyFootnote(currencyFilter, false)}
                 </p>
               </>
@@ -928,7 +928,7 @@ export default function SpendingAnalyzer({
 
           <div className="space-y-2">
             {displaySlices.length > 0 && (
-              <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 lg:hidden">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground lg:hidden">
                 Categorías
               </p>
             )}
@@ -938,36 +938,36 @@ export default function SpendingAnalyzer({
                 type="button"
                 key={`${s.name}-${idx}`}
                 onClick={() => openCategoryDetail(s.name)}
-                className="flex min-h-[52px] w-full touch-manipulation items-center justify-between gap-3 rounded-xl border border-transparent bg-slate-100/90 px-3 py-3 text-left transition-colors hover:bg-slate-200/80 focus:outline-none focus:ring-2 focus:ring-ring/40 active:bg-slate-200 dark:bg-slate-800/90 dark:hover:bg-slate-700/80 dark:active:bg-slate-700 sm:min-h-0 sm:py-3"
+                className="flex min-h-[52px] w-full touch-manipulation items-center justify-between gap-3 rounded-xl border border-transparent bg-secondary px-3 py-3 text-left transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring/40 active:bg-accent sm:min-h-0 sm:py-3"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <span
-                    className="h-3.5 w-3.5 shrink-0 rounded-full ring-1 ring-slate-300/80 dark:ring-slate-600 sm:h-3 sm:w-3"
+                    className="h-3.5 w-3.5 shrink-0 rounded-full ring-1 ring-border sm:h-3 sm:w-3"
                     style={{ backgroundColor: s.color }}
                     aria-hidden
                   />
                   <span className="inline-flex shrink-0 items-center justify-center text-xl sm:text-lg">
                     <CategoryIcon icon={s.icon} className="h-5 w-5 sm:h-4 sm:w-4" />
                   </span>
-                  <span className="truncate font-medium text-slate-700 dark:text-slate-200">{s.name}</span>
+                  <span className="truncate font-medium text-foreground">{s.name}</span>
                 </div>
                 <div className="flex shrink-0 items-center gap-2 text-right">
                   <div>
-                    <div className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-200">
+                    <div className="text-sm font-semibold tabular-nums text-foreground">
                       {s.percent.toFixed(0)}%
                     </div>
-                    <div className="text-xs tabular-nums text-slate-500 sm:text-sm">
+                    <div className="text-xs tabular-nums text-muted-foreground sm:text-sm">
                       ${s.amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                     </div>
                   </div>
-                  <span className="text-slate-400 dark:text-slate-500 sm:hidden" aria-hidden>
+                  <span className="text-muted-foreground sm:hidden" aria-hidden>
                     ›
                   </span>
                 </div>
               </button>
             ))}
             {displaySlices.length === 0 && (
-              <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm text-slate-500">No hay categorías para mostrar.</div>
+              <div className="p-4 rounded-xl bg-secondary text-sm text-muted-foreground">No hay categorías para mostrar.</div>
             )}
           </div>
         </div>
@@ -983,29 +983,29 @@ export default function SpendingAnalyzer({
             role="dialog"
             aria-modal="true"
             aria-labelledby="analyzer-detail-title"
-            className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl w-full sm:max-w-2xl max-h-[88vh] overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700"
+            className="bg-card/95 backdrop-blur-xl w-full sm:max-w-2xl max-h-[88vh] overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-xl border border-border"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
-              <h4 id="analyzer-detail-title" className="font-semibold text-lg text-slate-800 dark:text-slate-100 pr-2">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <h4 id="analyzer-detail-title" className="font-semibold text-lg text-foreground pr-2">
                 {detailCategory === '__others__' ? 'Otros (varias categorías)' : detailCategory}
               </h4>
               <button
                 type="button"
-                className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="rounded-lg px-2 py-1 text-muted-foreground hover:bg-secondary"
                 onClick={() => setDetailCategory(null)}
                 aria-label="Cerrar"
               >
                 ✕
               </button>
             </div>
-            <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-800">
-              <p className="text-sm text-slate-500 dark:text-slate-400">{periodLabel}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <div className="px-5 py-3 border-b border-border">
+              <p className="text-sm text-muted-foreground">{periodLabel}</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 Tocá un movimiento para editarlo.
               </p>
               {editOpenError && (
-                <p className="mt-2 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                <p className="mt-2 rounded-lg bg-destructive/10 px-2.5 py-1.5 text-xs text-destructive">
                   {editOpenError}
                 </p>
               )}
@@ -1020,25 +1020,25 @@ export default function SpendingAnalyzer({
                     type="button"
                     onClick={() => openTransactionEditor(tx.id)}
                     disabled={openingEditTxId === tx.id}
-                    className="w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-left transition-colors hover:bg-slate-100/80 disabled:opacity-70 dark:border-slate-700 dark:bg-slate-800/70 dark:hover:bg-slate-700/80"
+                    className="w-full rounded-xl border border-border bg-card/70 px-4 py-3 text-left transition-colors hover:bg-secondary/80 disabled:opacity-70"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                           {formatTxRowDate(tx.transaction_date)}
                         </div>
-                        <div className="mt-1 text-sm sm:text-base text-slate-800 dark:text-slate-100 truncate">
+                        <div className="mt-1 text-sm sm:text-base text-foreground truncate">
                           {tx.description?.trim() || 'Sin descripción'}
                         </div>
-                        <div className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate">
+                        <div className="mt-1 text-xs sm:text-sm text-muted-foreground truncate">
                           {tx.account?.name ?? 'Sin cuenta'} · {(tx.account?.currency || tx.currency || '—').toUpperCase()}
                         </div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-semibold text-sm sm:text-base text-slate-700 dark:text-slate-200 tabular-nums">
+                        <div className="font-semibold text-sm sm:text-base text-foreground tabular-nums">
                           ${txDisplayAmount(tx).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                         </div>
-                        <div className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+                        <div className="mt-1 text-xs text-muted-foreground">
                           {openingEditTxId === tx.id ? 'Abriendo…' : 'Editar ›'}
                         </div>
                       </div>
@@ -1048,7 +1048,7 @@ export default function SpendingAnalyzer({
               ))}
             </ul>
             {detailTransactions.length === 0 && (
-              <p className="text-sm text-slate-500 px-4 pb-4">No hay movimientos en esta categoría para el período y filtros actuales.</p>
+              <p className="text-sm text-muted-foreground px-4 pb-4">No hay movimientos en esta categoría para el período y filtros actuales.</p>
             )}
           </div>
         </div>

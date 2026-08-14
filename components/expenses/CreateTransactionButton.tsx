@@ -475,14 +475,14 @@ export default function CreateTransactionButton({
           className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-4 z-50"
           onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
         >
-          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 max-h-[90dvh] overflow-y-auto overscroll-contain">
+          <div className="bg-card rounded-2xl max-w-md w-full p-6 max-h-[90dvh] overflow-y-auto overscroll-contain">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">
                   {transferOnly ? 'Transferencia entre cuentas' : 'Nuevo Movimiento'}
                 </h2>
                 {!isOnline && (
-                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                  <p className="text-xs text-warning mt-0.5">
                     Sin conexión — se guardará localmente
                   </p>
                 )}
@@ -490,7 +490,7 @@ export default function CreateTransactionButton({
               <button
                 onClick={handleClose}
                 aria-label="Cerrar"
-                className="p-2 -mr-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                className="p-2 -mr-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center text-muted-foreground hover:text-foreground"
               >
                 ✕
               </button>
@@ -498,7 +498,7 @@ export default function CreateTransactionButton({
 
             <div className="space-y-4">
               {error && (
-                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
                   {error}
                 </div>
               )}
@@ -511,8 +511,8 @@ export default function CreateTransactionButton({
                       onClick={() => setType('expense')}
                       className={`flex-1 py-2 rounded-lg ${
                         type === 'expense'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700'
+                          ? 'bg-destructive text-destructive-foreground'
+                          : 'bg-secondary'
                       }`}
                     >
                       💸 Gasto
@@ -522,8 +522,8 @@ export default function CreateTransactionButton({
                       onClick={() => setType('income')}
                       className={`flex-1 py-2 rounded-lg ${
                         type === 'income'
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700'
+                          ? 'bg-success text-primary-foreground'
+                          : 'bg-secondary'
                       }`}
                     >
                       💰 Ingreso
@@ -533,8 +533,8 @@ export default function CreateTransactionButton({
                       onClick={() => setType('transfer')}
                       className={`flex-1 py-2 rounded-lg ${
                         type === 'transfer'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700'
+                          ? 'bg-info text-white'
+                          : 'bg-secondary'
                       }`}
                     >
                       🔄 Transfer
@@ -553,7 +553,7 @@ export default function CreateTransactionButton({
                         setAccountId(e.target.value);
                         setTransferAmountBasis('source');
                       }}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      className="w-full px-4 py-2 rounded-lg border border-border bg-card"
                     >
                       <option value="">Seleccioná una cuenta</option>
                       {selectableAccounts.map((acc) => (
@@ -572,7 +572,7 @@ export default function CreateTransactionButton({
                         setDestinationAccountId(e.target.value);
                         setTransferAmountBasis('source');
                       }}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      className="w-full px-4 py-2 rounded-lg border border-border bg-card"
                     >
                       <option value="">Seleccioná cuenta destino</option>
                       {destinationAccounts.map((acc) => (
@@ -584,11 +584,11 @@ export default function CreateTransactionButton({
                   </div>
 
                   {crossCurrencyTransfer && sourceAccount && destAccount && (
-                    <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-950/40 p-3 space-y-2">
-                      <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
+                    <div className="rounded-xl border border-info/30 bg-info/10 p-3 space-y-2">
+                      <p className="text-xs font-medium text-foreground">
                         Moneda del monto
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      <p className="text-[11px] text-muted-foreground">
                         Elegí si el importe lo ingresás en la moneda de la cuenta origen o de la de destino
                         (la otra cuenta se actualiza con la cotización del sistema).
                       </p>
@@ -598,8 +598,8 @@ export default function CreateTransactionButton({
                           onClick={() => setTransferAmountBasis('source')}
                           className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                             transferAmountBasis === 'source'
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200'
+                              ? 'bg-info text-white'
+                              : 'bg-card border border-border text-foreground'
                           }`}
                         >
                           Origen ({sourceAccount.currency})
@@ -609,8 +609,8 @@ export default function CreateTransactionButton({
                           onClick={() => setTransferAmountBasis('destination')}
                           className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                             transferAmountBasis === 'destination'
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200'
+                              ? 'bg-info text-white'
+                              : 'bg-card border border-border text-foreground'
                           }`}
                         >
                           Destino ({destAccount.currency})
@@ -623,7 +623,7 @@ export default function CreateTransactionButton({
                     <label className="block text-sm font-medium mb-2">
                       Monto
                       {crossCurrencyTransfer && (
-                        <span className="text-slate-500 dark:text-slate-400 font-normal">
+                        <span className="text-muted-foreground font-normal">
                           {' '}
                           ({transferPayloadCurrency})
                         </span>
@@ -636,7 +636,7 @@ export default function CreateTransactionButton({
                         value={amount}
                         onChange={(e) => setAmount(sanitizeAmountInput(e.target.value))}
                         placeholder={sourceAccount ? 'Máximo saldo' : '0.00'}
-                        className="w-full min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        className="w-full min-w-0 px-4 py-2 rounded-lg border border-border bg-card"
                       />
                       <div className="flex flex-wrap gap-2">
                         <button
@@ -644,7 +644,7 @@ export default function CreateTransactionButton({
                           onClick={applyMaxTransferFromSource}
                           disabled={!sourceAccount || transferMaxFromSource <= 0}
                           title={transferMaxBalanceTitle}
-                          className="shrink-0 px-3 py-2 rounded-lg text-sm font-medium border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/50 text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/40 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed"
+                          className="shrink-0 px-3 py-2 rounded-lg text-sm font-medium border border-info/30 bg-info/10 text-info hover:bg-info/20 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed"
                         >
                           Máximo saldo
                         </button>
@@ -652,9 +652,9 @@ export default function CreateTransactionButton({
                       </div>
                     </div>
                     {sourceAccount && transferMaxFromSource > 0 && (
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                      <p className="text-[11px] text-muted-foreground mt-1.5">
                         Disponible en origen ({sourceAccount.currency}):{' '}
-                        <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+                        <span className="tabular-nums font-medium text-muted-foreground">
                           {transferMaxFromSource.toLocaleString('es-AR', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
@@ -671,30 +671,30 @@ export default function CreateTransactionButton({
                   </div>
 
                   {crossCurrencyTransfer && transferArsReference && (
-                    <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/30 px-3 py-2.5 text-xs">
+                    <div className="rounded-xl border border-primary/20 bg-primary/10 px-3 py-2.5 text-xs">
                       {transferArsReference.hint === 'loading' && (
-                        <p className="text-slate-600 dark:text-slate-300">Obteniendo cotización de referencia…</p>
+                        <p className="text-muted-foreground">Obteniendo cotización de referencia…</p>
                       )}
                       {transferArsReference.hint === 'no-quote' && (
-                        <p className="text-amber-800 dark:text-amber-200">
+                        <p className="text-warning">
                           No se pudo cargar el dólar blue. Revisá la conexión o usá tipo de cambio manual abajo.
                         </p>
                       )}
                       {transferArsReference.ars !== null && typeof transferArsReference.ars === 'number' && (
-                        <p className="text-slate-700 dark:text-slate-200 leading-relaxed">
-                          <span className="text-slate-500 dark:text-slate-400">Equivalente aproximado en pesos: </span>
-                          <span className="font-semibold tabular-nums text-emerald-800 dark:text-emerald-200">
+                        <p className="text-foreground leading-relaxed">
+                          <span className="text-muted-foreground">Equivalente aproximado en pesos: </span>
+                          <span className="font-semibold tabular-nums text-primary">
                             $
                             {Math.round(transferArsReference.ars).toLocaleString('es-AR', {
                               maximumFractionDigits: 0,
                             })}{' '}
                             ARS
                           </span>
-                          <span className="text-slate-500 dark:text-slate-400"> — {transferArsReference.hint}</span>
+                          <span className="text-muted-foreground"> — {transferArsReference.hint}</span>
                         </p>
                       )}
                       {transferArsReference.hint === 'unsupported' && (
-                        <p className="text-slate-600 dark:text-slate-400">
+                        <p className="text-muted-foreground">
                           No hay referencia automática a pesos para esta moneda en el cotizador.
                         </p>
                       )}
@@ -702,11 +702,11 @@ export default function CreateTransactionButton({
                   )}
 
                   {crossCurrencyTransfer && sourceAccount && destAccount && (
-                    <details className="rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-900/30 p-3">
-                      <summary className="cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-200">
+                    <details className="rounded-xl border border-border bg-secondary/50 p-3">
+                      <summary className="cursor-pointer text-sm font-medium text-foreground">
                         Tipo de cambio manual (casos extremos)
                       </summary>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 mb-2 leading-relaxed">
+                      <p className="text-[11px] text-muted-foreground mt-2 mb-2 leading-relaxed">
                         {transferAmountBasis === 'source' ? (
                           <>
                             Indicá cuántas unidades de <strong>{destAccount.currency}</strong> equivalen a{' '}
@@ -729,7 +729,7 @@ export default function CreateTransactionButton({
                             setUseManualExchangeRate(e.target.checked);
                             if (!e.target.checked) setManualExchangeRate('');
                           }}
-                          className="rounded border-slate-300"
+                          className="rounded border-border"
                         />
                         Usar cotización propia (no la automática del sistema)
                       </label>
@@ -744,7 +744,7 @@ export default function CreateTransactionButton({
                               ? `Ej: cuántos ${destAccount.currency} por 1 ${sourceAccount.currency}`
                               : `Ej: cuántos ${sourceAccount.currency} por 1 ${destAccount.currency}`
                           }
-                          className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm"
+                          className="w-full px-3 py-2 rounded-lg border border-border bg-card text-sm"
                         />
                       )}
                     </details>
@@ -761,7 +761,7 @@ export default function CreateTransactionButton({
                         value={amount}
                         onChange={(e) => setAmount(sanitizeAmountInput(e.target.value))}
                         placeholder="0.00"
-                        className="flex-1 min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        className="flex-1 min-w-0 px-4 py-2 rounded-lg border border-border bg-card"
                       />
                       <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
                       <select
@@ -770,7 +770,7 @@ export default function CreateTransactionButton({
                           setAmountCurrency(e.target.value);
                           setCurrencyTouched(true);
                         }}
-                        className="w-[5.5rem] shrink-0 px-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-medium"
+                        className="w-[5.5rem] shrink-0 px-2 py-2 rounded-lg border border-border bg-card text-sm font-medium"
                         title="Moneda del monto"
                       >
                         {currencyOptions.map((c) => (
@@ -780,44 +780,44 @@ export default function CreateTransactionButton({
                         ))}
                       </select>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
                       Si el monto está en otra moneda que la de la cuenta, se convierte con la cotización del
                       sistema (igual que en transferencias).
                     </p>
                     {sourceAccount && amountCurNorm !== accountCurNorm && (
-                      <p className="text-[11px] text-amber-700 dark:text-amber-300 mt-1">
+                      <p className="text-[11px] text-warning mt-1">
                         El saldo de la cuenta se registra en <strong>{sourceAccount.currency}</strong>.
                       </p>
                     )}
                   </div>
 
                   {showExpenseArsBox && expenseIncomeArsReference && (
-                    <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/30 px-3 py-2.5 text-xs">
+                    <div className="rounded-xl border border-primary/20 bg-primary/10 px-3 py-2.5 text-xs">
                       {expenseIncomeArsReference.hint === 'loading' && (
-                        <p className="text-slate-600 dark:text-slate-300">Obteniendo cotización de referencia…</p>
+                        <p className="text-muted-foreground">Obteniendo cotización de referencia…</p>
                       )}
                       {expenseIncomeArsReference.hint === 'no-quote' && (
-                        <p className="text-amber-800 dark:text-amber-200">
+                        <p className="text-warning">
                           No se pudo cargar el dólar blue. Revisá la conexión; el movimiento igual puede guardarse
                           si el backend tiene cotización.
                         </p>
                       )}
                       {expenseIncomeArsReference.ars !== null &&
                         typeof expenseIncomeArsReference.ars === 'number' && (
-                          <p className="text-slate-700 dark:text-slate-200 leading-relaxed">
-                            <span className="text-slate-500 dark:text-slate-400">Equivalente aproximado en pesos: </span>
-                            <span className="font-semibold tabular-nums text-emerald-800 dark:text-emerald-200">
+                          <p className="text-foreground leading-relaxed">
+                            <span className="text-muted-foreground">Equivalente aproximado en pesos: </span>
+                            <span className="font-semibold tabular-nums text-primary">
                               $
                               {Math.round(expenseIncomeArsReference.ars).toLocaleString('es-AR', {
                                 maximumFractionDigits: 0,
                               })}{' '}
                               ARS
                             </span>
-                            <span className="text-slate-500 dark:text-slate-400"> — {expenseIncomeArsReference.hint}</span>
+                            <span className="text-muted-foreground"> — {expenseIncomeArsReference.hint}</span>
                           </p>
                         )}
                       {expenseIncomeArsReference.hint === 'unsupported' && (
-                        <p className="text-slate-600 dark:text-slate-400">
+                        <p className="text-muted-foreground">
                           No hay referencia automática a pesos para esta moneda en el cotizador; el importe se
                           convierte igualmente al guardar.
                         </p>
@@ -837,7 +837,7 @@ export default function CreateTransactionButton({
                         setAccountId(e.target.value);
                         setQuickCreate(null);
                       }}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      className="w-full px-4 py-2 rounded-lg border border-border bg-card"
                     >
                       <option value="">Seleccioná una cuenta</option>
                       {selectableAccounts.map((acc) => (
@@ -872,7 +872,7 @@ export default function CreateTransactionButton({
                         setCategoryId(e.target.value);
                         setQuickCreate(null);
                       }}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      className="w-full px-4 py-2 rounded-lg border border-border bg-card"
                     >
                       <option value="">Sin categoría</option>
                       {filteredCategories.map((cat) => (
@@ -904,9 +904,9 @@ export default function CreateTransactionButton({
                   type="date"
                   value={transactionDateYmd}
                   onChange={(e) => setTransactionDateYmd(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                  className="w-full px-4 py-2 rounded-lg border border-border bg-card"
                 />
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-[11px] text-muted-foreground mt-1">
                   Se guarda el día que elegís (sin correr un día por zona horaria).
                 </p>
               </div>
@@ -918,7 +918,7 @@ export default function CreateTransactionButton({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder={type === 'transfer' ? 'ej: Paso a cuenta ahorro' : 'ej: Compra en supermercado'}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                  className="w-full px-4 py-2 rounded-lg border border-border bg-card"
                 />
               </div>
 

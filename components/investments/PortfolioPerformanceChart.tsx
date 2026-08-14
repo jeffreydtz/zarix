@@ -73,7 +73,7 @@ export default function PortfolioPerformanceChart({
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-8 text-center text-sm text-slate-500">
+      <div className="bg-card rounded-2xl border border-border p-8 text-center text-sm text-muted-foreground">
         Cargando historial de rendimiento…
       </div>
     );
@@ -81,7 +81,7 @@ export default function PortfolioPerformanceChart({
 
   if (error) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-red-200 dark:border-red-900/50 p-5 text-sm text-red-600 dark:text-red-400">
+      <div className="bg-card rounded-2xl border border-destructive/30 p-5 text-sm text-destructive">
         {error}
       </div>
     );
@@ -89,13 +89,13 @@ export default function PortfolioPerformanceChart({
 
   if (chartData.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 text-sm text-slate-600 dark:text-slate-300 space-y-2">
-        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Rendimiento del portafolio</h3>
+      <div className="bg-card rounded-2xl border border-border p-6 text-sm text-muted-foreground space-y-2">
+        <h3 className="text-lg font-bold text-foreground">Rendimiento del portafolio</h3>
         <p>
           Todavía no hay puntos en el historial. Se guarda un registro por día cuando consultás el portafolio (con
           capital invertido y ganancia no realizada en USD, usando dólar blue para unificar pesos).
         </p>
-        <p className="text-slate-500 dark:text-slate-400">
+        <p className="text-muted-foreground">
           Volvé mañana o después de agregar posiciones: el gráfico muestra <strong>ROI %</strong> y{' '}
           <strong>PnL (ganancia no realizada)</strong>, no el valor nominal total — así un aporte nuevo no aparece como
           “subida” de la cartera.
@@ -105,10 +105,10 @@ export default function PortfolioPerformanceChart({
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm space-y-3">
+    <div className="bg-card rounded-2xl border border-border p-5 shadow-sm space-y-3">
       <div>
-        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Rendimiento (no nominal)</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-3xl">
+        <h3 className="text-lg font-bold text-foreground">Rendimiento (no nominal)</h3>
+        <p className="text-xs text-muted-foreground mt-1 max-w-3xl">
           Línea violeta: <strong>ROI %</strong> sobre capital invertido (costo). Línea esmeralda:{' '}
           <strong>ganancia o pérdida no realizada en USD</strong>. Si depositás 3000 USD en una compra al precio de
           mercado, el ROI no salta: sube el costo y el valor a la vez; lo que cambia es el mercado después.

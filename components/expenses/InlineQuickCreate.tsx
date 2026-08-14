@@ -32,11 +32,11 @@ export interface QuickCreatedAccount {
 }
 
 const panelClass =
-  'rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/25 p-3 mt-2 space-y-2.5';
+  'rounded-xl border border-primary/20 bg-primary/10 p-3 mt-2 space-y-2.5';
 const inputClass =
-  'w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-ring';
+  'w-full px-3 py-2 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-ring';
 const cancelClass =
-  'px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 text-slate-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-gray-700';
+  'px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-secondary';
 
 export function QuickCreateCategoryPanel({
   type,
@@ -86,7 +86,7 @@ export function QuickCreateCategoryPanel({
 
   return (
     <div className={panelClass}>
-      <p className="text-xs font-semibold text-emerald-900 dark:text-emerald-200">
+      <p className="text-xs font-semibold text-primary">
         Nueva categoría de {type === 'expense' ? 'gasto' : 'ingreso'}
       </p>
       <input
@@ -113,15 +113,15 @@ export function QuickCreateCategoryPanel({
             aria-label={`Icono ${emoji}`}
             className={`w-8 h-8 rounded-lg text-base leading-none ${
               icon === emoji
-                ? 'bg-emerald-200 dark:bg-emerald-800 ring-2 ring-ring'
-                : 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
+                ? 'bg-primary/20 ring-2 ring-ring'
+                : 'bg-card border border-border'
             }`}
           >
             {emoji}
           </button>
         ))}
       </div>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
       <div className="flex gap-2">
         <button
           type="button"
@@ -208,7 +208,7 @@ export function QuickCreateAccountPanel({
 
   return (
     <div className={panelClass}>
-      <p className="text-xs font-semibold text-emerald-900 dark:text-emerald-200">Nueva cuenta</p>
+      <p className="text-xs font-semibold text-primary">Nueva cuenta</p>
       <input
         ref={nameRef}
         type="text"
@@ -253,10 +253,10 @@ export function QuickCreateAccountPanel({
         placeholder="Saldo inicial (opcional)"
         className={inputClass}
       />
-      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+      <p className="text-[11px] text-muted-foreground">
         Las tarjetas de crédito se crean desde la sección Cuentas (piden límite y cierre).
       </p>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
       <div className="flex gap-2">
         <button
           type="button"

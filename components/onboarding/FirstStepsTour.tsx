@@ -174,7 +174,7 @@ export default function FirstStepsTour() {
       {/* Backdrop con recorte sobre el elemento destacado */}
       {hole ? (
         <div
-          className="absolute rounded-xl ring-2 ring-blue-400 transition-all duration-300"
+          className="absolute rounded-xl ring-2 ring-info transition-all duration-300"
           style={{
             top: hole.top,
             left: hole.left,
@@ -189,26 +189,26 @@ export default function FirstStepsTour() {
 
       {/* Tooltip */}
       <div
-        className="absolute left-1/2 w-[min(92vw,360px)] -translate-x-1/2 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl p-5"
+        className="absolute left-1/2 w-[min(92vw,360px)] -translate-x-1/2 rounded-2xl bg-card border border-border shadow-2xl p-5"
         style={{ top: tooltipTop }}
       >
-        <p className="text-xs font-medium text-blue-500 mb-1">
+        <p className="text-xs font-medium text-info mb-1">
           Paso {stepIndex + 1} de {STEPS.length}
         </p>
-        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">{step.title}</h3>
-        <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-300">{step.body}</p>
+        <h3 className="text-lg font-bold text-foreground">{step.title}</h3>
+        <p className="mt-1.5 text-sm text-muted-foreground">{step.body}</p>
         <div className="mt-4 flex items-center justify-between">
           <button
             type="button"
             onClick={finish}
-            className="text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Saltar
           </button>
           <button
             type="button"
             onClick={next}
-            className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+            className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-info hover:brightness-95 transition-colors"
           >
             {stepIndex >= STEPS.length - 1 ? 'Listo' : 'Siguiente'}
           </button>

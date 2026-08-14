@@ -34,8 +34,8 @@ export default async function AccountsPage() {
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Cuentas</h1>
-              <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+              <h1 className="text-3xl font-bold text-foreground">Cuentas</h1>
+              <p className="text-muted-foreground text-sm mt-1">
                 Administra tus cuentas y tarjetas
               </p>
             </div>

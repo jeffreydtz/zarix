@@ -17,7 +17,7 @@ function ChangeBadge({ value }: { value: number }) {
   return (
     <span
       className={`text-xs font-semibold tabular-nums ${
-        pos ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'
+        pos ? 'text-success' : 'text-destructive'
       }`}
     >
       {pos ? '▲' : '▼'} {Math.abs(value).toFixed(2)}%
@@ -28,14 +28,14 @@ function ChangeBadge({ value }: { value: number }) {
 function SkeletonRow() {
   return (
     <div className="flex items-center gap-3 py-2.5">
-      <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
+      <div className="w-7 h-7 rounded-full bg-secondary animate-pulse" />
       <div className="flex-1 space-y-1.5">
-        <div className="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
-        <div className="h-2.5 w-14 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+        <div className="h-3 w-20 bg-secondary rounded animate-pulse" />
+        <div className="h-2.5 w-14 bg-muted rounded animate-pulse" />
       </div>
       <div className="space-y-1 text-right">
-        <div className="h-3 w-16 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
-        <div className="h-2.5 w-10 bg-slate-100 dark:bg-slate-800 rounded animate-pulse ml-auto" />
+        <div className="h-3 w-16 bg-secondary rounded animate-pulse" />
+        <div className="h-2.5 w-10 bg-muted rounded animate-pulse ml-auto" />
       </div>
     </div>
   );
@@ -60,7 +60,7 @@ function CryptoRow({
         duration: 0.22,
       })}
       whileHover={shouldReduceMotion ? undefined : { x: 2 }}
-      className="flex items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50 last:border-0 rounded-control px-2 hover:bg-surface-soft/75 transition-colors"
+      className="flex items-center gap-3 py-2.5 border-b border-border/50 last:border-0 rounded-control px-2 hover:bg-surface-soft/75 transition-colors"
     >
       {coin.image ? (
         <Image
@@ -72,16 +72,16 @@ function CryptoRow({
           unoptimized
         />
       ) : (
-        <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold">
+        <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">
           {coin.symbol[0]}
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-sm text-slate-800 dark:text-slate-100">{coin.symbol}</div>
-        <div className="text-xs text-slate-400 truncate">{coin.name}</div>
+        <div className="font-semibold text-sm text-foreground">{coin.symbol}</div>
+        <div className="text-xs text-muted-foreground truncate">{coin.name}</div>
       </div>
       <div className="text-right">
-        <div className="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">
+        <div className="text-sm font-bold text-foreground tabular-nums">
           ${coin.price >= 1
             ? coin.price.toLocaleString('en-US', { maximumFractionDigits: 2 })
             : coin.price.toFixed(6)}
@@ -129,8 +129,8 @@ function StockRow({
     : displayTicker.slice(0, 3);
 
   const iconClass = isIndex
-    ? 'rounded-lg bg-violet-100 dark:bg-violet-900/35 text-violet-800 dark:text-violet-200'
-    : 'rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300';
+    ? 'rounded-lg bg-accent-invest/10 text-accent-invest'
+    : 'rounded-lg bg-primary/10 text-primary';
 
   return (
     <motion.div
@@ -142,8 +142,8 @@ function StockRow({
         duration: 0.22,
       })}
       whileHover={shouldReduceMotion ? undefined : { x: 2 }}
-      className={`flex items-center gap-3 py-2.5 border-b border-slate-100 dark:border-slate-700/50 last:border-0 ${
-        isIndex ? 'bg-violet-50/60 dark:bg-violet-950/20 -mx-4 px-4 border-slate-200/80 dark:border-violet-900/30' : 'rounded-control px-2 hover:bg-surface-soft/75 transition-colors'
+      className={`flex items-center gap-3 py-2.5 border-b border-border/50 last:border-0 ${
+        isIndex ? 'bg-accent-invest/10 -mx-4 px-4 border-accent-invest/20' : 'rounded-control px-2 hover:bg-surface-soft/75 transition-colors'
       }`}
     >
       {stock.logoUrl ? (
@@ -152,7 +152,7 @@ function StockRow({
           alt=""
           width={28}
           height={28}
-          className="w-7 h-7 shrink-0 rounded-lg object-contain bg-white dark:bg-slate-900 ring-1 ring-slate-200/90 dark:ring-slate-600"
+          className="w-7 h-7 shrink-0 rounded-lg object-contain bg-card ring-1 ring-border"
           unoptimized
         />
       ) : (
@@ -164,21 +164,21 @@ function StockRow({
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="font-semibold text-sm text-slate-800 dark:text-slate-100 truncate">
+          <span className="font-semibold text-sm text-foreground truncate">
             {isIndex || stock.ticker.startsWith('^') ? stock.name : displayTicker}
           </span>
           {isIndex && (
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400 shrink-0">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-accent-invest shrink-0">
               índice
             </span>
           )}
         </div>
-        <div className="text-xs text-slate-400 truncate">
+        <div className="text-xs text-muted-foreground truncate">
           {isIndex ? stock.ticker : stock.ticker.startsWith('^') ? stock.ticker : stock.name}
         </div>
       </div>
       <div className="text-right">
-        <div className="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">{priceStr}</div>
+        <div className="text-sm font-bold text-foreground tabular-nums">{priceStr}</div>
         <ChangeBadge value={stock.changePct} />
       </div>
     </motion.div>
@@ -215,27 +215,27 @@ function MarketSection({
   const snap = formatSnapshotLabel(snapshotAt);
   return (
     <div className="zx-panel overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
+      <div className="px-4 py-3 border-b border-border flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <span className="badge badge-primary uppercase tracking-wide">{marketTag}</span>
-          <span className="font-bold text-sm text-slate-800 dark:text-slate-100 truncate">{title}</span>
+          <span className="font-bold text-sm text-foreground truncate">{title}</span>
         </div>
         <div className="flex flex-col items-end text-right shrink-0">
           <span
             className={
               stale
-                ? 'text-[10px] font-medium text-amber-600 dark:text-amber-400'
-                : 'text-[11px] text-emerald-600 dark:text-emerald-300'
+                ? 'text-[10px] font-medium text-warning'
+                : 'text-[11px] text-success'
             }
           >
             {stale ? 'Última cotización guardada' : 'Tiempo real'}
           </span>
           {stale && snap && (
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 tabular-nums">{snap}</span>
+            <span className="text-[10px] text-muted-foreground tabular-nums">{snap}</span>
           )}
         </div>
       </div>
-      <div className="px-4 divide-y divide-slate-100 dark:divide-slate-700/50">
+      <div className="px-4 divide-y divide-border/50">
         {loading ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />) : children}
       </div>
     </div>
@@ -295,8 +295,8 @@ export default function MarketDataWidget() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
         <div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Mercados</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-xl">
+          <h2 className="text-xl font-bold text-foreground">Mercados</h2>
+          <p className="text-sm text-muted-foreground mt-1 max-w-xl">
             Índices Nasdaq Composite y MERVAL, acciones líderes y las cinco mayores cripto por capitalización.
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -306,14 +306,14 @@ export default function MarketDataWidget() {
         </div>
         <div className="flex items-center gap-2 shrink-0 sm:pb-0.5">
           {lastUpdated && (
-            <span className="text-xs text-slate-400 hidden sm:inline">Respuesta API {lastUpdated}</span>
+            <span className="text-xs text-muted-foreground hidden sm:inline">Respuesta API {lastUpdated}</span>
           )}
           <button
             type="button"
             onClick={() => {
               void fetchData({ showLoading: true, forceRefresh: true });
             }}
-            className="text-xs text-emerald-600 dark:text-emerald-300 hover:text-emerald-700 dark:hover:text-emerald-200 font-medium px-2 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
+            className="text-xs text-primary hover:text-primary/80 font-medium px-2 py-1 rounded-lg hover:bg-primary/10 transition-colors"
           >
             Actualizar
           </button>
@@ -321,7 +321,7 @@ export default function MarketDataWidget() {
       </div>
 
       {fetchError && (
-        <div className="rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-800 dark:text-amber-200 flex items-start gap-2">
+        <div className="rounded-2xl bg-warning/10 border border-warning/30 p-3 text-sm text-warning flex items-start gap-2">
           <span aria-hidden>ℹ️</span>
           <span>
             No se pudo actualizar desde la red. Mostramos la última información guardada en este dispositivo
@@ -344,7 +344,7 @@ export default function MarketDataWidget() {
             <CryptoRow key={coin.id} coin={coin} index={i} shouldReduceMotion={shouldReduceMotion} />
           ))}
           {!loading && !(data?.crypto || []).length && (
-            <div className="py-6 text-sm text-slate-500 dark:text-slate-400">Sin datos de crypto.</div>
+            <div className="py-6 text-sm text-muted-foreground">Sin datos de crypto.</div>
           )}
         </MarketSection>
 
@@ -360,7 +360,7 @@ export default function MarketDataWidget() {
               <StockRow key={stock.ticker} stock={stock} index={i} shouldReduceMotion={shouldReduceMotion} />
             ))
           ) : (
-            <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
+            <div className="py-6 text-sm text-muted-foreground">
               Sin datos del mercado USA (índice Nasdaq y acciones) en este momento.
             </div>
           )}
@@ -378,7 +378,7 @@ export default function MarketDataWidget() {
               <StockRow key={stock.ticker} stock={stock} index={i} shouldReduceMotion={shouldReduceMotion} />
             ))
           ) : (
-            <div className="py-6 text-sm text-slate-500 dark:text-slate-400">
+            <div className="py-6 text-sm text-muted-foreground">
               Sin datos de Argentina (índice MERVAL y acciones) en este momento.
             </div>
           )}

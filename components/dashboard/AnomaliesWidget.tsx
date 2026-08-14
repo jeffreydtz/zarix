@@ -38,26 +38,26 @@ export default function AnomaliesWidget() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className="rounded-2xl border border-amber-200 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/10 overflow-hidden"
+      className="rounded-2xl border border-warning/30 bg-warning/10 overflow-hidden"
     >
       {/* Header */}
       <div className="px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-lg">
+          <div className="w-9 h-9 rounded-xl bg-warning/15 flex items-center justify-center text-lg">
             🚨
           </div>
           <div>
-            <div className="font-bold text-slate-800 dark:text-slate-100 text-sm">
+            <div className="font-bold text-foreground text-sm">
               Gastos Inusuales
             </div>
-            <div className="text-xs text-amber-600 dark:text-amber-400">
+            <div className="text-xs text-warning">
               {anomalies.length} {anomalies.length === 1 ? 'categoría' : 'categorías'} por encima del promedio
             </div>
           </div>
         </div>
         <Link
           href="/analysis"
-          className="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 font-medium"
+          className="text-xs text-warning hover:opacity-80 font-medium"
         >
           Ver análisis →
         </Link>
@@ -72,8 +72,8 @@ export default function AnomaliesWidget() {
               : 'categoría nueva';
             const severityColor =
               !anomaly.ratio || anomaly.ratio >= 3
-                ? 'text-red-500'
-                : 'text-amber-500';
+                ? 'text-destructive'
+                : 'text-warning';
 
             return (
               <motion.div
@@ -82,14 +82,14 @@ export default function AnomaliesWidget() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -12 }}
                 transition={{ delay: i * 0.05 }}
-                className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-800 border border-amber-100 dark:border-amber-800/30"
+                className="flex items-center gap-3 p-3 rounded-xl bg-card border border-warning/20"
               >
                 <span className="text-xl shrink-0">{anomaly.categoryIcon}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">
+                  <div className="font-semibold text-foreground text-sm truncate">
                     {anomaly.categoryName}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 flex gap-1 flex-wrap">
+                  <div className="text-xs text-muted-foreground flex gap-1 flex-wrap">
                     <span>${anomaly.currentAmount.toLocaleString('es-AR', { maximumFractionDigits: 0 })} este mes</span>
                     {anomaly.historicalAvg > 0 && (
                       <>
@@ -110,7 +110,7 @@ export default function AnomaliesWidget() {
         {anomalies.length > 2 && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-full text-xs text-amber-600 dark:text-amber-400 hover:text-amber-800 py-1 font-medium"
+            className="w-full text-xs text-warning hover:opacity-80 py-1 font-medium"
           >
             {expanded ? '▲ Ver menos' : `▼ Ver ${anomalies.length - 2} más`}
           </button>

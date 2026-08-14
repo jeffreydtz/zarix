@@ -235,17 +235,17 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
           initial={{ scale: 0.96, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.96, opacity: 0 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full max-h-[90dvh] overflow-y-auto overscroll-contain shadow-xl border border-slate-200 dark:border-slate-700"
+          className="bg-card rounded-2xl max-w-lg w-full max-h-[90dvh] overflow-y-auto overscroll-contain shadow-xl border border-border"
           onClick={(ev) => ev.stopPropagation()}
         >
-          <div className="sticky top-0 z-10 flex items-center justify-between gap-2 px-5 py-4 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-t-2xl">
-            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+          <div className="sticky top-0 z-10 flex items-center justify-between gap-2 px-5 py-4 border-b border-border bg-card/95 backdrop-blur-sm rounded-t-2xl">
+            <h2 className="text-lg font-semibold text-foreground">
               Editar cuenta
             </h2>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
+              className="p-2 rounded-xl hover:bg-secondary text-muted-foreground"
               aria-label="Cerrar"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,12 +261,12 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
 
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
             {error && (
-              <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
                 {error}
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Nombre
               </label>
               <input
@@ -279,7 +279,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Tipo
               </label>
               <select
@@ -301,7 +301,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Moneda
               </label>
               <select
@@ -318,19 +318,19 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Color
               </label>
               <input
                 type="color"
                 value={color?.startsWith('#') ? color : '#3B82F6'}
                 onChange={(e) => setColor(e.target.value)}
-                className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-600 cursor-pointer bg-transparent"
+                className="h-10 w-full rounded-xl border border-border cursor-pointer bg-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Ícono
               </label>
               <div className="grid grid-cols-6 gap-1.5 max-h-28 overflow-y-auto">
@@ -341,8 +341,8 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                     onClick={() => setIcon(ic)}
                     className={`p-2 text-xl rounded-lg border-2 transition-all ${
                       icon === ic
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                        : 'border-slate-200 dark:border-slate-600 hover:border-slate-300'
+                        ? 'border-info bg-info/10'
+                        : 'border-border hover:border-border'
                     }`}
                   >
                     {ic}
@@ -352,10 +352,10 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Saldo en Zarix ({currency})
               </label>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+              <p className="text-xs text-muted-foreground mb-1">
                 Si cambiás este valor, se crea un movimiento de ajuste por la diferencia.
               </p>
               <input
@@ -369,10 +369,10 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
 
             {isCreditCard && isMulticurrency && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Saldo secundario en Zarix ({secondaryCurrency})
                 </label>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <p className="text-xs text-muted-foreground mb-1">
                   Se crea un movimiento de ajuste en la moneda secundaria por la diferencia.
                 </p>
                 <input
@@ -385,7 +385,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
               </div>
             )}
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/40">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary">
               <input
                 type="checkbox"
                 id="edit-include-total"
@@ -394,10 +394,10 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                 className="mt-1 w-4 h-4 rounded"
               />
               <div>
-                <label htmlFor="edit-include-total" className="text-sm text-slate-700 dark:text-slate-300">
+                <label htmlFor="edit-include-total" className="text-sm text-muted-foreground">
                   Incluir en totales generales de la app
                 </label>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   Desmarcar saca la cuenta del patrimonio del panel; la cuenta sigue activa y visible
                   acá. Para ocultarla de la lista usá archivar.
                 </p>
@@ -405,7 +405,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
             </div>
 
             {!isInvestment && (
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/40">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary">
                 <input
                   type="checkbox"
                   id="edit-include-liquid"
@@ -414,10 +414,10 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                   className="mt-1 w-4 h-4 rounded"
                 />
                 <div>
-                  <label htmlFor="edit-include-liquid" className="text-sm text-slate-700 dark:text-slate-300">
+                  <label htmlFor="edit-include-liquid" className="text-sm text-muted-foreground">
                     Contar en patrimonio líquido
                   </label>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     Desmarcá si el dinero no es “disponible” pero querés verlo en el total.
                   </p>
                 </div>
@@ -425,7 +425,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
             )}
 
             {!isCreditCard && (
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/40">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary">
                 <input
                   type="checkbox"
                   id="edit-is-debt"
@@ -433,14 +433,14 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                   onChange={(e) => setIsDebt(e.target.checked)}
                   className="mt-1 w-4 h-4 rounded"
                 />
-                <label htmlFor="edit-is-debt" className="text-sm text-slate-700 dark:text-slate-300">
+                <label htmlFor="edit-is-debt" className="text-sm text-muted-foreground">
                   Es una deuda (saldo como obligación)
                 </label>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Saldo mínimo alerta (opcional)
               </label>
               <input
@@ -454,10 +454,10 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
             </div>
 
             {isCreditCard && (
-              <div className="space-y-3 p-3 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-900/15">
-                <p className="text-sm font-medium text-amber-900 dark:text-amber-200">Tarjeta de crédito</p>
+              <div className="space-y-3 p-3 rounded-xl border border-warning/30 bg-warning/10">
+                <p className="text-sm font-medium text-warning">Tarjeta de crédito</p>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">
                     Límite *
                   </label>
                   <input
@@ -471,7 +471,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">
                       Día cierre
                     </label>
                     <input
@@ -484,7 +484,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">
                       Día vencimiento
                     </label>
                     <input
@@ -498,7 +498,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">
                     Últimos 4 dígitos
                   </label>
                   <input
@@ -519,7 +519,7 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
                     onChange={(e) => setIsMulticurrency(e.target.checked)}
                     className="w-4 h-4 rounded"
                   />
-                  <label htmlFor="edit-mc" className="text-sm text-slate-700 dark:text-slate-300">
+                  <label htmlFor="edit-mc" className="text-sm text-muted-foreground">
                     Tarjeta bi-moneda
                   </label>
                 </div>

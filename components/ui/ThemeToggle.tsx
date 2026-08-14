@@ -24,7 +24,7 @@ export default function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+      <div className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-secondary animate-pulse" />
     );
   }
 
@@ -37,9 +37,9 @@ export default function ThemeToggle() {
     <motion.button
       whileTap={{ scale: 0.9 }}
       onClick={() => setTheme(next)}
-      className="relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-slate-100 dark:bg-slate-800
+      className="relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-secondary
                  flex items-center justify-center overflow-hidden touch-manipulation
-                 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                 hover:bg-surface-soft transition-colors"
       aria-label={`Tema: ${META[current].label}. Tocar para ${META[next].label}`}
       title={`Tema: ${META[current].label}`}
     >

@@ -125,13 +125,13 @@ export default function PasskeysSection() {
       <h2 className="text-lg font-semibold mb-1 flex items-center gap-2">
         <span>🔑</span> Passkeys
       </h2>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+      <p className="text-sm text-muted-foreground mb-4">
         Iniciá sesión con tu huella, cara o PIN del dispositivo, sin contraseña. Tu email y
         contraseña siguen funcionando como respaldo.
       </p>
 
       {supported === false && (
-        <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-700 dark:text-amber-400">
+        <div className="p-4 rounded-lg bg-warning/10 border border-warning/30 text-sm text-warning">
           Este navegador o dispositivo no soporta passkeys. Probá desde un navegador moderno con
           biometría o PIN.
         </div>
@@ -140,27 +140,27 @@ export default function PasskeysSection() {
       {supported && (
         <div className="space-y-4">
           {error && (
-            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-sm text-green-700 dark:text-green-400">
+            <div className="p-3 rounded-lg bg-success/10 border border-success/30 text-sm text-success">
               {success}
             </div>
           )}
 
           {loading ? (
-            <p className="text-sm text-slate-500">Cargando passkeys...</p>
+            <p className="text-sm text-muted-foreground">Cargando passkeys...</p>
           ) : passkeys.length === 0 ? (
-            <p className="text-sm text-slate-500">Todavía no registraste ninguna passkey.</p>
+            <p className="text-sm text-muted-foreground">Todavía no registraste ninguna passkey.</p>
           ) : (
             <ul className="space-y-2">
               {passkeys.map((pk) => (
                 <li
                   key={pk.id}
-                  className="flex items-center justify-between gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                  className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border bg-card"
                 >
                   {editingId === pk.id ? (
                     <input
@@ -177,10 +177,10 @@ export default function PasskeysSection() {
                     />
                   ) : (
                     <div className="min-w-0">
-                      <div className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">
+                      <div className="text-sm font-medium text-foreground truncate">
                         {pk.friendly_name || 'Passkey'}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-muted-foreground">
                         Creada {formatDate(pk.created_at)}
                         {pk.last_used_at ? ` · Usada ${formatDate(pk.last_used_at)}` : ''}
                       </div>
@@ -193,13 +193,13 @@ export default function PasskeysSection() {
                         <button
                           onClick={() => void handleRename(pk.id)}
                           disabled={busy}
-                          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+                          className="text-sm font-medium text-info hover:underline disabled:opacity-50"
                         >
                           Guardar
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
-                          className="text-sm text-slate-500 hover:underline"
+                          className="text-sm text-muted-foreground hover:underline"
                         >
                           Cancelar
                         </button>
@@ -212,14 +212,14 @@ export default function PasskeysSection() {
                             setEditingName(pk.friendly_name || '');
                           }}
                           disabled={busy}
-                          className="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 disabled:opacity-50"
+                          className="text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
                         >
                           Renombrar
                         </button>
                         <button
                           onClick={() => void handleDelete(pk)}
                           disabled={busy}
-                          className="text-sm text-red-600 dark:text-red-400 hover:underline disabled:opacity-50"
+                          className="text-sm text-destructive hover:underline disabled:opacity-50"
                         >
                           Eliminar
                         </button>

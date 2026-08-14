@@ -36,13 +36,13 @@ export default function AccountBalanceEquivalents({
     variant === 'dark'
       ? 'text-xs opacity-90 font-medium'
       : variant === 'detail'
-        ? 'text-sm text-slate-500 dark:text-slate-400 mt-2 space-y-1'
-        : 'text-xs text-slate-400 dark:text-slate-500 mt-0.5';
+        ? 'text-sm text-muted-foreground mt-2 space-y-1'
+        : 'text-xs text-muted-foreground mt-0.5';
 
   const warn =
     variant === 'dark'
       ? 'text-xs opacity-75'
-      : 'text-xs text-amber-600 dark:text-amber-400/90';
+      : 'text-xs text-warning';
 
   if (c === 'ARS') {
     if (absUsd == null || absUsd < 1e-8) {
@@ -52,7 +52,7 @@ export default function AccountBalanceEquivalents({
       <div className={base}>
         <span className={variant === 'detail' ? 'block' : undefined}>
           Equivalente (dólar blue):{' '}
-          <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+          <span className="tabular-nums font-medium text-muted-foreground">
             ≈ ${fmtUsd(absUsd)} USD
           </span>
         </span>
@@ -68,7 +68,7 @@ export default function AccountBalanceEquivalents({
       <div className={base}>
         <span className={variant === 'detail' ? 'block' : undefined}>
           Equivalente (dólar blue):{' '}
-          <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+          <span className="tabular-nums font-medium text-muted-foreground">
             ≈ ${fmtArs(absArs)} ARS
           </span>
         </span>
@@ -85,7 +85,7 @@ export default function AccountBalanceEquivalents({
   }
   return (
     <div className={base}>
-      <span className="tabular-nums text-slate-600 dark:text-slate-300">{parts.join(' · ')}</span>
+      <span className="tabular-nums text-muted-foreground">{parts.join(' · ')}</span>
     </div>
   );
 }

@@ -6,7 +6,7 @@ interface SkeletonProps {
 }
 
 export default function Skeleton({ className = '', variant = 'rectangular' }: SkeletonProps) {
-  const baseClasses = 'bg-slate-200 dark:bg-slate-700';
+  const baseClasses = 'bg-muted';
   
   const variantClasses = {
     text: 'h-4 rounded',

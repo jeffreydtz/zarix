@@ -174,16 +174,16 @@ export default function EditTransactionModal({
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full max-h-[90dvh] overflow-y-auto overscroll-contain shadow-2xl"
+        className="bg-card rounded-2xl max-w-lg w-full max-h-[90dvh] overflow-y-auto overscroll-contain shadow-2xl"
       >
-        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">
+        <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-foreground">
             {duplicateDraftMode ? 'Duplicado (modo edición)' : 'Editar Movimiento'}
           </h2>
           <button
             onClick={onClose}
             aria-label="Cerrar"
-            className="p-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
+            className="p-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-xl hover:bg-secondary text-muted-foreground"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -193,19 +193,19 @@ export default function EditTransactionModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
               {error}
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Tipo
             </label>
             <div className="grid grid-cols-3 gap-2">
               {([
-                { value: 'expense', label: 'Gasto', active: 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300' },
-                { value: 'income', label: 'Ingreso', active: 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' },
-                { value: 'transfer', label: 'Transfer', active: 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' },
+                { value: 'expense', label: 'Gasto', active: 'border-destructive bg-destructive/10 text-destructive' },
+                { value: 'income', label: 'Ingreso', active: 'border-success bg-success/10 text-success' },
+                { value: 'transfer', label: 'Transfer', active: 'border-info bg-info/10 text-info' },
               ] as const).map((type) => (
                 <button
                   key={type.value}
@@ -214,7 +214,7 @@ export default function EditTransactionModal({
                   className={`p-3 rounded-xl border-2 transition-all font-medium ${
                     formData.type === type.value
                       ? type.active
-                      : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                      : 'border-border hover:border-muted-foreground'
                   }`}
                 >
                   {type.label}
@@ -225,7 +225,7 @@ export default function EditTransactionModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Monto
               </label>
               <div className="flex gap-2">
@@ -244,7 +244,7 @@ export default function EditTransactionModal({
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Moneda
               </label>
               <select
@@ -264,7 +264,7 @@ export default function EditTransactionModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Cuenta
             </label>
             <select
@@ -284,7 +284,7 @@ export default function EditTransactionModal({
           {formData.type === 'transfer' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Cuenta destino
                 </label>
                 <select
@@ -304,7 +304,7 @@ export default function EditTransactionModal({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Tipo de cambio (opcional)
                 </label>
                 <input
@@ -322,7 +322,7 @@ export default function EditTransactionModal({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Categoría
             </label>
             <select
@@ -340,7 +340,7 @@ export default function EditTransactionModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Descripcion
             </label>
             <input
@@ -353,7 +353,7 @@ export default function EditTransactionModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Fecha
             </label>
             <input
@@ -366,7 +366,7 @@ export default function EditTransactionModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Notas (opcional)
             </label>
             <textarea
@@ -382,7 +382,7 @@ export default function EditTransactionModal({
               type="button"
               onClick={handleDuplicate}
               disabled={loading || duplicateDraftMode}
-              className="btn flex-1 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+              className="btn flex-1 border border-border text-foreground hover:bg-secondary"
             >
               {duplicateDraftMode ? 'Duplicado listo para guardar' : 'Duplicar'}
             </button>

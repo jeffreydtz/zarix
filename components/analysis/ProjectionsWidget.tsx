@@ -35,11 +35,11 @@ export default function ProjectionsWidget() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 animate-pulse">
-        <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mb-4" />
+      <div className="rounded-2xl border border-border bg-card p-5 animate-pulse">
+        <div className="h-5 bg-secondary rounded w-1/3 mb-4" />
         <div className="grid grid-cols-3 gap-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-slate-100 dark:bg-slate-700 rounded-xl" />
+            <div key={i} className="h-20 bg-secondary rounded-xl" />
           ))}
         </div>
       </div>
@@ -49,12 +49,8 @@ export default function ProjectionsWidget() {
   if (!data || !data.hasData) return null;
 
   const isPositive = data.trend === 'positive';
-  const trendColor = isPositive
-    ? 'text-emerald-600 dark:text-emerald-400'
-    : 'text-red-500 dark:text-red-400';
-  const trendBg = isPositive
-    ? 'bg-emerald-50 dark:bg-emerald-900/20'
-    : 'bg-red-50 dark:bg-red-900/20';
+  const trendColor = isPositive ? 'text-success' : 'text-destructive';
+  const trendBg = isPositive ? 'bg-success/10' : 'bg-destructive/10';
 
   const projections = [
     { label: '3 meses', value: data.projection3m, months: 3 },
@@ -70,19 +66,19 @@ export default function ProjectionsWidget() {
       initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={maybeReduceTransition(shouldReduceMotion, { ...motionTransition.smooth, delay: 0.1 })}
-      className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden"
+      className="rounded-2xl border border-border bg-card overflow-hidden"
     >
       {/* Header */}
-      <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-700">
+      <div className="px-5 py-4 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-lg">
+          <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center text-lg">
             📈
           </div>
           <div>
-            <div className="font-bold text-slate-800 dark:text-slate-100 text-sm">
+            <div className="font-bold text-foreground text-sm">
               Proyecciones
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               Basado en los últimos {data.monthsAnalyzed} {data.monthsAnalyzed === 1 ? 'mes' : 'meses'}
             </div>
           </div>
@@ -95,20 +91,20 @@ export default function ProjectionsWidget() {
       <div className="p-5 space-y-4">
         {/* Avg stats */}
         <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="rounded-xl bg-slate-50 dark:bg-slate-700/50 p-3">
-            <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Ingreso promedio</div>
-            <div className="font-bold text-slate-800 dark:text-slate-100 text-sm">
+          <div className="rounded-xl bg-secondary p-3">
+            <div className="text-xs text-muted-foreground mb-1">Ingreso promedio</div>
+            <div className="font-bold text-foreground text-sm">
               ${data.avgIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
             </div>
           </div>
-          <div className="rounded-xl bg-slate-50 dark:bg-slate-700/50 p-3">
-            <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Gasto promedio</div>
-            <div className="font-bold text-slate-800 dark:text-slate-100 text-sm">
+          <div className="rounded-xl bg-secondary p-3">
+            <div className="text-xs text-muted-foreground mb-1">Gasto promedio</div>
+            <div className="font-bold text-foreground text-sm">
               ${data.avgExpense.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
             </div>
           </div>
           <div className={`rounded-xl p-3 ${trendBg}`}>
-            <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Tasa ahorro</div>
+            <div className="text-xs text-muted-foreground mb-1">Tasa ahorro</div>
             <div className={`font-bold text-sm ${trendColor}`}>
               {data.savingsRate.toFixed(1)}%
             </div>
@@ -130,15 +126,15 @@ export default function ProjectionsWidget() {
                   delay: 0.08 + i * 0.06,
                   duration: 0.32,
                 })}
-                className="rounded-xl border border-slate-100 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/40 p-3 text-center"
+                className="rounded-xl border border-border bg-secondary p-3 text-center"
               >
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1.5 font-medium">
+                <div className="text-xs text-muted-foreground mb-1.5 font-medium">
                   En {proj.label}
                 </div>
-                <div className={`font-bold text-base ${proj.value >= 0 ? 'text-slate-800 dark:text-slate-100' : 'text-red-500'}`}>
+                <div className={`font-bold text-base ${proj.value >= 0 ? 'text-foreground' : 'text-destructive'}`}>
                   ${Math.abs(proj.value).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                 </div>
-                <div className={`text-xs mt-0.5 ${diffPos ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
+                <div className={`text-xs mt-0.5 ${diffPos ? 'text-success' : 'text-destructive'}`}>
                   {diffPos ? '+' : '−'}${Math.abs(diff).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                 </div>
               </motion.div>
@@ -148,7 +144,7 @@ export default function ProjectionsWidget() {
 
         {/* Mini bar chart — próximos 6 meses */}
         <div>
-          <div className="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">
+          <div className="text-xs text-muted-foreground mb-2 font-medium">
             Próximos 6 meses
           </div>
           <div className="flex items-end gap-1.5 h-14">
@@ -166,10 +162,10 @@ export default function ProjectionsWidget() {
                       duration: 0.45,
                       delay: 0.14 + i * 0.05,
                     })}
-                    className={`w-full rounded-t-sm ${isNeg ? 'bg-red-400' : 'bg-blue-400 dark:bg-blue-500'}`}
+                    className={`w-full rounded-t-sm ${isNeg ? 'bg-destructive' : 'bg-info'}`}
                     title={`${m.month}: $${m.projected.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`}
                   />
-                  <div className="text-[9px] text-slate-400 leading-none truncate w-full text-center">
+                  <div className="text-[9px] text-muted-foreground leading-none truncate w-full text-center">
                     {m.month.split(' ')[0]}
                   </div>
                 </div>
@@ -179,7 +175,7 @@ export default function ProjectionsWidget() {
         </div>
 
         {!isPositive && (
-          <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl p-3">
+          <div className="text-xs text-destructive bg-destructive/10 rounded-xl p-3">
             ⚠️ Con este ritmo de gastos tu patrimonio en ARS disminuye. Considerá reducir gastos o aumentar ingresos.
           </div>
         )}

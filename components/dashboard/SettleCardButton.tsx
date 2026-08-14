@@ -146,13 +146,13 @@ export default function SettleCardButton({
             if (e.target === e.currentTarget) handleClose();
           }}
         >
-          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 max-h-[90dvh] overflow-y-auto overscroll-contain">
+          <div className="bg-card rounded-2xl max-w-md w-full p-6 max-h-[90dvh] overflow-y-auto overscroll-contain">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Saldar {card.name}</h2>
               <button
                 onClick={handleClose}
                 aria-label="Cerrar"
-                className="p-2 -mr-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                className="p-2 -mr-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center text-muted-foreground hover:text-foreground"
               >
                 ✕
               </button>
@@ -160,19 +160,19 @@ export default function SettleCardButton({
 
             <div className="space-y-4">
               {error && (
-                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
                   {error}
                 </div>
               )}
-              <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-900/15 px-3 py-2.5">
-                <p className="text-sm text-slate-700 dark:text-slate-200">
+              <div className="rounded-xl border border-warning/30 bg-warning/10 px-3 py-2.5">
+                <p className="text-sm text-foreground">
                   Deuda actual:{' '}
-                  <span className="font-bold tabular-nums text-amber-700 dark:text-amber-300">
+                  <span className="font-bold tabular-nums text-warning">
                     ${formatMoney(primaryDebt)} {card.currency}
                   </span>
                 </p>
                 {isMulticurrency && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-[11px] text-muted-foreground mt-1">
                     Esta tarjeta también tiene deuda en USD; por ahora se salda aparte.
                   </p>
                 )}
@@ -183,7 +183,7 @@ export default function SettleCardButton({
                 <select
                   value={fundingId}
                   onChange={(e) => selectFunding(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                  className="w-full px-4 py-2 rounded-lg border border-border bg-card"
                 >
                   {fundingAccounts.map((acc) => (
                     <option key={acc.id} value={acc.id}>
@@ -192,9 +192,9 @@ export default function SettleCardButton({
                   ))}
                 </select>
                 {fundingAccount && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                  <p className="text-[11px] text-muted-foreground mt-1.5">
                     Disponible ({fundingAccount.currency}):{' '}
-                    <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+                    <span className="tabular-nums font-medium text-muted-foreground">
                       {formatMoney(fundingAvailable)}
                     </span>
                   </p>
@@ -210,7 +210,7 @@ export default function SettleCardButton({
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0.00"
-                    className="w-full min-w-0 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    className="w-full min-w-0 px-4 py-2 rounded-lg border border-border bg-card"
                   />
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -218,7 +218,7 @@ export default function SettleCardButton({
                       onClick={applyMax}
                       disabled={maxSettle <= 0}
                       title={`Completar con el máximo a saldar: ${formatMoney(maxSettle)} ${card.currency}`}
-                      className="shrink-0 px-3 py-2 rounded-lg text-sm font-medium border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed"
+                      className="shrink-0 px-3 py-2 rounded-lg text-sm font-medium border border-primary/25 bg-primary/10 text-primary hover:bg-primary/15 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed"
                     >
                       Saldar todo
                     </button>
@@ -226,7 +226,7 @@ export default function SettleCardButton({
                   </div>
                 </div>
                 {amount !== '' && !amountValid && (
-                  <p className="text-[11px] text-amber-700 dark:text-amber-300 mt-1.5">
+                  <p className="text-[11px] text-warning mt-1.5">
                     El monto debe ser mayor a 0 y no superar ${formatMoney(maxSettle)}{' '}
                     {card.currency} (deuda o saldo disponible).
                   </p>

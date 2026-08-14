@@ -278,8 +278,8 @@ export default function SettingsForm({
         <h2 className="text-xl font-semibold mb-4">Cuenta</h2>
         <div className="space-y-3">
           <div>
-            <label className="text-sm text-gray-500">User ID</label>
-            <div className="font-mono text-sm bg-gray-100 dark:bg-gray-700 p-2 rounded">
+            <label className="text-sm text-muted-foreground">User ID</label>
+            <div className="font-mono text-sm bg-secondary p-2 rounded">
               {user.id}
             </div>
           </div>
@@ -290,17 +290,17 @@ export default function SettingsForm({
         <div
           className={`p-4 rounded-xl text-sm ${
             integMessage.startsWith('✅')
-              ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'
-              : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'
+              ? 'bg-success/10 text-success'
+              : 'bg-destructive/10 text-destructive'
           }`}
         >
           {integMessage}
         </div>
       )}
 
-      <div className="card border-2 border-violet-200 dark:border-violet-900">
+      <div className="card border-2 border-accent-invest/30">
         <h2 className="text-xl font-semibold mb-2">Plan y suscripción</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+        <p className="text-sm text-muted-foreground mb-3">
           Estado de la pasarela de pagos y selección del plan a contratar.
         </p>
         {billingPlans.length > 0 && (
@@ -312,17 +312,17 @@ export default function SettingsForm({
                 onClick={() => setSelectedPlanId(plan.id)}
                 className={`text-left rounded-xl border p-3 transition-colors ${
                   selectedPlanId === plan.id
-                    ? 'border-violet-400 bg-violet-50 dark:bg-violet-950/30 dark:border-violet-700'
-                    : 'border-gray-200 dark:border-gray-700'
+                    ? 'border-accent-invest bg-accent-invest/10'
+                    : 'border-border'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-medium">{plan.name}</p>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-secondary">
                     {plan.interval === 'yearly' ? 'Anual' : 'Mensual'}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{plan.description}</p>
+                <p className="text-sm text-muted-foreground mt-1">{plan.description}</p>
                 <p className="text-sm font-semibold mt-2">
                   {plan.currency} {plan.amount.toLocaleString('es-AR', { maximumFractionDigits: 2 })}
                 </p>
@@ -331,20 +331,20 @@ export default function SettingsForm({
           </div>
         )}
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          <span className="text-sm text-gray-500">Estado:</span>
+          <span className="text-sm text-muted-foreground">Estado:</span>
           <span
             className={`text-xs font-medium px-2.5 py-1 rounded-full ${
               isActivePlan
-                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200'
+                ? 'bg-success/10 text-success'
                 : isGracePeriod
-                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200'
-                  : 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200'
+                  ? 'bg-warning/10 text-warning'
+                  : 'bg-destructive/10 text-destructive'
             }`}
           >
             {subscriptionStatusLabel[subscriptionStatus] || subscriptionStatus}
           </span>
           {gracePeriodEnd && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-muted-foreground">
               Límite: {new Date(gracePeriodEnd).toLocaleString('es-AR')}
             </span>
           )}
@@ -360,7 +360,7 @@ export default function SettingsForm({
           </button>
           <a
             href="/recurring"
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm"
+            className="px-4 py-2 rounded-lg border border-border text-sm"
           >
             Ver planes y recurrentes
           </a>
@@ -368,7 +368,7 @@ export default function SettingsForm({
       </div>
 
       {isGracePeriod && (
-        <div className="rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-800 p-4 text-amber-900 dark:text-amber-200">
+        <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-warning">
           <div className="font-semibold">Aviso de pago: estás en período de gracia</div>
           <p className="text-sm mt-1">
             El último cobro de tu suscripción falló. Podés seguir usando la IA temporalmente, pero
@@ -383,9 +383,9 @@ export default function SettingsForm({
       )}
 
       {isPastDue ? (
-        <div className="card border-2 border-rose-200 dark:border-rose-900">
+        <div className="card border-2 border-destructive/30">
           <h2 className="text-xl font-semibold mb-2">Bot de IA bloqueado por suscripcion</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Tu estado actual es <strong>{subscriptionStatus}</strong>. Para volver a usar el panel
             del bot de IA (Gemini + Telegram), necesitas activar o regularizar el pago.
           </p>
@@ -400,26 +400,26 @@ export default function SettingsForm({
         </div>
       ) : (
         <>
-      <div className="card border-2 border-indigo-200 dark:border-indigo-900">
+      <div className="card border-2 border-info/30">
         <h2 className="text-xl font-semibold mb-2">Google Gemini (IA)</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Cada usuario puede usar su propia API Key de Google AI Studio. Así no compartís cuota ni
           costo con otros. Si no cargás nada, se intenta usar la clave del servidor (solo si el
           deployer la configuró).
         </p>
 
-        <details className="mb-4 text-sm bg-slate-50 dark:bg-slate-800/80 rounded-lg p-4">
-          <summary className="cursor-pointer font-medium text-indigo-700 dark:text-indigo-300">
+        <details className="mb-4 text-sm bg-secondary rounded-lg p-4">
+          <summary className="cursor-pointer font-medium text-info">
             Cómo obtener tu API Key (paso a paso)
           </summary>
-          <ol className="mt-3 space-y-2 list-decimal list-inside text-gray-700 dark:text-gray-300">
+          <ol className="mt-3 space-y-2 list-decimal list-inside text-muted-foreground">
             <li>
               Entrá a{' '}
               <a
                 href="https://aistudio.google.com/apikey"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-indigo-600 underline"
+                className="text-info underline"
               >
                 Google AI Studio → API keys
               </a>
@@ -427,13 +427,13 @@ export default function SettingsForm({
             </li>
             <li>Iniciá sesión con tu cuenta de Google.</li>
             <li>Tocá &quot;Create API key&quot; y elegí un proyecto de Google Cloud (o creá uno).</li>
-            <li>Copiá la clave (empieza con <code className="text-xs bg-gray-200 dark:bg-gray-600 px-1 rounded">AIza</code>).</li>
+            <li>Copiá la clave (empieza con <code className="text-xs bg-secondary px-1 rounded">AIza</code>).</li>
             <li>Pegala abajo y guardá. Solo se guarda en tu fila de usuario.</li>
           </ol>
         </details>
 
         <div className="space-y-2">
-          <label className="text-sm text-gray-500">
+          <label className="text-sm text-muted-foreground">
             API Key {geminiConfigured ? '(ya configurada — pegá una nueva para reemplazar)' : ''}
           </label>
           <input
@@ -442,7 +442,7 @@ export default function SettingsForm({
             onChange={(e) => setGeminiKey(e.target.value)}
             placeholder={geminiConfigured ? '••••••••' : 'Pegá tu API key de Gemini'}
             autoComplete="off"
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 font-mono text-sm"
+            className="w-full px-4 py-2 rounded-lg border border-border bg-secondary font-mono text-sm"
           />
         </div>
 
@@ -460,7 +460,7 @@ export default function SettingsForm({
               type="button"
               onClick={clearGeminiKey}
               disabled={integLoading}
-              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm"
+              className="px-4 py-2 rounded-lg border border-border text-sm"
             >
               Quitar mi clave
             </button>
@@ -468,33 +468,33 @@ export default function SettingsForm({
         </div>
       </div>
 
-      <div className="card border-2 border-sky-200 dark:border-sky-900">
+      <div className="card border-2 border-info/30">
         <h2 className="text-xl font-semibold mb-2">Telegram</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Podés usar el <strong>bot oficial de esta instancia de Zarix</strong> (un solo token en el
           servidor) y solo vincular tu chat, <strong>o</strong> crear tu propio bot con BotFather y
           apuntar el webhook a esta app. Las notificaciones y el chat del bot salen siempre por el
           bot que elijas (compartido o tuyo).
         </p>
 
-        <details className="mb-4 text-sm bg-slate-50 dark:bg-slate-800/80 rounded-lg p-4">
-          <summary className="cursor-pointer font-medium text-sky-700 dark:text-sky-300">
+        <details className="mb-4 text-sm bg-secondary rounded-lg p-4">
+          <summary className="cursor-pointer font-medium text-info">
             Opción A — Bot de Zarix (recomendado)
           </summary>
           <ol className="mt-3 space-y-2 list-decimal list-inside">
             <li>Abrí el bot de Telegram que te indique quien desplegó Zarix (mismo bot para todos).</li>
-            <li>Mandá <code className="text-xs bg-gray-200 dark:bg-gray-600 px-1 rounded">/start</code>.</li>
+            <li>Mandá <code className="text-xs bg-card px-1 rounded">/start</code>.</li>
             <li>Copiá el número (chat id) que te muestra el bot.</li>
             <li>Pegalo en &quot;Vincular Telegram&quot; más abajo.</li>
           </ol>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-muted-foreground">
             No necesitás token de bot: el servidor ya tiene uno. Tu API de Gemini sigue siendo la
             tuya si la cargaste arriba.
           </p>
         </details>
 
-        <details className="mb-4 text-sm bg-slate-50 dark:bg-slate-800/80 rounded-lg p-4">
-          <summary className="cursor-pointer font-medium text-sky-700 dark:text-sky-300">
+        <details className="mb-4 text-sm bg-secondary rounded-lg p-4">
+          <summary className="cursor-pointer font-medium text-info">
             Opción B — Tu propio bot
           </summary>
           <ol className="mt-3 space-y-2 list-decimal list-inside">
@@ -504,11 +504,11 @@ export default function SettingsForm({
                 href="https://t.me/BotFather"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sky-600 underline"
+                className="text-info underline"
               >
                 @BotFather
               </a>
-              , elegí <code className="text-xs bg-gray-200 px-1 rounded">/newbot</code> y seguí los
+              , elegí <code className="text-xs bg-card px-1 rounded">/newbot</code> y seguí los
               pasos.
             </li>
             <li>Guardá el <strong>token</strong> que te da (algo como <code className="text-xs">123:ABC...</code>).</li>
@@ -531,7 +531,7 @@ export default function SettingsForm({
         </details>
 
         <div className="space-y-3 mb-4">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Modo Telegram</span>
+          <span className="text-sm font-medium text-muted-foreground">Modo Telegram</span>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
@@ -554,20 +554,20 @@ export default function SettingsForm({
 
         {telegramMode === 'custom' && (
           <div className="mb-4">
-            <label className="text-sm text-gray-500">Token del bot (BotFather)</label>
+            <label className="text-sm text-muted-foreground">Token del bot (BotFather)</label>
             <input
               type="password"
               value={customBotToken}
               onChange={(e) => setCustomBotToken(e.target.value)}
               placeholder={telegramCustomMode ? '•••••••• (pegá uno nuevo para cambiar)' : '123456789:AAH...'}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 font-mono text-sm"
+              className="w-full px-4 py-2 rounded-lg border border-border bg-secondary font-mono text-sm"
             />
           </div>
         )}
 
         {telegramMode === 'custom' && webhookUrl && (
-          <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-950/40 rounded-lg text-sm">
-            <div className="font-medium text-amber-900 dark:text-amber-200 mb-1">
+          <div className="mb-4 p-3 bg-warning/10 rounded-lg text-sm">
+            <div className="font-medium text-warning mb-1">
               Tu URL de webhook (copiá esto en setWebhook)
             </div>
             <code className="break-all text-xs">{webhookUrl}</code>
@@ -575,7 +575,7 @@ export default function SettingsForm({
         )}
 
         {!appBaseUrl && telegramMode === 'custom' && (
-          <p className="text-amber-700 dark:text-amber-300 text-sm mb-2">
+          <p className="text-warning text-sm mb-2">
             Definí <code className="text-xs">NEXT_PUBLIC_APP_URL</code> en el servidor para ver la
             URL completa del webhook.
           </p>
@@ -596,22 +596,22 @@ export default function SettingsForm({
 
         {user.telegram_chat_id ? (
           <div className="space-y-2">
-            <div className="text-sm text-gray-500">Estado</div>
-            <div className="text-green-600 font-medium">✅ Vinculado</div>
+            <div className="text-sm text-muted-foreground">Estado</div>
+            <div className="text-success font-medium">✅ Vinculado</div>
             {user.telegram_username && (
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-muted-foreground">
                 Usuario: @{user.telegram_username}
               </div>
             )}
-            <div className="text-sm text-gray-500 mt-4">
+            <div className="text-sm text-muted-foreground mt-4">
               Chat ID: {user.telegram_chat_id}
             </div>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-muted-foreground">
               Generá un código y envialo al bot (el de Zarix o el tuyo si ya configuraste
-              webhook) enviando <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">/start</code> y
+              webhook) enviando <code className="text-xs bg-secondary px-1 rounded">/start</code> y
               pegándolo en el chat. El código vale 10 minutos.
             </div>
 
@@ -625,7 +625,7 @@ export default function SettingsForm({
 
             {linkCode && (
               <div className="text-center">
-                <div className="text-xs text-gray-500 mb-1">Tu código (enviáselo al bot):</div>
+                <div className="text-xs text-muted-foreground mb-1">Tu código (enviáselo al bot):</div>
                 <div className="font-mono text-2xl font-bold tracking-widest select-all">
                   {linkCode}
                 </div>
@@ -636,8 +636,8 @@ export default function SettingsForm({
               <div
                 className={`text-sm p-3 rounded-lg ${
                   message.startsWith('✅')
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                    ? 'bg-success/10 text-success'
+                    : 'bg-destructive/10 text-destructive'
                 }`}
               >
                 {message}
@@ -649,18 +649,18 @@ export default function SettingsForm({
 
       <div className="card">
         <h2 className="text-xl font-semibold mb-2">Notificaciones por Telegram</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Mismo ajuste que en el bot con <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">/resumenes</code>
+        <p className="text-sm text-muted-foreground mb-4">
+          Mismo ajuste que en el bot con <code className="text-xs bg-secondary px-1 rounded">/resumenes</code>
           . Los envíos siguen el horario del servidor (≈09:00 UTC); abajo ves la fecha aproximada en tu zona.
         </p>
         <div className="space-y-4">
           <label className="flex items-start justify-between gap-3 cursor-pointer">
             <span className="text-sm">
               <span className="font-medium block">Resumen semanal</span>
-              <span className="text-gray-500 dark:text-gray-400 text-xs">
+              <span className="text-muted-foreground text-xs">
                 Cada lunes (semana cerrada).{' '}
                 {weeklySummary && nextWeeklyLabel ? (
-                  <span className="block mt-1 text-indigo-600 dark:text-indigo-400">
+                  <span className="block mt-1 text-info">
                     Próximo: {nextWeeklyLabel}
                   </span>
                 ) : !weeklySummary ? (
@@ -673,16 +673,16 @@ export default function SettingsForm({
               checked={weeklySummary}
               disabled={notifLoading}
               onChange={(e) => saveNotificationToggle('weekly_summary_enabled', e.target.checked)}
-              className="w-6 h-6 mt-1 shrink-0 accent-emerald-600"
+              className="w-6 h-6 mt-1 shrink-0 accent-primary"
             />
           </label>
           <label className="flex items-start justify-between gap-3 cursor-pointer">
             <span className="text-sm">
               <span className="font-medium block">Resumen mensual</span>
-              <span className="text-gray-500 dark:text-gray-400 text-xs">
+              <span className="text-muted-foreground text-xs">
                 Día 1 de cada mes (mes cerrado).{' '}
                 {monthlySummary && nextMonthlyLabel ? (
-                  <span className="block mt-1 text-indigo-600 dark:text-indigo-400">
+                  <span className="block mt-1 text-info">
                     Próximo: {nextMonthlyLabel}
                   </span>
                 ) : !monthlySummary ? (
@@ -695,7 +695,7 @@ export default function SettingsForm({
               checked={monthlySummary}
               disabled={notifLoading}
               onChange={(e) => saveNotificationToggle('monthly_summary_enabled', e.target.checked)}
-              className="w-6 h-6 mt-1 shrink-0 accent-emerald-600"
+              className="w-6 h-6 mt-1 shrink-0 accent-primary"
             />
           </label>
         </div>
@@ -707,10 +707,10 @@ export default function SettingsForm({
         <h2 className="text-xl font-semibold mb-4">Preferencias</h2>
         <div className="space-y-3">
           <div>
-            <label className="text-sm text-gray-500 mb-2 block">Moneda por defecto</label>
+            <label className="text-sm text-muted-foreground mb-2 block">Moneda por defecto</label>
             <select
               defaultValue={user.default_currency}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+              className="w-full px-4 py-2 rounded-lg border border-border bg-secondary"
             >
               <option value="ARS">ARS (Peso Argentino)</option>
               <option value="USD">USD (Dólar)</option>

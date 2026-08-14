@@ -401,7 +401,7 @@ export default function EditInvestmentDialog({
             )}
 
             {error && (
-              <p className="text-sm text-red-500 dark:text-red-400 inline-flex items-center gap-1.5">
+              <p className="text-sm text-destructive inline-flex items-center gap-1.5">
                 <TriangleAlert size={14} aria-hidden />
                 {error}
               </p>

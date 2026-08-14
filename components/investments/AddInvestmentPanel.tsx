@@ -246,19 +246,19 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
 
   if (investmentAccounts.length === 0) {
     return (
-      <div className="card border-amber-300/70 bg-amber-50/80 dark:border-amber-700/60 dark:bg-amber-950/30">
+      <div className="card border-warning/30 bg-warning/10">
         <div className="flex items-start gap-3">
-          <TriangleAlert className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" size={18} aria-hidden />
+          <TriangleAlert className="text-warning shrink-0 mt-0.5" size={18} aria-hidden />
           <div>
-            <p className="font-medium text-amber-900 dark:text-amber-100 mb-1">
+            <p className="font-medium text-warning mb-1">
               Necesitás una cuenta de inversión
             </p>
-            <p className="text-sm text-amber-800/90 dark:text-amber-200/90 mb-2">
+            <p className="text-sm text-warning mb-2">
               Las posiciones se asocian a una cuenta tipo Inversión (IOL, Balanz, etc.).
             </p>
             <Link
               href="/accounts"
-              className="inline-flex items-center font-semibold text-amber-950 dark:text-amber-50 underline underline-offset-2"
+              className="inline-flex items-center font-semibold text-warning underline underline-offset-2"
             >
               Ir a Cuentas y crear una →
             </Link>
@@ -430,11 +430,11 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
                     <span
                       className={`text-xs inline-flex items-center gap-1 ${
                         quoteState.status === 'ok'
-                          ? 'text-emerald-600 dark:text-emerald-400'
+                          ? 'text-success'
                           : quoteState.status === 'warn'
-                            ? 'text-amber-600 dark:text-amber-400'
+                            ? 'text-warning'
                             : quoteState.status === 'error'
-                              ? 'text-red-500 dark:text-red-400'
+                              ? 'text-destructive'
                               : 'text-muted-foreground'
                       }`}
                     >
@@ -616,7 +616,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
             )}
 
             {error && (
-              <p className="text-sm text-red-500 dark:text-red-400 inline-flex items-center gap-1.5">
+              <p className="text-sm text-destructive inline-flex items-center gap-1.5">
                 <TriangleAlert size={14} aria-hidden />
                 {error}
               </p>

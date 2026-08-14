@@ -21,7 +21,7 @@ export default async function GracePeriodBanner() {
   if (data?.status !== 'GRACE_PERIOD' || !data.grace_period_end) return null;
 
   return (
-    <div className="bg-amber-100/90 border-b border-amber-300 text-amber-900 dark:bg-amber-950/55 dark:border-amber-800 dark:text-amber-200 px-4 py-2.5 text-sm backdrop-blur-md">
+    <div className="bg-warning/20 border-b border-warning/30 text-warning px-4 py-2.5 text-sm backdrop-blur-md">
       Tu último cobro falló y estás en período de gracia hasta{' '}
       <strong>{new Date(data.grace_period_end).toLocaleString('es-AR')}</strong>. Actualizá el pago
       para evitar interrupciones del orquestador de IA.

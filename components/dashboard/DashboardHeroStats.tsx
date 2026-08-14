@@ -22,9 +22,9 @@ function Chip({
 }) {
   const toneClass =
     tone === 'pos'
-      ? 'text-emerald-600 dark:text-emerald-400'
+      ? 'text-success'
       : tone === 'neg'
-        ? 'text-red-500 dark:text-red-400'
+        ? 'text-destructive'
         : tone === 'muted'
           ? 'text-muted-foreground'
           : 'text-foreground';

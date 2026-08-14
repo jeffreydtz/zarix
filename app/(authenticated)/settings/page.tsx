@@ -44,8 +44,8 @@ export default async function SettingsPage() {
     <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 py-6 pb-8 md:pb-10 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Configuracion</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Configuracion</h1>
+          <p className="text-muted-foreground text-sm mt-1">
             Personaliza tu experiencia en Zarix
           </p>
         </div>

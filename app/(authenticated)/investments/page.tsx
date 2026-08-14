@@ -97,10 +97,10 @@ export default async function InvestmentsPage() {
         </MotionSection>
 
         {upcomingMaturities.length > 0 ? (
-          <MotionSection delay={0.2} intensity="subtle" className="card border-amber-200 dark:border-amber-700/60 bg-gradient-to-br from-amber-50/90 via-white to-amber-100/65 dark:from-amber-900/20 dark:via-surface-elevated dark:to-amber-900/10">
+          <MotionSection delay={0.2} intensity="subtle" className="card border-warning/30 bg-gradient-to-br from-warning/10 via-card to-warning/10">
             <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
               <span>Próximos vencimientos</span>
-              <span className="ml-auto text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full font-semibold">
+              <span className="ml-auto text-xs bg-warning/10 text-warning px-2 py-0.5 rounded-full font-semibold">
                 {upcomingMaturities.length} en 30 días
               </span>
             </h2>
@@ -119,15 +119,15 @@ export default async function InvestmentsPage() {
                 }
 
                 const urgencyColor = daysLeft === 0
-                  ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
+                  ? 'bg-destructive/10 border-destructive/30'
                   : daysLeft <= 3
-                  ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700'
+                  ? 'bg-warning/10 border-warning/30'
                   : 'bg-surface-soft border-border';
 
                 return (
                   <div key={inv.id} className={`flex items-center gap-4 p-4 rounded-control border ${urgencyColor}`}>
                     <div className="w-12 h-12 rounded-control flex flex-col items-center justify-center bg-surface border border-border shrink-0">
-                      <div className={`text-xl font-bold leading-none ${daysLeft === 0 ? 'text-red-500' : daysLeft <= 3 ? 'text-amber-500' : 'text-foreground'}`}>
+                      <div className={`text-xl font-bold leading-none ${daysLeft === 0 ? 'text-destructive' : daysLeft <= 3 ? 'text-warning' : 'text-foreground'}`}>
                         {daysLeft}
                       </div>
                       <div className="text-xs text-muted-foreground">{daysLeft === 1 ? 'dia' : 'dias'}</div>
@@ -147,7 +147,7 @@ export default async function InvestmentsPage() {
                         ${totalValue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                       </div>
                       {returnAmount > 0 ? (
-                        <div className="text-xs text-emerald-600 dark:text-emerald-400">
+                        <div className="text-xs text-success">
                           +${returnAmount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                         </div>
                       ) : null}

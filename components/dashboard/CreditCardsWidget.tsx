@@ -24,7 +24,7 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
       transition={{ duration: 0.5, delay: 0.4 }}
       className="card"
     >
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-slate-800 dark:text-slate-200">
+      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-foreground">
         <span>💳</span>
         <span>Resumen de Tarjetas</span>
       </h3>
@@ -84,7 +84,7 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="p-4 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-750 border border-slate-200 dark:border-slate-700"
+              className="p-4 rounded-xl bg-secondary border border-border"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
@@ -95,9 +95,9 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
                     {card.icon || '💳'}
                   </motion.span>
                   <div>
-                    <div className="font-semibold text-slate-800 dark:text-slate-200">{card.name}</div>
+                    <div className="font-semibold text-foreground">{card.name}</div>
                     {card.last_4_digits && (
-                      <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                      <div className="text-xs text-muted-foreground font-mono">
                         •••• {card.last_4_digits}
                       </div>
                     )}
@@ -106,10 +106,10 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
                     utilization > 80
-                      ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                      ? 'bg-destructive/15 text-destructive'
                       : utilization > 50
-                      ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'
-                      : 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
+                      ? 'bg-warning/15 text-warning'
+                      : 'bg-success/15 text-success'
                   }`}>
                     {utilization.toFixed(0)}%
                   </span>
@@ -125,26 +125,26 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
               {isMulticurrencyCard ? (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Saldo ARS</p>
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                    <p className="text-xs text-muted-foreground mb-0.5">Saldo ARS</p>
+                    <p className="font-bold text-foreground">
                       <AnimatedNumber value={primaryDebt} prefix="$" decimals={0} />
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Saldo USD</p>
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                    <p className="text-xs text-muted-foreground mb-0.5">Saldo USD</p>
+                    <p className="font-bold text-foreground">
                       <AnimatedNumber value={secondaryDebt} prefix="$" decimals={2} />
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Total ARS blue</p>
-                    <p className="font-bold text-orange-600 dark:text-orange-400">
+                    <p className="text-xs text-muted-foreground mb-0.5">Total ARS blue</p>
+                    <p className="font-bold text-warning">
                       <AnimatedNumber value={totalArsBlueDebt} prefix="$" decimals={0} />
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Límite</p>
-                    <p className="font-semibold text-slate-600 dark:text-slate-300">
+                    <p className="text-xs text-muted-foreground mb-0.5">Límite</p>
+                    <p className="font-semibold text-muted-foreground">
                       <AnimatedNumber value={limit} prefix="$" decimals={0} />
                     </p>
                   </div>
@@ -152,20 +152,20 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
               ) : (
                 <div className="grid grid-cols-3 gap-3 mb-4">
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Usado</p>
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                    <p className="text-xs text-muted-foreground mb-0.5">Usado</p>
+                    <p className="font-bold text-foreground">
                       <AnimatedNumber value={used} prefix="$" decimals={0} />
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponible</p>
-                    <p className="font-bold text-green-600 dark:text-green-400">
+                    <p className="text-xs text-muted-foreground mb-0.5">Disponible</p>
+                    <p className="font-bold text-success">
                       <AnimatedNumber value={available} prefix="$" decimals={0} />
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Límite</p>
-                    <p className="font-semibold text-slate-600 dark:text-slate-300">
+                    <p className="text-xs text-muted-foreground mb-0.5">Límite</p>
+                    <p className="font-semibold text-muted-foreground">
                       <AnimatedNumber value={limit} prefix="$" decimals={0} />
                     </p>
                   </div>
@@ -174,7 +174,7 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
 
               {used > 1e-8 && (
                 <>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+                  <p className="text-[11px] text-muted-foreground mb-1">
                     Importes en {card.currency}. Equivalente aproximado:
                   </p>
                   <AccountBalanceEquivalents account={card} />
@@ -184,19 +184,19 @@ function CreditCardsWidget({ accounts }: CreditCardsWidgetProps) {
               <ProgressBar value={utilization} max={100} height="h-2" />
 
               {(card.closing_day || card.due_day) && (
-                <div className="flex gap-4 mt-4 pt-3 border-t border-slate-200 dark:border-slate-600">
+                <div className="flex gap-4 mt-4 pt-3 border-t border-border">
                   {card.closing_day && (
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-slate-400">📅</span>
-                      <span className="text-slate-500 dark:text-slate-400">Cierre:</span>
-                      <span className="font-semibold text-slate-700 dark:text-slate-300">Día {card.closing_day}</span>
+                      <span className="text-muted-foreground">📅</span>
+                      <span className="text-muted-foreground">Cierre:</span>
+                      <span className="font-semibold text-muted-foreground">Día {card.closing_day}</span>
                     </div>
                   )}
                   {card.due_day && (
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-slate-400">⏰</span>
-                      <span className="text-slate-500 dark:text-slate-400">Venc.:</span>
-                      <span className="font-semibold text-slate-700 dark:text-slate-300">Día {card.due_day}</span>
+                      <span className="text-muted-foreground">⏰</span>
+                      <span className="text-muted-foreground">Venc.:</span>
+                      <span className="font-semibold text-muted-foreground">Día {card.due_day}</span>
                     </div>
                   )}
                 </div>

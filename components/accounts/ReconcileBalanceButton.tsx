@@ -33,7 +33,7 @@ export default function ReconcileBalanceButton({ accountId }: { accountId: strin
       type="button"
       onClick={() => void run()}
       disabled={loading}
-      className="text-sm text-amber-700 dark:text-amber-300 hover:underline disabled:opacity-50"
+      className="text-sm text-warning hover:underline disabled:opacity-50"
     >
       {loading ? 'Recalculando…' : 'Recalcular saldo desde movimientos'}
     </button>
