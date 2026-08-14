@@ -27,7 +27,7 @@ export default function TopExpenses({ transactions, title = 'Gastos más grandes
     return (
       <div className="card p-6">
         <h3 className="text-lg font-semibold mb-4">{title}</h3>
-        <div className="h-32 flex items-center justify-center text-slate-500">
+        <div className="h-32 flex items-center justify-center text-muted-foreground">
           No hay gastos registrados
         </div>
       </div>
@@ -76,28 +76,28 @@ export default function TopExpenses({ transactions, title = 'Gastos más grandes
               className="relative"
             >
               <div 
-                className="absolute inset-0 bg-red-100/70 dark:bg-red-900/22 rounded-control"
+                className="absolute inset-0 bg-destructive/10 rounded-control"
                 style={{ width: `${percent}%` }}
               />
               <div className="relative flex items-center justify-between p-3 rounded-control hover:bg-surface-soft/70 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-lg">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-lg">
                     {tx.category?.icon || '💸'}
                   </div>
                   <div>
                     <div className="font-medium text-sm">
                       {tx.description || tx.category?.name || 'Sin descripción'}
                     </div>
-                    <div className="text-xs text-slate-500">
+                    <div className="text-xs text-muted-foreground">
                       {tx.account?.name} • {date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold text-red-600 dark:text-red-400">
+                  <div className="font-semibold text-destructive">
                     ${amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                   </div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-muted-foreground">
                     {percent.toFixed(1)}%
                   </div>
                 </div>
@@ -107,8 +107,8 @@ export default function TopExpenses({ transactions, title = 'Gastos más grandes
         })}
       </div>
 
-      <div className="mt-4 p-3 bg-amber-50/85 dark:bg-amber-900/20 rounded-control border border-amber-200 dark:border-amber-800">
-        <p className="text-sm text-amber-700 dark:text-amber-300">
+      <div className="mt-4 p-3 bg-warning/10 rounded-control border border-warning/30">
+        <p className="text-sm text-warning">
           <strong>Insight:</strong> Estos {transactions.length} gastos concentran una parte alta del mes. Si recortás solo los dos primeros, el impacto en caja es inmediato.
         </p>
       </div>

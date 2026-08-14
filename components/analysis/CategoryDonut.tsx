@@ -21,7 +21,7 @@ export default function CategoryDonut({ data, title }: Props) {
     return (
       <div className="card p-6">
         <h3 className="text-lg font-semibold mb-4">{title}</h3>
-        <div className="h-64 flex items-center justify-center text-slate-500">
+        <div className="h-64 flex items-center justify-center text-muted-foreground">
           No hay datos para mostrar
         </div>
       </div>
@@ -129,13 +129,13 @@ export default function CategoryDonut({ data, title }: Props) {
               />
               <span className="text-lg">{cat.icon}</span>
               <span className="font-medium text-sm">{cat.name}</span>
-              <span className="text-xs text-slate-500">({cat.count})</span>
+              <span className="text-xs text-muted-foreground">({cat.count})</span>
             </div>
             <div className="text-right">
               <div className="font-semibold text-sm zx-num">
                 ${cat.amount.toLocaleString('es-AR')}
               </div>
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-muted-foreground">
                 {cat.percent.toFixed(1)}%
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function CategoryDonut({ data, title }: Props) {
         ))}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+      <div className="mt-4 pt-4 border-t border-border">
         <div className="flex justify-between font-semibold zx-num">
           <span>Total</span>
           <span>${total.toLocaleString('es-AR')}</span>

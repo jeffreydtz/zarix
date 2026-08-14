@@ -64,8 +64,8 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
         >
           🏦
         </motion.div>
-        <p className="text-slate-500 dark:text-slate-400 mb-2 text-lg">No tenés cuentas todavía</p>
-        <p className="text-sm text-slate-400 dark:text-slate-500">
+        <p className="text-muted-foreground mb-2 text-lg">No tenés cuentas todavía</p>
+        <p className="text-sm text-muted-foreground">
           Creá tu primera cuenta para empezar a trackear tus finanzas
         </p>
       </motion.div>
@@ -108,7 +108,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                 <div className="flex flex-wrap items-start gap-2 sm:flex-nowrap sm:gap-3">
                   <Link
                     href={`/accounts/${account.id}`}
-                    className="order-1 flex items-start gap-3 sm:gap-4 flex-1 min-w-0 rounded-xl -m-1 p-2 hover:bg-slate-50/90 dark:hover:bg-slate-700/50 transition-colors group"
+                    className="order-1 flex items-start gap-3 sm:gap-4 flex-1 min-w-0 rounded-xl -m-1 p-2 hover:bg-secondary transition-colors group"
                   >
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
@@ -120,13 +120,13 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                     </motion.div>
 
                     <div className="flex-1 min-w-0 pr-1">
-                      <div className="font-semibold text-lg text-slate-800 dark:text-slate-200 leading-snug break-words group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                      <div className="font-semibold text-lg text-foreground leading-snug break-words group-hover:text-primary">
                         {getAccountDisplayName(account)}
                       </div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
+                      <div className="text-sm text-muted-foreground mt-0.5 flex items-center gap-2 flex-wrap">
                         <span className="font-medium tabular-nums">{account.currency}</span>
                         {account.type === 'credit_card' && account.last_4_digits && (
-                          <span className="text-xs font-mono text-slate-400">
+                          <span className="text-xs font-mono text-muted-foreground">
                             · ····{account.last_4_digits}
                           </span>
                         )}
@@ -137,29 +137,29 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                   <div className="order-3 sm:order-2 w-full sm:w-auto flex flex-col items-end justify-start gap-1 text-right shrink-0 sm:min-w-[7.5rem]">
                     {isMulticurrencyCard ? (
                       <div className="text-right space-y-0.5">
-                        <div className="text-base sm:text-lg font-bold tabular-nums text-red-500">
+                        <div className="text-base sm:text-lg font-bold tabular-nums text-destructive">
                           -$
                           {Math.abs(multicurrencyPrimaryBalance).toLocaleString('es-AR', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}{' '}
-                          <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                          <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                             {primaryCur}
                           </span>
                         </div>
-                        <div className="text-base sm:text-lg font-bold tabular-nums text-red-500">
+                        <div className="text-base sm:text-lg font-bold tabular-nums text-destructive">
                           -$
                           {Math.abs(Number(account.multicurrency_balance_secondary)).toLocaleString('es-AR', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}{' '}
-                          <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                          <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                             {secondaryCur}
                           </span>
                         </div>
-                        <div className="text-[11px] sm:text-xs font-medium tabular-nums text-slate-500 dark:text-slate-400">
+                        <div className="text-[11px] sm:text-xs font-medium tabular-nums text-muted-foreground">
                           Total (ARS blue):{' '}
-                          <span className="font-semibold text-red-500">
+                          <span className="font-semibold text-destructive">
                             -$
                             {Math.abs(
                               Number(account.multicurrency_total_ars_blue ?? account.balance_ars_blue ?? 0)
@@ -173,7 +173,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                       </div>
                     ) : (
                       <div
-                        className={`text-lg sm:text-xl font-bold tabular-nums flex flex-wrap items-baseline justify-end gap-x-1 ${account.is_debt ? 'text-red-500' : 'text-slate-800 dark:text-slate-200'}`}
+                        className={`text-lg sm:text-xl font-bold tabular-nums flex flex-wrap items-baseline justify-end gap-x-1 ${account.is_debt ? 'text-destructive' : 'text-foreground'}`}
                       >
                         <AnimatedNumber
                           value={
@@ -182,7 +182,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                           prefix={account.is_debt ? '-$' : '$'}
                           decimals={2}
                         />
-                        <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 shrink-0">
+                        <span className="text-xs sm:text-sm font-medium text-muted-foreground shrink-0">
                           {account.currency}
                         </span>
                       </div>
@@ -194,7 +194,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                       type="button"
                       whileTap={{ scale: 0.9 }}
                       onClick={() => setEditAccount(account)}
-                      className="p-2 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-500"
+                      className="p-2 rounded-xl hover:bg-primary/10 text-primary"
                       title="Editar cuenta"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +212,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleDelete(account.id, getAccountDisplayName(account))}
                       disabled={loading}
-                      className="p-2 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 disabled:opacity-50"
+                      className="p-2 rounded-xl hover:bg-destructive/10 text-destructive disabled:opacity-50"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -231,7 +231,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                       Number(account.multicurrency_total_ars_blue ?? account.balance_ars_blue ?? 0)
                     ) > 1e-8
                   : Math.abs(Number(account.balance)) > 1e-8) && (
-                  <div className="w-full pl-[4.25rem] sm:pl-[4.5rem] -mt-0.5 border-t border-slate-200/70 dark:border-slate-700/60 pt-2">
+                  <div className="w-full pl-[4.25rem] sm:pl-[4.5rem] -mt-0.5 border-t border-border pt-2">
                     <AccountBalanceEquivalents account={account} />
                   </div>
                 )}
@@ -241,7 +241,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-3 text-sm text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-xl border border-yellow-200 dark:border-yellow-800"
+                  className="mt-3 text-sm text-warning bg-warning/10 p-3 rounded-xl border border-warning/30"
                 >
                   Saldo por debajo del minimo (${account.min_balance.toFixed(2)})
                 </motion.div>
@@ -251,29 +251,29 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700"
+                  className="mt-4 pt-4 border-t border-border"
                 >
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
-                      <p className="text-slate-500 dark:text-slate-400 text-xs mb-0.5">Límite</p>
-                      <p className="font-semibold text-slate-700 dark:text-slate-300">
+                      <p className="text-muted-foreground text-xs mb-0.5">Límite</p>
+                      <p className="font-semibold text-muted-foreground">
                         ${account.credit_limit.toLocaleString('es-AR')}
                       </p>
                     </div>
                     {account.closing_day && (
                       <div>
-                        <p className="text-slate-500 dark:text-slate-400 text-xs mb-0.5">Cierre</p>
-                        <p className="font-semibold text-slate-700 dark:text-slate-300">
+                        <p className="text-muted-foreground text-xs mb-0.5">Cierre</p>
+                        <p className="font-semibold text-muted-foreground">
                           Dia {account.closing_day}
                         </p>
                       </div>
                     )}
                     {account.due_day && (
                       <div>
-                        <p className="text-slate-500 dark:text-slate-400 text-xs mb-0.5">
+                        <p className="text-muted-foreground text-xs mb-0.5">
                           Vencimiento
                         </p>
-                        <p className="font-semibold text-slate-700 dark:text-slate-300">
+                        <p className="font-semibold text-muted-foreground">
                           Dia {account.due_day}
                         </p>
                       </div>
@@ -290,12 +290,12 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card border border-slate-200/80 dark:border-slate-600/80 bg-slate-50/80 dark:bg-slate-800/40"
+          className="card border border-border bg-secondary"
         >
-          <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide mb-3">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             Totales (cotización dólar blue)
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+          <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
             Solo suman acá las cuentas con <strong>Incluir en totales</strong> (editar cuenta): eso
             las saca del patrimonio del panel pero <strong>no las archiva</strong>; siguen en la
             lista de arriba. Dentro de esas, la <strong>liquidez</strong> respeta “Contar en
@@ -303,12 +303,12 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Patrimonio total</p>
-              <p className="text-2xl font-bold tabular-nums text-slate-800 dark:text-slate-100">
+              <p className="text-xs text-muted-foreground mb-0.5">Patrimonio total</p>
+              <p className="text-2xl font-bold tabular-nums text-foreground">
                 ${aggregates.totalARSBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })}{' '}
-                <span className="text-base font-medium text-slate-500">ARS</span>
+                <span className="text-base font-medium text-muted-foreground">ARS</span>
               </p>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 tabular-nums">
+              <p className="text-sm text-muted-foreground mt-1 tabular-nums">
                 USD{' '}
                 {aggregates.totalUSD.toLocaleString('en-US', {
                   minimumFractionDigits: 2,
@@ -318,15 +318,15 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between gap-4">
-                <span className="text-slate-500 dark:text-slate-400">Liquidez</span>
-                <span className="font-medium tabular-nums text-slate-800 dark:text-slate-200">
+                <span className="text-muted-foreground">Liquidez</span>
+                <span className="font-medium tabular-nums text-foreground">
                   ${aggregates.liquidARSBlue.toLocaleString('es-AR', { maximumFractionDigits: 0 })} ARS
                 </span>
               </div>
               {(aggregates.investmentsARSBlue > 0 || aggregates.investmentsUSD > 0) && (
                 <div className="flex justify-between gap-4">
-                  <span className="text-slate-500 dark:text-slate-400">Inversiones</span>
-                  <span className="font-medium tabular-nums text-slate-800 dark:text-slate-200">
+                  <span className="text-muted-foreground">Inversiones</span>
+                  <span className="font-medium tabular-nums text-foreground">
                     $
                     {aggregates.investmentsARSBlue.toLocaleString('es-AR', {
                       maximumFractionDigits: 0,
@@ -338,15 +338,15 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
             </div>
           </div>
           {aggregates.totalCreditLimit > 0 && (
-            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600 text-sm">
-              <div className="flex justify-between gap-4 text-slate-600 dark:text-slate-400">
+            <div className="mt-4 pt-4 border-t border-border text-sm">
+              <div className="flex justify-between gap-4 text-muted-foreground">
                 <span>Tarjetas de crédito (líneas)</span>
                 <span className="tabular-nums">
                   ${aggregates.totalCreditUsed.toLocaleString('es-AR', { minimumFractionDigits: 0 })}{' '}
                   / $
                   {aggregates.totalCreditLimit.toLocaleString('es-AR', { minimumFractionDigits: 0 })}
                   {aggregates.creditUtilization > 0 && (
-                    <span className="text-slate-500 dark:text-slate-500">
+                    <span className="text-muted-foreground">
                       {' '}
                       ({aggregates.creditUtilization}%)
                     </span>

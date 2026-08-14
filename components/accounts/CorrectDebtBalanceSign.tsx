@@ -49,7 +49,7 @@ export default function CorrectDebtBalanceSign({
   };
 
   return (
-    <div className="rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
+    <div className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
       <p className="font-medium mb-1">Saldo de tarjeta con signo inconsistente</p>
       <p className="text-xs opacity-90 mb-3 leading-relaxed">
         El saldo interno está en positivo pero se muestra como deuda con el signo menos. Por eso un pago
@@ -60,7 +60,7 @@ export default function CorrectDebtBalanceSign({
         type="button"
         onClick={run}
         disabled={loading}
-        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50"
+        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-warning hover:brightness-90 text-white disabled:opacity-50"
       >
         {loading ? 'Corrigiendo…' : 'Corregir signo del saldo ahora'}
       </button>

@@ -60,10 +60,10 @@ export default function MonthlyTrend({ current, previous }: MonthlyTrendProps) {
 
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div className="text-center">
-          <div className="text-sm text-gray-500">Variación en Gastos</div>
+          <div className="text-sm text-muted-foreground">Variación en Gastos</div>
           <div
             className={`text-lg font-bold ${
-              expenseChange >= 0 ? 'text-red-600' : 'text-green-600'
+              expenseChange >= 0 ? 'text-destructive' : 'text-success'
             }`}
           >
             {expenseChange >= 0 ? '+' : ''}
@@ -72,12 +72,12 @@ export default function MonthlyTrend({ current, previous }: MonthlyTrendProps) {
         </div>
 
         <div className="text-center">
-          <div className="text-sm text-gray-500">Ahorro del Mes</div>
+          <div className="text-sm text-muted-foreground">Ahorro del Mes</div>
           <div
             className={`text-lg font-bold ${
               current.totalIncome - current.totalExpenses >= 0
-                ? 'text-green-600'
-                : 'text-red-600'
+                ? 'text-success'
+                : 'text-destructive'
             }`}
           >
             ${(current.totalIncome - current.totalExpenses).toLocaleString('es-AR')}

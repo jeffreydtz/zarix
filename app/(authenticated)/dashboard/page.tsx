@@ -14,19 +14,19 @@ import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 
 const QuotesWidget = dynamic(() => import('@/components/dashboard/QuotesWidget'), {
-  loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+  loading: () => <div className="card h-40 animate-pulse bg-secondary" />,
 });
 const CreditCardsWidget = dynamic(() => import('@/components/dashboard/CreditCardsWidget'), {
-  loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+  loading: () => <div className="card h-40 animate-pulse bg-secondary" />,
 });
 const AccountCards = dynamic(() => import('@/components/dashboard/AccountCards'), {
-  loading: () => <div className="h-32 animate-pulse bg-slate-100 dark:bg-slate-800 rounded-2xl" />,
+  loading: () => <div className="h-32 animate-pulse bg-secondary rounded-2xl" />,
 });
 const RecentTransactions = dynamic(() => import('@/components/dashboard/RecentTransactions'), {
-  loading: () => <div className="card h-64 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+  loading: () => <div className="card h-64 animate-pulse bg-secondary" />,
 });
 const AnomaliesWidget = dynamic(() => import('@/components/dashboard/AnomaliesWidget'), {
-  loading: () => <div className="card h-40 animate-pulse bg-slate-100 dark:bg-slate-800" />,
+  loading: () => <div className="card h-40 animate-pulse bg-secondary" />,
 });
 export default async function DashboardPage() {
   try {

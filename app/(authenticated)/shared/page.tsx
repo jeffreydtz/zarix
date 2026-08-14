@@ -74,7 +74,7 @@ export default function SharedGroupsPage() {
       </div>
 
       {error && (
-        <div className="card p-3 text-sm text-red-600 dark:text-red-400" role="alert">
+        <div className="card p-3 text-sm text-destructive" role="alert">
           {error}
         </div>
       )}
@@ -91,7 +91,7 @@ export default function SharedGroupsPage() {
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="w-full py-3 rounded-card bg-primary text-white font-medium text-sm"
+          className="w-full py-3 rounded-card bg-primary text-primary-foreground font-medium text-sm"
         >
           + Crear grupo
         </button>
@@ -133,7 +133,7 @@ export default function SharedGroupsPage() {
                 <button
                   type="button"
                   onClick={() => deleteGroup(g)}
-                  className="px-3 py-2 rounded-control border border-border text-xs text-muted-foreground hover:text-red-500 transition-colors"
+                  className="px-3 py-2 rounded-control border border-border text-xs text-muted-foreground hover:text-destructive transition-colors"
                 >
                   Eliminar
                 </button>
@@ -235,7 +235,7 @@ function CreateGroupForm({
             <button
               type="button"
               onClick={() => setMembers((prev) => prev.filter((_, j) => j !== i))}
-              className="px-2 text-muted-foreground hover:text-red-500"
+              className="px-2 text-muted-foreground hover:text-destructive"
               aria-label="Quitar miembro"
             >
               ✕
@@ -253,13 +253,13 @@ function CreateGroupForm({
           Los que falten se pueden sumar solos desde el link.
         </p>
       </div>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-2">
         <button
           type="button"
           disabled={saving}
           onClick={submit}
-          className="flex-1 py-2.5 rounded-control bg-primary text-white text-sm font-medium disabled:opacity-50"
+          className="flex-1 py-2.5 rounded-control bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50"
         >
           {saving ? 'Creando…' : 'Crear grupo'}
         </button>

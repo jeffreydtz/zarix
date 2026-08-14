@@ -18,7 +18,7 @@ export default function CashFlowChart({ data }: Props) {
     return (
       <div className="card p-6">
         <h3 className="text-lg font-semibold mb-4">Flujo de Caja (30 días)</h3>
-        <div className="h-64 flex items-center justify-center text-slate-500">
+        <div className="h-64 flex items-center justify-center text-muted-foreground">
           No hay datos para mostrar
         </div>
       </div>
@@ -46,7 +46,7 @@ export default function CashFlowChart({ data }: Props) {
     >
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h3 className="text-lg font-semibold">Flujo de Caja (últimos 30 días)</h3>
-        <span className={`story-chip ${net >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-500 dark:text-red-300'}`}>
+        <span className={`story-chip ${net >= 0 ? 'text-success' : 'text-destructive'}`}>
           Neto del período: {net >= 0 ? '+' : ''}${net.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
         </span>
       </div>
@@ -121,23 +121,23 @@ export default function CashFlowChart({ data }: Props) {
 
       <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
         <div className="zx-kpi">
-          <div className="text-slate-500 dark:text-slate-400">Total gastos</div>
-          <div className="text-lg font-semibold text-red-600 dark:text-red-400 zx-num">
+          <div className="text-muted-foreground">Total gastos</div>
+          <div className="text-lg font-semibold text-destructive zx-num">
             ${totalExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>
         <div className="zx-kpi">
-          <div className="text-slate-500 dark:text-slate-400">Total ingresos</div>
-          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400 zx-num">
+          <div className="text-muted-foreground">Total ingresos</div>
+          <div className="text-lg font-semibold text-success zx-num">
             ${totalIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>
         <div className="zx-kpi">
-          <div className="text-slate-500 dark:text-slate-400">Día pico</div>
-          <div className="text-lg font-semibold text-amber-600 dark:text-amber-400">
+          <div className="text-muted-foreground">Día pico</div>
+          <div className="text-lg font-semibold text-warning">
             {maxExpenseDay.dayLabel}
           </div>
-          <div className="text-xs text-slate-500 zx-num">
+          <div className="text-xs text-muted-foreground zx-num">
             ${maxExpenseDay.expenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>

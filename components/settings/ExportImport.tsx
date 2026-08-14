@@ -229,46 +229,46 @@ export default function ExportImport() {
       <div className="space-y-6">
         {/* Export Section */}
         <div>
-          <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3">
             Exportar transacciones
           </h3>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={handleExportCSV}
               disabled={exporting}
-              className="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm"
+              className="btn bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 text-sm"
             >
               {exporting ? '...' : '📊 CSV (Excel)'}
             </button>
             <button
               onClick={handleExportJSON}
               disabled={exporting}
-              className="btn bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm"
+              className="btn bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 text-sm"
             >
               {exporting ? '...' : '📄 JSON'}
             </button>
             <button
               onClick={handleBackup}
               disabled={exporting}
-              className="btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm"
+              className="btn bg-accent-invest hover:bg-accent-invest/90 text-primary-foreground px-4 py-2 text-sm"
             >
               {exporting ? '...' : '💾 Backup completo'}
             </button>
           </div>
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-xs text-muted-foreground mt-2">
             CSV es compatible con Excel. JSON es mejor para programadores. Backup incluye todo.
           </p>
         </div>
 
         {/* Import Section */}
-        <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
+        <div className="border-t border-border pt-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <h3 className="text-sm font-medium text-muted-foreground">
               Importar transacciones
             </h3>
             <button
               onClick={() => setShowGuide(!showGuide)}
-              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+              className="text-xs text-primary hover:underline flex items-center gap-1"
             >
               {showGuide ? '▲ Ocultar guía' : '▼ Ver guía de formato'}
             </button>
@@ -283,23 +283,23 @@ export default function ExportImport() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-4 overflow-hidden"
               >
-                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800 text-sm space-y-4">
+                <div className="p-4 bg-primary/10 rounded-lg border border-primary/30 text-sm space-y-4">
 
                   {/* Excel multi-hoja / Airtable */}
                   <div>
-                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
+                    <h4 className="font-semibold text-primary mb-2">
                       📗 Excel (.xlsx) con varias hojas
                     </h4>
-                    <p className="text-slate-600 dark:text-slate-400 mb-2">
+                    <p className="text-muted-foreground mb-2">
                       Podés subir un libro con hojas <strong>Expenses</strong>, <strong>Income</strong> y <strong>Transfers</strong>. Se ignoran filas de título (p. ej. &quot;expenses list&quot;) hasta la fila de encabezados. En un solo archivo se importan <strong>gastos, ingresos y transferencias</strong>.
                     </p>
-                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">
                       Gastos e ingresos — columnas típicas (inglés, como Airtable)
                     </p>
-                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto leading-relaxed">
+                    <div className="bg-card rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto leading-relaxed">
                       Date and time, Category, Account, Amount in default currency, Default currency, Amount in account currency, Account currency, Transaction amount in transaction currency, Transaction currency, Tags, Comment
                     </div>
-                    <ul className="text-xs text-slate-600 dark:text-slate-400 mt-2 space-y-1 list-disc list-inside">
+                    <ul className="text-xs text-muted-foreground mt-2 space-y-1 list-disc list-inside">
                       <li>
                         <strong>USD / moneda extranjera:</strong> si hay <strong>Transaction amount</strong> y <strong>Transaction currency</strong> (p. ej. 105,22 y USD), el movimiento se registra en esa moneda. El importe en <strong>Amount in account currency</strong> (p. ej. ARS) se usa como equivalente en cuenta. Si esas columnas van vacías, se usa solo el monto en moneda de cuenta.
                       </li>
@@ -311,14 +311,14 @@ export default function ExportImport() {
 
                   {/* CSV Format */}
                   <div>
-                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
+                    <h4 className="font-semibold text-primary mb-2">
                       📊 CSV simple (Gasto / Ingreso por fila)
                     </h4>
-                    <p className="text-slate-600 dark:text-slate-400 mb-2">
+                    <p className="text-muted-foreground mb-2">
                       Creá un archivo con estas columnas. El orden no importa (coma o punto y coma):
                     </p>
-                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-xs overflow-x-auto">
-                      <div className="text-slate-500">Fecha,Tipo,Monto,Moneda,Cuenta,Categoría,Descripción</div>
+                    <div className="bg-card rounded p-3 font-mono text-xs overflow-x-auto">
+                      <div className="text-muted-foreground">Fecha,Tipo,Monto,Moneda,Cuenta,Categoría,Descripción</div>
                       <div>03-01-2026,Gasto,5000,ARS,Efectivo ARS,Comida,Almuerzo</div>
                       <div>03-05-2026,Gasto,1500,ARS,Mercado Pago,Transporte,Uber</div>
                       <div>03-10-2026,Ingreso,850000,ARS,BBVA,Sueldo,Sueldo marzo</div>
@@ -327,91 +327,91 @@ export default function ExportImport() {
 
                   {/* CSV transferencias entre cuentas */}
                   <div>
-                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
+                    <h4 className="font-semibold text-primary mb-2">
                       🔁 CSV transferencias (origen → destino)
                     </h4>
-                    <p className="text-slate-600 dark:text-slate-400 mb-2">
-                      Si el archivo incluye columnas de cuenta <strong>origen</strong> y <strong>destino</strong>, Zarix lo toma como transferencia real (con <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">destination_account_id</code>). Separador: coma o punto y coma.
+                    <p className="text-muted-foreground mb-2">
+                      Si el archivo incluye columnas de cuenta <strong>origen</strong> y <strong>destino</strong>, Zarix lo toma como transferencia real (con <code className="bg-secondary px-1 rounded">destination_account_id</code>). Separador: coma o punto y coma.
                     </p>
-                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Inglés (ejemplo de encabezados)</p>
-                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto mb-3">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Inglés (ejemplo de encabezados)</p>
+                    <div className="bg-card rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto mb-3">
                       Date and time,Outgoing,Incoming,Amount in outgoing currency,Outgoing currency,Amount in incoming currency,Incoming currency,Comment
                     </div>
-                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Español (equivalente)</p>
-                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Español (equivalente)</p>
+                    <div className="bg-card rounded p-3 font-mono text-[10px] sm:text-xs overflow-x-auto">
                       Fecha y hora,Origen,Destino,Monto en moneda origen,Moneda origen,Monto en moneda destino,Moneda destino,Comentario
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       <strong>Origen</strong> y <strong>Destino</strong> deben coincidir con el nombre de tus cuentas. Montos: solo dígitos y punto decimal (sin miles). Fecha: <strong>DD/MM/YYYY</strong>, <strong>YYYY-MM-DD</strong> o ISO con hora. Los montos en destino son opcionales; si hay cruce de monedas, se agregan al comentario.
                     </p>
                   </div>
 
                   {/* Column mapping */}
                   <div>
-                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
+                    <h4 className="font-semibold text-primary mb-2">
                       🔗 Mapeo de columnas (CSV simple)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                      <div className="flex justify-between p-2 bg-card rounded">
                         <span className="font-medium">Fecha *</span>
-                        <span className="text-slate-500">
+                        <span className="text-muted-foreground">
                           <strong>YYYY-MM-DD</strong> (recomendado), <strong>DD/MM/AAAA</strong> o <strong>MM/DD/AAAA</strong> (elegí el orden arriba del import), o ISO con hora. Sin hora, día calendario fijo.
                         </span>
                       </div>
-                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                      <div className="flex justify-between p-2 bg-card rounded">
                         <span className="font-medium">Monto *</span>
-                        <span className="text-slate-500">1000 o 1000.50 (punto o coma decimal)</span>
+                        <span className="text-muted-foreground">1000 o 1000.50 (punto o coma decimal)</span>
                       </div>
-                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                      <div className="flex justify-between p-2 bg-card rounded">
                         <span className="font-medium">Tipo</span>
-                        <span className="text-slate-500">Gasto, Ingreso (no transferencias)</span>
+                        <span className="text-muted-foreground">Gasto, Ingreso (no transferencias)</span>
                       </div>
-                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                      <div className="flex justify-between p-2 bg-card rounded">
                         <span className="font-medium">Moneda</span>
-                        <span className="text-slate-500">ARS, USD (default: ARS)</span>
+                        <span className="text-muted-foreground">ARS, USD (default: ARS)</span>
                       </div>
-                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                      <div className="flex justify-between p-2 bg-card rounded">
                         <span className="font-medium">Cuenta</span>
-                        <span className="text-slate-500">
+                        <span className="text-muted-foreground">
                           Igual al nombre en Zarix (mayúsculas y tildes no importan)
                         </span>
                       </div>
-                      <div className="flex justify-between p-2 bg-white dark:bg-slate-800 rounded">
+                      <div className="flex justify-between p-2 bg-card rounded">
                         <span className="font-medium">Categoría</span>
-                        <span className="text-slate-500">
+                        <span className="text-muted-foreground">
                           Opcional; debe coincidir con una categoría tuya o del sistema (misma regla de
                           tildes); si no hay match, sin categoría
                         </span>
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">* Campos obligatorios en CSV simple</p>
+                    <p className="text-xs text-muted-foreground mt-2">* Campos obligatorios en CSV simple</p>
                   </div>
 
                   {/* Cuentas no encontradas */}
                   <div>
-                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
+                    <h4 className="font-semibold text-primary mb-2">
                       🏦 Cuentas que no coinciden
                     </h4>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                    <p className="text-xs text-muted-foreground mb-2">
                       Si el nombre de cuenta del archivo no existe en Zarix, podés elegir por cada una:
                     </p>
-                    <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                    <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
                       <li><strong>Asignar a cuenta existente:</strong> mapeá el nombre importado a una cuenta que ya tenés.</li>
-                      <li><strong>Dejar sin cuenta:</strong> se importa el movimiento sin <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">account_id</code> (podés editarlo después).</li>
+                      <li><strong>Dejar sin cuenta:</strong> se importa el movimiento sin <code className="bg-secondary px-1 rounded">account_id</code> (podés editarlo después).</li>
                       <li><strong>Guardar nombre original en notas:</strong> se anota el texto de la cuenta en las notas del movimiento.</li>
                       <li>Si no hay nombre de cuenta pero sí moneda, a veces se sugiere una cuenta con esa moneda (solo como ayuda).</li>
                     </ul>
-                    <p className="text-xs text-slate-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Las <strong>transferencias</strong> exigen resolver origen y destino; si falta una cuenta, esa fila se omite.
                     </p>
                   </div>
 
                   {/* JSON Format */}
                   <div>
-                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
+                    <h4 className="font-semibold text-primary mb-2">
                       📄 Formato JSON
                     </h4>
-                    <div className="bg-white dark:bg-slate-800 rounded p-3 font-mono text-xs overflow-x-auto">
+                    <div className="bg-card rounded p-3 font-mono text-xs overflow-x-auto">
                       <pre>{`[
   {
     "date": "2026-03-01",
@@ -425,20 +425,20 @@ export default function ExportImport() {
   }
 ]`}</pre>
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">
-                      <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">amount_in_account_currency</code> es opcional: sirve cuando el monto principal está en una moneda y querés guardar el equivalente en moneda de cuenta (como en Excel con USD + ARS).
+                    <p className="text-xs text-muted-foreground mt-2">
+                      <code className="bg-secondary px-1 rounded">amount_in_account_currency</code> es opcional: sirve cuando el monto principal está en una moneda y querés guardar el equivalente en moneda de cuenta (como en Excel con USD + ARS).
                     </p>
-                    <p className="text-xs text-slate-500 mt-2">
-                      Valores de type: <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">expense</code>, <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">income</code>. Para transferencias entre cuentas usá el <strong>CSV o hoja Transfers</strong> con Origen/Destino, no <code className="bg-slate-200 dark:bg-slate-700 px-1 rounded">transfer</code> en el CSV simple.
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Valores de type: <code className="bg-secondary px-1 rounded">expense</code>, <code className="bg-secondary px-1 rounded">income</code>. Para transferencias entre cuentas usá el <strong>CSV o hoja Transfers</strong> con Origen/Destino, no <code className="bg-secondary px-1 rounded">transfer</code> en el CSV simple.
                     </p>
                   </div>
 
                   {/* Tips */}
-                  <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded border border-amber-200 dark:border-amber-800">
-                    <h4 className="font-semibold text-amber-800 dark:text-amber-300 mb-2">
+                  <div className="p-3 bg-warning/10 rounded border border-warning/30">
+                    <h4 className="font-semibold text-warning mb-2">
                       💡 Tips importantes
                     </h4>
-                    <ul className="text-xs text-amber-700 dark:text-amber-400 space-y-1 list-disc list-inside">
+                    <ul className="text-xs text-warning space-y-1 list-disc list-inside">
                       <li>Los <strong>nombres de cuenta</strong> deben coincidir con Zarix (o usá la pantalla de revisión para mapearlos)</li>
                       <li>Archivos <strong>.xlsx</strong>: se leen directo; para <strong>.csv</strong> conviene exportar como <strong>CSV UTF-8</strong> para acentos</li>
                       <li>Evitá separador de miles en montos (usá 5000 o 5000.50; también aceptamos 5.000,50 con coma decimal)</li>
@@ -453,7 +453,7 @@ export default function ExportImport() {
           </AnimatePresence>
 
           <div className="mb-3 space-y-1">
-            <label htmlFor="import-date-format" className="text-xs font-medium text-slate-600 dark:text-slate-400">
+            <label htmlFor="import-date-format" className="text-xs font-medium text-muted-foreground">
               Orden de fecha con barras (ej. 02/04/2025)
             </label>
             <select
@@ -465,7 +465,7 @@ export default function ExportImport() {
               <option value="dmy">Día primero — DD/MM/AAAA (Argentina, Europa)</option>
               <option value="mdy">Mes primero — MM/DD/AAAA (EE.UU., algunos bancos)</option>
             </select>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-muted-foreground">
               Si un movimiento aparece con el mes y el día intercambiados (p. ej. 4 de febrero como 2 de abril), probá la otra opción o usá <strong>AAAA-MM-DD</strong> en el archivo.
             </p>
           </div>
@@ -483,8 +483,8 @@ export default function ExportImport() {
             htmlFor="import-file"
             className={`
               inline-flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer
-              border-2 border-dashed border-slate-300 dark:border-slate-600
-              hover:border-emerald-500 dark:hover:border-emerald-400
+              border-2 border-dashed border-border
+              hover:border-primary
               transition-colors
               ${importing ? 'opacity-50 cursor-not-allowed' : ''}
             `}
@@ -493,23 +493,23 @@ export default function ExportImport() {
             <span>{importing ? 'Importando...' : 'Seleccionar CSV, Excel (.xlsx) o JSON'}</span>
           </label>
 
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-xs text-muted-foreground mt-2">
               Aceptamos .csv, .xlsx y .json (los .xls viejos: guardalos como .xlsx primero)
           </p>
 
           {reviewStep && unresolvedAccounts.length > 0 && (
-            <div className="mt-4 p-4 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-              <h4 className="font-semibold text-amber-800 dark:text-amber-300 mb-2">
+            <div className="mt-4 p-4 rounded-lg border border-warning/30 bg-warning/10">
+              <h4 className="font-semibold text-warning mb-2">
                 Cuentas no reconocidas (import masivo)
               </h4>
-              <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
+              <p className="text-xs text-warning mb-3">
                 Elegí para cada cuenta: asignar una existente, dejar sin cuenta o guardar el nombre original.
               </p>
               <div className="space-y-3">
                 {unresolvedAccounts.map((name) => {
                   const current = resolutions[name] || { action: 'none' as const };
                   return (
-                    <div key={name} className="p-3 rounded bg-white dark:bg-slate-800 border border-amber-100 dark:border-amber-700/50">
+                    <div key={name} className="p-3 rounded bg-card border border-warning/20">
                       <div className="text-sm font-medium mb-2">{name}</div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                         <select
@@ -584,35 +584,35 @@ export default function ExportImport() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             className={`p-4 rounded-lg ${
-              importResult.success 
-                ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+              importResult.success
+                ? 'bg-success/10 border border-success/30'
+                : 'bg-destructive/10 border border-destructive/30'
             }`}
           >
             {importResult.success ? (
               <div className="space-y-3">
-                <p className="font-medium text-green-700 dark:text-green-400">
+                <p className="font-medium text-success">
                   ✅ Importación completada
                 </p>
-                <p className="text-sm text-green-600 dark:text-green-500">
+                <p className="text-sm text-success">
                   {importResult.imported} transacciones importadas
                   {importResult.skipped != null && importResult.skipped > 0 && (
-                    <span className="text-amber-700 dark:text-amber-300">
+                    <span className="text-warning">
                       {`, ${importResult.skipped} omitidas`}
                     </span>
                   )}
                 </p>
 
                 {importResult.skipped != null && importResult.skipped > 0 && (
-                  <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/30 p-3 text-sm">
+                  <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm">
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                      <p className="font-medium text-amber-900 dark:text-amber-200">
+                      <p className="font-medium text-warning">
                         Filas omitidas — por qué y cómo corregirlas
                       </p>
                       {(importResult.skippedDetails?.length ?? 0) > 0 && (
                         <button
                           type="button"
-                          className="text-xs px-2 py-1 rounded-md border border-amber-300 dark:border-amber-600 text-amber-900 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                          className="text-xs px-2 py-1 rounded-md border border-warning/40 text-warning hover:bg-warning/20"
                           onClick={() => {
                             const lines = importResult.skippedDetails!.map((d) => {
                               const ctx = d.context ? `\n  Contexto: ${d.context}` : '';
@@ -632,27 +632,27 @@ export default function ExportImport() {
                       )}
                     </div>
                     {importResult.skippedDetailsTruncated === true && (
-                      <p className="text-xs text-amber-800 dark:text-amber-400 mb-2">
+                      <p className="text-xs text-warning mb-2">
                         Se listan las primeras omisiones con detalle; el total omitido es mayor.
                       </p>
                     )}
                     {importResult.skippedDetails && importResult.skippedDetails.length > 0 ? (
-                      <ul className="space-y-3 text-amber-950 dark:text-amber-100">
+                      <ul className="space-y-3 text-warning">
                         {importResult.skippedDetails.map((d, i) => (
                           <li
                             key={i}
-                            className="border-l-2 border-amber-400 dark:border-amber-600 pl-3"
+                            className="border-l-2 border-warning pl-3"
                           >
-                            <div className="font-medium text-amber-950 dark:text-amber-50">{d.title}</div>
-                            <div className="text-xs mt-1 text-amber-900/90 dark:text-amber-200/90">
-                              <span className="text-amber-700 dark:text-amber-400">Motivo:</span> {d.reason}
+                            <div className="font-medium text-warning">{d.title}</div>
+                            <div className="text-xs mt-1 text-warning/90">
+                              <span className="text-warning">Motivo:</span> {d.reason}
                             </div>
-                            <div className="text-xs mt-1 text-amber-900/90 dark:text-amber-200/90">
-                              <span className="text-amber-700 dark:text-amber-400">Cómo evitarlo:</span>{' '}
+                            <div className="text-xs mt-1 text-warning/90">
+                              <span className="text-warning">Cómo evitarlo:</span>{' '}
                               {d.suggestion}
                             </div>
                             {d.context && (
-                              <div className="text-[11px] mt-1 text-amber-800/80 dark:text-amber-300/80 font-mono">
+                              <div className="text-[11px] mt-1 text-warning/80 font-mono">
                                 {d.context}
                               </div>
                             )}
@@ -660,7 +660,7 @@ export default function ExportImport() {
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-xs text-amber-800 dark:text-amber-400">
+                      <p className="text-xs text-warning">
                         No hay detalle por fila (revisá la consola del servidor o reintentá). Total omitidas:{' '}
                         {importResult.skipped}.
                       </p>
@@ -669,7 +669,7 @@ export default function ExportImport() {
                 )}
 
                 {importResult.errors && importResult.errors.length > 0 && !importResult.skippedDetails?.length && (
-                  <div className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                  <div className="mt-2 text-xs text-warning">
                     <p className="font-medium">Advertencias:</p>
                     <ul className="list-disc list-inside">
                       {importResult.errors.map((e, i) => (
@@ -680,7 +680,7 @@ export default function ExportImport() {
                 )}
               </div>
             ) : (
-              <p className="text-red-700 dark:text-red-400">
+              <p className="text-destructive">
                 ❌ {importResult.message || 'Error en la importación'}
               </p>
             )}

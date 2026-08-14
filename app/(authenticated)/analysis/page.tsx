@@ -69,33 +69,33 @@ export default async function AnalysisPage() {
       >
         <MotionSection delay={0.04} intensity="hero">
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            <div className="card bg-gradient-to-br from-red-50/80 via-white to-red-50/70 dark:from-red-900/15 dark:via-surface-elevated dark:to-red-900/5">
+            <div className="card bg-gradient-to-br from-destructive/10 via-card to-destructive/10">
               <div className="text-xs text-muted-foreground mb-1">Gastos</div>
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+              <div className="text-2xl font-bold text-destructive">
                 ${totalExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
               </div>
               {previousMonthData ? (
-                <div className={`text-xs mt-1 ${expensesDiff <= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                <div className={`text-xs mt-1 ${expensesDiff <= 0 ? 'text-success' : 'text-destructive'}`}>
                   {expensesDiff >= 0 ? 'Subió' : 'Bajó'} {Math.abs(expensesDiff).toFixed(0)}% vs mes anterior
                 </div>
               ) : null}
             </div>
 
-            <div className="card bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/70 dark:from-emerald-900/20 dark:via-surface-elevated dark:to-emerald-900/5">
+            <div className="card bg-gradient-to-br from-success/10 via-card to-success/10">
               <div className="text-xs text-muted-foreground mb-1">Ingresos</div>
-              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-2xl font-bold text-success">
                 ${totalIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="card bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/60 dark:from-indigo-900/20 dark:via-surface-elevated dark:to-blue-900/5">
+            <div className="card bg-gradient-to-br from-indigo-50/70 via-card to-blue-50/60 dark:from-indigo-900/20 dark:to-blue-900/5">
               <div className="text-xs text-muted-foreground mb-1">Balance</div>
-              <div className={`text-2xl font-bold ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+              <div className={`text-2xl font-bold ${balance >= 0 ? 'text-success' : 'text-destructive'}`}>
                 {balance >= 0 ? '+' : ''}${balance.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="card bg-gradient-to-br from-slate-100/80 via-white to-slate-100/60 dark:from-slate-800/60 dark:via-surface-elevated dark:to-slate-800/40">
+            <div className="card bg-gradient-to-br from-secondary via-card to-secondary">
               <div className="text-xs text-muted-foreground mb-1">Promedio 6 meses</div>
               <div className="text-2xl font-bold text-foreground">
                 ${averages.avgExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
@@ -135,7 +135,7 @@ export default async function AnalysisPage() {
           </h3>
           <div className="space-y-3 text-sm">
             {totalExpenses > totalIncome ? (
-              <div className="flex items-start gap-2 p-3 rounded-control border border-red-200/70 dark:border-red-900/50 bg-red-100/80 dark:bg-red-900/25">
+              <div className="flex items-start gap-2 p-3 rounded-control border border-destructive/30 bg-destructive/10">
                 <span>Gastaste más que tus ingresos este mes. Diferencia: ${(totalExpenses - totalIncome).toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
               </div>
             ) : null}
@@ -149,19 +149,19 @@ export default async function AnalysisPage() {
             ) : null}
 
             {expensesDiff > 10 && previousMonthData ? (
-              <div className="flex items-start gap-2 p-3 rounded-control border border-amber-200/70 dark:border-amber-900/50 bg-amber-100/80 dark:bg-amber-900/25">
+              <div className="flex items-start gap-2 p-3 rounded-control border border-warning/30 bg-warning/10">
                 <span>Tus gastos subieron {expensesDiff.toFixed(0)}% vs mes pasado. Conviene revisar los consumos mas altos.</span>
               </div>
             ) : null}
 
             {expensesDiff < -10 && previousMonthData ? (
-              <div className="flex items-start gap-2 p-3 rounded-control border border-emerald-200/70 dark:border-emerald-900/50 bg-emerald-100/70 dark:bg-emerald-900/25">
+              <div className="flex items-start gap-2 p-3 rounded-control border border-success/30 bg-success/10">
                 <span>Buen avance: redujiste gastos {Math.abs(expensesDiff).toFixed(0)}% frente al mes anterior.</span>
               </div>
             ) : null}
 
             {totalExpenses > averages.avgExpenses * 1.2 ? (
-              <div className="flex items-start gap-2 p-3 rounded-control border border-amber-200/70 dark:border-amber-900/50 bg-amber-100/80 dark:bg-amber-900/25">
+              <div className="flex items-start gap-2 p-3 rounded-control border border-warning/30 bg-warning/10">
                 <span>Estas 20% por encima de tu promedio historico. Todavia podes ajustar el cierre del mes.</span>
               </div>
             ) : null}

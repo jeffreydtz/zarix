@@ -18,7 +18,7 @@ export default function AccountBreakdownChart({ data }: Props) {
     return (
       <div className="card p-6">
         <h3 className="text-lg font-semibold mb-4">Gastos por Cuenta</h3>
-        <div className="h-48 flex items-center justify-center text-slate-500">
+        <div className="h-48 flex items-center justify-center text-muted-foreground">
           No hay datos para mostrar
         </div>
       </div>
@@ -84,7 +84,7 @@ export default function AccountBreakdownChart({ data }: Props) {
             </div>
             <div className="flex items-center gap-2">
               <span className="font-semibold">${acc.amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
-              <span className="text-xs text-slate-500 w-12 text-right">({acc.percent.toFixed(0)}%)</span>
+              <span className="text-xs text-muted-foreground w-12 text-right">({acc.percent.toFixed(0)}%)</span>
             </div>
           </div>
         ))}

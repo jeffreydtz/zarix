@@ -104,7 +104,7 @@ export default function SharedGroupView({ token, initialData }: Props) {
         </div>
 
         {error && (
-          <div className="card p-3 text-sm text-red-600 dark:text-red-400" role="alert">
+          <div className="card p-3 text-sm text-destructive" role="alert">
             {error}
           </div>
         )}
@@ -240,13 +240,13 @@ function IdentityPicker({
             placeholder="Teléfono (opcional si pusiste email)"
             className="w-full px-3 py-2.5 rounded-control border border-border bg-surface text-sm"
           />
-          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex gap-2">
             <button
               type="button"
               disabled={saving || !name.trim() || (!email.trim() && !phone.trim())}
               onClick={join}
-              className="flex-1 py-2.5 rounded-control bg-primary text-white text-sm font-medium disabled:opacity-50"
+              className="flex-1 py-2.5 rounded-control bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50"
             >
               {saving ? 'Uniéndote…' : 'Unirme'}
             </button>
@@ -315,7 +315,7 @@ function ExpensesTab({
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="w-full py-3 rounded-card bg-primary text-white font-medium text-sm"
+          className="w-full py-3 rounded-card bg-primary text-primary-foreground font-medium text-sm"
         >
           + Agregar gasto
         </button>
@@ -352,7 +352,7 @@ function ExpensesTab({
               <button
                 type="button"
                 onClick={() => deleteExpense(e.id)}
-                className="text-xs text-muted-foreground hover:text-red-500"
+                className="text-xs text-muted-foreground hover:text-destructive"
               >
                 Eliminar
               </button>
@@ -484,13 +484,13 @@ function ExpenseForm({
           })}
         </div>
       </div>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-2">
         <button
           type="button"
           disabled={saving}
           onClick={submit}
-          className="flex-1 py-2.5 rounded-control bg-primary text-white text-sm font-medium disabled:opacity-50"
+          className="flex-1 py-2.5 rounded-control bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50"
         >
           {saving ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Guardar gasto'}
         </button>
@@ -523,9 +523,9 @@ function BalancesTab({ data, meId }: { data: SharedGroupDetail; meId: string | n
               <span
                 className={`font-medium ${
                   b.net > 0.005
-                    ? 'text-emerald-600 dark:text-emerald-400'
+                    ? 'text-success'
                     : b.net < -0.005
-                      ? 'text-red-600 dark:text-red-400'
+                      ? 'text-destructive'
                       : 'text-muted-foreground'
                 }`}
               >

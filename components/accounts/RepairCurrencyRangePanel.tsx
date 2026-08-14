@@ -68,17 +68,17 @@ export default function RepairCurrencyRangePanel({ accountId }: RepairCurrencyRa
   };
 
   return (
-    <div className="card border border-amber-200 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20">
-      <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1">
+    <div className="card border border-warning/30 bg-warning/10">
+      <h3 className="text-sm font-semibold text-foreground mb-1">
         Recalcular conversiones y saldo
       </h3>
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+      <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
         Vuelve a aplicar la cotización actual del sistema a los gastos e ingresos en otra moneda (p. ej. USD
         en cuenta en ARS) entre las fechas que elijas. El saldo de la cuenta se actualiza con la diferencia.
       </p>
       <div className="flex flex-wrap items-end gap-3 mb-3">
         <div>
-          <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Desde</label>
+          <label className="block text-xs font-medium text-muted-foreground mb-1">Desde</label>
           <input
             type="date"
             value={startDate}
@@ -87,7 +87,7 @@ export default function RepairCurrencyRangePanel({ accountId }: RepairCurrencyRa
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Hasta</label>
+          <label className="block text-xs font-medium text-muted-foreground mb-1">Hasta</label>
           <input
             type="date"
             value={endDate}
@@ -99,18 +99,18 @@ export default function RepairCurrencyRangePanel({ accountId }: RepairCurrencyRa
           type="button"
           disabled={!canSubmit || loading}
           onClick={run}
-          className="btn bg-amber-600 hover:bg-amber-700 text-white border-0 disabled:opacity-50 text-sm py-2"
+          className="btn bg-warning hover:brightness-90 text-white border-0 disabled:opacity-50 text-sm py-2"
         >
           {loading ? 'Aplicando…' : 'Aplicar recálculo'}
         </button>
       </div>
-      <div className="flex flex-wrap gap-4 text-xs text-slate-600 dark:text-slate-400 mb-2">
+      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mb-2">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={onlyUsd}
             onChange={(e) => setOnlyUsd(e.target.checked)}
-            className="rounded border-slate-300"
+            className="rounded border-border"
           />
           Solo comprobantes en USD
         </label>
@@ -119,14 +119,14 @@ export default function RepairCurrencyRangePanel({ accountId }: RepairCurrencyRa
             type="checkbox"
             checked={force}
             onChange={(e) => setForce(e.target.checked)}
-            className="rounded border-slate-300"
+            className="rounded border-border"
           />
           Forzar todo (incluso si el importe ya coincide)
         </label>
       </div>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
       {lastResult && (
-        <p className="text-xs text-emerald-700 dark:text-emerald-300">
+        <p className="text-xs text-success">
           Actualizados: {lastResult.updated}. Misma moneda que la cuenta: {lastResult.sameCurrency}.
           {lastResult.filteredOut > 0 && ` Filtrados: ${lastResult.filteredOut}.`}
           {lastResult.alreadyAligned > 0 && ` Sin cambios necesarios: ${lastResult.alreadyAligned}.`}

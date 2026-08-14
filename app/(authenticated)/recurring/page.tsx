@@ -393,15 +393,15 @@ export default function RecurringPage() {
       <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Recurrentes (gastos e ingresos)</h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+            <h1 className="text-3xl font-bold text-foreground">Recurrentes (gastos e ingresos)</h1>
+            <p className="text-muted-foreground text-sm mt-1">
               Acá gestionás servicios recurrentes (Netflix, Spotify, etc.) y reglas manuales. Los planes Zarix (Gratis/Premium) se configuran en Configuración.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Link
               href="/settings"
-              className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="px-3 py-2 rounded-xl border border-border text-xs font-medium text-muted-foreground hover:bg-secondary transition-colors"
             >
               Plan Zarix en Configuración
             </Link>
@@ -437,11 +437,11 @@ export default function RecurringPage() {
           />
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 md:p-5">
+        <div className="bg-card rounded-2xl border border-border p-4 md:p-5">
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Info de servicios</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              <h2 className="text-lg font-bold text-foreground">Info de servicios</h2>
+              <p className="text-sm text-muted-foreground mt-1">
                 Catálogo de referencia para cargar gastos de servicios recurrentes más rápido.
               </p>
             </div>
@@ -450,25 +450,25 @@ export default function RecurringPage() {
             {SUBSCRIPTION_SERVICES.map((service) => (
               <div
                 key={service.id}
-                className="rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-slate-50/70 dark:bg-slate-900/30"
+                className="rounded-xl border border-border p-3 bg-surface-soft"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg" aria-hidden>
                     {service.icon}
                   </span>
-                  <h3 className="font-semibold text-slate-800 dark:text-slate-100">{service.name}</h3>
+                  <h3 className="font-semibold text-foreground">{service.name}</h3>
                 </div>
                 <div className="space-y-2">
                   {service.plans.map((plan) => (
                     <div
                       key={plan.id}
-                      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-2"
+                      className="rounded-lg border border-border bg-card px-2.5 py-2"
                     >
-                      <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{plan.name}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-sm font-medium text-foreground">{plan.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         {formatMoney(plan.amount, plan.currency)} / {FREQ_LABELS[plan.frequency]}
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                      <p className="text-xs text-muted-foreground">
                         Equiv. anual: {formatMoney(yearlyEquivalent(plan.amount, plan.frequency), plan.currency)}
                       </p>
                     </div>
@@ -487,21 +487,21 @@ export default function RecurringPage() {
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">✨ Nueva regla recurrente</h2>
+              <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+                <h2 className="text-lg font-bold text-foreground mb-4">✨ Nueva regla recurrente</h2>
 
-                <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-700 mb-5">
+                <div className="inline-flex p-1 rounded-xl bg-secondary mb-5">
                   <button
                     type="button"
                     onClick={() => setForm((prev) => ({ ...prev, kind: 'subscription', type: 'expense' }))}
-                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${form.kind === 'subscription' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-300'}`}
+                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${form.kind === 'subscription' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
                   >
                     📺 Servicio externo
                   </button>
                   <button
                     type="button"
                     onClick={() => setForm((prev) => ({ ...prev, kind: 'generic' }))}
-                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${form.kind === 'generic' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-300'}`}
+                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${form.kind === 'generic' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
                   >
                     🔁 Recurrente manual
                   </button>
@@ -511,12 +511,12 @@ export default function RecurringPage() {
                   {form.kind === 'subscription' && (
                     <>
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Servicio</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Servicio</label>
                         <select
                           required
                           value={form.serviceId}
                           onChange={(e) => setForm((prev) => ({ ...prev, serviceId: e.target.value, planId: '' }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                          className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                         >
                           <option value="">Elegí una plataforma</option>
                           {SUBSCRIPTION_SERVICES.map((service) => (
@@ -528,13 +528,13 @@ export default function RecurringPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Paquete del servicio</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Paquete del servicio</label>
                         <select
                           required
                           value={form.planId}
                           onChange={(e) => setForm((prev) => ({ ...prev, planId: e.target.value }))}
                           disabled={!selectedService}
-                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 disabled:opacity-60 focus:ring-2 focus:ring-ring outline-none"
+                          className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground disabled:opacity-60 focus:ring-2 focus:ring-ring outline-none"
                         >
                           <option value="">Elegí un paquete</option>
                           {(selectedService?.plans || []).map((plan) => (
@@ -548,34 +548,34 @@ export default function RecurringPage() {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Descripción</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Descripción</label>
                     <input
                       required
                       value={form.description}
                       onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
                       placeholder={form.kind === 'subscription' ? 'ej: Netflix Premium' : 'ej: Alquiler, Sueldo'}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                     />
                   </div>
 
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Monto</label>
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">Monto</label>
                       <input
                         required
                         type="text"
                         inputMode="decimal"
                         value={form.amount}
                         onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                       />
                     </div>
                     <div className="w-28">
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Moneda</label>
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">Moneda</label>
                       <select
                         value={form.currency}
                         onChange={(e) => setForm((prev) => ({ ...prev, currency: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                       >
                         <option value="ARS">ARS</option>
                         <option value="USD">USD</option>
@@ -586,11 +586,11 @@ export default function RecurringPage() {
                   {form.kind === 'generic' && (
                     <>
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tipo</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Tipo</label>
                         <select
                           value={form.type}
                           onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                          className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                         >
                           <option value="expense">💸 Gasto</option>
                           <option value="income">💰 Ingreso</option>
@@ -598,11 +598,11 @@ export default function RecurringPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoría</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Categoría</label>
                         <select
                           value={form.categoryId}
                           onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                          className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                         >
                           <option value="">Sin categoría</option>
                           {categories
@@ -619,11 +619,11 @@ export default function RecurringPage() {
 
                   {form.kind === 'subscription' && (
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoría</label>
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">Categoría</label>
                       <select
                         value={form.categoryId}
                         onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                       >
                         <option value="">Sin categoría</option>
                         {categories
@@ -638,12 +638,12 @@ export default function RecurringPage() {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Cuenta</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Cuenta</label>
                     <select
                       required
                       value={form.accountId}
                       onChange={(e) => setForm((prev) => ({ ...prev, accountId: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                     >
                       <option value="">Seleccionar cuenta</option>
                       {accounts.map((account) => (
@@ -655,11 +655,11 @@ export default function RecurringPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Frecuencia</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Frecuencia</label>
                     <select
                       value={form.frequency}
                       onChange={(e) => setForm((prev) => ({ ...prev, frequency: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                     >
                       <option value="daily">📅 Diaria</option>
                       <option value="weekly">📆 Semanal</option>
@@ -669,24 +669,24 @@ export default function RecurringPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
                       {form.kind === 'subscription' ? 'Fecha de renovación' : 'Fecha de inicio'}
                     </label>
                     <input
                       type="date"
                       value={form.startDate}
                       onChange={(e) => setForm((prev) => ({ ...prev, startDate: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fecha de fin (opcional)</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Fecha de fin (opcional)</label>
                     <input
                       type="date"
                       value={form.endDate}
                       onChange={(e) => setForm((prev) => ({ ...prev, endDate: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ring outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-border bg-secondary text-foreground focus:ring-2 focus:ring-ring outline-none"
                     />
                   </div>
 
@@ -694,7 +694,7 @@ export default function RecurringPage() {
                     <button
                       type="button"
                       onClick={() => setForm((prev) => ({ ...prev, notificationEnabled: !prev.notificationEnabled }))}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border transition-colors ${form.notificationEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-200' : 'border-slate-300 text-slate-600 dark:border-slate-600 dark:text-slate-300'}`}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border transition-colors ${form.notificationEnabled ? 'border-success/30 bg-success/10 text-success' : 'border-border text-muted-foreground'}`}
                     >
                       <span className="font-medium">🔔 Notificar cuando se ejecute la renovación</span>
                       <span>{form.notificationEnabled ? 'Activo' : 'Desactivado'}</span>
@@ -717,13 +717,13 @@ export default function RecurringPage() {
         </AnimatePresence>
 
         {upcomingRenewals.length > 0 && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
-            <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-2">📅 Próximas renovaciones (14 días)</h3>
+          <div className="bg-card rounded-2xl border border-border p-4">
+            <h3 className="font-semibold text-foreground mb-2">📅 Próximas renovaciones (14 días)</h3>
             <div className="flex flex-wrap gap-2">
               {upcomingRenewals.map(({ rule, nextDate, diffDays }) => (
                 <span
                   key={rule.id}
-                  className="text-xs px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200 border border-indigo-100 dark:border-indigo-700/40"
+                  className="text-xs px-3 py-1.5 rounded-full bg-info/10 text-info border border-info/30"
                 >
                   {(rule.subscription_name || rule.description)} · {nextDate.toLocaleDateString('es-AR')} {diffDays <= 0 ? '(hoy)' : `(en ${diffDays}d)`}
                 </span>
@@ -735,14 +735,14 @@ export default function RecurringPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((index) => (
-              <div key={index} className="h-24 rounded-2xl bg-slate-200 dark:bg-slate-700 animate-pulse" />
+              <div key={index} className="h-24 rounded-2xl bg-muted animate-pulse" />
             ))}
           </div>
         ) : rules.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
             <div className="text-6xl mb-4">✨</div>
-            <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">Sin reglas todavía</h3>
-            <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+            <h3 className="text-xl font-bold text-muted-foreground mb-2">Sin reglas todavía</h3>
+            <p className="text-muted-foreground max-w-sm mx-auto">
               Cargá tus servicios recurrentes (Netflix, YouTube Premium y más) o cualquier gasto/ingreso recurrente manual.
             </p>
           </motion.div>
@@ -803,10 +803,10 @@ function StatCard({
   gradient: string;
 }) {
   return (
-    <div className={`rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-gradient-to-br ${gradient} bg-white dark:bg-slate-800`}>
-      <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{title}</p>
-      <div className="text-lg font-bold text-slate-800 dark:text-slate-100 mt-1">{value}</div>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{caption}</p>
+    <div className={`rounded-2xl border border-border p-4 bg-gradient-to-br ${gradient} bg-card`}>
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">{title}</p>
+      <div className="text-lg font-bold text-foreground mt-1">{value}</div>
+      <p className="text-xs text-muted-foreground mt-1">{caption}</p>
     </div>
   );
 }
@@ -845,7 +845,7 @@ function RuleSection({
 }) {
   return (
     <div>
-      <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">{title}</h2>
+      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{title}</h2>
       <div className="space-y-3">
         {rules.map((rule) => (
           <RuleCard
@@ -886,8 +886,8 @@ function RuleCard({
       animate={{ opacity: 1, y: 0 }}
       className={`p-4 rounded-2xl border transition-colors ${
         rule.is_active
-          ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-          : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 opacity-65'
+          ? 'bg-card border-border'
+          : 'bg-secondary border-border opacity-65'
       }`}
     >
       <div className="flex items-center gap-4">
@@ -896,14 +896,14 @@ function RuleCard({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold text-slate-800 dark:text-slate-100 truncate">
+            <span className="font-semibold text-foreground truncate">
               {typeEmoji} {title}
             </span>
-            <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded-full">
               {subtitle}
             </span>
             {rule.category && (
-              <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 px-2 py-0.5 rounded-full">
+              <span className="text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded-full">
                 <span className="inline-flex items-center gap-1">
                   <CategoryIcon icon={rule.category.icon} className="w-3 h-3" />
                   {rule.category.name}
@@ -911,8 +911,8 @@ function RuleCard({
               </span>
             )}
           </div>
-          <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 flex-wrap mt-0.5">
-            <span className="font-medium text-slate-700 dark:text-slate-300">{formatMoney(Number(rule.amount), rule.currency)}</span>
+          <div className="text-sm text-muted-foreground flex items-center gap-2 flex-wrap mt-0.5">
+            <span className="font-medium text-muted-foreground">{formatMoney(Number(rule.amount), rule.currency)}</span>
             <span>·</span>
             <span>{freqLabel}</span>
             {rule.account && (
@@ -930,21 +930,21 @@ function RuleCard({
       <div className="mt-3 flex items-center justify-between gap-2">
         <button
           onClick={() => onToggleNotification(rule)}
-          className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${rule.notification_enabled ? 'border-emerald-200 text-emerald-700 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-200' : 'border-slate-300 text-slate-500 dark:border-slate-600 dark:text-slate-300'}`}
+          className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${rule.notification_enabled ? 'border-success/30 text-success bg-success/10' : 'border-border text-muted-foreground'}`}
         >
           {rule.notification_enabled ? '🔔 Notificación activa' : '🔕 Sin notificación'}
         </button>
         <div className="flex items-center gap-2">
           <button
             onClick={() => onToggle(rule)}
-            className={`relative w-11 h-6 rounded-full transition-colors ${rule.is_active ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'}`}
+            className={`relative w-11 h-6 rounded-full transition-colors ${rule.is_active ? 'bg-primary' : 'bg-secondary'}`}
             title={rule.is_active ? 'Pausar' : 'Activar'}
           >
             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${rule.is_active ? 'translate-x-5' : ''}`} />
           </button>
           <button
             onClick={() => onDelete(rule.id)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors text-sm"
           >
             🗑️
           </button>

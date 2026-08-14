@@ -15,7 +15,7 @@ interface ProgressBarProps {
 export default function ProgressBar({
   value,
   max = 100,
-  colorClass = 'bg-emerald-500',
+  colorClass = 'bg-primary',
   height = 'h-2',
   showLabel = false,
   animated = true,
@@ -24,7 +24,7 @@ export default function ProgressBar({
   const percentage = Math.min((value / max) * 100, 100);
 
   const getColorClass = () => {
-    if (colorClass !== 'bg-emerald-500') return colorClass;
+    if (colorClass !== 'bg-primary') return colorClass;
     // Auto-color sobre tokens semánticos (ver DESIGN.md): success → warning → destructive.
     if (percentage > 80) return 'bg-destructive';
     if (percentage > 50) return 'bg-warning';
@@ -34,12 +34,12 @@ export default function ProgressBar({
   return (
     <div className="w-full">
       {showLabel && (
-        <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+        <div className="flex justify-between text-xs text-muted-foreground mb-1">
           <span>{value.toLocaleString('es-AR')}</span>
           <span>{percentage.toFixed(0)}%</span>
         </div>
       )}
-      <div className={`w-full bg-slate-200 dark:bg-slate-700 rounded-full ${height} overflow-hidden`}>
+      <div className={`w-full bg-secondary rounded-full ${height} overflow-hidden`}>
         <motion.div
           className={`${height} rounded-full ${getColorClass()}`}
           style={{ transformOrigin: '0% 50%' }}

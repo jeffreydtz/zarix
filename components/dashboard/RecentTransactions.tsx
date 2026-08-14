@@ -35,7 +35,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
       className="card"
     >
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+        <h3 className="text-lg font-semibold text-foreground">
           Ultimos Movimientos
         </h3>
         <Link 
@@ -59,10 +59,10 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
           >
             💸
           </motion.div>
-          <p className="text-slate-500 dark:text-slate-400 mb-2">
+          <p className="text-muted-foreground mb-2">
             No tenés movimientos todavía
           </p>
-          <p className="text-sm text-slate-400 dark:text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Usá el bot de Telegram para registrar gastos
           </p>
         </motion.div>
@@ -89,12 +89,12 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   {tx.category?.icon || (tx.type === 'income' ? '💰' : '💸')}
                 </motion.div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-medium text-slate-800 dark:text-slate-200 truncate">
+                  <div className="font-medium text-foreground truncate">
                     {tx.description || tx.category?.name || 'Sin descripción'}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
                     <span className="truncate">{tx.account?.name}</span>
-                    <span className="text-slate-300">•</span>
+                    <span className="text-muted-foreground">•</span>
                     <span>
                       {formatDistanceToNow(new Date(tx.transaction_date), {
                         addSuffix: true,
@@ -108,10 +108,10 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
               <div
                 className={`font-bold text-right whitespace-nowrap ml-3 ${
                   tx.type === 'income'
-                    ? 'text-green-600 dark:text-green-400'
+                    ? 'text-success'
                     : tx.type === 'expense'
-                    ? 'text-red-500 dark:text-red-400'
-                    : 'text-slate-600 dark:text-slate-400'
+                    ? 'text-destructive'
+                    : 'text-muted-foreground'
                 }`}
               >
                 {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}

@@ -48,11 +48,11 @@ export default async function ExpensesPage({
         <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Movimientos</h1>
-              <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+              <h1 className="text-3xl font-bold text-foreground">Movimientos</h1>
+              <p className="text-muted-foreground text-sm mt-1">
                 Toca un movimiento para editarlo
               </p>
-              <div className="mt-2 inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+              <div className="mt-2 inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
                 Traídos: {transactions.length}
               </div>
             </div>

@@ -86,37 +86,37 @@ function AccountMovementsSummaryCard({
     ac === 'ARS' && usdToArs && usdToArs > 0 ? netListed / usdToArs : null;
 
   return (
-    <div className="card mb-3 border border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/50">
-      <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+    <div className="card mb-3 border border-border bg-secondary">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
         Resumen de movimientos listados
       </p>
-      <p className="text-lg font-bold tabular-nums text-slate-800 dark:text-slate-100">
+      <p className="text-lg font-bold tabular-nums text-foreground">
         {fmtMoney(netListed, ac)}{' '}
-        <span className="text-sm font-normal text-slate-500">(impacto neto en la cuenta)</span>
+        <span className="text-sm font-normal text-muted-foreground">(impacto neto en la cuenta)</span>
       </p>
       {transactions.length === 0 && (
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-sm text-muted-foreground mt-2">
           Todavía no hay movimientos en esta lista; el total neto es cero.
         </p>
       )}
       {origParts.length > 0 && (
-        <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
-          <span className="text-slate-500 dark:text-slate-400">Por moneda original: </span>
+        <p className="text-sm text-muted-foreground mt-2">
+          <span className="text-muted-foreground">Por moneda original: </span>
           {origParts.join(' · ')}
         </p>
       )}
       {refArs != null && (
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-xs text-muted-foreground mt-2">
           Referencia aprox. en ARS (cotización actual):{' '}
-          <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+          <span className="tabular-nums font-medium text-muted-foreground">
             {fmtMoney(refArs, 'ARS')}
           </span>
         </p>
       )}
       {refUsd != null && (
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-xs text-muted-foreground mt-2">
           Referencia aprox. en USD:{' '}
-          <span className="tabular-nums font-medium text-slate-600 dark:text-slate-300">
+          <span className="tabular-nums font-medium text-muted-foreground">
             {fmtMoney(refUsd, 'USD')}
           </span>
         </p>
@@ -284,7 +284,7 @@ export default function TransactionsList({
         >
           💸
         </motion.div>
-        <p className="text-slate-500 dark:text-slate-400 mb-2">No hay movimientos</p>
+        <p className="text-muted-foreground mb-2">No hay movimientos</p>
         <p className="text-sm text-muted-foreground">{emptySubmessage}</p>
       </motion.div>
     );
@@ -305,8 +305,8 @@ export default function TransactionsList({
             }}
             className={`px-3 py-1.5 rounded-lg text-sm border ${
               selectionMode
-                ? 'bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
-                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+                ? 'bg-info/10 border-info text-info'
+                : 'border-border text-muted-foreground'
             }`}
           >
             {selectionMode ? 'Salir selección masiva' : 'Edición masiva'}
@@ -317,11 +317,11 @@ export default function TransactionsList({
               <button
                 type="button"
                 onClick={toggleSelectAll}
-                className="px-3 py-1.5 rounded-lg text-sm border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"
+                className="px-3 py-1.5 rounded-lg text-sm border border-border text-muted-foreground"
               >
                 {selectedIds.length === transactions.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
               </button>
-              <span className="text-xs text-slate-500">Seleccionados: {selectedIds.length}</span>
+              <span className="text-xs text-muted-foreground">Seleccionados: {selectedIds.length}</span>
             </>
           )}
         </div>
@@ -363,12 +363,12 @@ export default function TransactionsList({
         )}
 
         {selectionMode && selectedIds.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600 flex flex-wrap items-center gap-2">
+          <div className="mt-3 pt-3 border-t border-border flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={applyBulkDelete}
               disabled={deletingBulk || applyingBulk}
-              className="px-3 py-1.5 rounded-lg text-sm border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/60 disabled:opacity-50"
+              className="px-3 py-1.5 rounded-lg text-sm border border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50"
             >
               {deletingBulk ? 'Eliminando...' : `Eliminar seleccionados (${selectedIds.length})`}
             </button>
@@ -397,7 +397,7 @@ export default function TransactionsList({
           >
             💸
           </motion.div>
-          <p className="text-slate-500 dark:text-slate-400 mb-2">No hay movimientos</p>
+          <p className="text-muted-foreground mb-2">No hay movimientos</p>
           <p className="text-sm text-muted-foreground">{emptySubmessage}</p>
         </motion.div>
       )}
@@ -456,18 +456,18 @@ export default function TransactionsList({
                     className="w-4 h-4"
                   />
                 )}
-                <motion.div 
-                  className="text-3xl w-12 h-12 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700"
+                <motion.div
+                  className="text-3xl w-12 h-12 flex items-center justify-center rounded-xl bg-secondary"
                   whileHover={enableListAnimations ? { scale: 1.1 } : undefined}
                 >
                   {tx.category?.icon || (tx.type === 'income' ? '💰' : '💸')}
                 </motion.div>
 
                 <div>
-                  <div className="font-medium text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <div className="font-medium text-foreground group-hover:text-info transition-colors">
                     {tx.description || tx.category?.name || 'Sin descripción'}
                   </div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                  <div className="text-sm text-muted-foreground">
                     {tx.account?.name} • {dateMeta?.dateLabel ?? '—'} • {dateMeta?.distanceLabel ?? '—'}
                   </div>
                   {tx.notes && (
@@ -478,7 +478,7 @@ export default function TransactionsList({
                       {tx.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full"
+                          className="text-xs bg-secondary px-2 py-1 rounded-full"
                         >
                           {tag}
                         </span>
@@ -495,16 +495,16 @@ export default function TransactionsList({
                       <div
                         className={`text-xl font-bold tabular-nums ${
                           impact > 0
-                            ? 'text-green-600 dark:text-green-400'
+                            ? 'text-success'
                             : impact < 0
-                              ? 'text-red-500 dark:text-red-400'
-                              : 'text-slate-600 dark:text-slate-400'
+                              ? 'text-destructive'
+                              : 'text-muted-foreground'
                         }`}
                       >
                         {fmtMoney(impact, vac.accountCurrency.trim().toUpperCase())}
                       </div>
                       {secondary && (
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-[14rem] ml-auto">
+                        <div className="text-xs text-muted-foreground mt-0.5 max-w-[14rem] ml-auto">
                           {secondary}
                         </div>
                       )}
@@ -514,16 +514,16 @@ export default function TransactionsList({
                       <div
                         className={`text-xl font-bold ${
                           tx.type === 'income'
-                            ? 'text-green-600 dark:text-green-400'
+                            ? 'text-success'
                             : tx.type === 'expense'
-                              ? 'text-red-500 dark:text-red-400'
-                              : 'text-slate-600 dark:text-slate-400'
+                              ? 'text-destructive'
+                              : 'text-muted-foreground'
                         }`}
                       >
                         {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
                         ${tx.amount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                       </div>
-                      <div className="text-sm text-slate-500">{tx.currency}</div>
+                      <div className="text-sm text-muted-foreground">{tx.currency}</div>
                     </>
                   )}
                   {tx.installment_number && tx.installment_total && (
@@ -533,7 +533,7 @@ export default function TransactionsList({
                   )}
                 </div>
                 <div className="opacity-60 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -541,7 +541,7 @@ export default function TransactionsList({
             </div>
 
             {tx.type === 'transfer' && tx.destination_account_id && (
-              <div className="mt-3 text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-xl">
+              <div className="mt-3 text-sm text-info bg-info/10 p-2 rounded-xl">
                 {viewAccountContext?.accountId === tx.destination_account_id ? (
                   <>
                     ← Transferencia desde {tx.account?.name ?? 'otra cuenta'}

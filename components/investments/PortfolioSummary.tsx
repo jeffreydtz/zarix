@@ -56,8 +56,8 @@ function formatPct(value: number, fractionDigits = 2): string {
 }
 
 function pnlClass(value: number): string {
-  if (value > 0) return 'text-emerald-500 dark:text-emerald-400';
-  if (value < 0) return 'text-red-500 dark:text-red-400';
+  if (value > 0) return 'text-success';
+  if (value < 0) return 'text-destructive';
   return 'text-muted-foreground';
 }
 

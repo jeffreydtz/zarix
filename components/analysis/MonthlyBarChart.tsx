@@ -18,7 +18,7 @@ export default function MonthlyBarChart({ data }: Props) {
     return (
       <div className="card p-6">
         <h3 className="text-lg font-semibold mb-4">Evolución Mensual</h3>
-        <div className="h-64 flex items-center justify-center text-slate-500">
+        <div className="h-64 flex items-center justify-center text-muted-foreground">
           No hay datos para mostrar
         </div>
       </div>
@@ -46,9 +46,9 @@ export default function MonthlyBarChart({ data }: Props) {
         <h3 className="text-lg font-semibold">Evolución Mensual</h3>
         {previousMonth && (
           <div className={`text-sm px-2 py-1 rounded-full zx-num ${
-            expensesDiff <= 0 
-              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
-              : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+            expensesDiff <= 0
+              ? 'bg-success/10 text-success'
+              : 'bg-destructive/10 text-destructive'
           }`}>
             {expensesDiff >= 0 ? '+' : ''}{expensesDiff.toFixed(1)}% vs mes anterior
           </div>
@@ -58,7 +58,7 @@ export default function MonthlyBarChart({ data }: Props) {
       <div className="mb-4 flex flex-wrap gap-2">
         <span className="story-chip">Promedio gasto: ${avgExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
         <span className="story-chip">Promedio ingreso: ${avgIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
-        <span className={`story-chip ${balanceTrend >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-500 dark:text-red-300'}`}>
+        <span className={`story-chip ${balanceTrend >= 0 ? 'text-success' : 'text-destructive'}`}>
           Balance actual: {balanceTrend >= 0 ? '+' : ''}${balanceTrend.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
         </span>
       </div>
@@ -107,14 +107,14 @@ export default function MonthlyBarChart({ data }: Props) {
 
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
         <div className="zx-kpi">
-          <div className="text-slate-500">Promedio gastos (6 meses)</div>
-          <div className="text-lg font-semibold text-red-500 zx-num">
+          <div className="text-muted-foreground">Promedio gastos (6 meses)</div>
+          <div className="text-lg font-semibold text-destructive zx-num">
             ${avgExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>
         <div className="zx-kpi">
-          <div className="text-slate-500">Promedio ingresos (6 meses)</div>
-          <div className="text-lg font-semibold text-emerald-500 zx-num">
+          <div className="text-muted-foreground">Promedio ingresos (6 meses)</div>
+          <div className="text-lg font-semibold text-success zx-num">
             ${avgIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>

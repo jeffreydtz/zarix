@@ -77,10 +77,10 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
       exit={{ opacity: 0, scale: 0.95 }}
       className={`rounded-2xl p-5 border ${
         realPercent >= 100
-          ? 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10'
+          ? 'border-destructive/30 bg-destructive/10'
           : realPercent >= 80
-          ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/10'
-          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+          ? 'border-warning/30 bg-warning/10'
+          : 'border-border bg-card'
       }`}
     >
       {/* Header */}
@@ -90,8 +90,8 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
             <CategoryIcon icon={categoryIcon} className="w-5 h-5" />
           </div>
           <div>
-            <div className="font-bold text-slate-800 dark:text-slate-100">{categoryName}</div>
-            <div className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="font-bold text-foreground">{categoryName}</div>
+            <div className="text-xs text-muted-foreground">
               {budget.currency} · alerta al {budget.alert_at_percent}%
               {budget.rollover_enabled && ' · con rollover'}
             </div>
@@ -101,7 +101,7 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors text-sm"
           title="Eliminar presupuesto"
         >
           {deleting ? '...' : '🗑️'}
@@ -110,7 +110,7 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
 
       {/* Progress bar */}
       <div className="mb-3">
-        <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div className="h-3 bg-secondary rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${percent}%` }}
@@ -120,7 +120,7 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
           />
         </div>
         <div className="flex justify-between text-xs mt-1">
-          <span className="text-slate-500 dark:text-slate-400">
+          <span className="text-muted-foreground">
             ${spent.toLocaleString('es-AR', { maximumFractionDigits: 0 })} gastado
           </span>
           <span className="font-semibold" style={{ color: progressColor }}>
@@ -131,32 +131,32 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl p-3 bg-slate-50 dark:bg-slate-700/50">
-          <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Presupuesto</div>
-          <div className="font-bold text-slate-800 dark:text-slate-100">
+        <div className="rounded-xl p-3 bg-secondary">
+          <div className="text-xs text-muted-foreground mb-0.5">Presupuesto</div>
+          <div className="font-bold text-foreground">
             ${totalAmount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
-          <div className="text-xs text-slate-400">{budget.currency}</div>
+          <div className="text-xs text-muted-foreground">{budget.currency}</div>
         </div>
-        <div className={`rounded-xl p-3 ${remaining < 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-slate-50 dark:bg-slate-700/50'}`}>
-          <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">
+        <div className={`rounded-xl p-3 ${remaining < 0 ? 'bg-destructive/10' : 'bg-secondary'}`}>
+          <div className="text-xs text-muted-foreground mb-0.5">
             {remaining < 0 ? 'Excedido' : 'Restante'}
           </div>
-          <div className={`font-bold ${remaining < 0 ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-400'}`}>
+          <div className={`font-bold ${remaining < 0 ? 'text-destructive' : 'text-success'}`}>
             ${Math.abs(remaining).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
-          <div className="text-xs text-slate-400">{budget.currency}</div>
+          <div className="text-xs text-muted-foreground">{budget.currency}</div>
         </div>
       </div>
 
       {/* Alert badges */}
       {realPercent >= 100 && (
-        <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-red-600 dark:text-red-400">
+        <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-destructive">
           <span>🔴</span> Presupuesto superado
         </div>
       )}
       {realPercent >= budget.alert_at_percent && realPercent < 100 && (
-        <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-amber-600 dark:text-amber-400">
+        <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-warning">
           <span>⚠️</span> Cerca del límite ({budget.alert_at_percent}%)
         </div>
       )}

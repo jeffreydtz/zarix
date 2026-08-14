@@ -63,12 +63,12 @@ export default function CreateCategoryButton() {
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-4 sm:py-8 z-50 overflow-y-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Nueva Categoría</h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-muted-foreground hover:text-foreground"
               >
                 ✕
               </button>
@@ -82,7 +82,7 @@ export default function CreateCategoryButton() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ej: Supermercado"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                  className="w-full px-4 py-2 rounded-lg border border-border bg-secondary"
                   autoFocus
                 />
               </div>
@@ -94,8 +94,8 @@ export default function CreateCategoryButton() {
                     onClick={() => setType('expense')}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       type === 'expense'
-                        ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                        : 'border-gray-200 dark:border-gray-700'
+                        ? 'border-destructive bg-destructive/10'
+                        : 'border-border'
                     }`}
                   >
                     📤 Gasto
@@ -104,8 +104,8 @@ export default function CreateCategoryButton() {
                     onClick={() => setType('income')}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       type === 'income'
-                        ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                        : 'border-gray-200 dark:border-gray-700'
+                        ? 'border-success bg-success/10'
+                        : 'border-border'
                     }`}
                   >
                     📥 Ingreso
@@ -121,8 +121,8 @@ export default function CreateCategoryButton() {
                     onClick={() => setIconMode('emoji')}
                     className={`px-3 py-1.5 rounded-lg text-sm border ${
                       iconMode === 'emoji'
-                        ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
-                        : 'border-gray-200 dark:border-gray-700'
+                        ? 'bg-primary/10 border-primary text-primary'
+                        : 'border-border'
                     }`}
                   >
                     Emoji
@@ -132,8 +132,8 @@ export default function CreateCategoryButton() {
                     onClick={() => setIconMode('symbol')}
                     className={`px-3 py-1.5 rounded-lg text-sm border ${
                       iconMode === 'symbol'
-                        ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
-                        : 'border-gray-200 dark:border-gray-700'
+                        ? 'bg-primary/10 border-primary text-primary'
+                        : 'border-border'
                     }`}
                   >
                     Ícono estilo iOS
@@ -149,8 +149,8 @@ export default function CreateCategoryButton() {
                         onClick={() => setSelectedIcon(icon)}
                         className={`p-3 text-2xl rounded-lg border-2 transition-all ${
                           selectedIcon === icon
-                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:border-muted-foreground/40'
                         }`}
                       >
                         {icon}
@@ -166,8 +166,8 @@ export default function CreateCategoryButton() {
                           onClick={() => setSelectedIcon(value)}
                           className={`p-3 rounded-lg border-2 transition-all flex items-center justify-center ${
                             selectedIcon === value
-                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-muted-foreground/40'
                           }`}
                         >
                           <CategoryIcon icon={value} className="w-5 h-5" />

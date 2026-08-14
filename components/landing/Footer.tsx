@@ -25,7 +25,7 @@ export default function Footer() {
               </button>
             </div>
           </div>
-          <p className="mt-6 max-w-3xl text-xs leading-relaxed text-[#6F7682]">
+          <p className="mt-6 max-w-3xl text-xs leading-relaxed text-muted-foreground">
             Las cotizaciones (dólar blue, MEP, CCL, acciones, CEDEARs, bonos, cripto) provienen de fuentes públicas
             (DolarApi, data912.com, CoinGecko, Yahoo Finance) y se muestran con fines informativos. Pueden tener
             demoras o errores y no constituyen recomendación de inversión. Zarix no opera mercados ni custodia

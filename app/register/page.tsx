@@ -84,7 +84,7 @@ function RegisterForm() {
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-700"
+        className="bg-card rounded-3xl shadow-2xl p-8 w-full max-w-md border border-border"
       >
         <motion.div
           className="text-center mb-8"
@@ -96,7 +96,7 @@ function RegisterForm() {
           <h1 className="text-4xl font-bold text-primary mb-2">
             Crear cuenta
           </h1>
-          <p className="text-slate-500 dark:text-slate-400">
+          <p className="text-muted-foreground">
             Registrate con email y contraseña. Te pediremos confirmar el correo.
           </p>
         </motion.div>
@@ -105,7 +105,7 @@ function RegisterForm() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              className="block text-sm font-medium text-muted-foreground mb-2"
             >
               Email
             </label>
@@ -123,7 +123,7 @@ function RegisterForm() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              className="block text-sm font-medium text-muted-foreground mb-2"
             >
               Contraseña
             </label>
@@ -142,7 +142,7 @@ function RegisterForm() {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              className="block text-sm font-medium text-muted-foreground mb-2"
             >
               Confirmar contraseña
             </label>
@@ -177,8 +177,8 @@ function RegisterForm() {
               exit={{ opacity: 0, y: -10 }}
               className={`mt-4 p-4 rounded-xl text-sm font-medium ${
                 isError
-                  ? 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 border border-red-200 dark:border-red-800'
-                  : 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800'
+                  ? 'bg-destructive/10 text-destructive border border-destructive/30'
+                  : 'bg-success/10 text-success border border-success/30'
               }`}
             >
               <span className="mr-2">{isError ? '!' : '✓'}</span>
@@ -187,7 +187,7 @@ function RegisterForm() {
           )}
         </AnimatePresence>
 
-        <p className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-8 text-center text-sm text-muted-foreground">
           ¿Ya tenés cuenta?{' '}
           <Link
             href="/login"

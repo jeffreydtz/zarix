@@ -143,8 +143,8 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                   onClick={() => setEditIconMode('emoji')}
                   className={`px-2 py-1 rounded text-xs border ${
                     editIconMode === 'emoji'
-                      ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
-                      : 'border-gray-200 dark:border-gray-700'
+                      ? 'bg-primary/10 border-primary text-primary'
+                      : 'border-border'
                   }`}
                 >
                   Emoji
@@ -154,8 +154,8 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                   onClick={() => setEditIconMode('symbol')}
                   className={`px-2 py-1 rounded text-xs border ${
                     editIconMode === 'symbol'
-                      ? 'bg-emerald-50 border-emerald-400 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
-                      : 'border-gray-200 dark:border-gray-700'
+                      ? 'bg-primary/10 border-primary text-primary'
+                      : 'border-border'
                   }`}
                 >
                   Ícono
@@ -169,7 +169,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                       key={icon}
                       onClick={() => setEditIcon(icon)}
                       className={`text-xl p-1 rounded ${
-                        editIcon === icon ? 'bg-emerald-100 dark:bg-emerald-900' : ''
+                        editIcon === icon ? 'bg-primary/15' : ''
                       }`}
                     >
                       {icon}
@@ -184,7 +184,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                         key={value}
                         onClick={() => setEditIcon(value)}
                         className={`p-2 rounded flex items-center justify-center ${
-                          editIcon === value ? 'bg-emerald-100 dark:bg-emerald-900' : ''
+                          editIcon === value ? 'bg-primary/15' : ''
                         }`}
                       >
                         <CategoryIcon icon={value} className="w-4 h-4" />
@@ -206,13 +206,13 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="font-semibold px-2 py-1 border rounded dark:bg-gray-700 w-full"
+                  className="font-semibold px-2 py-1 border border-border rounded bg-secondary w-full"
                   autoFocus
                 />
                 <select
                   value={editType}
                   onChange={(e) => setEditType(e.target.value as 'expense' | 'income')}
-                  className="px-2 py-1 border rounded dark:bg-gray-700 text-sm"
+                  className="px-2 py-1 border border-border rounded bg-secondary text-sm"
                 >
                   <option value="expense">📤 Gasto</option>
                   <option value="income">📥 Ingreso</option>
@@ -221,7 +221,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
             ) : (
               <div>
                 <div className="font-semibold">{category.name}</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-muted-foreground">
                   {category.type === 'expense' ? '📤 Gasto' : '📥 Ingreso'}
                   {isSystem && ' • Sistema'}
                 </div>
@@ -237,14 +237,14 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                 <button
                   onClick={() => handleSave(category.id)}
                   disabled={loading}
-                  className="text-green-600 hover:text-green-700 px-3 py-1 disabled:opacity-50"
+                  className="text-success hover:text-success/80 px-3 py-1 disabled:opacity-50"
                 >
                   ✓
                 </button>
                 <button
                   onClick={() => setEditingId(null)}
                   disabled={loading}
-                  className="text-gray-600 hover:text-gray-700 px-3 py-1 disabled:opacity-50"
+                  className="text-muted-foreground hover:text-foreground px-3 py-1 disabled:opacity-50"
                 >
                   ✕
                 </button>
@@ -253,13 +253,13 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
               <>
                 <button
                   onClick={() => handleEdit(category)}
-                  className="text-emerald-600 hover:text-emerald-700 px-3 py-1 text-sm font-medium"
+                  className="text-primary hover:text-primary/80 px-3 py-1 text-sm font-medium"
                 >
                   Editar
                 </button>
                 <button
                   onClick={() => handleDelete(category.id, category.name)}
-                  className="text-red-600 hover:text-red-700 px-3 py-1 text-sm font-medium"
+                  className="text-destructive hover:text-destructive/80 px-3 py-1 text-sm font-medium"
                 >
                   Eliminar
                 </button>
@@ -272,7 +272,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
             <button
               onClick={() => handleDuplicateSystemCategory(category)}
               disabled={loading}
-              className="text-emerald-600 hover:text-emerald-700 px-3 py-1 text-sm font-medium disabled:opacity-50"
+              className="text-primary hover:text-primary/80 px-3 py-1 text-sm font-medium disabled:opacity-50"
             >
               Duplicar a mis categorías
             </button>
@@ -287,7 +287,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2 items-center">
-        <span className="text-sm text-gray-500 dark:text-gray-400 mr-1">Mostrar:</span>
+        <span className="text-sm text-muted-foreground mr-1">Mostrar:</span>
         {(
           [
             { id: 'all' as const, label: 'Todas' },
@@ -301,8 +301,8 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
             onClick={() => setTypeFilter(opt.id)}
             className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
               typeFilter === opt.id
-                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 border-transparent'
-                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300'
+                ? 'bg-foreground text-background border-transparent'
+                : 'bg-card border-border text-muted-foreground'
             }`}
           >
             {opt.label}
@@ -330,7 +330,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
 
       {!hasAnyFiltered && (
         <div className="card text-center py-12">
-          <p className="text-gray-500 mb-4">
+          <p className="text-muted-foreground mb-4">
             {categories.length === 0
               ? 'No hay categorías todavía'
               : typeFilter === 'all'
@@ -339,7 +339,7 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
                   ? 'No hay categorías de gasto en este filtro'
                   : 'No hay categorías de ingreso en este filtro'}
           </p>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-muted-foreground">
             {categories.length === 0
               ? 'Creá tu primera categoría personalizada'
               : 'Cambiá el filtro o creá una categoría de este tipo'}

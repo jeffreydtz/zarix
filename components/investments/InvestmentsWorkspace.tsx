@@ -128,7 +128,7 @@ export default function InvestmentsWorkspace({
               Última actualización: <LiveUpdatedLabel lastLiveAt={lastLiveAt} />
             </span>
             {liveError && (
-              <span className="text-xs text-amber-600 dark:text-amber-400">
+              <span className="text-xs text-warning">
                 {liveError} · usando último precio guardado
               </span>
             )}

@@ -56,7 +56,7 @@ export default function PricingSection() {
           <ul className="mt-5 space-y-2">
             {freeFeatures.map((feature) => (
               <li key={feature} className="flex items-center gap-2 text-sm text-foreground">
-                <Check size={16} className="text-[#10B981]" />
+                <Check size={16} className="text-success" />
                 {feature}
               </li>
             ))}
@@ -79,7 +79,7 @@ export default function PricingSection() {
           <ul className="mt-5 space-y-2">
             {premiumFeatures.map((feature) => (
               <li key={feature} className="flex items-center gap-2 text-sm text-foreground">
-                <Check size={16} className="text-[#10B981]" />
+                <Check size={16} className="text-success" />
                 {feature}
               </li>
             ))}

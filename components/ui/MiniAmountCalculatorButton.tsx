@@ -174,20 +174,20 @@ export default function MiniAmountCalculatorButton({
 
   const keyClass =
     'min-h-[2.5rem] rounded-lg text-sm font-semibold transition-colors active:scale-[0.98] ' +
-    'border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/90 ' +
-    'text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-600';
+    'border border-border bg-secondary ' +
+    'text-foreground hover:bg-surface-soft';
 
   const keyOpClass =
     'min-h-[2.5rem] rounded-lg text-sm font-semibold transition-colors active:scale-[0.98] ' +
-    'border border-amber-200/80 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 ' +
-    'text-amber-900 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/50';
+    'border border-warning/30 bg-warning/10 ' +
+    'text-warning hover:bg-warning/20';
 
   return (
     <div ref={rootRef} className={`relative inline-flex ${className}`.trim()}>
       <button
         type="button"
         onClick={() => (open ? close() : openPanel())}
-        className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
+        className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg border border-border bg-secondary text-muted-foreground hover:bg-surface-soft transition-colors"
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         title={ariaLabel}
@@ -202,12 +202,12 @@ export default function MiniAmountCalculatorButton({
       {open && (
         <div
           id={panelId}
-          className="absolute z-[80] top-full right-0 mt-1.5 w-[min(calc(100vw-1.5rem),13.5rem)] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-2.5"
+          className="absolute z-[80] top-full right-0 mt-1.5 w-[min(calc(100vw-1.5rem),13.5rem)] rounded-xl border border-border bg-card shadow-lg p-2.5"
           role="dialog"
           aria-label="Calculadora de monto"
         >
           <div
-            className="mb-2 px-2 py-2 rounded-lg bg-slate-900 dark:bg-slate-950 text-right text-lg font-mono tabular-nums text-emerald-400 min-h-[2.75rem] flex items-center justify-end tracking-tight overflow-x-auto"
+            className="mb-2 px-2 py-2 rounded-lg bg-slate-900 dark:bg-slate-950 text-right text-lg font-mono tabular-nums text-primary min-h-[2.75rem] flex items-center justify-end tracking-tight overflow-x-auto"
             aria-live="polite"
           >
             {calc.display}
@@ -281,7 +281,7 @@ export default function MiniAmountCalculatorButton({
           <button
             type="button"
             onClick={apply}
-            className="mt-2 w-full py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            className="mt-2 w-full py-2 text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
           >
             Usar monto
           </button>

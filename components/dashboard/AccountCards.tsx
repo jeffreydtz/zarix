@@ -19,12 +19,12 @@ function AccountCards({ accounts }: AccountCardsProps) {
       transition={{ duration: 0.5, delay: 0.5 }}
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+        <h3 className="text-lg font-semibold text-foreground">
           Tus Cuentas
         </h3>
-        <Link 
-          href="/accounts" 
-          className="text-sm text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-medium"
+        <Link
+          href="/accounts"
+          className="text-sm text-primary hover:opacity-85 font-medium"
         >
           Ver todas
         </Link>
@@ -169,7 +169,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
             >
               🏦
             </motion.div>
-            <p className="text-slate-500 dark:text-slate-400 mb-4">No tenés cuentas todavía</p>
+            <p className="text-muted-foreground mb-4">No tenés cuentas todavía</p>
             <Link href="/accounts" className="btn btn-primary">
               Crear cuenta
             </Link>

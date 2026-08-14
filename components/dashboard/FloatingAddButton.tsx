@@ -174,7 +174,7 @@ export default function FloatingAddButton() {
     <>
       {/* Pending sync indicator */}
       {(pendingCount > 0 || syncing) && (
-        <div className="fixed z-50 text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 rounded-full px-3 py-1.5 shadow-md flex items-center gap-1.5 pointer-events-none bottom-[calc(8.5rem+env(safe-area-inset-bottom,0px))] right-4 md:bottom-24 md:right-6">
+        <div className="fixed z-50 text-xs bg-warning/15 text-warning rounded-full px-3 py-1.5 shadow-md flex items-center gap-1.5 pointer-events-none bottom-[calc(8.5rem+env(safe-area-inset-bottom,0px))] right-4 md:bottom-24 md:right-6">
           {syncing ? (
             <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -217,21 +217,21 @@ export default function FloatingAddButton() {
           className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center p-4 z-[60] overscroll-contain"
           onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
         >
-          <div className="bg-white dark:bg-slate-800 rounded-t-3xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 max-h-[min(92dvh,900px)] overflow-y-auto overscroll-contain shadow-2xl border border-slate-200/80 dark:border-slate-700 pb-[env(safe-area-inset-bottom,0px)]">
+          <div className="bg-card rounded-t-3xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 max-h-[min(92dvh,900px)] overflow-y-auto overscroll-contain shadow-2xl border border-border pb-[env(safe-area-inset-bottom,0px)]">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+                <h2 className="text-xl font-bold text-foreground">
                   Nuevo Movimiento
                 </h2>
                 {!isOnline && (
-                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                  <p className="text-xs text-warning mt-0.5">
                     Sin conexión — se guardará localmente
                   </p>
                 )}
               </div>
               <button
                 onClick={handleClose}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg transition-colors"
+                className="text-muted-foreground hover:text-foreground p-1 rounded-lg transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -240,20 +240,20 @@ export default function FloatingAddButton() {
             </div>
 
             {error && (
-              <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
+              <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
                 {error}
               </div>
             )}
 
-            <div className="mb-4 rounded-xl bg-slate-100 p-1 dark:bg-slate-700/60">
+            <div className="mb-4 rounded-xl bg-secondary p-1">
               <div className="grid grid-cols-2 gap-1">
                 <button
                   type="button"
                   onClick={() => setActiveTab('manual')}
                   className={`rounded-lg py-2 text-sm font-medium transition-colors ${
                     activeTab === 'manual'
-                      ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-800 dark:text-slate-100'
-                      : 'text-slate-600 dark:text-slate-300'
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground'
                   }`}
                 >
                   Manual
@@ -263,8 +263,8 @@ export default function FloatingAddButton() {
                   onClick={() => setActiveTab('chatbot')}
                   className={`rounded-lg py-2 text-sm font-medium transition-colors ${
                     activeTab === 'chatbot'
-                      ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-800 dark:text-slate-100'
-                      : 'text-slate-600 dark:text-slate-300'
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground'
                   }`}
                 >
                   Chatbot
@@ -273,8 +273,8 @@ export default function FloatingAddButton() {
             </div>
 
             {activeTab === 'chatbot' ? (
-              <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 dark:border-slate-700 dark:bg-slate-900/40">
-                <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+              <div className="space-y-3 rounded-2xl border border-border bg-secondary/70 p-3">
+                <p className="text-xs leading-relaxed text-muted-foreground">
                   Escribí algo como: &quot;gasté 5000 en super&quot; o &quot;me entraron 800000 de sueldo&quot;.
                 </p>
                 <InternalAiChat embedded />
@@ -282,7 +282,7 @@ export default function FloatingAddButton() {
             ) : dataLoading ? (
               <div className="space-y-3">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-11 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />
+                  <div key={i} className="h-11 bg-secondary rounded-xl animate-pulse" />
                 ))}
               </div>
             ) : (
@@ -293,8 +293,8 @@ export default function FloatingAddButton() {
                     onClick={() => setType('expense')}
                     className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                       type === 'expense'
-                        ? 'bg-red-500 text-white'
-                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                        ? 'bg-destructive text-destructive-foreground'
+                        : 'bg-secondary text-muted-foreground'
                     }`}
                   >
                     💸 Gasto
@@ -303,8 +303,8 @@ export default function FloatingAddButton() {
                     onClick={() => setType('income')}
                     className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                       type === 'income'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                        ? 'bg-success text-primary-foreground'
+                        : 'bg-secondary text-muted-foreground'
                     }`}
                   >
                     💰 Ingreso
@@ -313,7 +313,7 @@ export default function FloatingAddButton() {
 
                 {/* Amount */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1.5">
                     Monto
                   </label>
                   <div className="flex gap-2">
@@ -324,7 +324,7 @@ export default function FloatingAddButton() {
                       onChange={(e) => setAmount(sanitizeAmountInput(e.target.value))}
                       placeholder="0.00"
                       autoFocus
-                      className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     <MiniAmountCalculatorButton currentAmount={amount} onApply={setAmount} />
                     <select
@@ -333,7 +333,7 @@ export default function FloatingAddButton() {
                         setAmountCurrency(coerceTransactionCurrency(e.target.value));
                         setCurrencyTouched(true);
                       }}
-                      className="w-[5.5rem] shrink-0 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-[5.5rem] shrink-0 px-2 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring"
                       title="Moneda del monto"
                     >
                       {TRANSACTION_CURRENCIES.map((currency) => (
@@ -347,7 +347,7 @@ export default function FloatingAddButton() {
 
                 {/* Account */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1.5">
                     Cuenta
                   </label>
                   <select
@@ -367,7 +367,7 @@ export default function FloatingAddButton() {
                         }
                       }
                     }}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Seleccioná una cuenta</option>
                     {accounts.map((acc) => (
@@ -394,7 +394,7 @@ export default function FloatingAddButton() {
 
                 {/* Category */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1.5">
                     Categoría
                   </label>
                   <select
@@ -407,7 +407,7 @@ export default function FloatingAddButton() {
                       setCategoryId(e.target.value);
                       setQuickCreate(null);
                     }}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Sin categoría</option>
                     {filteredCategories.map((cat) => (
@@ -433,20 +433,20 @@ export default function FloatingAddButton() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1.5">
                     Fecha
                   </label>
                   <input
                     type="date"
                     value={transactionDateYmd}
                     onChange={(e) => setTransactionDateYmd(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1.5">
                     Descripción
                   </label>
                   <input
@@ -454,7 +454,7 @@ export default function FloatingAddButton() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="ej: Compra en supermercado"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
 

@@ -61,12 +61,12 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
     >
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+          <h3 className="text-lg font-semibold text-foreground">
             Cotizaciones
           </h3>
           {lastUpdated && (
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Dolar actualizado: <span className="font-medium text-slate-700 dark:text-slate-300">{lastUpdated}</span>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Dolar actualizado: <span className="font-medium text-muted-foreground">{lastUpdated}</span>
             </p>
           )}
         </div>
@@ -81,39 +81,39 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
       >
         <motion.div 
           variants={item}
-          className="p-3 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-100 dark:border-green-900/50"
+          className="p-3 rounded-xl bg-primary/10 border border-primary/20"
         >
           <div className="flex items-center gap-1.5 mb-2">
             <span className="text-base">💵</span>
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Blue</span>
+            <span className="text-xs font-medium text-muted-foreground">Blue</span>
           </div>
-          <div className="text-xl font-bold text-slate-800 dark:text-slate-100">
+          <div className="text-xl font-bold text-foreground">
             <AnimatedNumber value={quotes.dolar.blue.sell} prefix="$" decimals={0} />
           </div>
         </motion.div>
 
         <motion.div 
           variants={item}
-          className="p-3 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-100 dark:border-blue-900/50"
+          className="p-3 rounded-xl bg-info/10 border border-info/20"
         >
           <div className="flex items-center gap-1.5 mb-2">
             <span className="text-base">📊</span>
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-400">MEP</span>
+            <span className="text-xs font-medium text-muted-foreground">MEP</span>
           </div>
-          <div className="text-xl font-bold text-slate-800 dark:text-slate-100">
+          <div className="text-xl font-bold text-foreground">
             <AnimatedNumber value={quotes.dolar.mep.sell} prefix="$" decimals={0} />
           </div>
         </motion.div>
 
         <motion.div 
           variants={item}
-          className="p-3 rounded-xl bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border border-orange-100 dark:border-orange-900/50"
+          className="p-3 rounded-xl bg-warning/10 border border-warning/20"
         >
           <div className="flex items-center gap-1.5 mb-2">
             <span className="text-base">₿</span>
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Bitcoin</span>
+            <span className="text-xs font-medium text-muted-foreground">Bitcoin</span>
           </div>
-          <div className="text-xl font-bold text-slate-800 dark:text-slate-100">
+          <div className="text-xl font-bold text-foreground">
             <AnimatedNumber value={quotes.crypto.btc.priceUSD} prefix="$" decimals={0} />
           </div>
           <motion.div
@@ -121,9 +121,9 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
             className={`text-xs font-medium mt-1 flex items-center gap-1 ${
-              quotes.crypto.btc.change24h >= 0 
-                ? 'text-green-600 dark:text-green-400' 
-                : 'text-red-600 dark:text-red-400'
+              quotes.crypto.btc.change24h >= 0
+                ? 'text-success'
+                : 'text-destructive'
             }`}
           >
             <span>{quotes.crypto.btc.change24h >= 0 ? '↑' : '↓'}</span>
@@ -133,13 +133,13 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
 
         <motion.div 
           variants={item}
-          className="p-3 rounded-xl bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30 border border-purple-100 dark:border-purple-900/50"
+          className="p-3 rounded-xl bg-accent-invest/10 border border-accent-invest/20"
         >
           <div className="flex items-center gap-1.5 mb-2">
             <span className="text-base">💎</span>
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Ethereum</span>
+            <span className="text-xs font-medium text-muted-foreground">Ethereum</span>
           </div>
-          <div className="text-xl font-bold text-slate-800 dark:text-slate-100">
+          <div className="text-xl font-bold text-foreground">
             <AnimatedNumber value={quotes.crypto.eth.priceUSD} prefix="$" decimals={0} />
           </div>
           <motion.div
@@ -147,9 +147,9 @@ function QuotesWidget({ quotes }: QuotesWidgetProps) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
             className={`text-xs font-medium mt-1 flex items-center gap-1 ${
-              quotes.crypto.eth.change24h >= 0 
-                ? 'text-green-600 dark:text-green-400' 
-                : 'text-red-600 dark:text-red-400'
+              quotes.crypto.eth.change24h >= 0
+                ? 'text-success'
+                : 'text-destructive'
             }`}
           >
             <span>{quotes.crypto.eth.change24h >= 0 ? '↑' : '↓'}</span>

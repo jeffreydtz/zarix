@@ -107,8 +107,8 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
     previewRealizedNative === null
       ? 'text-muted-foreground'
       : previewRealizedNative >= 0
-        ? 'text-emerald-500 dark:text-emerald-400'
-        : 'text-red-500 dark:text-red-400';
+        ? 'text-success'
+        : 'text-destructive';
 
   return (
     <AnimatePresence>
@@ -259,7 +259,7 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
             </div>
 
             {error && (
-              <p className="text-sm text-red-500 dark:text-red-400 inline-flex items-center gap-1.5">
+              <p className="text-sm text-destructive inline-flex items-center gap-1.5">
                 <TriangleAlert size={14} aria-hidden />
                 {error}
               </p>
