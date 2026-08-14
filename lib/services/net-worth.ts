@@ -59,8 +59,12 @@ export async function recordNetWorthSnapshot(userId: string): Promise<boolean> {
   try {
     const now = await computeNetWorth(userId);
     // Sin cotización no hay conversión confiable: mejor saltear el día que
-    // guardar un total en 0 que ensucie el gráfico.
-    if (!(now.blueRate > 0)) return false;
+    // guardar un total en 0 que ensucie el gráfico. Se loguea para que un
+    // hueco en la serie sea diagnosticable.
+    if (!(now.blueRate > 0)) {
+      console.warn('[net-worth] snapshot salteado: sin cotización blue');
+      return false;
+    }
 
     const supabase = createServiceClientSync();
     const { error } = await supabase.from('net_worth_snapshots').upsert(

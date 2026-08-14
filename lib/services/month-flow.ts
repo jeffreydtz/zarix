@@ -103,11 +103,11 @@ export async function getMonthFlow(userId: string): Promise<MonthFlow> {
     .filter((t) => t.type === 'expense')
     .reduce((sum, t) => sum + toArs(t), 0);
 
-  // Días de historia realmente disponibles para el promedio (evita inflar el
-  // denominador a principio de mes/cuenta nueva, cuando hay menos de 14 días).
-  const daysOfHistory = Math.min(TRAILING_WINDOW_DAYS, Math.max(1, now.getDate()));
+  // La ventana rodante SIEMPRE abarca 14 días calendario (cruza el límite de
+  // mes): el denominador es fijo. Capar por día-del-mes inflaba el promedio
+  // ~3x a principio de mes al dividir 14 días de gasto por pocos días.
   const trailingTotalARS = trailingExpenses.reduce((sum, t) => sum + toArs(t), 0);
-  const avgDailySpendARS = trailingTotalARS / daysOfHistory;
+  const avgDailySpendARS = trailingTotalARS / TRAILING_WINDOW_DAYS;
 
   let pendingRecurringARS = 0;
   for (const rule of activeExpenseRules) {

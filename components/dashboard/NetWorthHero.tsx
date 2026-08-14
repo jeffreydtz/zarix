@@ -172,7 +172,9 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
     [inflacion]
   );
 
-  const todayISO = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  // Sin memo: barato por render y evita quedar clavado en la fecha de ayer
+  // si la pestaña queda abierta cruzando la medianoche.
+  const todayISO = new Date().toISOString().slice(0, 10);
 
   const priorPoint = useMemo(() => {
     if (history.length === 0) return null;
