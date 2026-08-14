@@ -3,7 +3,9 @@ import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30;
+// Fetches seriales por ticker contra 4 APIs de mercado: 30s quedaba corto
+// con un portfolio mediano y el job moría a mitad de la precarga.
+export const maxDuration = 60;
 
 const CRYPTO_TICKER_MAP: Record<string, string> = {
   BTC: 'BTC',

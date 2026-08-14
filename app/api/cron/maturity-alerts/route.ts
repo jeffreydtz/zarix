@@ -46,7 +46,16 @@ class MaturityAlertsJob extends IterativeCronJob<any> {
 
   protected shouldProcess(inv: any): boolean {
     const user = inv.user as any;
-    return Boolean(user?.telegram_chat_id);
+    if (!user?.telegram_chat_id) return false;
+
+    // El cron corre todos los días y el rango es de 3 días: sin este filtro el
+    // mismo vencimiento alerta 4 días seguidos. Solo avisar a 3 días, 1 día y
+    // el día del vencimiento (sin estado: es función pura de las fechas).
+    const maturityDate = new Date(inv.maturity_date + 'T00:00:00');
+    const daysUntil = Math.round(
+      (maturityDate.getTime() - this.today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    return daysUntil === 3 || daysUntil === 1 || daysUntil === 0;
   }
 
   protected async processItem(_supabase: ServiceClient, inv: any): Promise<void> {
