@@ -78,7 +78,8 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
   const [mode, setMode] = useState<'quick' | 'chat'>('quick');
-  const [showMore, setShowMore] = useState(false);
+  const [categoryUsage, setCategoryUsage] = useState<Record<string, number>>({});
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
 
   const [type, setType] = useState<'expense' | 'income' | 'transfer'>('expense');
   const [destinationAccountId, setDestinationAccountId] = useState('');
@@ -104,7 +105,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
     setQuickCreate(null);
     setDescription('');
     setTransactionDateYmd(todayLocalYmd());
-    setShowMore(false);
+    setCategoryMenuOpen(false);
     setMode('quick');
     setError('');
   }, []);
@@ -130,12 +131,24 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
     Promise.all([
       fetchReferenceList<Account>('/api/accounts?lite=1', { force: true }),
       fetchReferenceList<Category>('/api/categories', { ttlMs: 2 * 60 * 1000 }),
-    ]).then(([accsRaw, catsRaw]) => {
+      fetch('/api/transactions?limit=80', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : []))
+        .catch(() => []),
+    ]).then(([accsRaw, catsRaw, txs]) => {
       maybePersistAccountsSnapshot(accsRaw, online);
       maybePersistCategoriesSnapshot(catsRaw, online);
       const accs = pickReferenceList(accsRaw, cachedAccs);
       setAccounts(accs);
       setCategories(pickReferenceList(catsRaw, cachedCats));
+      const counts: Record<string, number> = {};
+      if (Array.isArray(txs)) {
+        for (const tx of txs) {
+          const id = typeof tx?.category_id === 'string' ? tx.category_id : '';
+          if (!id) continue;
+          counts[id] = (counts[id] || 0) + 1;
+        }
+      }
+      setCategoryUsage(counts);
       setDataLoading(false);
     });
   }, [isOpen]);
@@ -196,7 +209,23 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const filteredCategories = categories.filter((c) => c.type === type || c.type === 'both');
+  const filteredCategories = useMemo(() => {
+    const list = categories.filter((c) => c.type === type || c.type === 'both');
+    return list.sort((a, b) => {
+      const diff = (categoryUsage[b.id] || 0) - (categoryUsage[a.id] || 0);
+      if (diff !== 0) return diff;
+      return a.name.localeCompare(b.name, 'es');
+    });
+  }, [categories, type, categoryUsage]);
+
+  const selectedCategory = filteredCategories.find((c) => c.id === categoryId) || null;
+
+  useEffect(() => {
+    if (!categoryId || type === 'transfer') return;
+    if (!filteredCategories.some((c) => c.id === categoryId)) {
+      setCategoryId('');
+    }
+  }, [type, categoryId, filteredCategories]);
   const ctx = useMemo(() => ({ open, close }), [open, close]);
 
   return (
@@ -337,7 +366,10 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
                         <button
                           key={cat.id}
                           type="button"
-                          onClick={() => setCategoryId(active ? '' : cat.id)}
+                          onClick={() => {
+                            setCategoryId(active ? '' : cat.id);
+                            setCategoryMenuOpen(false);
+                          }}
                           className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium border ${
                             active
                               ? 'bg-primary/15 text-primary border-primary/40'
@@ -350,28 +382,63 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
                       );
                     })}
                   </div>
-                  {filteredCategories.length > 8 && (
-                    <select
-                      value={categoryId}
-                      onChange={(e) => {
-                        if (e.target.value === QUICK_CREATE_OPTION) {
-                          setQuickCreate('category');
-                          return;
-                        }
-                        setCategoryId(e.target.value);
-                        setQuickCreate(null);
-                      }}
-                      className="mt-2 w-full px-3 py-2 rounded-xl border border-border bg-card text-sm"
+                  <div className="relative mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setCategoryMenuOpen((v) => !v)}
+                      className="flex w-full items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left text-sm"
                     >
-                      <option value="">Otra categoría…</option>
-                      {filteredCategories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                      <option value={QUICK_CREATE_OPTION}>Nueva categoría…</option>
-                    </select>
-                  )}
+                      {selectedCategory ? (
+                        <>
+                          <CategoryIcon icon={selectedCategory.icon} className="w-4 h-4 shrink-0" />
+                          <span className="flex-1 truncate">{selectedCategory.name}</span>
+                        </>
+                      ) : (
+                        <span className="flex-1 text-muted-foreground">Todas las categorías…</span>
+                      )}
+                    </button>
+                    {categoryMenuOpen && (
+                      <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-border bg-card py-1 shadow-lg">
+                        <button
+                          type="button"
+                          className="flex w-full items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:bg-secondary"
+                          onClick={() => {
+                            setCategoryId('');
+                            setCategoryMenuOpen(false);
+                          }}
+                        >
+                          Sin categoría
+                        </button>
+                        {filteredCategories.map((cat) => (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            className={`flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-secondary ${
+                              cat.id === categoryId ? 'bg-primary/10 text-primary' : 'text-foreground'
+                            }`}
+                            onClick={() => {
+                              setCategoryId(cat.id);
+                              setCategoryMenuOpen(false);
+                              setQuickCreate(null);
+                            }}
+                          >
+                            <CategoryIcon icon={cat.icon} className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{cat.name}</span>
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium text-primary hover:bg-secondary"
+                          onClick={() => {
+                            setQuickCreate('category');
+                            setCategoryMenuOpen(false);
+                          }}
+                        >
+                          Nueva categoría…
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   {quickCreate === 'category' && (
                     <QuickCreateCategoryPanel
                       type={type === 'income' ? 'income' : 'expense'}
@@ -454,30 +521,29 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => setShowMore((v) => !v)}
-                  className="text-xs font-medium text-muted-foreground hover:text-foreground"
-                >
-                  {showMore ? 'Menos datos' : 'Fecha y descripción'}
-                </button>
-                {showMore && (
-                  <div className="space-y-3">
-                    <input
-                      type="date"
-                      value={transactionDateYmd}
-                      onChange={(e) => setTransactionDateYmd(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-border bg-card"
-                    />
-                    <input
-                      type="text"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="ej: Compra en el súper"
-                      className="w-full px-4 py-2.5 rounded-xl border border-border bg-card"
-                    />
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+                    Fecha
+                  </label>
+                  <input
+                    type="date"
+                    value={transactionDateYmd}
+                    onChange={(e) => setTransactionDateYmd(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+                    Descripción
+                  </label>
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="ej: Compra en el súper"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground"
+                  />
+                </div>
 
                 <button
                   type="button"
