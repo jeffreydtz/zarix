@@ -40,12 +40,7 @@ export default async function AccountsPage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 justify-end">
-              <CreateTransactionButton
-                accounts={accounts}
-                categories={categories || []}
-                mode="transfer-only"
-                triggerClassName="btn btn-secondary"
-              />
+              <CreateTransactionButton mode="transfer-only" triggerClassName="btn btn-secondary" />
               <CreateAccountButton />
             </div>
           </div>

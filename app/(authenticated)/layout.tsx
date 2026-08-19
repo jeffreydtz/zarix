@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import Navigation from '@/components/Navigation';
+import { AddTransactionProvider } from '@/components/add-transaction/AddTransactionProvider';
 import OfflineReferenceWarmup from '@/components/OfflineReferenceWarmup';
 import FirstStepsTour from '@/components/onboarding/FirstStepsTour';
 import GracePeriodBanner from '@/components/GracePeriodBanner';
@@ -20,7 +21,9 @@ export default function AuthenticatedLayout({
       <Suspense fallback={null}>
         <GracePeriodBanner />
       </Suspense>
-      <Navigation>{children}</Navigation>
+      <AddTransactionProvider>
+        <Navigation>{children}</Navigation>
+      </AddTransactionProvider>
       <FirstStepsTour />
     </div>
   );

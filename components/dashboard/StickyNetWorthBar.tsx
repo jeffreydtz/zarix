@@ -36,7 +36,7 @@ export default function StickyNetWorthBar({
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+    <div className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top,0px))] md:top-14 z-30 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-shell items-baseline justify-between gap-4 px-4 py-2">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Patrimonio

@@ -13,7 +13,14 @@ type UiMessage = {
   text: string;
   historyText?: string;
   executed?: InternalAiChatSuccessResponse['executed'];
+  pendingConfirm?: string;
 };
+
+const EXAMPLE_CHIPS = [
+  'Gasté 5000 en el super',
+  'Cobré el sueldo 800 mil',
+  'Pagué Netflix 15 USD',
+];
 
 function toApiHistory(messages: UiMessage[]): InternalAiChatHistoryItem[] {
   return messages.map((message) => ({
@@ -45,18 +52,15 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
     [loading, input, blockedStatus]
   );
 
-  const sendMessage = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!canSend) return;
-
-    const text = input.trim();
+  const sendText = async (text: string) => {
+    if (!text.trim() || loading || blockedStatus !== null) return;
     const userMessage: UiMessage = {
       id: `${Date.now()}-user`,
       role: 'user',
       text,
     };
-    const optimistic = [...messages, userMessage];
-    setMessages(optimistic);
+    const historySnapshot = messages;
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setError(null);
     setLoading(true);
@@ -64,7 +68,7 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
     try {
       const payload: InternalAiChatRequest = {
         message: text,
-        history: toApiHistory(messages),
+        history: toApiHistory(historySnapshot),
       };
 
       const response = await fetch('/api/ai/chat', {
@@ -92,6 +96,8 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
         text: chatResponse.assistant_message,
         historyText: chatResponse.raw_response || chatResponse.assistant_message,
         executed: chatResponse.mode === 'executed' ? (chatResponse.executed ?? []) : undefined,
+        pendingConfirm:
+          chatResponse.mode === 'confirm' ? chatResponse.pending_confirm?.preview : undefined,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (requestError: unknown) {
@@ -103,15 +109,19 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
     }
   };
 
+  const sendMessage = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!canSend) return;
+    await sendText(input.trim());
+  };
+
   return (
     <section className={`${embedded ? '' : 'card'} ${embedded ? 'space-y-2.5' : 'space-y-3'} ${className}`.trim()}>
       {!embedded && (
         <div>
-          <h3 className="text-lg font-semibold text-foreground">
-            Bot interno de movimientos
-          </h3>
+          <h3 className="text-lg font-semibold text-foreground">Asistente</h3>
           <p className="text-xs text-muted-foreground mt-1">
-            Ejemplos: &quot;gasté 5000 en super&quot;, &quot;pagué netflix con visa 15 usd&quot;.
+            Escribí el movimiento como lo dirías: &quot;gasté 5000 en el super&quot;.
           </p>
         </div>
       )}
@@ -128,11 +138,7 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
       )}
 
       <div
-        className={`overflow-y-auto rounded-xl p-3 ${
-          embedded
-            ? 'max-h-60 border border-slate-700/70 bg-slate-900/60'
-            : 'max-h-80 border border-border bg-card'
-        }`}
+        className={`overflow-y-auto rounded-xl p-3 max-h-60 border border-border bg-card`}
       >
         <div className="space-y-3">
           {messages.map((message) => (
@@ -145,10 +151,28 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
               }`}
             >
               <p className="whitespace-pre-wrap">{message.text}</p>
+              {message.pendingConfirm && (
+                <div className="mt-2 flex gap-2">
+                  <button
+                    type="button"
+                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+                    onClick={() => sendText('sí, confirmá')}
+                  >
+                    Sí
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-lg bg-background/70 px-3 py-1.5 text-xs font-medium"
+                    onClick={() => sendText('no, cancelá')}
+                  >
+                    No
+                  </button>
+                </div>
+              )}
               {message.executed && message.executed.length > 0 && (
                 <ul className="mt-2 space-y-1 text-xs">
                   {message.executed.map((item, index) => (
-                    <li key={`${message.id}-${index}`} className="rounded bg-white/30 px-2 py-1 dark:bg-slate-700/40">
+                    <li key={`${message.id}-${index}`} className="rounded bg-background/50 px-2 py-1">
                       {item.summary}
                     </li>
                   ))}
@@ -170,16 +194,27 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
         </div>
       )}
 
+      {messages.length <= 1 && !blockedStatus && (
+        <div className="flex flex-wrap gap-1.5">
+          {EXAMPLE_CHIPS.map((chip) => (
+            <button
+              key={chip}
+              type="button"
+              onClick={() => sendText(chip)}
+              className="rounded-full border border-border bg-secondary px-2.5 py-1 text-xs text-foreground"
+            >
+              {chip}
+            </button>
+          ))}
+        </div>
+      )}
+
       <form onSubmit={sendMessage} className="flex items-stretch gap-2">
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Escribí un movimiento..."
-          className={`flex-1 rounded-xl border px-4 py-2.5 text-sm outline-none transition focus:ring-2 ${
-            embedded
-              ? 'border-slate-600 bg-slate-900 text-slate-100 placeholder:text-slate-400 focus:ring-ring'
-              : 'border-border bg-card text-foreground placeholder:text-muted-foreground focus:ring-ring'
-          }`}
+          className="flex-1 rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:ring-2 focus:ring-ring"
           disabled={loading || blockedStatus !== null}
         />
         <button

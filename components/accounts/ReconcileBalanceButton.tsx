@@ -2,20 +2,21 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 export default function ReconcileBalanceButton({ accountId }: { accountId: string }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(false);
 
   const run = async () => {
-    if (
-      !confirm(
-        'Recalcular el saldo desde todos los movimientos de esta cuenta.\n\n' +
-          'Sirve si el saldo no coincide con el historial (por ejemplo tras borrar movimientos o ajustes).'
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: '¿Recalcular el saldo?',
+      description:
+        'Se arma de nuevo desde todos los movimientos de esta cuenta. Sirve si el saldo no coincide con el historial.',
+      confirmLabel: 'Recalcular',
+    });
+    if (!ok) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/accounts/${accountId}/reconcile-balance`, { method: 'POST' });

@@ -16,6 +16,7 @@ import {
 } from '@/lib/constants/transaction-currencies';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 import { sanitizeAmountInput } from '@/lib/sanitize-amount-input';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface EditTransactionModalProps {
   transaction: TransactionWithCategory;
@@ -33,6 +34,7 @@ export default function EditTransactionModal({
   onSave,
 }: EditTransactionModalProps) {
   useBodyScrollLock();
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [duplicateDraftMode, setDuplicateDraftMode] = useState(false);
@@ -135,7 +137,8 @@ export default function EditTransactionModal({
   };
 
   const handleDelete = async () => {
-    if (!confirm('¿Eliminar este movimiento?')) return;
+    const ok = await confirm({ title: '¿Eliminar este movimiento?', danger: true });
+    if (!ok) return;
 
     setError('');
     setLoading(true);

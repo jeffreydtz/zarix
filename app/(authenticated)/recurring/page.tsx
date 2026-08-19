@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { CategoryIcon, getOptionTextIcon } from '@/lib/category-icons';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface RecurringRule {
   id: string;
@@ -192,6 +193,7 @@ function getStatusTag(rule: RecurringRule): string {
 }
 
 export default function RecurringPage() {
+  const confirm = useConfirm();
   const [rules, setRules] = useState<RecurringRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -291,7 +293,8 @@ export default function RecurringPage() {
   };
 
   const deleteRule = async (id: string) => {
-    if (!confirm('¿Eliminar esta regla recurrente?')) return;
+    const ok = await confirm({ title: '¿Eliminar esta regla recurrente?', danger: true });
+    if (!ok) return;
     await fetch(`/api/recurring/${id}`, { method: 'DELETE' });
     setRules((prev) => prev.filter((r) => r.id !== id));
   };

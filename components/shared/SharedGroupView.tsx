@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { brandAsset } from '@/lib/brand';
 import { formatCurrency } from '@/lib/utils/currency';
 import type { SharedExpense, SharedGroupDetail, SharedGroupMember } from '@/lib/services/sharedExpenses';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface Props {
   token: string;
@@ -277,13 +278,15 @@ function ExpensesTab({
   meId: string | null;
   onChanged: () => Promise<void>;
 }) {
+  const confirm = useConfirm();
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<SharedExpense | null>(null);
   const memberName = (id: string) =>
     data.members.find((m) => m.id === id)?.display_name || '¿?';
 
   const deleteExpense = async (expenseId: string) => {
-    if (!confirm('¿Eliminar este gasto?')) return;
+    const ok = await confirm({ title: '¿Eliminar este gasto?', danger: true });
+    if (!ok) return;
     await fetch(`/api/shared/${token}/expenses/${expenseId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },

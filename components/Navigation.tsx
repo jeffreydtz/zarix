@@ -9,25 +9,49 @@ import ThemeToggle from '@/components/ui/ThemeToggle';
 import { brandAsset } from '@/lib/brand';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
+import { useAddTransaction } from '@/components/add-transaction/AddTransactionProvider';
+import type { LucideIcon } from 'lucide-react';
+import {
+  Home,
+  ArrowLeftRight,
+  Landmark,
+  LineChart,
+  PieChart,
+  Target,
+  Users,
+  Repeat,
+  Tags,
+  Settings,
+  Plus,
+  ChevronDown,
+} from 'lucide-react';
 
-const PRIMARY_LINKS = [
-  { href: '/dashboard', label: 'Inicio', icon: '🏠' },
-  { href: '/expenses', label: 'Movimientos', icon: '💸' },
-  { href: '/accounts', label: 'Cuentas', icon: '🏦' },
-  { href: '/investments', label: 'Inversiones', icon: '📈' },
+const PRIMARY_LINKS: Array<{ href: string; label: string; icon: LucideIcon }> = [
+  { href: '/dashboard', label: 'Inicio', icon: Home },
+  { href: '/expenses', label: 'Movimientos', icon: ArrowLeftRight },
+  { href: '/accounts', label: 'Cuentas', icon: Landmark },
+  { href: '/investments', label: 'Inversiones', icon: LineChart },
 ];
 
-const MORE_LINKS = [
-  { href: '/analysis', label: 'Análisis', icon: '📊' },
-  { href: '/budgets', label: 'Presupuestos', icon: '🎯' },
-  { href: '/shared', label: 'Compartidos', icon: '👥' },
-  { href: '/recurring', label: 'Planes', icon: '🔄' },
-  { href: '/categories', label: 'Categorías', icon: '🏷️' },
-  { href: '/settings', label: 'Config', icon: '⚙️' },
+const MOBILE_TABS: Array<{ href: string; label: string; icon: LucideIcon }> = [
+  { href: '/dashboard', label: 'Inicio', icon: Home },
+  { href: '/expenses', label: 'Gastos', icon: ArrowLeftRight },
+  { href: '/accounts', label: 'Cuentas', icon: Landmark },
+];
+
+const MORE_LINKS: Array<{ href: string; label: string; icon: LucideIcon }> = [
+  { href: '/investments', label: 'Inversiones', icon: LineChart },
+  { href: '/analysis', label: 'Análisis', icon: PieChart },
+  { href: '/budgets', label: 'Presupuestos', icon: Target },
+  { href: '/shared', label: 'Compartidos', icon: Users },
+  { href: '/recurring', label: 'Planes', icon: Repeat },
+  { href: '/categories', label: 'Categorías', icon: Tags },
+  { href: '/settings', label: 'Config', icon: Settings },
 ];
 
 export default function Navigation({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { open: openAdd } = useAddTransaction();
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
@@ -62,7 +86,9 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
     return () => window.removeEventListener('keydown', onKey);
   }, [moreSheetOpen]);
 
-  const isMoreActive = MORE_LINKS.some((l) => l.href === pathname);
+  const isMoreActive = MORE_LINKS.some(
+    (l) => l.href === pathname && !PRIMARY_LINKS.some((p) => p.href === l.href)
+  );
 
   return (
     <>
@@ -130,7 +156,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
-                      <span>{link.icon}</span>
+                      <link.icon className="w-4 h-4" aria-hidden />
                       <span>{link.label}</span>
                     </span>
                   </Link>
@@ -148,13 +174,12 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                   }`}
                 >
                   <span>Más</span>
-                  <span
-                    className={`inline-block text-xs leading-none transition-transform duration-200 ease-out ${
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ease-out ${
                       moreOpen ? 'rotate-180' : ''
                     }`}
-                  >
-                    ▾
-                  </span>
+                    aria-hidden
+                  />
                 </button>
 
                 <AnimatePresence>
@@ -182,7 +207,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                                 : 'text-foreground/85 hover:bg-surface-soft/70'
                             }`}
                           >
-                            <span>{link.icon}</span>
+                            <link.icon className="w-4 h-4" aria-hidden />
                             <span>{link.label}</span>
                           </Link>
                         );
@@ -192,6 +217,15 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                 </AnimatePresence>
               </div>
 
+              <button
+                type="button"
+                data-tour="add"
+                onClick={() => openAdd()}
+                className="ml-1 inline-flex items-center gap-1.5 rounded-control bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground min-h-[44px] hover:brightness-95"
+              >
+                <Plus className="w-4 h-4" aria-hidden />
+                Nuevo
+              </button>
               <div className="w-px h-5 bg-border mx-1" />
               <ThemeToggle />
             </div>
@@ -206,11 +240,11 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
       {/* ——— Mobile: barra inferior (thumb zone); en flujo flex para que no “flote” al scrollear (iOS/PWA) ——— */}
       <nav
         data-tour="nav"
-        className="md:hidden shrink-0 w-full z-40 bg-surface-glass/95 dark:bg-surface-glass/95 border-t border-border/80 pb-[env(safe-area-inset-bottom,0px)]"
+        className="md:hidden shrink-0 w-full z-40 overflow-visible bg-surface-glass/95 dark:bg-surface-glass/95 border-t border-border/80 pb-[env(safe-area-inset-bottom,0px)]"
         aria-label="Navegación principal"
       >
         <div className="flex items-stretch justify-around h-14 max-w-lg mx-auto px-1">
-          {PRIMARY_LINKS.map((link) => {
+          {MOBILE_TABS.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
@@ -223,15 +257,24 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                     : 'text-muted-foreground active:bg-surface-soft'
                 }`}
               >
-                <span className="text-lg leading-none" aria-hidden>
-                  {link.icon}
-                </span>
+                <link.icon className="w-5 h-5" aria-hidden />
                 <span className="text-[10px] font-medium truncate max-w-full px-0.5">
-                  {link.label === 'Movimientos' ? 'Movs' : link.label}
+                  {link.label}
                 </span>
               </Link>
             );
           })}
+          <button
+            type="button"
+            data-tour="add"
+            onClick={() => openAdd()}
+            className="-mt-3 flex flex-1 flex-col items-center justify-center min-h-[48px]"
+            aria-label="Nuevo movimiento"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30">
+              <Plus className="w-6 h-6" strokeWidth={2.5} />
+            </span>
+          </button>
           <button
             type="button"
             onClick={() => setMoreSheetOpen(true)}
@@ -244,9 +287,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
             aria-haspopup="dialog"
             aria-label="Más opciones"
           >
-            <span className="text-lg leading-none" aria-hidden>
-              ⋯
-            </span>
+            <ChevronDown className="w-5 h-5" aria-hidden />
             <span className="text-[10px] font-medium">Más</span>
           </button>
         </div>
@@ -293,7 +334,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
                             : 'text-foreground active:bg-surface-soft'
                         }`}
                       >
-                        <span className="text-xl">{link.icon}</span>
+                        <link.icon className="w-5 h-5" aria-hidden />
                         <span>{link.label}</span>
                       </Link>
                     </li>

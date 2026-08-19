@@ -6,6 +6,7 @@ import { Trash2 } from 'lucide-react';
 import type { AccountWithBalance } from '@/lib/services/accounts';
 import { getAccountDisplayName } from '@/lib/account-display-name';
 import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments-privacy';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface InvestmentAccountsListProps {
   accounts: AccountWithBalance[];
@@ -14,12 +15,17 @@ interface InvestmentAccountsListProps {
 export default function InvestmentAccountsList({ accounts }: InvestmentAccountsListProps) {
   const router = useRouter();
   const { hidden } = useInvestmentsPrivacy();
+  const confirm = useConfirm();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (account: AccountWithBalance) => {
-    const ok = window.confirm(
-      `Archivar la cuenta de inversión "${getAccountDisplayName(account)}"?\n\nSe desactiva la cuenta y sus inversiones asociadas. Los movimientos no se borran; podés restaurar la cuenta desde Cuentas → Cuentas archivadas.`
-    );
+    const ok = await confirm({
+      title: `¿Archivar "${getAccountDisplayName(account)}"?`,
+      description:
+        'Se desactiva la cuenta y sus inversiones asociadas. Los movimientos no se borran; podés restaurar la cuenta desde Cuentas → Cuentas archivadas.',
+      confirmLabel: 'Archivar',
+      danger: true,
+    });
     if (!ok) return;
 
     setDeletingId(account.id);

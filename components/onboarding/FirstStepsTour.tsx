@@ -28,7 +28,7 @@ const STEPS: Step[] = [
   {
     selector: '[data-tour="add"]',
     title: 'Cargá un movimiento',
-    body: 'Tocá este botón para registrar un gasto o ingreso. También podés cargarlo escribiéndole al bot de Telegram.',
+    body: 'Tocá el + para registrar un gasto o ingreso. También podés dictárselo al asistente o al bot de Telegram.',
   },
   {
     selector: '[data-tour="nav"]',

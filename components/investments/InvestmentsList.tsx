@@ -22,6 +22,7 @@ import type { InvestmentType } from '@/types/database';
 import type { InvestmentWithPnL } from '@/lib/services/investments';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments-privacy';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface InvestmentsListProps {
   investments: InvestmentWithPnL[];
@@ -76,10 +77,17 @@ function pnlColor(value: number): string {
 export default function InvestmentsList({ investments, onArchived, onEdit, onSell }: InvestmentsListProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const { hidden } = useInvestmentsPrivacy();
+  const confirm = useConfirm();
   const [archivingId, setArchivingId] = useState<string | null>(null);
 
   const archive = async (id: string) => {
-    if (!confirm('¿Archivar esta posición? Podés volver a cargarla después si hace falta.')) return;
+    const ok = await confirm({
+      title: '¿Archivar esta posición?',
+      description: 'Podés volver a cargarla después si hace falta.',
+      confirmLabel: 'Archivar',
+      danger: true,
+    });
+    if (!ok) return;
     setArchivingId(id);
     try {
       const r = await fetch(`/api/investments/${id}`, { method: 'DELETE' });

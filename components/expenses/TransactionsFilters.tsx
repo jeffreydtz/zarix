@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface TransactionsFiltersProps {
   accounts: Array<{ id: string; name: string; currency: string; balance: number }>;
@@ -45,6 +46,7 @@ function getPresetDates(preset: string): { startDate: string; endDate: string } 
 
 export default function TransactionsFilters({ accounts, categories }: TransactionsFiltersProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const searchParams = useSearchParams();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [deletingAll, setDeletingAll] = useState(false);
@@ -77,13 +79,21 @@ export default function TransactionsFilters({ accounts, categories }: Transactio
   };
 
   const handleDeleteAll = async () => {
-    const firstConfirm = confirm(
-      'Vas a eliminar TODOS tus movimientos (gastos, ingresos y transferencias). Esta acción no se puede deshacer. ¿Continuar?'
-    );
-    if (!firstConfirm) return;
-
-    const secondConfirm = confirm('Confirmá nuevamente para eliminar todo el historial de movimientos.');
-    if (!secondConfirm) return;
+    const first = await confirm({
+      title: '¿Eliminar todos los movimientos?',
+      description:
+        'Se borran gastos, ingresos y transferencias. Esta acción no se puede deshacer.',
+      confirmLabel: 'Continuar',
+      danger: true,
+    });
+    if (!first) return;
+    const second = await confirm({
+      title: 'Confirmá de nuevo',
+      description: 'Se va a borrar todo el historial de movimientos.',
+      confirmLabel: 'Eliminar todo',
+      danger: true,
+    });
+    if (!second) return;
 
     setDeletingAll(true);
     try {

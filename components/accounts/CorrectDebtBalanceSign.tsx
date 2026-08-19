@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface CorrectDebtBalanceSignProps {
   accountId: string;
@@ -21,20 +22,20 @@ export default function CorrectDebtBalanceSign({
   accountType,
 }: CorrectDebtBalanceSignProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(false);
   const debtLike = isDebt || accountType === 'credit_card';
   const needsFix = debtLike && Number(balance) > 0;
 
-  if (!needsFix) return null;
-
   const run = async () => {
-    if (
-      !confirm(
-        'Vamos a guardar la deuda de la tarjeta como saldo negativo interno (el número en pantalla no cambia). Así los pagos desde otra cuenta van a bajar la deuda de verdad. ¿Seguimos?'
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: '¿Corregir el signo de la deuda?',
+      description:
+        'La deuda se guarda como saldo negativo interno (el número en pantalla no cambia). Así los pagos desde otra cuenta bajan la deuda de verdad.',
+      confirmLabel: 'Corregir',
+    });
+    if (!ok) return;
+    if (!needsFix) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/accounts/${accountId}/correct-debt-sign`, { method: 'POST' });
@@ -47,6 +48,8 @@ export default function CorrectDebtBalanceSign({
       setLoading(false);
     }
   };
+
+  if (!needsFix) return null;
 
   return (
     <div className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">

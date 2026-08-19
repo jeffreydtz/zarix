@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { translatePasskeyError } from '@/lib/auth/auth-error-messages';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 type Passkey = {
   id: string;
@@ -22,6 +23,7 @@ function formatDate(value?: string): string {
 }
 
 export default function PasskeysSection() {
+  const confirm = useConfirm();
   const [supported, setSupported] = useState<boolean | null>(null);
   const [passkeys, setPasskeys] = useState<Passkey[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,9 +99,12 @@ export default function PasskeysSection() {
 
   const handleDelete = async (passkey: Passkey) => {
     const label = passkey.friendly_name || 'esta passkey';
-    if (!window.confirm(`¿Eliminar ${label}? No vas a poder iniciar sesión con ella.`)) {
-      return;
-    }
+    const ok = await confirm({
+      title: `¿Eliminar ${label}?`,
+      description: 'No vas a poder iniciar sesión con ella.',
+      danger: true,
+    });
+    if (!ok) return;
     setBusy(true);
     setError('');
     setSuccess('');

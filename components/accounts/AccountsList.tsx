@@ -9,6 +9,7 @@ import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquivalents';
 import EditAccountModal from '@/components/accounts/EditAccountModal';
 import { useRouter } from 'next/navigation';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface AccountsListProps {
   accounts: AccountWithBalance[];
@@ -17,18 +18,19 @@ interface AccountsListProps {
 
 export default function AccountsList({ accounts, aggregates }: AccountsListProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(false);
   const [editAccount, setEditAccount] = useState<AccountWithBalance | null>(null);
 
   const handleDelete = async (id: string, name: string) => {
-    if (
-      !confirm(
-        `Archivar la cuenta "${name}"?\n\n` +
-          `Dejará de mostrarse en listados y totales. Los movimientos no se borran; podés restaurarla más abajo si hace falta.`
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: `¿Archivar "${name}"?`,
+      description:
+        'Dejará de mostrarse en listados y totales. Los movimientos no se borran; podés restaurarla más abajo si hace falta.',
+      confirmLabel: 'Archivar',
+      danger: true,
+    });
+    if (!ok) return;
 
     setLoading(true);
     try {

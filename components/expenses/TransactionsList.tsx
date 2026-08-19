@@ -13,6 +13,7 @@ import {
 } from '@/lib/transaction-account-impact';
 import EditTransactionModal from './EditTransactionModal';
 import { useRouter } from 'next/navigation';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 function fmtMoney(n: number, currency: string) {
   const abs = Math.abs(n).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -145,10 +146,11 @@ export default function TransactionsList({
   transactions, 
   accounts = [], 
   categories = [],
-  emptySubmessage = 'Usá el bot de Telegram para registrar gastos e ingresos',
+  emptySubmessage = 'Tocá + para registrar un gasto o ingreso',
   viewAccountContext,
 }: TransactionsListProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -242,13 +244,12 @@ export default function TransactionsList({
       return;
     }
     const n = selectedIds.length;
-    if (
-      !confirm(
-        `¿Eliminar ${n} movimiento${n === 1 ? '' : 's'}? Esta acción no se puede deshacer.`
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: `¿Eliminar ${n} movimiento${n === 1 ? '' : 's'}?`,
+      description: 'Esta acción no se puede deshacer.',
+      danger: true,
+    });
+    if (!ok) return;
     setDeletingBulk(true);
     try {
       const response = await fetch('/api/transactions/bulk', {

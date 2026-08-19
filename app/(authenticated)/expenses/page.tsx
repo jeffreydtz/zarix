@@ -5,6 +5,7 @@ import { transactionsService } from '@/lib/services/transactions';
 import TransactionsList from '@/components/expenses/TransactionsList';
 import TransactionsFilters from '@/components/expenses/TransactionsFilters';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
+import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 
 export default async function ExpensesPage({
   searchParams,
@@ -44,30 +45,25 @@ export default async function ExpensesPage({
 
 
     return (
-      <div className="min-h-screen bg-background transition-colors">
-        <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Movimientos</h1>
-              <p className="text-muted-foreground text-sm mt-1">
-                Toca un movimiento para editarlo
-              </p>
-              <div className="mt-2 inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
-                Traídos: {transactions.length}
-              </div>
-            </div>
-            <CreateTransactionButton accounts={accounts || []} categories={categories || []} />
-          </div>
-
-          <TransactionsFilters accounts={accounts || []} categories={categories || []} />
-
-          <TransactionsList 
-            transactions={transactions} 
-            accounts={accounts || []}
-            categories={categories || []}
+      <PageScaffold
+        hero={
+          <PageHero
+            title="Movimientos"
+            subtitle="Tocá un movimiento para editarlo"
+            rightSlot={<CreateTransactionButton />}
           />
+        }
+      >
+        <div className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground -mt-2">
+          Traídos: {transactions.length}
         </div>
-      </div>
+        <TransactionsFilters accounts={accounts || []} categories={categories || []} />
+        <TransactionsList
+          transactions={transactions}
+          accounts={accounts || []}
+          categories={categories || []}
+        />
+      </PageScaffold>
     );
   } catch (error) {
     console.error('Expenses page error:', error);

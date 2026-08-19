@@ -22,8 +22,8 @@ import MonthFlowCard from '@/components/dashboard/MonthFlowCard';
 import UpcomingRail from '@/components/dashboard/UpcomingRail';
 import BudgetCluster from '@/components/dashboard/BudgetCluster';
 import StickyNetWorthBar from '@/components/dashboard/StickyNetWorthBar';
-import FloatingAddButton from '@/components/dashboard/FloatingAddButton';
 import DashboardSpendingAnalyzerSection from '@/components/dashboard/DashboardSpendingAnalyzerSection';
+import DashboardMore from '@/components/dashboard/DashboardMore';
 import { PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 
@@ -173,24 +173,24 @@ export default async function DashboardPage() {
               </Suspense>
             </MotionSection>
 
-            <MotionSection delay={0.2} intensity="subtle" className="lg:col-span-6">
-              <CreditCardsWidget accounts={accounts} />
-            </MotionSection>
+            <DashboardMore>
+              <MotionSection delay={0.2} intensity="subtle" className="lg:col-span-6">
+                <CreditCardsWidget accounts={accounts} />
+              </MotionSection>
 
-            <MotionSection delay={0.22} intensity="subtle" className="lg:col-span-6">
-              <AccountCards accounts={accounts} />
-            </MotionSection>
+              <MotionSection delay={0.22} intensity="subtle" className="lg:col-span-6">
+                <AccountCards accounts={accounts} />
+              </MotionSection>
 
-            <MotionSection delay={0.26} intensity="subtle" className="lg:col-span-7">
-              <RecentTransactions transactions={recentTransactions} />
-            </MotionSection>
+              <MotionSection delay={0.26} intensity="subtle" className="lg:col-span-7">
+                <RecentTransactions transactions={recentTransactions} />
+              </MotionSection>
 
-            <MotionSection delay={0.28} intensity="subtle" className="lg:col-span-5">
-              <AnomaliesWidget />
-            </MotionSection>
+              <MotionSection delay={0.28} intensity="subtle" className="lg:col-span-5">
+                <AnomaliesWidget />
+              </MotionSection>
+            </DashboardMore>
           </div>
-
-          <FloatingAddButton />
         </PageScaffold>
       </>
     );

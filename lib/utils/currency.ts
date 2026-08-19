@@ -7,7 +7,8 @@ export function formatCurrency(
     return `${amount.toFixed(8)} ${currency}`;
   }
 
-  return `${currency === 'USD' ? 'USD' : '$'} ${amount.toLocaleString(locale, {
+  const prefix = currency === 'USD' ? 'USD' : currency === 'EUR' ? '€' : '$';
+  return `${prefix} ${amount.toLocaleString(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;

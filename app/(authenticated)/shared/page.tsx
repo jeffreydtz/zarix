@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils/currency';
 import { TRANSACTION_CURRENCIES } from '@/lib/constants/transaction-currencies';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface GroupSummary {
   id: string;
@@ -22,6 +23,7 @@ interface DraftMember {
 }
 
 export default function SharedGroupsPage() {
+  const confirm = useConfirm();
   const [groups, setGroups] = useState<GroupSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -56,8 +58,12 @@ export default function SharedGroupsPage() {
   };
 
   const deleteGroup = async (group: GroupSummary) => {
-    if (!confirm(`¿Eliminar "${group.name}" y todos sus gastos? Esta acción no se puede deshacer.`))
-      return;
+    const ok = await confirm({
+      title: `¿Eliminar "${group.name}"?`,
+      description: 'Se borran todos los gastos del grupo. Esta acción no se puede deshacer.',
+      danger: true,
+    });
+    if (!ok) return;
     await fetch(`/api/shared-groups/${group.id}`, { method: 'DELETE' });
     await load();
   };

@@ -3,15 +3,16 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Monitor, Moon, Sun } from 'lucide-react';
 
 // Ciclo: sistema (sigue al dispositivo) → claro → oscuro → sistema.
 const ORDER = ['system', 'light', 'dark'] as const;
 type Mode = (typeof ORDER)[number];
 
-const META: Record<Mode, { icon: string; label: string }> = {
-  system: { icon: '🖥️', label: 'Automático (sistema)' },
-  light: { icon: '☀️', label: 'Claro' },
-  dark: { icon: '🌙', label: 'Oscuro' },
+const META: Record<Mode, { icon: typeof Sun; label: string }> = {
+  system: { icon: Monitor, label: 'Automático (sistema)' },
+  light: { icon: Sun, label: 'Claro' },
+  dark: { icon: Moon, label: 'Oscuro' },
 };
 
 export default function ThemeToggle() {
@@ -50,9 +51,12 @@ export default function ThemeToggle() {
           animate={{ y: 0, opacity: 1, rotate: 0 }}
           exit={{ y: -20, opacity: 0, rotate: -90 }}
           transition={{ duration: 0.2 }}
-          className="text-xl"
+          className="text-foreground"
         >
-          {META[current].icon}
+          {(() => {
+            const Icon = META[current].icon;
+            return <Icon className="w-5 h-5" />;
+          })()}
         </motion.span>
       </AnimatePresence>
     </motion.button>

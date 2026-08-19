@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { useRouter } from 'next/navigation';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import type { AccountWithBalance } from '@/lib/services/accounts';
 import {
   ACCOUNT_FORM_CURRENCIES,
@@ -34,6 +35,7 @@ function getEditablePrimaryBalance(account: AccountWithBalance): number {
 export default function EditAccountModal({ account, onClose }: EditAccountModalProps) {
   useBodyScrollLock();
   const router = useRouter();
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -126,11 +128,11 @@ export default function EditAccountModal({ account, onClose }: EditAccountModalP
     // Cambiar la moneda NO convierte el saldo: el número guardado se reinterpreta
     // en la nueva moneda. Avisar para que el usuario ajuste el saldo si hace falta.
     if (currency !== account.currency && Math.abs(getEditablePrimaryBalance(account)) > 1e-6) {
-      const ok = window.confirm(
-        `Vas a cambiar la moneda de ${account.currency} a ${currency}.\n\n` +
-          `El saldo NO se convierte solo: ${getEditablePrimaryBalance(account)} se va a interpretar como ${currency}. ` +
-          `Si el monto correcto en ${currency} es otro, ajustá "Saldo en Zarix" antes de guardar.\n\n¿Continuar?`
-      );
+      const ok = await confirm({
+        title: `¿Cambiar de ${account.currency} a ${currency}?`,
+        description: `El saldo NO se convierte solo: ${getEditablePrimaryBalance(account)} se va a interpretar como ${currency}. Si el monto correcto es otro, ajustá "Saldo en Zarix" antes de guardar.`,
+        confirmLabel: 'Continuar',
+      });
       if (!ok) return;
     }
 

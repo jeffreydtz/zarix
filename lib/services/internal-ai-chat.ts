@@ -94,6 +94,7 @@ export async function processInternalAiChatMessage(input: {
 
   const executed: ExecutedTransactionSummary[] = [];
   let writeCalls = 0;
+  let pendingConfirm: { preview: string } | undefined;
   const allowedTools = new Set(BOT_FUNCTION_DECLARATIONS.map((d) => d.name));
 
   const { text, toolsUsed } = await gemini.chatWithTools(input.message.slice(0, MAX_CHAT_MESSAGE_CHARS), {
@@ -114,6 +115,20 @@ export async function processInternalAiChatMessage(input: {
         userId: input.userId,
         financialContext: input.financialContext,
       });
+      if (out.response?.needs_confirm) {
+        const raw = out.response.preview;
+        let preview = '¿Confirmás esta acción?';
+        if (typeof raw === 'string' && raw.trim()) preview = raw;
+        else if (raw && typeof raw === 'object') {
+          const o = raw as Record<string, unknown>;
+          preview = [o.type, o.amount != null ? `${o.amount} ${o.currency ?? ''}`.trim() : null, o.description]
+            .filter(Boolean)
+            .join(' · ') || preview;
+        } else if (out.response.error) {
+          preview = String(out.response.error);
+        }
+        pendingConfirm = { preview };
+      }
       if (out.executed?.length) executed.push(...out.executed);
       return out.response;
     },
@@ -166,9 +181,12 @@ export async function processInternalAiChatMessage(input: {
     : message;
 
   return {
-    mode: didWrite ? 'executed' : 'chat',
-    assistant_message: message,
+    mode: pendingConfirm ? 'confirm' : didWrite ? 'executed' : 'chat',
+    assistant_message: pendingConfirm
+      ? pendingConfirm.preview
+      : message,
     executed: executed.length ? executed : undefined,
+    pending_confirm: pendingConfirm,
     raw_response: historyText,
   };
 }

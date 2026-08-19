@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CategoryIcon } from '@/lib/category-icons';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface BudgetWithStatus {
   id: string;
@@ -39,6 +40,7 @@ function getProgressBg(percent: number): string {
 }
 
 export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardProps) {
+  const confirm = useConfirm();
   const [deleting, setDeleting] = useState(false);
 
   const percent = Math.min(Number(budget.percent_used) || 0, 100);
@@ -52,7 +54,11 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
   const categoryIcon = budget.category?.icon || '🎯';
 
   const handleDelete = async () => {
-    if (!confirm(`¿Eliminar el presupuesto de "${categoryName}"?`)) return;
+    const ok = await confirm({
+      title: `¿Eliminar el presupuesto de "${categoryName}"?`,
+      danger: true,
+    });
+    if (!ok) return;
     setDeleting(true);
     try {
       const res = await fetch(`/api/budgets/${budget.id}`, { method: 'DELETE' });

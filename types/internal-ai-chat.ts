@@ -20,10 +20,11 @@ export interface ExecutedTransactionSummary {
 }
 
 export interface InternalAiChatSuccessResponse {
-  mode: 'chat' | 'executed';
+  mode: 'chat' | 'executed' | 'confirm';
   assistant_message: string;
   executed?: ExecutedTransactionSummary[];
   raw_response?: string;
+  pending_confirm?: { preview: string };
 }
 
 export interface InternalAiChatErrorResponse {

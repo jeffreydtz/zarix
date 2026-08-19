@@ -9,6 +9,7 @@ import {
   iconValueFromLucideName,
 } from '@/lib/category-icons';
 import { useRouter } from 'next/navigation';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 interface CategoriesListProps {
   categories: Category[];
@@ -18,6 +19,7 @@ type TypeFilter = 'all' | 'expense' | 'income';
 
 export default function CategoriesList({ categories }: CategoriesListProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -74,7 +76,11 @@ export default function CategoriesList({ categories }: CategoriesListProps) {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`¿Estás seguro de eliminar la categoría "${name}"?`)) return;
+    const ok = await confirm({
+      title: `¿Eliminar la categoría "${name}"?`,
+      danger: true,
+    });
+    if (!ok) return;
 
     setLoading(true);
     try {
