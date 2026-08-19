@@ -201,11 +201,6 @@ function IdentityPicker({
                 className="w-full text-left px-4 py-3 rounded-control border border-border bg-surface hover:bg-surface-soft transition-colors text-sm font-medium"
               >
                 {m.display_name}
-                {(m.email || m.phone) && (
-                  <span className="block text-xs text-muted-foreground font-normal">
-                    {m.email || m.phone}
-                  </span>
-                )}
               </button>
             ))}
           </div>
@@ -289,7 +284,11 @@ function ExpensesTab({
 
   const deleteExpense = async (expenseId: string) => {
     if (!confirm('¿Eliminar este gasto?')) return;
-    await fetch(`/api/shared/${token}/expenses/${expenseId}`, { method: 'DELETE' });
+    await fetch(`/api/shared/${token}/expenses/${expenseId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ actorMemberId: meId }),
+    });
     await onChanged();
   };
 
@@ -416,6 +415,7 @@ function ExpenseForm({
         method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          actorMemberId: meId,
           description: description.trim(),
           amount: parsed,
           paidByMemberId: paidBy,

@@ -131,27 +131,51 @@ export async function PATCH(req: NextRequest) {
         }
       }
 
-      let updated = 0;
-      for (const row of rows || []) {
+      const payload = (rows || []).map((row) => {
         const cur = String(row.currency || 'ARS').trim().toUpperCase();
         const conv = rateByCurrency.get(cur)!;
-        const { error: updErr } = await serviceClient
-          .from('transactions')
-          .update({
-            ...updates,
-            amount_in_account_currency: Number(row.amount) * conv.rate,
-            exchange_rate: conv.exchange_rate,
-          })
-          .eq('id', row.id)
-          .eq('user_id', user.id);
+        return {
+          id: row.id,
+          amount_in_account_currency: Number(row.amount) * conv.rate,
+          exchange_rate: conv.exchange_rate,
+        };
+      });
 
-        if (updErr) throw updErr;
-        updated++;
+      const { data: moved, error: rpcErr } = await serviceClient.rpc('bulk_move_transactions', {
+        p_user_id: user.id,
+        p_account_id: updates.account_id,
+        p_rows: payload,
+      });
+      if (rpcErr) {
+        const missing =
+          (rpcErr as { code?: string }).code === 'PGRST202' ||
+          String((rpcErr as { message?: string }).message || '').includes('Could not find the function');
+        if (!missing) throw rpcErr;
+        for (const row of payload) {
+          const { error: updErr } = await serviceClient
+            .from('transactions')
+            .update({
+              ...updates,
+              amount_in_account_currency: row.amount_in_account_currency,
+              exchange_rate: row.exchange_rate,
+            })
+            .eq('id', row.id)
+            .eq('user_id', user.id);
+          if (updErr) throw updErr;
+        }
+      }
+
+      if (updates.category_id !== undefined) {
+        await serviceClient
+          .from('transactions')
+          .update({ category_id: updates.category_id })
+          .eq('user_id', user.id)
+          .in('id', transactionIds);
       }
 
       return NextResponse.json({
         success: true,
-        updated,
+        updated: Number(moved || payload.length),
       });
     }
 

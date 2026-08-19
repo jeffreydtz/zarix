@@ -498,27 +498,39 @@ class AccountsService {
       throw new Error('La cuenta no es tarjeta bimoneda');
     }
 
-    const breakdown = await this.getMulticurrencyBreakdown(userId, accountId);
     const target = Number(targetSecondaryBalance);
     if (!Number.isFinite(target)) {
       throw new Error('Saldo secundario inválido');
     }
 
+    const { error } = await supabase.rpc('create_secondary_balance_adjustment', {
+      p_user_id: userId,
+      p_account_id: accountId,
+      p_target_secondary: target,
+    });
+    if (!error) return;
+    const code = (error as { code?: string }).code;
+    const msg = (error as { message?: string }).message || '';
+    if (code !== 'PGRST202' && !msg.includes('Could not find the function')) {
+      if (msg.includes('Cuenta no encontrada') || msg.includes('no es tarjeta')) {
+        throw new Error(msg.includes('no es tarjeta') ? 'La cuenta no es tarjeta bimoneda' : 'Cuenta no encontrada');
+      }
+      throw error;
+    }
+
+    const breakdown = await this.getMulticurrencyBreakdown(userId, accountId);
     const deltaSecondary = target - Number(breakdown.secondary);
     if (Math.abs(deltaSecondary) < 1e-8) return;
-
     const { error: insErr } = await supabase.from('transactions').insert({
       user_id: userId,
       type: 'adjustment',
       account_id: accountId,
       amount: Math.abs(deltaSecondary),
       currency: breakdown.secondaryCurrency,
-      // Conserva el signo del ajuste secundario y evita contaminar el saldo primario.
       amount_in_account_currency: deltaSecondary,
       description: 'Ajuste de saldo moneda secundaria (edición de cuenta)',
       transaction_date: new Date().toISOString(),
     });
-
     if (insErr) throw insErr;
   }
 
@@ -575,6 +587,10 @@ class AccountsService {
     const before = Number(acc.balance);
     const debtLike = acc.is_debt || acc.type === 'credit_card';
     if (!debtLike || before <= 0) {
+      return null;
+    }
+    // En tarjeta, un saldo positivo es un crédito (pago de más), no un signo mal cargado.
+    if (acc.type === 'credit_card') {
       return null;
     }
 
@@ -647,6 +663,20 @@ class AccountsService {
     const row = this.sanitizeAccountPatch(updates);
     if (Object.keys(row).length === 0) {
       throw new Error('No hay cambios válidos');
+    }
+
+    if (row.currency !== undefined || row.is_multicurrency !== undefined) {
+      const { count, error: countErr } = await supabase
+        .from('transactions')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .or(`account_id.eq.${id},destination_account_id.eq.${id}`);
+      if (countErr) throw countErr;
+      if ((count ?? 0) > 0) {
+        throw new Error(
+          'No se puede cambiar la moneda ni el modo bimoneda de una cuenta con movimientos.'
+        );
+      }
     }
 
     const { data, error } = await supabase

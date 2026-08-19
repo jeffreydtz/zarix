@@ -124,14 +124,23 @@ function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
   return 1;
 }
 
-function amountToUsd(amount: number, currency: string | null | undefined, arsPerUsd: number): number {
+function amountToUsd(
+  amount: number,
+  currency: string | null | undefined,
+  arsPerUsd: number,
+  extraUsdPerUnit?: Map<string, number>
+): number {
   const c = (currency || 'USD').toUpperCase();
   if (STABLE_AS_USD.has(c)) return amount;
   if (c === 'ARS') {
     const rate = arsPerUsd > 0 ? arsPerUsd : 1;
     return amount / rate;
   }
-  return amount;
+  if (extraUsdPerUnit) {
+    const extra = extraUsdPerUnit.get(c);
+    return extra && extra > 0 ? amount * extra : 0;
+  }
+  throw new Error(`No hay cotización a USD para ${c}`);
 }
 
 function usdToArsBlue(usd: number, arsPerUsd: number): number {
@@ -171,6 +180,26 @@ interface QuoteResult {
   currency: string;
 }
 
+async function assertOwnedInvestmentAccount(
+  supabase: ReturnType<typeof createServiceClientSync>,
+  accountId: string,
+  userId: string
+): Promise<void> {
+  const { data, error } = await supabase
+    .from('accounts')
+    .select('id, type, is_active')
+    .eq('id', accountId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data || !data.is_active) {
+    throw new Error('Cuenta no encontrada');
+  }
+  if (data.type !== 'investment') {
+    throw new Error('La cuenta tiene que ser de tipo inversión');
+  }
+}
+
 function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
   const row: Record<string, unknown> = {};
   if (updates.accountId !== undefined) row.account_id = updates.accountId;
@@ -200,6 +229,7 @@ function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
 class InvestmentsService {
   async create(input: CreateInvestmentInput): Promise<Investment> {
     const supabase = createServiceClientSync();
+    await assertOwnedInvestmentAccount(supabase, input.accountId, input.userId);
 
     const { data, error } = await supabase
       .from('investments')
@@ -362,6 +392,23 @@ class InvestmentsService {
     if (error) throw error;
     const investments: Investment[] = investmentsRaw || [];
 
+    const extraUsd = new Map<string, number>();
+    const needed = new Set<string>();
+    for (const inv of investments) {
+      needed.add((inv.purchase_currency || 'USD').toUpperCase());
+      needed.add(
+        (inv.market_currency || marketCurrencyForInvestment(inv.type, inv.purchase_currency)).toUpperCase()
+      );
+    }
+    for (const c of needed) {
+      if (STABLE_AS_USD.has(c) || c === 'ARS' || extraUsd.has(c)) continue;
+      try {
+        extraUsd.set(c, await cotizacionesService.getExchangeRate(c, 'USD'));
+      } catch {
+        /* sin tasa: amountToUsd devolverá 0 para esa moneda */
+      }
+    }
+
     const investmentIds = investments.map((inv) => inv.id);
     const salesByInvestment = new Map<string, { realized: number; count: number }>();
     if (investmentIds.length > 0) {
@@ -429,8 +476,8 @@ class InvestmentsService {
       const costNative = (qty * purchaseUnit) / priceFactor;
       const marketNative = (qty * currentPrice) / priceFactor;
 
-      const costUsd = amountToUsd(costNative, purchaseCur, blueArsPerUsd);
-      const marketUsd = amountToUsd(marketNative, marketCur, blueArsPerUsd);
+      const costUsd = amountToUsd(costNative, purchaseCur, blueArsPerUsd, extraUsd);
+      const marketUsd = amountToUsd(marketNative, marketCur, blueArsPerUsd, extraUsd);
       const pnlUsd = marketUsd - costUsd;
       const pnlPctUsd = costUsd > 0 ? (pnlUsd / costUsd) * 100 : 0;
 
@@ -439,7 +486,7 @@ class InvestmentsService {
         const denom = 100 + dailyChangePct;
         if (denom !== 0) {
           const previousMarketNative = marketNative * (100 / denom);
-          const previousMarketUsd = amountToUsd(previousMarketNative, marketCur, blueArsPerUsd);
+          const previousMarketUsd = amountToUsd(previousMarketNative, marketCur, blueArsPerUsd, extraUsd);
           dailyPnlUsd = marketUsd - previousMarketUsd;
         }
       }
@@ -513,6 +560,9 @@ class InvestmentsService {
     if (Object.keys(row).length === 0) {
       throw new Error('No hay campos para actualizar');
     }
+    if (typeof row.account_id === 'string') {
+      await assertOwnedInvestmentAccount(supabase, row.account_id, userId);
+    }
 
     const { data, error } = await supabase
       .from('investments')
@@ -582,8 +632,14 @@ class InvestmentsService {
     // La moneda de venta puede diferir de la de compra (el diálogo deja elegir).
     // Pasamos ambos precios a USD antes de restar para no mezclar monedas
     // (restar un precio ARS de uno USD daba un P&L disparatado).
-    const saleUsdPerUnit = amountToUsd(input.price, saleCurrency, arsPerUsd);
-    const purchaseUsdPerUnit = amountToUsd(purchasePrice, basisCurrency, arsPerUsd);
+    const extra = new Map<string, number>();
+    for (const c of [saleCurrency, basisCurrency]) {
+      if (!STABLE_AS_USD.has(c) && c !== 'ARS' && !extra.has(c)) {
+        extra.set(c, await cotizacionesService.getExchangeRate(c, 'USD'));
+      }
+    }
+    const saleUsdPerUnit = amountToUsd(input.price, saleCurrency, arsPerUsd, extra);
+    const purchaseUsdPerUnit = amountToUsd(purchasePrice, basisCurrency, arsPerUsd, extra);
     const realizedUsd = ((saleUsdPerUnit - purchaseUsdPerUnit) * input.quantity) / priceFactor;
     const realizedNative =
       saleCurrency === 'ARS' ? usdToArsBlue(realizedUsd, arsPerUsd) : realizedUsd;

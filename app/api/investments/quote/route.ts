@@ -92,7 +92,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: unknown) {
     console.error('investments quote error:', error);
-    const message = error instanceof Error ? error.message : 'No se pudo obtener la cotización';
-    return NextResponse.json({ ok: false, error: message }, { status: 200 });
+    return NextResponse.json({ ok: false, error: 'No se pudo obtener la cotización' }, { status: 200 });
   }
 }

@@ -7,6 +7,9 @@ import type { NextRequest } from 'next/server';
 export function getEmailRedirectOrigin(req: NextRequest): string {
   const env = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
   if (env) return env;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('NEXT_PUBLIC_APP_URL es obligatorio en producción');
+  }
   return new URL(req.url).origin;
 }
 

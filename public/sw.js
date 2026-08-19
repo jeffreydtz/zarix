@@ -1,23 +1,14 @@
-const CACHE_NAME = 'zarix-v7';
+const CACHE_NAME = 'zarix-v8';
 const SYNC_TAG = 'zarix-sync';
 
 const STATIC_ASSETS = [
   '/',
-  '/dashboard',
-  '/accounts',
-  '/expenses',
-  '/investments',
-  '/analysis',
-  '/settings',
   '/manifest.json',
   '/favicon.ico',
   '/apple-touch-icon.png',
   '/logo-formats/android-chrome-192x192.png',
   '/logo-formats/android-chrome-512x512.png',
 ];
-
-// Cacheable API GET endpoints (for offline read access)
-const CACHEABLE_API = ['/api/accounts', '/api/categories'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -55,28 +46,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cacheable API endpoints: network-first, store response, fall back to cache
-  if (CACHEABLE_API.some((path) => url.pathname.startsWith(path))) {
-    event.respondWith(
-      fetch(request)
-        .then((res) => {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(request, clone));
-          return res;
-        })
-        .catch(() =>
-          caches.match(request).then(
-            (cached) =>
-              cached ||
-              new Response(JSON.stringify([]), {
-                status: 200,
-                headers: { 'Content-Type': 'application/json' },
-              })
-          )
-        )
-    );
-    return;
-  }
+
 
   // Other API routes: network-only, return offline indicator on failure
   if (url.pathname.startsWith('/api/')) {
@@ -91,20 +61,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Navigation (HTML pages): network-first, fall back to cached page
+  // Navigation: network-only for authenticated shells (no leftover user HTML).
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((res) => {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(request, clone));
-          return res;
-        })
-        .catch(() =>
-          caches
-            .match(request)
-            .then((cached) => cached || caches.match('/dashboard'))
-        )
+      fetch(request).catch(
+        () =>
+          new Response('Sin conexión.', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+          })
+      )
     );
     return;
   }
@@ -126,3 +92,11 @@ async function notifyClientsToSync() {
   const clients = await self.clients.matchAll({ includeUncontrolled: true });
   clients.forEach((client) => client.postMessage({ type: 'SYNC_QUEUE' }));
 }
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CLEAR_CACHES') {
+    event.waitUntil(
+      caches.keys().then((names) => Promise.all(names.map((n) => caches.delete(n))))
+    );
+  }
+});

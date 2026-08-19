@@ -11,13 +11,14 @@ type UiMessage = {
   id: string;
   role: 'user' | 'assistant';
   text: string;
+  historyText?: string;
   executed?: InternalAiChatSuccessResponse['executed'];
 };
 
 function toApiHistory(messages: UiMessage[]): InternalAiChatHistoryItem[] {
   return messages.map((message) => ({
     role: message.role === 'assistant' ? 'model' : 'user',
-    text: message.text,
+    text: message.historyText || message.text,
   }));
 }
 
@@ -89,6 +90,7 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
         id: `${Date.now()}-assistant`,
         role: 'assistant',
         text: chatResponse.assistant_message,
+        historyText: chatResponse.raw_response || chatResponse.assistant_message,
         executed: chatResponse.mode === 'executed' ? (chatResponse.executed ?? []) : undefined,
       };
       setMessages((prev) => [...prev, assistantMessage]);

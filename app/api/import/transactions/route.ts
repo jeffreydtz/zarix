@@ -1131,7 +1131,7 @@ export async function POST(request: NextRequest) {
     // `type` y `currency` se fuerzan a valores permitidos antes de insertar.
     const importedTxSchema = z.object({
       date: z.string().min(1),
-      type: z.enum(['expense', 'income', 'transfer', 'adjustment']).catch('expense'),
+      type: z.enum(['expense', 'income', 'transfer', 'adjustment']),
       amount: z.coerce.number().finite().nonnegative().catch(0),
       currency: z
         .unknown()
@@ -1142,9 +1142,20 @@ export async function POST(request: NextRequest) {
       notes: z.string().optional(),
       amountInAccountCurrency: z.coerce.number().finite().nonnegative().optional(),
     });
-    combined.transactions = combined.transactions.map(
-      (t) => importedTxSchema.parse(t) as (typeof combined.transactions)[number]
-    );
+    const parsedTx: typeof combined.transactions = [];
+    for (const t of combined.transactions) {
+      const parsed = importedTxSchema.safeParse(t);
+      if (!parsed.success) {
+        combined.skips.push({
+          title: `Movimiento omitido — ${(t as { description?: string }).description || 'sin descripción'}`,
+          reason: 'Tipo de movimiento inválido o monto ilegible.',
+          suggestion: 'Usá expense, income, transfer o adjustment, y un monto numérico.',
+        });
+        continue;
+      }
+      parsedTx.push(parsed.data as (typeof combined.transactions)[number]);
+    }
+    combined.transactions = parsedTx;
 
     const totalCount = combined.transactions.length + combined.transfers.length;
 
@@ -1232,6 +1243,10 @@ export async function POST(request: NextRequest) {
       pushSkip(parseSkip);
     }
 
+    const seenFingerprints = new Set<string>();
+    const fingerprint = (...parts: Array<string | number | null | undefined>) =>
+      parts.map((p) => String(p ?? '').trim().toLowerCase()).join('|');
+
     for (const tr of combined.transfers) {
       const outRes = resolveAccountId(
         tr.outgoingName,
@@ -1291,9 +1306,39 @@ export async function POST(request: NextRequest) {
       }
 
       let description = tr.comment || 'Transferencia importada';
-      if (tr.amountIncoming && tr.currencyIncoming && tr.currencyIncoming !== tr.currencyOutgoing) {
+      let exchangeRateOverride: number | undefined;
+      if (tr.currencyIncoming && tr.currencyIncoming !== tr.currencyOutgoing) {
+        if (!(tr.amountIncoming && tr.amountIncoming > 0 && tr.amountOutgoing > 0)) {
+          pushSkip({
+            title: `Transferencia omitida — ${tr.outgoingName} → ${tr.incomingName}`,
+            reason: 'Falta el monto en destino para una transferencia entre monedas distintas.',
+            suggestion: 'Completá el equivalente en la moneda de destino (no usamos la cotización de hoy).',
+            context: formatTransferContext(tr),
+          });
+          continue;
+        }
+        exchangeRateOverride = tr.amountIncoming / tr.amountOutgoing;
         description += ` (${tr.amountIncoming} ${tr.currencyIncoming} en destino)`;
       }
+
+      const fp = fingerprint(
+        'transfer',
+        tr.date,
+        tr.outgoingName,
+        tr.incomingName,
+        tr.amountOutgoing,
+        tr.currencyOutgoing
+      );
+      if (seenFingerprints.has(fp)) {
+        pushSkip({
+          title: 'Transferencia omitida — duplicada en el archivo',
+          reason: 'Ya se importó una transferencia idéntica en esta corrida.',
+          suggestion: 'Revisá filas repetidas en el CSV.',
+          context: formatTransferContext(tr),
+        });
+        continue;
+      }
+      seenFingerprints.add(fp);
 
       try {
         await transactionsService.create({
@@ -1305,6 +1350,7 @@ export async function POST(request: NextRequest) {
           currency: tr.currencyOutgoing,
           description,
           transactionDate: tr.date,
+          exchangeRateOverride,
         });
         imported++;
       } catch (e: unknown) {
@@ -1331,9 +1377,6 @@ export async function POST(request: NextRequest) {
       if (account) {
         accountId = account.id;
       } else {
-        const fallbackByCurrency = Array.from(accountMap.values()).find(
-          (a) => a.currency === tx.currency
-        );
         const resolution = hasAccountInFile ? resolutions[rawAccountName] || null : null;
 
         if (resolution?.action === 'map' && resolution.accountId) {
@@ -1349,18 +1392,15 @@ export async function POST(request: NextRequest) {
             continue;
           }
           accountId = resolution.accountId;
-        } else if (resolution?.action === 'keep_name') {
-          if (rawAccountName) {
-            const annotation = `Cuenta original importada: ${rawAccountName}`;
-            notes = notes ? `${notes} | ${annotation}` : annotation;
-          }
-          accountId = null;
-        } else if (resolution?.action === 'none') {
-          accountId = null;
-        } else if (!hasAccountInFile && fallbackByCurrency) {
-          accountId = fallbackByCurrency.id;
-        } else if (!hasAccountInFile) {
-          accountId = null;
+        } else if (resolution?.action === 'keep_name' || resolution?.action === 'none' || !hasAccountInFile) {
+          pushSkip({
+            title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
+            reason: 'Sin cuenta válida: no se importan movimientos huérfanos (no impactan ningún saldo).',
+            suggestion:
+              'En la revisión del import, mapeá el nombre a una cuenta existente de Zarix.',
+            context: formatTxContext(tx),
+          });
+          continue;
         } else {
           pushSkip({
             title: `Movimiento omitido — cuenta "${rawAccountName}"`,
@@ -1386,6 +1426,16 @@ export async function POST(request: NextRequest) {
               'Esta fila está marcada como transferencia; el import masivo de gastos/ingresos no crea transferencias entre cuentas.',
             suggestion:
               'Usá el formato de transferencias (columnas Origen y Destino) en otro CSV/Excel, o cambiá el tipo a Gasto/Ingreso si corresponde a un solo lado.',
+            context: formatTxContext(tx),
+          });
+          continue;
+        }
+
+        if (!accountId) {
+          pushSkip({
+            title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
+            reason: 'El movimiento no tiene cuenta.',
+            suggestion: 'Mapeá la fila a una cuenta activa.',
             context: formatTxContext(tx),
           });
           continue;
@@ -1429,6 +1479,25 @@ export async function POST(request: NextRequest) {
             continue;
           }
         }
+
+        const fp = fingerprint(
+          tx.type,
+          tx.date,
+          tx.amount,
+          tx.currency,
+          accountId,
+          tx.description
+        );
+        if (seenFingerprints.has(fp)) {
+          pushSkip({
+            title: `Movimiento omitido — duplicado`,
+            reason: 'Ya se importó un movimiento idéntico en esta corrida.',
+            suggestion: 'Revisá filas repetidas en el archivo.',
+            context: formatTxContext(tx),
+          });
+          continue;
+        }
+        seenFingerprints.add(fp);
 
         const { error: insertError } = await serviceSupabase.from('transactions').insert({
           user_id: user.id,

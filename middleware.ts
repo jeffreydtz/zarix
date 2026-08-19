@@ -51,10 +51,14 @@ export async function middleware(req: NextRequest) {
 
   const isPublicPath =
     pathname === '/' ||
-    pathname.startsWith('/demo') ||
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
-    pathname.startsWith('/auth') ||
+    pathname === '/demo' ||
+    pathname.startsWith('/demo/') ||
+    pathname === '/login' ||
+    pathname.startsWith('/login/') ||
+    pathname === '/register' ||
+    pathname.startsWith('/register/') ||
+    pathname === '/auth' ||
+    pathname.startsWith('/auth/') ||
     // Gastos compartidos: /shared/[token] es público (invitados sin cuenta);
     // /shared (exacto, listado del dueño) sigue requiriendo sesión.
     pathname.startsWith('/shared/');

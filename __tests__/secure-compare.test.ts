@@ -23,8 +23,10 @@ describe('timingSafeStringEqual', () => {
     expect(timingSafeStringEqual(undefined, undefined)).toBe(false);
   });
 
-  it('treats two empty strings as equal', () => {
-    expect(timingSafeStringEqual('', '')).toBe(true);
+  it('rejects empty strings (a missing secret must never match)', () => {
+    expect(timingSafeStringEqual('', '')).toBe(false);
+    expect(timingSafeStringEqual('', 'x')).toBe(false);
+    expect(timingSafeStringEqual('x', '')).toBe(false);
   });
 
   it('handles multibyte utf-8 correctly', () => {

@@ -110,6 +110,7 @@ export class GeminiClient {
       history?: Content[];
       systemInstruction?: string;
       functionDeclarations: FunctionDeclaration[];
+      allowedToolNames?: ReadonlySet<string>;
       onToolCall: (name: string, args: Record<string, unknown>) => Promise<Record<string, unknown>>;
       maxTokens?: number;
       maxRounds?: number;
@@ -120,6 +121,7 @@ export class GeminiClient {
       history = [],
       systemInstruction,
       functionDeclarations,
+      allowedToolNames,
       onToolCall,
       maxTokens = 2048,
       maxRounds = 8,
@@ -148,15 +150,28 @@ export class GeminiClient {
       for (const call of calls) {
         toolsUsed.push(call.name);
         let toolResult: Record<string, unknown>;
-        try {
-          toolResult = await onToolCall(call.name, (call.args as Record<string, unknown>) ?? {});
-        } catch (e) {
-          toolResult = { error: (e as Error)?.message || 'tool_error' };
+        if (allowedToolNames && !allowedToolNames.has(call.name)) {
+          toolResult = { error: 'Herramienta no permitida.' };
+        } else {
+          try {
+            toolResult = await onToolCall(call.name, (call.args as Record<string, unknown>) ?? {});
+          } catch (e) {
+            console.error('[gemini] tool error', call.name, e);
+            toolResult = { error: 'No pude completar esa acción.' };
+          }
         }
         responses.push({ functionResponse: { name: call.name, response: toolResult ?? {} } });
       }
 
       result = await chat.sendMessage(responses);
+    }
+
+    const leftover = result.response.functionCalls();
+    if (leftover && leftover.length > 0) {
+      return {
+        text: 'No pude terminar de procesar el pedido. ¿Lo reintentamos en partes más chicas?',
+        toolsUsed,
+      };
     }
 
     let text = '';
@@ -173,20 +188,23 @@ export class GeminiClient {
     message: string,
     imageBase64: string,
     mimeType: string,
-    options: Omit<GeminiChatOptions, 'tier'> = {}
+    options: Omit<GeminiChatOptions, 'tier'> & { json?: boolean } = {}
   ): Promise<string> {
     const {
       history = [],
       systemInstruction,
       maxTokens = 2048,
+      json = true,
     } = options;
 
     const model = this.genAI.getGenerativeModel({
       model: GEMINI_FULL_MODEL,
       systemInstruction: systemInstruction,
-      generationConfig: {
-        responseMimeType: 'application/json',
-      },
+      generationConfig: json
+        ? {
+            responseMimeType: 'application/json',
+          }
+        : undefined,
     });
 
     const chat = model.startChat({

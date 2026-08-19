@@ -67,8 +67,7 @@ export async function POST(
     return NextResponse.json(result, { status: 201 });
   } catch (error: unknown) {
     console.error('investments sell error:', error);
-    const message = error instanceof Error ? error.message : 'Error al registrar la venta';
-    return NextResponse.json({ error: message }, { status: 400 });
+    return errorResponse(error);
   }
 }
 

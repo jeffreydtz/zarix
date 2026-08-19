@@ -15,7 +15,13 @@ export async function PUT(
     const updates: Record<string, any> = {};
 
     if (body.isActive !== undefined) updates.is_active = body.isActive;
-    if (body.amount !== undefined) updates.amount = body.amount;
+    if (body.amount !== undefined) {
+      const amount = Number(body.amount);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return NextResponse.json({ error: 'El monto debe ser mayor a 0' }, { status: 400 });
+      }
+      updates.amount = amount;
+    }
     if (body.description !== undefined) updates.description = body.description;
     if (body.endDate !== undefined) updates.end_date = body.endDate;
     if (body.notificationEnabled !== undefined) updates.notification_enabled = body.notificationEnabled;

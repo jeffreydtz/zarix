@@ -1,5 +1,6 @@
 import { randomBytes } from 'crypto';
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { ApiError } from '@/lib/api-handler';
 
 // ── Tipos ───────────────────────────────────────────────────────────
 
@@ -16,11 +17,13 @@ export interface SharedGroup {
 export interface SharedGroupMember {
   id: string;
   group_id: string;
-  user_id: string | null;
+  user_id?: string | null;
   display_name: string;
-  email: string | null;
-  phone: string | null;
+  email?: string | null;
+  phone?: string | null;
 }
+
+const MAX_GROUP_MEMBERS = 30;
 
 export interface SharedExpenseSplit {
   member_id: string;
@@ -245,7 +248,7 @@ class SharedExpensesService {
     const [membersRes, expensesRes] = await Promise.all([
       supabase
         .from('shared_group_members')
-        .select('id, group_id, user_id, display_name, email, phone')
+        .select('id, group_id, display_name')
         .eq('group_id', group.id)
         .order('created_at', { ascending: true }),
       supabase
@@ -306,6 +309,15 @@ class SharedExpensesService {
     if (!groupId) return null;
     const supabase = createServiceClientSync();
 
+    const { count, error: countErr } = await supabase
+      .from('shared_group_members')
+      .select('id', { count: 'exact', head: true })
+      .eq('group_id', groupId);
+    if (countErr) throw countErr;
+    if ((count ?? 0) >= MAX_GROUP_MEMBERS) {
+      throw new ApiError(`El grupo ya tiene el máximo de ${MAX_GROUP_MEMBERS} miembros.`, 400);
+    }
+
     const { data, error } = await supabase
       .from('shared_group_members')
       .insert({
@@ -314,16 +326,32 @@ class SharedExpensesService {
         email: input.email || null,
         phone: input.phone || null,
       })
-      .select('id, group_id, user_id, display_name, email, phone')
+      .select('id, group_id, display_name')
       .single();
 
     if (error) throw error;
     return data;
   }
 
+  private async assertActorInGroup(
+    supabase: ReturnType<typeof createServiceClientSync>,
+    groupId: string,
+    actorMemberId: string
+  ): Promise<void> {
+    const { data, error } = await supabase
+      .from('shared_group_members')
+      .select('id')
+      .eq('id', actorMemberId)
+      .eq('group_id', groupId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) throw new ApiError('Tenés que unirte al grupo para cargar o editar gastos.', 403);
+  }
+
   async addExpenseByToken(
     token: string,
     input: {
+      actorMemberId: string;
       paidByMemberId: string;
       description: string;
       amount: number;
@@ -335,6 +363,7 @@ class SharedExpensesService {
     const groupId = await this.getGroupIdByToken(token);
     if (!groupId) return null;
     const supabase = createServiceClientSync();
+    await this.assertActorInGroup(supabase, groupId, input.actorMemberId);
 
     // Validar que payer y participantes pertenezcan al grupo
     const { data: members, error: membersError } = await supabase
@@ -347,10 +376,13 @@ class SharedExpensesService {
     if (!memberIds.has(input.paidByMemberId)) {
       throw new Error('El miembro que pagó no pertenece al grupo');
     }
-    const splitIds =
-      input.splitMemberIds && input.splitMemberIds.length > 0
-        ? input.splitMemberIds
-        : Array.from(memberIds);
+    const splitIds = Array.from(
+      new Set(
+        input.splitMemberIds && input.splitMemberIds.length > 0
+          ? input.splitMemberIds
+          : Array.from(memberIds)
+      )
+    );
     if (splitIds.some((id) => !memberIds.has(id))) {
       throw new Error('Hay participantes que no pertenecen al grupo');
     }
@@ -388,6 +420,7 @@ class SharedExpensesService {
     token: string,
     expenseId: string,
     input: {
+      actorMemberId: string;
       paidByMemberId: string;
       description: string;
       amount: number;
@@ -399,6 +432,7 @@ class SharedExpensesService {
     const groupId = await this.getGroupIdByToken(token);
     if (!groupId) return null;
     const supabase = createServiceClientSync();
+    await this.assertActorInGroup(supabase, groupId, input.actorMemberId);
 
     // El gasto tiene que pertenecer a este grupo
     const { data: existing, error: existingError } = await supabase
@@ -421,10 +455,13 @@ class SharedExpensesService {
     if (!memberIds.has(input.paidByMemberId)) {
       throw new Error('El miembro que pagó no pertenece al grupo');
     }
-    const splitIds =
-      input.splitMemberIds && input.splitMemberIds.length > 0
-        ? input.splitMemberIds
-        : Array.from(memberIds);
+    const splitIds = Array.from(
+      new Set(
+        input.splitMemberIds && input.splitMemberIds.length > 0
+          ? input.splitMemberIds
+          : Array.from(memberIds)
+      )
+    );
     if (splitIds.some((id) => !memberIds.has(id))) {
       throw new Error('Hay participantes que no pertenecen al grupo');
     }
@@ -443,7 +480,12 @@ class SharedExpensesService {
       .single();
     if (error) throw error;
 
-    // Reemplazar los splits: borrar los viejos e insertar los nuevos
+    const { data: oldSplits, error: oldSplitsErr } = await supabase
+      .from('shared_expense_splits')
+      .select('member_id, amount')
+      .eq('expense_id', expenseId);
+    if (oldSplitsErr) throw oldSplitsErr;
+
     const { error: deleteError } = await supabase
       .from('shared_expense_splits')
       .delete()
@@ -458,23 +500,40 @@ class SharedExpensesService {
         amount: s.amount,
       }))
     );
-    if (splitsError) throw splitsError;
+    if (splitsError) {
+      if (oldSplits && oldSplits.length > 0) {
+        await supabase.from('shared_expense_splits').insert(
+          oldSplits.map((s) => ({
+            expense_id: expenseId,
+            member_id: s.member_id,
+            amount: s.amount,
+          }))
+        );
+      }
+      throw splitsError;
+    }
 
     return { ...expense, amount: Number(expense.amount), splits };
   }
 
-  async deleteExpenseByToken(token: string, expenseId: string): Promise<boolean> {
+  async deleteExpenseByToken(
+    token: string,
+    expenseId: string,
+    actorMemberId: string
+  ): Promise<boolean> {
     const groupId = await this.getGroupIdByToken(token);
     if (!groupId) return false;
     const supabase = createServiceClientSync();
+    await this.assertActorInGroup(supabase, groupId, actorMemberId);
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('shared_expenses')
       .delete()
       .eq('id', expenseId)
-      .eq('group_id', groupId);
+      .eq('group_id', groupId)
+      .select('id');
     if (error) throw error;
-    return true;
+    return (data?.length ?? 0) > 0;
   }
 }
 

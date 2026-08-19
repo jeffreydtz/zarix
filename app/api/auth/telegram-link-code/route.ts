@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClientSync } from '@/lib/supabase/server';
+import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,7 +9,7 @@ export const dynamic = 'force-dynamic';
 // autenticado. El usuario lo envía al bot de Telegram, que lo canjea probando
 // posesión del chat (ver lib/telegram/bot.ts → redeemLinkCode). Reemplaza el
 // flujo viejo inseguro que usaba el telegram_chat_id como su propia "prueba".
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -19,11 +20,20 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 8 hex chars en mayúscula: legible para copiar/pegar en el chat.
-    const code = randomBytes(4).toString('hex').toUpperCase();
+    if (!rateLimitAllow(`tg-link:${user.id}:${clientIpFromRequest(req)}`, 8, 10 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: 'Demasiados códigos. Esperá un rato y reintentá.' },
+        { status: 429 }
+      );
+    }
+
+    // 12 hex chars (48 bits): sigue siendo tipeable y deja de ser brute-forceable
+    // en la ventana de 10 min.
+    const code = randomBytes(6).toString('hex').toUpperCase();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
-    const { error } = await supabase
+    const service = createServiceClientSync();
+    const { error } = await service
       .from('users')
       .update({
         telegram_link_code: code,

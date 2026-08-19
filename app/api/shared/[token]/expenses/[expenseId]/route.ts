@@ -27,6 +27,11 @@ export async function PUT(
       return NextResponse.json({ error: 'El monto debe ser mayor a 0' }, { status: 400 });
     }
 
+    const actorMemberId = typeof body.actorMemberId === 'string' ? body.actorMemberId : '';
+    if (!actorMemberId) {
+      return NextResponse.json({ error: 'Identificate en el grupo para editar' }, { status: 400 });
+    }
+
     const paidByMemberId = typeof body.paidByMemberId === 'string' ? body.paidByMemberId : '';
     if (!paidByMemberId) {
       return NextResponse.json({ error: 'Indicá quién pagó' }, { status: 400 });
@@ -47,7 +52,7 @@ export async function PUT(
     const expense = await sharedExpensesService.updateExpenseByToken(
       params.token,
       params.expenseId,
-      { paidByMemberId, description, amount, expenseDate, splitMemberIds }
+      { actorMemberId, paidByMemberId, description, amount, expenseDate, splitMemberIds }
     );
     if (!expense) {
       return NextResponse.json({ error: 'Gasto no encontrado' }, { status: 404 });
@@ -61,7 +66,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { token: string; expenseId: string } }
 ) {
   try {
@@ -69,9 +74,19 @@ export async function DELETE(
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });
     }
 
+    const body = await req.json().catch(() => ({}));
+    const actorMemberId =
+      typeof (body as { actorMemberId?: string }).actorMemberId === 'string'
+        ? (body as { actorMemberId: string }).actorMemberId
+        : '';
+    if (!actorMemberId) {
+      return NextResponse.json({ error: 'Identificate en el grupo para borrar' }, { status: 400 });
+    }
+
     const deleted = await sharedExpensesService.deleteExpenseByToken(
       params.token,
-      params.expenseId
+      params.expenseId,
+      actorMemberId
     );
     if (!deleted) {
       return NextResponse.json({ error: 'Grupo no encontrado' }, { status: 404 });

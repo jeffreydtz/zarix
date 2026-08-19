@@ -6,28 +6,41 @@ import { sendTelegramDm } from '@/lib/telegram/send';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
+function todayYmdAr(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+function ymdParts(ymd: string): { y: number; m: number; d: number; dow: number } {
+  const [y, m, d] = ymd.slice(0, 10).split('-').map(Number);
+  const dow = new Date(Date.UTC(y, m - 1, d, 15, 0, 0)).getUTCDay();
+  return { y, m, d, dow };
+}
+
+function lastDayOfMonth(y: number, m: number): number {
+  return new Date(Date.UTC(y, m, 0)).getUTCDate();
+}
+
 function shouldExecuteToday(rule: any): boolean {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const todayYmd = todayYmdAr();
+  const today = ymdParts(todayYmd);
+  const startYmd = String(rule.start_date || '').slice(0, 10);
+  if (!startYmd) return false;
+  const start = ymdParts(startYmd);
 
-  const startDate = new Date(rule.start_date);
-  startDate.setHours(0, 0, 0, 0);
+  if (todayYmd < startYmd) return false;
 
-  // Don't execute before start date
-  if (today < startDate) return false;
-
-  // Don't execute after end date
   if (rule.end_date) {
-    const endDate = new Date(rule.end_date);
-    endDate.setHours(0, 0, 0, 0);
-    if (today > endDate) return false;
+    const endYmd = String(rule.end_date).slice(0, 10);
+    if (todayYmd > endYmd) return false;
   }
 
-  // Check if already executed today
-  if (rule.last_executed_date) {
-    const lastExec = new Date(rule.last_executed_date);
-    lastExec.setHours(0, 0, 0, 0);
-    if (lastExec.getTime() === today.getTime()) return false;
+  if (rule.last_executed_date && String(rule.last_executed_date).slice(0, 10) === todayYmd) {
+    return false;
   }
 
   const frequency = rule.frequency;
@@ -35,23 +48,18 @@ function shouldExecuteToday(rule: any): boolean {
   if (frequency === 'daily') return true;
 
   if (frequency === 'weekly') {
-    const dayOfWeek = startDate.getDay();
-    return today.getDay() === dayOfWeek;
+    return today.dow === start.dow;
   }
 
   if (frequency === 'monthly') {
-    // Clamp al último día del mes: una regla del 31 debe ejecutarse el 30/28
-    // en meses más cortos en vez de saltearse el mes entero.
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    const targetDay = Math.min(startDate.getDate(), lastDay);
-    return today.getDate() === targetDay;
+    const targetDay = Math.min(start.d, lastDayOfMonth(today.y, today.m));
+    return today.d === targetDay;
   }
 
   if (frequency === 'yearly') {
-    if (today.getMonth() !== startDate.getMonth()) return false;
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    const targetDay = Math.min(startDate.getDate(), lastDay); // 29/2 → 28/2 en años no bisiestos
-    return today.getDate() === targetDay;
+    if (today.m !== start.m) return false;
+    const targetDay = Math.min(start.d, lastDayOfMonth(today.y, today.m));
+    return today.d === targetDay;
   }
 
   return false;
@@ -81,14 +89,20 @@ class RecurringRulesJob extends IterativeCronJob<any> {
     return true;
   }
 
-  protected async processItem(supabase: ServiceClient, rule: any): Promise<void> {
+  protected async processItem(supabase: ServiceClient, rule: any): Promise<boolean | void> {
     // "Reclamamos" el día ANTES de crear: si la creación o un retry fallan a
     // medias, el próximo cron del mismo día ve last_executed_date == hoy y NO
     // vuelve a crear. Un duplicado de plata es peor que saltear una ocurrencia.
-    await supabase
+    const today = todayYmdAr();
+    const { data: claimed, error: claimErr } = await supabase
       .from('recurring_rules')
-      .update({ last_executed_date: new Date().toISOString().split('T')[0] })
-      .eq('id', rule.id);
+      .update({ last_executed_date: today })
+      .eq('id', rule.id)
+      .or(`last_executed_date.is.null,last_executed_date.lt.${today}`)
+      .select('id')
+      .maybeSingle();
+    if (claimErr) throw claimErr;
+    if (!claimed) return false;
 
     await transactionsService.create({
       userId: rule.user_id,
@@ -98,7 +112,9 @@ class RecurringRulesJob extends IterativeCronJob<any> {
       currency: rule.currency,
       categoryId: rule.category_id,
       description: rule.description,
-      transactionDate: new Date().toISOString(),
+      transactionDate: `${today}T12:00:00.000Z`,
+      isRecurring: true,
+      recurringRuleId: rule.id,
     });
 
     // Send Telegram notification

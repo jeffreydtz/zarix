@@ -17,6 +17,14 @@ function postgrestEqUuid(id: string): string {
   return `"${id.replace(/"/g, '\\"')}"`;
 }
 
+function roundFiat(amount: number, currency: string): number {
+  const c = (currency || '').toUpperCase();
+  if (c === 'ARS' || c === 'USD' || c === 'EUR') {
+    return Math.round(amount * 100) / 100;
+  }
+  return amount;
+}
+
 /**
  * Listados globales: excluye movimientos que tocan cuentas archivadas.
  * Debe ser **síncrona** y devolver el builder: `PostgrestBuilder` es thenable; si se devuelve
@@ -117,6 +125,8 @@ export interface CreateTransactionInput {
    * - Monto en destino: unidades de moneda origen por 1 unidad de moneda destino (equivale a `getExchangeRate(destino, origen)`).
    */
   exchangeRateOverride?: number | null;
+  isRecurring?: boolean;
+  recurringRuleId?: string | null;
 }
 
 export interface TransactionWithCategory extends Transaction {
@@ -153,6 +163,9 @@ class TransactionsService {
     if (account.error || !account.data) {
       throw new Error('Account not found');
     }
+    if (account.data.is_active === false) {
+      throw new Error('La cuenta está archivada. Reactivala para registrar movimientos.');
+    }
 
     // Sin cuenta destino, una "transferencia" caería al insert genérico y la plata
     // desaparecería del origen sin acreditarse en ningún lado.
@@ -185,6 +198,9 @@ class TransactionsService {
           'Las compras en cuotas deben estar en la misma moneda que la cuenta. Convertí el monto o usá una cuenta en esa moneda.'
         );
       }
+      if (input.installments < 2 || input.installments > 36) {
+        throw new Error('Las cuotas tienen que ser entre 2 y 36.');
+      }
       const { data, error } = await supabase.rpc('create_installment_transactions', {
         p_user_id: input.userId,
         p_account_id: input.accountId,
@@ -203,6 +219,7 @@ class TransactionsService {
         .select('*')
         .eq('installment_group_id', data)
         .eq('installment_number', 1)
+        .eq('user_id', input.userId)
         .single();
 
       if (firstInstallment.error) throw firstInstallment.error;
@@ -219,6 +236,9 @@ class TransactionsService {
 
       if (destAccount.error || !destAccount.data) {
         throw new Error('Destination account not found');
+      }
+      if (destAccount.data.is_active === false) {
+        throw new Error('La cuenta destino está archivada.');
       }
 
       const srcCur = account.data.currency.trim().toUpperCase();
@@ -277,21 +297,26 @@ class TransactionsService {
       return data;
     }
 
+    const roundedAmount = roundFiat(input.amount, input.currency);
+    const roundedAin = roundFiat(amountInAccountCurrency, account.data.currency);
+
     const { data, error } = await supabase
       .from('transactions')
       .insert({
         user_id: input.userId,
         type: input.type,
         account_id: input.accountId,
-        amount: input.amount,
+        amount: roundedAmount,
         currency: input.currency,
-        amount_in_account_currency: amountInAccountCurrency,
+        amount_in_account_currency: roundedAin,
         exchange_rate: exchangeRate !== 1 ? exchangeRate : null,
         category_id: input.categoryId || null,
         description: input.description || null,
         notes: input.notes || null,
         tags: input.tags || null,
         transaction_date: input.transactionDate || new Date().toISOString(),
+        is_recurring: input.isRecurring === true,
+        recurring_rule_id: input.recurringRuleId || null,
       })
       .select()
       .single();
@@ -497,21 +522,15 @@ class TransactionsService {
       }
     }
 
-    const normalized = normalizeDebtBalanceForStorage(
-      Boolean(account.is_debt),
-      String(account.type),
-      balance
-    );
-
     const before = Number(account.balance);
     const { error: updErr } = await supabase
       .from('accounts')
-      .update({ balance: normalized, updated_at: new Date().toISOString() })
+      .update({ balance, updated_at: new Date().toISOString() })
       .eq('id', accountId)
       .eq('user_id', userId);
 
     if (updErr) throw updErr;
-    return { before, after: normalized };
+    return { before, after: balance };
   }
 
   /**
@@ -551,12 +570,15 @@ class TransactionsService {
     const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
     const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59);
 
-    const { data: transactions, error } = await supabase
+    const activeIds = await accountsService.getActiveAccountIds(userId);
+    let monthQuery = supabase
       .from('transactions')
       .select('*, category:categories(name, icon)')
       .eq('user_id', userId)
       .gte('transaction_date', startOfMonth.toISOString())
       .lte('transaction_date', endOfMonth.toISOString());
+    monthQuery = applyArchivedAccountsTransactionFilter(monthQuery, activeIds);
+    const { data: transactions, error } = await monthQuery;
 
     if (error) throw error;
 

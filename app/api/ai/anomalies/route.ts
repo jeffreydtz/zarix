@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
-import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
+import {
+  applyArchivedAccountsTransactionFilter,
+  buildToArsConverter,
+} from '@/lib/services/transactions';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,17 +22,22 @@ export async function GET(req: NextRequest) {
 
     let txQ = supabase
       .from('transactions')
-      .select('amount_in_account_currency, category_id, transaction_date, category:categories(name, icon)')
+      .select('amount, currency, amount_in_account_currency, category_id, transaction_date, category:categories(name, icon)')
       .eq('user_id', user.id)
       .eq('type', 'expense')
       .gte('transaction_date', fourMonthsAgo.toISOString());
     const activeIds = await accountsService.getActiveAccountIds(user.id);
     txQ = applyArchivedAccountsTransactionFilter(txQ, activeIds);
-    const { data: transactions } = await txQ;
+    const { data: transactions, error: txErr } = await txQ;
+    if (txErr) {
+      console.error('anomalies query', txErr);
+      return NextResponse.json({ error: 'No se pudieron cargar los movimientos.' }, { status: 500 });
+    }
 
     if (!transactions || transactions.length === 0) {
       return NextResponse.json({ anomalies: [] });
     }
+    const { toArs } = await buildToArsConverter(transactions);
 
     // Split into historical (3 prev months) and current month
     const historical = transactions.filter(
@@ -52,7 +60,7 @@ export async function GET(req: NextRequest) {
           count: 0,
         };
       }
-      historicalByCategory[catId].total += Number(t.amount_in_account_currency);
+      historicalByCategory[catId].total += toArs(t);
       historicalByCategory[catId].count += 1;
     }
 
@@ -74,7 +82,7 @@ export async function GET(req: NextRequest) {
           total: 0,
         };
       }
-      currentByCategory[catId].total += Number(t.amount_in_account_currency);
+      currentByCategory[catId].total += toArs(t);
     }
 
     // Detect anomalies: current > 2x historical average

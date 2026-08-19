@@ -425,7 +425,7 @@ BEGIN
   ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
@@ -627,8 +627,11 @@ CREATE POLICY accounts_delete_own ON accounts FOR DELETE TO authenticated USING 
 CREATE POLICY categories_select ON categories FOR SELECT USING (
   is_system = TRUE OR auth.uid() = user_id
 );
-CREATE POLICY categories_insert ON categories FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY categories_update ON categories FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY categories_insert ON categories FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id AND is_system = FALSE);
+CREATE POLICY categories_update ON categories FOR UPDATE TO authenticated
+  USING (auth.uid() = user_id AND is_system = FALSE)
+  WITH CHECK (auth.uid() = user_id AND is_system = FALSE);
 CREATE POLICY categories_delete ON categories FOR DELETE USING (auth.uid() = user_id);
 
 -- Transactions: solo las propias
@@ -1263,7 +1266,9 @@ BEGIN
   SET telegram_chat_id = p_telegram_chat_id
   WHERE id = auth.uid();
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE ALL ON FUNCTION link_telegram_to_user(UUID, BIGINT) FROM PUBLIC, anon, authenticated;
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- NOTAS FINALES

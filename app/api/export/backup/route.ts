@@ -10,16 +10,29 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const pageSize = 1000;
+    const transactions: Record<string, unknown>[] = [];
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('transaction_date', { ascending: false })
+        .range(from, from + pageSize - 1);
+      if (error) throw error;
+      const batch = data || [];
+      transactions.push(...batch);
+      if (batch.length < pageSize) break;
+    }
+
     const [
       accountsResult,
-      transactionsResult,
       categoriesResult,
       budgetsResult,
       investmentsResult,
       userResult,
     ] = await Promise.all([
       supabase.from('accounts').select('*').eq('user_id', user.id),
-      supabase.from('transactions').select('*').eq('user_id', user.id).order('transaction_date', { ascending: false }),
       supabase.from('categories').select('*').or(`user_id.eq.${user.id},is_system.eq.true`),
       supabase.from('budgets').select('*').eq('user_id', user.id),
       supabase.from('investments').select('*').eq('user_id', user.id),
@@ -38,14 +51,14 @@ export async function GET() {
       },
       data: {
         accounts: accountsResult.data || [],
-        transactions: transactionsResult.data || [],
+        transactions,
         categories: (categoriesResult.data || []).filter(c => c.user_id === user.id),
         budgets: budgetsResult.data || [],
         investments: investmentsResult.data || [],
       },
       stats: {
         accountsCount: accountsResult.data?.length || 0,
-        transactionsCount: transactionsResult.data?.length || 0,
+        transactionsCount: transactions.length,
         categoriesCount: (categoriesResult.data || []).filter(c => c.user_id === user.id).length,
         budgetsCount: budgetsResult.data?.length || 0,
         investmentsCount: investmentsResult.data?.length || 0,

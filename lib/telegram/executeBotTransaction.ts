@@ -1,5 +1,6 @@
 import type { FinancialContext } from '@/lib/ai/prompts';
 import { parseBotTransactionDateInput } from '@/lib/transaction-date';
+import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
@@ -48,7 +49,7 @@ export async function executeBotTransaction(
   }
 
   const txType = normalizeTxType(txData.type);
-  const txCurrency = (txData.currency || 'ARS').trim().toUpperCase();
+  const txCurrency = coerceTransactionCurrency(txData.currency);
 
   let accountId = '';
   let accountName = '';
@@ -62,10 +63,6 @@ export async function executeBotTransaction(
     if (fuzzyResult.confidence === 'exact' || fuzzyResult.confidence === 'high') {
       accountId = fuzzyResult.account!.id;
       accountName = fuzzyResult.account!.name;
-      selectedAccount = fuzzyResult.account;
-    } else if (fuzzyResult.confidence === 'medium' && fuzzyResult.account) {
-      accountId = fuzzyResult.account.id;
-      accountName = fuzzyResult.account.name;
       selectedAccount = fuzzyResult.account;
     } else if (
       fuzzyResult.confidence === 'low' &&
@@ -112,7 +109,7 @@ export async function executeBotTransaction(
     selectedAccount = defaultAccount;
   }
 
-  let finalCurrency = txCurrency;
+  let finalCurrency: string = txCurrency;
   let finalAmount = txData.amount;
   let conversionNote = '';
 

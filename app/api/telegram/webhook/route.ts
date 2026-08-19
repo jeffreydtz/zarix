@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleTelegramUpdate } from '@/lib/telegram/bot';
-import { timingSafeStringEqual } from '@/lib/secure-compare';
+import { verifyConfiguredSecret } from '@/lib/telegram/webhook-auth';
 
 export const dynamic = 'force-dynamic';
 // El loop de function-calling de Gemini puede tardar; sin un límite alto la
@@ -10,7 +10,7 @@ export const maxDuration = 60;
 export async function POST(req: NextRequest) {
   const secret = req.headers.get('x-telegram-bot-api-secret-token');
 
-  if (!timingSafeStringEqual(secret, process.env.TELEGRAM_WEBHOOK_SECRET)) {
+  if (!verifyConfiguredSecret(secret, process.env.TELEGRAM_WEBHOOK_SECRET)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -13,6 +13,8 @@ import type {
 } from '@/types/internal-ai-chat';
 
 export const MAX_BATCH_TRANSACTIONS = 12;
+export const MAX_CHAT_HISTORY_TURNS = 24;
+export const MAX_CHAT_MESSAGE_CHARS = 4000;
 
 /**
  * El bot viejo (antes de function calling) respondía con JSON
@@ -56,12 +58,16 @@ function parseLegacyActionJson(text: string): LegacyAction | null {
 
 export function mapHistoryToGemini(history: InternalAiChatHistoryItem[] = []): Content[] {
   const out: Content[] = [];
-  for (const h of history) {
+  const capped = history.slice(-MAX_CHAT_HISTORY_TURNS);
+  for (const h of capped) {
+    const role = h?.role === 'model' ? 'model' : h?.role === 'user' ? 'user' : null;
+    if (!role) continue;
     const raw = h?.text?.trim();
     if (!raw) continue;
+    const clipped = raw.slice(0, MAX_CHAT_MESSAGE_CHARS);
     // Turnos del modelo en formato JSON viejo → quedarnos solo con el texto.
-    const text = h.role === 'model' ? parseLegacyActionJson(raw)?.response ?? raw : raw;
-    if (text.trim()) out.push({ role: h.role, parts: [{ text }] });
+    const text = role === 'model' ? parseLegacyActionJson(clipped)?.response ?? clipped : clipped;
+    if (text.trim()) out.push({ role, parts: [{ text }] });
   }
   return out;
 }
@@ -76,6 +82,7 @@ export async function processInternalAiChatMessage(input: {
   message: string;
   financialContext: FinancialContext;
   history?: InternalAiChatHistoryItem[];
+  allowLegacyWriteFallback?: boolean;
 }): Promise<InternalAiChatSuccessResponse> {
   const systemPrompt = buildBotSystemPrompt(input.financialContext);
   // Siempre 'full' (gemini-2.5-flash): el modelo lite es poco confiable para
@@ -86,14 +93,23 @@ export async function processInternalAiChatMessage(input: {
   const gemini = await getGeminiForUser(input.userId);
 
   const executed: ExecutedTransactionSummary[] = [];
+  let writeCalls = 0;
+  const allowedTools = new Set(BOT_FUNCTION_DECLARATIONS.map((d) => d.name));
 
-  const { text, toolsUsed } = await gemini.chatWithTools(input.message, {
+  const { text, toolsUsed } = await gemini.chatWithTools(input.message.slice(0, MAX_CHAT_MESSAGE_CHARS), {
     tier,
     systemInstruction: systemPrompt,
     history: mapHistoryToGemini(input.history),
     functionDeclarations: BOT_FUNCTION_DECLARATIONS,
+    allowedToolNames: allowedTools,
     maxTokens: 2048,
     onToolCall: async (name, args) => {
+      if (BOT_WRITE_TOOLS.has(name)) {
+        writeCalls += 1;
+        if (writeCalls > 2 || executed.length >= MAX_BATCH_TRANSACTIONS) {
+          return { success: false, error: 'Límite de escrituras en este mensaje. Confirmá el resto después.' };
+        }
+      }
       const out = await executeBotTool(name, args, {
         userId: input.userId,
         financialContext: input.financialContext,
@@ -108,7 +124,12 @@ export async function processInternalAiChatMessage(input: {
   // Red de seguridad: si el modelo no llamó ninguna tool y devolvió JSON viejo
   // {action, transaction, response} (por historial heredado del bot anterior),
   // lo ejecutamos a mano para no perder el movimiento ni mostrarle JSON crudo.
-  if (toolsUsed.length === 0 && executed.length === 0 && assistantText) {
+  if (
+    input.allowLegacyWriteFallback &&
+    toolsUsed.length === 0 &&
+    executed.length === 0 &&
+    assistantText
+  ) {
     const legacy = parseLegacyActionJson(assistantText);
     if (legacy?.tool) {
       try {

@@ -1,14 +1,18 @@
-import { NextResponse } from 'next/server';
-import { createServiceClientSync } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 // Health check liviano: verifica conectividad con Supabase. Público a propósito
 // (para monitores de uptime tipo UptimeRobot). No expone datos sensibles.
-export async function GET() {
+export async function GET(req: NextRequest) {
   const startedAt = Date.now();
+  if (!rateLimitAllow(`health:${clientIpFromRequest(req)}`, 30, 60 * 1000)) {
+    return NextResponse.json({ status: 'busy' }, { status: 429 });
+  }
   try {
-    const supabase = createServiceClientSync();
+    const supabase = await createClient();
     // Query mínima contra una tabla del sistema (categorías): confirma que la DB
     // responde sin leer datos de usuario.
     const { error } = await supabase

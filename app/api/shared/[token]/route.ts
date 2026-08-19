@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sharedExpensesService, isValidShareToken } from '@/lib/services/sharedExpenses';
 import { errorResponse } from '@/lib/api-handler';
+import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 
 // Acceso público por token (link compartible). El token de 32 hex chars
 // actúa como capability: sin token válido no hay datos.
@@ -37,6 +38,9 @@ export async function POST(
   try {
     if (!isValidShareToken(params.token)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });
+    }
+    if (!rateLimitAllow(`shared-join:${params.token}:${clientIpFromRequest(req)}`, 20, 10 * 60 * 1000)) {
+      return NextResponse.json({ error: 'Demasiados intentos. Esperá un rato.' }, { status: 429 });
     }
 
     const body = await req.json();

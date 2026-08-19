@@ -41,6 +41,7 @@ export default function SettingsForm({
   );
   const [customBotToken, setCustomBotToken] = useState('');
   const [lastWebhookUrl, setLastWebhookUrl] = useState<string | null>(null);
+  const [lastWebhookSecretToken, setLastWebhookSecretToken] = useState<string | null>(null);
 
   const [weeklySummary, setWeeklySummary] = useState(user.weekly_summary_enabled);
   const [monthlySummary, setMonthlySummary] = useState(user.monthly_summary_enabled);
@@ -240,6 +241,7 @@ export default function SettingsForm({
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'No se pudo guardar');
       if (data.webhookUrl) setLastWebhookUrl(data.webhookUrl);
+      if (data.webhookSecretToken) setLastWebhookSecretToken(data.webhookSecretToken);
       setIntegMessage('✅ Configuración de Telegram guardada. Si usás bot propio, configurá el webhook con curl.');
       setCustomBotToken('');
       setTimeout(() => router.refresh(), 2000);
@@ -522,11 +524,11 @@ export default function SettingsForm({
               <pre className="mt-2 p-3 bg-gray-900 text-green-400 text-xs rounded overflow-x-auto">
 {`curl -s -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \\
   -H "Content-Type: application/json" \\
-  -d '{"url":"<URL_WEBHOOK_DE_LA_APP>"}'`}
+  -d '{"url":"<URL_WEBHOOK_DE_LA_APP>","secret_token":"<SECRET_TOKEN>"}'`}
               </pre>
             </li>
             <li>Vuelve a esta pantalla: la URL exacta aparece después de guardar (incluye un código secreto en el path).</li>
-            <li>Hablá con <strong>tu</strong> bot, mandá /start y vinculá el chat id como en la opción A.</li>
+            <li>Hablá con <strong>tu</strong> bot, mandá el código de vinculación (Configuración → Generar código). No se vincula solo con /start.</li>
           </ol>
         </details>
 
@@ -571,6 +573,12 @@ export default function SettingsForm({
               Tu URL de webhook (copiá esto en setWebhook)
             </div>
             <code className="break-all text-xs">{webhookUrl}</code>
+            {lastWebhookSecretToken && (
+              <p className="mt-2 text-xs">
+                secret_token (no está en la URL):{' '}
+                <code className="break-all">{lastWebhookSecretToken}</code>
+              </p>
+            )}
           </div>
         )}
 

@@ -25,6 +25,11 @@ export async function POST(
       return NextResponse.json({ error: 'El monto debe ser mayor a 0' }, { status: 400 });
     }
 
+    const actorMemberId = typeof body.actorMemberId === 'string' ? body.actorMemberId : '';
+    if (!actorMemberId) {
+      return NextResponse.json({ error: 'Identificate en el grupo para cargar un gasto' }, { status: 400 });
+    }
+
     const paidByMemberId = typeof body.paidByMemberId === 'string' ? body.paidByMemberId : '';
     if (!paidByMemberId) {
       return NextResponse.json({ error: 'Indicá quién pagó' }, { status: 400 });
@@ -43,6 +48,7 @@ export async function POST(
       : undefined;
 
     const expense = await sharedExpensesService.addExpenseByToken(params.token, {
+      actorMemberId,
       paidByMemberId,
       description,
       amount,

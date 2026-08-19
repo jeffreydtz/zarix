@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
+import {
+  MAX_CHAT_HISTORY_TURNS,
+  MAX_CHAT_MESSAGE_CHARS,
+} from '@/lib/services/internal-ai-chat';
 import { createClient } from '@/lib/supabase/server';
 import { GeminiMissingKeyError } from '@/lib/ai/gemini';
 import { transactionsService } from '@/lib/services/transactions';
@@ -15,6 +20,8 @@ import type {
 import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
 import type { User } from '@/types/database';
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -26,6 +33,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (!rateLimitAllow(`ai-chat:${user.id}:${clientIpFromRequest(req)}`, 40, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: 'Demasiados mensajes. Esperá un rato.' }, { status: 429 });
+    }
+
     await subscriptionsService.ensureOrchestratorAccess(user.id);
 
     let body: InternalAiChatRequest;
@@ -34,11 +45,23 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
-    const { message, history } = body;
+    const { message } = body;
 
     if (!message || !message.trim()) {
       return NextResponse.json({ error: 'Message required' }, { status: 400 });
     }
+    if (message.length > MAX_CHAT_MESSAGE_CHARS) {
+      return NextResponse.json({ error: 'Mensaje demasiado largo' }, { status: 400 });
+    }
+    const rawHistory = Array.isArray(body.history) ? body.history.slice(-MAX_CHAT_HISTORY_TURNS) : [];
+    const safeHistory = rawHistory
+      .filter(
+        (h): h is { role: 'user' | 'model'; text: string } =>
+          !!h &&
+          (h.role === 'user' || h.role === 'model') &&
+          typeof h.text === 'string'
+      )
+      .map((h) => ({ role: h.role, text: h.text.slice(0, MAX_CHAT_MESSAGE_CHARS) }));
 
     const [userProfile, accountsResult, userCategories, systemCategories, monthSummary] = await Promise.all([
       supabase.from('users').select(USER_CLIENT_SAFE_COLUMNS).eq('id', user.id).single(),
@@ -85,7 +108,7 @@ export async function POST(req: NextRequest) {
     const response: InternalAiChatSuccessResponse = await processInternalAiChatMessage({
       userId: user.id,
       message: message.trim(),
-      history,
+      history: safeHistory,
       financialContext,
     });
     return NextResponse.json(response);

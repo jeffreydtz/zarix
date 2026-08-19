@@ -12,6 +12,14 @@ export default function LogoutButton() {
   const handleLogout = async () => {
     setLoggingOut(true);
     await createClient().auth.signOut();
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.ready.catch(() => null);
+      reg?.active?.postMessage({ type: 'CLEAR_CACHES' });
+    }
+    if (typeof caches !== 'undefined') {
+      const names = await caches.keys();
+      await Promise.all(names.map((n) => caches.delete(n)));
+    }
     router.push('/login');
     router.refresh();
   };

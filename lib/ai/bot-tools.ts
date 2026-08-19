@@ -234,16 +234,22 @@ export const BOT_FUNCTION_DECLARATIONS: FunctionDeclaration[] = [
       type: SchemaType.OBJECT,
       properties: {
         name: { type: SchemaType.STRING, description: 'Nombre de la cuenta.' },
-        type: { type: SchemaType.STRING, description: 'cash, bank, credit_card, wallet... Default cash.' },
+        type: { type: SchemaType.STRING, description: 'cash, bank, credit_card, digital_wallet, crypto, investment, other. Default cash.' },
         currency: { type: SchemaType.STRING, description: 'ARS, USD, EUR. Default ARS.' },
+        confirm: { type: SchemaType.BOOLEAN, description: 'true SOLO si el usuario pidió explícitamente crear la cuenta.' },
       },
       required: ['name'],
     },
   },
   {
     name: 'delete_last_transaction',
-    description: 'Borra el último movimiento registrado. Usar para "borrá el último", "deshacé eso", "cancelá lo que acabo de cargar".',
-    parameters: { type: SchemaType.OBJECT, properties: {} },
+    description: 'Borra el último movimiento registrado. Usar para "borrá el último", "deshacé eso", "cancelá lo que acabo de cargar". Requiere confirm=true.',
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        confirm: { type: SchemaType.BOOLEAN, description: 'true SOLO si el usuario pidió explícitamente borrar.' },
+      },
+    },
   },
   {
     name: 'edit_last_transaction',
@@ -256,6 +262,7 @@ export const BOT_FUNCTION_DECLARATIONS: FunctionDeclaration[] = [
         account: { type: SchemaType.STRING, description: 'Nueva cuenta.' },
         description: { type: SchemaType.STRING, description: 'Nueva descripción.' },
         type: { type: SchemaType.STRING, format: 'enum', enum: ['expense', 'income'] },
+        confirm: { type: SchemaType.BOOLEAN, description: 'true SOLO si el usuario pidió explícitamente corregir el último movimiento.' },
       },
     },
   },
@@ -354,6 +361,7 @@ export const BOT_FUNCTION_DECLARATIONS: FunctionDeclaration[] = [
           type: SchemaType.STRING,
           description: 'YYYY-MM-DD de la primera ocurrencia. SOLO si el usuario lo dijo; default hoy.',
         },
+        confirm: { type: SchemaType.BOOLEAN, description: 'true SOLO si el usuario pidió explícitamente crear la regla.' },
       },
       required: ['description', 'amount', 'frequency'],
     },
@@ -373,6 +381,20 @@ function str(v: unknown): string | undefined {
 function num(v: unknown): number | undefined {
   return typeof v === 'number' && Number.isFinite(v) ? v : undefined;
 }
+
+function isConfirmed(args: ToolArgs): boolean {
+  return args.confirm === true;
+}
+
+const ACCOUNT_TYPES = new Set([
+  'cash',
+  'bank',
+  'credit_card',
+  'investment',
+  'crypto',
+  'digital_wallet',
+  'other',
+]);
 
 export async function executeBotTool(
   name: string,
@@ -418,13 +440,24 @@ export async function executeBotTool(
     case 'create_account': {
       const accountName = str(args.name) || str(args.account);
       if (!accountName) return { response: { success: false, error: 'Falta el nombre de la cuenta.' } };
+      if (!isConfirmed(args)) {
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            preview: `Crear cuenta "${accountName}"`,
+            error: 'Preguntá si confirma y volvé a llamar con confirm=true.',
+          },
+        };
+      }
       try {
-        const type = str(args.type) || 'cash';
+        const rawType = (str(args.type) || 'cash').toLowerCase();
+        const type = ACCOUNT_TYPES.has(rawType) ? rawType : 'cash';
         await accountsService.create({
           userId,
           name: accountName,
           type,
-          currency: str(args.currency) || 'ARS',
+          currency: coerceTransactionCurrency(str(args.currency) || 'ARS'),
           initialBalance: 0,
           icon: type === 'bank' ? '🏦' : '💵',
         });
@@ -441,6 +474,21 @@ export async function executeBotTool(
       // borrar ESE, no otro movimiento con transaction_date más nuevo.
       const [last] = await transactionsService.list(userId, { limit: 1, orderByCreated: true });
       if (!last) return { response: { success: false, error: 'No hay movimientos para borrar.' } };
+      if (!isConfirmed(args)) {
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            preview: {
+              type: last.type,
+              amount: last.amount,
+              currency: last.currency,
+              description: last.description,
+            },
+            error: 'Mostrá el movimiento y, si el usuario confirma, llamá de nuevo con confirm=true.',
+          },
+        };
+      }
       await transactionsService.delete(last.id, userId);
       return {
         response: {
@@ -462,6 +510,20 @@ export async function executeBotTool(
       if (!last) return { response: { success: false, error: 'No encontré un movimiento reciente para editar.' } };
       if (last.type === 'transfer') {
         return { response: { success: false, error: 'No puedo editar transferencias desde acá. Borrala y recreala.' } };
+      }
+      if (!isConfirmed(args)) {
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            preview: {
+              type: last.type,
+              amount: num(args.amount) ?? last.amount,
+              description: str(args.description) || last.description,
+            },
+            error: 'Mostrá la corrección y, si el usuario confirma, llamá de nuevo con confirm=true.',
+          },
+        };
       }
       const merged: BotTxPayload = {
         type: str(args.type) || last.type,
@@ -661,6 +723,16 @@ export async function executeBotTool(
     case 'create_recurring': {
       const description = str(args.description);
       if (!description) return { response: { success: false, error: 'Falta la descripción de la regla recurrente.' } };
+      if (!isConfirmed(args)) {
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            preview: { description, amount: num(args.amount), frequency: str(args.frequency) },
+            error: 'Preguntá si confirma la regla y volvé a llamar con confirm=true.',
+          },
+        };
+      }
       const amount = num(args.amount);
       if (!amount || amount <= 0) {
         return { response: { success: false, error: 'No pude entender el monto. ¿Podés ser más específico?' } };
@@ -678,7 +750,7 @@ export async function executeBotTool(
       const account = str(args.account);
       if (account) {
         const fuzzy = await accountsService.findByNameFuzzy(userId, account, { currency });
-        if (fuzzy.account && (fuzzy.confidence === 'exact' || fuzzy.confidence === 'high' || fuzzy.confidence === 'medium')) {
+        if (fuzzy.account && (fuzzy.confidence === 'exact' || fuzzy.confidence === 'high')) {
           accountId = fuzzy.account.id;
           accountName = fuzzy.account.name;
         } else {

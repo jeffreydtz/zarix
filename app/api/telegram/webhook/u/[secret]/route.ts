@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { handleCustomTelegramUpdate } from '@/lib/telegram/bot';
-import { timingSafeStringEqual } from '@/lib/secure-compare';
+import {
+  deriveCustomWebhookHeaderSecret,
+  verifyConfiguredSecret,
+} from '@/lib/telegram/webhook-auth';
 
 export const dynamic = 'force-dynamic';
 // Igual que el webhook compartido: damos margen al loop de Gemini para que la
@@ -13,6 +16,16 @@ export async function POST(
   { params }: { params: { secret: string } }
 ) {
   const secret = params.secret;
+  if (!secret || secret.length < 32) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const headerSecret = req.headers.get('x-telegram-bot-api-secret-token');
+  const expectedHeader = deriveCustomWebhookHeaderSecret(secret);
+  if (!verifyConfiguredSecret(headerSecret, expectedHeader)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const supabase = createServiceClientSync();
   const { data: row } = await supabase
     .from('users')
@@ -20,11 +33,9 @@ export async function POST(
     .eq('telegram_webhook_secret', secret)
     .maybeSingle();
 
-  // Defensa en profundidad: el .eq() de la DB no es timing-safe, re-validamos
-  // el secret con comparación en tiempo constante (mismo patrón que el webhook compartido).
   if (
     !row?.telegram_bot_token ||
-    !timingSafeStringEqual(secret, row.telegram_webhook_secret)
+    !verifyConfiguredSecret(secret, row.telegram_webhook_secret)
   ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

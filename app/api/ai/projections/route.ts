@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
-import { applyArchivedAccountsTransactionFilter } from '@/lib/services/transactions';
+import {
+  applyArchivedAccountsTransactionFilter,
+  buildToArsConverter,
+} from '@/lib/services/transactions';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,13 +21,17 @@ export async function GET(req: NextRequest) {
 
     let txQuery = supabase
       .from('transactions')
-      .select('type, amount_in_account_currency, transaction_date')
+      .select('type, amount, currency, amount_in_account_currency, transaction_date')
       .eq('user_id', user.id)
       .in('type', ['expense', 'income'])
       .gte('transaction_date', threeMonthsAgo.toISOString());
     const activeIds = await accountsService.getActiveAccountIds(user.id);
     txQuery = applyArchivedAccountsTransactionFilter(txQuery, activeIds);
-    const { data: transactions } = await txQuery;
+    const { data: transactions, error: txErr } = await txQuery;
+    if (txErr) {
+      console.error('projections query', txErr);
+      return NextResponse.json({ error: 'No se pudieron cargar los movimientos.' }, { status: 500 });
+    }
 
     if (!transactions || transactions.length === 0) {
       return NextResponse.json({
@@ -36,6 +43,7 @@ export async function GET(req: NextRequest) {
     // Group by month
     const monthlyData: Record<string, { income: number; expense: number }> = {};
 
+    const { toArs } = await buildToArsConverter(transactions);
     for (const t of transactions) {
       const date = new Date(t.transaction_date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -43,9 +51,9 @@ export async function GET(req: NextRequest) {
         monthlyData[monthKey] = { income: 0, expense: 0 };
       }
       if (t.type === 'income') {
-        monthlyData[monthKey].income += Number(t.amount_in_account_currency);
+        monthlyData[monthKey].income += toArs(t);
       } else {
-        monthlyData[monthKey].expense += Number(t.amount_in_account_currency);
+        monthlyData[monthKey].expense += toArs(t);
       }
     }
 

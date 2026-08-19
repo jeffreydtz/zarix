@@ -9,7 +9,9 @@ import { transactionsService, excludedCurrenciesNote } from '@/lib/services/tran
 import { accountsService } from '@/lib/services/accounts';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { createServiceClientSync } from '@/lib/supabase/server';
-import type { FinancialContext } from '@/lib/ai/prompts';
+import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
+import { sanitizeForPrompt, type FinancialContext } from '@/lib/ai/prompts';
+import type { User } from '@/types/database';
 import {
   appendBotTurn,
   clearBotSession,
@@ -32,6 +34,8 @@ interface BotContext extends Context {
 // Estado por-update inyectado por el guard de bots propios (ver más abajo).
 interface CustomBotState {
   forcedUserId?: string;
+  /** Dueño del bot propio (secret del webhook). Sin chat vinculado no se fuerza. */
+  ownerUserId?: string;
 }
 
 const GEMINI_SETUP_MSG =
@@ -52,23 +56,23 @@ async function getUserFromTelegramId(telegramChatId: number) {
 
   const { data: user, error } = await supabase
     .from('users')
-    .select('*')
+    .select(USER_CLIENT_SAFE_COLUMNS)
     .eq('telegram_chat_id', telegramChatId)
     .single();
 
   if (error || !user) return null;
-  return user;
+  return user as unknown as User;
 }
 
 async function getUserById(userId: string) {
   const supabase = createServiceClientSync();
   const { data: user, error } = await supabase
     .from('users')
-    .select('*')
+    .select(USER_CLIENT_SAFE_COLUMNS)
     .eq('id', userId)
     .single();
   if (error || !user) return null;
-  return user;
+  return user as unknown as User;
 }
 
 // Resuelve el usuario que actúa en este update.
@@ -91,7 +95,8 @@ async function resolveActingUser(ctx: BotContext) {
 async function redeemLinkCode(
   code: string,
   telegramChatId: number,
-  username?: string
+  username?: string,
+  expectedUserId?: string
 ): Promise<'ok' | 'invalid' | 'taken'> {
   const supabase = createServiceClientSync();
   const normalized = code.toUpperCase().trim();
@@ -103,6 +108,7 @@ async function redeemLinkCode(
     .maybeSingle();
 
   if (!match) return 'invalid';
+  if (expectedUserId && match.id !== expectedUserId) return 'invalid';
 
   const { error } = await supabase
     .from('users')
@@ -122,21 +128,7 @@ async function redeemLinkCode(
   return 'ok';
 }
 
-const LINK_CODE_RE = /^[A-F0-9]{8}$/;
-
-async function linkUserToTelegram(userId: string, telegramChatId: number, username?: string) {
-  const supabase = createServiceClientSync();
-
-  const { error } = await supabase
-    .from('users')
-    .update({
-      telegram_chat_id: telegramChatId,
-      telegram_username: username || null,
-    })
-    .eq('id', userId);
-
-  if (error) throw error;
-}
+const LINK_CODE_RE = /^[A-F0-9]{8}$|^[A-F0-9]{12}$/;
 
 function summaryPrefsKeyboard(weekly: boolean, monthly: boolean) {
   return Markup.inlineKeyboard([
@@ -158,7 +150,7 @@ async function getFinancialContext(userId: string): Promise<FinancialContext> {
   // El asistente consulta gastos/saldos vía tools (get_spending, get_accounts…),
   // así que el contexto base solo necesita usuario + cuentas + categorías.
   const [userResult, accounts, categories] = await Promise.all([
-    supabase.from('users').select('*').eq('id', userId).single(),
+    supabase.from('users').select(USER_CLIENT_SAFE_COLUMNS).eq('id', userId).single(),
     accountsService.list(userId),
     supabase.from('categories').select('*').or(`user_id.eq."${userId.replace(/"/g, '\\"')}",is_system.eq.true`),
   ]);
@@ -167,9 +159,9 @@ async function getFinancialContext(userId: string): Promise<FinancialContext> {
   if (categories.error) throw categories.error;
 
   return {
-    user: userResult.data,
+    user: userResult.data as unknown as User,
     accounts,
-    categories: categories.data,
+    categories: categories.data || [],
   };
 }
 
@@ -481,10 +473,10 @@ Extraé la siguiente información:
 - Moneda (ARS por defecto, USD si dice dólares o $US)
 
 CUENTAS DEL USUARIO:
-${financialContext.accounts.map(a => `- ${a.icon} ${a.name} (${a.currency})`).join('\n')}
+${financialContext.accounts.map((a) => `- ${sanitizeForPrompt(String(a.icon || ''))} ${sanitizeForPrompt(a.name)} (${sanitizeForPrompt(a.currency)})`).join('\n')}
 
 CATEGORÍAS DISPONIBLES:
-${financialContext.categories.filter(c => c.type === 'expense').map(c => `- ${c.icon} ${c.name}`).join('\n')}
+${financialContext.categories.filter((c) => c.type === 'expense').map((c) => `- ${sanitizeForPrompt(String(c.icon || ''))} ${sanitizeForPrompt(c.name)}`).join('\n')}
 
 Respondé en JSON:
 {
@@ -616,7 +608,7 @@ bot.on(message('voice'), async (ctx) => {
       Si no podés transcribir, devolvé "ERROR".`,
       audioBase64,
       'audio/ogg',
-      { maxTokens: 512 }
+      { maxTokens: 512, json: false }
     );
 
     // Clean JSON wrapper if Gemini returns it
@@ -632,7 +624,7 @@ bot.on(message('voice'), async (ctx) => {
       return ctx.reply('No pude entender el audio. ¿Podés escribirme el gasto?');
     }
 
-    await ctx.reply(`🎤 Escuché: _"${transcribed}"_`, { parse_mode: 'Markdown' });
+    await ctx.reply(`🎤 Escuché: _"${escapeMd(transcribed)}"_`, { parse_mode: 'Markdown' });
 
     const financialContext = await getFinancialContext(user.id);
     const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
@@ -642,6 +634,7 @@ bot.on(message('voice'), async (ctx) => {
       const result = await processInternalAiChatMessage({
         userId: user.id,
         message: transcribed,
+        allowLegacyWriteFallback: true,
         history,
         financialContext,
       });
@@ -675,7 +668,13 @@ bot.on(message('text'), async (ctx) => {
       .trim()
       .toUpperCase();
     if (LINK_CODE_RE.test(candidate)) {
-      const result = await redeemLinkCode(candidate, ctx.chat.id, ctx.from?.username);
+      const expectedUserId = (ctx.state as CustomBotState | undefined)?.ownerUserId;
+      const result = await redeemLinkCode(
+        candidate,
+        ctx.chat.id,
+        ctx.from?.username,
+        expectedUserId
+      );
       if (result === 'ok') {
         return ctx.reply(
           '✅ ¡Listo! Tu cuenta quedó vinculada. Escribime "gasté 500 en el súper" para empezar.'
@@ -723,6 +722,7 @@ bot.on(message('text'), async (ctx) => {
         message: userMessage,
         history,
         financialContext,
+        allowLegacyWriteFallback: true,
       });
       rawResponse = result.raw_response || '';
       return ctx.reply(result.assistant_message);
@@ -790,20 +790,19 @@ function getBotForTelegramToken(token: string): Telegraf {
     // (customBotOwners), nunca por el chat.id del payload.
     t.use(async (ctx, next) => {
       const owner = customBotOwners.get(token);
-      if (!owner) return; // sin contexto de dueño: no procesar
+      if (!owner) return;
       const chatId = ctx.chat?.id;
       if (chatId == null) return;
-      // Si el dueño ya vinculó su chat, el bot ignora a cualquier otro chat.
-      if (owner.chatId != null && chatId !== owner.chatId) return;
-      (ctx.state as CustomBotState).forcedUserId = owner.userId;
-      // Primer contacto del dueño con su bot propio: vinculamos su chat (sabemos
-      // que es el dueño porque posee el secret del webhook).
-      if (owner.chatId == null) {
-        await linkUserToTelegram(owner.userId, chatId, ctx.from?.username).catch(
-          (err) => console.error('[telegram] auto-link owner failed', err)
-        );
-        owner.chatId = chatId;
+      (ctx.state as CustomBotState).ownerUserId = owner.userId;
+      // Chat ya vinculado: solo el dueño. El acting user lo fija el secret,
+      // nunca el chat.id del payload.
+      if (owner.chatId != null) {
+        if (chatId !== owner.chatId) return;
+        (ctx.state as CustomBotState).forcedUserId = owner.userId;
+        return next();
       }
+      // Sin chat vinculado: no auto-link. Solo se acepta el código de un solo uso
+      // (misma prueba de posesión que el bot compartido).
       return next();
     });
     registerBotHandlers(t);

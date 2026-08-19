@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { deriveCustomWebhookHeaderSecret } from '@/lib/telegram/webhook-auth';
 import { errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
@@ -83,8 +84,11 @@ export async function POST(req: NextRequest) {
       fresh?.telegram_webhook_secret && baseUrl
         ? `${baseUrl}/api/telegram/webhook/u/${fresh.telegram_webhook_secret}`
         : null;
+    const webhookSecretToken = fresh?.telegram_webhook_secret
+      ? deriveCustomWebhookHeaderSecret(fresh.telegram_webhook_secret)
+      : null;
 
-    return NextResponse.json({ ok: true, webhookUrl });
+    return NextResponse.json({ ok: true, webhookUrl, webhookSecretToken });
   } catch (e) {
     console.error('integrations POST:', e);
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });

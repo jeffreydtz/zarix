@@ -11,7 +11,7 @@ export const maxDuration = 30;
 /**
  * Valida la firma HMAC del webhook de Mercado Pago (`x-signature` + `x-request-id`).
  * Manifest: `id:<data.id>;request-id:<x-request-id>;ts:<ts>;` → HMAC-SHA256 con MP_WEBHOOK_SECRET.
- * Si el secret no está configurado, NO bloquea (preserva prod) pero loguea el riesgo.
+ * Fail-closed: sin MP_WEBHOOK_SECRET se rechaza (prod y resto).
  */
 function verifyMercadoPagoSignature(req: NextRequest): boolean {
   const secret = process.env.MP_WEBHOOK_SECRET;
@@ -124,9 +124,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
   const payload = await req.json().catch(() => null);
-  // Esperar el procesamiento: en Vercel un fire-and-forget puede cortarse al
-  // responder, y contestar 200 igual perdía activaciones pagas. Con 500, MP
-  // reintenta (el mapeo de estados es idempotente).
+  const signedId =
+    req.nextUrl.searchParams.get('data.id') || req.nextUrl.searchParams.get('id');
+  const bodyId =
+    payload && typeof payload === 'object'
+      ? (payload as { data?: { id?: string } }).data?.id
+      : undefined;
+  if (signedId && typeof bodyId === 'string' && bodyId && bodyId.toLowerCase() !== signedId.toLowerCase()) {
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+  }
   try {
     await processWebhook({ payload, searchParams: req.nextUrl.searchParams });
   } catch (error) {

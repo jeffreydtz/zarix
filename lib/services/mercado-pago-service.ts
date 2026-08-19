@@ -186,10 +186,11 @@ class MercadoPagoService {
     }
 
     if (mpStatus === 'pending') {
+      // Checkout acaba de crear el preapproval: no revocar el acceso hasta que
+      // MP confirme authorized/active o un fallo real (paused/cancelled).
       return {
-        status: 'PAST_DUE',
+        status: currentStatus,
         currentPeriodEnd: nextPaymentDate,
-        gracePeriodEnd: null,
       };
     }
 

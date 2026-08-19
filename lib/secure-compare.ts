@@ -6,6 +6,7 @@ export function timingSafeStringEqual(
   b: string | null | undefined
 ): boolean {
   if (a == null || b == null) return false;
+  if (a.length === 0 || b.length === 0) return false;
   const ba = Buffer.from(a, 'utf8');
   const bb = Buffer.from(b, 'utf8');
   if (ba.length !== bb.length) return false;
