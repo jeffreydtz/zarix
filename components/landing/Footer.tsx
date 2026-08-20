@@ -69,7 +69,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://jeffrey-dietz-portfolio.vercel.app/"
+                href="https://www.jeffreydietz.dev/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 rounded-xl border border-border/70 bg-white/[0.02] px-3 py-2.5 text-foreground transition hover:border-muted-foreground/40"
