@@ -15,5 +15,16 @@ export default defineConfig({
     globals: true,
     include: ['**/*.test.ts'],
     exclude: ['node_modules/**', '.next/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'lcov', 'html'],
+      reportsDirectory: './coverage',
+      include: [
+        'lib/services/transactions.ts',
+        'lib/cron/cron-job.ts',
+        'lib/cron/recurring-schedule.ts',
+        'app/api/cron/recurring/route.ts',
+      ],
+    },
   },
 });

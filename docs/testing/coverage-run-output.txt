@@ -1,0 +1,91 @@
+
+> zarix@0.1.0 test:coverage
+> vitest run --coverage
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /workspace
+      Coverage enabled with v8
+
+ ✓ __tests__/transaction-account-impact.test.ts (12 tests) 4ms
+ ✓ __tests__/transaction-exchange.test.ts (14 tests) 4ms
+stderr | __tests__/cron-job-structural.test.ts > CU-006 CronJob.run > returns 500 and alerts admin when execute throws (branch B4)
+[cron:error-job] error: Error: boom
+    at ErrorJob.execute (/workspace/__tests__/cron-job-structural.test.ts:25:11)
+    at ErrorJob.run (/workspace/lib/cron/cron-job.ts:33:34)
+    at /workspace/__tests__/cron-job-structural.test.ts:110:38
+    at file:///workspace/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///workspace/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///workspace/node_modules/@vitest/runner/dist/index.js:39:7)
+    at runTest (file:///workspace/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runSuite (file:///workspace/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///workspace/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | __tests__/cron-job-structural.test.ts > CU-006 IterativeCronJob.execute > rethrows when fetchItems fails (branch B4)
+[cron:fetch-fail] fetch error: Error: db down
+    at FetchFailJob.fetchItems (/workspace/__tests__/cron-job-structural.test.ts:147:15)
+    at FetchFailJob.execute (/workspace/lib/cron/cron-job.ts:65:26)
+    at /workspace/__tests__/cron-job-structural.test.ts:155:95
+    at file:///workspace/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///workspace/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///workspace/node_modules/@vitest/runner/dist/index.js:39:7)
+    at runTest (file:///workspace/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runSuite (file:///workspace/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///workspace/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+stderr | __tests__/cron-job-structural.test.ts > CU-006 IterativeCronJob.execute > counts per-item failures without aborting the batch (branch B3)
+[cron:iterative-test] item error: Error: fail bad
+    at TestIterativeJob.processItem (/workspace/__tests__/cron-job-structural.test.ts:54:26)
+    at TestIterativeJob.execute (/workspace/lib/cron/cron-job.ts:83:33)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /workspace/__tests__/cron-job-structural.test.ts:167:20
+    at file:///workspace/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///workspace/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///workspace/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///workspace/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///workspace/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///workspace/node_modules/@vitest/runner/dist/index.js:1271:3)
+
+ ✓ __tests__/cron-job-structural.test.ts (9 tests) 19ms
+ ✓ __tests__/billing-plans.test.ts (10 tests) 8ms
+ ✓ __tests__/shared-expenses.test.ts (10 tests) 5ms
+ ✓ __tests__/transactions-structural.test.ts (9 tests) 5ms
+ ✓ __tests__/recurring-schedule.test.ts (12 tests) 17ms
+ ✓ __tests__/notification-schedule.test.ts (11 tests) 16ms
+ ✓ __tests__/transaction-date.test.ts (14 tests) 4ms
+ ✓ __tests__/transaction-currencies.test.ts (5 tests) 3ms
+ ✓ __tests__/sanitize-amount-input.test.ts (17 tests) 4ms
+ ✓ __tests__/webhook-auth.test.ts (4 tests) 3ms
+ ✓ __tests__/secure-compare.test.ts (6 tests) 2ms
+ ✓ __tests__/cron-auth.test.ts (6 tests) 2ms
+ ✓ __tests__/evaluate-simple-amount-expression.test.ts (18 tests) 4ms
+ ✓ __tests__/rate-limit.test.ts (1 test) 2ms
+ ✓ __tests__/sanitize-for-prompt.test.ts (4 tests) 3ms
+
+ Test Files  17 passed (17)
+      Tests  162 passed (162)
+   Start at  23:34:59
+   Duration  1.60s (transform 359ms, setup 0ms, collect 905ms, tests 105ms, environment 3ms, prepare 986ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   23.27 |    96.82 |   46.42 |   23.27 |                   
+ ...cron/recurring |       0 |        0 |       0 |       0 |                   
+  route.ts         |       0 |        0 |       0 |       0 | 1-96              
+ lib/cron          |   96.36 |    97.87 |      80 |   96.36 |                   
+  cron-job.ts      |   93.65 |    95.83 |   66.66 |   93.65 | 107-108,118-119   
+  ...g-schedule.ts |     100 |      100 |     100 |     100 |                   
+ lib/services      |   10.55 |      100 |   29.41 |   10.55 |                   
+  transactions.ts  |   10.55 |      100 |   29.41 |   10.55 | ...26-639,646-730 
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 23.27% ( 159/683 )
+Branches     : 96.82% ( 61/63 )
+Functions    : 46.42% ( 13/28 )
+Lines        : 23.27% ( 159/683 )
+================================================================================
