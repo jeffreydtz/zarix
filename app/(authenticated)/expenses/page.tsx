@@ -38,6 +38,7 @@ export default async function ExpensesPage({
           search: searchParams.search,
           minAmount: searchParams.minAmount ? parseFloat(searchParams.minAmount) : undefined,
           maxAmount: searchParams.maxAmount ? parseFloat(searchParams.maxAmount) : undefined,
+          limit: 2000,
         })
         .catch(() => []),
     ]);

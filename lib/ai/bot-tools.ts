@@ -559,7 +559,9 @@ export async function executeBotTool(
 
     case 'get_spending': {
       const { start, end, label } = resolvePeriod(str(args.period));
-      const breakdown = await analyticsService.getCategoryBreakdown(userId, start, end, 'expense');
+      const startYmd = start.toISOString().slice(0, 10);
+      const endYmd = end.toISOString().slice(0, 10);
+      const breakdown = await analyticsService.getCategoryBreakdown(userId, startYmd, endYmd, 'expense');
       const total = breakdown.reduce((s, c) => s + c.amount, 0);
       const category = str(args.category);
       if (category) {

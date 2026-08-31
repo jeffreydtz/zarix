@@ -10,6 +10,8 @@ import AccountBalanceEquivalents from '@/components/accounts/AccountBalanceEquiv
 import EditAccountModal from '@/components/accounts/EditAccountModal';
 import { useRouter } from 'next/navigation';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
+import { useAddTransaction } from '@/components/add-transaction/AddTransactionProvider';
+import { Plus } from 'lucide-react';
 
 interface AccountsListProps {
   accounts: AccountWithBalance[];
@@ -19,6 +21,7 @@ interface AccountsListProps {
 export default function AccountsList({ accounts, aggregates }: AccountsListProps) {
   const router = useRouter();
   const confirm = useConfirm();
+  const { open: openAdd } = useAddTransaction();
   const [loading, setLoading] = useState(false);
   const [editAccount, setEditAccount] = useState<AccountWithBalance | null>(null);
 
@@ -192,6 +195,16 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                   </div>
 
                   <div className="order-2 sm:order-3 flex gap-1 shrink-0 self-start pt-1">
+                    <motion.button
+                      type="button"
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => openAdd({ accountId: account.id })}
+                      className="p-2 rounded-xl hover:bg-primary/10 text-primary"
+                      title="Nuevo movimiento en esta cuenta"
+                      aria-label={`Nuevo movimiento en ${getAccountDisplayName(account)}`}
+                    >
+                      <Plus className="w-5 h-5" aria-hidden />
+                    </motion.button>
                     <motion.button
                       type="button"
                       whileTap={{ scale: 0.9 }}

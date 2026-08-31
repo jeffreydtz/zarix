@@ -4,9 +4,122 @@
  * zona horaria no se muestre el día anterior (bug típico con `...T00:00:00.000Z`).
  */
 
+export const APP_CIVIL_TIMEZONE = 'America/Argentina/Buenos_Aires';
+
+const CIVIL_YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+function pad2(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+export function isCivilYmd(value: string | undefined | null): value is string {
+  if (!value) return false;
+  const m = value.trim().match(CIVIL_YMD);
+  if (!m) return false;
+  const mo = Number(m[2]);
+  const d = Number(m[3]);
+  return mo >= 1 && mo <= 12 && d >= 1 && d <= 31;
+}
+
+/** Día civil del `Date` en la zona local del runtime (navegador o server). */
+export function dateToLocalYmd(date: Date): string {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
 export function todayLocalYmd(): string {
-  const n = new Date();
-  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+  return dateToLocalYmd(new Date());
+}
+
+/** Día civil de hoy en la zona de la app (Argentina), independiente del TZ del server. */
+export function civilTodayYmd(timeZone: string = APP_CIVIL_TIMEZONE, now: Date = new Date()): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
+}
+
+export function addDaysYmd(ymd: string, days: number): string {
+  const m = ymd.trim().match(CIVIL_YMD);
+  if (!m) return ymd;
+  const dt = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]) + days));
+  return `${dt.getUTCFullYear()}-${pad2(dt.getUTCMonth() + 1)}-${pad2(dt.getUTCDate())}`;
+}
+
+export function addMonthsYmd(ymd: string, months: number): string {
+  const m = ymd.trim().match(CIVIL_YMD);
+  if (!m) return ymd;
+  const day = Number(m[3]);
+  const target = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1 + months, 1));
+  const last = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  return `${target.getUTCFullYear()}-${pad2(target.getUTCMonth() + 1)}-${pad2(Math.min(day, last))}`;
+}
+
+export function startOfMonthYmd(ymd: string): string {
+  return isCivilYmd(ymd) ? `${ymd.slice(0, 7)}-01` : ymd;
+}
+
+export function endOfMonthYmd(ymd: string): string {
+  const m = ymd.trim().match(CIVIL_YMD);
+  if (!m) return ymd;
+  const last = new Date(Date.UTC(Number(m[1]), Number(m[2]), 0)).getUTCDate();
+  return `${m[1]}-${m[2]}-${pad2(last)}`;
+}
+
+export function startOfYearYmd(ymd: string): string {
+  return isCivilYmd(ymd) ? `${ymd.slice(0, 4)}-01-01` : ymd;
+}
+
+export function ymdToQueryStartIso(ymd: string): string {
+  return `${ymd}T00:00:00.000Z`;
+}
+
+export function ymdToQueryEndIso(ymd: string): string {
+  return `${ymd}T23:59:59.999Z`;
+}
+
+/** Día civil guardado (movimientos a mediodía UTC → prefijo YYYY-MM-DD). */
+export function transactionCivilYmd(iso: string): string {
+  return String(iso).slice(0, 10);
+}
+
+export function daysInclusive(startYmd: string, endYmd: string): number {
+  const start = startYmd.trim().match(CIVIL_YMD);
+  const end = endYmd.trim().match(CIVIL_YMD);
+  if (!start || !end) return 0;
+  const a = Date.UTC(Number(start[1]), Number(start[2]) - 1, Number(start[3]));
+  const b = Date.UTC(Number(end[1]), Number(end[2]) - 1, Number(end[3]));
+  return Math.floor((b - a) / 86400000) + 1;
+}
+
+export function eachYmdInclusive(startYmd: string, endYmd: string): string[] {
+  if (!isCivilYmd(startYmd) || !isCivilYmd(endYmd) || startYmd > endYmd) return [];
+  const out: string[] = [];
+  let cur = startYmd;
+  while (cur <= endYmd) {
+    out.push(cur);
+    cur = addDaysYmd(cur, 1);
+  }
+  return out;
+}
+
+export function monthKeysInclusive(startYmd: string, endYmd: string): string[] {
+  if (!isCivilYmd(startYmd) || !isCivilYmd(endYmd) || startYmd > endYmd) return [];
+  const keys: string[] = [];
+  let y = Number(startYmd.slice(0, 4));
+  let m = Number(startYmd.slice(5, 7));
+  const ey = Number(endYmd.slice(0, 4));
+  const em = Number(endYmd.slice(5, 7));
+  while (y < ey || (y === ey && m <= em)) {
+    keys.push(`${y}-${pad2(m)}`);
+    m += 1;
+    if (m > 12) {
+      m = 1;
+      y += 1;
+    }
+  }
+  return keys;
 }
 
 /** `YYYY-MM-DD` (input date) → ISO al mediodía UTC de ese día civil. */
@@ -28,7 +141,7 @@ export function calendarDateToUtcNoonIso(ymd: string): string {
 export function isoToLocalDateInputValue(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return todayLocalYmd();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return dateToLocalYmd(d);
 }
 
 /**

@@ -10,6 +10,7 @@ import { brandAsset } from '@/lib/brand';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { useAddTransaction } from '@/components/add-transaction/AddTransactionProvider';
+import { accountIdFromPathname } from '@/lib/account-route';
 import type { LucideIcon } from 'lucide-react';
 import {
   Home,
@@ -52,6 +53,8 @@ const MORE_LINKS: Array<{ href: string; label: string; icon: LucideIcon }> = [
 export default function Navigation({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { open: openAdd } = useAddTransaction();
+  const accountIdForNew = accountIdFromPathname(pathname);
+  const openNewMovement = () => openAdd(accountIdForNew ? { accountId: accountIdForNew } : undefined);
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
@@ -220,7 +223,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
               <button
                 type="button"
                 data-tour="add"
-                onClick={() => openAdd()}
+                onClick={openNewMovement}
                 className="ml-1 inline-flex items-center gap-1.5 rounded-control bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground min-h-[44px] hover:brightness-95"
               >
                 <Plus className="w-4 h-4" aria-hidden />
@@ -267,7 +270,7 @@ export default function Navigation({ children }: { children: React.ReactNode }) 
           <button
             type="button"
             data-tour="add"
-            onClick={() => openAdd()}
+            onClick={openNewMovement}
             className="-mt-3 flex flex-1 flex-col items-center justify-center min-h-[48px]"
             aria-label="Nuevo movimiento"
           >

@@ -30,8 +30,8 @@ export default function MonthlyBarChart({ data }: Props) {
   const currentMonth = data[data.length - 1];
   const previousMonth = data.length > 1 ? data[data.length - 2] : null;
 
-  const expensesDiff = previousMonth 
-    ? ((currentMonth.expenses - previousMonth.expenses) / previousMonth.expenses) * 100 
+  const expensesDiff = previousMonth && previousMonth.expenses !== 0
+    ? ((currentMonth.expenses - previousMonth.expenses) / Math.abs(previousMonth.expenses)) * 100
     : 0;
   const balanceTrend = currentMonth.income - currentMonth.expenses;
 
@@ -44,7 +44,7 @@ export default function MonthlyBarChart({ data }: Props) {
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Evolución Mensual</h3>
-        {previousMonth && (
+        {previousMonth && previousMonth.expenses !== 0 && (
           <div className={`text-sm px-2 py-1 rounded-full zx-num ${
             expensesDiff <= 0
               ? 'bg-success/10 text-success'
@@ -107,13 +107,13 @@ export default function MonthlyBarChart({ data }: Props) {
 
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
         <div className="zx-kpi">
-          <div className="text-muted-foreground">Promedio gastos (6 meses)</div>
+          <div className="text-muted-foreground">Promedio gastos</div>
           <div className="text-lg font-semibold text-destructive zx-num">
             ${avgExpenses.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
         </div>
         <div className="zx-kpi">
-          <div className="text-muted-foreground">Promedio ingresos (6 meses)</div>
+          <div className="text-muted-foreground">Promedio ingresos</div>
           <div className="text-lg font-semibold text-success zx-num">
             ${avgIncome.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
           </div>
