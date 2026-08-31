@@ -9,15 +9,17 @@ import ChartTooltip from '@/components/ui/ChartTooltip';
 
 interface Props {
   data: DailyData[];
+  title?: string;
 }
 
-export default function CashFlowChart({ data }: Props) {
+export default function CashFlowChart({ data, title = 'Flujo de caja' }: Props) {
   const shouldReduceMotion = useReducedMotion() ?? false;
+  const hasActivity = data.some((d) => d.expenses > 0 || d.income > 0);
 
-  if (data.length === 0) {
+  if (data.length === 0 || !hasActivity) {
     return (
       <div className="card p-6">
-        <h3 className="text-lg font-semibold mb-4">Flujo de Caja (30 días)</h3>
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
         <div className="h-64 flex items-center justify-center text-muted-foreground">
           No hay datos para mostrar
         </div>
@@ -45,7 +47,7 @@ export default function CashFlowChart({ data }: Props) {
       className="card card-spotlight p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h3 className="text-lg font-semibold">Flujo de Caja (últimos 30 días)</h3>
+        <h3 className="text-lg font-semibold">{title}</h3>
         <span className={`story-chip ${net >= 0 ? 'text-success' : 'text-destructive'}`}>
           Neto del período: {net >= 0 ? '+' : ''}${net.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
         </span>
@@ -68,7 +70,7 @@ export default function CashFlowChart({ data }: Props) {
             <XAxis
               dataKey="dayLabel"
               {...axisProps}
-              interval={4}
+              interval={Math.max(0, Math.floor(data.length / 8))}
               dy={4}
             />
             <YAxis

@@ -55,7 +55,7 @@ type Category = {
   type: string;
 };
 
-type OpenOpts = { type?: 'expense' | 'income' | 'transfer' };
+type OpenOpts = { type?: 'expense' | 'income' | 'transfer'; accountId?: string };
 type AddCtx = { open: (opts?: OpenOpts) => void; close: () => void };
 
 const AddTransactionContext = createContext<AddCtx | null>(null);
@@ -87,6 +87,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   const [amountCurrency, setAmountCurrency] = useState<TransactionCurrency>('ARS');
   const [currencyTouched, setCurrencyTouched] = useState(false);
   const [accountId, setAccountId] = useState('');
+  const [preferredAccountId, setPreferredAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [quickCreate, setQuickCreate] = useState<'account' | 'category' | null>(null);
   const [description, setDescription] = useState('');
@@ -101,6 +102,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
     setAmountCurrency('ARS');
     setCurrencyTouched(false);
     setAccountId('');
+    setPreferredAccountId('');
     setCategoryId('');
     setQuickCreate(null);
     setDescription('');
@@ -118,6 +120,12 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   const open = useCallback((opts?: OpenOpts) => {
     setError('');
     if (opts?.type) setType(opts.type);
+    if (opts?.accountId) {
+      setAccountId(opts.accountId);
+      setPreferredAccountId(opts.accountId);
+    } else {
+      setPreferredAccountId('');
+    }
     setIsOpen(true);
   }, []);
 
@@ -154,19 +162,47 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (!isOpen || accountId || accounts.length === 0) return;
-    const preferred =
-      accounts.find((a) => coerceTransactionCurrency(a.currency) === amountCurrency) || accounts[0];
-    setAccountId(preferred.id);
-    if (!currencyTouched) {
-      setAmountCurrency(coerceTransactionCurrency(preferred.currency));
+    if (!isOpen || accounts.length === 0) return;
+
+    if (!accountId) {
+      const fromPreferred = preferredAccountId
+        ? accounts.find((a) => a.id === preferredAccountId)
+        : undefined;
+      const preferred =
+        fromPreferred ||
+        accounts.find((a) => coerceTransactionCurrency(a.currency) === amountCurrency) ||
+        accounts[0];
+      setAccountId(preferred.id);
+      if (!currencyTouched) {
+        setAmountCurrency(coerceTransactionCurrency(preferred.currency));
+      }
+      return;
     }
-  }, [isOpen, accounts, accountId, amountCurrency, currencyTouched]);
+
+    if (preferredAccountId && accountId === preferredAccountId && !currencyTouched) {
+      const locked = accounts.find((a) => a.id === preferredAccountId);
+      if (locked) {
+        const next = coerceTransactionCurrency(locked.currency);
+        if (next !== amountCurrency) setAmountCurrency(next);
+      }
+    }
+  }, [isOpen, accounts, accountId, amountCurrency, currencyTouched, preferredAccountId]);
 
   const handleCreate = async () => {
     setError('');
-    if (!amount || !accountId) return;
-    if (type === 'transfer' && !destinationAccountId) return;
+    if (!accountId) {
+      setError('Elegí una cuenta');
+      return;
+    }
+    if (type === 'transfer' && !destinationAccountId) {
+      setError('Elegí la cuenta destino');
+      return;
+    }
+    const parsedAmount = parseFloat(amount.replace(',', '.'));
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+      setError('Ingresá un monto válido');
+      return;
+    }
     setLoading(true);
     const account = accounts.find((a) => a.id === accountId);
     if (!account) {
@@ -177,7 +213,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
       type,
       accountId,
       destinationAccountId: type === 'transfer' ? destinationAccountId : undefined,
-      amount: parseFloat(amount.replace(',', '.')),
+      amount: parsedAmount,
       currency: amountCurrency,
       categoryId: type === 'transfer' ? null : categoryId || null,
       description,
@@ -194,15 +230,20 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error('Error al crear el movimiento');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          typeof data.error === 'string' ? data.error : 'Error al crear el movimiento'
+        );
+      }
       close();
       router.refresh();
-    } catch {
+    } catch (err) {
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
         await enqueue(payload);
         close();
       } else {
-        setError('No se pudo guardar. Probá de nuevo.');
+        setError(err instanceof Error ? err.message : 'No se pudo guardar. Probá de nuevo.');
       }
     } finally {
       setLoading(false);
@@ -219,6 +260,9 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   }, [categories, type, categoryUsage]);
 
   const selectedCategory = filteredCategories.find((c) => c.id === categoryId) || null;
+  const preferredAccount = preferredAccountId
+    ? accounts.find((a) => a.id === preferredAccountId)
+    : undefined;
 
   useEffect(() => {
     if (!categoryId || type === 'transfer') return;
@@ -247,6 +291,11 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-xl font-bold text-foreground">Nuevo movimiento</h2>
+                {preferredAccount ? (
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Cuenta: {formatAccountSelectLabel(preferredAccount)}
+                  </p>
+                ) : null}
                 {!isOnline && (
                   <p className="text-xs text-warning mt-0.5">Sin conexión — se guarda en el teléfono</p>
                 )}

@@ -166,7 +166,7 @@ export default async function AccountDetailPage({ params }: { params: { id: stri
             </div>
             <div className="flex items-center gap-2">
               <AccountDetailEditButton account={editableAccount} />
-              <CreateTransactionButton />
+              <CreateTransactionButton defaultAccountId={account.id} />
             </div>
           </div>
 

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
+import { dateToLocalYmd } from '@/lib/transaction-date';
 
 interface TransactionsFiltersProps {
   accounts: Array<{ id: string; name: string; currency: string; balance: number }>;
@@ -13,7 +14,7 @@ interface TransactionsFiltersProps {
 
 function getPresetDates(preset: string): { startDate: string; endDate: string } | null {
   const now = new Date();
-  const fmt = (d: Date) => d.toISOString().split('T')[0];
+  const fmt = (d: Date) => dateToLocalYmd(d);
 
   switch (preset) {
     case 'today': {
