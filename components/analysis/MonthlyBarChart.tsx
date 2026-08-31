@@ -44,7 +44,7 @@ export default function MonthlyBarChart({ data }: Props) {
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Evolución Mensual</h3>
-        {previousMonth && (
+        {previousMonth && previousMonth.expenses !== 0 && (
           <div className={`text-sm px-2 py-1 rounded-full zx-num ${
             expensesDiff <= 0
               ? 'bg-success/10 text-success'
