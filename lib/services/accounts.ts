@@ -1,10 +1,42 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { ApiError } from '@/lib/api-handler';
 import { cotizacionesService } from './cotizaciones';
 import type { Account } from '@/types/database';
 
 /** Moneda de cuenta normalizada (trim + mayúsculas) para claves de tasas. */
 function normalizeAccountCurrency(currency: string | null | undefined): string {
   return (currency?.trim() || 'ARS').toUpperCase();
+}
+
+function normalizeOptionalCurrency(currency: unknown): string | null {
+  if (currency == null || currency === '') return null;
+  const value = String(currency).trim().toUpperCase();
+  return value || null;
+}
+
+/**
+ * El modal de edición siempre manda currency / is_multicurrency / secondary_currency
+ * aunque no hayan cambiado. Solo hay que bloquear un cambio real de esos campos
+ * cuando la cuenta ya tiene movimientos.
+ */
+export function patchChangesLockedCurrencySettings(
+  current: Pick<Account, 'currency' | 'is_multicurrency' | 'secondary_currency'>,
+  patch: Record<string, unknown>
+): boolean {
+  if (patch.currency !== undefined) {
+    const next = normalizeAccountCurrency(String(patch.currency));
+    const prev = normalizeAccountCurrency(current.currency);
+    if (next !== prev) return true;
+  }
+  if (patch.is_multicurrency !== undefined) {
+    if (Boolean(patch.is_multicurrency) !== Boolean(current.is_multicurrency)) return true;
+  }
+  if (patch.secondary_currency !== undefined) {
+    const next = normalizeOptionalCurrency(patch.secondary_currency);
+    const prev = normalizeOptionalCurrency(current.secondary_currency);
+    if (next !== prev) return true;
+  }
+  return false;
 }
 
 /**
@@ -662,10 +694,15 @@ class AccountsService {
     const supabase = createServiceClientSync();
     const row = this.sanitizeAccountPatch(updates);
     if (Object.keys(row).length === 0) {
-      throw new Error('No hay cambios válidos');
+      throw new ApiError('No hay cambios válidos', 400);
     }
 
-    if (row.currency !== undefined || row.is_multicurrency !== undefined) {
+    const current = await this.getById(id, userId, { includeInactive: true });
+    if (!current) {
+      throw new ApiError('Cuenta no encontrada', 404);
+    }
+
+    if (patchChangesLockedCurrencySettings(current, row)) {
       const { count, error: countErr } = await supabase
         .from('transactions')
         .select('id', { count: 'exact', head: true })
@@ -673,8 +710,9 @@ class AccountsService {
         .or(`account_id.eq.${id},destination_account_id.eq.${id}`);
       if (countErr) throw countErr;
       if ((count ?? 0) > 0) {
-        throw new Error(
-          'No se puede cambiar la moneda ni el modo bimoneda de una cuenta con movimientos.'
+        throw new ApiError(
+          'No se puede cambiar la moneda ni el modo bimoneda de una cuenta con movimientos.',
+          400
         );
       }
     }
