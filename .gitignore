@@ -26,6 +26,7 @@ yarn-error.log*
 .env*.local
 .env
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -36,7 +37,6 @@ next-env.d.ts
 
 # supabase
 supabase/.temp
-.env.example
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 graft/

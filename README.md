@@ -16,6 +16,7 @@ Zarix es una app de finanzas personales para uso individual, enfocada en Argenti
 - [CI](#ci)
 - [Buenas practicas de seguridad](#buenas-practicas-de-seguridad)
 - [FAQ](#faq)
+- [Auditoria y handoff](#auditoria-y-handoff)
 
 ## Que es Zarix
 
@@ -76,7 +77,7 @@ La web de Zarix te permite:
 - **Backend/Data**: Supabase (PostgreSQL + Auth + APIs).
 - **Automatizaciones**: Telegram Bot (Telegraf), scripts Node/TS.
 - **Integraciones**: cotizaciones y mercado (Yahoo Finance y fuentes externas).
-- **Validacion y estado**: Zod + Zustand.
+- **Validacion**: Zod. Estado de UI local (`useState`); Server Components para datos. No hay store global.
 
 ## Arquitectura y flujo
 
@@ -149,9 +150,14 @@ npm run telegram:webhook # configura webhook de Telegram
 
 ## Variables de entorno
 
-Todas las variables estan documentadas en [`.env.example`](./.env.example) (con
-placeholders, sin valores reales). Copia ese archivo a `.env.local` y completa
-los valores. Grupos:
+Todas las variables estan documentadas en [`.env.example`](./.env.example) (placeholders,
+sin valores reales). Copia ese archivo a `.env.local` y completa los valores.
+
+**Produccion:** `NEXT_PUBLIC_APP_URL` tiene que ser la origin publica (hoy
+`https://zarix-phi.vercel.app`). Sin ella, `/auth/callback` falla y los metadatos
+OG apuntan a localhost. Ver `docs/AUDIT.md`.
+
+Grupos:
 
 - **Supabase** (requeridas): `NEXT_PUBLIC_SUPABASE_URL`,
   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (ambas expuestas al cliente, el acceso lo
@@ -206,7 +212,7 @@ Para compartir este repositorio o mostrarlo publicamente sin comprometer tus dat
 - Definir `CRON_SECRET` en produccion: sin valor, los endpoints `/api/cron/*` quedan cerrados (no usar `Bearer undefined`).
 - El login de desarrollo (`/api/auth/dev-login`) en produccion responde 404 salvo que configures explicitamente `ALLOW_DEV_LOGIN=true` (solo si lo necesitas y con `DEV_LOGIN_SECRET` fuerte).
 
-> Recomendado: crear un `.env.example` con placeholders y sin valores reales.
+> Los placeholders viven en `.env.example` (trackeado). `.env.local` no se sube.
 
 ## Funcionalidad base
 
@@ -233,3 +239,8 @@ Si, podes exportar transacciones y tambien backup completo.
 
 ### Tiene soporte para inversiones?
 Si, incluye portafolio y seguimiento de rendimiento.
+
+## Auditoria y handoff
+
+- [`docs/AUDIT.md`](./docs/AUDIT.md) — arquitectura, que anda en prod vs que esta roto, P0/P1/P2, slice recomendado.
+- [`docs/HANDOFF.md`](./docs/HANDOFF.md) — como seguir (env, mapa de codigo, Definition of Done del slice Trust).
