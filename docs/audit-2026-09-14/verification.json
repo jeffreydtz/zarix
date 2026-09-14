@@ -11,8 +11,8 @@
     "npmAuditFindings": 0,
     "lockfileDryRun": "pass (npm11 npm ci --ignore-scripts --dry-run)",
     "build": "pass (Next.js 15.5.25 production build; placeholder local Supabase configuration)",
-    "tests": 209,
-    "testFiles": 29,
+    "tests": 223,
+    "testFiles": 30,
     "lint": "pass",
     "typecheck": "pass"
   },
@@ -34,11 +34,22 @@
   },
   "independentReview": {
     "securityJson": "3 validated schema and independently verified original traces",
-    "code": "APPROVE after fixing reported regressions; offline idempotency independently approved"
+    "code": "APPROVE after fixing reported regressions; offline idempotency independently approved",
+    "exports": "APPROVE: pagination, user isolation, archives, limits, date boundaries and updated documentation"
   },
   "limits": [
     "No authenticated production end-to-end verification",
     "No production migrations, deploy, messages or payments",
     "DOCX structure/images checked, final pagination not checked"
-  ]
+  ],
+  "exportRegression": {
+    "tests": 14,
+    "serverPageCaps": [
+      2,
+      700
+    ],
+    "largeDatasetRows": 10005,
+    "focusedTimezone": "America/Argentina/Buenos_Aires",
+    "productionDatabase": false
+  }
 }

@@ -20,3 +20,7 @@ Esta adenda actualiza la implementación que respalda el documento `Zarix_TIF_Je
 Las pruebas locales de contratos y errores no son transacciones realizadas contra Supabase, Telegram ni Mercado Pago. Un build con variables de ejemplo tampoco verifica credenciales, permisos desplegados o facturación. La auditoría no acredita por sí sola los objetivos comerciales de latencia, uptime o precisión histórica. La matriz de resultados actual debe consultarse en el informe fechado; no se trasladan automáticamente números de corridas anteriores al documento académico.
 
 Se conserva la separación entre RLS para clientes de sesión y filtros de propietario obligatorios en consultas service-role. No se aplican migraciones ni cambios de políticas a producción como parte de esta adenda. Las figuras editables y sus PNG fueron preparados para renderizado local y actualización de las imágenes incrustadas en el DOCX, conservando su portada y tablas.
+
+## Cierre adicional de exportaciones
+
+La exportación de movimientos y los cinco conjuntos del respaldo versión 1.0 se leen mediante páginas con cursor de ID, manteniendo el filtro del usuario en cada consulta. Una página corta no se interpreta como fin de datos, porque PostgREST puede limitarla. El historial descargado incluye cuentas archivadas. Los errores de lectura impiden entregar un archivo parcial como válido. Esta lectura entre varias consultas no equivale a un snapshot transaccional ni acredita recuperación completa de la aplicación.

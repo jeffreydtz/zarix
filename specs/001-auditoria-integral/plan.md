@@ -5,3 +5,5 @@
 4. Agregar pruebas sobre fallos reales, verificar navegador desktop/móvil y producción compilada.
 5. Sincronizar informe y documentación académica con cambios reales y límites de verificación.
 La instrucción del usuario autoriza mejoras locales; no se requiere otra aprobación para concretar arreglos revisables (instrucción de sesión prevalece sobre gates genéricos del workspace).
+
+6. Cerrar exportaciones: helper keyset compartido, scope usuario en cada página, presupuesto100.000 filas/32MiB de datos serializados/45s por solicitud; migrar cinco datasets y movimientos; probar páginas cortas, >10.000, error intermedio y CSV. Revisión independiente antes de commit.

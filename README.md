@@ -229,7 +229,7 @@ Si, esta optimizada para mobile y se puede usar como PWA.
 Si, podes importar desde CSV o JSON.
 
 ### Puedo exportar mi informacion?
-Si, podes exportar transacciones y tambien backup completo.
+Sí, podés exportar movimientos en CSV/JSON, incluidos los de cuentas archivadas. El backup financiero1.0 contiene cuentas, movimientos, categorías propias, presupuestos e inversiones; no incluye recurrentes ni gastos compartidos. Las descargas paginan hasta agotar resultados; si superan100.000 registros,32MiB de datos serializados o45s, fallan explícitamente sin entregar un archivo parcial. No son una instantánea transaccional entre consultas ni una restauración certificada.
 
 ### Tiene soporte para inversiones?
 Si, incluye portafolio y seguimiento de rendimiento.

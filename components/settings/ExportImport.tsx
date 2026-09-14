@@ -252,11 +252,11 @@ export default function ExportImport() {
               disabled={exporting}
               className="btn bg-accent-invest hover:bg-accent-invest/90 text-primary-foreground px-4 py-2 text-sm"
             >
-              {exporting ? '...' : '💾 Backup completo'}
+              {exporting ? '...' : '💾 Backup financiero'}
             </button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            CSV es compatible con Excel. JSON es mejor para programadores. Backup incluye todo.
+            CSV es compatible con Excel. CSV y JSON incluyen movimientos de cuentas archivadas. El backup incluye cuentas, movimientos, categorías propias, presupuestos e inversiones; no incluye recurrentes ni gastos compartidos.
           </p>
         </div>
 

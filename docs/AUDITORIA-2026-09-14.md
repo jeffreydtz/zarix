@@ -20,7 +20,7 @@ Zarix es una app de finanzas personales argentina y caso de TIF UAI. Se auditó 
 | Cron precios | USDC/DAI se trataban como USDT; llamadas en serie | Precios por instrumento, lotes/concurrencia/deadlines y faltantes reportados |
 | Offline | Snapshots y cola compartidos entre cuentas;4xx borraban borradores | Namespace por dueño, respuestas en vuelo descartadas al cambiar sesión, borradores preservados y cola no bloqueada por un400 |
 | Reintento offline | Una respuesta perdida podía duplicar un gasto | UUID por solicitud y usuario, PK existente y recuperación del registro original ante concurrencia; sin migración |
-| Exportación | Comillas de nombres rompían CSV; backup ocultaba errores | Encoder uniforme RFC4180 + protección de fórmulas; backup no presenta datasets fallidos como vacíos |
+| Exportación | Comillas de nombres rompían CSV; backup ocultaba errores | Encoder uniforme RFC4180 + protección de fórmulas; backup no presenta datasets fallidos como vacíos; cinco datasets y movimientos paginados por id hasta vacío, incluso con max_rows menor al solicitado |
 | Excel | Límite solo del ZIP comprimido | Preflight de bytes reales:256 entradas,8MiB por entrada,32MiB total; cuotas posteriores de filas/columnas y respuestas400/413 |
 | Telegram | Bot propio sin chat podía resolver otra cuenta; código se consumía en dos pasos | Identidad ligada al dueño; canje atómico con código vigente y dueño esperado |
 | Mercado Pago/IA | Identificador procesado podía diferir del firmado; cuota chat por usuario+IP | Se procesa solo ID firmado; cuota por usuario y validación runtime del mensaje |
@@ -48,7 +48,7 @@ Ver [informe de seguridad](audit-2026-09-14/REPORT.md), [flujos verificados](aud
 
 ## Verificación
 
-Baseline:14 archivos/132 tests, lint y tipado correctos. Estado final:29 archivos/209 tests aprobados (77 regresiones nuevas), lint y tipado aprobados; npm audit sin avisos conocidos y lockfile validado con npm ci --ignore-scripts --dry-run. Compilación de producción aprobada con Next.js 15.5.25. Se verifica sin secretos y con Supabase local de referencia ficticia, evitando escrituras reales. Navegador Chromium: demo pública crea un gasto sintético; componentes reales del dashboard se montan temporalmente con fixtures para comprobar desktop/móvil, privacidad, IPC y monedas. Esa página temporal no forma parte del producto final. Las pruebas SSR cubren máscara antes de hidratación.
+Baseline:14 archivos/132 tests, lint y tipado correctos. Estado final:30 archivos/223 tests aprobados (91 regresiones nuevas), lint y tipado aprobados; npm audit sin avisos conocidos y lockfile validado con npm ci --ignore-scripts --dry-run. Compilación de producción aprobada con Next.js 15.5.25. Se verifica sin secretos y con Supabase local de referencia ficticia, evitando escrituras reales. Navegador Chromium: demo pública crea un gasto sintético; componentes reales del dashboard se montan temporalmente con fixtures para comprobar desktop/móvil, privacidad, IPC y monedas. Esa página temporal no forma parte del producto final. Las pruebas SSR cubren máscara antes de hidratación.
 
 ## Límites y trabajo de despliegue
 
@@ -57,7 +57,7 @@ Baseline:14 archivos/132 tests, lint y tipado correctos. Estado final:29 archivo
 - Las funciones con service role siguen requiriendo scope de usuario manual. No se realizó una migración global de autorización ni cambios de esquema remoto.
 - La caché por proceso y el rate limit no son distribuidos. El cron puede reportar tareas incompletas al alcanzar deadline: monitorear esas alertas y evaluar lotes durables si crece la cartera.
 - Persisten precios históricos cuando se pide skipQuoteRefresh y aproximación existente de stablecoins a USD para ciertas valoraciones; referencias no son precios de ejecución garantizados.
-- Backups de datasets secundarios todavía dependen de límites PostgREST; la exportación de movimientos limita10.000. Para certificar recuperación masiva hacen falta paginación completa y restore probado en una base aislada.
+- Cierre posterior: backup1.0 pagina cuentas, movimientos, categorías propias, presupuestos e inversiones; CSV/JSON incluye historial de cuentas archivadas y elimina el truncamiento10.000. Cada página filtra user_id y usa cursor id asc hasta vacío (una página corta no implica fin). Límite compartido por solicitud:100.000 registros,32MiB de datos serializados y45s de consultas; superar límites o fallar una página devuelve error sin archivo parcial. El archivo final puede ser mayor por formato/indentación. No incluye otras entidades (recurrentes/gastos compartidos), no es un snapshot transaccional y los cambios concurrentes pueden alterar el resultado. Certificar recuperación requiere restore probado en una base aislada.
 - La idempotencia offline usa la fila original como registro de deduplicación; si se elimina definitivamente y reaparece un borrador antiguo, puede recrearla. No se implementó una tabla de tombstones.
 - Los borradores legacy sin dueño quedan conservados pero no sincronizados automáticamente. Borradores inválidos nuevos se preservan; todavía no hay editor de recuperación dedicado.
 - El preflight XLSX limita memoria de expansión; límite de filas se comprueba después del parse de XML. No es un sandbox de documentos.

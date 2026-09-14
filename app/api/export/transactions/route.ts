@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { transactionsService } from '@/lib/services/transactions';
+import type { TransactionWithCategory } from '@/lib/services/transactions';
+import { ApiError, errorResponse } from '@/lib/api-handler';
+import { collectExportRows, createExportBudget, EXPORT_PAGE_SIZE } from '@/lib/export-pagination';
 import { encodeCsvCell } from '@/lib/csv';
+
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,14 +24,32 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get('categoryId');
     const type = searchParams.get('type');
 
-    const transactions = await transactionsService.list(user.id, {
-      startDate: startDate || undefined,
-      endDate: endDate || undefined,
-      accountId: accountId || undefined,
-      categoryId: categoryId || undefined,
-      type: type || undefined,
-      limit: 10000,
-    });
+    for (const date of [startDate, endDate]) {
+      if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date)) {
+        throw new ApiError('Las fechas deben ser válidas y tener formato AAAA-MM-DD.', 400);
+      }
+    }
+    if (startDate && endDate && startDate > endDate) throw new ApiError('La fecha inicial debe ser anterior o igual a la final.', 400);
+    const endExclusive = endDate ? new Date(Date.parse(endDate) + 86_400_000).toISOString() : null;
+
+    const transactions = await collectExportRows<TransactionWithCategory>((after, signal) => {
+      let query = supabase.from('transactions').select(`*,
+        category:categories(name, icon),
+        account:accounts!transactions_account_id_fkey(name, currency),
+        destination_account:accounts!transactions_destination_account_id_fkey(name, currency)
+      `).eq('user_id', user.id).order('id', { ascending: true })
+        .limit(EXPORT_PAGE_SIZE).abortSignal(signal);
+      if (after) query = query.gt('id', after);
+      if (startDate) query = query.gte('transaction_date', startDate);
+      if (endExclusive) query = query.lt('transaction_date', endExclusive);
+      if (accountId) query = query.eq('account_id', accountId);
+      if (categoryId === 'uncategorized') query = query.is('category_id', null);
+      else if (categoryId) query = query.eq('category_id', categoryId);
+      if (type) query = query.eq('type', type);
+      return query;
+    }, createExportBudget());
+    // Downloads include archived-account history. Keep presentation date-descending.
+    transactions.sort((a, b) => b.transaction_date.localeCompare(a.transaction_date) || b.id.localeCompare(a.id));
 
     if (format === 'json') {
       const jsonData = transactions.map(tx => ({
@@ -70,7 +92,7 @@ export async function GET(request: NextRequest) {
     ];
 
     const rows = transactions.map(tx => {
-      const date = new Date(tx.transaction_date).toLocaleDateString('es-AR');
+      const date = new Date(tx.transaction_date).toLocaleDateString('es-AR', { timeZone: 'UTC' });
       const typeLabels: Record<string, string> = {
         expense: 'Gasto',
         income: 'Ingreso',
@@ -111,7 +133,6 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Export error:', error);
-    return NextResponse.json({ error: 'Export failed' }, { status: 500 });
+    return errorResponse(error);
   }
 }

@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { errorResponse } from '@/lib/api-handler';
+import { checkExportDeadline, collectExportRows, createExportBudget, EXPORT_PAGE_SIZE } from '@/lib/export-pagination';
+
+export const maxDuration = 60;
 
 export async function GET() {
   try {
@@ -10,40 +14,23 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const pageSize = 1000;
-    const transactions: Record<string, unknown>[] = [];
-    for (let from = 0; ; from += pageSize) {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('transaction_date', { ascending: false })
-        .order('id', { ascending: false })
-        .range(from, from + pageSize - 1);
-      if (error) throw error;
-      const batch = data || [];
-      transactions.push(...batch);
-      if (batch.length < pageSize) break;
-    }
-
-    const [
-      accountsResult,
-      categoriesResult,
-      budgetsResult,
-      investmentsResult,
-      userResult,
-    ] = await Promise.all([
-      supabase.from('accounts').select('*').eq('user_id', user.id),
-      supabase.from('categories').select('*').or(`user_id.eq.${user.id},is_system.eq.true`),
-      supabase.from('budgets').select('*').eq('user_id', user.id),
-      supabase.from('investments').select('*').eq('user_id', user.id),
-      supabase.from('users').select('default_currency, timezone').eq('id', user.id).single(),
-    ]);
-
-    // A failed dataset is not an empty dataset: never offer an incomplete backup as valid.
-    for (const result of [accountsResult, categoriesResult, budgetsResult, investmentsResult, userResult]) {
-      if (result.error) throw result.error;
-    }
+    const budget = createExportBudget();
+    const readTable = (table: string) => collectExportRows<{ id: string; [key: string]: unknown }>((after, signal) => {
+      let query = supabase.from(table).select('*').eq('user_id', user.id)
+        .order('id', { ascending: true }).limit(EXPORT_PAGE_SIZE).abortSignal(signal);
+      if (after) query = query.gt('id', after);
+      return query;
+    }, budget);
+    // Sequential datasets keep peak in-flight payloads bounded by one page.
+    const accounts = await readTable('accounts');
+    const transactions = await readTable('transactions');
+    const categories = await readTable('categories');
+    const budgets = await readTable('budgets');
+    const investments = await readTable('investments');
+    const userResult = await supabase.from('users').select('default_currency, timezone')
+      .eq('id', user.id).abortSignal(budget.signal).single();
+    checkExportDeadline(budget.signal);
+    if (userResult.error) throw userResult.error;
 
     const backup = {
       version: '1.0',
@@ -56,18 +43,18 @@ export async function GET() {
         timezone: userResult.data?.timezone || 'America/Argentina/Buenos_Aires',
       },
       data: {
-        accounts: accountsResult.data || [],
+        accounts: accounts,
         transactions,
-        categories: (categoriesResult.data || []).filter(c => c.user_id === user.id),
-        budgets: budgetsResult.data || [],
-        investments: investmentsResult.data || [],
+        categories: categories,
+        budgets: budgets,
+        investments: investments,
       },
       stats: {
-        accountsCount: accountsResult.data?.length || 0,
+        accountsCount: accounts.length,
         transactionsCount: transactions.length,
-        categoriesCount: (categoriesResult.data || []).filter(c => c.user_id === user.id).length,
-        budgetsCount: budgetsResult.data?.length || 0,
-        investmentsCount: investmentsResult.data?.length || 0,
+        categoriesCount: categories.length,
+        budgetsCount: budgets.length,
+        investmentsCount: investments.length,
       },
     };
 
@@ -79,7 +66,6 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('Backup error:', error);
-    return NextResponse.json({ error: 'Backup failed' }, { status: 500 });
+    return errorResponse(error);
   }
 }
