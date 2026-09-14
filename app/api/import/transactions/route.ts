@@ -8,7 +8,8 @@ import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { transactionsService } from '@/lib/services/transactions';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
 import type { ImportSkippedDetail } from '@/types/import';
-import { errorResponse } from '@/lib/api-handler';
+import { ApiError, errorResponse } from '@/lib/api-handler';
+import { validateXlsxArchive } from '@/lib/xlsx-limits';
 
 const MAX_SKIPPED_DETAILS = 250;
 /** Límite de tamaño de archivo de import (mitiga DoS y reduce superficie de bugs en parsers). */
@@ -800,16 +801,20 @@ async function parseXlsxWorkbook(
   parseOpts: ParseImportDateOpts
 ): Promise<ParsedImport> {
   const out: ParsedImport = { transactions: [], transfers: [], skips: [] };
+  await validateXlsxArchive(buffer);
   const wb = new ExcelJS.Workbook();
   try {
     await wb.xlsx.load(buffer);
   } catch {
-    throw new Error(
-      'No se pudo leer el archivo .xlsx. Verificá que sea un Excel válido y no esté dañado.'
+    throw new ApiError(
+      'No se pudo leer el archivo .xlsx. Verificá que sea un Excel válido y no esté dañado.', 400
     );
   }
 
   for (const sheet of wb.worksheets) {
+    if (sheet.rowCount > 10000 || sheet.columnCount > 100) {
+      throw new ApiError('El Excel supera el máximo de 10.000 filas o 100 columnas por hoja.', 413);
+    }
     const asStrings: string[][] = [];
     sheet.eachRow({ includeEmpty: false }, (row) => {
       const cells: string[] = [];
@@ -991,11 +996,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const contentLength = Number(request.headers.get('content-length'));
+    if (Number.isFinite(contentLength) && contentLength > MAX_IMPORT_FILE_BYTES + 1024 * 1024) {
+      return NextResponse.json({ error: 'El archivo supera el máximo permitido (12 MB).' }, { status: 413 });
+    }
     const formData = await request.formData();
     const mode = (formData.get('mode') as string) || 'import';
-    const file = formData.get('file') as File;
+    const file = formData.get('file');
 
-    if (!file) {
+    if (!file || typeof file === 'string') {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
@@ -1158,6 +1167,9 @@ export async function POST(request: NextRequest) {
     combined.transactions = parsedTx;
 
     const totalCount = combined.transactions.length + combined.transfers.length;
+    if (totalCount > 10000) {
+      return NextResponse.json({ error: 'Importá hasta 10.000 movimientos por archivo.' }, { status: 413 });
+    }
 
     if (totalCount === 0) {
       if (combined.skips.length > 0) {

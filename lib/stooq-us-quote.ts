@@ -17,7 +17,6 @@ const KNOWN_NAMES: Record<string, string> = {
 
 function yahooUsTickerToStooqSymbol(yahooTicker: string): string | null {
   const t = yahooTicker.trim();
-  if (t === '^IXIC') return 'qqq.us';
   if (t.startsWith('^') || t.endsWith('.BA')) return null;
   const root = t.split('.')[0].toLowerCase();
   if (!root) return null;
@@ -26,7 +25,7 @@ function yahooUsTickerToStooqSymbol(yahooTicker: string): string | null {
 
 /**
  * Cotización intradía vía Stooq (CSV público, sin API key).
- * Solo tickers de EE. UU.; ^IXIC se aproxima con QQQ (precio en USD, no puntos de índice).
+ * Solo acciones de EE. UU.: no sustituir un índice por un ETF de otro universo.
  */
 export async function fetchStooqUsQuote(yahooTicker: string): Promise<StockQuote | null> {
   const stooqSym = yahooUsTickerToStooqSymbol(yahooTicker);
@@ -38,7 +37,7 @@ export async function fetchStooqUsQuote(yahooTicker: string): Promise<StockQuote
     const res = await fetch(url, {
       headers: STOOQ_HEADERS,
       cache: 'no-store',
-      signal: AbortSignal.timeout(7000),
+      signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
 
@@ -57,18 +56,17 @@ export async function fetchStooqUsQuote(yahooTicker: string): Promise<StockQuote
     const changePct = open > 0 ? (change / open) * 100 : 0;
 
     const stooqRoot = stooqSym.replace(/\.us$/i, '').toUpperCase();
-    const isIxicProxy = yahooTicker.trim() === '^IXIC';
 
     return {
       ticker: yahooTicker.trim(),
-      name: isIxicProxy
-        ? 'Nasdaq (vía QQQ)'
-        : KNOWN_NAMES[stooqRoot] ?? stooqRoot,
+      name: KNOWN_NAMES[stooqRoot] ?? stooqRoot,
+      source: 'stooq',
+      observedAt: new Date().toISOString(),
+      changeBasis: 'open',
       price: close,
       change,
       changePct,
       currency: 'USD',
-      /** QQQ no es el índice en puntos: EQUITY evita mostrar “pts” en la UI. */
       instrumentType: 'EQUITY',
     };
   } catch {

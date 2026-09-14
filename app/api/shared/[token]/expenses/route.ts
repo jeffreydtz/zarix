@@ -3,10 +3,8 @@ import { sharedExpensesService, isValidShareToken } from '@/lib/services/sharedE
 import { errorResponse } from '@/lib/api-handler';
 
 // Agregar un gasto al grupo (público, validado por token).
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { token: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   try {
     if (!isValidShareToken(params.token)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });

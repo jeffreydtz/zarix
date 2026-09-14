@@ -28,7 +28,7 @@ export default function MonthFlowCard({ flow }: MonthFlowCardProps) {
   const incomePct = Math.min(100, (incomeARS / maxARS) * 100);
   const spentPct = Math.min(100, (spentARS / maxARS) * 100);
 
-  const monthLabel = MONTH_LABELS[new Date().getMonth()];
+  const monthLabel = MONTH_LABELS[flow.month ? Number(flow.month.slice(5, 7)) - 1 : new Date().getMonth()];
 
   return (
     <motion.div
@@ -88,10 +88,13 @@ export default function MonthFlowCard({ flow }: MonthFlowCardProps) {
         </div>
 
         <p className={`text-xs mt-3 ${projectedOverIncome ? 'text-warning' : 'text-muted-foreground'}`}>
-          Proyectado a fin de mes:{' '}
+          Gasto estimado a fin de mes:{' '}
           <Amount value={projectedSpendARS} decimals={0} prefix="−" className="font-medium" />
         </p>
 
+        <p className="text-[11px] text-muted-foreground mt-2">
+          Gastos realizados + promedio variable de 14 días + próximas recurrencias. Es una estimación.
+        </p>
         {excludedCurrencies.length > 0 && (
           <p className="text-[11px] text-muted-foreground mt-2">
             ⚠️ Sin cotización para {excludedCurrencies.join(', ')}: no están incluidos en los totales.

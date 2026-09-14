@@ -14,7 +14,8 @@ import ReconcileBalanceButton from '@/components/accounts/ReconcileBalanceButton
 import AccountDetailEditButton from '@/components/accounts/AccountDetailEditButton';
 import { getAccountDisplayName, getAccountTypeLabelEs } from '@/lib/account-display-name';
 
-export default async function AccountDetailPage({ params }: { params: { id: string } }) {
+export default async function AccountDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {

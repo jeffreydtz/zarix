@@ -1,3 +1,5 @@
+import { singleFlight } from './requests';
+
 /**
  * Cliente de data912.com — datos del mercado argentino (acciones, CEDEARs, bonos).
  * Sin API key, cacheado ~2h del lado del proveedor. Reusable para múltiples tickers.
@@ -13,6 +15,8 @@ export interface Data912Quote {
   changePct: number | null;
   currency: 'ARS' | 'USD';
   source: 'arg_stocks' | 'arg_cedears' | 'arg_bonds';
+  observedAt?: string;
+  stale?: boolean;
 }
 
 interface MemCacheEntry<T> {
@@ -31,6 +35,7 @@ interface Data912Row {
   last?: unknown;
   close?: unknown;
   pct?: unknown;
+  pct_change?: unknown;
   variation?: unknown;
   var?: unknown;
   change_pct?: unknown;
@@ -65,7 +70,7 @@ function normalizeRow(
   if (!symbol) return null;
   const price = pickNumber(r.c, r.px, r.price, r.last, r.close);
   if (price === null || price <= 0) return null;
-  const changePct = pickNumber(r.pct, r.variation, r.var, r.change_pct, r.changePct, r.variacion);
+  const changePct = pickNumber(r.pct_change, r.pct, r.variation, r.var, r.change_pct, r.changePct, r.variacion);
   return {
     symbol: symbol.toUpperCase(),
     price,
@@ -85,28 +90,30 @@ async function fetchEndpoint(
     return cached.data;
   }
 
-  try {
-    const res = await fetch(`${DATA912_BASE}${path}`, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      next: { revalidate: 300 },
-    });
-    if (!res.ok) {
-      memCache.set(path, { ts: Date.now(), data: cached?.data ?? [] });
-      return cached?.data ?? [];
+  return singleFlight(`data912:${path}`, async () => {
+    try {
+      const res = await fetch(`${DATA912_BASE}${path}`, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        next: { revalidate: 300 },
+      });
+      if (!res.ok) {
+        return (cached?.data ?? []).map((q) => ({ ...q, stale: true }));
+      }
+      const json = await res.json();
+      const rows = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
+      const quotes: Data912Quote[] = [];
+      for (const raw of rows) {
+        const q = normalizeRow(raw, source, currency);
+        if (q) quotes.push({ ...q, observedAt: new Date().toISOString(), stale: false });
+      }
+      if (!quotes.length) return (cached?.data ?? []).map((q) => ({ ...q, stale: true }));
+      memCache.set(path, { ts: Date.now(), data: quotes });
+      return quotes;
+    } catch {
+      return (cached?.data ?? []).map((q) => ({ ...q, stale: true }));
     }
-    const json = await res.json();
-    const rows = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
-    const quotes: Data912Quote[] = [];
-    for (const raw of rows) {
-      const q = normalizeRow(raw, source, currency);
-      if (q) quotes.push(q);
-    }
-    memCache.set(path, { ts: Date.now(), data: quotes });
-    return quotes;
-  } catch {
-    return cached?.data ?? [];
-  }
+  });
 }
 
 export async function fetchArgStocks(): Promise<Data912Quote[]> {

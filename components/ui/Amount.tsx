@@ -4,7 +4,7 @@ import { usePrivacy, PRIVACY_MASK } from '@/lib/hooks/use-privacy';
 
 interface AmountProps {
   value: number;
-  currency?: 'ARS' | 'USD' | 'EUR';
+  currency?: string;
   /** Decimales a mostrar (default 0: montos grandes del dashboard). */
   decimals?: number;
   /** Prefijo visual, ej. "≈ ". */
@@ -28,7 +28,7 @@ export default function Amount({
 }: AmountProps) {
   const { hidden } = usePrivacy();
 
-  const symbol = currency === 'USD' ? 'US$' : currency === 'EUR' ? '€' : '$';
+  const symbol = currency === 'ARS' ? '$' : currency === 'USD' ? 'US$' : currency === 'EUR' ? '€' : currency;
   const formatted = value.toLocaleString('es-AR', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,

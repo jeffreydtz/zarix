@@ -3,9 +3,12 @@ import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import type { StockQuote } from '@/lib/market-data-types';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { fetchYahooStockQuotesMap, orderedStockQuotesFromMap } from '@/lib/yahoo-finance-quotes';
+import { fetchArgStocks } from '@/lib/market-data/data912-client';
+import { mapConcurrent, singleFlight } from '@/lib/market-data/requests';
+import { cachedStaleFlags, mergeWithCache, normalizeStoredPayload, payloadHasAnyData, type MarketPayloadStored } from '@/lib/market-data/cache';
 
 export const dynamic = 'force-dynamic';
-// Cache for 5 minutes on Vercel edge
+// Caché de los fetches de proveedores; la respuesta autenticada es privada.
 export const revalidate = 300;
 /** Paralelismo + caché rápida; Pro puede usar más tiempo si hace falta. */
 export const maxDuration = 25;
@@ -28,22 +31,28 @@ interface CryptoQuote {
   image: string;
 }
 
-async function fetchStockQuotesSequential(
+async function fetchStockQuotes(
   tickers: string[],
   opts: { stooqFallback: boolean }
 ): Promise<StockQuote[]> {
-  const yahooMap = await fetchYahooStockQuotesMap(tickers);
+  const [yahooMap, argQuotes] = await Promise.all([
+    fetchYahooStockQuotesMap(tickers),
+    opts.stooqFallback ? Promise.resolve([]) : fetchArgStocks(),
+  ]);
+  for (const q of argQuotes) {
+    const ticker = `${q.symbol}.BA`;
+    if (!tickers.includes(ticker) || yahooMap.has(ticker)) continue;
+    const pct = q.changePct ?? 0;
+    const previous = 1 + pct / 100 > 0 ? q.price / (1 + pct / 100) : q.price;
+    yahooMap.set(ticker, { ticker, name: q.symbol, price: q.price, change: q.price - previous, changePct: pct, currency: q.currency, instrumentType: 'EQUITY', source: 'data912', observedAt: q.observedAt, stale: q.stale });
+  }
   let ordered = orderedStockQuotesFromMap(tickers, yahooMap);
 
   if (!opts.stooqFallback) return ordered;
 
   const have = new Set(ordered.map((q) => q.ticker));
-  const extra: StockQuote[] = [];
-  for (const t of tickers) {
-    if (have.has(t)) continue;
-    const stooq = await fetchStooqUsQuote(t);
-    if (stooq) extra.push(stooq);
-  }
+  const fallback = await mapConcurrent(tickers.filter((t) => !have.has(t)), 3, fetchStooqUsQuote);
+  const extra = fallback.filter((q): q is StockQuote => q !== null);
   if (extra.length === 0) return ordered;
 
   const byTicker = new Map<string, StockQuote>();
@@ -51,33 +60,6 @@ async function fetchStockQuotesSequential(
   for (const q of extra) byTicker.set(q.ticker, q);
   ordered = tickers.map((t) => byTicker.get(t)).filter((q): q is StockQuote => Boolean(q));
   return ordered;
-}
-
-interface MarketPayloadStored {
-  crypto: CryptoQuote[];
-  usStocks: StockQuote[];
-  argStocks: StockQuote[];
-  /** ISO: última vez que cada bloque se actualizó con datos “en vivo”. */
-  sectionTimes?: {
-    crypto?: string;
-    usStocks?: string;
-    argStocks?: string;
-  };
-}
-
-function normalizeStoredPayload(raw: unknown): MarketPayloadStored | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const p = raw as MarketPayloadStored;
-  return {
-    crypto: Array.isArray(p.crypto) ? p.crypto : [],
-    usStocks: Array.isArray(p.usStocks) ? p.usStocks : [],
-    argStocks: Array.isArray(p.argStocks) ? p.argStocks : [],
-    sectionTimes: p.sectionTimes,
-  };
-}
-
-function payloadHasAnyData(p: MarketPayloadStored): boolean {
-  return p.crypto.length > 0 || p.usStocks.length > 0 || p.argStocks.length > 0;
 }
 
 async function loadCachedRow(): Promise<{
@@ -90,6 +72,7 @@ async function loadCachedRow(): Promise<{
       .from('market_data_cache')
       .select('payload, updated_at')
       .eq('id', 1)
+      .abortSignal(AbortSignal.timeout(2000))
       .maybeSingle();
     if (error || !data?.payload || !data.updated_at) return null;
     const payload = normalizeStoredPayload(data.payload);
@@ -110,50 +93,10 @@ async function saveMergedPayload(payload: MarketPayloadStored): Promise<void> {
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'id' }
-    );
+    ).abortSignal(AbortSignal.timeout(2000));
   } catch {
     /* tabla ausente o sin permisos: la UI puede usar caché local */
   }
-}
-
-function mergeWithCache(
-  live: { crypto: CryptoQuote[]; usStocks: StockQuote[]; argStocks: StockQuote[] },
-  cached: MarketPayloadStored | null,
-  nowIso: string
-): {
-  crypto: CryptoQuote[];
-  usStocks: StockQuote[];
-  argStocks: StockQuote[];
-  stale: { crypto: boolean; usStocks: boolean; argStocks: boolean };
-  sectionTimes: NonNullable<MarketPayloadStored['sectionTimes']>;
-} {
-  const stale = { crypto: false, usStocks: false, argStocks: false };
-
-  let crypto = live.crypto;
-  if (!crypto.length && cached?.crypto?.length) {
-    crypto = cached.crypto;
-    stale.crypto = true;
-  }
-
-  let usStocks = live.usStocks;
-  if (!usStocks.length && cached?.usStocks?.length) {
-    usStocks = cached.usStocks;
-    stale.usStocks = true;
-  }
-
-  let argStocks = live.argStocks;
-  if (!argStocks.length && cached?.argStocks?.length) {
-    argStocks = cached.argStocks;
-    stale.argStocks = true;
-  }
-
-  const sectionTimes = {
-    crypto: stale.crypto ? cached?.sectionTimes?.crypto ?? nowIso : nowIso,
-    usStocks: stale.usStocks ? cached?.sectionTimes?.usStocks ?? nowIso : nowIso,
-    argStocks: stale.argStocks ? cached?.sectionTimes?.argStocks ?? nowIso : nowIso,
-  };
-
-  return { crypto, usStocks, argStocks, stale, sectionTimes };
 }
 
 async function fetchCryptoTop5(): Promise<CryptoQuote[]> {
@@ -171,16 +114,16 @@ async function fetchCryptoTop5(): Promise<CryptoQuote[]> {
 
     if (!res.ok) return [];
 
-    const data: any[] = await res.json();
-
-    return data.map((c) => ({
+    const data: unknown = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.filter((c) => c && typeof c.id === 'string' && typeof c.symbol === 'string' && Number.isFinite(c.current_price) && c.current_price > 0).slice(0, 5).map((c) => ({
       id: c.id,
       symbol: c.symbol.toUpperCase(),
       name: c.name,
       price: c.current_price,
-      change24h: c.price_change_percentage_24h ?? 0,
-      marketCap: c.market_cap,
-      image: c.image,
+      change24h: Number.isFinite(c.price_change_percentage_24h) ? c.price_change_percentage_24h : 0,
+      marketCap: Number.isFinite(c.market_cap) ? c.market_cap : 0,
+      image: typeof c.image === 'string' ? c.image : '',
     }));
   } catch (error) {
     console.error('Error fetching crypto top 5:', error);
@@ -202,7 +145,7 @@ function jsonResponse(
   return NextResponse.json(body, {
     status: opts?.status ?? 200,
     headers: {
-      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      'Cache-Control': 'private, no-store',
       ...(opts?.cacheHeader ? { 'x-zarix-market-cache': opts.cacheHeader } : {}),
     },
   });
@@ -224,9 +167,8 @@ export async function GET(request: Request) {
   const cachedPayload = cachedRow?.payload ?? null;
 
   if (
-    !forceRefresh &&
     cachedRow &&
-    Date.now() - new Date(cachedRow.updated_at).getTime() < SERVER_CACHE_TTL_MS
+    Date.now() - new Date(cachedRow.updated_at).getTime() < (forceRefresh ? 30_000 : SERVER_CACHE_TTL_MS)
   ) {
     const st = cachedRow.payload.sectionTimes ?? {};
     return jsonResponse(
@@ -235,7 +177,7 @@ export async function GET(request: Request) {
         usStocks: cachedRow.payload.usStocks,
         argStocks: cachedRow.payload.argStocks,
         fetchedAt: cachedRow.updated_at,
-        stale: { crypto: false, usStocks: false, argStocks: false },
+        stale: cachedStaleFlags(cachedRow.payload, cachedRow.updated_at),
         sectionTimes: {
           crypto: st.crypto ?? cachedRow.updated_at,
           usStocks: st.usStocks ?? cachedRow.updated_at,
@@ -246,36 +188,40 @@ export async function GET(request: Request) {
     );
   }
 
-  const [crypto, usStocks, argStocks] = await Promise.all([
-    fetchCryptoTop5(),
-    fetchStockQuotesSequential(US_TICKERS, { stooqFallback: true }),
-    fetchStockQuotesSequential(ARG_TICKERS, { stooqFallback: false }),
-  ]);
+  const result = await singleFlight('market-data:refresh', async () => {
+    const [crypto, usStocks, argStocks] = await Promise.all([
+      fetchCryptoTop5(),
+      fetchStockQuotes(US_TICKERS, { stooqFallback: true }),
+      fetchStockQuotes(ARG_TICKERS, { stooqFallback: false }),
+    ]);
 
-  const nowIso = new Date().toISOString();
-  const merged = mergeWithCache({ crypto, usStocks, argStocks }, cachedPayload, nowIso);
+    const nowIso = new Date().toISOString();
+    const merged = mergeWithCache({ crypto, usStocks, argStocks }, cachedPayload, nowIso);
+    merged.stale.usStocks ||= US_TICKERS.some((ticker) => !usStocks.some((q) => q.ticker === ticker));
+    merged.stale.argStocks ||= ARG_TICKERS.some((ticker) => !argStocks.some((q) => q.ticker === ticker));
+    merged.stale.crypto ||= crypto.length < 5;
 
-  const payloadToStore: MarketPayloadStored = {
-    crypto: merged.crypto,
-    usStocks: merged.usStocks,
-    argStocks: merged.argStocks,
-    sectionTimes: merged.sectionTimes,
-  };
-
-  const hasAnyData = payloadHasAnyData(payloadToStore);
-  if (hasAnyData) {
-    void saveMergedPayload(payloadToStore);
-  }
-
-  return jsonResponse(
-    {
+    const payloadToStore: MarketPayloadStored = {
       crypto: merged.crypto,
       usStocks: merged.usStocks,
       argStocks: merged.argStocks,
-      fetchedAt: nowIso,
-      stale: merged.stale,
       sectionTimes: merged.sectionTimes,
-    },
-    { cacheHeader: 'miss' }
-  );
+      stale: merged.stale,
+    };
+
+    const hasAnyData = payloadHasAnyData(payloadToStore);
+    if (hasAnyData) {
+      await saveMergedPayload(payloadToStore);
+    }
+
+    return {
+        crypto: merged.crypto,
+        usStocks: merged.usStocks,
+        argStocks: merged.argStocks,
+        fetchedAt: nowIso,
+        stale: merged.stale,
+        sectionTimes: merged.sectionTimes,
+      };
+  });
+  return jsonResponse(result, { cacheHeader: 'miss' });
 }

@@ -6,6 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { TransactionWithCategory } from '@/lib/services/transactions';
 import Link from 'next/link';
+import Amount from '@/components/ui/Amount';
 import { motionVariants, maybeReduceTransition, motionTransition } from '@/lib/motion';
 
 interface RecentTransactionsProps {
@@ -115,8 +116,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
                 }`}
               >
                 {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
-                ${tx.amount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}{' '}
-                <span className="text-xs font-normal">{tx.currency}</span>
+                <Amount value={tx.amount} currency={tx.currency} decimals={2} />
               </div>
             </motion.div>
           ))}

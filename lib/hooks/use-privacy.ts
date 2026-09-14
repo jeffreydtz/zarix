@@ -1,60 +1,59 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 const STORAGE_KEY = 'zarix.privacy';
-const EVENT_NAME = 'zarix:privacy-changed';
+let memoryHidden: boolean | undefined;
+const listeners = new Set<() => void>();
 
 function readStored(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') return true;
+  if (memoryHidden !== undefined) return memoryHidden;
   try {
-    return window.localStorage.getItem(STORAGE_KEY) === '1';
+    memoryHidden = window.localStorage.getItem(STORAGE_KEY) === '1';
   } catch {
-    return false;
+    memoryHidden = false;
+  }
+  return memoryHidden;
+}
+
+function notify() {
+  listeners.forEach((listener) => listener());
+}
+
+function onStorage(event: StorageEvent) {
+  if (event.key === STORAGE_KEY || event.key === null) {
+    memoryHidden = event.newValue === '1';
+    notify();
   }
 }
 
-/**
- * Modo privado GLOBAL del dashboard (patrón Nubank/Ualá: la app se abre en
- * público). Oculta montos en plata; porcentajes y deltas siguen visibles.
- * Mismo mecanismo que use-investments-privacy (localStorage + evento) pero
- * con clave propia: el módulo de inversiones conserva su toggle independiente.
- */
-export function usePrivacy(): {
-  hidden: boolean;
-  toggle: () => void;
-  setHidden: (value: boolean) => void;
-} {
-  const [hidden, setHiddenState] = useState<boolean>(false);
+function subscribe(listener: () => void) {
+  if (listeners.size === 0) window.addEventListener('storage', onStorage);
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size === 0) window.removeEventListener('storage', onStorage);
+  };
+}
 
-  useEffect(() => {
-    setHiddenState(readStored());
-    const sync = () => setHiddenState(readStored());
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY) sync();
-    };
-    window.addEventListener('storage', onStorage);
-    window.addEventListener(EVENT_NAME, sync);
-    return () => {
-      window.removeEventListener('storage', onStorage);
-      window.removeEventListener(EVENT_NAME, sync);
-    };
-  }, []);
+function setHidden(value: boolean) {
+  memoryHidden = value;
+  try {
+    window.localStorage.setItem(STORAGE_KEY, value ? '1' : '0');
+  } catch {
+    // La preferencia sigue funcionando en memoria con almacenamiento bloqueado.
+  }
+  notify();
+}
 
-  const setHidden = useCallback((value: boolean) => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, value ? '1' : '0');
-    } catch {
-      /* ignore quota errors */
-    }
-    setHiddenState(value);
-    window.dispatchEvent(new Event(EVENT_NAME));
-  }, []);
+function toggle() {
+  setHidden(!readStored());
+}
 
-  const toggle = useCallback(() => {
-    setHidden(!readStored());
-  }, [setHidden]);
-
+/** Oculta los montos durante SSR/hidratación hasta conocer la preferencia local. */
+export function usePrivacy() {
+  const hidden = useSyncExternalStore(subscribe, readStored, () => true);
   return { hidden, toggle, setHidden };
 }
 

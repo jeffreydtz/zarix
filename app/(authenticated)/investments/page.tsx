@@ -1,5 +1,5 @@
+import { MarketDataWidget, InvestmentAccountsList } from '@/components/investments/LazyInvestmentWidgets';
 import { redirect } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { getCachedUser } from '@/lib/auth/session';
 import { investmentsService, type PortfolioSummaryPayload } from '@/lib/services/investments';
@@ -9,8 +9,6 @@ import type { Account, Investment, InvestmentType } from '@/types/database';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
 
-const MarketDataWidget = dynamic(() => import('@/components/investments/MarketDataWidget'), { ssr: false });
-const InvestmentAccountsList = dynamic(() => import('@/components/investments/InvestmentAccountsList'), { ssr: false });
 
 const INVESTMENT_LABELS: Partial<Record<InvestmentType, string>> = {
   plazo_fijo: 'Plazo Fijo',

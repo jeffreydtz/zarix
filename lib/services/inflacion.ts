@@ -17,12 +17,13 @@ let cache: { data: InflacionMes[]; at: number } | null = null;
 export async function getInflacionSeries(): Promise<InflacionMes[]> {
   if (cache && Date.now() - cache.at < TTL_MS) return cache.data;
   try {
-    const res = await fetch(API_URL, { next: { revalidate: 43200 } });
+    const res = await fetch(API_URL, { next: { revalidate: 43200 }, signal: AbortSignal.timeout(5000) });
     if (!res.ok) throw new Error(`inflacion API ${res.status}`);
     const raw = (await res.json()) as Array<{ fecha: string; valor: number }>;
     const data = raw
-      .filter((r) => r && typeof r.valor === 'number' && r.fecha)
+      .filter((r) => r && Number.isFinite(r.valor) && r.valor > -100 && /^\d{4}-(0[1-9]|1[0-2])-01$/.test(r.fecha) && r.fecha <= new Date().toISOString().slice(0, 10))
       .sort((a, b) => a.fecha.localeCompare(b.fecha));
+    if (data.length === 0) throw new Error('Serie de inflación vacía o inválida');
     cache = { data, at: Date.now() };
     return data;
   } catch (e) {

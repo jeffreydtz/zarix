@@ -28,7 +28,7 @@ Adoptar una estrategia de testing **basada en riesgo**, no una pirámide complet
    como trabajo futuro explícito, no como deuda oculta.
 
 Los tests corren con `npm test` y se ejecutan en CI en cada push/PR (ver
-ADR sobre CI en 0006 y §11.1 de la guía).
+`.github/workflows/ci.yml` y §11.1 de la guía).
 
 ## Consecuencias
 
@@ -40,3 +40,10 @@ ADR sobre CI en 0006 y §11.1 de la guía).
   "los tests están donde está el riesgo", coherente con un equipo unipersonal.
 - Debilidad honesta y asumida: la cobertura E2E es limitada; se documenta como
   siguiente paso en lugar de simularla.
+
+
+## Evolución — 2026-09-14
+
+Se mantiene la decisión basada en riesgo y se actualiza Vitest a 4.1.11. La suite incorpora aislamiento de usuarios en caché/cola offline con IndexedDB simulado, errores de sincronización, privacidad en renderizado SSR, vinculación Telegram, identidad firmada de Mercado Pago, CSV, límites de XLSX y contratos/fallbacks de mercados. Los dobles de proveedores evitan operaciones sobre datos reales. Las pruebas no certifican configuración de producción ni reemplazan una prueba de pagos end-to-end.
+
+CI usa Node.js 22 y ejecuta lint, typecheck, tests, build y `npm audit --audit-level=high`. Los resultados fechados y su alcance se documentan en la [adenda académica](../tif/ADENDA-AUDITORIA-2026-09-14.md) y el [informe de auditoría](../AUDITORIA-2026-09-14.md); no se reescribe la evidencia histórica.

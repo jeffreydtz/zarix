@@ -28,9 +28,11 @@ function BudgetCluster({ budgets }: BudgetClusterProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
 
   const availablePerDay = useMemo(() => {
-    if (budgets.length === 0) return 0;
-    const totalRemaining = budgets.reduce((sum, b) => sum + b.remainingAmount, 0);
-    return totalRemaining / daysLeftInMonth();
+    const totals = new Map<string, number>();
+    for (const budget of budgets) {
+      totals.set(budget.currency, (totals.get(budget.currency) ?? 0) + budget.remainingAmount);
+    }
+    return Array.from(totals, ([currency, amount]) => ({ currency, value: amount / daysLeftInMonth() }));
   }, [budgets]);
 
   return (
@@ -85,11 +87,11 @@ function BudgetCluster({ budgets }: BudgetClusterProps) {
                         Te quedan{' '}
                         <Amount
                           value={budget.remainingAmount}
-                          currency={budget.currency === 'USD' ? 'USD' : 'ARS'}
+                          currency={budget.currency}
                           className="font-bold"
                         />{' '}
                         <span className="text-muted-foreground">
-                          de <Amount value={budget.limitAmount} currency={budget.currency === 'USD' ? 'USD' : 'ARS'} />
+                          de <Amount value={budget.limitAmount} currency={budget.currency} />
                         </span>
                       </span>
                     </div>
@@ -106,7 +108,10 @@ function BudgetCluster({ budgets }: BudgetClusterProps) {
           </ul>
 
           <p className="mt-4 pt-3 border-t border-border text-xs text-muted-foreground">
-            Disponible por día: <Amount value={availablePerDay} currency="ARS" className="font-medium" />
+            Disponible por día (presupuestos mostrados):{' '}
+            {availablePerDay.map((item, index) => <span key={item.currency}>
+              {index > 0 ? ' · ' : ''}<Amount value={item.value} currency={item.currency} className="font-medium" />
+            </span>)}
           </p>
         </>
       )}

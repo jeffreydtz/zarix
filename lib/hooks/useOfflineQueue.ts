@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { getOfflineUserId } from '@/lib/offline-reference-cache';
 
 const DB_NAME = 'zarix-offline';
 const DB_VERSION = 1;
@@ -8,6 +9,7 @@ const STORE_NAME = 'pending_transactions';
 
 export interface QueuedTransaction {
   id: string;
+  userId: string;
   payload: {
     type: string;
     accountId: string;
@@ -36,22 +38,25 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-async function dbGetAll(): Promise<QueuedTransaction[]> {
+export async function dbGetAll(): Promise<QueuedTransaction[]> {
+  const userId = await getOfflineUserId();
+  if (!userId) return [];
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const req = tx.objectStore(STORE_NAME).getAll();
-    req.onsuccess = () => resolve(req.result ?? []);
+    req.onsuccess = () => resolve((req.result ?? []).filter((item: QueuedTransaction) => item.userId === userId));
+    tx.oncomplete = () => db.close();
     req.onerror = () => reject(req.error);
   });
 }
 
-async function dbAdd(item: QueuedTransaction): Promise<void> {
+export async function dbAdd(item: QueuedTransaction): Promise<void> {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     tx.objectStore(STORE_NAME).put(item);
-    tx.oncomplete = () => resolve();
+    tx.oncomplete = () => { db.close(); resolve(); };
     tx.onerror = () => reject(tx.error);
   });
 }
@@ -61,9 +66,53 @@ async function dbRemove(id: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     tx.objectStore(STORE_NAME).delete(id);
-    tx.oncomplete = () => resolve();
+    tx.oncomplete = () => { db.close(); resolve(); };
     tx.onerror = () => reject(tx.error);
   });
+}
+
+let syncInFlight: Promise<void> | null = null;
+
+/** Shared by every mounted queue instance; browser lock serializes other tabs. */
+export async function syncPendingTransactions(): Promise<void> {
+  if (syncInFlight) return syncInFlight;
+  const run = async () => {
+      const items = await dbGetAll();
+      for (const item of items) {
+        try {
+          if (await getOfflineUserId() !== item.userId) break;
+          const res = await fetch('/api/transactions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-zarix-offline-owner': item.userId },
+            body: JSON.stringify({ ...item.payload, clientRequestId: item.id }),
+          });
+          if (res.ok) {
+            await dbRemove(item.id);
+          } else if ([400, 403, 404, 422].includes(res.status)) {
+            // Preserve this draft for recovery, but do not starve unrelated valid drafts.
+            continue;
+          } else {
+            // Stop on session changes, throttling and server failure; preserve all drafts.
+            break;
+          }
+          // 5xx: error transitorio del server → se deja en la cola y se
+          // reintenta en el próximo sync.
+        } catch {
+          // Still offline — stop processing the queue
+          break;
+        }
+      }
+  };
+  const attempt = (async () => {
+    if (typeof navigator !== 'undefined' && navigator.locks) {
+      await navigator.locks.request('zarix-offline-sync', { ifAvailable: true }, async lock => {
+        if (lock) await run();
+      });
+    } else await run();
+  })();
+  const pending = attempt.finally(() => { syncInFlight = null; });
+  syncInFlight = pending;
+  return pending;
 }
 
 export function useOfflineQueue() {
@@ -85,8 +134,11 @@ export function useOfflineQueue() {
 
   const enqueue = useCallback(
     async (payload: QueuedTransaction['payload']): Promise<void> => {
+      const userId = await getOfflineUserId();
+      if (!userId) throw new Error('Iniciá sesión antes de guardar un movimiento sin conexión.');
       const item: QueuedTransaction = {
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        id: crypto.randomUUID(),
+        userId,
         payload,
         createdAt: Date.now(),
       };
@@ -101,31 +153,7 @@ export function useOfflineQueue() {
     syncingRef.current = true;
     setSyncing(true);
     try {
-      const items = await dbGetAll();
-      for (const item of items) {
-        try {
-          const res = await fetch('/api/transactions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item.payload),
-          });
-          if (res.ok) {
-            await dbRemove(item.id);
-          } else if (res.status >= 400 && res.status < 500) {
-            // 4xx: request inválida (nunca va a andar). La sacamos para no
-            // envenenar la cola con reintentos infinitos en cada sync.
-            console.error(
-              `[offline-queue] descartando ítem con status ${res.status}`
-            );
-            await dbRemove(item.id);
-          }
-          // 5xx: error transitorio del server → se deja en la cola y se
-          // reintenta en el próximo sync.
-        } catch {
-          // Still offline — stop processing the queue
-          break;
-        }
-      }
+      await syncPendingTransactions();
     } catch {
       // DB error
     } finally {

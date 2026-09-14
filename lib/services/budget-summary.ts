@@ -16,8 +16,8 @@ export interface TopBudgetItem {
 
 /** Primer día del mes en curso, formato YYYY-MM-01 (mismo formato que la columna `budgets.month`). */
 function currentMonthStr(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' });
+  return `${today.slice(0, 7)}-01`;
 }
 
 /**
@@ -40,7 +40,7 @@ export async function getTopBudgets(userId: string, limit = 4): Promise<TopBudge
 
   // `get_budget_status` hace INNER JOIN contra categories, así que presupuestos
   // sin categoría (category_id null) no aparecen ahí: se listan con gastado = 0.
-  const status = await budgetsService.getStatus(userId, new Date(month)).catch(() => []);
+  const status = await budgetsService.getStatus(userId, new Date(month));
   const statusByCategory = new Map(status.map((s) => [s.category_id, s]));
 
   const items: TopBudgetItem[] = budgets.map((b: any) => {

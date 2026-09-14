@@ -1,16 +1,11 @@
-import { Suspense } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import { redirect } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { getCachedUser } from '@/lib/auth/session';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { investmentsService } from '@/lib/services/investments';
-import {
-  computeNetWorth,
-  getNetWorthHistory,
-  recordNetWorthSnapshot,
-} from '@/lib/services/net-worth';
+import { getNetWorthHistory, type NetWorthNow } from '@/lib/services/net-worth';
 import { getInflacionSeries } from '@/lib/services/inflacion';
 import { getMarketSparklines } from '@/lib/services/market-history';
 import { getMonthFlow } from '@/lib/services/month-flow';
@@ -24,178 +19,133 @@ import BudgetCluster from '@/components/dashboard/BudgetCluster';
 import StickyNetWorthBar from '@/components/dashboard/StickyNetWorthBar';
 import DashboardSpendingAnalyzerSection from '@/components/dashboard/DashboardSpendingAnalyzerSection';
 import DashboardMore from '@/components/dashboard/DashboardMore';
+import AccountCards from '@/components/dashboard/AccountCards';
+import CreditCardsWidget from '@/components/dashboard/CreditCardsWidget';
+import RecentTransactions from '@/components/dashboard/RecentTransactions';
+import AnomaliesWidget from '@/components/dashboard/AnomaliesWidget';
+import UnavailableCard from '@/components/dashboard/UnavailableCard';
+import PrivateDetails from '@/components/dashboard/PrivateDetails';
 import { PageScaffold } from '@/components/ui/PageScaffold';
-import MotionSection from '@/components/ui/MotionSection';
 
-const CreditCardsWidget = dynamic(() => import('@/components/dashboard/CreditCardsWidget'), {
-  loading: () => <div className="card h-40 animate-pulse bg-secondary" />,
-});
-const AccountCards = dynamic(() => import('@/components/dashboard/AccountCards'), {
-  loading: () => <div className="h-32 animate-pulse bg-secondary rounded-2xl" />,
-});
-const RecentTransactions = dynamic(() => import('@/components/dashboard/RecentTransactions'), {
-  loading: () => <div className="card h-64 animate-pulse bg-secondary" />,
-});
-const AnomaliesWidget = dynamic(() => import('@/components/dashboard/AnomaliesWidget'), {
-  loading: () => <div className="card h-40 animate-pulse bg-secondary" />,
-});
+// Attach error handling immediately: independent requests may reject before
+// their streamed section is rendered. null means unavailable, never empty data.
+async function available<T>(promise: Promise<T>): Promise<T | null> {
+  try { return await promise; } catch (error) {
+    console.error('[dashboard] No se pudo cargar una sección:', error);
+    return null;
+  }
+}
+
+function Skeleton() {
+  return <div className="card min-h-40 animate-pulse bg-surface-soft" role="status" aria-label="Cargando resumen" />;
+}
+
+async function Section<T>({ data, title, children }: {
+  data: Promise<T | null>; title: string; children: (value: T) => ReactNode;
+}) {
+  const value = await data;
+  return value === null ? <UnavailableCard title={title} /> : <>{children(value)}</>;
+}
+
+type Accounts = Awaited<ReturnType<typeof accountsService.list>>;
+type Portfolio = Awaited<ReturnType<typeof investmentsService.getPortfolioSummary>>;
+type History = Awaited<ReturnType<typeof getNetWorthHistory>>;
+type Inflation = Awaited<ReturnType<typeof getInflacionSeries>>;
+
+async function HistoryHero({ now, history, inflation }: {
+  now: NetWorthNow; history: Promise<History | null>; inflation: Promise<Inflation | null>;
+}) {
+  const [points, ipc] = await Promise.all([history, inflation]);
+  return <NetWorthHero now={now} history={points ?? []} inflacion={ipc ?? []} historyUnavailable={points === null} />;
+}
+
+async function FinancialHero({ accounts, portfolio, history, inflation }: {
+  accounts: Promise<Accounts | null>; portfolio: Promise<Portfolio | null>;
+  history: Promise<History | null>; inflation: Promise<Inflation | null>;
+}) {
+  const [rows, positions] = await Promise.all([accounts, portfolio]);
+  if (rows === null || positions === null) return <UnavailableCard title="Patrimonio total" />;
+  const balances = accountsService.aggregateAccountTotals(rows);
+  const now: NetWorthNow = {
+    liquidUSD: balances.liquidUSD,
+    investmentsUSD: balances.investmentsUSD + positions.totalCurrentValue,
+    totalUSD: balances.totalUSD + positions.totalCurrentValue,
+    totalARSBlue: balances.totalARSBlue + positions.totalCurrentValueArsBlue,
+    blueRate: positions.blueArsPerUsd,
+  };
+  if (!(now.blueRate > 0) || !Object.values(now).every(Number.isFinite)) {
+    return <UnavailableCard title="Patrimonio total" />;
+  }
+  return <>
+    <Suspense fallback={<NetWorthHero now={now} history={[]} inflacion={[]} historyLoading />}>
+      <HistoryHero now={now} history={history} inflation={inflation} />
+    </Suspense>
+    <div id="networth-sentinel" aria-hidden="true" />
+    <StickyNetWorthBar totalARSBlue={now.totalARSBlue} totalUSD={now.totalUSD} sentinelId="networth-sentinel" />
+  </>;
+}
 
 export default async function DashboardPage() {
-  try {
-    const user = await getCachedUser();
+  const user = await getCachedUser();
+  if (!user) redirect('/login');
 
-    if (!user) {
-      redirect('/login');
-    }
+  const accounts = available(accountsService.list(user.id));
+  const portfolio = available(investmentsService.getPortfolioSummary(user.id, {
+    skipQuoteRefresh: true, skipDailySnapshot: true,
+  }));
+  const history = available(getNetWorthHistory(user.id));
+  const inflation = available(getInflacionSeries());
+  const quotes = available(cotizacionesService.getAllQuotes());
+  const sparklines = available(getMarketSparklines());
+  const flow = available(getMonthFlow(user.id));
+  const upcoming = available(getUpcoming(user.id));
+  const budgets = available(getTopBudgets(user.id));
+  const recent = available(transactionsService.list(user.id, { limit: 5 }));
+  const market = Promise.all([quotes, sparklines, portfolio]).then(([q, s, p]) => {
+    if (!q) return null;
+    return { q, s: s ?? { blue: [], btc: [], eth: [] }, holdings: (p?.investments ?? [])
+      .slice().sort((a, b) => b.market_value_usd - a.market_value_usd).slice(0, 2)
+      .map((inv) => ({ ticker: inv.ticker ?? inv.name, name: inv.name,
+        valueUSD: inv.market_value_usd, dailyPct: inv.daily_change_pct ?? 0 })) };
+  });
 
-    // Pre-calienta la cache de cotización con la última persistida en DB (rápido)
-    // para que las conversiones no esperen a las APIs externas en el render frío.
-    await Promise.race([
-      cotizacionesService.getDolarQuotes({ preferCache: true }),
-      new Promise((resolve) => setTimeout(resolve, 1500)),
-    ]).catch(() => {});
-
-    const [
-      accounts,
-      recentTransactions,
-      portfolio,
-      quotes,
-      netWorthHistory,
-      inflacion,
-      sparklines,
-      monthFlow,
-      upcoming,
-      budgets,
-    ] = await Promise.all([
-      accountsService.list(user.id).catch(() => []),
-      transactionsService.list(user.id, { limit: 5 }).catch(() => []),
-      investmentsService
-        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true })
-        .catch(() => null),
-      cotizacionesService.getAllQuotes().catch(() => ({
-        dolar: {
-          blue: { type: 'blue' as const, buy: 0, sell: 0, timestamp: new Date() },
-          oficial: { type: 'oficial' as const, buy: 0, sell: 0, timestamp: new Date() },
-          mep: { type: 'mep' as const, buy: 0, sell: 0, timestamp: new Date() },
-          ccl: { type: 'ccl' as const, buy: 0, sell: 0, timestamp: new Date() },
-        },
-        crypto: {
-          btc: { symbol: 'BTC', priceUSD: 0, priceARS: 0, change24h: 0, timestamp: new Date() },
-          eth: { symbol: 'ETH', priceUSD: 0, priceARS: 0, change24h: 0, timestamp: new Date() },
-          usdt: { symbol: 'USDT', priceUSD: 1, priceARS: 0, change24h: 0, timestamp: new Date() },
-        },
-        timestamp: new Date().toISOString(),
-      })),
-      getNetWorthHistory(user.id).catch(() => []),
-      getInflacionSeries().catch(() => []),
-      getMarketSparklines().catch(() => ({ blue: [], btc: [], eth: [] })),
-      getMonthFlow(user.id).catch(() => null),
-      getUpcoming(user.id).catch(() => []),
-      getTopBudgets(user.id).catch(() => []),
-    ]);
-
-    // Snapshot del día best-effort (idempotente con el cron por unique user+día):
-    // así el gráfico ancla acumula historia aunque el cron no haya corrido.
-    void recordNetWorthSnapshot(user.id);
-
-    // Patrimonio HOY: misma composición que computeNetWorth pero reutilizando
-    // lo ya traído (evita repetir las queries de accounts/portfolio).
-    const balances =
-      accounts.length > 0
-        ? accountsService.aggregateAccountTotals(accounts)
-        : {
-            liquidUSD: 0,
-            liquidARSBlue: 0,
-            investmentsUSD: 0,
-            investmentsARSBlue: 0,
-            totalUSD: 0,
-            totalARSBlue: 0,
-            totalCreditUsed: 0,
-            totalCreditLimit: 0,
-            creditUtilization: 0,
-          };
-    const netWorthNow = {
-      liquidUSD: balances.liquidUSD,
-      investmentsUSD: balances.investmentsUSD + (portfolio?.totalCurrentValue ?? 0),
-      totalUSD: balances.totalUSD + (portfolio?.totalCurrentValue ?? 0),
-      totalARSBlue: balances.totalARSBlue + (portfolio?.totalCurrentValueArsBlue ?? 0),
-      blueRate: portfolio?.blueArsPerUsd ?? quotes?.dolar?.blue?.sell ?? 0,
-    };
-
-    // Top 2 posiciones por valor para el strip de mercado
-    const topHoldings = (portfolio?.investments ?? [])
-      .slice()
-      .sort((a, b) => b.market_value_usd - a.market_value_usd)
-      .slice(0, 2)
-      .map((inv) => ({
-        ticker: inv.ticker ?? inv.name,
-        name: inv.name,
-        valueUSD: inv.market_value_usd,
-        dailyPct: inv.daily_change_pct ?? 0,
-      }));
-
-    return (
-      <>
-        <StickyNetWorthBar
-          totalARSBlue={netWorthNow.totalARSBlue}
-          totalUSD={netWorthNow.totalUSD}
-          sentinelId="networth-sentinel"
-        />
-        <PageScaffold
-          hero={(
-            <>
-              <NetWorthHero now={netWorthNow} history={netWorthHistory} inflacion={inflacion} />
-              <div id="networth-sentinel" aria-hidden="true" />
-            </>
-          )}
-        >
-          {/* Bento desktop: 12 columnas; mobile: columna única en orden de jerarquía */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            <MotionSection delay={0.04} intensity="normal" className="lg:col-span-12">
-              <MarketStrip quotes={quotes} sparklines={sparklines} topHoldings={topHoldings} />
-            </MotionSection>
-
-            <MotionSection delay={0.08} intensity="normal" className="lg:col-span-4">
-              {monthFlow ? <MonthFlowCard flow={monthFlow} /> : null}
-            </MotionSection>
-
-            <MotionSection delay={0.1} intensity="normal" className="lg:col-span-4">
-              <BudgetCluster budgets={budgets} />
-            </MotionSection>
-
-            <MotionSection delay={0.12} intensity="normal" className="lg:col-span-4">
-              <UpcomingRail items={upcoming} />
-            </MotionSection>
-
-            <MotionSection delay={0.16} intensity="subtle" className="lg:col-span-12">
-              <Suspense fallback={<div className="card h-80 animate-pulse-subtle bg-surface-soft" />}>
-                <DashboardSpendingAnalyzerSection quotes={quotes} />
-              </Suspense>
-            </MotionSection>
-
-            <DashboardMore>
-              <MotionSection delay={0.2} intensity="subtle" className="lg:col-span-6">
-                <CreditCardsWidget accounts={accounts} />
-              </MotionSection>
-
-              <MotionSection delay={0.22} intensity="subtle" className="lg:col-span-6">
-                <AccountCards accounts={accounts} />
-              </MotionSection>
-
-              <MotionSection delay={0.26} intensity="subtle" className="lg:col-span-7">
-                <RecentTransactions transactions={recentTransactions} />
-              </MotionSection>
-
-              <MotionSection delay={0.28} intensity="subtle" className="lg:col-span-5">
-                <AnomaliesWidget />
-              </MotionSection>
-            </DashboardMore>
-          </div>
-        </PageScaffold>
-      </>
-    );
-  } catch (error) {
-    console.error('Dashboard error:', error);
-    redirect('/login');
-  }
+  return <PageScaffold hero={
+    <Suspense fallback={<Skeleton />}>
+      <FinancialHero accounts={accounts} portfolio={portfolio} history={history} inflation={inflation} />
+    </Suspense>
+  }>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+      <div className="lg:col-span-12"><Suspense fallback={<Skeleton />}>
+        <Section data={market} title="Mercado">
+          {({ q, s, holdings }) => <MarketStrip quotes={q} sparklines={s} topHoldings={holdings} />}
+        </Section>
+      </Suspense></div>
+      <div className="lg:col-span-4"><Suspense fallback={<Skeleton />}>
+        <Section data={flow} title="Este mes">{(value) => <MonthFlowCard flow={value} />}</Section>
+      </Suspense></div>
+      <div className="lg:col-span-4"><Suspense fallback={<Skeleton />}>
+        <Section data={budgets} title="Presupuestos">{(value) => <BudgetCluster budgets={value} />}</Section>
+      </Suspense></div>
+      <div className="lg:col-span-4"><Suspense fallback={<Skeleton />}>
+        <Section data={upcoming} title="Próximos vencimientos">{(value) => <UpcomingRail items={value} />}</Section>
+      </Suspense></div>
+      <div className="lg:col-span-12"><PrivateDetails label="Análisis de gastos"><Suspense fallback={<Skeleton />}>
+        <Section data={quotes} title="Análisis de gastos">
+          {(value) => <DashboardSpendingAnalyzerSection quotes={value} />}
+        </Section>
+      </Suspense></PrivateDetails></div>
+      <DashboardMore>
+        <div className="lg:col-span-6"><PrivateDetails label="Tarjetas"><Suspense fallback={<Skeleton />}>
+          <Section data={accounts} title="Tarjetas">{(value) => <CreditCardsWidget accounts={value} />}</Section>
+        </Suspense></PrivateDetails></div>
+        <div className="lg:col-span-6"><PrivateDetails label="Cuentas"><Suspense fallback={<Skeleton />}>
+          <Section data={accounts} title="Cuentas">{(value) => <AccountCards accounts={value} />}</Section>
+        </Suspense></PrivateDetails></div>
+        <div className="lg:col-span-7"><Suspense fallback={<Skeleton />}>
+          <Section data={recent} title="Últimos movimientos">{(value) => <RecentTransactions transactions={value} />}</Section>
+        </Suspense></div>
+        <div className="lg:col-span-5"><PrivateDetails label="Anomalías"><AnomaliesWidget /></PrivateDetails></div>
+      </DashboardMore>
+    </div>
+  </PageScaffold>;
 }

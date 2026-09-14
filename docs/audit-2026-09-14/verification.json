@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-14",
+  "baselineCommit": "d7b3219",
+  "branch": "audit/zarix-2026-09-14",
+  "baseline": {
+    "testFiles": 14,
+    "tests": 132,
+    "npmAuditFindings": 18
+  },
+  "final": {
+    "npmAuditFindings": 0,
+    "lockfileDryRun": "pass (npm11 npm ci --ignore-scripts --dry-run)",
+    "build": "pass (Next.js 15.5.25 production build; placeholder local Supabase configuration)",
+    "tests": 209,
+    "testFiles": 29,
+    "lint": "pass",
+    "typecheck": "pass"
+  },
+  "browser": {
+    "engine": "Chrome153",
+    "environment": "local Next dev; synthetic fixtures, no real credentials",
+    "demo": "Created synthetic expense1500 ARS and returned to list",
+    "dashboardComponents": [
+      "desktop1280px",
+      "mobile390px",
+      "no horizontal overflow",
+      "private masks amounts + axes + holdings + legacy details",
+      "IPC reference date",
+      "EUR upcoming amount label",
+      "no console errors"
+    ],
+    "unauthenticatedDashboard": "redirects to /login",
+    "fixtureRoute": "temporary /demo/audit-preview removed"
+  },
+  "independentReview": {
+    "securityJson": "3 validated schema and independently verified original traces",
+    "code": "APPROVE after fixing reported regressions; offline idempotency independently approved"
+  },
+  "limits": [
+    "No authenticated production end-to-end verification",
+    "No production migrations, deploy, messages or payments",
+    "DOCX structure/images checked, final pagination not checked"
+  ]
+}

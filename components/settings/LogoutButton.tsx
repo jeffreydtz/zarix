@@ -4,24 +4,36 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { clearOfflineReferenceSnapshots } from '@/lib/offline-reference-cache';
+import { setOfflineOwner } from '@/lib/offline-owner';
 
 export default function LogoutButton() {
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLogout = async () => {
     setLoggingOut(true);
-    await createClient().auth.signOut();
-    if ('serviceWorker' in navigator) {
-      const reg = await navigator.serviceWorker.ready.catch(() => null);
-      reg?.active?.postMessage({ type: 'CLEAR_CACHES' });
+    setError('');
+    try {
+      const result = await createClient().auth.signOut();
+      if (result.error) throw result.error;
+      setOfflineOwner(null);
+      clearOfflineReferenceSnapshots();
+      // ready never settles when no worker is registered (e.g. first visit).
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations().catch(() => []);
+        regs.forEach(reg => reg.active?.postMessage({ type: 'CLEAR_CACHES' }));
+      }
+      if (typeof caches !== 'undefined') {
+        await caches.keys().then(names => Promise.all(names.filter(n => n.startsWith('zarix')).map(n => caches.delete(n)))).catch(() => {});
+      }
+      router.push('/login');
+      router.refresh();
+    } catch {
+      setError('No pudimos cerrar la sesión. Reintentá.');
+      setLoggingOut(false);
     }
-    if (typeof caches !== 'undefined') {
-      const names = await caches.keys();
-      await Promise.all(names.map((n) => caches.delete(n)));
-    }
-    router.push('/login');
-    router.refresh();
   };
 
   return (
@@ -36,6 +48,7 @@ export default function LogoutButton() {
       <p className="text-sm text-muted-foreground mb-4">
         Cerrá tu sesión en este dispositivo.
       </p>
+      {error && <p role="alert" className="text-sm text-destructive mb-3">{error}</p>}
       <button
         onClick={handleLogout}
         disabled={loggingOut}

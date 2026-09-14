@@ -135,7 +135,7 @@ package "Aplicación: proveedores de cotización del dólar" {
     class "<CotizacionesService>\n(Context)" as Service {
         -providers: DolarRateProvider[]
         -cache: Record<string, CacheEntry>
-        +getDolarQuotes(): Record<string, DolarQuote>
+        +getDolarQuotes(opts?): Promise<Record<string, DolarQuote>>
     }
     class "<CriptoYaProvider>\n(fuente primaria)" as CriptoYa {
         +name = "criptoya"
@@ -166,6 +166,9 @@ Aplicado a: obtención de cotizaciones con múltiples fuentes
 Motivación: encapsular cada fuente de datos (CriptoYa, DolarApi,
 caché en BD) como una estrategia intercambiable; el Context las
 recorre en orden hasta obtener una cotización válida.
+El modo preferCache intenta BD primero; singleFlight agrupa
+solicitudes iguales, timeout limita esperas y cada fuente valida
+su contrato. Sin precio válido, se informa indisponibilidad.
 
 Beneficios:
 - Agregar una fuente = una clase nueva (Open/Closed)

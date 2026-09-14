@@ -106,10 +106,10 @@ class AccountsService {
   private getRateToUsd(usdRates: Record<string, number>, currency: string | null | undefined): number {
     const c = normalizeAccountCurrency(currency);
     const r = usdRates[c];
-    if (r !== undefined && r > 0) return r;
+    if (r !== undefined && Number.isFinite(r) && r > 0) return r;
     if (c === 'USD') return 1;
     if (STABLECOIN_USD.has(c)) return 1;
-    return 0;
+    throw new Error(`No hay cotización a USD para ${c}`);
   }
 
   private async buildUsdRates(currencies: string[], blueRate: number): Promise<Record<string, number>> {
@@ -136,6 +136,7 @@ class AccountsService {
       if ((!effective || effective <= 0) && STABLECOIN_USD.has(currency)) {
         effective = 1;
       }
+      if (!Number.isFinite(effective) || effective <= 0) throw new Error(`No hay cotización a USD para ${currency}`);
       rates[currency] = effective;
     }
 
@@ -243,7 +244,7 @@ class AccountsService {
 
     const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
 
-    if (blueRate === 0) {
+    if (!Number.isFinite(blueRate) || blueRate <= 0) {
       throw new Error('Exchange rate not available');
     }
 
@@ -257,11 +258,12 @@ class AccountsService {
 
     const accountsWithConversion = accounts.map((account) => {
       const balance = Number(account.balance);
+      if (!Number.isFinite(balance)) throw new Error('Saldo de cuenta inválido');
       const rateToUSD = this.getRateToUsd(usdRates, account.currency);
       let balanceUSD = 0;
       let balanceARSBlue = 0;
       const multi = multicurrencyBalances.get(account.id);
-      const secondaryRateToUSD = this.getRateToUsd(usdRates, account.secondary_currency);
+      const secondaryRateToUSD = account.secondary_currency ? this.getRateToUsd(usdRates, account.secondary_currency) : 1;
       if (rateToUSD > 0) {
         balanceUSD = balance * rateToUSD;
         balanceARSBlue = balanceUSD * blueRate;

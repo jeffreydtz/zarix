@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
+import { rateLimitAllow } from '@/lib/rate-limit';
 import {
   MAX_CHAT_HISTORY_TURNS,
   MAX_CHAT_MESSAGE_CHARS,
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!rateLimitAllow(`ai-chat:${user.id}:${clientIpFromRequest(req)}`, 40, 60 * 60 * 1000)) {
+    if (!rateLimitAllow(`ai-chat:${user.id}`, 40, 60 * 60 * 1000)) {
       return NextResponse.json({ error: 'Demasiados mensajes. Esperá un rato.' }, { status: 429 });
     }
 
@@ -45,9 +45,9 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
-    const { message } = body;
+    const message = body?.message;
 
-    if (!message || !message.trim()) {
+    if (typeof message !== 'string' || !message.trim()) {
       return NextResponse.json({ error: 'Message required' }, { status: 400 });
     }
     if (message.length > MAX_CHAT_MESSAGE_CHARS) {

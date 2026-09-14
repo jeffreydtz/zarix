@@ -27,11 +27,10 @@ export interface NetWorthNow {
  */
 export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
   const [accounts, portfolio, dolar] = await Promise.all([
-    accountsService.list(userId).catch(() => []),
+    accountsService.list(userId),
     investmentsService
-      .getPortfolioSummary(userId, { skipQuoteRefresh: true, skipDailySnapshot: true })
-      .catch(() => null),
-    cotizacionesService.getDolarQuotes({ preferCache: true }).catch(() => null),
+      .getPortfolioSummary(userId, { skipQuoteRefresh: true, skipDailySnapshot: true }),
+    cotizacionesService.getDolarQuotes({ preferCache: true }),
   ]);
 
   const balances =
@@ -61,7 +60,7 @@ export async function recordNetWorthSnapshot(userId: string): Promise<boolean> {
     // Sin cotización no hay conversión confiable: mejor saltear el día que
     // guardar un total en 0 que ensucie el gráfico. Se loguea para que un
     // hueco en la serie sea diagnosticable.
-    if (!(now.blueRate > 0)) {
+    if (!(now.blueRate > 0) || !Object.values(now).every(Number.isFinite)) {
       console.warn('[net-worth] snapshot salteado: sin cotización blue');
       return false;
     }
@@ -70,7 +69,7 @@ export async function recordNetWorthSnapshot(userId: string): Promise<boolean> {
     const { error } = await supabase.from('net_worth_snapshots').upsert(
       {
         user_id: userId,
-        snapshot_date: new Date().toISOString().split('T')[0],
+        snapshot_date: new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' }),
         liquid_usd: now.liquidUSD,
         investments_usd: now.investmentsUSD,
         total_usd: now.totalUSD,

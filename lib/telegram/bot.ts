@@ -26,6 +26,7 @@ import { escapeMd } from '@/lib/telegram/markdown';
 import { buildTelegramSummaryScheduleLines } from '@/lib/notification-schedule';
 import type { SubscriptionStatus } from '@/types/database';
 import type { InternalAiChatHistoryItem } from '@/types/internal-ai-chat';
+import { redeemLinkCode } from '@/lib/telegram/link-code';
 
 interface BotContext extends Context {
   userId?: string;
@@ -85,6 +86,9 @@ async function getUserById(userId: string) {
 async function resolveActingUser(ctx: BotContext) {
   const forcedId = (ctx.state as CustomBotState | undefined)?.forcedUserId;
   if (forcedId) return getUserById(forcedId);
+  // Unlinked custom bots may redeem their owner's code, never resolve another
+  // account from the incoming chat ID (including callbacks, photos and voice).
+  if ((ctx.state as CustomBotState | undefined)?.ownerUserId) return null;
   const chatId = ctx.chat?.id;
   if (chatId == null) return null;
   return getUserFromTelegramId(chatId);
@@ -92,42 +96,6 @@ async function resolveActingUser(ctx: BotContext) {
 
 // Canje del código de vinculación de un solo uso (prueba de posesión del chat:
 // quien envía el código controla este chat_id porque Telegram lo entregó).
-async function redeemLinkCode(
-  code: string,
-  telegramChatId: number,
-  username?: string,
-  expectedUserId?: string
-): Promise<'ok' | 'invalid' | 'taken'> {
-  const supabase = createServiceClientSync();
-  const normalized = code.toUpperCase().trim();
-  const { data: match } = await supabase
-    .from('users')
-    .select('id')
-    .eq('telegram_link_code', normalized)
-    .gt('telegram_link_code_expires_at', new Date().toISOString())
-    .maybeSingle();
-
-  if (!match) return 'invalid';
-  if (expectedUserId && match.id !== expectedUserId) return 'invalid';
-
-  const { error } = await supabase
-    .from('users')
-    .update({
-      telegram_chat_id: telegramChatId,
-      telegram_username: username || null,
-      telegram_link_code: null,
-      telegram_link_code_expires_at: null,
-    })
-    .eq('id', match.id);
-
-  if (error) {
-    // UNIQUE(telegram_chat_id): el chat ya está vinculado a otra cuenta.
-    if ((error as { code?: string }).code === '23505') return 'taken';
-    throw error;
-  }
-  return 'ok';
-}
-
 const LINK_CODE_RE = /^[A-F0-9]{8}$|^[A-F0-9]{12}$/;
 
 function summaryPrefsKeyboard(weekly: boolean, monthly: boolean) {

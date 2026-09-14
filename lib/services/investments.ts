@@ -119,9 +119,9 @@ function priceFactorForType(type: InvestmentType): number {
 }
 
 function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
-  if (blue.sell > 0) return blue.sell;
-  if (blue.buy > 0) return blue.buy;
-  return 1;
+  if (Number.isFinite(blue.sell) && blue.sell > 0) return blue.sell;
+  if (Number.isFinite(blue.buy) && blue.buy > 0) return blue.buy;
+  throw new Error('Cotización blue no disponible');
 }
 
 function amountToUsd(
@@ -130,22 +130,24 @@ function amountToUsd(
   arsPerUsd: number,
   extraUsdPerUnit?: Map<string, number>
 ): number {
+  if (!Number.isFinite(amount)) throw new Error('Importe de inversión inválido');
   const c = (currency || 'USD').toUpperCase();
   if (STABLE_AS_USD.has(c)) return amount;
   if (c === 'ARS') {
-    const rate = arsPerUsd > 0 ? arsPerUsd : 1;
-    return amount / rate;
+    if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización blue no disponible');
+    return amount / arsPerUsd;
   }
   if (extraUsdPerUnit) {
     const extra = extraUsdPerUnit.get(c);
-    return extra && extra > 0 ? amount * extra : 0;
+    if (extra && Number.isFinite(extra) && extra > 0) return amount * extra;
+    throw new Error(`No hay cotización a USD para ${c}`);
   }
   throw new Error(`No hay cotización a USD para ${c}`);
 }
 
 function usdToArsBlue(usd: number, arsPerUsd: number): number {
-  const rate = arsPerUsd > 0 ? arsPerUsd : 1;
-  return usd * rate;
+  if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización blue no disponible');
+  return usd * arsPerUsd;
 }
 
 function marketCurrencyForInvestment(type: InvestmentType, purchaseCurrency: string | null): string {
@@ -402,21 +404,18 @@ class InvestmentsService {
     }
     for (const c of needed) {
       if (STABLE_AS_USD.has(c) || c === 'ARS' || extraUsd.has(c)) continue;
-      try {
-        extraUsd.set(c, await cotizacionesService.getExchangeRate(c, 'USD'));
-      } catch {
-        /* sin tasa: amountToUsd devolverá 0 para esa moneda */
-      }
+      extraUsd.set(c, await cotizacionesService.getExchangeRate(c, 'USD'));
     }
 
     const investmentIds = investments.map((inv) => inv.id);
     const salesByInvestment = new Map<string, { realized: number; count: number }>();
     if (investmentIds.length > 0) {
-      const { data: salesRows } = await supabase
+      const { data: salesRows, error: salesError } = await supabase
         .from('investment_sales')
         .select('investment_id, realized_pnl_usd')
         .eq('user_id', userId)
         .in('investment_id', investmentIds);
+      if (salesError) throw salesError;
       for (const row of salesRows || []) {
         const cur = salesByInvestment.get(row.investment_id) || { realized: 0, count: 0 };
         cur.realized += Number(row.realized_pnl_usd) || 0;
@@ -753,10 +752,11 @@ class InvestmentsService {
     const totalDailyPnLArsBlue = usdToArsBlue(totalDailyPnLUsd, blueArsPerUsd);
 
     const supabase = createServiceClientSync();
-    const { data: allSales } = await supabase
+    const { data: allSales, error: allSalesError } = await supabase
       .from('investment_sales')
       .select('realized_pnl_usd')
       .eq('user_id', userId);
+    if (allSalesError) throw allSalesError;
     const totalRealizedPnLUsd = (allSales || []).reduce(
       (sum, row) => sum + (Number(row.realized_pnl_usd) || 0),
       0

@@ -7,9 +7,9 @@ export const maxDuration = 60;
 
 /**
  * Snapshot diario del patrimonio total por usuario (tabla net_worth_snapshots),
- * corre después de update-prices para capturar precios frescos. El dashboard
- * también upsertea el día en cada visita — el unique(user, día) hace que ambos
- * caminos sean idempotentes entre sí.
+ * corre después de update-prices para capturar precios frescos. Es el único
+ * escritor programado: visitar el dashboard no repite consultas ni persiste
+ * snapshots. El unique(user, día) permite reintentar la captura del día.
  */
 class NetWorthSnapshotJob extends IterativeCronJob<{ id: string }> {
   readonly name = 'net-worth-snapshot';

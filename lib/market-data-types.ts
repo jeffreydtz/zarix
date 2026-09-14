@@ -1,4 +1,9 @@
 export interface StockQuote {
+  source?: 'yahoo' | 'stooq' | 'data912';
+  observedAt?: string;
+  quotedAt?: string;
+  stale?: boolean;
+  changeBasis?: 'previousClose' | 'open';
   ticker: string;
   name: string;
   price: number;

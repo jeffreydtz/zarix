@@ -24,11 +24,11 @@ asistente IA (Gemini) y bot de Telegram.
 asesoramiento financiero → por eso no requiere licencia BCRA/CNV (sección 9.4 del doc).
 
 **Stack (memorizar):**
-- **Frontend:** Next.js 14 (App Router, React Server Components), React 18, Tailwind CSS, Recharts, Framer Motion.
+- **Frontend:** Next.js 15.5.25 (App Router, React Server Components), React 19.3, Tailwind CSS, Recharts, Framer Motion.
 - **Backend:** route handlers serverless de Next.js en Vercel (`app/api/**`), capa de servicios TypeScript (`lib/services/`).
 - **Datos:** Supabase = PostgreSQL 15 + Auth (JWT/GoTrue) + Storage. RLS en todas las tablas. Saldos por **trigger**, no por código.
 - **Integraciones:** Telegram (Telegraf, webhook), Google Gemini (chat, OCR de tickets, anomalías), Mercado Pago (suscripciones, webhook HMAC), APIs de cotización (CriptoYa, DolarApi, CoinGecko, Yahoo Finance).
-- **Automatización:** 7 cron jobs de Vercel Cron.
+- **Automatización:** 8 cron jobs de Vercel Cron.
 - **Metodología de análisis/diseño del TIF:** ICONIX (requerimientos → CU → dominio → robustez → secuencia → clases), según material de cátedra `sap_tfi_2026`.
 
 **Frase clave si pregunta "¿por qué este stack?":** minimizar costo operativo
@@ -137,7 +137,7 @@ zarix/
 ├── types/                ← database.ts (espejo TS del esquema) + contratos IA/import
 ├── scripts/              ← setup-telegram-webhook, set-password, compare-import
 ├── public/               ← manifest.json + sw.js (PWA)
-├── vercel.json           ← schedules de los 7 cron jobs
+├── vercel.json           ← schedules de los 8 cron jobs
 └── docs/tif/             ← 13 diagramas PlantUML (.puml) + PNGs del TIF
 ```
 
@@ -155,7 +155,7 @@ zarix/
 **Autenticadas** (grupo `(authenticated)`, su layout llama `getCachedUser()` y muestra banner si `status='GRACE_PERIOD'`):
 | Ruta | Tipo | Datos que carga |
 |---|---|---|
-| `/dashboard` | server | `Promise.all`: cuentas, últimas 5 tx, resumen portafolio, todas las cotizaciones. Widgets lazy con `next/dynamic` + Suspense. |
+| `/dashboard` | server | Secciones transmitidas con Suspense; cuentas/portafolio compartidos, historial independiente y fallos visibles por sección; sin escritura de snapshots al visitar. |
 | `/expenses` | server | Transacciones con filtros por searchParams (cuenta, categoría, tipo, fechas, búsqueda, montos). |
 | `/accounts` y `/accounts/[id]` | server | Listado + archivadas; detalle con 500 tx, FX rates, paneles de reparación/conciliación. |
 | `/investments` | server | Resumen de portafolio, cuentas de inversión, vencimientos ≤30 días. |
@@ -175,7 +175,7 @@ Regla general: cada handler valida sesión con `supabase.auth.getUser()` (las AP
 - **Cotizaciones:** `cotizaciones`, `cotizaciones/transactions-fx`, `market-data` (top crypto + tickers US/AR, caché en tabla singleton `market_data_cache`, TTL 3 min).
 - **Import/Export:** `export/transactions` (CSV/JSON, sanitiza inyección de fórmulas CSV + BOM), `export/backup` (JSON completo), `import/transactions` (~1490 líneas: CSV/XLSX/JSON, límite 12 MB, modos preview/import, zod, conversión de moneda, resolución de cuentas).
 - **Webhooks:** `telegram/webhook` (header secreto, timing-safe, siempre 200 tras auth), `telegram/webhook/u/[secret]` (bot propio por usuario), `webhooks/mercado-pago` (firma HMAC-SHA256, fail-closed).
-- **Cron:** 7 rutas bajo `api/cron/*` (ver §6.4).
+- **Cron:** 8 rutas bajo `api/cron/*` (ver §6.4).
 - **Auth/Billing/User:** `auth/link-telegram` (RPC `link_telegram_to_user`), `auth/dev-login` (solo dev, 404 en prod), `billing/subscription-link` (crea preapproval MP, anti open-redirect en `back_url`), `user/integrations`, `user/notification-preferences`, `user/onboarding`, `user/subscription`.
 - **Compartidos:** `shared-groups` (dueño, con sesión) vs `shared/[token]/**` (**público por capability token** 32-hex: unirse, agregar/editar/borrar gastos).
 
@@ -217,11 +217,11 @@ Otros módulos de `lib/`:
 
 - Carpetas por área: `dashboard/`, `expenses/`, `accounts/`, `investments/`, `analysis/`, `budgets/`, `recurring/` (en página), `settings/`, `shared/`, `landing/`, `onboarding/`, `ui/` (primitivos: PageScaffold, ChartTooltip, Skeleton, Animated*).
 - **DESIGN.md** (raíz): estética tipo Supabase — canvas casi negro, un solo color de marca (esmeralda `#22C55E`); tokens CSS en `globals.css` expuestos como utilidades Tailwind (`bg-background`, `bg-card`, `text-foreground`); **prohibido** hex crudos o clases tipo `bg-blue-500` en TSX; charts solo con `lib/chart-theme.ts`. `tailwind.config.ts` no define hex — todo delega en CSS custom properties (única fuente de verdad, flip claro/oscuro automático).
-- **Data fetching:** React Server Components + capa de servicios. **No hay** Redux/SWR/react-query. Único provider global: `ThemeProvider` (next-themes). ⚠️ `zustand` figura en package.json pero **no se usa** (dependencia huérfana — si el profesor lo nota: "quedó de una iteración anterior, es candidata a remover").
+- **Data fetching:** React Server Components + capa de servicios. **No hay** Redux/SWR/react-query. Providers y hooks coordinan tema, carga de movimientos y privacidad. Zustand no figura en las dependencias actuales.
 
 ### 3.6 package.json — dependencias que hay que saber justificar
 
-`next` 14.2 (App Router+RSC), `@supabase/supabase-js` + `@supabase/ssr` (auth por cookies en SSR), `recharts` (charts), `telegraf` (bot), `@google/generative-ai` (Gemini), `yahoo-finance2` (precios), `exceljs` (XLSX import/export), `zod` (validación), `date-fns`, `framer-motion`, `lucide-react`, `next-themes`. Scripts: `dev/build/start/lint`, `db:push`/`db:reset` (Supabase CLI), `telegram:webhook`, `test:bot`, `set-password`, `compare:import`.
+`next` 15.5.25 (App Router+RSC), `@supabase/supabase-js` + `@supabase/ssr` (auth por cookies en SSR), `recharts` (charts), `telegraf` (bot), `@google/generative-ai` (Gemini), `yahoo-finance2` (precios), `exceljs` (XLSX import/export), `zod` (validación), `date-fns`, `framer-motion`, `lucide-react`, `next-themes`. Scripts: `dev/build/start/lint`, `db:push`/`db:reset` (Supabase CLI), `telegram:webhook`, `test:bot`, `set-password`, `compare:import`.
 
 ---
 
@@ -370,7 +370,7 @@ Formato cátedra: RF → CU → RN → Robustez → Secuencia → Clases → tab
 5. 201 + revalidación del dashboard.
 
 ### 6.2 Dashboard (CU-003)
-Server Component: `getCachedUser()` → `Promise.all(accounts.list, transactions.list(5), investments.getPortfolioSummary, cotizaciones.getAllQuotes)` → agrega totales → renderiza widgets lazy. Si las APIs de cotización fallan, el Strategy cae a `DbCacheProvider` (último valor persistido) → el dashboard nunca se queda sin cotización (CP-003-02).
+Server Component: `getCachedUser()` → inicia consultas independientes → cada sección espera sus datos dentro de Suspense. Cuentas y portafolio se reutilizan para el patrimonio; el historial se carga aparte. Los fallos producen una sección no disponible, nunca un cero financiero inventado. El fallback Strategy depende de disponer de una cotización válida en BD; no garantiza cotización si todas las fuentes fallan. La visita no registra snapshots: lo hace el cron diario.
 
 ### 6.3 Bot Telegram + IA (CU-001-E1, CU-001-E2, RF10)
 1. Telegram → `POST /api/telegram/webhook` con header `x-telegram-bot-api-secret-token`; se valida timing-safe; tras autenticar **siempre responde 200** (evita re-entregas).
@@ -379,10 +379,11 @@ Server Component: `getCachedUser()` → `Promise.all(accounts.list, transactions
 4. Foto → Gemini `chatWithImage` extrae JSON (monto/comercio/fecha/categoría) → guarda propuesta en `bot_sessions` → pide confirmación → el "sí" dispara la tool. Voz → transcripción → mismo flujo de texto.
 5. Memoria conversacional en `bot_sessions.context` (tope 24 mensajes).
 
-### 6.4 Cron de recurrentes (CU-006-I1) y los otros 6 crons
-`vercel.json` define 7 schedules; Vercel invoca GET con `Authorization: Bearer CRON_SECRET`; `CronJob.run()` valida timing-safe y crea service client.
+### 6.4 Cron de recurrentes (CU-006-I1) y los otros 7 crons
+`vercel.json` define 8 schedules; Vercel invoca GET con `Authorization: Bearer CRON_SECRET`; `CronJob.run()` valida timing-safe y crea service client.
 - `recurring` (diario 08:00 UTC): busca reglas activas que tocan hoy; **reclama `last_executed_date` ANTES de crear** el movimiento (anti-duplicado, RN-REC-001); salta cuentas inactivas (RN-REC-002); notifica por Telegram.
-- `update-prices` (10:00): refresca `current_price` de inversiones no manuales.
+- `update-prices` (10:00): refresca `current_price` de inversiones no manuales con validación y agrupación de solicitudes.
+- `net-worth-snapshot` (10:30): registra el patrimonio total diario; rechaza datos financieros incompletos.
 - `weekly-summary` (lunes 09:00) y `monthly-summary` (día 1): resumen por Telegram redactado con Gemini.
 - `maturity-alerts` (09:00): inversiones que vencen en ≤3 días.
 - `budget-alerts` (10:30): umbral `alert_at_percent` y 100%, dedupe vía `budget_alerts`.
@@ -410,7 +411,7 @@ Server Component: `getCachedUser()` → `Promise.all(accounts.list, transactions
 - Documentado con formato Cristiá/FCEIA: `Pattern ObtencionDeCotizaciones based on Strategy because…`.
 
 ### 7.2 Template Method — cron jobs (`lib/cron/cron-job.ts`)
-- **Problema:** 7 crons repetían ~80 líneas de andamiaje (validar bearer, service client, iterar tolerando errores por ítem, resumen JSON).
+- **Problema:** 8 crons repetían ~80 líneas de andamiaje (validar bearer, service client, iterar tolerando errores por ítem, resumen JSON).
 - **Solución:** `abstract class CronJob` con **template method `run(request)`** (no redefinible): valida bearer → service client → `this.execute()` → respuesta JSON uniforme. `IterativeCronJob<TItem>` agrega el sub-esqueleto fetch → filtrar → procesar de a uno con try/catch por ítem → contadores. Primitivas: `fetchItems`, `processItem`. Hooks opcionales: `shouldProcess`, `beforeAll`, `afterAll`, `emptyMessage`.
 - 7 subclases: RecurringRulesJob, UpdatePricesJob, WeeklySummaryJob, MonthlySummaryJob, MaturityAlertsJob, BudgetAlertsJob (iterativos) y SubscriptionGraceJob (extiende CronJob directo: un UPDATE atómico). Cada route handler quedó en `return new XxxJob().run(request)`.
 - **Principio de Hollywood:** las subclases no pueden saltearse la autenticación porque está en el esqueleto. Job nuevo = una subclase (Open/Closed).
@@ -419,7 +420,7 @@ Server Component: `getCachedUser()` → `Promise.all(accounts.list, transactions
 1. **Cliente-Servidor** — browser PWA → Vercel; el servidor nunca inicia.
 2. **N-Tier** — Cliente · API · Servicios · Datos.
 3. **Layered** — rutas → servicios → clientes Supabase; cada capa depende solo de la inferior.
-4. **Serverless/FaaS** — funciones + 7 crons bajo demanda en Vercel.
+4. **Serverless/FaaS** — funciones + 8 crons bajo demanda en Vercel.
 5. **BaaS** — Supabase provee PG, Auth, Storage gestionados.
 6. **Repository** — los `*Service` encapsulan el acceso a datos; nadie más hace SQL.
 7. **Event-Driven** — triggers de BD, crons, webhooks (Telegram, MP).
@@ -447,7 +448,7 @@ Otros patrones presentes si pregunta "¿algún otro?": **Singleton** (todos los 
 - Export CSV sanitiza inyección de fórmulas (`=`, `+`, `-`, `@` al inicio de celda).
 - Anti open-redirect en `billing back_url` y `auth/callback`.
 - Anti-ciclo en jerarquía de categorías (recorre ancestros hasta 20 niveles).
-- Webhooks idempotentes: Telegram responde 200 siempre tras auth; MP 500 → retry con mapeo idempotente; cron recurrentes "reclama el día" antes de crear.
+- Reintentos: Telegram responde 200 tras autenticar para reducir reentregas, lo cual no garantiza ejecución exactamente una vez; MP consulta el identificador firmado y responde 500 ante fallo; recurrentes reclama el día antes de crear.
 - `DELETE /api/transactions` (borrar todo) exige `confirm: 'DELETE_ALL'`.
 - dev-login: 404 en producción y detrás de `ALLOW_DEV_LOGIN`.
 - Comparaciones de secretos siempre en tiempo constante (`lib/secure-compare.ts`).
@@ -482,7 +483,7 @@ Metodología para responder EN VIVO: (1) clasificarlo (¿nuevo CU? ¿cambio de d
 → Equipo unipersonal, dominio cohesivo, costo: un monolito modular serverless (capas + repository) da los mismos límites lógicos sin costo operativo. Los "servicios" ya están separados en módulos con interfaz clara; extraerlos sería mecánico si hiciera falta.
 
 **"Agregale tests"**
-→ El doc ya lo declara planificado (11.1): Jest + React Testing Library para componentes críticos, Playwright e2e para CU-001/CU-003. Primer objetivo racional: tests del trigger de saldos (SQL) y de `computeSettlements`/`getExchangeRate` (funciones puras, fáciles de testear).
+→ La suite Vitest ya existe y se amplió con regresiones de mercados, identidad offline, Telegram, firma de Mercado Pago, CSV/XLSX y privacidad SSR. Agregar escenarios al riesgo detectado; E2E con proveedores reales y verificación de políticas desplegadas siguen siendo una actividad separada. Ver adenda 2026-09-14.
 
 **Reglas generales al aceptar cualquier cambio:** nueva tabla ⇒ RLS + índice por user_id + tipos TS + migración versionada; nueva ruta ⇒ `getUser()` o secreto según el actor; nuevo componente ⇒ tokens del DESIGN.md; y siempre actualizar matriz de trazabilidad.
 
@@ -535,3 +536,8 @@ Metodología para responder EN VIVO: (1) clasificarlo (¿nuevo CU? ¿cambio de d
 | Patrones GoF documentados | Strategy (cotizaciones) + Template Method (crons) |
 | Estilos arquitectónicos | 8 |
 
+
+
+## Adenda de auditoría — 2026-09-14
+
+Consultar [adenda académica](tif/ADENDA-AUDITORIA-2026-09-14.md) e [informe de auditoría](AUDITORIA-2026-09-14.md). La versión técnica vigente usa Next.js 15.5.25, React 19.3, Node.js 22 y Vitest 4.1.11. La validación de CI incluye auditoría de dependencias bloqueante ante severidad alta. Los objetivos de latencia y disponibilidad del plan de negocio son requisitos, no mediciones demostradas por esta revisión local. La estructura original del TIF y sus resultados históricos se conserva; el anexo fechado distingue las mejoras actuales.

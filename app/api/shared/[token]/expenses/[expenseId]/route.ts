@@ -7,8 +7,9 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 // Editar un gasto del grupo (público, validado por token).
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { token: string; expenseId: string } }
+  props: { params: Promise<{ token: string; expenseId: string }> }
 ) {
+  const params = await props.params;
   try {
     if (!isValidShareToken(params.token) || !UUID_REGEX.test(params.expenseId)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });
@@ -67,8 +68,9 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { token: string; expenseId: string } }
+  props: { params: Promise<{ token: string; expenseId: string }> }
 ) {
+  const params = await props.params;
   try {
     if (!isValidShareToken(params.token) || !UUID_REGEX.test(params.expenseId)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });

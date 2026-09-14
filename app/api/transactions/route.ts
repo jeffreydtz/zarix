@@ -56,7 +56,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const offlineOwner = req.headers.get('x-zarix-offline-owner');
+    if (offlineOwner && offlineOwner !== user.id) {
+      return NextResponse.json({ error: 'La sesión cambió. Volvé a tu cuenta para sincronizar.' }, { status: 409 });
+    }
     const body = await req.json();
+
+    if (body.clientRequestId != null && (
+      typeof body.clientRequestId !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.clientRequestId)
+    )) {
+      return NextResponse.json({ error: 'Identificador de solicitud inválido.' }, { status: 400 });
+    }
+    if (body.clientRequestId && Number(body.installments) > 1) {
+      return NextResponse.json({ error: 'Las solicitudes offline no admiten compras en cuotas.' }, { status: 400 });
+    }
 
     if (!body.accountId) {
       return NextResponse.json(
@@ -94,6 +108,7 @@ export async function POST(req: NextRequest) {
 
     const transaction = await transactionsService.create({
       userId: user.id,
+      clientRequestId: body.clientRequestId,
       type: body.type,
       accountId: body.accountId,
       destinationAccountId: body.destinationAccountId,

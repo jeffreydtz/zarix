@@ -1,12 +1,12 @@
 # TIF UAI 2026 — Diagramas ICONIX de Zarix
 
 Fuentes editables de los diagramas de la sección técnica del **Trabajo Integrador
-Final** (`Zarix TIF v2.docx`, sección 10 "Aspectos Descriptivos de la Solución
+Final** (`Zarix_TIF_Jeffrey_Dietz.docx`, sección 10 "Aspectos Descriptivos de la Solución
 Tecnológica" + Anexo D). Siguen la metodología **ICONIX** y las convenciones del
 material de cátedra (PlantUML, leyenda, checklists por tipo de diagrama).
 
 > Todos los diagramas se derivan por ingeniería del **código real** del repo
-> (Next.js 14 + Supabase), no de un diseño teórico. Cada uno fue verificado de
+> (Next.js 15.5.25 + Supabase), no de un diseño teórico. Cada uno fue verificado de
 > forma adversarial contra el código fuente.
 
 ## Catálogo
@@ -32,25 +32,22 @@ material de cátedra (PlantUML, leyenda, checklists por tipo de diagrama).
 
 ## Regenerar
 
-Render **local** (preferido: los diagramas derivan del código privado, no
-subirlos a servidores externos). No hace falta Java instalado: se usa un JRE
-portable + `plantuml.jar` con el layout Smetana (sin Graphviz):
+Render **local**: no subir los diagramas a servicios externos. En Linux con Java y PlantUML instalados, usar `-pipe` conserva el nombre del archivo fuente aunque el título `@startuml` sea distinto:
 
 ```bash
-# una sola vez, en un dir temporal:
-curl -sL -o jre.tar.gz "https://api.adoptium.net/v3/binary/latest/21/ga/mac/aarch64/jre/hotspot/normal/eclipse"
-tar xzf jre.tar.gz
-curl -sL -o plantuml.jar "https://github.com/plantuml/plantuml/releases/download/v1.2025.2/plantuml-1.2025.2.jar"
-
-# render (el JAVA es el bin dentro del JRE extraído):
-$JAVA -Djava.awt.headless=true -jar plantuml.jar -Playout=smetana -tpng \
-  -o docs/tif/png docs/tif/diagrams/*.puml
+mkdir -p docs/tif/png
+for source in docs/tif/diagrams/*.puml; do
+  name="${source##*/}"
+  java -Djava.awt.headless=true -jar /usr/share/plantuml/plantuml.jar -Sdpi=150 -tpng -pipe \
+    < "$source" > "docs/tif/png/${name%.puml}.png"
+done
 ```
 
-Ojo: PlantUML nombra el PNG según el nombre del `@startuml` (`D-XXX-...`);
-renombrar a `figNN_*.png` después de renderizar. Alternativa histórica: el
-servidor público de PlantUML (`www.plantuml.com`) — evitarlo para no exponer
-la arquitectura interna.
+Revisar errores de PlantUML y abrir los PNG antes de incrustarlos. Reemplazar las imágenes existentes en el DOCX conservando su tamaño y relación de aspecto; la portada no es un diagrama. Actualizar los textos y tablas que describen las figuras junto con las fuentes.
+
+## Auditoría de septiembre de 2026
+
+La [adenda académica](ADENDA-AUDITORIA-2026-09-14.md) y el [informe de auditoría](../AUDITORIA-2026-09-14.md) documentan el estado vigente. `RESULTADOS-PRUEBAS.md` conserva las mediciones históricas. El dashboard ya no registra snapshots al visitar; el cron diario realiza esa escritura. Las figuras 4, 7, 10, 11 y 12 reflejan los cambios de flujo, fuentes y automatización; las leyendas técnicas reflejan Next.js 15.
 
 ## Convenciones (cátedra)
 

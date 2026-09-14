@@ -100,7 +100,7 @@ function UpcomingRail({ items }: UpcomingRailProps) {
                   {typeof item.amountARS === 'number' && (
                     <Amount
                       value={item.amountARS}
-                      currency={item.currency === 'USD' ? 'USD' : 'ARS'}
+                      currency={item.currency || 'ARS'}
                       className="shrink-0 text-sm font-semibold text-foreground"
                     />
                   )}

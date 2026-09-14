@@ -1,12 +1,14 @@
 import YahooFinance from 'yahoo-finance2';
 import type { StockQuote } from '@/lib/market-data-types';
+import { mapConcurrent, singleFlight, quoteDate } from '@/lib/market-data/requests';
 
-const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey'] });
+const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey'], versionCheck: false });
 
 /** Campos explícitos: `logoUrl` no viene si no se pide en la API de Yahoo. */
 const QUOTE_FIELDS = [
   'symbol',
   'regularMarketPrice',
+  'regularMarketTime',
   'regularMarketChange',
   'regularMarketChangePercent',
   'regularMarketPreviousClose',
@@ -19,12 +21,6 @@ const QUOTE_FIELDS = [
 ] as const;
 
 const QUOTE_OPTS = { fields: [...QUOTE_FIELDS] };
-
-const RETRY_MS = [0, 850, 2000] as const;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function resolveCurrency(symbol: string, metaCurrency: string | undefined): string {
   if (metaCurrency && metaCurrency.length > 0) return metaCurrency;
@@ -73,6 +69,9 @@ function mapYahooQuoteRow(symbol: string, q: Record<string, unknown>): StockQuot
 
   return {
     ticker: symbol,
+    source: 'yahoo',
+    observedAt: new Date().toISOString(),
+    quotedAt: q.regularMarketTime instanceof Date ? q.regularMarketTime.toISOString() : quoteDate(q.regularMarketTime).toISOString(),
     name,
     price,
     change,
@@ -113,43 +112,38 @@ function getQuoteForRequested(map: Map<string, StockQuote>, requested: string): 
   return undefined;
 }
 
-const MODULE_OPTS = { validateResult: false as const };
-
-/**
- * Cotizaciones Yahoo vía [yahoo-finance2](https://www.npmjs.com/package/yahoo-finance2) (solo servidor).
- * Lote + reintentos; símbolos faltantes se consultan uno a uno.
+/** Un lote y, solo si hubo datos parciales, un intento por faltante (máximo 3 a la vez).
+ * Todo Yahoo comparte un deadline de 7s; una caída no dispara 21 reintentos por panel.
  */
 export async function fetchYahooStockQuotesMap(tickers: string[]): Promise<Map<string, StockQuote>> {
-  const map = new Map<string, StockQuote>();
-  if (tickers.length === 0) return map;
-
-  for (let round = 0; round < RETRY_MS.length; round++) {
-    if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round]);
-    try {
-      const rows = await yahooFinance.quote(tickers, QUOTE_OPTS, MODULE_OPTS);
-      mergeQuoteBatchIntoMap(map, rows);
-      if (map.size > 0) break;
-    } catch {
-      /* siguiente ronda */
-    }
-  }
-
-  const missing = tickers.filter((t) => !mapHasTicker(map, t));
-  for (const t of missing) {
-    await sleep(150);
-    for (let round = 0; round < RETRY_MS.length; round++) {
-      if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round]);
+  if (!tickers.length) return new Map();
+  return singleFlight(`yahoo:${tickers.slice().sort().join(',')}`, async () => {
+    const map = new Map<string, StockQuote>();
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout>;
+    const deadline = new Promise<void>((resolve) => {
+      timer = setTimeout(() => { controller.abort(); resolve(); }, 7000);
+    });
+    const moduleOptions = { validateResult: false as const, fetchOptions: { signal: controller.signal } };
+    const work = async () => {
       try {
-        const rows = await yahooFinance.quote(t, QUOTE_OPTS, MODULE_OPTS);
-        mergeQuoteBatchIntoMap(map, rows);
-        break;
-      } catch {
-        /* siguiente ronda */
-      }
-    }
-  }
-
-  return map;
+        const rows = await yahooFinance.quote(tickers, QUOTE_OPTS, moduleOptions);
+        if (!controller.signal.aborted) mergeQuoteBatchIntoMap(map, rows);
+      } catch { return; }
+      // Si todo el lote falló, usar el proveedor alternativo en vez de insistir.
+      if (!map.size || controller.signal.aborted) return;
+      await mapConcurrent(tickers.filter((t) => !mapHasTicker(map, t)), 3, async (ticker) => {
+        if (controller.signal.aborted) return;
+        try {
+          const rows = await yahooFinance.quote(ticker, QUOTE_OPTS, moduleOptions);
+          if (!controller.signal.aborted) mergeQuoteBatchIntoMap(map, rows);
+        } catch { /* queda disponible el fallback */ }
+      });
+    };
+    try { await Promise.race([work(), deadline]); }
+    finally { clearTimeout(timer!); controller.abort(); }
+    return map;
+  });
 }
 
 /** Alinea al orden de `tickers` y fuerza `ticker` al símbolo pedido (display). */

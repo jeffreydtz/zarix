@@ -1,0 +1,205 @@
+[
+  {
+    "verdict": "confirmed",
+    "title": "Bot Telegram propio sin vínculo puede resolver otra cuenta",
+    "description": "Estado original en commit d7b3219. El guard establece ownerUserId pero no forcedUserId cuando no hay chat vinculado; resolveActingUser busca por chat.id recibido. Un callback sum:weekly llega a actualizar preferencias del usuario resuelto antes de responder a Telegram. No se afirma exfiltración por reply: la entrega a un chat ajeno requiere condiciones adicionales.",
+    "root_cause": "resolveActingUser in lib/telegram/bot.ts does not reject unlinked custom-owner context, allowing lookup and actions under another linked account.",
+    "intended_behavior": "Un bot propio solo opera sobre su dueño; antes de vincular permite canjear exclusivamente el código del dueño.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/api/telegram/webhook/u/[secret]/route.ts",
+        "line": 46,
+        "scope": "POST",
+        "description": "Update aceptado tras validar secretos del webhook del dueño."
+      },
+      {
+        "kind": "propagation",
+        "file": "lib/telegram/bot.ts",
+        "line": 796,
+        "scope": "getBotForTelegramToken",
+        "description": "Guarda dueño; si chatId del dueño es null continúa sin forcedUserId."
+      },
+      {
+        "kind": "propagation",
+        "file": "lib/telegram/bot.ts",
+        "line": 90,
+        "scope": "resolveActingUser",
+        "description": "Fallback utiliza chat.id del update."
+      },
+      {
+        "kind": "sink",
+        "file": "lib/telegram/bot.ts",
+        "line": 387,
+        "scope": "registerBotHandlers",
+        "description": "Callback de resúmenes actualiza preferencias del usuario resuelto con service role."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "authorization_role",
+        "description": "Cuenta con bot Telegram propio configurado pero telegram_chat_id null; conoce el secreto/cabecera de su propio webhook."
+      },
+      {
+        "kind": "data_state",
+        "description": "Conoce un chat.id vinculado a otra cuenta. El callback debe contener una estructura Telegram válida."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "Usuario de la aplicación en las condiciones indicadas; pruebas exclusivamente locales con datos sintéticos.",
+      "payloads": [
+        "Callback local sintético con data=\"sum:weekly\" y message.chat.id de otra cuenta vinculada."
+      ],
+      "instructions": [
+        "Preparar datos sintéticos que cumplan las condiciones.",
+        "Ejecutar la secuencia local descrita y verificar el resultado sin consultar servicios productivos."
+      ],
+      "expected_result": "Cambio de preferencias de notificaciones de otra cuenta bajo privilegios del servidor."
+    },
+    "remediation": {
+      "strategy": "Rechazar resolución por chat para todo contexto ownerUserId sin forcedUserId. Mantener canje condicionado al dueño y consumir código mediante UPDATE condicional atómico. Pruebas telegram-owner-isolation y telegram-link-code."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "Requiere las condiciones específicas indicadas; no es acceso indiscriminado."
+      },
+      "impact": {
+        "score": "high",
+        "reason": "Cambio de preferencias de notificaciones de otra cuenta bajo privilegios del servidor."
+      },
+      "overall_severity": "high"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Flujo inspeccionado por agentes independientes; regresión local agregada. Referencias corresponden al commit original indicado, no al árbol corregido."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "title": "Caché offline compartida entre usuarios del navegador",
+    "description": "Estado original en commit d7b3219. La caché local de cuentas y categorías usa claves globales; cerrar sesión elimina CacheStorage pero no snapshots. Una cuenta nueva recibe datos previos dentro del TTL sin consultar API.",
+    "root_cause": "fetchReferenceList in lib/offline-reference-cache.ts does not namespace snapshots by authenticated account, allowing the next user to receive prior account data.",
+    "intended_behavior": "Los datos de selección offline deben estar separados por usuario.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "components/settings/LogoutButton.tsx",
+        "line": 14,
+        "scope": "handleLogout",
+        "description": "Cierra sesión sin eliminar snapshots de localStorage."
+      },
+      {
+        "kind": "propagation",
+        "file": "lib/offline-reference-cache.ts",
+        "line": 7,
+        "scope": "KEYS",
+        "description": "Las claves no contienen propietario."
+      },
+      {
+        "kind": "sink",
+        "file": "lib/offline-reference-cache.ts",
+        "line": 134,
+        "scope": "fetchReferenceList",
+        "description": "Devuelve snapshot previo por TTL sin petición autenticada."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "user_interaction",
+        "description": "A usa Zarix y cierra sesión; B inicia sesión en el mismo perfil de navegador con snapshot vigente."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "Usuario de la aplicación en las condiciones indicadas; pruebas exclusivamente locales con datos sintéticos.",
+      "payloads": [
+        "Persistir snapshot sintético A; cambiar sesión simulada a B; fetchReferenceList(\"/api/accounts?lite=1\")."
+      ],
+      "instructions": [
+        "Preparar datos sintéticos que cumplan las condiciones.",
+        "Ejecutar la secuencia local descrita y verificar el resultado sin consultar servicios productivos."
+      ],
+      "expected_result": "B recibe nombres y datos de cuentas/categorías de A en el mismo navegador."
+    },
+    "remediation": {
+      "strategy": "Claves y singleflight por userId obtenido de la sesión local; descartar respuestas en vuelo tras cambio de sesión; limpiar snapshots al salir. Cola separada por propietario y validación del propietario esperado en API. Pruebas offline-reference-cache/offline-queue."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "Requiere las condiciones específicas indicadas; no es acceso indiscriminado."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "B recibe nombres y datos de cuentas/categorías de A en el mismo navegador."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Flujo inspeccionado por agentes independientes; regresión local agregada. Referencias corresponden al commit original indicado, no al árbol corregido."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "title": "Importación XLSX sin límite de expansión",
+    "description": "Estado original en commit d7b3219. Se comprueba solo tamaño comprimido de 12 MiB. ExcelJS descomprime entradas antes de interpretar hojas; archivo pequeño puede expandirse a memoria muy superior. Se validó localmente con una muestra acotada; no se ejecutó agotamiento de recursos.",
+    "root_cause": "parseXlsxWorkbook in app/api/import/transactions/route.ts does not bound archive expansion before ExcelJS, allowing disproportionate memory allocation from compressed input.",
+    "intended_behavior": "Aceptar planillas de tamaño razonable sin comprometer disponibilidad del proceso.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/api/import/transactions/route.ts",
+        "line": 1002,
+        "scope": "POST",
+        "description": "Solo controla tamaño del archivo comprimido."
+      },
+      {
+        "kind": "sink",
+        "file": "app/api/import/transactions/route.ts",
+        "line": 805,
+        "scope": "parseXlsxWorkbook",
+        "description": "ExcelJS materializa contenido descomprimido sin cuota de expansión."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "authentication_level",
+        "description": "Usuario autenticado con acceso a importación."
+      },
+      {
+        "kind": "environmental_dependency",
+        "description": "Instancia con memoria limitada; impacto depende del tamaño expandido y concurrencia."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "Usuario de la aplicación en las condiciones indicadas; pruebas exclusivamente locales con datos sintéticos.",
+      "payloads": [
+        "Planilla sintética válida con cadena repetida >8 MiB en XML, comprimida a <100 KiB, usada por xlsx-limits.test.ts."
+      ],
+      "instructions": [
+        "Preparar datos sintéticos que cumplan las condiciones.",
+        "Ejecutar la secuencia local descrita y verificar el resultado sin consultar servicios productivos."
+      ],
+      "expected_result": "Asignación de memoria desproporcionada; múltiples archivos grandes pueden agotar la instancia."
+    },
+    "remediation": {
+      "strategy": "Preflight yauzl de entradas y bytes realmente descomprimidos (256 entradas, 8 MiB por entrada, 32 MiB total), cuotas de filas/columnas y archivo. Test con planilla normal y expansión rechazada."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "Requiere las condiciones específicas indicadas; no es acceso indiscriminado."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "Asignación de memoria desproporcionada; múltiples archivos grandes pueden agotar la instancia."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Flujo inspeccionado por agentes independientes; regresión local agregada. Referencias corresponden al commit original indicado, no al árbol corregido."
+    }
+  }
+]

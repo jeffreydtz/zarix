@@ -3,8 +3,6 @@
 import { useEffect } from 'react';
 import {
   fetchReferenceList,
-  maybePersistAccountsSnapshot,
-  maybePersistCategoriesSnapshot,
 } from '@/lib/offline-reference-cache';
 
 /**
@@ -16,14 +14,11 @@ export default function OfflineReferenceWarmup() {
 
     const run = async () => {
       if (typeof navigator !== 'undefined' && !navigator.onLine) return;
-      const online = typeof navigator !== 'undefined' && navigator.onLine;
-      const [accs, cats] = await Promise.all([
+      await Promise.all([
         fetchReferenceList<unknown>('/api/accounts?lite=1', { ttlMs: 2 * 60 * 1000 }),
         fetchReferenceList<unknown>('/api/categories', { ttlMs: 2 * 60 * 1000 }),
       ]);
       if (cancelled) return;
-      maybePersistAccountsSnapshot(accs, online);
-      maybePersistCategoriesSnapshot(cats, online);
     };
 
     // No competir con el primer fetch de la página / transición de ruta (misma prioridad de red).

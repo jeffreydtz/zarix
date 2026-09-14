@@ -191,7 +191,7 @@ legend right
 Proyecto: ZARIX — TIF UAI 2026
 Autor: Jeffrey Dietz
 Metodología: ICONIX
-Fuente: Ingeniería del código real (Next.js 14 + Supabase)
+Fuente: Ingeniería del código real (Next.js 15 + Supabase)
 <<include>>: sub-flujo obligatorio | <<extend>>: sub-flujo opcional
 Flecha include: CU base → CU incluido | Flecha extend: CU que extiende → CU base
 endlegend

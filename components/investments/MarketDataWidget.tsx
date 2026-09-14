@@ -180,6 +180,9 @@ function StockRow({
       <div className="text-right">
         <div className="text-sm font-bold text-foreground tabular-nums">{priceStr}</div>
         <ChangeBadge value={stock.changePct} />
+        {stock.changeBasis === 'open' && (
+          <span className="block text-[10px] text-muted-foreground">Desde apertura · Stooq</span>
+        )}
       </div>
     </motion.div>
   );
@@ -228,9 +231,9 @@ function MarketSection({
                 : 'text-[11px] text-success'
             }
           >
-            {stale ? 'Última cotización guardada' : 'Tiempo real'}
+            {stale ? 'Última cotización guardada' : 'Referencia de mercado'}
           </span>
-          {stale && snap && (
+          {snap && (
             <span className="text-[10px] text-muted-foreground tabular-nums">{snap}</span>
           )}
         </div>

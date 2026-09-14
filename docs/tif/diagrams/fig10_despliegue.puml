@@ -112,13 +112,13 @@ node "Telegram" as Tg {
 }
 
 cloud "Vercel (Edge Network)" as Vercel {
-    node "Next.js 14 (Serverless / Fluid)" as Next {
+    node "Next.js 15 (Serverless / Fluid)" as Next {
         artifact "Frontend (SSR/CSR)" as FE
         artifact "Route Handlers\n(app/api/**)" as BE
         artifact "Webhook Telegram" as WH
     }
     node "Cron Jobs" as CronNode {
-        artifact "recurring · update-prices\nweekly-summary · monthly-summary\nmaturity-alerts · subscription-grace\nbudget-alerts" as CronJobs
+        artifact "recurring · update-prices\nweekly-summary · monthly-summary\nmaturity-alerts · subscription-grace\nbudget-alerts · net-worth-snapshot" as CronJobs
     }
 }
 
@@ -128,7 +128,7 @@ cloud "Supabase" as Supa {
 }
 
 cloud "APIs Externas" as Ext {
-    artifact "CriptoYa · DolarApi\nCoinGecko · Yahoo Finance" as Mkt
+    artifact "CriptoYa · DolarApi\nCoinGecko · Yahoo Finance\nStooq · Data912 · ArgentinaDatos" as Mkt
     artifact "Google Gemini\n(IA / anomalías)" as Gem
 }
 

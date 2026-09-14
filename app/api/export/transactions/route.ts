@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
+import { encodeCsvCell } from '@/lib/csv';
 
 export async function GET(request: NextRequest) {
   try {
@@ -89,20 +90,15 @@ export async function GET(request: NextRequest) {
         tx.amount_in_account_currency.toString(),
         tx.account?.name || '',
         tx.category?.name || '',
-        (tx.description || '').replace(/"/g, '""'),
-        (tx.notes || '').replace(/"/g, '""'),
+        tx.description || '',
+        tx.notes || '',
         installment,
       ];
     });
 
-    // Mitiga inyección de fórmulas CSV: si la celda empieza con =, +, -, @ o tab,
-    // Excel/Sheets la ejecutaría como fórmula al abrir el archivo.
-    const sanitizeCsvCell = (cell: string) =>
-      /^[=+\-@\t]/.test(cell) ? `'${cell}` : cell;
-
     const csvContent = [
       headers.join(','),
-      ...rows.map(row => row.map(cell => `"${sanitizeCsvCell(cell)}"`).join(',')),
+      ...rows.map(row => row.map(encodeCsvCell).join(',')),
     ].join('\n');
 
     const BOM = '\uFEFF';

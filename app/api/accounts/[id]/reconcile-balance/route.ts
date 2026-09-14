@@ -7,10 +7,8 @@ import { errorResponse } from '@/lib/api-handler';
  * Recalcula el saldo de la cuenta desde el libro de movimientos (misma lógica que el trigger).
  * POST sin body. Útil si hubo inconsistencias tras borrar movimientos (p. ej. ajustes de saldo).
  */
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {

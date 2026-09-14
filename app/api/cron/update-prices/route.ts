@@ -1,24 +1,18 @@
 import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
+import { mapConcurrent } from '@/lib/market-data/requests';
 
 export const dynamic = 'force-dynamic';
-// Fetches seriales por ticker contra 4 APIs de mercado: 30s quedaba corto
-// con un portfolio mediano y el job moría a mitad de la precarga.
+// Precarga acotada y escrituras con deadline para terminar dentro del presupuesto de Vercel.
 export const maxDuration = 60;
-
-const CRYPTO_TICKER_MAP: Record<string, string> = {
-  BTC: 'BTC',
-  ETH: 'ETH',
-  USDT: 'USDT',
-  USDC: 'USDT',
-  DAI: 'USDT',
-};
 
 class UpdatePricesJob extends IterativeCronJob<any> {
   readonly name = 'update-prices';
 
   private priceCache: Record<string, number> = {};
+  private priceTimes: Record<string, string> = {};
+  private deadline = Date.now() + 50_000;
 
   protected async fetchItems(supabase: ServiceClient): Promise<any[]> {
     // Get all active investments with crypto or USD-priced assets
@@ -27,7 +21,8 @@ class UpdatePricesJob extends IterativeCronJob<any> {
       .select('id, type, ticker, purchase_currency')
       .eq('is_active', true)
       .eq('is_manual_price', false)
-      .in('type', ['crypto', 'stock_us', 'etf', 'cedear', 'stock_arg']);
+      .in('type', ['crypto', 'stock_us', 'etf', 'cedear', 'stock_arg'])
+      .abortSignal(AbortSignal.timeout(3000));
 
     if (error) throw error;
     return investments || [];
@@ -42,8 +37,7 @@ class UpdatePricesJob extends IterativeCronJob<any> {
 
     for (const inv of investments) {
       if (inv.type === 'crypto' && inv.ticker) {
-        const mappedTicker = CRYPTO_TICKER_MAP[inv.ticker.toUpperCase()] || inv.ticker.toUpperCase();
-        cryptoTickers.add(mappedTicker);
+        cryptoTickers.add(inv.ticker.toUpperCase());
       } else if ((inv.type === 'stock_us' || inv.type === 'etf') && inv.ticker) {
         usTickers.add(inv.ticker.toUpperCase());
       } else if (inv.type === 'stock_arg' && inv.ticker) {
@@ -53,59 +47,44 @@ class UpdatePricesJob extends IterativeCronJob<any> {
       }
     }
 
-    // Fetch crypto prices
-    for (const ticker of cryptoTickers) {
-      try {
-        const quote = await cotizacionesService.getCryptoQuote(ticker);
-        this.priceCache[ticker] = quote.priceUSD;
-      } catch (e) {
-        console.error(`Error fetching price for ${ticker}:`, e);
-      }
-    }
-
-    // Fetch US stock/ETF prices
-    for (const ticker of usTickers) {
-      try {
-        const quote = await cotizacionesService.getStockQuote(ticker, 'us');
-        this.priceCache[`US:${ticker}`] = quote.price;
-      } catch (e) {
-        console.error(`Error fetching US stock price for ${ticker}:`, e);
-      }
-    }
-
-    // Fetch Argentina stock prices (MERVAL)
-    for (const ticker of argTickers) {
-      try {
-        const quote = await cotizacionesService.getStockQuote(ticker, 'arg');
-        this.priceCache[`ARG:${ticker}`] = quote.price;
-      } catch (e) {
-        console.error(`Error fetching ARG stock price for ${ticker}:`, e);
-      }
-    }
-
-    // Fetch CEDEAR prices (usually .BA)
-    for (const ticker of cedearTickers) {
-      try {
-        const quote = await cotizacionesService.getStockQuote(ticker, 'cedear');
-        this.priceCache[`CEDEAR:${ticker}`] = quote.price;
-      } catch (e) {
-        console.error(`Error fetching CEDEAR price for ${ticker}:`, e);
-      }
-    }
-
-    // Fetch USD/ARS rate (useful for USDT plazo fijo)
-    try {
-      const dolar = await cotizacionesService.getDolarQuotes();
-      this.priceCache['USD_ARS'] = dolar.blue.sell;
-    } catch (e) {
-      console.error('Error fetching USD rate:', e);
-    }
+    const preloadDeadline = Date.now() + 20_000;
+    const cryptoBatches: string[][] = [];
+    const symbols = [...cryptoTickers];
+    for (let i = 0; i < symbols.length; i += 100) cryptoBatches.push(symbols.slice(i, i + 100));
+    const stocks = [
+      ...[...usTickers].map((ticker) => ({ ticker, market: 'us' as const, prefix: 'US' })),
+      ...[...argTickers].map((ticker) => ({ ticker, market: 'arg' as const, prefix: 'ARG' })),
+      ...[...cedearTickers].map((ticker) => ({ ticker, market: 'cedear' as const, prefix: 'CEDEAR' })),
+    ];
+    await Promise.all([
+      mapConcurrent(cryptoBatches, 2, async (batch) => {
+        if (Date.now() >= preloadDeadline) return;
+        try {
+          const quotes = await cotizacionesService.getCryptoQuotes(batch);
+          for (const [ticker, quote] of Object.entries(quotes)) {
+            this.priceCache[ticker] = quote.priceUSD;
+            this.priceTimes[ticker] = quote.timestamp.toISOString();
+          }
+        } catch (error) { console.error('Crypto batch failed:', error); }
+      }),
+      mapConcurrent(stocks, 4, async ({ ticker, market, prefix }) => {
+        if (Date.now() >= preloadDeadline) return;
+        try {
+          const quote = await cotizacionesService.getStockQuote(ticker, market);
+          this.priceCache[`${prefix}:${ticker}`] = quote.price;
+          this.priceTimes[`${prefix}:${ticker}`] = quote.timestamp.toISOString();
+        } catch (error) { console.error(`Quote ${ticker} failed:`, error); }
+      }),
+      cotizacionesService.getDolarQuotes().then((quotes) => {
+        this.priceCache.USD_ARS = quotes.blue.sell;
+        this.priceTimes.USD_ARS = quotes.blue.timestamp.toISOString();
+      }).catch((error) => console.error('USD quote failed:', error)),
+    ]);
   }
 
   private resolvePrice(inv: any): number | null {
     if (inv.type === 'crypto' && inv.ticker) {
-      const mappedTicker = CRYPTO_TICKER_MAP[inv.ticker.toUpperCase()] || inv.ticker.toUpperCase();
-      return this.priceCache[mappedTicker] || null;
+      return this.priceCache[inv.ticker.toUpperCase()] || null;
     }
     if ((inv.type === 'stock_us' || inv.type === 'etf') && inv.ticker) {
       return this.priceCache[`US:${inv.ticker.toUpperCase()}`] || null;
@@ -119,55 +98,43 @@ class UpdatePricesJob extends IterativeCronJob<any> {
     return null;
   }
 
-  protected shouldProcess(inv: any): boolean {
-    return this.resolvePrice(inv) !== null;
-  }
-
   protected async processItem(supabase: ServiceClient, inv: any): Promise<void> {
+    const price = this.resolvePrice(inv);
+    // El template cuenta errores y alerta: jamás omitir silenciosamente una cotización caída.
+    if (!price || !Number.isFinite(price)) throw new Error(`Sin cotización válida para ${inv.ticker}`);
+    if (Date.now() >= this.deadline) throw new Error('Tiempo máximo de actualización alcanzado');
+    const prefix = inv.type === 'stock_us' || inv.type === 'etf' ? 'US:' : inv.type === 'stock_arg' ? 'ARG:' : inv.type === 'cedear' ? 'CEDEAR:' : '';
+    const timestamp = this.priceTimes[`${prefix}${inv.ticker.toUpperCase()}`];
     const { error } = await supabase
       .from('investments')
       .update({
-        current_price: this.resolvePrice(inv),
-        current_price_updated_at: new Date().toISOString(),
+        current_price: price,
+        current_price_updated_at: timestamp,
       })
-      .eq('id', inv.id);
+      .eq('id', inv.id)
+      .eq('is_active', true)
+      .eq('is_manual_price', false)
+      .abortSignal(AbortSignal.timeout(Math.max(1, Math.min(2000, this.deadline - Date.now()))));
 
     if (error) throw error;
   }
 
   /** Persiste el histórico de cotizaciones obtenidas en esta corrida. */
   protected async afterAll(supabase: ServiceClient, _items: any[]): Promise<void> {
-    try {
-      const usdRate = this.priceCache['USD_ARS'] ?? 0;
-      if (usdRate > 0) {
-        await supabase.from('exchange_rates').upsert({
-          source: 'blue',
-          from_currency: 'USD',
-          to_currency: 'ARS',
-          rate: usdRate,
-          timestamp: new Date().toISOString(),
-        }, { onConflict: 'source,from_currency,to_currency,timestamp' });
-      }
-
-      for (const [ticker, price] of Object.entries(this.priceCache)) {
-        if (ticker === 'USD_ARS') continue;
-        // Solo cotizaciones de MONEDAS cripto van a exchange_rates. Las claves
-        // de acciones/CEDEARs van prefijadas (US:AAPL, ARG:GGAL, CEDEAR:...) y
-        // NO son monedas: persistirlas contaminaba la tabla con filas basura.
-        if (ticker.includes(':')) continue;
-        // Nunca persistir tasas <= 0 en exchange_rates.
-        if (!(price > 0)) continue;
-        await supabase.from('exchange_rates').upsert({
-          source: 'coingecko',
-          from_currency: ticker,
-          to_currency: 'USD',
-          rate: price,
-          timestamp: new Date().toISOString(),
-        }, { onConflict: 'source,from_currency,to_currency,timestamp' });
-      }
-    } catch (e) {
-      console.error('Error storing exchange rates:', e);
-    }
+    const rows = Object.entries(this.priceCache)
+      .filter(([ticker, price]) => !ticker.includes(':') && Number.isFinite(price) && price > 0)
+      .map(([ticker, price]) => ({
+        source: ticker === 'USD_ARS' ? 'blue' : 'coingecko',
+        from_currency: ticker === 'USD_ARS' ? 'USD' : ticker,
+        to_currency: ticker === 'USD_ARS' ? 'ARS' : 'USD',
+        rate: price,
+        timestamp: this.priceTimes[ticker],
+      }));
+    if (!rows.length) return;
+    const { error } = await supabase.from('exchange_rates').upsert(rows, {
+      onConflict: 'source,from_currency,to_currency,timestamp',
+    }).abortSignal(AbortSignal.timeout(2000));
+    if (error) throw error;
   }
 
   protected emptyMessage(): string {

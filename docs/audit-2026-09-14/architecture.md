@@ -1,0 +1,14 @@
+# Zarix: arquitectura y límites de confianza (2026-09-14)
+Aplicación financiera personal argentina y TIF UAI: Next.js 14.2.35 App Router, React 18, TypeScript, Supabase Auth/Postgres, Vercel, Telegram/Telegraf, Gemini y Mercado Pago. Comparación conceptual: gestor de finanzas personales multiusuario (aislamiento de patrimonio obligatorio); grupos por enlace admiten colaboración de cualquier poseedor por diseño, no identidad individual de cada invitado.
+
+Entradas: 59 rutas API más callback OAuth. CRUD de cuentas/movimientos/inversiones/categorías/presupuestos/recurrentes; importación JSON y exportación CSV/XLSX; grupos compartidos por token; chat IA; webhooks Telegram compartido/propio y MP; ocho crons; proveedores Yahoo/Stooq/Data912/CriptoYa/DolarApi/CoinGecko/ArgentinaDatos.
+
+Autorización: middleware.ts protege páginas; APIs excluidas del matcher verifican Supabase auth.getUser individualmente (lib/api-handler.ts, lib/auth/session.ts). lib/supabase/server.ts crea clientes service-role que ignoran RLS: cada consulta requiere user_id o relación previamente autorizada. PostgREST con JWT público expone también tablas sujetas a políticas SQL. Migraciones locales no prueban políticas desplegadas.
+
+Invitados: lib/services/sharedExpenses.ts resuelve capacidad aleatoria 32-hex y limita consultas por group_id. Telegram: app/api/telegram/webhook/{route.ts,u/[secret]/route.ts}, lib/telegram/bot.ts, lib/services/user-integrations.ts; cabecera secreta autentica transporte, chat vinculado determina usuario. Custom bot depende de owner.chatId. MP: app/api/webhooks/mercado-pago/route.ts y lib/services/mercado-pago-service.ts validan HMAC y consultan proveedor. CronJob valida bearer timing-safe antes del service client. Dev-login bloqueado incondicionalmente en producción.
+
+Datos externos: lib/services/cotizaciones.ts implementa Strategy CriptoYa→DolarApi→DB; lib/market-data y lib/yahoo-finance-quotes.ts alimentan inversiones y app/api/market-data/route.ts. app/(authenticated)/dashboard/page.tsx carga servicios en paralelo pero espera todas las fuentes y repite consultas con snapshot. lib/services/net-worth.ts convierte errores de datos en colecciones vacías: investigar persistencia parcial.
+
+Sinks: consultas Supabase y RPC con privilegios; mutaciones de herramientas IA; fetch al proveedor; CSV/XLSX; Telegram mensajes y URLs de archivos. No evaluar vulnerabilidades solo por ausencia de defensa: seguir entrada, validación, transformación, persistencia y salida. No ejecutar ataques en servicios reales.
+
+Cobertura previa: no existen corridas en /root/security-audit-skill/zarix. Hay hardening previo y 132 tests locales; estudiar mitigaciones existentes antes de confirmar. Prioridades: custom Telegram sin chat, consumo concurrente de códigos, ID MP firmado/procesado, relaciones DB entre dueños, CSV, caché de mercados.

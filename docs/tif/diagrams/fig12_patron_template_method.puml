@@ -169,6 +169,10 @@ package "Aplicación: cron jobs (app/api/cron/**)" {
         #execute(): UPDATE atómico único
     }
 
+    class "<NetWorthSnapshotJob>" as Nw {
+        #processItem(): captura patrimonio completo
+    }
+
     Base <|-- Iter
     Iter <|-- Rec
     Iter <|-- Upd
@@ -176,6 +180,7 @@ package "Aplicación: cron jobs (app/api/cron/**)" {
     Iter <|-- Mo
     Iter <|-- Mat
     Iter <|-- Bud
+    Iter <|-- Nw
     Base <|-- Sub
 
     note bottom of Base
@@ -193,9 +198,9 @@ Autor: Jeffrey Dietz
 Metodología: ICONIX
 Fuente: lib/cron/cron-job.ts + app/api/cron/** (código real)
 Patrón: Template Method (Gamma et al., 1995)
-Aplicado a: los 7 cron jobs de Vercel (recurring, update-prices,
+Aplicado a: los 8 cron jobs de Vercel (recurring, update-prices,
 weekly-summary, monthly-summary, maturity-alerts,
-subscription-grace, budget-alerts)
+subscription-grace, budget-alerts, net-worth-snapshot)
 
 Beneficios:
 - Elimina ~80 líneas de andamiaje duplicado por ruta

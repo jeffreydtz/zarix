@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
+import { setOfflineOwner } from '@/lib/offline-owner';
 
 function buildClient() {
   return createBrowserClient(
@@ -43,6 +44,12 @@ function buildClient() {
 let browserClient: ReturnType<typeof buildClient> | undefined;
 
 export function createClient() {
-  if (!browserClient) browserClient = buildClient();
+  if (!browserClient) {
+    browserClient = buildClient();
+    browserClient.auth.onAuthStateChange((event, session) => {
+      if (session?.user.id) setOfflineOwner(session.user.id);
+      else if (event === 'SIGNED_OUT') setOfflineOwner(null);
+    });
+  }
   return browserClient;
 }

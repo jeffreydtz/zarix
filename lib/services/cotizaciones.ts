@@ -1,5 +1,6 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { YAHOO_FINANCE_HEADERS } from '@/lib/yahoo-finance-headers';
+import { positiveNumber, quoteDate, singleFlight } from '@/lib/market-data/requests';
 
 interface DolarQuote {
   type: 'blue' | 'oficial' | 'mep' | 'ccl';
@@ -30,12 +31,31 @@ interface CacheEntry {
 }
 
 const cache: Record<string, CacheEntry> = {};
-const CACHE_TTL = parseInt(process.env.EXCHANGE_RATE_CACHE_TTL || '300') * 1000;
+const configuredTtl = Number(process.env.EXCHANGE_RATE_CACHE_TTL || 300);
+const CACHE_TTL = Number.isFinite(configuredTtl) && configuredTtl > 0 ? configuredTtl * 1000 : 300_000;
+const FETCH_TIMEOUT_MS = 5000;
+const COIN_IDS: Record<string, string> = {
+  BTC: 'bitcoin', ETH: 'ethereum', USDT: 'tether', USDC: 'usd-coin', DAI: 'dai',
+  SOL: 'solana', XRP: 'ripple', BNB: 'binancecoin', ADA: 'cardano', DOGE: 'dogecoin',
+  AVAX: 'avalanche-2', DOT: 'polkadot', LINK: 'chainlink', LTC: 'litecoin',
+};
+
+function validateDollarQuotes(quotes: Record<string, DolarQuote>): void {
+  for (const type of ['blue', 'oficial', 'mep', 'ccl']) {
+    const q = quotes[type];
+    if (!q || !positiveNumber(q.buy) || !positiveNumber(q.sell) || !Number.isFinite(q.timestamp.getTime())) {
+      throw new Error(`Cotización ${type} inválida o incompleta`);
+    }
+    q.buy = Number(q.buy);
+    q.sell = Number(q.sell);
+  }
+}
 
 interface DolarApiRow {
   casa: string;
   compra: number;
   venta: number;
+  fechaActualizacion?: string;
 }
 
 /**
@@ -58,6 +78,7 @@ class CriptoYaProvider implements DolarRateProvider {
   async fetch(): Promise<Record<string, DolarQuote>> {
     const response = await fetch(`${this.baseURL}/dolar`, {
       next: { revalidate: 300 },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -73,25 +94,25 @@ class CriptoYaProvider implements DolarRateProvider {
         type: 'blue',
         buy: data.blue?.bid || data.blue || 0,
         sell: data.blue?.ask || data.blue || 0,
-        timestamp: new Date(),
+        timestamp: quoteDate(data.timestamp),
       },
       oficial: {
         type: 'oficial',
         buy: data.oficial?.bid || data.oficial || 0,
         sell: data.oficial?.ask || data.oficial || 0,
-        timestamp: new Date(),
+        timestamp: quoteDate(data.timestamp),
       },
       mep: {
         type: 'mep',
         buy: data.mep?.al30?.['24hs']?.price || 0,
         sell: data.mep?.al30?.['24hs']?.price || 0,
-        timestamp: new Date(),
+        timestamp: quoteDate(data.timestamp),
       },
       ccl: {
         type: 'ccl',
         buy: data.ccl?.al30?.['24hs']?.price || 0,
         sell: data.ccl?.al30?.['24hs']?.price || 0,
-        timestamp: new Date(),
+        timestamp: quoteDate(data.timestamp),
       },
     };
 
@@ -101,6 +122,7 @@ class CriptoYaProvider implements DolarRateProvider {
       throw new Error('CriptoYa: dólar blue en 0');
     }
 
+    validateDollarQuotes(quotes);
     return quotes;
   }
 }
@@ -114,7 +136,7 @@ class DolarApiProvider implements DolarRateProvider {
     const response = await fetch(`${this.baseURL}/dolares`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 300 },
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -138,13 +160,11 @@ class DolarApiProvider implements DolarRateProvider {
     const oficial = byCasa.get('oficial');
     const bolsa = byCasa.get('bolsa');
     const ccl = byCasa.get('contadoconliqui');
-    const timestamp = new Date();
-
     const quotes: Record<string, DolarQuote> = {
-      blue: { type: 'blue', buy: Number(blue?.compra) || 0, sell: Number(blue?.venta) || 0, timestamp },
-      oficial: { type: 'oficial', buy: Number(oficial?.compra) || 0, sell: Number(oficial?.venta) || 0, timestamp },
-      mep: { type: 'mep', buy: Number(bolsa?.compra) || 0, sell: Number(bolsa?.venta) || 0, timestamp },
-      ccl: { type: 'ccl', buy: Number(ccl?.compra) || 0, sell: Number(ccl?.venta) || 0, timestamp },
+      blue: { type: 'blue', buy: Number(blue?.compra) || 0, sell: Number(blue?.venta) || 0, timestamp: quoteDate(blue?.fechaActualizacion) },
+      oficial: { type: 'oficial', buy: Number(oficial?.compra) || 0, sell: Number(oficial?.venta) || 0, timestamp: quoteDate(oficial?.fechaActualizacion) },
+      mep: { type: 'mep', buy: Number(bolsa?.compra) || 0, sell: Number(bolsa?.venta) || 0, timestamp: quoteDate(bolsa?.fechaActualizacion) },
+      ccl: { type: 'ccl', buy: Number(ccl?.compra) || 0, sell: Number(ccl?.venta) || 0, timestamp: quoteDate(ccl?.fechaActualizacion) },
     };
 
     // Igual que CriptoYa: blue en 0 = respuesta degradada → fallar para caer al
@@ -153,6 +173,7 @@ class DolarApiProvider implements DolarRateProvider {
       throw new Error('DolarApi: dólar blue en 0');
     }
 
+    validateDollarQuotes(quotes);
     return quotes;
   }
 }
@@ -175,6 +196,7 @@ class DbCacheProvider implements DolarRateProvider {
           .eq('to_currency', 'ARS')
           .order('timestamp', { ascending: false })
           .limit(1)
+          .abortSignal(AbortSignal.timeout(2000))
           .single();
 
         return { source, data };
@@ -204,6 +226,7 @@ class DbCacheProvider implements DolarRateProvider {
       }
     }
 
+    validateDollarQuotes(result);
     return result;
   }
 }
@@ -244,6 +267,8 @@ class CotizacionesService {
   }
 
   private setCache<T>(key: string, data: T): void {
+    // Los símbolos vienen de requests: mantener acotado el caché de proceso.
+    if (Object.keys(cache).length >= 500) delete cache[Object.keys(cache)[0]];
     cache[key] = {
       data,
       timestamp: Date.now(),
@@ -253,7 +278,6 @@ class CotizacionesService {
   private async saveLatestDolarQuotes(quotes: Record<string, DolarQuote>): Promise<void> {
     try {
       const supabase = createServiceClientSync();
-      const nowIso = new Date().toISOString();
 
       // Nunca persistir tasas <= 0: quedan en exchange_rates y las lee DbCacheProvider.
       const rows = Object.values(quotes)
@@ -262,13 +286,13 @@ class CotizacionesService {
           from_currency: 'USD',
           to_currency: 'ARS',
           rate: q.sell || q.buy || 0,
-          timestamp: nowIso,
+          timestamp: q.timestamp.toISOString(),
         }))
-        .filter((r) => r.rate > 0);
+        .filter((r) => Number.isFinite(r.rate) && r.rate > 0);
 
       if (rows.length === 0) return;
 
-      await supabase.from('exchange_rates').insert(rows);
+      await supabase.from('exchange_rates').insert(rows).abortSignal(AbortSignal.timeout(2000));
     } catch (error) {
       console.error('Error saving dollar quotes:', error);
     }
@@ -277,100 +301,97 @@ class CotizacionesService {
   async getDolarQuotes(
     opts?: { preferCache?: boolean }
   ): Promise<Record<string, DolarQuote>> {
-    const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
+    const cacheKey = this.getCacheKey('criptoya', 'dolar', opts?.preferCache ? 'db' : 'all');
     const cached = this.getFromCache<Record<string, DolarQuote>>(cacheKey);
 
     if (cached) {
       return cached;
     }
 
-    // Camino rápido (dashboard): última cotización persistida en DB en vez de
-    // esperar a las APIs externas en vivo (que en frío tardan segundos). La
-    // frescura la mantiene el cron update-prices. Si no hay cache en DB, cae al
-    // camino en vivo. El caller (dashboard) lo envuelve en un timeout duro.
-    if (opts?.preferCache) {
-      const dbProvider = this.dolarProviders.find((p) => p.name === 'db');
-      if (dbProvider) {
+    return singleFlight(`dolar:${opts?.preferCache ? 'db' : 'live'}`, async () => {
+      // Camino rápido (dashboard): última cotización persistida en DB en vez de
+      // esperar a las APIs externas en vivo (que en frío tardan segundos). La
+      // frescura la mantiene el cron update-prices. Si no hay cache en DB, cae al
+      // camino en vivo. El caller (dashboard) lo envuelve en un timeout duro.
+      if (opts?.preferCache) {
+        const dbProvider = this.dolarProviders.find((p) => p.name === 'db');
+        if (dbProvider) {
+          try {
+            const quotes = await dbProvider.fetch();
+            this.setCache(cacheKey, quotes);
+            return quotes;
+          } catch {
+            // sin cache previa en DB → seguimos al camino en vivo
+          }
+        }
+      }
+
+      // Patrón Strategy + fallback: recorre los proveedores en orden hasta que uno
+      // devuelve una cotización válida. Solo se persisten las fuentes en vivo
+      // (no el proveedor de respaldo en BD, que ya lee de exchange_rates).
+      let lastError: unknown;
+      for (const provider of this.dolarProviders) {
         try {
-          const quotes = await dbProvider.fetch();
+          const quotes = await provider.fetch();
           this.setCache(cacheKey, quotes);
+          if (provider.name !== 'db') {
+            await this.saveLatestDolarQuotes(quotes);
+          }
           return quotes;
-        } catch {
-          // sin cache previa en DB → seguimos al camino en vivo
+        } catch (error) {
+          console.error(`Dolar provider "${provider.name}" failed:`, error);
+          lastError = error;
         }
       }
-    }
 
-    // Patrón Strategy + fallback: recorre los proveedores en orden hasta que uno
-    // devuelve una cotización válida. Solo se persisten las fuentes en vivo
-    // (no el proveedor de respaldo en BD, que ya lee de exchange_rates).
-    let lastError: unknown;
-    for (const provider of this.dolarProviders) {
-      try {
-        const quotes = await provider.fetch();
-        this.setCache(cacheKey, quotes);
-        if (provider.name !== 'db') {
-          void this.saveLatestDolarQuotes(quotes);
-        }
-        return quotes;
-      } catch (error) {
-        console.error(`Dolar provider "${provider.name}" failed:`, error);
-        lastError = error;
+      throw lastError ?? new Error('No hay proveedor de cotización disponible');
+    });
+  }
+
+  /** CoinGecko simple/price admite IDs separados por coma; una consulta por lote. */
+  async getCryptoQuotes(symbols: string[]): Promise<Record<string, CryptoQuote>> {
+    const normalized = [...new Set(symbols.map((s) => s.trim().toUpperCase()))];
+    if (normalized.length > 100 || normalized.some((s) => !/^[A-Z0-9-]{1,64}$/.test(s))) {
+      throw new Error('Símbolos cripto inválidos');
+    }
+    const result: Record<string, CryptoQuote> = {};
+    const missing = normalized.filter((symbol) => {
+      const cached = this.getFromCache<CryptoQuote>(this.getCacheKey('coingecko', symbol, 'USD'));
+      if (cached) result[symbol] = cached;
+      return !cached;
+    });
+    if (!missing.length) return result;
+    const fresh = await singleFlight(`crypto:${missing.slice().sort().join(',')}`, async () => {
+      const ids = [...new Set(missing.map((s) => COIN_IDS[s] || s.toLowerCase()))];
+      const query = new URLSearchParams({ ids: ids.join(','), vs_currencies: 'usd,ars', include_24hr_change: 'true', include_last_updated_at: 'true' });
+      const response = await fetch(`${this.coingeckoBaseURL}/simple/price?${query}`, {
+        next: { revalidate: 60 }, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+      if (!response.ok) throw new Error(`CoinGecko API error: ${response.status}`);
+      const data = await response.json();
+      const quotes: Record<string, CryptoQuote> = {};
+      for (const symbol of missing) {
+        const row = data?.[COIN_IDS[symbol] || symbol.toLowerCase()];
+        const priceUSD = positiveNumber(row?.usd);
+        const priceARS = positiveNumber(row?.ars);
+        if (!priceUSD || !priceARS) continue;
+        const quote: CryptoQuote = { symbol, priceUSD, priceARS,
+          change24h: typeof row.usd_24h_change === 'number' && Number.isFinite(row.usd_24h_change) ? row.usd_24h_change : 0,
+          timestamp: quoteDate(row.last_updated_at),
+        };
+        this.setCache(this.getCacheKey('coingecko', symbol, 'USD'), quote);
+        quotes[symbol] = quote;
       }
-    }
-
-    throw lastError ?? new Error('No hay proveedor de cotización disponible');
+      return quotes;
+    });
+    return { ...result, ...fresh };
   }
 
   async getCryptoQuote(symbol: string): Promise<CryptoQuote> {
-    const cacheKey = this.getCacheKey('coingecko', symbol, 'USD');
-    const cached = this.getFromCache<CryptoQuote>(cacheKey);
-
-    if (cached) {
-      return cached;
-    }
-
-    const coinIdMap: Record<string, string> = {
-      BTC: 'bitcoin',
-      ETH: 'ethereum',
-      USDT: 'tether',
-      USDC: 'usd-coin',
-      DAI: 'dai',
-    };
-
-    const coinId = coinIdMap[symbol.toUpperCase()] || symbol.toLowerCase();
-
-    try {
-      const response = await fetch(
-        `${this.coingeckoBaseURL}/simple/price?ids=${coinId}&vs_currencies=usd,ars&include_24hr_change=true`,
-        { next: { revalidate: 60 } }
-      );
-
-      if (!response.ok) {
-        throw new Error(`CoinGecko API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const coinData = data[coinId];
-
-      if (!coinData) {
-        throw new Error(`Crypto ${symbol} not found`);
-      }
-
-      const quote: CryptoQuote = {
-        symbol: symbol.toUpperCase(),
-        priceUSD: coinData.usd || 0,
-        priceARS: coinData.ars || 0,
-        change24h: coinData.usd_24h_change || 0,
-        timestamp: new Date(),
-      };
-
-      this.setCache(cacheKey, quote);
-      return quote;
-    } catch (error) {
-      console.error(`Error fetching crypto quote for ${symbol}:`, error);
-      throw error;
-    }
+    const normalized = symbol.trim().toUpperCase();
+    const quotes = await this.getCryptoQuotes([normalized]);
+    if (!quotes[normalized]) throw new Error(`Crypto ${normalized} no disponible`);
+    return quotes[normalized];
   }
 
   async getStockQuote(
@@ -382,50 +403,53 @@ class CotizacionesService {
     const cached = this.getFromCache<StockQuote>(cacheKey);
     if (cached) return cached;
 
-    const yahooSymbol =
-      market === 'us'
-        ? normalizedTicker
-        : normalizedTicker.endsWith('.BA')
+    if (!/^[A-Z0-9.^=-]{1,40}$/.test(normalizedTicker)) throw new Error('Ticker inválido');
+    return singleFlight(cacheKey, async () => {
+      const yahooSymbol =
+        market === 'us'
           ? normalizedTicker
-          : `${normalizedTicker}.BA`;
+          : normalizedTicker.endsWith('.BA')
+            ? normalizedTicker
+            : `${normalizedTicker}.BA`;
 
-    try {
-      const response = await fetch(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=1d&interval=1d`,
-        { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 } }
-      );
+      try {
+        const response = await fetch(
+          `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=1d&interval=1d`,
+          { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 }, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) }
+        );
 
-      if (!response.ok) {
-        throw new Error(`Yahoo API error: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`Yahoo API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const result = data?.chart?.result?.[0];
+        const meta = result?.meta;
+
+        const price = Number(meta?.regularMarketPrice || 0);
+        const prevClose = Number(meta?.chartPreviousClose || meta?.previousClose || 0);
+        const currency = String(meta?.currency || (market === 'us' ? 'USD' : 'ARS'));
+        const change = Number.isFinite(prevClose) && prevClose > 0 ? ((price - prevClose) / prevClose) * 100 : 0;
+
+        if (!Number.isFinite(price) || price <= 0) {
+          throw new Error(`No price for ${yahooSymbol}`);
+        }
+
+        const quote: StockQuote = {
+          ticker: normalizedTicker,
+          price,
+          currency,
+          change,
+          timestamp: quoteDate(meta?.regularMarketTime),
+        };
+
+        this.setCache(cacheKey, quote);
+        return quote;
+      } catch (error) {
+        console.error(`Error fetching stock quote for ${ticker}:`, error);
+        throw error;
       }
-
-      const data = await response.json();
-      const result = data?.chart?.result?.[0];
-      const meta = result?.meta;
-
-      const price = Number(meta?.regularMarketPrice || 0);
-      const prevClose = Number(meta?.chartPreviousClose || meta?.previousClose || 0);
-      const currency = String(meta?.currency || (market === 'us' ? 'USD' : 'ARS'));
-      const change = prevClose > 0 ? ((price - prevClose) / prevClose) * 100 : 0;
-
-      if (!price) {
-        throw new Error(`No price for ${yahooSymbol}`);
-      }
-
-      const quote: StockQuote = {
-        ticker: normalizedTicker,
-        price,
-        currency,
-        change,
-        timestamp: new Date(),
-      };
-
-      this.setCache(cacheKey, quote);
-      return quote;
-    } catch (error) {
-      console.error(`Error fetching stock quote for ${ticker}:`, error);
-      throw error;
-    }
+    });
   }
 
   /**
@@ -436,20 +460,22 @@ class CotizacionesService {
     const cached = this.getFromCache<number>(cacheKey);
     if (cached) return cached;
 
-    const response = await fetch(
-      'https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?range=1d&interval=1d',
-      { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 } }
-    );
-    if (!response.ok) {
-      throw new Error(`Yahoo EURUSD error: ${response.status}`);
-    }
-    const data = await response.json();
-    const price = Number(data?.chart?.result?.[0]?.meta?.regularMarketPrice);
-    if (!Number.isFinite(price) || price <= 0) {
-      throw new Error('Invalid EUR/USD from Yahoo');
-    }
-    this.setCache(cacheKey, price);
-    return price;
+    return singleFlight(cacheKey, async () => {
+      const response = await fetch(
+        'https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?range=1d&interval=1d',
+        { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 }, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) }
+      );
+      if (!response.ok) {
+        throw new Error(`Yahoo EURUSD error: ${response.status}`);
+      }
+      const data = await response.json();
+      const price = Number(data?.chart?.result?.[0]?.meta?.regularMarketPrice);
+      if (!Number.isFinite(price) || price <= 0) {
+        throw new Error('Invalid EUR/USD from Yahoo');
+      }
+      this.setCache(cacheKey, price);
+      return price;
+    });
   }
 
   /** Cotizaciones mínimas para movimientos (ARS / USD / EUR), sin crypto ni otros mercados. */
@@ -531,13 +557,13 @@ class CotizacionesService {
     }
 
     const cryptoSymbols = new Set(['BTC', 'ETH', 'USDT', 'USDC', 'DAI']);
-    if (cryptoSymbols.has(from) && to === 'USD') {
+    if (cryptoSymbols.has(fromU) && toU === 'USD') {
       const crypto = await this.getCryptoQuote(from);
       this.setCache(cacheKey, crypto.priceUSD);
       return crypto.priceUSD;
     }
 
-    if (cryptoSymbols.has(from) && to === 'ARS') {
+    if (cryptoSymbols.has(fromU) && toU === 'ARS') {
       const crypto = await this.getCryptoQuote(from);
       this.setCache(cacheKey, crypto.priceARS);
       return crypto.priceARS;
@@ -547,12 +573,12 @@ class CotizacionesService {
   }
 
   async getAllQuotes() {
-    const [dolar, btc, eth, usdt] = await Promise.all([
+    const [dolar, quotes] = await Promise.all([
       this.getDolarQuotes(),
-      this.getCryptoQuote('BTC'),
-      this.getCryptoQuote('ETH'),
-      this.getCryptoQuote('USDT'),
+      this.getCryptoQuotes(['BTC', 'ETH', 'USDT']),
     ]);
+    const { BTC: btc, ETH: eth, USDT: usdt } = quotes;
+    if (!btc || !eth || !usdt) throw new Error('Cotizaciones cripto incompletas');
 
     return {
       dolar,

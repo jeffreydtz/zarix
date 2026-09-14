@@ -32,7 +32,7 @@ const CLOSED: DialogState = {
 
 export function ConfirmProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DialogState>(CLOSED);
-  const resolveRef = useRef<(value: boolean) => void>();
+  const resolveRef = useRef<((value: boolean) => void) | undefined>(undefined);
   useBodyScrollLock(state.open);
 
   const confirm = useCallback<ConfirmFn>((options) => {

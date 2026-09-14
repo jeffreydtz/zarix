@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Amount from '@/components/ui/Amount';
 import Sparkline from '@/components/ui/Sparkline';
 import type { MarketSparklines } from '@/lib/services/market-history';
 
@@ -34,11 +35,13 @@ interface MarketStripProps {
 }
 
 function formatARS(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return '—';
   return value.toLocaleString('es-AR', { maximumFractionDigits: 0 });
 }
 
 function formatUSD(value: number, decimals = 0): string {
-  return value.toLocaleString('en-US', {
+  if (!Number.isFinite(value) || value <= 0) return '—';
+  return value.toLocaleString('es-AR', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });
@@ -90,16 +93,19 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
   const mep = quotes.dolar.mep ?? { type: 'mep', buy: 0, sell: 0 };
   const { btc, eth } = quotes.crypto;
   const holdings = topHoldings.slice(0, 2);
+  const quoteDate = quotes.timestamp ? new Date(quotes.timestamp) : null;
+  const updated = quoteDate && Number.isFinite(quoteDate.getTime()) ? quoteDate.toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', dateStyle: 'short', timeStyle: 'short' }) : null;
 
   return (
     <div className="card">
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-foreground">Mercado hoy</h3>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Cotizaciones en vivo y tus principales posiciones
+          Referencias de mercado y tus principales posiciones. Pueden tener demoras.
         </p>
       </div>
 
+      {updated && <p className="mb-3 text-xs text-muted-foreground">Dólar actualizado: {updated} (Argentina).</p>}
       <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 hide-scrollbar -mx-1 px-1">
         <TickerCard ariaLabel="Dólar blue, compra y venta. Ver inversiones">
           <div className="flex items-center gap-1.5 mb-2">
@@ -142,7 +148,7 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
             US${formatUSD(btc.priceUSD)}
           </div>
           <div className="mt-0.5">
-            <DeltaPct value={btc.change24h} />
+            {btc.priceUSD > 0 ? <DeltaPct value={btc.change24h} /> : <span className="text-xs text-muted-foreground">No disponible</span>}
           </div>
           {sparklines.btc.length >= 2 && (
             <div className="mt-2">
@@ -165,7 +171,7 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
             US${formatUSD(eth.priceUSD)}
           </div>
           <div className="mt-0.5">
-            <DeltaPct value={eth.change24h} />
+            {eth.priceUSD > 0 ? <DeltaPct value={eth.change24h} /> : <span className="text-xs text-muted-foreground">No disponible</span>}
           </div>
           {sparklines.eth.length >= 2 && (
             <div className="mt-2">
@@ -191,7 +197,7 @@ export default function MarketStrip({ quotes, sparklines, topHoldings }: MarketS
               </span>
             </div>
             <div className="text-sm font-semibold text-foreground tabular-nums">
-              US${formatUSD(holding.valueUSD, 2)}
+              <Amount value={holding.valueUSD} currency="USD" decimals={2} />
             </div>
             <div className="mt-0.5">
               <DeltaPct value={holding.dailyPct} />

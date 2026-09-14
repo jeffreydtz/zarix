@@ -45,7 +45,7 @@ const nextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://api.telegram.org",
+              "img-src 'self' data: blob: https://api.telegram.org https://coin-images.coingecko.com https://assets.coingecko.com https://s.yimg.com",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.telegram.org",
               "frame-ancestors 'none'",

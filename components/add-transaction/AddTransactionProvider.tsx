@@ -22,11 +22,6 @@ import {
 } from '@/lib/constants/transaction-currencies';
 import {
   fetchReferenceList,
-  getOfflineCachedAccounts,
-  getOfflineCachedCategories,
-  maybePersistAccountsSnapshot,
-  maybePersistCategoriesSnapshot,
-  pickReferenceList,
 } from '@/lib/offline-reference-cache';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 import InternalAiChat from '@/components/dashboard/InternalAiChat';
@@ -125,9 +120,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
     if (!isOpen) return;
     setTransactionDateYmd(todayLocalYmd());
     setDataLoading(true);
-    const cachedAccs = getOfflineCachedAccounts<Account>();
-    const cachedCats = getOfflineCachedCategories<Category>();
-    const online = typeof navigator !== 'undefined' && navigator.onLine;
+    let cancelled = false;
     Promise.all([
       fetchReferenceList<Account>('/api/accounts?lite=1', { force: true }),
       fetchReferenceList<Category>('/api/categories', { ttlMs: 2 * 60 * 1000 }),
@@ -135,11 +128,10 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
         .then((r) => (r.ok ? r.json() : []))
         .catch(() => []),
     ]).then(([accsRaw, catsRaw, txs]) => {
-      maybePersistAccountsSnapshot(accsRaw, online);
-      maybePersistCategoriesSnapshot(catsRaw, online);
-      const accs = pickReferenceList(accsRaw, cachedAccs);
+      if (cancelled) return;
+      const accs = accsRaw ?? [];
       setAccounts(accs);
-      setCategories(pickReferenceList(catsRaw, cachedCats));
+      setCategories(catsRaw ?? []);
       const counts: Record<string, number> = {};
       if (Array.isArray(txs)) {
         for (const tx of txs) {
@@ -150,7 +142,10 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
       }
       setCategoryUsage(counts);
       setDataLoading(false);
+    }).catch(() => {
+      if (!cancelled) { setError('No pudimos cargar tus cuentas. Reintentá.'); setDataLoading(false); }
     });
+    return () => { cancelled = true; };
   }, [isOpen]);
 
   useEffect(() => {

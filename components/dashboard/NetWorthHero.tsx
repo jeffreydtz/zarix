@@ -1,7 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { animate } from 'framer-motion';
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { subDays } from 'date-fns';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import Amount from '@/components/ui/Amount';
@@ -12,13 +11,15 @@ import { deflatorToToday, type InflacionMes } from '@/lib/services/inflacion';
 import type { NetWorthNow, NetWorthPoint } from '@/lib/services/net-worth';
 
 type ViewMode = 'ars' | 'usd' | 'real';
-type TimeframeId = '1m' | '3m' | '1y' | 'max';
+type TimeframeId = '1m' | '3m' | '1y';
 type Currency = 'ARS' | 'USD';
 
 interface NetWorthHeroProps {
   now: NetWorthNow;
   history: NetWorthPoint[];
   inflacion: InflacionMes[];
+  historyUnavailable?: boolean;
+  historyLoading?: boolean;
 }
 
 const VIEW_STORAGE_KEY = 'zarix.networth.view';
@@ -33,7 +34,6 @@ const TIMEFRAMES: { id: TimeframeId; label: string; days: number | null }[] = [
   { id: '1m', label: '1M', days: 30 },
   { id: '3m', label: '3M', days: 90 },
   { id: '1y', label: '1A', days: 365 },
-  { id: 'max', label: 'Max', days: null },
 ];
 
 function readStoredView(): ViewMode {
@@ -109,20 +109,19 @@ function EyeOffIcon({ className }: { className?: string }) {
 /**
  * Widget hero del dashboard: patrimonio total con 3 vistas conmutables
  * (ARS nominal / USD blue / ARS reales via inflación) y un AreaChart ancla
- * con timeframes. Único gran número animado (count-up al montar); el resto
- * de la UI es estática para no competir por atención.
+ * con rangos de fecha explícitos. Los valores se muestran sin animación
+ * para evitar ceros transitorios y respetar movimiento reducido.
  */
-export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroProps) {
+export default function NetWorthHero({ now, history, inflacion, historyUnavailable = false, historyLoading = false }: NetWorthHeroProps) {
   const { hidden, toggle } = usePrivacy();
   const gradientId = useId();
 
-  const [view, setView] = useState<ViewMode>('ars');
+  const [preferredView, setView] = useState<ViewMode>('ars');
+  const view = preferredView === 'real' && inflacion.length === 0 ? 'ars' : preferredView;
   const [timeframe, setTimeframe] = useState<TimeframeId>('3m');
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setView(readStoredView());
-    setMounted(true);
   }, []);
 
   function selectView(next: ViewMode) {
@@ -139,29 +138,6 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
   const heroValue = view === 'usd' ? now.totalUSD : now.totalARSBlue;
   const currency = currencyForView(view);
 
-  // --- Count-up: SOLO en el montaje, una única vez. ---
-  const hasAnimatedRef = useRef(false);
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    if (hasAnimatedRef.current) {
-      // Ya animamos una vez: cambios posteriores (switch de vista) son instantáneos.
-      setDisplayValue(heroValue);
-    }
-  }, [heroValue]);
-
-  useEffect(() => {
-    if (!mounted || hasAnimatedRef.current) return;
-    hasAnimatedRef.current = true;
-    const controls = animate(0, heroValue, {
-      duration: 0.6,
-      ease: 'easeOut',
-      onUpdate: (v) => setDisplayValue(v),
-    });
-    return () => controls.stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted]);
-
   // --- Delta vs snapshot anterior ---
   const pointViewValue = useCallback(
     (p: NetWorthPoint, v: ViewMode): number => {
@@ -172,9 +148,8 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
     [inflacion]
   );
 
-  // Sin memo: barato por render y evita quedar clavado en la fecha de ayer
-  // si la pestaña queda abierta cruzando la medianoche.
-  const todayISO = new Date().toISOString().slice(0, 10);
+  // Fecha argentina consistente con los snapshots; se actualiza al renderizar.
+  const todayISO = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' });
 
   const priorPoint = useMemo(() => {
     if (history.length === 0) return null;
@@ -211,9 +186,7 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
     if (timeframeCfg.days == null) return seriesByView;
     const cutoff = subDays(new Date(), timeframeCfg.days);
     const filtered = seriesByView.filter((p) => new Date(`${p.date}T00:00:00`) >= cutoff);
-    // Si el recorte deja muy pocos puntos (datos aún escasos), mostramos todo
-    // lo que haya en vez de un gráfico casi vacío.
-    return filtered.length >= 2 ? filtered : seriesByView;
+    return filtered;
   }, [seriesByView, timeframeCfg]);
 
   const chartData = useMemo(
@@ -221,7 +194,7 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
     [filteredSeries, view]
   );
 
-  const hasChart = history.length >= 2;
+  const hasChart = chartData.length >= 2;
 
   return (
     <section className="card space-y-5">
@@ -233,7 +206,7 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
             onClick={toggle}
             aria-label={hidden ? 'Mostrar montos' : 'Ocultar montos'}
             aria-pressed={hidden}
-            className="rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="min-h-11 min-w-11 flex items-center justify-center rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
             {hidden ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
           </button>
@@ -250,7 +223,9 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
               type="button"
               aria-pressed={view === v.id}
               onClick={() => selectView(v.id)}
-              className={`rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors ${
+              disabled={v.id === 'real' && inflacion.length === 0}
+              title={v.id === 'real' && inflacion.length === 0 ? 'IPC no disponible' : undefined}
+              className={`rounded-[calc(var(--radius-control)-0.25rem)] min-h-11 px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
                 view === v.id
                   ? 'bg-card text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
@@ -264,7 +239,7 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
 
       <div>
         <Amount
-          value={displayValue}
+          value={heroValue}
           currency={currency}
           decimals={0}
           className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl"
@@ -273,7 +248,7 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
         <p className="mt-1.5 text-sm text-muted-foreground">
           {view === 'ars' && <Amount value={now.totalUSD} currency="USD" prefix="≈ " />}
           {view === 'usd' && <Amount value={now.totalARSBlue} currency="ARS" prefix="≈ " />}
-          {view === 'real' && 'en pesos de hoy'}
+          {view === 'real' && `Ajustado por IPC publicado hasta (${inflacion.at(-1)?.fecha.slice(0, 7)})`}
         </p>
 
         {delta && (
@@ -294,28 +269,21 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
         )}
       </div>
 
+      {!historyLoading && inflacion.length === 0 && (
+        <p className="text-xs text-muted-foreground">IPC no disponible: la vista ajustada por inflación está deshabilitada.</p>
+      )}
+      <div role="group" aria-label="Rango del gráfico" className="flex justify-end gap-2">
+        {TIMEFRAMES.map((tf) => <button key={tf.id} type="button" aria-pressed={timeframe === tf.id}
+          onClick={() => setTimeframe(tf.id)} className={`min-h-11 min-w-11 rounded-control text-xs focus-visible:ring-2 focus-visible:ring-ring ${timeframe === tf.id ? 'bg-secondary font-semibold' : 'text-muted-foreground'}`}>
+          {tf.label}
+        </button>)}
+      </div>
       {!hasChart ? (
         <p className="text-xs text-muted-foreground">
-          El gráfico se construye día a día a partir de hoy.
+          {historyLoading ? 'Cargando historial…' : historyUnavailable ? 'No pudimos cargar el historial de patrimonio.' : 'Todavía no hay suficientes registros en este período. El historial se actualiza diariamente.'}
         </p>
       ) : (
         <div>
-          <div role="group" aria-label="Rango del gráfico" className="mb-2 flex justify-end gap-3">
-            {TIMEFRAMES.map((tf) => (
-              <button
-                key={tf.id}
-                type="button"
-                aria-pressed={timeframe === tf.id}
-                onClick={() => setTimeframe(tf.id)}
-                className={`text-xs transition-colors ${
-                  timeframe === tf.id ? 'font-semibold text-foreground' : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {tf.label}
-              </button>
-            ))}
-          </div>
-
           <div className="h-[130px] w-full md:h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
@@ -338,7 +306,7 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
                   {...axisProps}
                   tickCount={3}
                   allowDecimals={false}
-                  tickFormatter={(v) => formatCompactValue(Number(v), currency)}
+                  tickFormatter={(v) => hidden ? PRIVACY_MASK : formatCompactValue(Number(v), currency)}
                 />
                 <Tooltip
                   cursor={{ stroke: 'rgb(var(--primary))', strokeOpacity: 0.3 }}

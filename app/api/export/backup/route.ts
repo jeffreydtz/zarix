@@ -18,6 +18,7 @@ export async function GET() {
         .select('*')
         .eq('user_id', user.id)
         .order('transaction_date', { ascending: false })
+        .order('id', { ascending: false })
         .range(from, from + pageSize - 1);
       if (error) throw error;
       const batch = data || [];
@@ -38,6 +39,11 @@ export async function GET() {
       supabase.from('investments').select('*').eq('user_id', user.id),
       supabase.from('users').select('default_currency, timezone').eq('id', user.id).single(),
     ]);
+
+    // A failed dataset is not an empty dataset: never offer an incomplete backup as valid.
+    for (const result of [accountsResult, categoriesResult, budgetsResult, investmentsResult, userResult]) {
+      if (result.error) throw result.error;
+    }
 
     const backup = {
       version: '1.0',

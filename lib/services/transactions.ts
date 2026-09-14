@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import { ApiError } from '@/lib/api-handler';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
 import { accountsService, normalizeDebtBalanceForStorage } from './accounts';
@@ -119,6 +121,8 @@ export interface CreateTransactionInput {
   tags?: string[];
   transactionDate?: string;
   installments?: number;
+  /** Stable offline request UUID. A replay returns the existing transaction; it never edits it. */
+  clientRequestId?: string;
   /**
    * Solo transferencias entre monedas distintas: reemplaza la cotización del mercado.
    * - Monto en origen: unidades de moneda destino por 1 unidad de moneda origen (equivale a `getExchangeRate(origen, destino)`).
@@ -144,9 +148,51 @@ export interface TransactionWithCategory extends Transaction {
   } | null;
 }
 
+const CLIENT_REQUEST_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/** Namespaced UUID: one user's request key cannot address another user's row. */
+export function offlineTransactionId(userId: string, clientRequestId: string): string {
+  if (!CLIENT_REQUEST_UUID.test(clientRequestId)) throw new ApiError('Identificador de solicitud inválido.', 400);
+  const hex = createHash('sha256').update(`zarix:offline:v1:${userId}:${clientRequestId.toLowerCase()}`).digest('hex').slice(0, 32).split('');
+  hex[12] = '8';
+  hex[16] = ((parseInt(hex[16], 16) & 3) | 8).toString(16);
+  const value = hex.join('');
+  return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(12, 16)}-${value.slice(16, 20)}-${value.slice(20)}`;
+}
+
 class TransactionsService {
   async create(input: CreateTransactionInput): Promise<Transaction> {
     const supabase = createServiceClientSync();
+    const transactionId = input.clientRequestId ? offlineTransactionId(input.userId, input.clientRequestId) : null;
+    if (transactionId && input.installments && input.installments > 1) {
+      throw new ApiError('Las solicitudes offline no admiten compras en cuotas.', 400);
+    }
+    const findReplay = async (): Promise<Transaction | null> => {
+      if (!transactionId) return null;
+      const { data, error } = await supabase.from('transactions').select('*')
+        .eq('id', transactionId).eq('user_id', input.userId).maybeSingle();
+      if (error) throw error;
+      return data;
+    };
+    // The key identifies the first transaction, even if a retry sends changed fields.
+    // Replay precedes account/rate reads so a lost response can recover after archiving.
+    if (transactionId) {
+      const replay = await findReplay();
+      if (replay) return replay;
+    }
+    const inserted = async (data: Transaction | null, error: { code?: string } | null): Promise<Transaction> => {
+      if (error) {
+        // Concurrent inserts serialize on the existing PK; only the winner runs
+        // the AFTER INSERT balance trigger. Other constraint failures still fail.
+        if (transactionId && error.code === '23505') {
+          const replay = await findReplay();
+          if (replay) return replay;
+        }
+        throw error;
+      }
+      if (!data) throw new Error('No se pudo recuperar el movimiento guardado');
+      return data;
+    };
 
     // Normalizamos la moneda a mayúsculas antes de cualquier insert: el CHECK
     // `currency = upper(currency)` (migración data_integrity) lo exige, y evita
@@ -279,6 +325,7 @@ class TransactionsService {
       const { data, error } = await supabase
         .from('transactions')
         .insert({
+        ...(transactionId ? { id: transactionId } : {}),
           user_id: input.userId,
           type: 'transfer',
           account_id: input.accountId,
@@ -293,8 +340,7 @@ class TransactionsService {
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
+      return inserted(data, error);
     }
 
     const roundedAmount = roundFiat(input.amount, input.currency);
@@ -303,6 +349,7 @@ class TransactionsService {
     const { data, error } = await supabase
       .from('transactions')
       .insert({
+        ...(transactionId ? { id: transactionId } : {}),
         user_id: input.userId,
         type: input.type,
         account_id: input.accountId,
@@ -321,8 +368,7 @@ class TransactionsService {
       .select()
       .single();
 
-    if (error) throw error;
-    return data;
+    return inserted(data, error);
   }
 
   async list(

@@ -40,6 +40,7 @@ function verifyMercadoPagoSignature(req: NextRequest): boolean {
 
   const dataId =
     req.nextUrl.searchParams.get('data.id') || req.nextUrl.searchParams.get('id');
+  if (!dataId) return false;
 
   let manifest = '';
   if (dataId) manifest += `id:${dataId.toLowerCase()};`;
@@ -84,7 +85,9 @@ async function resolveUserIdFromPreapproval(
 }
 
 async function processWebhook({ payload, searchParams }: ProcessWebhookInput): Promise<void> {
-  const preapprovalId = mercadoPagoService.extractPreapprovalId(payload, searchParams);
+  // Only the query identifier was covered by the verified HMAC. Body metadata
+  // must never select a different subscription, regardless of payload format.
+  const preapprovalId = searchParams.get('data.id') || searchParams.get('id');
   if (!preapprovalId) {
     return;
   }

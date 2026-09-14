@@ -1,5 +1,7 @@
+'use client';
+
 import dynamic from 'next/dynamic';
-import { cotizacionesService } from '@/lib/services/cotizaciones';
+import type { cotizacionesService } from '@/lib/services/cotizaciones';
 
 const SpendingAnalyzer = dynamic(() => import('@/components/dashboard/SpendingAnalyzer'), {
   ssr: false,
@@ -12,7 +14,7 @@ type QuotesPayload = Awaited<ReturnType<typeof cotizacionesService.getAllQuotes>
  * Carga el pool grande del analizador fuera del camino crítico del dashboard
  * (Suspense en la página) para que la navegación muestre el resto del resumen antes.
  */
-export default async function DashboardSpendingAnalyzerSection({
+export default function DashboardSpendingAnalyzerSection({
   quotes,
 }: {
   quotes: QuotesPayload;

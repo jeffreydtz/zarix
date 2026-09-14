@@ -72,7 +72,7 @@ La web de Zarix te permite:
 
 ## Stack tecnologico
 
-- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts.
+- **Frontend**: Next.js 15.5.25, React 19.3, Tailwind CSS, Recharts.
 - **Backend/Data**: Supabase (PostgreSQL + Auth + APIs).
 - **Automatizaciones**: Telegram Bot (Telegraf), scripts Node/TS.
 - **Integraciones**: cotizaciones y mercado (Yahoo Finance y fuentes externas).
@@ -126,7 +126,7 @@ Zarix
 
 ### 1) Requisitos
 
-- Node.js 18+
+- Node.js 22.12+ (rama 22)
 - npm 9+
 - Proyecto Supabase configurado
 
@@ -175,7 +175,7 @@ los valores. Grupos:
 
 ## Testing
 
-Los tests corren con **Vitest**:
+Los tests corren con **Vitest 4.1.11** sobre Node.js 22.12 o posterior dentro de la rama 22:
 
 ```bash
 npm test
@@ -233,3 +233,12 @@ Si, podes exportar transacciones y tambien backup completo.
 
 ### Tiene soporte para inversiones?
 Si, incluye portafolio y seguimiento de rendimiento.
+
+
+## Auditoría técnica del 14 de septiembre de 2026
+
+El [informe de auditoría](docs/AUDITORIA-2026-09-14.md) reúne alcance, resultados y límites de verificación. La [adenda académica](docs/tif/ADENDA-AUDITORIA-2026-09-14.md) relaciona los cambios con el TIF. Las evidencias anteriores en `docs/tif/RESULTADOS-PRUEBAS.md` conservan su fecha original.
+
+El dashboard transmite secciones independientes mediante Suspense: un proveedor lento no bloquea todo el contenido. Un error de cuentas, inversiones o conversión se muestra como dato no disponible; no se transforma en patrimonio cero. Las visitas consultan el historial sin escribir snapshots: la captura diaria de patrimonio total corresponde al cron `net-worth-snapshot`, uno de los ocho schedules de `vercel.json`.
+
+La estrategia de dólar conserva CriptoYa → DolarApi → base de datos, con un camino de lectura preferente de caché para consumidores que lo solicitan. Las solicitudes concurrentes equivalentes se agrupan, las esperas tienen límites y los contratos externos se validan. Una fuente ausente no equivale a un precio cero. Las pruebas de integración usan dobles locales; no acreditan pagos ni operaciones sobre servicios reales.
