@@ -7,11 +7,12 @@ import TransactionsFilters from '@/components/expenses/TransactionsFilters';
 import CreateTransactionButton from '@/components/expenses/CreateTransactionButton';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 
-export default async function ExpensesPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) {
+export default async function ExpensesPage(
+  props: {
+    searchParams: Promise<{ [key: string]: string | undefined }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   try {
     const supabase = await createClient();
     const {

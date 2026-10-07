@@ -20,9 +20,9 @@ function postgrestEqUuid(id: string): string {
 function roundFiat(amount: number, currency: string): number {
   const c = (currency || '').toUpperCase();
   if (c === 'ARS' || c === 'USD' || c === 'EUR') {
-    return Math.round(amount * 100) / 100;
+    return Math.round((amount + Number.EPSILON) * 100) / 100;
   }
-  return amount;
+  return Math.round(amount * 1e8) / 1e8;
 }
 
 /**
@@ -64,7 +64,7 @@ export async function buildToArsConverter(
   transactions: Array<{ currency: string | null }>
 ): Promise<ToArsConverter> {
   const currencies = Array.from(
-    new Set(transactions.map((t) => (t.currency || 'ARS').toUpperCase()))
+    new Set(transactions.map((t) => normalizeCurrency(t.currency)))
   );
   const rateToArs = new Map<string, number>();
   const excludedCurrencies: string[] = [];
@@ -74,13 +74,15 @@ export async function buildToArsConverter(
       continue;
     }
     try {
-      rateToArs.set(c, await cotizacionesService.getExchangeRate(c, 'ARS'));
+      const rate = await cotizacionesService.getExchangeRate(c, 'ARS');
+      if (!Number.isFinite(rate) || rate <= 0) throw new Error('Cotización inválida');
+      rateToArs.set(c, rate);
     } catch {
       excludedCurrencies.push(c);
     }
   }
   return {
-    toArs: (t) => Number(t.amount) * (rateToArs.get((t.currency || 'ARS').toUpperCase()) ?? 0),
+    toArs: (t) => Number(t.amount) * (rateToArs.get(normalizeCurrency(t.currency)) ?? 0),
     excludedCurrencies,
   };
 }
@@ -103,7 +105,48 @@ async function computeAmountInAccountCurrencyForAccount(
     return { amountInAccountCurrency: amount, exchangeRate: 1 };
   }
   const exchangeRate = await cotizacionesService.getExchangeRate(currency, accountCurrency);
+  if (!Number.isFinite(exchangeRate) || exchangeRate <= 0) {
+    throw new Error('No hay una cotización válida para convertir el movimiento.');
+  }
   return { amountInAccountCurrency: amount * exchangeRate, exchangeRate };
+}
+
+/** Valores de la transferencia antes de persistir la tasa con su escala SQL. */
+export async function computeTransferAmounts(
+  amount: number,
+  currency: string,
+  sourceCurrency: string,
+  destinationCurrency: string,
+  override?: number | null
+): Promise<{ amountInSource: number; amountInDestination: number; exchangeRate: number }> {
+  const inputCurrency = normalizeCurrency(currency);
+  const source = normalizeCurrency(sourceCurrency);
+  const destination = normalizeCurrency(destinationCurrency);
+  if (!Number.isFinite(amount) || amount <= 0 || Math.abs(roundFiat(amount,inputCurrency)-amount)>1e-8) {
+    throw new Error('Monto inválido o con demasiados decimales.');
+  }
+  if (inputCurrency !== source && inputCurrency !== destination) {
+    throw new Error('El monto de transferencia debe estar en la moneda origen o destino.');
+  }
+  if (override != null && (!Number.isFinite(override) || override <= 0)) {
+    throw new Error('La cotización manual debe ser finita y mayor a cero.');
+  }
+  let exchangeRate = 1;
+  let amountInSource = amount;
+  if (source !== destination) {
+    const rate = override ?? await cotizacionesService.getExchangeRate(inputCurrency,
+      inputCurrency === source ? destination : source);
+    if (!Number.isFinite(rate) || rate <= 0) throw new Error('No hay una cotización válida para la transferencia.');
+    if (inputCurrency === source) exchangeRate = rate;
+    else amountInSource = amount * rate;
+  }
+  amountInSource = roundFiat(amountInSource,source);
+  const amountInDestination = roundFiat(amount * exchangeRate,destination);
+  if (!Number.isFinite(amountInSource) || !Number.isFinite(amountInDestination) ||
+      amountInSource <= 0 || amountInDestination <= 0) {
+    throw new Error('El importe convertido de la transferencia debe ser mayor a cero.');
+  }
+  return { amountInSource, amountInDestination, exchangeRate };
 }
 
 export interface CreateTransactionInput {
@@ -146,12 +189,36 @@ export interface TransactionWithCategory extends Transaction {
 
 class TransactionsService {
   async create(input: CreateTransactionInput): Promise<Transaction> {
-    const supabase = createServiceClientSync();
-
     // Normalizamos la moneda a mayúsculas antes de cualquier insert: el CHECK
     // `currency = upper(currency)` (migración data_integrity) lo exige, y evita
     // los mismatches por comparación de strings aguas abajo.
     input = { ...input, currency: (input.currency || 'ARS').trim().toUpperCase() };
+    if (!['expense', 'income', 'transfer', 'adjustment'].includes(input.type)) {
+      throw new Error('Tipo de movimiento inválido.');
+    }
+    if (!Number.isFinite(input.amount) || input.amount <= 0) {
+      throw new Error('El monto debe ser finito y mayor a cero.');
+    }
+    const amount = roundFiat(input.amount, input.currency);
+    if (amount <= 0 || Math.abs(amount - input.amount) > 1e-8) {
+      throw new Error('El monto en ARS, USD o EUR admite hasta dos decimales.');
+    }
+    input = { ...input, amount };
+    if (input.installments != null &&
+        (!Number.isInteger(input.installments) || input.installments < 1 || input.installments > 36)) {
+      throw new Error('Las cuotas deben ser un entero entre 1 y 36.');
+    }
+    if (input.installments && input.installments > 1 && input.type !== 'expense') {
+      throw new Error('Las cuotas sólo se admiten para gastos.');
+    }
+    if (input.type === 'transfer' && input.accountId === input.destinationAccountId) {
+      throw new Error('La cuenta origen y destino deben ser distintas.');
+    }
+    if (input.exchangeRateOverride != null &&
+        (!Number.isFinite(input.exchangeRateOverride) || input.exchangeRateOverride <= 0)) {
+      throw new Error('La cotización manual debe ser finita y mayor a cero.');
+    }
+    const supabase = createServiceClientSync();
 
     const account = await supabase
       .from('accounts')
@@ -241,40 +308,10 @@ class TransactionsService {
         throw new Error('La cuenta destino está archivada.');
       }
 
-      const srcCur = account.data.currency.trim().toUpperCase();
-      const dstCur = destAccount.data.currency.trim().toUpperCase();
-      const inCur = input.currency.trim().toUpperCase();
-      if (srcCur !== dstCur && inCur !== srcCur && inCur !== dstCur) {
-        throw new Error(
-          'En transferencias entre monedas distintas, el monto debe estar en la moneda de la cuenta origen o de la cuenta destino.'
-        );
-      }
-
-      const override =
-        input.exchangeRateOverride != null &&
-        Number.isFinite(input.exchangeRateOverride) &&
-        input.exchangeRateOverride > 0
-          ? input.exchangeRateOverride
-          : null;
-
-      let transferAmountInSource: number;
-      let transferExchangeRate: number;
-
-      if (srcCur === dstCur) {
-        transferAmountInSource = input.amount;
-        transferExchangeRate = 1;
-      } else if (inCur === srcCur) {
-        transferAmountInSource = input.amount;
-        transferExchangeRate =
-          override ??
-          (await cotizacionesService.getExchangeRate(input.currency, destAccount.data.currency));
-      } else {
-        transferExchangeRate = 1;
-        transferAmountInSource =
-          input.amount *
-          (override ??
-            (await cotizacionesService.getExchangeRate(input.currency, account.data.currency)));
-      }
+      const transfer = await computeTransferAmounts(
+        input.amount, input.currency, account.data.currency,
+        destAccount.data.currency, input.exchangeRateOverride
+      );
 
       const { data, error } = await supabase
         .from('transactions')
@@ -285,8 +322,9 @@ class TransactionsService {
           destination_account_id: input.destinationAccountId,
           amount: input.amount,
           currency: input.currency,
-          amount_in_account_currency: transferAmountInSource,
-          exchange_rate: transferExchangeRate !== 1 ? transferExchangeRate : null,
+          amount_in_account_currency: transfer.amountInSource,
+          destination_amount_in_account_currency: transfer.amountInDestination,
+          exchange_rate: transfer.exchangeRate !== 1 ? transfer.exchangeRate : null,
           description: input.description || 'Transferencia entre cuentas',
           transaction_date: input.transactionDate || new Date().toISOString(),
         })
@@ -299,6 +337,9 @@ class TransactionsService {
 
     const roundedAmount = roundFiat(input.amount, input.currency);
     const roundedAin = roundFiat(amountInAccountCurrency, account.data.currency);
+    if (!Number.isFinite(roundedAin) || roundedAin <= 0) {
+      throw new Error('El importe convertido del movimiento debe ser mayor a cero.');
+    }
 
     const { data, error } = await supabase
       .from('transactions')
@@ -518,7 +559,8 @@ class TransactionsService {
       if (destId === accountId && t === 'transfer') {
         const amt = Number(tx.amount);
         const rate = Number(tx.exchange_rate ?? 1);
-        balance += amt * rate;
+        balance += tx.destination_amount_in_account_currency != null
+          ? Number(tx.destination_amount_in_account_currency) : amt * rate;
       }
     }
 
@@ -627,13 +669,20 @@ class TransactionsService {
     currency: string,
     accountCurrency: string
   ): Promise<{ amount_in_account_currency: number; exchange_rate: number | null }> {
+    if (!Number.isFinite(amount) || amount <= 0 || Math.abs(roundFiat(amount,currency)-amount)>1e-8) {
+      throw new Error('Monto inválido o con demasiados decimales.');
+    }
     const { amountInAccountCurrency, exchangeRate } = await computeAmountInAccountCurrencyForAccount(
       amount,
       currency,
       accountCurrency
     );
+    const appliedAmount = roundFiat(amountInAccountCurrency,accountCurrency);
+    if (!Number.isFinite(appliedAmount) || appliedAmount <= 0) {
+      throw new Error('El importe convertido del movimiento debe ser mayor a cero.');
+    }
     return {
-      amount_in_account_currency: amountInAccountCurrency,
+      amount_in_account_currency: appliedAmount,
       exchange_rate: exchangeRate !== 1 ? exchangeRate : null,
     };
   }

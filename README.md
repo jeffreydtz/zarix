@@ -73,7 +73,7 @@ La web de Zarix te permite:
 
 ## Stack tecnologico
 
-- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts.
+- **Frontend**: Next.js 15.5.27, React 18, Tailwind CSS, Recharts.
 - **Backend/Data**: Supabase (PostgreSQL + Auth + APIs).
 - **Automatizaciones**: Telegram Bot (Telegraf), scripts Node/TS.
 - **Integraciones**: cotizaciones y mercado (Yahoo Finance y fuentes externas).
@@ -244,3 +244,8 @@ Si, incluye portafolio y seguimiento de rendimiento.
 
 - [`docs/AUDIT.md`](./docs/AUDIT.md) — arquitectura, que anda en prod vs que esta roto, P0/P1/P2, slice recomendado.
 - [`docs/HANDOFF.md`](./docs/HANDOFF.md) — como seguir (env, mapa de codigo, Definition of Done del slice Trust).
+
+
+## Trabajo Final de Ingeniería
+
+El plan v2.13 y la evidencia de esta revisión están en [docs/tif/v2.13](docs/tif/v2.13/README.md). El alcance académico final tiene exactamente cuatro casos de uso; los diagramas y resultados anteriores conservan su carácter histórico.

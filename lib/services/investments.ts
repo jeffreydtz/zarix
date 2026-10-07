@@ -44,6 +44,8 @@ export type PatchInvestmentInput = {
 };
 
 export interface InvestmentWithPnL extends Investment {
+  /** Diferencia precio confirmado/caché de la referencia inicial de compra. */
+  valuation_price_source: 'live' | 'manual' | 'cache' | 'purchase_reference';
   current_value: number;
   profit_loss: number;
   profit_loss_percent: number;
@@ -119,9 +121,9 @@ function priceFactorForType(type: InvestmentType): number {
 }
 
 function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
-  if (blue.sell > 0) return blue.sell;
-  if (blue.buy > 0) return blue.buy;
-  return 1;
+  if (Number.isFinite(blue.sell) && blue.sell > 0) return blue.sell;
+  if (Number.isFinite(blue.buy) && blue.buy > 0) return blue.buy;
+  throw new Error('No hay una cotización blue válida para valorar el portafolio.');
 }
 
 function amountToUsd(
@@ -133,19 +135,19 @@ function amountToUsd(
   const c = (currency || 'USD').toUpperCase();
   if (STABLE_AS_USD.has(c)) return amount;
   if (c === 'ARS') {
-    const rate = arsPerUsd > 0 ? arsPerUsd : 1;
-    return amount / rate;
+    if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+    return amount / arsPerUsd;
   }
   if (extraUsdPerUnit) {
     const extra = extraUsdPerUnit.get(c);
-    return extra && extra > 0 ? amount * extra : 0;
+    if (extra != null && Number.isFinite(extra) && extra > 0) return amount * extra;
   }
   throw new Error(`No hay cotización a USD para ${c}`);
 }
 
 function usdToArsBlue(usd: number, arsPerUsd: number): number {
-  const rate = arsPerUsd > 0 ? arsPerUsd : 1;
-  return usd * rate;
+  if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+  return usd * arsPerUsd;
 }
 
 function marketCurrencyForInvestment(type: InvestmentType, purchaseCurrency: string | null): string {
@@ -228,6 +230,14 @@ function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
 
 class InvestmentsService {
   async create(input: CreateInvestmentInput): Promise<Investment> {
+    if (!Number.isFinite(input.quantity) || input.quantity <= 0 ||
+        !Number.isFinite(input.purchasePrice) || input.purchasePrice <= 0) {
+      throw new Error('La cantidad y el precio de compra deben ser finitos y mayores a cero.');
+    }
+    if (input.isManualPrice &&
+        (input.currentPrice == null || !Number.isFinite(input.currentPrice) || input.currentPrice <= 0)) {
+      throw new Error('El precio manual debe ser finito y mayor a cero.');
+    }
     const supabase = createServiceClientSync();
     await assertOwnedInvestmentAccount(supabase, input.accountId, input.userId);
 
@@ -405,18 +415,19 @@ class InvestmentsService {
       try {
         extraUsd.set(c, await cotizacionesService.getExchangeRate(c, 'USD'));
       } catch {
-        /* sin tasa: amountToUsd devolverá 0 para esa moneda */
+        /* amountToUsd rechazará la valoración; no inventar un valor cero. */
       }
     }
 
     const investmentIds = investments.map((inv) => inv.id);
     const salesByInvestment = new Map<string, { realized: number; count: number }>();
     if (investmentIds.length > 0) {
-      const { data: salesRows } = await supabase
+      const { data: salesRows, error: salesError } = await supabase
         .from('investment_sales')
         .select('investment_id, realized_pnl_usd')
         .eq('user_id', userId)
         .in('investment_id', investmentIds);
+      if (salesError) throw salesError;
       for (const row of salesRows || []) {
         const cur = salesByInvestment.get(row.investment_id) || { realized: 0, count: 0 };
         cur.realized += Number(row.realized_pnl_usd) || 0;
@@ -443,10 +454,13 @@ class InvestmentsService {
       ? await this.refreshQuotesForInvestments(candidatesForRefresh)
       : new Map<string, QuoteResult>();
 
-    const updates: Array<{ id: string; price: number; changePct: number | null }> = [];
+    const updates: Array<{ id: string; price: number; changePct: number | null; currency: string }> = [];
 
     const investmentsWithPnL: InvestmentWithPnL[] = investments.map((inv) => {
       let currentPrice = Number(inv.current_price ?? inv.purchase_price);
+      let priceSource: InvestmentWithPnL['valuation_price_source'] = inv.current_price == null
+        ? 'purchase_reference' : inv.is_manual_price ? 'manual' : 'cache';
+      let priceUpdatedAt = inv.current_price == null ? null : inv.current_price_updated_at;
       let dailyChangePct: number | null =
         inv.current_price_change_pct == null ? null : Number(inv.current_price_change_pct);
       let liveCurrency: string | null = null;
@@ -458,19 +472,21 @@ class InvestmentsService {
           currentPrice = fresh.price;
           dailyChangePct = fresh.changePct;
           liveCurrency = fresh.currency;
-          updates.push({ id: inv.id, price: fresh.price, changePct: fresh.changePct });
+          priceSource = 'live';
+          priceUpdatedAt = new Date(now).toISOString();
+          updates.push({ id: inv.id, price: fresh.price, changePct: fresh.changePct, currency:fresh.currency });
         }
       }
 
       const qty = Number(inv.quantity);
       const purchaseUnit = Number(inv.purchase_price);
       const purchaseCur = (inv.purchase_currency || 'USD').toUpperCase();
-      // Moneda de mercado: override manual del usuario > moneda real de la cotización
-      // en vivo (no para bonos: data912 hardcodea ARS y rompería un bono en USD) >
-      // default por tipo.
+      // La referencia de compra conserva la moneda de compra. Una cotización
+      // confirmada conserva la moneda del proveedor, también para bonos: no
+      // se reetiqueta un precio ARS como USD por el tipo o la preferencia.
       const typeDefaultCur = marketCurrencyForInvestment(inv.type, inv.purchase_currency);
-      const autoCur = inv.type !== 'bond' ? liveCurrency : null;
-      const marketCur = (inv.market_currency || autoCur || typeDefaultCur).toUpperCase();
+      const marketCur = (priceSource === 'purchase_reference' ? purchaseCur
+        : liveCurrency || inv.market_currency || typeDefaultCur).trim().toUpperCase();
       const priceFactor = priceFactorForType(inv.type);
 
       const costNative = (qty * purchaseUnit) / priceFactor;
@@ -498,6 +514,8 @@ class InvestmentsService {
         quantity: qty,
         purchase_price: purchaseUnit,
         current_price: currentPrice,
+        current_price_updated_at: priceUpdatedAt,
+        valuation_price_source: priceSource,
         current_price_change_pct: dailyChangePct,
         interest_rate: inv.interest_rate ? Number(inv.interest_rate) : null,
         market_price_currency: marketCur,
@@ -526,6 +544,7 @@ class InvestmentsService {
               current_price: u.price,
               current_price_updated_at: nowIso,
               current_price_change_pct: u.changePct,
+              market_currency: u.currency.trim().toUpperCase(),
             })
             .eq('id', u.id)
         )
@@ -555,6 +574,11 @@ class InvestmentsService {
   }
 
   async update(id: string, userId: string, updates: PatchInvestmentInput): Promise<Investment> {
+    if ((updates.quantity !== undefined && (!Number.isFinite(updates.quantity) || updates.quantity <= 0)) ||
+        (updates.purchasePrice !== undefined && (!Number.isFinite(updates.purchasePrice) || updates.purchasePrice <= 0)) ||
+        (updates.currentPrice != null && (!Number.isFinite(updates.currentPrice) || updates.currentPrice <= 0))) {
+      throw new Error('La cantidad y los precios deben ser finitos y mayores a cero.');
+    }
     const supabase = createServiceClientSync();
     const row = mapPatchToRow(updates);
     if (Object.keys(row).length === 0) {
@@ -641,8 +665,10 @@ class InvestmentsService {
     const saleUsdPerUnit = amountToUsd(input.price, saleCurrency, arsPerUsd, extra);
     const purchaseUsdPerUnit = amountToUsd(purchasePrice, basisCurrency, arsPerUsd, extra);
     const realizedUsd = ((saleUsdPerUnit - purchaseUsdPerUnit) * input.quantity) / priceFactor;
-    const realizedNative =
-      saleCurrency === 'ARS' ? usdToArsBlue(realizedUsd, arsPerUsd) : realizedUsd;
+    // Native se expresa en la moneda de la venta, también si es EUR/crypto:
+    // no guardar un importe USD etiquetado con otra moneda.
+    const saleUsdPerCurrencyUnit = amountToUsd(1, saleCurrency, arsPerUsd, extra);
+    const realizedNative = realizedUsd / saleUsdPerCurrencyUnit;
 
     // RPC atómico (una transacción): descuenta quantity SOLO si alcanza e
     // inserta la venta. Elimina la carrera lectura-validación-escritura que
@@ -753,10 +779,11 @@ class InvestmentsService {
     const totalDailyPnLArsBlue = usdToArsBlue(totalDailyPnLUsd, blueArsPerUsd);
 
     const supabase = createServiceClientSync();
-    const { data: allSales } = await supabase
+    const { data: allSales, error: allSalesError } = await supabase
       .from('investment_sales')
       .select('realized_pnl_usd')
       .eq('user_id', userId);
+    if (allSalesError) throw allSalesError;
     const totalRealizedPnLUsd = (allSales || []).reduce(
       (sum, row) => sum + (Number(row.realized_pnl_usd) || 0),
       0

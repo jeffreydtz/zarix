@@ -6,10 +6,8 @@ import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 // Acceso público por token (link compartible). El token de 32 hex chars
 // actúa como capability: sin token válido no hay datos.
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { token: string } }
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   try {
     if (!isValidShareToken(params.token)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });
@@ -31,10 +29,8 @@ export async function GET(
 }
 
 // Unirse al grupo como invitado (sin cuenta): nombre + email o teléfono.
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { token: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   try {
     if (!isValidShareToken(params.token)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });

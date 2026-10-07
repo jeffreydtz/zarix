@@ -148,6 +148,7 @@ CREATE TABLE transactions (
   currency TEXT NOT NULL,
   amount_in_account_currency NUMERIC(20, 8) NOT NULL,
   exchange_rate NUMERIC(20, 8),
+  destination_amount_in_account_currency NUMERIC(20, 8) CHECK (destination_amount_in_account_currency > 0),
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
   description TEXT,
   notes TEXT,
@@ -449,137 +450,79 @@ CREATE TRIGGER trigger_investments_updated_at BEFORE UPDATE ON investments
 CREATE OR REPLACE FUNCTION update_account_balance()
 RETURNS TRIGGER AS $$
 DECLARE
-  amount_delta NUMERIC(20, 8);
+  touched_accounts UUID[] := ARRAY[]::UUID[];
   old_is_secondary_adjustment BOOLEAN := FALSE;
   new_is_secondary_adjustment BOOLEAN := FALSE;
 BEGIN
+  IF TG_OP IN ('DELETE', 'UPDATE') THEN
+    touched_accounts := touched_accounts || ARRAY[OLD.account_id, OLD.destination_account_id];
+  END IF;
+  IF TG_OP IN ('INSERT', 'UPDATE') THEN
+    touched_accounts := touched_accounts || ARRAY[NEW.account_id, NEW.destination_account_id];
+  END IF;
+
+  -- Mismo orden de locks para A→B y B→A; los dos impactos son parte de la
+  -- transacción que modificó el movimiento, incluidos UPDATE y DELETE.
+  PERFORM id FROM public.accounts
+  WHERE id = ANY(touched_accounts)
+  ORDER BY id
+  FOR UPDATE;
+
   IF TG_OP IN ('DELETE', 'UPDATE') AND OLD.type = 'adjustment' THEN
     SELECT COALESCE(
-      a.type = 'credit_card'
-      AND a.is_multicurrency = true
+      a.type = 'credit_card' AND a.is_multicurrency
       AND a.secondary_currency IS NOT NULL
       AND upper(trim(COALESCE(OLD.currency, ''))) = upper(trim(a.secondary_currency)),
       FALSE
-    )
-    INTO old_is_secondary_adjustment
-    FROM accounts a
-    WHERE a.id = OLD.account_id;
+    ) INTO old_is_secondary_adjustment
+    FROM public.accounts a WHERE a.id = OLD.account_id;
     old_is_secondary_adjustment := COALESCE(old_is_secondary_adjustment, FALSE);
   END IF;
-
   IF TG_OP IN ('INSERT', 'UPDATE') AND NEW.type = 'adjustment' THEN
     SELECT COALESCE(
-      a.type = 'credit_card'
-      AND a.is_multicurrency = true
+      a.type = 'credit_card' AND a.is_multicurrency
       AND a.secondary_currency IS NOT NULL
       AND upper(trim(COALESCE(NEW.currency, ''))) = upper(trim(a.secondary_currency)),
       FALSE
-    )
-    INTO new_is_secondary_adjustment
-    FROM accounts a
-    WHERE a.id = NEW.account_id;
+    ) INTO new_is_secondary_adjustment
+    FROM public.accounts a WHERE a.id = NEW.account_id;
     new_is_secondary_adjustment := COALESCE(new_is_secondary_adjustment, FALSE);
   END IF;
 
-  IF TG_OP = 'DELETE' THEN
-    IF OLD.type = 'expense' THEN
-      UPDATE accounts SET balance = balance + OLD.amount_in_account_currency
+  -- Quitar el impacto anterior usando OLD.type, no el tipo de la fila nueva.
+  IF TG_OP IN ('DELETE', 'UPDATE') THEN
+    IF OLD.type IN ('expense', 'transfer') THEN
+      UPDATE public.accounts SET balance = balance + OLD.amount_in_account_currency
       WHERE id = OLD.account_id;
-    ELSIF OLD.type = 'income' THEN
-      UPDATE accounts SET balance = balance - OLD.amount_in_account_currency
+    ELSIF OLD.type = 'income' OR (OLD.type = 'adjustment' AND NOT old_is_secondary_adjustment) THEN
+      UPDATE public.accounts SET balance = balance - OLD.amount_in_account_currency
       WHERE id = OLD.account_id;
-    ELSIF OLD.type = 'transfer' THEN
-      UPDATE accounts SET balance = balance + OLD.amount_in_account_currency
-      WHERE id = OLD.account_id;
-      IF OLD.destination_account_id IS NOT NULL THEN
-        UPDATE accounts SET balance = balance - (OLD.amount * COALESCE(OLD.exchange_rate, 1))
-        WHERE id = OLD.destination_account_id;
-      END IF;
-    ELSIF OLD.type = 'adjustment' THEN
-      IF NOT old_is_secondary_adjustment THEN
-        UPDATE accounts SET balance = balance - OLD.amount_in_account_currency
-        WHERE id = OLD.account_id;
-      END IF;
     END IF;
-    RETURN OLD;
-  END IF;
-
-  IF TG_OP = 'UPDATE' THEN
-    IF OLD.type = 'expense' THEN
-      amount_delta = OLD.amount_in_account_currency - NEW.amount_in_account_currency;
-    ELSIF OLD.type = 'income' THEN
-      amount_delta = NEW.amount_in_account_currency - OLD.amount_in_account_currency;
-    ELSIF OLD.type = 'transfer' THEN
-      amount_delta = OLD.amount_in_account_currency - NEW.amount_in_account_currency;
-    ELSIF OLD.type = 'adjustment' AND NEW.type = 'adjustment' THEN
-      IF old_is_secondary_adjustment AND new_is_secondary_adjustment THEN
-        amount_delta = 0;
-      ELSIF old_is_secondary_adjustment AND NOT new_is_secondary_adjustment THEN
-        amount_delta = NEW.amount_in_account_currency;
-      ELSIF NOT old_is_secondary_adjustment AND new_is_secondary_adjustment THEN
-        amount_delta = -OLD.amount_in_account_currency;
-      ELSE
-        amount_delta = NEW.amount_in_account_currency - OLD.amount_in_account_currency;
-      END IF;
-    ELSE
-      amount_delta = NEW.amount_in_account_currency - OLD.amount_in_account_currency;
-    END IF;
-    
-    IF OLD.account_id != NEW.account_id THEN
-      IF OLD.type = 'expense' THEN
-        UPDATE accounts SET balance = balance + OLD.amount_in_account_currency WHERE id = OLD.account_id;
-        UPDATE accounts SET balance = balance - NEW.amount_in_account_currency WHERE id = NEW.account_id;
-      ELSIF OLD.type = 'income' THEN
-        UPDATE accounts SET balance = balance - OLD.amount_in_account_currency WHERE id = OLD.account_id;
-        UPDATE accounts SET balance = balance + NEW.amount_in_account_currency WHERE id = NEW.account_id;
-      ELSIF OLD.type = 'adjustment' THEN
-        IF NOT old_is_secondary_adjustment THEN
-          UPDATE accounts SET balance = balance - OLD.amount_in_account_currency WHERE id = OLD.account_id;
-        END IF;
-        IF NEW.type = 'adjustment' AND NOT new_is_secondary_adjustment THEN
-          UPDATE accounts SET balance = balance + NEW.amount_in_account_currency WHERE id = NEW.account_id;
-        END IF;
-      END IF;
-    ELSE
-      UPDATE accounts SET balance = balance + amount_delta WHERE id = NEW.account_id;
-    END IF;
-    
     IF OLD.type = 'transfer' AND OLD.destination_account_id IS NOT NULL THEN
-      UPDATE accounts SET balance = balance - (OLD.amount * COALESCE(OLD.exchange_rate, 1))
+      UPDATE public.accounts SET balance = balance - COALESCE(OLD.destination_amount_in_account_currency, OLD.amount * COALESCE(OLD.exchange_rate, 1))
       WHERE id = OLD.destination_account_id;
     END IF;
-    IF NEW.type = 'transfer' AND NEW.destination_account_id IS NOT NULL THEN
-      UPDATE accounts SET balance = balance + (NEW.amount * COALESCE(NEW.exchange_rate, 1))
-      WHERE id = NEW.destination_account_id;
-    END IF;
-    
-    RETURN NEW;
   END IF;
 
-  IF TG_OP = 'INSERT' THEN
-    IF NEW.type = 'expense' THEN
-      UPDATE accounts SET balance = balance - NEW.amount_in_account_currency
+  -- Aplicar el impacto nuevo usando NEW.type y sus propias cuentas/monedas.
+  IF TG_OP IN ('INSERT', 'UPDATE') THEN
+    IF NEW.type IN ('expense', 'transfer') THEN
+      UPDATE public.accounts SET balance = balance - NEW.amount_in_account_currency
       WHERE id = NEW.account_id;
-    ELSIF NEW.type = 'income' THEN
-      UPDATE accounts SET balance = balance + NEW.amount_in_account_currency
+    ELSIF NEW.type = 'income' OR (NEW.type = 'adjustment' AND NOT new_is_secondary_adjustment) THEN
+      UPDATE public.accounts SET balance = balance + NEW.amount_in_account_currency
       WHERE id = NEW.account_id;
-    ELSIF NEW.type = 'transfer' THEN
-      UPDATE accounts SET balance = balance - NEW.amount_in_account_currency
-      WHERE id = NEW.account_id;
-      IF NEW.destination_account_id IS NOT NULL THEN
-        UPDATE accounts SET balance = balance + (NEW.amount * COALESCE(NEW.exchange_rate, 1))
-        WHERE id = NEW.destination_account_id;
-      END IF;
-    ELSIF NEW.type = 'adjustment' THEN
-      IF NOT new_is_secondary_adjustment THEN
-        UPDATE accounts SET balance = balance + NEW.amount_in_account_currency
-        WHERE id = NEW.account_id;
-      END IF;
     END IF;
-    RETURN NEW;
+    IF NEW.type = 'transfer' AND NEW.destination_account_id IS NOT NULL THEN
+      UPDATE public.accounts SET balance = balance + COALESCE(NEW.destination_amount_in_account_currency, NEW.amount * COALESCE(NEW.exchange_rate, 1))
+      WHERE id = NEW.destination_account_id;
+    END IF;
   END IF;
+
+  IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
+  RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = public;
 
 CREATE TRIGGER trigger_update_account_balance
   AFTER INSERT OR UPDATE OR DELETE ON transactions
@@ -880,8 +823,8 @@ destination_entries AS (
     tx.transaction_date,
     tx.id AS tx_id,
     upper(trim(tx.currency)) AS tx_currency,
-    abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1) AS signed_original_amount,
-    abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1) AS signed_primary_fallback,
+    COALESCE(tx.destination_amount_in_account_currency, abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1)) AS signed_original_amount,
+    COALESCE(tx.destination_amount_in_account_currency, abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1)) AS signed_primary_fallback,
     (
       upper(trim(tx.currency)) = ma.secondary_currency
       AND COALESCE(tx.exchange_rate, 1) <> 1
@@ -905,7 +848,7 @@ destination_entries AS (
     CASE
       WHEN upper(trim(tx.currency)) = ma.primary_currency
            AND COALESCE(tx.exchange_rate, 1) <> 1
-      THEN abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1)
+      THEN COALESCE(tx.destination_amount_in_account_currency, abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1))
       ELSE NULL::numeric
     END AS primary_inflow_amount,
     CASE
@@ -1459,3 +1402,126 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 REVOKE EXECUTE ON FUNCTION sell_investment_position(UUID, UUID, NUMERIC, NUMERIC, TEXT, DATE, NUMERIC, NUMERIC, NUMERIC, TEXT) FROM PUBLIC;
 REVOKE EXECUTE ON FUNCTION sell_investment_position(UUID, UUID, NUMERIC, NUMERIC, TEXT, DATE, NUMERIC, NUMERIC, NUMERIC, TEXT) FROM anon, authenticated;
 GRANT EXECUTE ON FUNCTION sell_investment_position(UUID, UUID, NUMERIC, NUMERIC, TEXT, DATE, NUMERIC, NUMERIC, NUMERIC, TEXT) TO service_role;
+
+
+-- Atomic shared expenses: migration 20261006235955
+-- Un gasto y su reparto son una sola operación; jamás dejar importe nuevo
+-- con reparto anterior si falla una escritura. Se ejecuta sólo desde backend.
+CREATE OR REPLACE FUNCTION public.save_shared_expense(
+  p_share_token TEXT,
+  p_actor_member_id UUID,
+  p_paid_by_member_id UUID,
+  p_description TEXT,
+  p_amount NUMERIC,
+  p_expense_date DATE DEFAULT NULL,
+  p_split_member_ids UUID[] DEFAULT NULL,
+  p_expense_id UUID DEFAULT NULL
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+  v_group_id UUID;
+  v_expense_id UUID;
+  v_member_ids UUID[];
+  v_amount NUMERIC;
+  v_count INTEGER;
+BEGIN
+  IF p_share_token IS NULL OR p_share_token !~ '^[a-f0-9]{32}$' THEN
+    RETURN NULL;
+  END IF;
+
+  -- Serializa las escrituras de gastos del grupo y evita que se borre entre
+  -- la autorización por capability y el cambio de sus gastos/repartos.
+  SELECT id INTO v_group_id FROM public.shared_groups
+  WHERE share_token = p_share_token AND is_active = TRUE
+  FOR UPDATE;
+  IF NOT FOUND THEN RETURN NULL; END IF;
+
+  IF p_actor_member_id IS NULL OR NOT EXISTS (
+    SELECT 1 FROM public.shared_group_members
+    WHERE id = p_actor_member_id AND group_id = v_group_id
+  ) THEN
+    RAISE EXCEPTION 'Tenés que unirte al grupo para cargar o editar gastos.' USING ERRCODE = '42501';
+  END IF;
+
+  -- El actor es una identificación declarada dentro del link compartido.
+  -- No prueba identidad individual: el token autoriza la colaboración grupal.
+  IF p_paid_by_member_id IS NULL OR NOT EXISTS (
+    SELECT 1 FROM public.shared_group_members
+    WHERE id = p_paid_by_member_id AND group_id = v_group_id
+  ) THEN
+    RAISE EXCEPTION 'El miembro que pagó no pertenece al grupo.' USING ERRCODE = '22023';
+  END IF;
+  IF p_description IS NULL OR char_length(btrim(p_description)) NOT BETWEEN 1 AND 200 THEN
+    RAISE EXCEPTION 'La descripción debe tener entre 1 y 200 caracteres.' USING ERRCODE = '22023';
+  END IF;
+  IF p_amount IS NULL OR p_amount::TEXT IN ('NaN', 'Infinity', '-Infinity') OR p_amount <= 0 OR p_amount > 999999999999999999.99 THEN
+    RAISE EXCEPTION 'El monto debe ser positivo y finito.' USING ERRCODE = '22023';
+  END IF;
+  v_amount := round(p_amount, 2);
+  IF v_amount < 0.01 THEN
+    RAISE EXCEPTION 'El monto mínimo es 0,01.' USING ERRCODE = '22023';
+  END IF;
+
+  IF coalesce(cardinality(p_split_member_ids), 0) = 0 THEN
+    SELECT array_agg(id ORDER BY created_at, id) INTO v_member_ids
+    FROM public.shared_group_members WHERE group_id = v_group_id;
+  ELSE
+    IF cardinality(p_split_member_ids) > 30 THEN
+      RAISE EXCEPTION 'El reparto supera el máximo de participantes.' USING ERRCODE = '22023';
+    END IF;
+    SELECT array_agg(member_id ORDER BY first_position) INTO v_member_ids
+    FROM (
+      SELECT member_id, min(position) AS first_position
+      FROM unnest(p_split_member_ids) WITH ORDINALITY AS participants(member_id, position)
+      GROUP BY member_id
+    ) distinct_participants;
+  END IF;
+  v_count := coalesce(cardinality(v_member_ids), 0);
+  IF v_count = 0 OR EXISTS (
+    SELECT 1 FROM unnest(v_member_ids) AS selected(member_id)
+    LEFT JOIN public.shared_group_members m
+      ON m.id = selected.member_id AND m.group_id = v_group_id
+    WHERE m.id IS NULL
+  ) THEN
+    RAISE EXCEPTION 'Hay participantes que no pertenecen al grupo.' USING ERRCODE = '22023';
+  END IF;
+
+  IF p_expense_id IS NULL THEN
+    INSERT INTO public.shared_expenses(group_id, paid_by_member_id, description, amount, expense_date)
+    VALUES (v_group_id, p_paid_by_member_id, btrim(p_description), v_amount,
+            coalesce(p_expense_date, (now() AT TIME ZONE 'America/Argentina/Buenos_Aires')::DATE))
+    RETURNING id INTO v_expense_id;
+  ELSE
+    SELECT id INTO v_expense_id FROM public.shared_expenses
+    WHERE id = p_expense_id AND group_id = v_group_id FOR UPDATE;
+    IF NOT FOUND THEN RETURN NULL; END IF;
+    UPDATE public.shared_expenses SET paid_by_member_id = p_paid_by_member_id,
+      description = btrim(p_description), amount = v_amount,
+      expense_date = coalesce(p_expense_date, expense_date)
+    WHERE id = v_expense_id AND group_id = v_group_id;
+    DELETE FROM public.shared_expense_splits WHERE expense_id = v_expense_id;
+  END IF;
+
+  -- Usar NUMERIC para centavos: BIGINT no cubre todo el NUMERIC(20,2).
+  -- El reparto usa el orden deduplicado de participantes de la solicitud.
+  INSERT INTO public.shared_expense_splits(expense_id, member_id, amount)
+  SELECT v_expense_id, member_id,
+    (floor(v_amount * 100 / v_count) +
+       CASE WHEN position <= mod(v_amount * 100, v_count) THEN 1 ELSE 0 END) / 100
+  FROM unnest(v_member_ids) WITH ORDINALITY AS participants(member_id, position);
+
+  RETURN (
+    SELECT to_jsonb(e) || jsonb_build_object('splits', (
+      SELECT jsonb_agg(jsonb_build_object('member_id', member_id, 'amount', amount) ORDER BY member_id)
+      FROM public.shared_expense_splits WHERE expense_id = v_expense_id
+    ))
+    FROM public.shared_expenses e WHERE id = v_expense_id AND group_id = v_group_id
+  );
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.save_shared_expense(TEXT, UUID, UUID, TEXT, NUMERIC, DATE, UUID[], UUID) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.save_shared_expense(TEXT, UUID, UUID, TEXT, NUMERIC, DATE, UUID[], UUID) TO service_role;

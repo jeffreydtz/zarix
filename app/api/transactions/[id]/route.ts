@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
-import { transactionsService } from '@/lib/services/transactions';
+import { transactionsService, computeTransferAmounts } from '@/lib/services/transactions';
 import { errorResponse } from '@/lib/api-handler';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {
@@ -29,10 +27,8 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {
@@ -71,11 +67,10 @@ export async function PATCH(
     const serviceClient = createServiceClientSync();
 
     // Cargamos el movimiento existente (scoped por usuario) para validar el tipo.
-    // El trigger de saldos calcula el delta a partir de OLD.type; cambiar el tipo
-    // o editar transfer/adjustment desde acá descuadra el balance silenciosamente.
+    // Se conserva el tipo original. Las transferencias recalculan ambos importes.
     const { data: existing, error: existingErr } = await serviceClient
       .from('transactions')
-      .select('type')
+      .select('*')
       .eq('id', params.id)
       .eq('user_id', user.id)
       .single();
@@ -84,9 +79,9 @@ export async function PATCH(
       return NextResponse.json({ error: 'Movimiento no encontrado' }, { status: 404 });
     }
 
-    if (existing.type === 'transfer' || existing.type === 'adjustment') {
+    if (existing.type === 'adjustment') {
       return NextResponse.json(
-        { error: 'Las transferencias y ajustes no se editan desde acá: borralos y recrealos.' },
+        { error: 'Los ajustes se registran mediante el formulario de saldo.' },
         { status: 400 }
       );
     }
@@ -100,17 +95,30 @@ export async function PATCH(
 
     const { data: accRow, error: accErr } = await serviceClient
       .from('accounts')
-      .select('currency')
+      .select('currency, is_active')
       .eq('id', body.account_id)
       .eq('user_id', user.id)
       .single();
 
-    if (accErr || !accRow) {
+    if (accErr || !accRow || accRow.is_active === false) {
       return NextResponse.json({ error: 'Cuenta no encontrada' }, { status: 400 });
     }
 
     let amountPatch: Record<string, unknown> = {};
-    if (existing.type === 'expense' || existing.type === 'income') {
+    const destinationId = body.destination_account_id ?? existing.destination_account_id;
+    const financialChanged = amount !== Number(existing.amount) || cur !== existing.currency ||
+      body.account_id !== existing.account_id ||
+      (existing.type === 'transfer' && destinationId !== existing.destination_account_id) ||
+      body.exchange_rate_override != null;
+    if (!financialChanged) {
+      // Corregir texto/categoría no aplica una cotización nueva al movimiento histórico.
+      amountPatch = {
+        amount_in_account_currency:existing.amount_in_account_currency,
+        destination_amount_in_account_currency:existing.destination_amount_in_account_currency ?? null,
+        exchange_rate:existing.exchange_rate,
+      };
+    }
+    if (financialChanged && (existing.type === 'expense' || existing.type === 'income')) {
       const rec = await transactionsService.recomputeExpenseIncomeAmountFields(
         amount,
         cur,
@@ -119,6 +127,23 @@ export async function PATCH(
       amountPatch = {
         amount_in_account_currency: rec.amount_in_account_currency,
         exchange_rate: rec.exchange_rate,
+      };
+    } else if (financialChanged && existing.type === 'transfer') {
+      if (!destinationId || destinationId === body.account_id) {
+        return NextResponse.json({ error:'La cuenta destino debe ser distinta del origen.' },{ status:400 });
+      }
+      const { data: destination, error: destinationError } = await serviceClient
+        .from('accounts').select('currency, is_active').eq('id',destinationId).eq('user_id',user.id).single();
+      if (destinationError || !destination || destination.is_active === false) {
+        return NextResponse.json({ error:'Cuenta destino no encontrada o archivada.' },{ status:400 });
+      }
+      const transfer = await computeTransferAmounts(amount,cur,accRow.currency,destination.currency,
+        body.exchange_rate_override == null ? undefined : Number(body.exchange_rate_override));
+      amountPatch = {
+        destination_account_id:destinationId,
+        amount_in_account_currency:transfer.amountInSource,
+        destination_amount_in_account_currency:transfer.amountInDestination,
+        exchange_rate:transfer.exchangeRate===1 ? null : transfer.exchangeRate,
       };
     }
 
@@ -149,10 +174,8 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {

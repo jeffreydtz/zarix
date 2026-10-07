@@ -1,3 +1,5 @@
+> **Referencia histórica.** La entrega vigente y sus cuatro CU se encuentran en [v2.13](../tif/v2.13/README.md). Este catálogo y sus resultados conservan el contexto anterior.
+
 # TIF UAI 2026 — Diagramas ICONIX de Zarix
 
 Fuentes editables de los diagramas de la sección técnica del **Trabajo Integrador

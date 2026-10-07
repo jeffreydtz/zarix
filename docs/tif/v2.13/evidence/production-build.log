@@ -1,0 +1,146 @@
+
+> zarix@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.27
+   - Experiments (use with caution):
+     · serverActions
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.5s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/30) ...
+   Generating static pages (7/30) 
+Investments page error: Error: Dynamic server usage: Route /investments couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at s (.next/server/chunks/3897.js:1:30928)
+    at n (.next/server/chunks/369.js:1:2933)
+    at f (.next/server/chunks/2583.js:1:8107)
+    at <unknown> (.next/server/chunks/6127.js:1:8767)
+    at l (.next/server/chunks/6127.js:1:7287) {
+  description: "Route /investments couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (14/30) 
+   Generating static pages (22/30) 
+Categories page error: Error: Dynamic server usage: Route /categories couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at s (.next/server/chunks/3897.js:1:30928)
+    at n (.next/server/chunks/369.js:1:2933)
+    at f (.next/server/chunks/2583.js:1:8107)
+    at i (.next/server/app/(authenticated)/categories/page.js:2:18861)
+    at stringify (<anonymous>) {
+  description: "Route /categories couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Accounts page error: Error: Dynamic server usage: Route /accounts couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at s (.next/server/chunks/3897.js:1:30928)
+    at n (.next/server/chunks/369.js:1:2933)
+    at f (.next/server/chunks/2583.js:1:8107)
+    at l (.next/server/app/(authenticated)/accounts/page.js:2:27573)
+    at stringify (<anonymous>) {
+  description: "Route /accounts couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Dashboard error: Error: Dynamic server usage: Route /dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at s (.next/server/chunks/3897.js:1:30928)
+    at n (.next/server/chunks/369.js:1:2933)
+    at f (.next/server/chunks/2583.js:1:8107)
+    at <unknown> (.next/server/chunks/6127.js:1:8767)
+    at l (.next/server/chunks/6127.js:1:7287) {
+  description: "Route /dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+ ✓ Generating static pages (30/30)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                         Size  First Load JS
+┌ ƒ /                                            15.3 kB         173 kB
+├ ○ /_not-found                                     1 kB         104 kB
+├ ƒ /accounts                                    8.71 kB         179 kB
+├ ƒ /accounts/[id]                               2.38 kB         186 kB
+├ ƒ /analysis                                    4.36 kB         151 kB
+├ ƒ /api/accounts                                  276 B         103 kB
+├ ƒ /api/accounts/[id]                             276 B         103 kB
+├ ƒ /api/accounts/[id]/adjust-balance              276 B         103 kB
+├ ƒ /api/accounts/[id]/adjust-secondary-balance    276 B         103 kB
+├ ƒ /api/accounts/[id]/correct-debt-sign           276 B         103 kB
+├ ƒ /api/accounts/[id]/reconcile-balance           276 B         103 kB
+├ ƒ /api/accounts/[id]/repair-currency-range       276 B         103 kB
+├ ƒ /api/ai/anomalies                              276 B         103 kB
+├ ƒ /api/ai/chat                                   276 B         103 kB
+├ ƒ /api/ai/projections                            276 B         103 kB
+├ ƒ /api/auth/dev-login                            276 B         103 kB
+├ ƒ /api/auth/link-telegram                        276 B         103 kB
+├ ƒ /api/auth/telegram-link-code                   276 B         103 kB
+├ ƒ /api/billing/subscription-link                 276 B         103 kB
+├ ƒ /api/budgets                                   276 B         103 kB
+├ ƒ /api/budgets/[id]                              276 B         103 kB
+├ ƒ /api/budgets/status                            276 B         103 kB
+├ ƒ /api/categories                                276 B         103 kB
+├ ƒ /api/categories/[id]                           276 B         103 kB
+├ ƒ /api/cotizaciones                              276 B         103 kB
+├ ƒ /api/cotizaciones/transactions-fx              276 B         103 kB
+├ ƒ /api/cron/budget-alerts                        276 B         103 kB
+├ ƒ /api/cron/maturity-alerts                      276 B         103 kB
+├ ƒ /api/cron/monthly-summary                      276 B         103 kB
+├ ƒ /api/cron/net-worth-snapshot                   276 B         103 kB
+├ ƒ /api/cron/recurring                            276 B         103 kB
+├ ƒ /api/cron/subscription-grace                   276 B         103 kB
+├ ƒ /api/cron/update-prices                        276 B         103 kB
+├ ƒ /api/cron/weekly-summary                       276 B         103 kB
+├ ƒ /api/export/backup                             276 B         103 kB
+├ ƒ /api/export/transactions                       276 B         103 kB
+├ ƒ /api/health                                    276 B         103 kB
+├ ƒ /api/import/transactions                       276 B         103 kB
+├ ƒ /api/investments                               276 B         103 kB
+├ ƒ /api/investments/[id]                          276 B         103 kB
+├ ƒ /api/investments/[id]/sell                     276 B         103 kB
+├ ƒ /api/investments/performance                   276 B         103 kB
+├ ƒ /api/investments/portfolio                     276 B         103 kB
+├ ƒ /api/investments/quote                         276 B         103 kB
+├ ƒ /api/investments/ticker-search                 276 B         103 kB
+├ ƒ /api/market-data                               276 B         103 kB
+├ ƒ /api/recurring                                 276 B         103 kB
+├ ƒ /api/recurring/[id]                            276 B         103 kB
+├ ƒ /api/shared-groups                             276 B         103 kB
+├ ƒ /api/shared-groups/[id]                        276 B         103 kB
+├ ƒ /api/shared/[token]                            276 B         103 kB
+├ ƒ /api/shared/[token]/expenses                   276 B         103 kB
+├ ƒ /api/shared/[token]/expenses/[expenseId]       276 B         103 kB
+├ ƒ /api/telegram/webhook                          276 B         103 kB
+├ ƒ /api/telegram/webhook/u/[secret]               276 B         103 kB
+├ ƒ /api/transactions                              276 B         103 kB
+├ ƒ /api/transactions/[id]                         276 B         103 kB
+├ ƒ /api/transactions/bulk                         276 B         103 kB
+├ ƒ /api/transactions/summary                      276 B         103 kB
+├ ƒ /api/user/integrations                         276 B         103 kB
+├ ƒ /api/user/notification-preferences             276 B         103 kB
+├ ƒ /api/user/onboarding                           276 B         103 kB
+├ ƒ /api/user/subscription                         276 B         103 kB
+├ ƒ /api/webhooks/mercado-pago                     276 B         103 kB
+├ ƒ /auth/callback                                 276 B         103 kB
+├ ƒ /budgets                                     8.55 kB         158 kB
+├ ƒ /categories                                     5 kB         111 kB
+├ ƒ /dashboard                                    128 kB         282 kB
+├ ○ /demo                                        3.12 kB         109 kB
+├ ƒ /expenses                                    2.72 kB         179 kB
+├ ƒ /investments                                 16.1 kB         169 kB
+├ ○ /login                                       7.03 kB         226 kB
+├ ƒ /recurring                                     10 kB         163 kB
+├ ○ /register                                     4.9 kB         224 kB
+├ ƒ /settings                                      17 kB         235 kB
+├ ƒ /shared                                      3.23 kB         109 kB
+└ ƒ /shared/[token]                              4.76 kB         116 kB
++ First Load JS shared by all                     103 kB
+  ├ chunks/1255-8dc91b756d944555.js              46.2 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js          54.2 kB
+  └ other shared chunks (total)                  2.37 kB
+
+
+ƒ Middleware                                     94.2 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

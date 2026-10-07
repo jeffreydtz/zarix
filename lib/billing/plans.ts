@@ -18,7 +18,9 @@ interface RawBillingPlan {
   reason?: unknown;
 }
 
-function normalizePlan(raw: RawBillingPlan): BillingPlan | null {
+function normalizePlan(value: unknown): BillingPlan | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const raw = value as RawBillingPlan;
   const id = typeof raw.id === 'string' ? raw.id.trim() : '';
   const name = typeof raw.name === 'string' ? raw.name.trim() : '';
   const description = typeof raw.description === 'string' ? raw.description.trim() : '';
@@ -42,9 +44,10 @@ function normalizePlan(raw: RawBillingPlan): BillingPlan | null {
   };
 }
 
-function fallbackPlan(): BillingPlan {
-  const amount = Number(process.env.MP_SUBSCRIPTION_AMOUNT ?? 0);
-  const safeAmount = Number.isFinite(amount) && amount > 0 ? amount : 9.99;
+function fallbackPlan(): BillingPlan | null {
+  const amount = Number(process.env.MP_SUBSCRIPTION_AMOUNT);
+  // A missing or invalid price must never become an accidental live checkout.
+  if (!Number.isFinite(amount) || amount <= 0) return null;
   const currency = (process.env.MP_SUBSCRIPTION_CURRENCY || 'ARS').toUpperCase();
   const reason = process.env.MP_SUBSCRIPTION_REASON || 'Zarix SaaS';
 
@@ -52,7 +55,7 @@ function fallbackPlan(): BillingPlan {
     id: 'zarix-monthly',
     name: 'Zarix Mensual',
     description: 'Acceso al orquestador IA, integraciones y soporte base.',
-    amount: safeAmount,
+    amount,
     currency,
     interval: 'monthly',
     reason,
@@ -62,26 +65,27 @@ function fallbackPlan(): BillingPlan {
 export function getBillingPlans(): BillingPlan[] {
   const fromJson = process.env.MP_SUBSCRIPTION_PLANS_JSON;
   if (!fromJson) {
-    return [fallbackPlan()];
+    const plan = fallbackPlan();
+    return plan ? [plan] : [];
   }
 
   try {
     const parsed = JSON.parse(fromJson) as unknown;
     if (!Array.isArray(parsed)) {
-      return [fallbackPlan()];
+      return [];
     }
 
     const plans = parsed
-      .map((entry) => normalizePlan(entry as RawBillingPlan))
+      .map(normalizePlan)
       .filter((plan): plan is BillingPlan => Boolean(plan));
 
     if (plans.length === 0) {
-      return [fallbackPlan()];
+      return [];
     }
 
     return plans;
   } catch {
-    return [fallbackPlan()];
+    return [];
   }
 }
 

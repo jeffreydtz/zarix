@@ -1,3 +1,5 @@
+> **Referencia histórica.** Para la entrega v2.13 del 6 de octubre de 2026, el alcance final, las versiones y los resultados vigentes están en [docs/tif/v2.13](tif/v2.13/README.md). Los CU y mediciones que siguen pertenecen al relevamiento anterior y no acreditan la nueva revisión.
+
 # EV-COD — Evidence pack (código) — Zarix
 
 **Proyecto:** Zarix — finanzas personales (PWA)  

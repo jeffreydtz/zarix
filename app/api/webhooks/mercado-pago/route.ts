@@ -13,7 +13,7 @@ export const maxDuration = 30;
  * Manifest: `id:<data.id>;request-id:<x-request-id>;ts:<ts>;` → HMAC-SHA256 con MP_WEBHOOK_SECRET.
  * Fail-closed: sin MP_WEBHOOK_SECRET se rechaza (prod y resto).
  */
-function verifyMercadoPagoSignature(req: NextRequest): boolean {
+function verifyMercadoPagoSignature(req: NextRequest, signedId: string): boolean {
   const secret = process.env.MP_WEBHOOK_SECRET;
   if (!secret) {
     // Fail-closed: sin secret no se puede validar la firma. Aceptar igual dejaría
@@ -38,11 +38,7 @@ function verifyMercadoPagoSignature(req: NextRequest): boolean {
   }
   if (!ts || !v1) return false;
 
-  const dataId =
-    req.nextUrl.searchParams.get('data.id') || req.nextUrl.searchParams.get('id');
-
-  let manifest = '';
-  if (dataId) manifest += `id:${dataId.toLowerCase()};`;
+  let manifest = `id:${signedId.toLowerCase()};`;
   if (xRequestId) manifest += `request-id:${xRequestId};`;
   manifest += `ts:${ts};`;
 
@@ -50,9 +46,43 @@ function verifyMercadoPagoSignature(req: NextRequest): boolean {
   return timingSafeStringEqual(computed, v1);
 }
 
-interface ProcessWebhookInput {
-  payload: unknown;
-  searchParams: URLSearchParams;
+function normalizeResourceId(value: unknown): string | null {
+  if (typeof value !== 'string' && typeof value !== 'number') return null;
+  const id = String(value).trim().toLowerCase();
+  return id || null;
+}
+
+/** Bind every resource lookup to the query ID included in the HMAC manifest. */
+function signedResourceId(req: NextRequest): string | null {
+  const query = req.nextUrl.searchParams;
+  const candidates = query.getAll('data.id');
+  const legacy = query.getAll('id');
+  const signedId = normalizeResourceId(candidates[0] ?? legacy[0]);
+  if (!signedId) return null;
+  const aliases = [...candidates, ...legacy, ...query.getAll('preapproval_id')];
+  if (aliases.some(value => normalizeResourceId(value) !== signedId)) return null;
+  return signedId;
+}
+
+function hasMatchingBodyResource(payload: unknown, signedId: string): boolean {
+  if (!payload || typeof payload !== 'object') return true;
+  const body = payload as { id?: unknown; data?: { id?: unknown } | null; resource?: unknown };
+  const dataId = body.data?.id;
+  if (dataId !== undefined && normalizeResourceId(dataId) !== signedId) return false;
+  // In the modern format, body.id identifies the notification, not the resource.
+  // Only the legacy body without data.id treated top-level id as a resource alias.
+  if (dataId === undefined && body.id !== undefined && normalizeResourceId(body.id) !== signedId) return false;
+  if (typeof body.resource === 'string') {
+    const match = body.resource.match(/\/preapproval\/([^/?#]+)/i);
+    if (match?.[1]) {
+      try {
+        if (normalizeResourceId(decodeURIComponent(match[1])) !== signedId) return false;
+      } catch {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 async function resolveUserIdFromPreapproval(
@@ -83,12 +113,7 @@ async function resolveUserIdFromPreapproval(
   return byExternalRef.data?.id || null;
 }
 
-async function processWebhook({ payload, searchParams }: ProcessWebhookInput): Promise<void> {
-  const preapprovalId = mercadoPagoService.extractPreapprovalId(payload, searchParams);
-  if (!preapprovalId) {
-    return;
-  }
-
+async function processWebhook(preapprovalId: string): Promise<void> {
   const preapproval = await mercadoPagoService.getPreapproval(preapprovalId);
   const userId = await resolveUserIdFromPreapproval(
     preapproval.id,
@@ -120,21 +145,16 @@ async function processWebhook({ payload, searchParams }: ProcessWebhookInput): P
 }
 
 export async function POST(req: NextRequest) {
-  if (!verifyMercadoPagoSignature(req)) {
+  const signedId = signedResourceId(req);
+  if (!signedId || !verifyMercadoPagoSignature(req, signedId)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
   const payload = await req.json().catch(() => null);
-  const signedId =
-    req.nextUrl.searchParams.get('data.id') || req.nextUrl.searchParams.get('id');
-  const bodyId =
-    payload && typeof payload === 'object'
-      ? (payload as { data?: { id?: string } }).data?.id
-      : undefined;
-  if (signedId && typeof bodyId === 'string' && bodyId && bodyId.toLowerCase() !== signedId.toLowerCase()) {
+  if (!hasMatchingBodyResource(payload, signedId)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
   try {
-    await processWebhook({ payload, searchParams: req.nextUrl.searchParams });
+    await processWebhook(signedId);
   } catch (error) {
     console.error('Mercado Pago webhook processing error:', error);
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
@@ -145,11 +165,12 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   // MP también notifica por GET; debe validar firma igual que POST. Sin esto, un
   // GET sin firma podía forzar transiciones de suscripción de cualquier usuario.
-  if (!verifyMercadoPagoSignature(req)) {
+  const signedId = signedResourceId(req);
+  if (!signedId || !verifyMercadoPagoSignature(req, signedId)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
   try {
-    await processWebhook({ payload: null, searchParams: req.nextUrl.searchParams });
+    await processWebhook(signedId);
   } catch (error) {
     console.error('Mercado Pago webhook processing error:', error);
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });

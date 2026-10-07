@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { getCachedUser } from '@/lib/auth/session';
 import { analyticsService } from '@/lib/services/analytics';
 import { monthlyTrendWindow, percentChange, resolveAnalysisPeriod } from '@/lib/analysis-period';
@@ -7,13 +6,8 @@ import ProjectionsWidget from '@/components/analysis/ProjectionsWidget';
 import AnalysisPeriodPicker from '@/components/analysis/AnalysisPeriodPicker';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
-import ChartSkeleton from '@/components/ui/ChartSkeleton';
+import { CategoryDonut, MonthlyBarChart, CashFlowChart, TopExpenses, AccountBreakdownChart } from '@/components/analysis/AnalysisCharts';
 
-const CategoryDonut = dynamic(() => import('@/components/analysis/CategoryDonut'), { ssr: false, loading: () => <ChartSkeleton height={320} /> });
-const MonthlyBarChart = dynamic(() => import('@/components/analysis/MonthlyBarChart'), { ssr: false, loading: () => <ChartSkeleton height={320} /> });
-const CashFlowChart = dynamic(() => import('@/components/analysis/CashFlowChart'), { ssr: false, loading: () => <ChartSkeleton height={320} /> });
-const TopExpenses = dynamic(() => import('@/components/analysis/TopExpenses'), { ssr: false, loading: () => <ChartSkeleton height={240} /> });
-const AccountBreakdownChart = dynamic(() => import('@/components/analysis/AccountBreakdownChart'), { ssr: false, loading: () => <ChartSkeleton height={240} /> });
 
 function firstParam(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) return value[0];
@@ -37,11 +31,12 @@ function changeLabel(
   };
 }
 
-export default async function AnalysisPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export default async function AnalysisPage(
+  props: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   try {
     const user = await getCachedUser();
 

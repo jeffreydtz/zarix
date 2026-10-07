@@ -1,10 +1,6 @@
-import dynamic from 'next/dynamic';
+import SpendingAnalyzer from '@/components/dashboard/DeferredSpendingAnalyzer';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 
-const SpendingAnalyzer = dynamic(() => import('@/components/dashboard/SpendingAnalyzer'), {
-  ssr: false,
-  loading: () => <div className="card h-80 animate-pulse bg-secondary" />,
-});
 
 type QuotesPayload = Awaited<ReturnType<typeof cotizacionesService.getAllQuotes>>;
 

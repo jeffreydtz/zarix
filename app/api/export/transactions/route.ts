@@ -36,6 +36,9 @@ export async function GET(request: NextRequest) {
         currency: tx.currency,
         amountInAccountCurrency: tx.amount_in_account_currency,
         exchangeRate: tx.exchange_rate,
+        destinationAmountInAccountCurrency: tx.destination_amount_in_account_currency,
+        accountCurrency: tx.account?.currency,
+        destinationCurrency: tx.destination_account?.currency,
         account: tx.account?.name || '',
         destinationAccount: tx.destination_account?.name || '',
         category: tx.category?.name || '',
@@ -66,6 +69,11 @@ export async function GET(request: NextRequest) {
       'Descripción',
       'Notas',
       'Cuota',
+      'Cuenta Destino',
+      'Moneda Cuenta',
+      'Moneda Destino',
+      'Monto en Destino',
+      'Tasa de Cambio',
     ];
 
     const rows = transactions.map(tx => {
@@ -89,9 +97,14 @@ export async function GET(request: NextRequest) {
         tx.amount_in_account_currency.toString(),
         tx.account?.name || '',
         tx.category?.name || '',
-        (tx.description || '').replace(/"/g, '""'),
-        (tx.notes || '').replace(/"/g, '""'),
+        tx.description || '',
+        tx.notes || '',
         installment,
+        tx.destination_account?.name || '',
+        tx.account?.currency || '',
+        tx.destination_account?.currency || '',
+        tx.destination_amount_in_account_currency == null ? '' : String(tx.destination_amount_in_account_currency),
+        tx.exchange_rate == null ? '' : String(tx.exchange_rate),
       ];
     });
 
@@ -102,7 +115,7 @@ export async function GET(request: NextRequest) {
 
     const csvContent = [
       headers.join(','),
-      ...rows.map(row => row.map(cell => `"${sanitizeCsvCell(cell)}"`).join(',')),
+      ...rows.map(row => row.map(cell => `"${sanitizeCsvCell(cell).replace(/"/g, '""')}"`).join(',')),
     ].join('\n');
 
     const BOM = '\uFEFF';

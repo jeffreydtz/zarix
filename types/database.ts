@@ -149,6 +149,8 @@ export interface Transaction {
   amount: number;
   currency: string;
   amount_in_account_currency: number;
+  /** Crédito destino confirmado; null/ausente sólo en movimientos históricos. */
+  destination_amount_in_account_currency?: number | null;
   exchange_rate: number | null;
   category_id: string | null;
   description: string | null;

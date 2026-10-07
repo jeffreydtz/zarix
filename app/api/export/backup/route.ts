@@ -39,6 +39,11 @@ export async function GET() {
       supabase.from('users').select('default_currency, timezone').eq('id', user.id).single(),
     ]);
 
+    // Never offer a successful-looking partial backup when one table failed.
+    for (const result of [accountsResult, categoriesResult, budgetsResult, investmentsResult, userResult]) {
+      if (result.error) throw result.error;
+    }
+
     const backup = {
       version: '1.0',
       exportedAt: new Date().toISOString(),
@@ -52,7 +57,9 @@ export async function GET() {
       data: {
         accounts: accountsResult.data || [],
         transactions,
-        categories: (categoriesResult.data || []).filter(c => c.user_id === user.id),
+        // System category names are needed to reconstruct category references.
+        // The query still permits only this user's categories or public system ones.
+        categories: categoriesResult.data || [],
         budgets: budgetsResult.data || [],
         investments: investmentsResult.data || [],
       },

@@ -1,0 +1,1653 @@
+{
+  "numPassedTests": 292,
+  "numFailedTests": 0,
+  "success": true,
+  "testResults": [
+    {
+      "file": "__tests__/account-patch-currency.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "patchChangesLockedCurrencySettings ignores the edit-modal payload when currency settings did not change",
+          "status": "passed",
+          "duration_ms": 1.1384589999999832
+        },
+        {
+          "title": "patchChangesLockedCurrencySettings ignores repeating the same currency in a different case",
+          "status": "passed",
+          "duration_ms": 0.10283400000000142
+        },
+        {
+          "title": "patchChangesLockedCurrencySettings detects a real currency change",
+          "status": "passed",
+          "duration_ms": 0.05945800000000645
+        },
+        {
+          "title": "patchChangesLockedCurrencySettings detects enabling or disabling multicurrency",
+          "status": "passed",
+          "duration_ms": 0.06749999999999545
+        },
+        {
+          "title": "patchChangesLockedCurrencySettings detects a secondary currency change on a bimoneda card",
+          "status": "passed",
+          "duration_ms": 0.054249999999996135
+        },
+        {
+          "title": "patchChangesLockedCurrencySettings treats empty secondary currency as unchanged null",
+          "status": "passed",
+          "duration_ms": 0.05229099999999676
+        }
+      ]
+    },
+    {
+      "file": "__tests__/analysis-period.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "civil calendar helpers accepts valid YYYY-MM-DD and rejects garbage",
+          "status": "passed",
+          "duration_ms": 1.3764170000000036
+        },
+        {
+          "title": "civil calendar helpers adds days and months without local-TZ drift",
+          "status": "passed",
+          "duration_ms": 0.492416999999989
+        },
+        {
+          "title": "civil calendar helpers computes month bounds and inclusive counts",
+          "status": "passed",
+          "duration_ms": 1.1827499999999986
+        },
+        {
+          "title": "civil calendar helpers builds query ISO bounds from civil days",
+          "status": "passed",
+          "duration_ms": 0.10966700000000174
+        },
+        {
+          "title": "civil calendar helpers civilTodayYmd uses Argentina even if the clock is already the next UTC day",
+          "status": "passed",
+          "duration_ms": 11.915541999999988
+        },
+        {
+          "title": "civil calendar helpers dateToLocalYmd does not shift the civil day via toISOString",
+          "status": "passed",
+          "duration_ms": 0.11029199999998696
+        },
+        {
+          "title": "resolveAnalysisPeriod defaults to this month through today and compares against the same days last month",
+          "status": "passed",
+          "duration_ms": 0.26320900000001757
+        },
+        {
+          "title": "resolveAnalysisPeriod resolves last_month as a full calendar month",
+          "status": "passed",
+          "duration_ms": 0.10745800000000827
+        },
+        {
+          "title": "resolveAnalysisPeriod resolves rolling day windows",
+          "status": "passed",
+          "duration_ms": 0.20004199999999628
+        },
+        {
+          "title": "resolveAnalysisPeriod treats startDate/endDate as a custom range and swaps inverted bounds",
+          "status": "passed",
+          "duration_ms": 0.12095800000000168
+        },
+        {
+          "title": "resolveAnalysisPeriod pads short periods to 6 months of monthly context",
+          "status": "passed",
+          "duration_ms": 0.0956250000000125
+        },
+        {
+          "title": "resolveAnalysisPeriod keeps a long custom range as-is for monthly evolution",
+          "status": "passed",
+          "duration_ms": 0.0731670000000122
+        },
+        {
+          "title": "percentChange returns null when previous is zero and a signed percent otherwise",
+          "status": "passed",
+          "duration_ms": 0.09233300000002487
+        },
+        {
+          "title": "accountIdFromPathname extracts a UUID from an account detail path",
+          "status": "passed",
+          "duration_ms": 0.10870900000000461
+        },
+        {
+          "title": "accountIdFromPathname ignores the accounts index and unrelated routes",
+          "status": "passed",
+          "duration_ms": 0.10920799999999531
+        }
+      ]
+    },
+    {
+      "file": "__tests__/billing-checkout.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "checkout preserves selected price and interval rejects unknown plan without charging another plan",
+          "status": "passed",
+          "duration_ms": 8.186834000000005
+        },
+        {
+          "title": "checkout preserves selected price and interval requires an explicitly configured price",
+          "status": "passed",
+          "duration_ms": 0.45974999999998545
+        },
+        {
+          "title": "checkout preserves selected price and interval sends twelve months for an annual plan",
+          "status": "passed",
+          "duration_ms": 0.8122079999999983
+        },
+        {
+          "title": "checkout preserves selected price and interval uses one month and rejects a foreign return URL",
+          "status": "passed",
+          "duration_ms": 0.28129200000000765
+        },
+        {
+          "title": "checkout preserves selected price and interval requires authentication",
+          "status": "passed",
+          "duration_ms": 0.27045900000001666
+        }
+      ]
+    },
+    {
+      "file": "__tests__/billing-plans.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "explicit billing configuration offers no arbitrary price without configuration",
+          "status": "passed",
+          "duration_ms": 2.482167000000004
+        },
+        {
+          "title": "explicit billing configuration rejects invalid price ",
+          "status": "passed",
+          "duration_ms": 0.12966699999999776
+        },
+        {
+          "title": "explicit billing configuration rejects invalid price 0",
+          "status": "passed",
+          "duration_ms": 0.16058299999998837
+        },
+        {
+          "title": "explicit billing configuration rejects invalid price -5",
+          "status": "passed",
+          "duration_ms": 0.06879200000000196
+        },
+        {
+          "title": "explicit billing configuration rejects invalid price abc",
+          "status": "passed",
+          "duration_ms": 0.05912499999999454
+        },
+        {
+          "title": "explicit billing configuration rejects invalid price Infinity",
+          "status": "passed",
+          "duration_ms": 0.05724999999999625
+        },
+        {
+          "title": "explicit billing configuration normalizes an explicit monthly plan",
+          "status": "passed",
+          "duration_ms": 0.4239589999999964
+        },
+        {
+          "title": "explicit billing configuration rejects unusable JSON without offering another price",
+          "status": "passed",
+          "duration_ms": 0.09433399999998926
+        },
+        {
+          "title": "explicit billing configuration rejects unusable JSON without offering another price",
+          "status": "passed",
+          "duration_ms": 0.06620799999998894
+        },
+        {
+          "title": "explicit billing configuration rejects unusable JSON without offering another price",
+          "status": "passed",
+          "duration_ms": 0.1634170000000097
+        },
+        {
+          "title": "explicit billing configuration accepts an annual plan and ignores malformed entries",
+          "status": "passed",
+          "duration_ms": 0.5807920000000024
+        }
+      ]
+    },
+    {
+      "file": "__tests__/billing-webhook.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "Mercado Pago signed resource binding without live payments rejects a POST body resource alias that differs from the signed ID: {\"id\":\"preapproval-b\"}",
+          "status": "passed",
+          "duration_ms": 6.317332999999991
+        },
+        {
+          "title": "Mercado Pago signed resource binding without live payments rejects a POST body resource alias that differs from the signed ID: {\"data\":{\"id\":\"preapproval-b\"}}",
+          "status": "passed",
+          "duration_ms": 0.5395419999999831
+        },
+        {
+          "title": "Mercado Pago signed resource binding without live payments rejects a POST body resource alias that differs from the signed ID: {\"resource\":\"https://api.mercadopago.com/preapproval/preapproval-b\"}",
+          "status": "passed",
+          "duration_ms": 0.31749999999999545
+        },
+        {
+          "title": "Mercado Pago signed resource binding without live payments rejects GET query aliases which could override the signed data.id",
+          "status": "passed",
+          "duration_ms": 0.5641669999999976
+        },
+        {
+          "title": "Mercado Pago signed resource binding without live payments accepts the modern format with a distinct notification ID and looks up only the signed resource",
+          "status": "passed",
+          "duration_ms": 0.9998329999999953
+        },
+        {
+          "title": "Mercado Pago signed resource binding without live payments accepts a legacy signed GET when all aliases agree",
+          "status": "passed",
+          "duration_ms": 0.2612079999999821
+        },
+        {
+          "title": "Mercado Pago signed resource binding without live payments rejects an unsigned resource even if a manifest with no resource could be valid",
+          "status": "passed",
+          "duration_ms": 0.3200000000000216
+        }
+      ]
+    },
+    {
+      "file": "__tests__/cron-auth.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "verifyCronBearer fails closed when no secret is configured",
+          "status": "passed",
+          "duration_ms": 1.7070420000000013
+        },
+        {
+          "title": "verifyCronBearer rejects a missing or malformed Authorization header",
+          "status": "passed",
+          "duration_ms": 0.31466700000000003
+        },
+        {
+          "title": "verifyCronBearer rejects a wrong token of different length",
+          "status": "passed",
+          "duration_ms": 0.18208300000000577
+        },
+        {
+          "title": "verifyCronBearer rejects a wrong token of equal length",
+          "status": "passed",
+          "duration_ms": 0.1688749999999999
+        },
+        {
+          "title": "verifyCronBearer accepts the correct bearer token",
+          "status": "passed",
+          "duration_ms": 0.1578750000000042
+        },
+        {
+          "title": "verifyCronBearer does not treat the \"Bearer \" prefix as part of the secret",
+          "status": "passed",
+          "duration_ms": 0.12354100000000301
+        }
+      ]
+    },
+    {
+      "file": "__tests__/cron-job-structural.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CU-006 CronJob.run returns 401 when bearer is invalid (branch B1)",
+          "status": "passed",
+          "duration_ms": 4.942709000000008
+        },
+        {
+          "title": "CU-006 CronJob.run returns 401 when authorization header is missing (branch B1)",
+          "status": "passed",
+          "duration_ms": 0.35958299999998644
+        },
+        {
+          "title": "CU-006 CronJob.run returns success payload when execute succeeds (branch B2)",
+          "status": "passed",
+          "duration_ms": 0.6147079999999789
+        },
+        {
+          "title": "CU-006 CronJob.run alerts admin when execute reports errors (branch B3)",
+          "status": "passed",
+          "duration_ms": 0.3019999999999925
+        },
+        {
+          "title": "CU-006 CronJob.run returns 500 and alerts admin when execute throws (branch B4)",
+          "status": "passed",
+          "duration_ms": 4.11737500000001
+        },
+        {
+          "title": "CU-006 IterativeCronJob.execute returns empty summary when fetch yields no items (branch B1)",
+          "status": "passed",
+          "duration_ms": 0.17108399999997914
+        },
+        {
+          "title": "CU-006 IterativeCronJob.execute skips items filtered by shouldProcess (branch B2)",
+          "status": "passed",
+          "duration_ms": 0.11025000000000773
+        },
+        {
+          "title": "CU-006 IterativeCronJob.execute rethrows when fetchItems fails (branch B4)",
+          "status": "passed",
+          "duration_ms": 1.0219999999999914
+        },
+        {
+          "title": "CU-006 IterativeCronJob.execute counts per-item failures without aborting the batch (branch B3)",
+          "status": "passed",
+          "duration_ms": 0.25445799999999963
+        }
+      ]
+    },
+    {
+      "file": "__tests__/evaluate-simple-amount-expression.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "formatAmountForInput 1234.56 -> \"1234.56\"",
+          "status": "passed",
+          "duration_ms": 1.085125000000005
+        },
+        {
+          "title": "formatAmountForInput 1234.5 -> \"1234.5\"",
+          "status": "passed",
+          "duration_ms": 0.10029199999999605
+        },
+        {
+          "title": "formatAmountForInput 1000 -> \"1000\"",
+          "status": "passed",
+          "duration_ms": 0.04695800000001782
+        },
+        {
+          "title": "formatAmountForInput 1000 -> \"1000\"",
+          "status": "passed",
+          "duration_ms": 0.039874999999995
+        },
+        {
+          "title": "formatAmountForInput 0 -> \"0\"",
+          "status": "passed",
+          "duration_ms": 0.04316700000001106
+        },
+        {
+          "title": "formatAmountForInput 0 -> \"0\"",
+          "status": "passed",
+          "duration_ms": 0.03516700000000128
+        },
+        {
+          "title": "formatAmountForInput 1.1 -> \"1.1\"",
+          "status": "passed",
+          "duration_ms": 0.03454199999998764
+        },
+        {
+          "title": "formatAmountForInput 1.99 -> \"1.99\"",
+          "status": "passed",
+          "duration_ms": 0.03716700000001083
+        },
+        {
+          "title": "formatAmountForInput 0.1 -> \"0.1\"",
+          "status": "passed",
+          "duration_ms": 0.0881249999999909
+        },
+        {
+          "title": "formatAmountForInput -5.5 -> \"-5.5\"",
+          "status": "passed",
+          "duration_ms": 0.03654199999999719
+        },
+        {
+          "title": "formatAmountForInput 99.9 -> \"99.9\"",
+          "status": "passed",
+          "duration_ms": 0.03241599999998357
+        },
+        {
+          "title": "formatAmountForInput 1.005 -> \"1\"",
+          "status": "passed",
+          "duration_ms": 0.030000000000001137
+        },
+        {
+          "title": "formatAmountForInput 2.675 -> \"2.68\"",
+          "status": "passed",
+          "duration_ms": 0.029334000000005744
+        },
+        {
+          "title": "formatAmountForInput 0.005 -> \"0.01\"",
+          "status": "passed",
+          "duration_ms": 0.029583000000002357
+        },
+        {
+          "title": "formatAmountForInput 3.999 -> \"4\"",
+          "status": "passed",
+          "duration_ms": 0.028750000000002274
+        },
+        {
+          "title": "formatAmountForInput 0.001 -> \"0\"",
+          "status": "passed",
+          "duration_ms": 0.028999999999996362
+        },
+        {
+          "title": "formatAmountForInput returns empty string for non-finite values",
+          "status": "passed",
+          "duration_ms": 0.059291999999999234
+        },
+        {
+          "title": "formatAmountForInput never leaves trailing zeros",
+          "status": "passed",
+          "duration_ms": 0.05079200000000128
+        }
+      ]
+    },
+    {
+      "file": "__tests__/export-route.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "export preserving transaction equivalents exports original and both account amounts without losing the currencies",
+          "status": "passed",
+          "duration_ms": 9.933457999999973
+        },
+        {
+          "title": "export preserving transaction equivalents round-trips quoted names and multiline descriptions as one CSV record",
+          "status": "passed",
+          "duration_ms": 16.48154199999999
+        },
+        {
+          "title": "export preserving transaction equivalents refuses an export without an authenticated user before listing transactions",
+          "status": "passed",
+          "duration_ms": 0.6414169999999899
+        }
+      ]
+    },
+    {
+      "file": "__tests__/financial-anomalies.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CU-003 RF11 anomalías financieras alerta en ratio2 exacto con promedio de tres meses completos",
+          "status": "passed",
+          "duration_ms": 13.823541000000006
+        },
+        {
+          "title": "CU-003 RF11 anomalías financieras no alerta en ratio1.999",
+          "status": "passed",
+          "duration_ms": 0.25575000000000614
+        },
+        {
+          "title": "CU-003 RF11 anomalías financieras no alerta para nueva categoría en5000ARS exactos",
+          "status": "passed",
+          "duration_ms": 0.1937910000000045
+        },
+        {
+          "title": "CU-003 RF11 anomalías financieras alerta nueva categoría en5000.01ARS con ratio desconocido",
+          "status": "passed",
+          "duration_ms": 0.5912090000000205
+        },
+        {
+          "title": "CU-003 RF11 anomalías financieras usa el día Argentina para límites UTC y para timestamps sin tomar el prefijo ISO",
+          "status": "passed",
+          "duration_ms": 0.4312919999999849
+        },
+        {
+          "title": "CU-003 RF11 anomalías financieras devuelve vacío sin gastos elegibles ni ante ingresos o transferencias",
+          "status": "passed",
+          "duration_ms": 0.16895799999997507
+        },
+        {
+          "title": "CU-003 RF11 anomalías financieras excluye negativos, cero y conversiones no finitas sin alterar el oráculo",
+          "status": "passed",
+          "duration_ms": 0.4220420000000047
+        },
+        {
+          "title": "CU-003 RF11 anomalías financieras incluye el corte civil y excluye mañana, meses futuros e historia demasiado antigua",
+          "status": "passed",
+          "duration_ms": 1.0099170000000015
+        }
+      ]
+    },
+    {
+      "file": "__tests__/financial-projections-route.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "projection API calendar and completeness queries the closed months at Argentina midnight instead of UTC midnight",
+          "status": "passed",
+          "duration_ms": 18.465041999999983
+        },
+        {
+          "title": "projection API calendar and completeness does not project an inflated saving when a currency could not be converted",
+          "status": "passed",
+          "duration_ms": 0.6819580000000087
+        },
+        {
+          "title": "projection API calendar and completeness reports an account query failure instead of a zero balance",
+          "status": "passed",
+          "duration_ms": 0.9420829999999967
+        },
+        {
+          "title": "projection API calendar and completeness rejects an unauthenticated caller",
+          "status": "passed",
+          "duration_ms": 0.25899999999998613
+        }
+      ]
+    },
+    {
+      "file": "__tests__/financial-projections.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "financial projection over completed calendar months excludes the partial current month and future entries from the average",
+          "status": "passed",
+          "duration_ms": 13.400666999999999
+        },
+        {
+          "title": "financial projection over completed calendar months does not claim sufficient history when only the current month has entries",
+          "status": "passed",
+          "duration_ms": 0.349583999999993
+        },
+        {
+          "title": "financial projection over completed calendar months uses Argentina calendar when UTC has already crossed into a new month",
+          "status": "passed",
+          "duration_ms": 0.5052909999999997
+        },
+        {
+          "title": "financial projection over completed calendar months honors the inclusive start and exclusive end of the historical window",
+          "status": "passed",
+          "duration_ms": 0.2914159999999981
+        },
+        {
+          "title": "financial projection over completed calendar months excludes transfers, invalid amounts and other non-operating entries",
+          "status": "passed",
+          "duration_ms": 0.48320799999999053
+        },
+        {
+          "title": "financial projection over completed calendar months projects negative savings without hiding a deficit or dividing by zero income",
+          "status": "passed",
+          "duration_ms": 0.2681249999999977
+        },
+        {
+          "title": "financial projection over completed calendar months includes the last Argentina evening of a closed month and excludes the next local day",
+          "status": "passed",
+          "duration_ms": 0.23454100000000722
+        }
+      ]
+    },
+    {
+      "file": "__tests__/financial-services-regression.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CU-001 financial regressions rejects invalid amount 0 before writing",
+          "status": "passed",
+          "duration_ms": 2.125374999999991
+        },
+        {
+          "title": "CU-001 financial regressions rejects invalid amount -1 before writing",
+          "status": "passed",
+          "duration_ms": 0.16345799999999144
+        },
+        {
+          "title": "CU-001 financial regressions rejects invalid amount NaN before writing",
+          "status": "passed",
+          "duration_ms": 0.11750000000000682
+        },
+        {
+          "title": "CU-001 financial regressions rejects invalid amount Infinity before writing",
+          "status": "passed",
+          "duration_ms": 0.10408300000000281
+        },
+        {
+          "title": "CU-001 financial regressions rejects invalid amount 0.001 before writing",
+          "status": "passed",
+          "duration_ms": 0.11870799999999804
+        },
+        {
+          "title": "CU-001 financial regressions rejects invalid installment count 0",
+          "status": "passed",
+          "duration_ms": 0.1531670000000247
+        },
+        {
+          "title": "CU-001 financial regressions rejects invalid installment count 1.5",
+          "status": "passed",
+          "duration_ms": 0.09704199999998764
+        },
+        {
+          "title": "CU-001 financial regressions rejects invalid installment count 37",
+          "status": "passed",
+          "duration_ms": 0.09250000000000114
+        },
+        {
+          "title": "CU-001 financial regressions rejects invalid installment count NaN",
+          "status": "passed",
+          "duration_ms": 0.1530830000000094
+        },
+        {
+          "title": "CU-001 financial regressions does not convert a transfer into an installment expense",
+          "status": "passed",
+          "duration_ms": 0.12204099999999585
+        },
+        {
+          "title": "CU-001 financial regressions rejects a transfer to the same account",
+          "status": "passed",
+          "duration_ms": 0.10170800000000213
+        },
+        {
+          "title": "CU-001 financial regressions does not treat USD as ARS when both accounts are ARS",
+          "status": "passed",
+          "duration_ms": 1.0796660000000031
+        },
+        {
+          "title": "CU-001 financial regressions records one transfer with source and destination impacts encoded correctly",
+          "status": "passed",
+          "duration_ms": 2.2778339999999844
+        },
+        {
+          "title": "CU-001 financial regressions allows a destination-denominated transfer without converting twice",
+          "status": "passed",
+          "duration_ms": 0.46237500000000864
+        },
+        {
+          "title": "CU-001 financial regressions persists an exact destination for a large inverse-rate transfer",
+          "status": "passed",
+          "duration_ms": 0.38075000000000614
+        },
+        {
+          "title": "CU-001 financial regressions rejects a conversion whose debit rounds to zero",
+          "status": "passed",
+          "duration_ms": 0.32370800000001054
+        },
+        {
+          "title": "CU-001 financial regressions does not apply invalid FX 0",
+          "status": "passed",
+          "duration_ms": 0.24850000000000705
+        },
+        {
+          "title": "CU-001 financial regressions does not apply invalid FX -1",
+          "status": "passed",
+          "duration_ms": 0.19770800000000577
+        },
+        {
+          "title": "CU-001 financial regressions does not apply invalid FX NaN",
+          "status": "passed",
+          "duration_ms": 0.195083000000011
+        },
+        {
+          "title": "CU-001 financial regressions does not apply invalid FX Infinity",
+          "status": "passed",
+          "duration_ms": 0.2484579999999994
+        },
+        {
+          "title": "CU-001 financial regressions normalizes spaces in converter currencies and excludes non-positive quotes",
+          "status": "passed",
+          "duration_ms": 0.20504099999999426
+        },
+        {
+          "title": "CU-004 financial regressions preserves remaining lot cost and separates realized/non-realized profit",
+          "status": "passed",
+          "duration_ms": 0.7714169999999854
+        },
+        {
+          "title": "CU-004 financial regressions marks purchase price fallback as a reference instead of a current quote",
+          "status": "passed",
+          "duration_ms": 0.4653340000000128
+        },
+        {
+          "title": "CU-004 financial regressions keeps the currency of the purchase reference for a USD-quoted stock bought in EUR",
+          "status": "passed",
+          "duration_ms": 0.3533329999999921
+        },
+        {
+          "title": "CU-004 financial regressions uses and persists the provider currency for a bond quoted in ARS and purchased in USD",
+          "status": "passed",
+          "duration_ms": 1.6491660000000081
+        },
+        {
+          "title": "CU-004 financial regressions does not value ARS holdings with a fake rate of 1",
+          "status": "passed",
+          "duration_ms": 0.17491699999999355
+        },
+        {
+          "title": "CU-004 financial regressions does not replace missing EUR FX with zero cost/value",
+          "status": "passed",
+          "duration_ms": 0.3826249999999902
+        },
+        {
+          "title": "CU-004 financial regressions does not hide a failed sales history query as zero realized profit",
+          "status": "passed",
+          "duration_ms": 0.28683300000000145
+        },
+        {
+          "title": "CU-004 financial regressions stores EUR realized profit in EUR and its USD equivalent separately",
+          "status": "passed",
+          "duration_ms": 0.49074999999999136
+        },
+        {
+          "title": "CU-004 financial regressions keeps bond prices per VN100 in realized profit",
+          "status": "passed",
+          "duration_ms": 0.20633399999999824
+        },
+        {
+          "title": "CU-004 financial regressions rejects a sale larger than the current holding before invoking RPC",
+          "status": "passed",
+          "duration_ms": 0.22170800000000668
+        },
+        {
+          "title": "CU-004 financial regressions rejects a missing manual price before persistence",
+          "status": "passed",
+          "duration_ms": 0.1744160000000079
+        }
+      ]
+    },
+    {
+      "file": "__tests__/import-csv.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "financial CSV import preserves exported descriptions with newlines, commas and escaped quotes",
+          "status": "passed",
+          "duration_ms": 2.8965419999999966
+        },
+        {
+          "title": "financial CSV import keeps CRLF and leading/trailing spaces inside quoted text intact",
+          "status": "passed",
+          "duration_ms": 0.15891700000000242
+        },
+        {
+          "title": "financial CSV import handles UTF-8 BOM and empty lines without creating financial rows",
+          "status": "passed",
+          "duration_ms": 0.14587500000000375
+        },
+        {
+          "title": "financial CSV import rejects an unfinished quoted cell instead of silently importing a partial row",
+          "status": "passed",
+          "duration_ms": 0.9669580000000053
+        }
+      ]
+    },
+    {
+      "file": "__tests__/import-date.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "financial import calendar dates rejects impossible date 2026-02-31 instead of shifting the financial history",
+          "status": "passed",
+          "duration_ms": 2.191041999999996
+        },
+        {
+          "title": "financial import calendar dates rejects impossible date 31/02/2026 instead of shifting the financial history",
+          "status": "passed",
+          "duration_ms": 0.169667000000004
+        },
+        {
+          "title": "financial import calendar dates rejects impossible date 2026-04-31 instead of shifting the financial history",
+          "status": "passed",
+          "duration_ms": 0.05325000000000557
+        },
+        {
+          "title": "financial import calendar dates rejects impossible date 2026-02-31T08:30:00Z instead of shifting the financial history",
+          "status": "passed",
+          "duration_ms": 0.063083000000006
+        },
+        {
+          "title": "financial import calendar dates handles leap years, chosen ambiguous order and Excel serials",
+          "status": "passed",
+          "duration_ms": 1.8737080000000077
+        },
+        {
+          "title": "financial import calendar dates preserves the time and offset of a valid timestamp",
+          "status": "passed",
+          "duration_ms": 0.18295899999999676
+        }
+      ]
+    },
+    {
+      "file": "__tests__/import-route.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "import authorization and preservation remaps backup IDs by names only to the authenticated user, preserving historical equivalents",
+          "status": "passed",
+          "duration_ms": 22.32591700000006
+        },
+        {
+          "title": "import authorization and preservation imports a mixed exported transfer using both historical amounts, without current FX",
+          "status": "passed",
+          "duration_ms": 1.3105830000000651
+        },
+        {
+          "title": "import authorization and preservation rejects a supplied mapping to a foreign account without writing",
+          "status": "passed",
+          "duration_ms": 0.7811659999999847
+        },
+        {
+          "title": "import authorization and preservation does not interpret an unsupported currency as ARS",
+          "status": "passed",
+          "duration_ms": 0.5632500000000391
+        },
+        {
+          "title": "import authorization and preservation handles malformed rows as user errors, and refuses unknown mode before writes",
+          "status": "passed",
+          "duration_ms": 0.9777080000000069
+        },
+        {
+          "title": "import authorization and preservation refuses access without a session before querying owned data",
+          "status": "passed",
+          "duration_ms": 0.20000000000004547
+        }
+      ]
+    },
+    {
+      "file": "__tests__/notification-schedule.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "getNextWeeklySendUtc (Monday 09:00 UTC) Sunday -> next day (Monday) at 09:00",
+          "status": "passed",
+          "duration_ms": 3.2924999999999898
+        },
+        {
+          "title": "getNextWeeklySendUtc (Monday 09:00 UTC) Monday before 09:00 -> same day 09:00",
+          "status": "passed",
+          "duration_ms": 0.12145799999998985
+        },
+        {
+          "title": "getNextWeeklySendUtc (Monday 09:00 UTC) Monday after 09:00 -> following Monday",
+          "status": "passed",
+          "duration_ms": 0.0670419999999865
+        },
+        {
+          "title": "getNextWeeklySendUtc (Monday 09:00 UTC) mid-week always lands on the next Monday 09:00",
+          "status": "passed",
+          "duration_ms": 0.2010829999999828
+        },
+        {
+          "title": "getNextMonthlySendUtc (day 1, 09:00 UTC) after this month's send -> first of next month",
+          "status": "passed",
+          "duration_ms": 0.08591599999999744
+        },
+        {
+          "title": "getNextMonthlySendUtc (day 1, 09:00 UTC) before the 1st 09:00 -> this month",
+          "status": "passed",
+          "duration_ms": 0.04954200000000242
+        },
+        {
+          "title": "getNextMonthlySendUtc (day 1, 09:00 UTC) rolls over the year in December",
+          "status": "passed",
+          "duration_ms": 0.04879200000002015
+        },
+        {
+          "title": "formatSendInUserTimezone falls back to ISO when the timezone is invalid",
+          "status": "passed",
+          "duration_ms": 9.888708000000008
+        },
+        {
+          "title": "formatSendInUserTimezone formats without throwing for a valid timezone",
+          "status": "passed",
+          "duration_ms": 0.7892080000000021
+        },
+        {
+          "title": "buildTelegramSummaryScheduleLines shows \"desactivado\" for disabled summaries",
+          "status": "passed",
+          "duration_ms": 0.14183299999999122
+        },
+        {
+          "title": "buildTelegramSummaryScheduleLines shows next-send lines for enabled summaries",
+          "status": "passed",
+          "duration_ms": 0.1665830000000028
+        }
+      ]
+    },
+    {
+      "file": "__tests__/rate-limit.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "rateLimitAllow allows up to max then denies inside the window",
+          "status": "passed",
+          "duration_ms": 1.042209000000014
+        }
+      ]
+    },
+    {
+      "file": "__tests__/recurring-job-regression.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CU-001 A06 recurring coordinator regressions does not mark execution when movement persistence fails",
+          "status": "passed",
+          "duration_ms": 19.46116699999999
+        },
+        {
+          "title": "CU-001 A06 recurring coordinator regressions marks after creation and sends one notice to the winner",
+          "status": "passed",
+          "duration_ms": 4.715250000000026
+        },
+        {
+          "title": "CU-001 A06 recurring coordinator regressions recovers an existing occurrence without sending another notification",
+          "status": "passed",
+          "duration_ms": 0.7580829999999992
+        },
+        {
+          "title": "CU-001 A06 recurring coordinator regressions does not hide a conflict unrelated to the recurring occurrence",
+          "status": "passed",
+          "duration_ms": 0.7912499999999909
+        },
+        {
+          "title": "CU-001 A06 recurring coordinator regressions surfaces a mark failure so a later duplicate can repair it",
+          "status": "passed",
+          "duration_ms": 0.6528749999999945
+        },
+        {
+          "title": "CU-001 A06 recurring coordinator regressions does not undo a confirmed movement when Telegram is unavailable",
+          "status": "passed",
+          "duration_ms": 0.6685420000000022
+        },
+        {
+          "title": "CU-001 A06 recurring coordinator regressions deactivates only rules strictly past their inclusive end",
+          "status": "passed",
+          "duration_ms": 0.44362499999999727
+        },
+        {
+          "title": "CU-001 A06 recurring coordinator regressions skips archived accounts before financial creation",
+          "status": "passed",
+          "duration_ms": 0.3435000000000059
+        }
+      ]
+    },
+    {
+      "file": "__tests__/recurring-schedule.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CU-001 A06 recurring-schedule helpers todayYmdAr formats Argentina calendar date",
+          "status": "passed",
+          "duration_ms": 15.260582999999997
+        },
+        {
+          "title": "CU-001 A06 recurring-schedule helpers ymdParts returns day-of-week in UTC anchor",
+          "status": "passed",
+          "duration_ms": 0.4837079999999787
+        },
+        {
+          "title": "CU-001 A06 recurring-schedule helpers lastDayOfMonth handles February in leap years",
+          "status": "passed",
+          "duration_ms": 0.17462499999999181
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday returns false when start_date is missing (branch B1)",
+          "status": "passed",
+          "duration_ms": 0.3630420000000072
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday returns false before start_date (branch B2)",
+          "status": "passed",
+          "duration_ms": 0.22508300000001213
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday returns false after end_date (branch B3)",
+          "status": "passed",
+          "duration_ms": 0.2154170000000022
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday returns false when already executed today (branch B4)",
+          "status": "passed",
+          "duration_ms": 0.18045799999998735
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday returns true for daily frequency inside window (branch B5)",
+          "status": "passed",
+          "duration_ms": 0.16795799999999872
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday matches weekly rules on start weekday (branch B6)",
+          "status": "passed",
+          "duration_ms": 0.2966250000000059
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday matches monthly rules on target day, clamped to month length (branch B7)",
+          "status": "passed",
+          "duration_ms": 0.2852500000000191
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday matches yearly rules only in start month on target day (branch B8)",
+          "status": "passed",
+          "duration_ms": 0.26654199999998696
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday returns false for unknown frequency (branch B9)",
+          "status": "passed",
+          "duration_ms": 0.14908399999998778
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday rejects impossible start date 2026-02-30",
+          "status": "passed",
+          "duration_ms": 0.15691699999999287
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday rejects impossible start date 2026-13-01",
+          "status": "passed",
+          "duration_ms": 0.1323330000000169
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday rejects impossible start date invalid",
+          "status": "passed",
+          "duration_ms": 0.1825420000000122
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday rejects invalid/reversed windows and future execution state",
+          "status": "passed",
+          "duration_ms": 0.3090829999999869
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday executes on the inclusive end date",
+          "status": "passed",
+          "duration_ms": 0.15612500000000296
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday clamps yearly leap-day recurrence to February 28 in non-leap years",
+          "status": "passed",
+          "duration_ms": 0.2651250000000118
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday uses the Argentina civil day at the UTC midnight boundary",
+          "status": "passed",
+          "duration_ms": 0.2109999999999843
+        },
+        {
+          "title": "CU-001 A06 shouldExecuteToday accepts a previous execution date and rejects a valid end date before start",
+          "status": "passed",
+          "duration_ms": 0.20583399999998164
+        }
+      ]
+    },
+    {
+      "file": "__tests__/sanitize-amount-input.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "sanitizeAmountInput \"1.234,56\" -> \"1234,56\" (AR locale: dots are thousands, last comma is decimal)",
+          "status": "passed",
+          "duration_ms": 1.0526250000000061
+        },
+        {
+          "title": "sanitizeAmountInput \"1,234.56\" -> \"1234.56\" (US locale: last dot is decimal, commas stripped)",
+          "status": "passed",
+          "duration_ms": 0.08983299999999872
+        },
+        {
+          "title": "sanitizeAmountInput \"1.234.567\" -> \"1234.567\" (multiple dots -> last is decimal separator)",
+          "status": "passed",
+          "duration_ms": 0.05374999999999375
+        },
+        {
+          "title": "sanitizeAmountInput \"1.000.000,00\" -> \"1000000,00\" (millions AR locale)",
+          "status": "passed",
+          "duration_ms": 0.03945799999999622
+        },
+        {
+          "title": "sanitizeAmountInput \"$1.000,50 ARS\" -> \"1000,50\" (strips currency symbol and letters)",
+          "status": "passed",
+          "duration_ms": 0.04654100000000483
+        },
+        {
+          "title": "sanitizeAmountInput \"abc123\" -> \"123\" (letters stripped, no separator left)",
+          "status": "passed",
+          "duration_ms": 0.03554099999999494
+        },
+        {
+          "title": "sanitizeAmountInput \"100\" -> \"100\" (plain integer, no separator)",
+          "status": "passed",
+          "duration_ms": 0.0383329999999944
+        },
+        {
+          "title": "sanitizeAmountInput \"12,5\" -> \"12,5\" (single comma decimal preserved)",
+          "status": "passed",
+          "duration_ms": 0.03604200000000901
+        },
+        {
+          "title": "sanitizeAmountInput \"12.5\" -> \"12.5\" (single dot decimal preserved)",
+          "status": "passed",
+          "duration_ms": 0.08995799999999576
+        },
+        {
+          "title": "sanitizeAmountInput \"\" -> \"\" (empty stays empty)",
+          "status": "passed",
+          "duration_ms": 0.035916999999997756
+        },
+        {
+          "title": "sanitizeAmountInput \"1.234,\" -> \"1234,\" (trailing comma kept as (empty) decimal part)",
+          "status": "passed",
+          "duration_ms": 0.03350000000000364
+        },
+        {
+          "title": "sanitizeAmountInput \",\" -> \",\" (lone comma: nothing before, comma kept)",
+          "status": "passed",
+          "duration_ms": 0.03458299999999781
+        },
+        {
+          "title": "sanitizeAmountInput \".\" -> \".\" (lone dot kept)",
+          "status": "passed",
+          "duration_ms": 0.03208400000001177
+        },
+        {
+          "title": "sanitizeAmountInput \"-50\" -> \"50\" (minus sign is stripped (not in allowlist))",
+          "status": "passed",
+          "duration_ms": 0.030000000000001137
+        },
+        {
+          "title": "sanitizeAmountInput \"1e3\" -> \"13\" (exponent letter stripped, digits concatenated)",
+          "status": "passed",
+          "duration_ms": 0.03204200000000412
+        },
+        {
+          "title": "sanitizeAmountInput \"  1 000,25 \" -> \"1000,25\" (spaces stripped)",
+          "status": "passed",
+          "duration_ms": 0.03325000000000955
+        },
+        {
+          "title": "sanitizeAmountInput is idempotent on already-normalized values",
+          "status": "passed",
+          "duration_ms": 0.04754200000000708
+        }
+      ]
+    },
+    {
+      "file": "__tests__/sanitize-for-prompt.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "sanitizeForPrompt strips newlines and markdown metacharacters",
+          "status": "passed",
+          "duration_ms": 1.6391250000000355
+        },
+        {
+          "title": "sanitizeForPrompt caps length",
+          "status": "passed",
+          "duration_ms": 0.08295799999996234
+        },
+        {
+          "title": "mapHistoryToGemini drops unknown roles and keeps only user/model",
+          "status": "passed",
+          "duration_ms": 0.819582999999966
+        },
+        {
+          "title": "mapHistoryToGemini does not execute legacy JSON in history turns",
+          "status": "passed",
+          "duration_ms": 0.15745899999996027
+        }
+      ]
+    },
+    {
+      "file": "__tests__/secure-compare.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "timingSafeStringEqual returns true for equal strings",
+          "status": "passed",
+          "duration_ms": 1.0844589999999954
+        },
+        {
+          "title": "timingSafeStringEqual returns false for different values of the same length",
+          "status": "passed",
+          "duration_ms": 0.09345799999999826
+        },
+        {
+          "title": "timingSafeStringEqual returns false when lengths differ",
+          "status": "passed",
+          "duration_ms": 0.06225000000000591
+        },
+        {
+          "title": "timingSafeStringEqual returns false for any null/undefined operand",
+          "status": "passed",
+          "duration_ms": 0.09237500000000409
+        },
+        {
+          "title": "timingSafeStringEqual rejects empty strings (a missing secret must never match)",
+          "status": "passed",
+          "duration_ms": 0.15679099999999835
+        },
+        {
+          "title": "timingSafeStringEqual handles multibyte utf-8 correctly",
+          "status": "passed",
+          "duration_ms": 0.06654199999999832
+        }
+      ]
+    },
+    {
+      "file": "__tests__/shared-expenses.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "splitEqually — cent distribution distributes the remainder cent-by-cent and sums exactly to the total",
+          "status": "passed",
+          "duration_ms": 2.6833750000000123
+        },
+        {
+          "title": "splitEqually — cent distribution handles a small amount with a leftover cent",
+          "status": "passed",
+          "duration_ms": 0.2967079999999953
+        },
+        {
+          "title": "splitEqually — cent distribution splits evenly when it divides cleanly",
+          "status": "passed",
+          "duration_ms": 0.18433400000000688
+        },
+        {
+          "title": "splitEqually — cent distribution assigns the whole amount to a single member",
+          "status": "passed",
+          "duration_ms": 0.18320899999997664
+        },
+        {
+          "title": "computeBalances computes paid / owed / net per member",
+          "status": "passed",
+          "duration_ms": 1.0513750000000073
+        },
+        {
+          "title": "computeSettlements — greedy debtor/creditor matching settles a simple two-person debt",
+          "status": "passed",
+          "duration_ms": 1.319041999999996
+        },
+        {
+          "title": "computeSettlements — greedy debtor/creditor matching splits one creditor across multiple debtors",
+          "status": "passed",
+          "duration_ms": 0.3983329999999796
+        },
+        {
+          "title": "computeSettlements — greedy debtor/creditor matching returns no settlements when everyone is squared up",
+          "status": "passed",
+          "duration_ms": 0.13800000000000523
+        },
+        {
+          "title": "isValidShareToken accepts 32 lowercase hex chars",
+          "status": "passed",
+          "duration_ms": 0.23016699999999446
+        },
+        {
+          "title": "isValidShareToken rejects wrong length, uppercase, and non-hex",
+          "status": "passed",
+          "duration_ms": 0.2897079999999903
+        }
+      ]
+    },
+    {
+      "file": "__tests__/transaction-account-impact.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "impactInAccountCurrency — source account expense is negative in account currency",
+          "status": "passed",
+          "duration_ms": 1.1307079999999985
+        },
+        {
+          "title": "impactInAccountCurrency — source account income is positive in account currency",
+          "status": "passed",
+          "duration_ms": 0.09062500000000284
+        },
+        {
+          "title": "impactInAccountCurrency — source account transfer out is always negative (abs of ain)",
+          "status": "passed",
+          "duration_ms": 0.16616600000000403
+        },
+        {
+          "title": "impactInAccountCurrency — source account adjustment keeps its sign (can be negative)",
+          "status": "passed",
+          "duration_ms": 0.06441599999999426
+        },
+        {
+          "title": "impactInAccountCurrency — source account applies fx correction on a foreign expense with legacy 1:1 rate",
+          "status": "passed",
+          "duration_ms": 0.09475000000000477
+        },
+        {
+          "title": "impactInAccountCurrency — source account uses tx.account.currency when accountCurrency option is absent",
+          "status": "passed",
+          "duration_ms": 0.06166600000000244
+        },
+        {
+          "title": "impactInAccountCurrency — destination account transfer in credits amount * exchange_rate",
+          "status": "passed",
+          "duration_ms": 0.07729199999999992
+        },
+        {
+          "title": "impactInAccountCurrency — destination account transfer in with null exchange_rate uses rate 1",
+          "status": "passed",
+          "duration_ms": 0.0536249999999967
+        },
+        {
+          "title": "impactInAccountCurrency — unrelated returns 0 when the account is neither source nor destination",
+          "status": "passed",
+          "duration_ms": 0.04800000000000182
+        },
+        {
+          "title": "sumImpactInAccountCurrency sums signed impacts across a mixed ledger",
+          "status": "passed",
+          "duration_ms": 0.14441600000000676
+        },
+        {
+          "title": "aggregateOriginalByCurrency groups original amounts by currency with entry/exit signs",
+          "status": "passed",
+          "duration_ms": 0.14024999999999466
+        },
+        {
+          "title": "aggregateOriginalByCurrency credits a transfer destination in the destination account currency",
+          "status": "passed",
+          "duration_ms": 0.06441699999999173
+        }
+      ]
+    },
+    {
+      "file": "__tests__/transaction-currencies.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "isTransactionCurrency accepts the allowed currencies (case/whitespace insensitive)",
+          "status": "passed",
+          "duration_ms": 1.4963750000000005
+        },
+        {
+          "title": "isTransactionCurrency rejects unsupported currencies and nullish values",
+          "status": "passed",
+          "duration_ms": 0.13850000000000762
+        },
+        {
+          "title": "coerceTransactionCurrency normalizes allowed currencies to uppercase",
+          "status": "passed",
+          "duration_ms": 0.09633300000000133
+        },
+        {
+          "title": "coerceTransactionCurrency falls back to ARS for unsupported or missing values",
+          "status": "passed",
+          "duration_ms": 0.07616600000000062
+        },
+        {
+          "title": "TRANSACTION_CURRENCIES is exactly ARS, USD, EUR",
+          "status": "passed",
+          "duration_ms": 0.4264999999999901
+        }
+      ]
+    },
+    {
+      "file": "__tests__/transaction-date.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "todayLocalYmd returns a YYYY-MM-DD string for today (local)",
+          "status": "passed",
+          "duration_ms": 2.361582999999996
+        },
+        {
+          "title": "calendarDateToUtcNoonIso maps a civil day to noon UTC of that day",
+          "status": "passed",
+          "duration_ms": 0.31595899999999233
+        },
+        {
+          "title": "calendarDateToUtcNoonIso tolerates surrounding whitespace",
+          "status": "passed",
+          "duration_ms": 0.06304199999999582
+        },
+        {
+          "title": "calendarDateToUtcNoonIso rejects 2026-02-30 instead of recording another civil day",
+          "status": "passed",
+          "duration_ms": 0.4680000000000035
+        },
+        {
+          "title": "calendarDateToUtcNoonIso rejects 2026-04-31 instead of recording another civil day",
+          "status": "passed",
+          "duration_ms": 0.17062500000000114
+        },
+        {
+          "title": "calendarDateToUtcNoonIso rejects not-a-date instead of recording another civil day",
+          "status": "passed",
+          "duration_ms": 0.0712079999999986
+        },
+        {
+          "title": "calendarDateToUtcNoonIso rejects 2026-13-01 instead of recording another civil day",
+          "status": "passed",
+          "duration_ms": 0.06170799999999588
+        },
+        {
+          "title": "calendarDateToUtcNoonIso rejects 2026-01-32 instead of recording another civil day",
+          "status": "passed",
+          "duration_ms": 0.0594159999999988
+        },
+        {
+          "title": "calendarDateToUtcNoonIso accepts leap days only in real leap years",
+          "status": "passed",
+          "duration_ms": 0.11599999999999966
+        },
+        {
+          "title": "isoToLocalDateInputValue round-trips a civil day through noon-UTC storage (safe in any real timezone)",
+          "status": "passed",
+          "duration_ms": 0.09987499999999727
+        },
+        {
+          "title": "isoToLocalDateInputValue falls back to today for an unparseable ISO",
+          "status": "passed",
+          "duration_ms": 0.04837500000000716
+        },
+        {
+          "title": "parseBotTransactionDateInput returns undefined for null/undefined/empty/blank",
+          "status": "passed",
+          "duration_ms": 0.178875000000005
+        },
+        {
+          "title": "parseBotTransactionDateInput returns undefined for non-string input",
+          "status": "passed",
+          "duration_ms": 0.05262499999999193
+        },
+        {
+          "title": "parseBotTransactionDateInput maps a bare YYYY-MM-DD to noon UTC",
+          "status": "passed",
+          "duration_ms": 0.06658299999999429
+        },
+        {
+          "title": "parseBotTransactionDateInput preserves a full ISO timestamp as-is",
+          "status": "passed",
+          "duration_ms": 0.06187500000000057
+        },
+        {
+          "title": "parseBotTransactionDateInput returns undefined for an unparseable string",
+          "status": "passed",
+          "duration_ms": 0.05504200000000026
+        },
+        {
+          "title": "parseBotTransactionDateInput does not normalize an impossible bot/OCR date 2026-02-30",
+          "status": "passed",
+          "duration_ms": 0.04133299999999451
+        },
+        {
+          "title": "parseBotTransactionDateInput does not normalize an impossible bot/OCR date 2026-02-30T08:30:00Z",
+          "status": "passed",
+          "duration_ms": 0.03216600000000369
+        },
+        {
+          "title": "parseBotTransactionDateInput does not normalize an impossible bot/OCR date 1900-02-29T12:00:00Z",
+          "status": "passed",
+          "duration_ms": 0.030917000000002304
+        }
+      ]
+    },
+    {
+      "file": "__tests__/transaction-edit-regression.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CU-001 A08 edits preserve monetary intent does not reprice an unchanged financial tuple when editing text",
+          "status": "passed",
+          "duration_ms": 5.749459000000002
+        },
+        {
+          "title": "CU-001 A08 edits preserve monetary intent recalculates both amounts when editing a transfer",
+          "status": "passed",
+          "duration_ms": 0.7952919999999892
+        },
+        {
+          "title": "CU-001 A08 edits preserve monetary intent rejects a transfer edit to the same account",
+          "status": "passed",
+          "duration_ms": 0.3850830000000087
+        },
+        {
+          "title": "CU-001 A08 edits preserve monetary intent uses the persisted destination amount in account impact and grouping",
+          "status": "passed",
+          "duration_ms": 0.28120899999998983
+        },
+        {
+          "title": "CU-001 A08 edits preserve monetary intent keeps the historical fallback when no explicit destination amount exists",
+          "status": "passed",
+          "duration_ms": 0.10341700000000742
+        }
+      ]
+    },
+    {
+      "file": "__tests__/transaction-exchange.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "normalizeCurrency uppercases and trims",
+          "status": "passed",
+          "duration_ms": 1.2666660000000007
+        },
+        {
+          "title": "normalizeCurrency defaults to ARS for null/undefined/empty",
+          "status": "passed",
+          "duration_ms": 0.10541600000000528
+        },
+        {
+          "title": "approximateCrossRate returns 1 for same currency (case-insensitive)",
+          "status": "passed",
+          "duration_ms": 0.1024579999999986
+        },
+        {
+          "title": "approximateCrossRate computes the full USD/ARS/EUR matrix",
+          "status": "passed",
+          "duration_ms": 0.25133300000000247
+        },
+        {
+          "title": "approximateCrossRate guards against an invalid USD->ARS base rate",
+          "status": "passed",
+          "duration_ms": 0.2027919999999881
+        },
+        {
+          "title": "approximateCrossRate returns null for EUR conversions when eurArs is missing/invalid",
+          "status": "passed",
+          "duration_ms": 0.10945800000000361
+        },
+        {
+          "title": "approximateCrossRate returns null for unknown currency pairs",
+          "status": "passed",
+          "duration_ms": 0.05700000000000216
+        },
+        {
+          "title": "effectiveAmountInAccountCurrencyForMovement returns |amount_in_account_currency| when currencies match",
+          "status": "passed",
+          "duration_ms": 0.14237500000000125
+        },
+        {
+          "title": "effectiveAmountInAccountCurrencyForMovement returns ain when the original amount is ~zero",
+          "status": "passed",
+          "duration_ms": 0.05979200000000162
+        },
+        {
+          "title": "effectiveAmountInAccountCurrencyForMovement trusts a valid stored exchange_rate that matches ain",
+          "status": "passed",
+          "duration_ms": 0.054500000000004434
+        },
+        {
+          "title": "effectiveAmountInAccountCurrencyForMovement recomputes from rate when ain looks like the foreign amount",
+          "status": "passed",
+          "duration_ms": 0.046875
+        },
+        {
+          "title": "effectiveAmountInAccountCurrencyForMovement treats exchange_rate === 1 across different currencies as absent (uses fx)",
+          "status": "passed",
+          "duration_ms": 0.051207999999988374
+        },
+        {
+          "title": "effectiveAmountInAccountCurrencyForMovement falls back to ain when suspicious but no fx is provided",
+          "status": "passed",
+          "duration_ms": 0.048749999999998295
+        },
+        {
+          "title": "effectiveAmountInAccountCurrencyForMovement keeps a plausible stored ain when no rate and not suspicious",
+          "status": "passed",
+          "duration_ms": 0.04554199999999753
+        }
+      ]
+    },
+    {
+      "file": "__tests__/transactions-structural.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CU-001 applyArchivedAccountsTransactionFilter returns impossible id filter when there are no active accounts (branch B1)",
+          "status": "passed",
+          "duration_ms": 1.3734169999999892
+        },
+        {
+          "title": "CU-001 applyArchivedAccountsTransactionFilter filters by active account ids when list is non-empty (branch B2)",
+          "status": "passed",
+          "duration_ms": 0.15308400000000688
+        },
+        {
+          "title": "CU-001 applyArchivedAccountsTransactionFilter quotes UUIDs for PostgREST reserved characters (edge E3)",
+          "status": "passed",
+          "duration_ms": 0.11345900000000597
+        },
+        {
+          "title": "CU-001 buildToArsConverter uses rate 1 for ARS without calling cotizaciones (branch B1)",
+          "status": "passed",
+          "duration_ms": 0.5136669999999981
+        },
+        {
+          "title": "CU-001 buildToArsConverter converts foreign currency using live rate (branch B2 success)",
+          "status": "passed",
+          "duration_ms": 0.42654200000001197
+        },
+        {
+          "title": "CU-001 buildToArsConverter excludes currencies when rate lookup fails (branch B3 catch)",
+          "status": "passed",
+          "duration_ms": 0.15087500000001342
+        },
+        {
+          "title": "CU-001 buildToArsConverter defaults null currency to ARS (edge E4)",
+          "status": "passed",
+          "duration_ms": 0.07195899999999256
+        },
+        {
+          "title": "CU-001 excludedCurrenciesNote returns null when no currencies were excluded (branch B1)",
+          "status": "passed",
+          "duration_ms": 0.06499999999999773
+        },
+        {
+          "title": "CU-001 excludedCurrenciesNote returns warning text when currencies were excluded (branch B2)",
+          "status": "passed",
+          "duration_ms": 0.049334000000015976
+        }
+      ]
+    },
+    {
+      "file": "__tests__/webhook-auth.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "verifyConfiguredSecret fails closed on missing or empty expected secret",
+          "status": "passed",
+          "duration_ms": 1.117584000000008
+        },
+        {
+          "title": "verifyConfiguredSecret accepts the matching non-empty secret",
+          "status": "passed",
+          "duration_ms": 0.09283299999999883
+        },
+        {
+          "title": "deriveCustomWebhookHeaderSecret falls back to the path secret when no pepper is configured",
+          "status": "passed",
+          "duration_ms": 0.14954199999999673
+        },
+        {
+          "title": "deriveCustomWebhookHeaderSecret differs from the path secret when a pepper is set",
+          "status": "passed",
+          "duration_ms": 0.651332999999994
+        }
+      ]
+    }
+  ]
+}

@@ -360,60 +360,7 @@ class SharedExpensesService {
       splitMemberIds?: string[];
     }
   ): Promise<SharedExpense | null> {
-    const groupId = await this.getGroupIdByToken(token);
-    if (!groupId) return null;
-    const supabase = createServiceClientSync();
-    await this.assertActorInGroup(supabase, groupId, input.actorMemberId);
-
-    // Validar que payer y participantes pertenezcan al grupo
-    const { data: members, error: membersError } = await supabase
-      .from('shared_group_members')
-      .select('id')
-      .eq('group_id', groupId);
-    if (membersError) throw membersError;
-
-    const memberIds = new Set((members || []).map((m) => m.id));
-    if (!memberIds.has(input.paidByMemberId)) {
-      throw new Error('El miembro que pagó no pertenece al grupo');
-    }
-    const splitIds = Array.from(
-      new Set(
-        input.splitMemberIds && input.splitMemberIds.length > 0
-          ? input.splitMemberIds
-          : Array.from(memberIds)
-      )
-    );
-    if (splitIds.some((id) => !memberIds.has(id))) {
-      throw new Error('Hay participantes que no pertenecen al grupo');
-    }
-
-    const { data: expense, error } = await supabase
-      .from('shared_expenses')
-      .insert({
-        group_id: groupId,
-        paid_by_member_id: input.paidByMemberId,
-        description: input.description,
-        amount: round2(input.amount),
-        expense_date: input.expenseDate || new Date().toISOString().slice(0, 10),
-      })
-      .select()
-      .single();
-    if (error) throw error;
-
-    const splits = splitEqually(round2(input.amount), splitIds);
-    const { error: splitsError } = await supabase.from('shared_expense_splits').insert(
-      splits.map((s) => ({
-        expense_id: expense.id,
-        member_id: s.member_id,
-        amount: s.amount,
-      }))
-    );
-    if (splitsError) {
-      await supabase.from('shared_expenses').delete().eq('id', expense.id);
-      throw splitsError;
-    }
-
-    return { ...expense, amount: Number(expense.amount), splits };
+    return this.saveExpenseByToken(token, input);
   }
 
   async updateExpenseByToken(
@@ -425,95 +372,54 @@ class SharedExpensesService {
       description: string;
       amount: number;
       expenseDate?: string;
-      /** Miembros entre los que se divide; default: todos. */
       splitMemberIds?: string[];
     }
   ): Promise<SharedExpense | null> {
-    const groupId = await this.getGroupIdByToken(token);
-    if (!groupId) return null;
+    return this.saveExpenseByToken(token, input, expenseId);
+  }
+
+  private async saveExpenseByToken(
+    token: string,
+    input: {
+      actorMemberId: string;
+      paidByMemberId: string;
+      description: string;
+      amount: number;
+      expenseDate?: string;
+      splitMemberIds?: string[];
+    },
+    expenseId?: string
+  ): Promise<SharedExpense | null> {
+    if (!isValidShareToken(token)) return null;
     const supabase = createServiceClientSync();
-    await this.assertActorInGroup(supabase, groupId, input.actorMemberId);
-
-    // El gasto tiene que pertenecer a este grupo
-    const { data: existing, error: existingError } = await supabase
-      .from('shared_expenses')
-      .select('id')
-      .eq('id', expenseId)
-      .eq('group_id', groupId)
-      .maybeSingle();
-    if (existingError) throw existingError;
-    if (!existing) return null;
-
-    // Validar que payer y participantes pertenezcan al grupo
-    const { data: members, error: membersError } = await supabase
-      .from('shared_group_members')
-      .select('id')
-      .eq('group_id', groupId);
-    if (membersError) throw membersError;
-
-    const memberIds = new Set((members || []).map((m) => m.id));
-    if (!memberIds.has(input.paidByMemberId)) {
-      throw new Error('El miembro que pagó no pertenece al grupo');
-    }
-    const splitIds = Array.from(
-      new Set(
-        input.splitMemberIds && input.splitMemberIds.length > 0
-          ? input.splitMemberIds
-          : Array.from(memberIds)
-      )
-    );
-    if (splitIds.some((id) => !memberIds.has(id))) {
-      throw new Error('Hay participantes que no pertenecen al grupo');
-    }
-
-    const { data: expense, error } = await supabase
-      .from('shared_expenses')
-      .update({
-        paid_by_member_id: input.paidByMemberId,
-        description: input.description,
-        amount: round2(input.amount),
-        expense_date: input.expenseDate || new Date().toISOString().slice(0, 10),
-      })
-      .eq('id', expenseId)
-      .eq('group_id', groupId)
-      .select()
-      .single();
-    if (error) throw error;
-
-    const { data: oldSplits, error: oldSplitsErr } = await supabase
-      .from('shared_expense_splits')
-      .select('member_id, amount')
-      .eq('expense_id', expenseId);
-    if (oldSplitsErr) throw oldSplitsErr;
-
-    const { error: deleteError } = await supabase
-      .from('shared_expense_splits')
-      .delete()
-      .eq('expense_id', expenseId);
-    if (deleteError) throw deleteError;
-
-    const splits = splitEqually(round2(input.amount), splitIds);
-    const { error: splitsError } = await supabase.from('shared_expense_splits').insert(
-      splits.map((s) => ({
-        expense_id: expenseId,
-        member_id: s.member_id,
-        amount: s.amount,
-      }))
-    );
-    if (splitsError) {
-      if (oldSplits && oldSplits.length > 0) {
-        await supabase.from('shared_expense_splits').insert(
-          oldSplits.map((s) => ({
-            expense_id: expenseId,
-            member_id: s.member_id,
-            amount: s.amount,
-          }))
-        );
+    // The RPC resolves token/group itself, checks every participant and saves
+    // the expense plus its splits in one PostgreSQL transaction.
+    const { data, error } = await supabase.rpc('save_shared_expense', {
+      p_share_token: token,
+      p_actor_member_id: input.actorMemberId,
+      p_paid_by_member_id: input.paidByMemberId,
+      p_description: input.description,
+      p_amount: input.amount,
+      p_expense_date: input.expenseDate ?? null,
+      p_split_member_ids: input.splitMemberIds ?? null,
+      p_expense_id: expenseId ?? null,
+    });
+    if (error) {
+      if (error.code === '42501') throw new ApiError(error.message, 403);
+      if (['22023', '22P02', '22007', '22008', '23514'].includes(error.code)) {
+        throw new ApiError(error.message, 400);
       }
-      throw splitsError;
+      throw error;
     }
-
-    return { ...expense, amount: Number(expense.amount), splits };
+    if (!data) return null;
+    return {
+      ...data,
+      amount: Number(data.amount),
+      splits: (data.splits || []).map((split: SharedExpenseSplit) => ({
+        member_id: split.member_id,
+        amount: Number(split.amount),
+      })),
+    };
   }
 
   async deleteExpenseByToken(

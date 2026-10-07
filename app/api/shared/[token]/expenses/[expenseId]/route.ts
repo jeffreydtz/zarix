@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sharedExpensesService, isValidShareToken } from '@/lib/services/sharedExpenses';
 import { errorResponse } from '@/lib/api-handler';
+import { isCivilYmd } from '@/lib/transaction-date';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Editar un gasto del grupo (público, validado por token).
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { token: string; expenseId: string } }
+  props: { params: Promise<{ token: string; expenseId: string }> }
 ) {
+  const params = await props.params;
   try {
     if (!isValidShareToken(params.token) || !UUID_REGEX.test(params.expenseId)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });
@@ -39,7 +41,7 @@ export async function PUT(
 
     let expenseDate: string | undefined;
     if (body.expenseDate) {
-      if (typeof body.expenseDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(body.expenseDate)) {
+      if (typeof body.expenseDate !== 'string' || !isCivilYmd(body.expenseDate)) {
         return NextResponse.json({ error: 'Fecha inválida' }, { status: 400 });
       }
       expenseDate = body.expenseDate;
@@ -67,8 +69,9 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { token: string; expenseId: string } }
+  props: { params: Promise<{ token: string; expenseId: string }> }
 ) {
+  const params = await props.params;
   try {
     if (!isValidShareToken(params.token) || !UUID_REGEX.test(params.expenseId)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });

@@ -6,7 +6,7 @@ import {
   lastDayOfMonth,
 } from '@/lib/cron/recurring-schedule';
 
-describe('CU-006 recurring-schedule helpers', () => {
+describe('CU-001 A06 recurring-schedule helpers', () => {
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -28,7 +28,7 @@ describe('CU-006 recurring-schedule helpers', () => {
   });
 });
 
-describe('CU-006 shouldExecuteToday', () => {
+describe('CU-001 A06 shouldExecuteToday', () => {
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -116,5 +116,44 @@ describe('CU-006 shouldExecuteToday', () => {
     expect(
       shouldExecuteToday({ start_date: '2026-08-01', frequency: 'quarterly' })
     ).toBe(false);
+  });
+
+  it.each(['2026-02-30', '2026-13-01', 'invalid'])('rejects impossible start date %s', start_date => {
+    freezeToday('2026-10-06');
+    expect(shouldExecuteToday({ start_date, frequency:'daily' })).toBe(false);
+  });
+
+  it('rejects invalid/reversed windows and future execution state', () => {
+    freezeToday('2026-10-06');
+    expect(shouldExecuteToday({ start_date:'2026-10-01', end_date:'2026-02-30', frequency:'daily' })).toBe(false);
+    expect(shouldExecuteToday({ start_date:'2026-10-06', end_date:'2026-10-05', frequency:'daily' })).toBe(false);
+    expect(shouldExecuteToday({ start_date:'2026-10-01', last_executed_date:'2026-10-07', frequency:'daily' })).toBe(false);
+    expect(shouldExecuteToday({ start_date:'2026-10-01', last_executed_date:'2026-02-30', frequency:'daily' })).toBe(false);
+  });
+
+  it('executes on the inclusive end date', () => {
+    freezeToday('2026-10-06');
+    expect(shouldExecuteToday({ start_date:'2026-10-01', end_date:'2026-10-06', frequency:'daily' })).toBe(true);
+  });
+
+  it('clamps yearly leap-day recurrence to February 28 in non-leap years', () => {
+    freezeToday('2025-02-28');
+    expect(shouldExecuteToday({ start_date:'2024-02-29', frequency:'yearly' })).toBe(true);
+    freezeToday('2025-02-27');
+    expect(shouldExecuteToday({ start_date:'2024-02-29', frequency:'yearly' })).toBe(false);
+  });
+
+  it('uses the Argentina civil day at the UTC midnight boundary', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-06T02:59:59Z'));
+    expect(shouldExecuteToday({ start_date:'2026-10-06', frequency:'daily' })).toBe(false);
+    vi.setSystemTime(new Date('2026-10-06T03:00:00Z'));
+    expect(shouldExecuteToday({ start_date:'2026-10-06', frequency:'daily' })).toBe(true);
+  });
+
+  it('accepts a previous execution date and rejects a valid end date before start', () => {
+    freezeToday('2026-10-06');
+    expect(shouldExecuteToday({ start_date:'2026-10-01', last_executed_date:'2026-10-05', frequency:'daily' })).toBe(true);
+    expect(shouldExecuteToday({ start_date:'2026-10-07', end_date:'2026-10-06', frequency:'daily' })).toBe(false);
   });
 });

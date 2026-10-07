@@ -34,11 +34,13 @@ export async function POST(req: NextRequest) {
     };
 
     const plans = getBillingPlans();
-    const selectedPlan =
-      (body.plan_id && getBillingPlanById(body.plan_id)) || plans[0] || null;
+    if (body.plan_id && !getBillingPlanById(body.plan_id)) {
+      return NextResponse.json({ error: 'El plan seleccionado no existe.' }, { status: 400 });
+    }
+    const selectedPlan = body.plan_id ? getBillingPlanById(body.plan_id) : plans[0] || null;
 
     if (!selectedPlan) {
-      return NextResponse.json({ error: 'No billing plans configured' }, { status: 500 });
+      return NextResponse.json({ error: 'No hay planes de cobro configurados.' }, { status: 503 });
     }
 
     // Solo aceptamos back_url propio (mismo origen): un back_url arbitrario del
@@ -62,6 +64,8 @@ export async function POST(req: NextRequest) {
       backUrl,
       transactionAmount: selectedPlan.amount,
       currencyId: selectedPlan.currency,
+      frequency: selectedPlan.interval === 'yearly' ? 12 : 1,
+      frequencyType: 'months',
     });
 
     if (!preapproval.id || !preapproval.init_point) {
