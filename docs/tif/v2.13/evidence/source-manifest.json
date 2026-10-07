@@ -12,6 +12,7 @@
   "__tests__/import-csv.test.ts": "43d06c07ed7d207db9204cd7dc62b6688cc91306b97d4d22930e90212001f84e",
   "__tests__/import-date.test.ts": "48af1feffa5d8f0794540d45029f1dc6258cfad5ed24aabb21dfc7911f5caa47",
   "__tests__/import-route.test.ts": "ca80c17b2cc8fc572253b50a179256a4a197601a6e0640266f09977a59a5a2f6",
+  "__tests__/offline-queue-sync.test.ts": "1de047134cf4cbef9c26bd78b83e106d288afb7e7979ead82b587c57c3e222e3",
   "__tests__/recurring-job-regression.test.ts": "e2f4c1abb0b26767019b02de0f48313aa6ce69d9612a2be8b1c80c539473676f",
   "__tests__/recurring-schedule.test.ts": "74a26a52c24a8fc4697f3709899a0296519156b99e9166aac65fe507da3b9133",
   "__tests__/transaction-date.test.ts": "d44453fc53e8bc0c6247393953c57ab05ba44afe09bd9ff12c6cab698535dc42",
@@ -46,6 +47,7 @@
   "app/api/transactions/[id]/route.ts": "f81cf24ac7eaded301b329e8b67c7917ba0690d60ce9434517698709df36681a",
   "app/api/webhooks/mercado-pago/route.ts": "a46ce2abe03ab4f75742a07ca7e27fcaf91b192366b9f7850c9e73136b16d304",
   "app/shared/[token]/page.tsx": "6929b22427446ba67b30f1efa4c2bd4cabb5a8a0b3ee092cfc8e4eaab30e3d49",
+  "components/add-transaction/AddTransactionProvider.tsx": "e0834606ade390284b6b736c5341e44635f312dbb908dd6aa30e3acfb2df4ca3",
   "components/analysis/AnalysisCharts.tsx": "31bf3e0d9897875ba907e94d6a3e3c231461365afd34368877f56da241304cd6",
   "components/dashboard/AnomaliesWidget.tsx": "9daf01bb22b0442948d3d7648c647093e6ebefffc6e00843350dd5364936f9db",
   "components/dashboard/DashboardSpendingAnalyzerSection.tsx": "38a2b0e1e834384d5a65896abe853f191433072afbab833c0b866745391d2685",
@@ -57,8 +59,10 @@
   "lib/cron/recurring-schedule.ts": "d9725bfd1d8735d24a65d19bb6f462e3a920ef1130df34299bf4dd2790c2547e",
   "lib/financial-anomalies.ts": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
   "lib/financial-projections.ts": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+  "lib/hooks/useOfflineQueue.ts": "a01733e65837a52d451888c6514e922d5cb133e10532dc13004d0d261c5f9701",
   "lib/import/csv.ts": "7b30c1594a9ff0747d24a02a8a228cfc4b651ec00c35825dc6ad3ac88971c833",
   "lib/import/date.ts": "d71cc327323b3ef0f30b07eb4fdd6c92b4baa417ab06a2826f6c7d7851fdcaf8",
+  "lib/offline-queue-sync.ts": "c994c320c11da4a28f39f9359452ab57cf7c8350ba4f54e110710298a1732ad8",
   "lib/services/investments.ts": "4c0fe6e61d0bbe60bfe0beb5be323ce54765b4c9aa95284f4af6baaffdde5429",
   "lib/services/sharedExpenses.ts": "70fddad0654eb2474dd6aee78e48f54fe7f685b3b2404a3e462d3d4ff4cb310e",
   "lib/services/transactions.ts": "68093b43701c8970304e9adac65d8a32f047d561f8c03f87b121a53a6e1e6a26",
@@ -73,5 +77,5 @@
   "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f",
   "supabase/schema.sql": "01255724ef94aced4836bf074d9e6abc571aaa640d25d41705433e91123be9f5",
   "types/database.ts": "889645d70f0d47ea4e5f2d16dd326400ffe24724ae23fc75816ac90908bdea24",
-  "vitest.config.ts": "ab85fc4396e6fef43ee2bcf8689ffdaef15f2886be8251f595df147f0fccf4c1"
+  "vitest.config.ts": "b1e41b4ca91ee9ad8bb3f86ebf1492a9fe8a60a765a561f8b3b8893920252323"
 }

@@ -8,7 +8,9 @@
      · optimizePackageImports
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 5.5s
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (113kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (268kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled successfully in 8.4s
    Linting and checking validity of types ...
    Collecting page data ...
    Generating static pages (0/30) ...
@@ -17,13 +19,11 @@ Investments page error: Error: Dynamic server usage: Route /investments couldn't
     at s (.next/server/chunks/3897.js:1:30928)
     at n (.next/server/chunks/369.js:1:2933)
     at f (.next/server/chunks/2583.js:1:8107)
-    at <unknown> (.next/server/chunks/6127.js:1:8767)
-    at l (.next/server/chunks/6127.js:1:7287) {
+    at <unknown> (.next/server/chunks/6127.js:1:8798)
+    at l (.next/server/chunks/6127.js:1:7318) {
   description: "Route /investments couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
   digest: 'DYNAMIC_SERVER_USAGE'
 }
-   Generating static pages (14/30) 
-   Generating static pages (22/30) 
 Categories page error: Error: Dynamic server usage: Route /categories couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
     at s (.next/server/chunks/3897.js:1:30928)
     at n (.next/server/chunks/369.js:1:2933)
@@ -33,6 +33,8 @@ Categories page error: Error: Dynamic server usage: Route /categories couldn't b
   description: "Route /categories couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
   digest: 'DYNAMIC_SERVER_USAGE'
 }
+   Generating static pages (14/30) 
+   Generating static pages (22/30) 
 Accounts page error: Error: Dynamic server usage: Route /accounts couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
     at s (.next/server/chunks/3897.js:1:30928)
     at n (.next/server/chunks/369.js:1:2933)
@@ -46,8 +48,8 @@ Dashboard error: Error: Dynamic server usage: Route /dashboard couldn't be rende
     at s (.next/server/chunks/3897.js:1:30928)
     at n (.next/server/chunks/369.js:1:2933)
     at f (.next/server/chunks/2583.js:1:8107)
-    at <unknown> (.next/server/chunks/6127.js:1:8767)
-    at l (.next/server/chunks/6127.js:1:7287) {
+    at <unknown> (.next/server/chunks/6127.js:1:8798)
+    at l (.next/server/chunks/6127.js:1:7318) {
   description: "Route /dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
   digest: 'DYNAMIC_SERVER_USAGE'
 }
@@ -58,7 +60,7 @@ Dashboard error: Error: Dynamic server usage: Route /dashboard couldn't be rende
 Route (app)                                         Size  First Load JS
 ┌ ƒ /                                            15.3 kB         173 kB
 ├ ○ /_not-found                                     1 kB         104 kB
-├ ƒ /accounts                                    8.71 kB         179 kB
+├ ƒ /accounts                                    8.71 kB         180 kB
 ├ ƒ /accounts/[id]                               2.38 kB         186 kB
 ├ ƒ /analysis                                    4.36 kB         151 kB
 ├ ƒ /api/accounts                                  276 B         103 kB

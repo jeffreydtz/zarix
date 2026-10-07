@@ -13,7 +13,7 @@ Transferencias, OCR, Telegram, recurrencias, cuotas, presupuestos, importación 
 
 ## Evidencia ejecutada
 
-Node 22.17.0, Next.js 15.5.27 y Vitest 5.0.3. La suite local ejecutó 292 pruebas en 31 archivos; SQL aislado ejecutó 28 casos monetarios y 11 casos de gastos compartidos. Compilación de producción, TypeScript y lint aprobaron. Ver evidence/verification.json, vitest-results.json, sql-tests.log, production-build.log y coverage-summary.json. La cobertura general es del conjunto instrumentado en vitest.config.ts; no mide toda la aplicación. El calendario recurrente cubre sus 30 ramas instrumentadas; no implica cobertura completa de condiciones o caminos del producto.
+Node 22.17.0, Next.js 15.5.27 y Vitest 5.0.3. La suite local ejecutó 304 pruebas en 32 archivos; SQL aislado ejecutó 28 casos monetarios y 11 casos de gastos compartidos. Compilación de producción, TypeScript y lint aprobaron. Ver evidence/verification.json, vitest-results.json, sql-tests.log, production-build.log y coverage-summary.json. La cobertura general es del conjunto instrumentado en vitest.config.ts; no mide toda la aplicación. El calendario recurrente cubre sus 30 ramas instrumentadas; no implica cobertura completa de condiciones o caminos del producto.
 
 ## Migraciones y puesta en funcionamiento
 

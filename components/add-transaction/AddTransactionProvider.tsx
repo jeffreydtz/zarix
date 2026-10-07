@@ -93,7 +93,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   const [description, setDescription] = useState('');
   const [transactionDateYmd, setTransactionDateYmd] = useState(() => todayLocalYmd());
 
-  const { isOnline, pendingCount, syncing, enqueue } = useOfflineQueue();
+  const { isOnline, pendingCount, syncing, syncError, needsReview, enqueue, sync } = useOfflineQueue();
 
   const resetForm = useCallback(() => {
     setType('expense');
@@ -276,8 +276,12 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
     <AddTransactionContext.Provider value={ctx}>
       {children}
       {(pendingCount > 0 || syncing) && (
-        <div className="pointer-events-none fixed z-50 bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 md:bottom-6 md:left-auto md:right-6 md:translate-x-0 text-xs bg-warning/15 text-warning rounded-full px-3 py-1.5 shadow-md flex items-center gap-1.5">
+        <div className="fixed z-50 bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 md:bottom-6 md:left-auto md:right-6 md:translate-x-0 text-xs bg-card border border-warning/30 text-warning rounded-xl px-3 py-2 shadow-md max-w-xs">
           {syncing ? 'Sincronizando...' : `${pendingCount} pendiente${pendingCount !== 1 ? 's' : ''}`}
+          {syncError && <p className="mt-1" role="alert">{syncError}</p>}
+          {needsReview ? <a href="/expenses" className="block mt-1 underline">Revisar movimientos</a> : (
+            <button type="button" onClick={() => void sync()} disabled={!isOnline || syncing} className="ml-2 underline disabled:opacity-50">Reintentar</button>
+          )}
         </div>
       )}
       {isOpen && (

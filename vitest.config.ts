@@ -26,6 +26,7 @@ export default defineConfig({
         'lib/cron/recurring-job.ts',
         'lib/financial-projections.ts',
         'lib/financial-anomalies.ts',
+        'lib/offline-queue-sync.ts',
         'lib/services/investments.ts',
         'lib/import/csv.ts',
         'app/api/ai/projections/route.ts',

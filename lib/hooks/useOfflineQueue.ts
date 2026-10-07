@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { syncPendingTransactions } from '@/lib/offline-queue-sync';
 
 const DB_NAME = 'zarix-offline';
 const DB_VERSION = 1;
@@ -72,7 +73,10 @@ export function useOfflineQueue() {
   );
   const [pendingCount, setPendingCount] = useState(0);
   const [syncing, setSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [needsReview, setNeedsReview] = useState(false);
   const syncingRef = useRef(false);
+  const reviewRequiredRef = useRef(false);
 
   const refreshCount = useCallback(async () => {
     try {
@@ -97,37 +101,33 @@ export function useOfflineQueue() {
   );
 
   const sync = useCallback(async () => {
-    if (syncingRef.current) return;
+    if (syncingRef.current || reviewRequiredRef.current) return;
     syncingRef.current = true;
     setSyncing(true);
+    setSyncError(null);
+    setNeedsReview(false);
     try {
       const items = await dbGetAll();
-      for (const item of items) {
-        try {
-          const res = await fetch('/api/transactions', {
+      const result = await syncPendingTransactions(
+        items,
+        (item) => fetch('/api/transactions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(item.payload),
-          });
-          if (res.ok) {
-            await dbRemove(item.id);
-          } else if (res.status >= 400 && res.status < 500) {
-            // 4xx: request inválida (nunca va a andar). La sacamos para no
-            // envenenar la cola con reintentos infinitos en cada sync.
-            console.error(
-              `[offline-queue] descartando ítem con status ${res.status}`
-            );
-            await dbRemove(item.id);
-          }
-          // 5xx: error transitorio del server → se deja en la cola y se
-          // reintenta en el próximo sync.
-        } catch {
-          // Still offline — stop processing the queue
-          break;
-        }
+          }),
+        dbRemove
+      );
+      if (result.failure === 'storage') {
+        reviewRequiredRef.current = true;
+        setNeedsReview(true);
+        setSyncError('Se confirmó un registro, pero no se pudo actualizar la cola. Revisá tus movimientos antes de volver a sincronizar.');
+      } else if (result.status === 401 || result.status === 403) {
+        setSyncError('Tus movimientos siguen guardados. Iniciá sesión y reintentá.');
+      } else if (result.failure) {
+        setSyncError('No se pudo confirmar el registro. Tus movimientos siguen guardados para reintentar.');
       }
     } catch {
-      // DB error
+      setSyncError('No se pudo leer la cola guardada. Reintentá cuando esté disponible.');
     } finally {
       syncingRef.current = false;
       setSyncing(false);
@@ -160,5 +160,5 @@ export function useOfflineQueue() {
     };
   }, [refreshCount, sync]);
 
-  return { isOnline, pendingCount, syncing, enqueue, sync };
+  return { isOnline, pendingCount, syncing, syncError, needsReview, enqueue, sync };
 }
