@@ -1,0 +1,14 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="DTO: regla y presupuesto"; labelloc=t; fontsize=22;
+RecurringRule [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>RecurringRule</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">+account_id: string</TD></TR><TR><TD ALIGN="LEFT">+frequency: RecurrenceFrequency</TD></TR><TR><TD ALIGN="LEFT">+start_date: string</TD></TR><TR><TD ALIGN="LEFT">+end_date: string</TD></TR><TR><TD ALIGN="LEFT">+last_executed_date: string</TD></TR><TR><TD ALIGN="LEFT">+is_active: boolean</TD></TR></TABLE>>];
+Budget [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Budget</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">+user_id: string</TD></TR><TR><TD ALIGN="LEFT">+category_id: string</TD></TR><TR><TD ALIGN="LEFT">+month: string</TD></TR><TR><TD ALIGN="LEFT">+amount: number</TD></TR><TR><TD ALIGN="LEFT">+currency: string</TD></TR><TR><TD ALIGN="LEFT">+alert_at_percent: number</TD></TR></TABLE>>];
+Account [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>Account</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">contexto: otra vista</TD></TR></TABLE>>];
+Category [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>Category</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">contexto: otra vista</TD></TR></TABLE>>];
+Transaction [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>Transaction</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">contexto: otra vista</TD></TR></TABLE>>];
+Account -> RecurringRule [dir=none,label="Account 1\nRecurringRule 0..*"];
+RecurringRule -> Transaction [dir=none,label="RecurringRule 0..1\nTransaction 0..*"];
+Category -> Budget [dir=none,label="Category 0..1\nBudget 0..*"];
+}

@@ -1,0 +1,20 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU004: A04: comparación sin escritura"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+bs [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP10 Simulación"];
+au [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+si [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nSimulacion"];
+ep [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nPosición"];
+eq [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCotización"];
+cp [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nCostoPosicion"];
+u -> bs [label="A04"];
+bs -> au [label="identidad /\nPremium"];
+bs -> si [dir=both,label="variación finita\n↔\ncomparación sin\nescritura"];
+si -> ep [label="lectura de\ncopia"];
+si -> eq [label="precio /\nreferencia"];
+si -> cp [label="resultado\nhipotético"];
+
+}

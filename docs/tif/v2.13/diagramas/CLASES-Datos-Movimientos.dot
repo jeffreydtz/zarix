@@ -1,0 +1,14 @@
+digraph G {
+graph [rankdir=LR,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="DTO: movimiento y clasificación"; labelloc=t; fontsize=22;
+Transaction [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Transaction</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">+user_id: string</TD></TR><TR><TD ALIGN="LEFT">+type: TransactionType</TD></TR><TR><TD ALIGN="LEFT">+account_id: string</TD></TR><TR><TD ALIGN="LEFT">+destination_account_id: string</TD></TR><TR><TD ALIGN="LEFT">+amount: number</TD></TR><TR><TD ALIGN="LEFT">+currency: string</TD></TR><TR><TD ALIGN="LEFT">+amount_in_account_currency: number</TD></TR><TR><TD ALIGN="LEFT">+destination_amount_in_account_currency: number</TD></TR><TR><TD ALIGN="LEFT">+exchange_rate: number</TD></TR><TR><TD ALIGN="LEFT">+transaction_date: string</TD></TR></TABLE>>];
+Category [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Category</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">+user_id: string</TD></TR><TR><TD ALIGN="LEFT">+name: string</TD></TR><TR><TD ALIGN="LEFT">+type: CategoryType</TD></TR><TR><TD ALIGN="LEFT">+is_system: boolean</TD></TR></TABLE>>];
+Account [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>Account</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">contexto: otra vista</TD></TR></TABLE>>];
+RecurringRule [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>RecurringRule</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">contexto: otra vista</TD></TR></TABLE>>];
+Account -> Transaction [dir=none,label="origen\nAccount 1\nTransaction 0..*"];
+Account -> Transaction [dir=none,label="destino\ntransferencia\nAccount 0..1\nTransaction 0..*"];
+Category -> Transaction [dir=none,label="Category 0..1\nTransaction 0..*"];
+RecurringRule -> Transaction [dir=none,label="RecurringRule 0..1\nTransaction 0..*"];
+}

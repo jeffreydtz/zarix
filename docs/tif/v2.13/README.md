@@ -31,3 +31,10 @@ La nueva columna destination_amount_in_account_currency conserva el importe exac
 No se ejecutaron pagos reales, integración autenticada de los cuatro CU, matriz RLS completa, carga/desempeño, restauración ni validación de usuarios/profesor. No hay aprobación RRR/PDR/CDR registrada. Las cuotas y el precio comercial son hipótesis del plan; no se presentan como restricciones implementadas. La auditoría de dependencias registra siete entradas de gravedad alta asociadas al mismo aviso sin parche de braces en herramientas de desarrollo; no se afirma cero alertas.
 
 Para repetir controles: npm ci; npm test -- --coverage; npm run test:db; npm run typecheck; npm run lint; npm run build. La compilación necesita variables públicas de Supabase; para revisión local se usaron valores ficticios y no hubo conexión productiva.
+
+
+## Archivos del plan
+
+[Plan editable Word](ZARIX-Plan-de-Desarrollo-Tecnologico-v2.13.docx), [plan consultable](plan.md), [modelo financiero](ZARIX-Modelo-financiero-v2.13.xlsx), [matriz de negocio](matriz_negocio_v2.13.md), [checklist](checklist_final.md) y [guía de defensa](guia_defensa_v2.13.md).
+
+Las figuras están divididas para lectura impresa y pertenecen a los mismos cuatro casos de uso. El SVG/PNG incorporado se conserva en figures y su fuente DOT/Mermaid en diagramas. Un prototipo propuesto no sustituye la revisión con usuarios. Los archivos de evidence distinguen resultados anteriores a la corrección, corridas selectivas y corrida general final.

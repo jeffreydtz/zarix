@@ -1,0 +1,26 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Chat (B)
+ participant C as Consulta (C)
+ participant I as IA (B)
+ participant D as Datos (E)
+ U->>B: Pregunta
+ B->>C: Consulta iniciada
+ Note over B: Misma interacción fase<br/>tras Intención
+ opt Agregar datos
+  C->>D: Propios y período
+  D-->>C: Hechos / error
+ end
+ alt Datos insuficientes
+  C-->>B: Aclarar / filtros
+ else Datos válidos
+  C->>I: Redactar con cifras
+  alt Redacción válida
+   I-->>C: Texto
+  else IA no disponible
+   I-->>C: Fallback determinista
+  end
+  C-->>B: Cifra/período/origen
+ end
+ B-->>U: Resultado real

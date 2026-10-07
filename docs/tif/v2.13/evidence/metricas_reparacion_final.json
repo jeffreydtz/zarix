@@ -1,0 +1,542 @@
+[
+  {
+    "id": "ROB-CU001-Registro",
+    "width": 571.0,
+    "height": 641.0,
+    "min_source_font": 18.0,
+    "printed_pt": 15.547,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU001-OCR",
+    "width": 803.0,
+    "height": 778.0,
+    "min_source_font": 18.0,
+    "printed_pt": 11.056,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU001-Importacion",
+    "width": 576.0,
+    "height": 704.0,
+    "min_source_font": 18.0,
+    "printed_pt": 14.911,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU001-Telegram",
+    "width": 472.0,
+    "height": 600.0,
+    "min_source_font": 18.0,
+    "printed_pt": 17.496,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU001-Reglas",
+    "width": 456.0,
+    "height": 619.0,
+    "min_source_font": 18.0,
+    "printed_pt": 16.959,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU001-Cron",
+    "width": 615.0,
+    "height": 747.0,
+    "min_source_font": 18.0,
+    "printed_pt": 14.053,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU001-Aviso",
+    "width": 641.0,
+    "height": 898.0,
+    "min_source_font": 18.0,
+    "printed_pt": 11.69,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU001-Presupuesto",
+    "width": 521.0,
+    "height": 598.0,
+    "min_source_font": 18.0,
+    "printed_pt": 17.04,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU001-Compartidos",
+    "width": 462.0,
+    "height": 619.0,
+    "min_source_font": 18.0,
+    "printed_pt": 16.959,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU002-Cuentas",
+    "width": 525.0,
+    "height": 665.0,
+    "min_source_font": 18.0,
+    "printed_pt": 15.786,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU002-Datos",
+    "width": 488.0,
+    "height": 643.0,
+    "min_source_font": 18.0,
+    "printed_pt": 16.326,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU002-Preferencias",
+    "width": 464.0,
+    "height": 641.0,
+    "min_source_font": 18.0,
+    "printed_pt": 16.377,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU002-Acceso",
+    "width": 513.0,
+    "height": 619.0,
+    "min_source_font": 18.0,
+    "printed_pt": 16.959,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU002-Plan",
+    "width": 514.0,
+    "height": 598.0,
+    "min_source_font": 18.0,
+    "printed_pt": 17.272,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU003-Patrimonio",
+    "width": 701.0,
+    "height": 655.0,
+    "min_source_font": 18.0,
+    "printed_pt": 12.664,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU003-Cotizaciones",
+    "width": 475.0,
+    "height": 833.0,
+    "min_source_font": 18.0,
+    "printed_pt": 12.602,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU003-Resumen",
+    "width": 427.0,
+    "height": 598.0,
+    "min_source_font": 18.0,
+    "printed_pt": 17.555,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU003-Chat",
+    "width": 585.0,
+    "height": 855.0,
+    "min_source_font": 18.0,
+    "printed_pt": 12.278,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU003-RF11",
+    "width": 483.0,
+    "height": 663.0,
+    "min_source_font": 18.0,
+    "printed_pt": 15.833,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU004-Operacion",
+    "width": 878.0,
+    "height": 676.0,
+    "min_source_font": 18.0,
+    "printed_pt": 10.111,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU004-Referencias",
+    "width": 437.0,
+    "height": 927.0,
+    "min_source_font": 18.0,
+    "printed_pt": 11.324,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ROB-CU004-Simulacion",
+    "width": 644.0,
+    "height": 590.0,
+    "min_source_font": 18.0,
+    "printed_pt": 13.785,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-Crear",
+    "width": 996.5,
+    "height": 1436.0,
+    "min_source_font": 20,
+    "printed_pt": 8.123,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-EditarEliminar",
+    "width": 974.0,
+    "height": 1328.0,
+    "min_source_font": 20,
+    "printed_pt": 8.783,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-OCR",
+    "width": 1051.0,
+    "height": 1036.0,
+    "min_source_font": 20,
+    "printed_pt": 9.385,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-Telegram",
+    "width": 777.5,
+    "height": 1145.0,
+    "min_source_font": 20,
+    "printed_pt": 10.187,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-Importar",
+    "width": 819.5,
+    "height": 1222.0,
+    "min_source_font": 20,
+    "printed_pt": 9.545,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-ReglasPresupuestos",
+    "width": 772.5,
+    "height": 976.0,
+    "min_source_font": 20,
+    "printed_pt": 11.951,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-CronSeleccion",
+    "width": 702.0,
+    "height": 1100.0,
+    "min_source_font": 20,
+    "printed_pt": 10.604,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-CronOcurrencia",
+    "width": 788.0,
+    "height": 1274.0,
+    "min_source_font": 20,
+    "printed_pt": 9.155,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU002-AccesoPreferencias",
+    "width": 859.5,
+    "height": 1206.0,
+    "min_source_font": 20,
+    "printed_pt": 9.672,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU002-PagoInicio",
+    "width": 779.5,
+    "height": 890.0,
+    "min_source_font": 20,
+    "printed_pt": 12.654,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU002-PagoWebhook",
+    "width": 642.5,
+    "height": 1098.0,
+    "min_source_font": 20,
+    "printed_pt": 10.623,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU003-Dashboard",
+    "width": 927.5,
+    "height": 1256.0,
+    "min_source_font": 20,
+    "printed_pt": 9.287,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU003-Cotizaciones",
+    "width": 813.5,
+    "height": 1342.0,
+    "min_source_font": 20,
+    "printed_pt": 8.692,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU003-ChatIntencion",
+    "width": 897.0,
+    "height": 1000.0,
+    "min_source_font": 20,
+    "printed_pt": 10.997,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU003-ChatRespuesta",
+    "width": 780.5,
+    "height": 982.0,
+    "min_source_font": 20,
+    "printed_pt": 11.878,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU003-AnomaliasSeleccion",
+    "width": 740.0,
+    "height": 834.0,
+    "min_source_font": 20,
+    "printed_pt": 13.33,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU003-AnomaliasCalculo",
+    "width": 528.0,
+    "height": 1094.0,
+    "min_source_font": 20,
+    "printed_pt": 10.662,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU003-Proyeccion",
+    "width": 858.0,
+    "height": 1454.0,
+    "min_source_font": 20,
+    "printed_pt": 8.022,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU004-Compra",
+    "width": 730.5,
+    "height": 1012.0,
+    "min_source_font": 20,
+    "printed_pt": 11.526,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU004-VentaValidar",
+    "width": 772.0,
+    "height": 997.0,
+    "min_source_font": 20,
+    "printed_pt": 11.699,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU004-VentaRPC",
+    "width": 836.5,
+    "height": 1023.0,
+    "min_source_font": 20,
+    "printed_pt": 11.402,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU004-Valoracion",
+    "width": 905.5,
+    "height": 1396.0,
+    "min_source_font": 20,
+    "printed_pt": 8.355,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-StrategyAdapter",
+    "width": 758.0,
+    "height": 896.0,
+    "min_source_font": 20,
+    "printed_pt": 13.013,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-TemplateMethod",
+    "width": 678.0,
+    "height": 1068.0,
+    "min_source_font": 20,
+    "printed_pt": 10.921,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-CompartidosGrupo",
+    "width": 837.5,
+    "height": 1014.0,
+    "min_source_font": 20,
+    "printed_pt": 11.503,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-CompartidosReparto",
+    "width": 948.5,
+    "height": 1166.0,
+    "min_source_font": 20,
+    "printed_pt": 10.003,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU002-CuentasAlta",
+    "width": 769.0,
+    "height": 1040.0,
+    "min_source_font": 20,
+    "printed_pt": 11.215,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU002-CuentasDatos",
+    "width": 744.5,
+    "height": 1090.0,
+    "min_source_font": 20,
+    "printed_pt": 10.701,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-Cuotas",
+    "width": 811.5,
+    "height": 1276.0,
+    "min_source_font": 20,
+    "printed_pt": 9.141,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-Cola",
+    "width": 705.0,
+    "height": 520.0,
+    "min_source_font": 20,
+    "printed_pt": 13.991,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU001-Sincronizacion",
+    "width": 895.5,
+    "height": 1238.0,
+    "min_source_font": 20,
+    "printed_pt": 9.422,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "SEC-CU004-Simulacion-Detalle",
+    "width": 1099.5,
+    "height": 1394.0,
+    "min_source_font": 20,
+    "printed_pt": 8.367,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "DOM-Personal",
+    "width": 452.0,
+    "height": 516.0,
+    "min_source_font": 18.0,
+    "printed_pt": 19.641,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "ER-CU003-Snapshots",
+    "width": 617.0,
+    "height": 578.0,
+    "min_source_font": 18.0,
+    "printed_pt": 14.388,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "PATRONES-Cotizaciones",
+    "width": 917.0,
+    "height": 445.0,
+    "min_source_font": 18.0,
+    "printed_pt": 9.681,
+    "visual_seen": true,
+    "owner": "tecnologia"
+  },
+  {
+    "id": "CFG-01-Guardas",
+    "width": 815.0,
+    "height": 1219.0,
+    "min_source_font": 20.0,
+    "printed_pt": 9.568,
+    "visual_seen": false,
+    "owner": "testing"
+  },
+  {
+    "id": "CFG-01-Frecuencia",
+    "width": 1023.0,
+    "height": 569.0,
+    "min_source_font": 20.0,
+    "printed_pt": 9.642,
+    "visual_seen": false,
+    "owner": "testing"
+  },
+  {
+    "id": "CLASES-CU003-Analisis",
+    "width": 589.0,
+    "height": 350.0,
+    "min_source_font": 18.0,
+    "printed_pt": 15.072,
+    "visual_seen": false,
+    "owner": "testing"
+  }
+]

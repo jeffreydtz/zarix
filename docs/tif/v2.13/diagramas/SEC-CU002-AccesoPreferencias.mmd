@@ -1,0 +1,26 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P06 (B)
+ participant A as Acceso (C)
+ participant D as Datos (E)
+ alt Acceso A05
+  U->>B: Registrar/iniciar/recuperar/cerrar
+  B->>A: Validar identidad
+  A->>D: Identidad / sesión
+  D-->>A: Resultado permitido
+  A-->>B: Sesión / mensaje<br/>seguro
+ else Vincular o revocar<br/>Telegram
+  U->>B: Solicitar<br/>vínculo/revocación
+  B->>A: Usuario y código
+  A->>D: Validar/consumir/revocar<br/>vínculo
+  D-->>A: Estado / rechazo
+  A-->>B: Resultado
+ else Preferencias A06 / CU003<br/>A05
+  U->>B: Moneda base / widgets
+  B->>A: Validar opciones
+  A->>D: Guardar propias
+  D-->>A: Confirmación
+  A-->>B: Sin alterar historia
+ end
+ B-->>U: Estado final

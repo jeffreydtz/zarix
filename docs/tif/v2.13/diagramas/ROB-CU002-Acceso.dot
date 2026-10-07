@@ -1,0 +1,19 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU002: A05: identidad y vínculo"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b2 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP06 Configuración"];
+au [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+eu [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nUsuario"];
+vi [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nVínculo Telegram"];
+ev [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nVinculoTelegram"];
+u -> b2 [label="A04–A07"];
+b2 -> au [dir=both,label="registro /\ninicio /\nrecuperación /\ncierre\n↔\nsesión / rechazo\nseguro"];
+au -> eu [label="identidad y\npermisos"];
+
+b2 -> vi [dir=both,label="A05 vincular /\nrevocar\n↔\nvínculo /\nrechazo"];
+vi -> ev [label="único, vence, un\nuso"];
+
+}

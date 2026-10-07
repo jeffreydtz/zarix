@@ -1,0 +1,515 @@
+[
+  {
+    "id": "ROB-CU001-Registro",
+    "page": 98,
+    "figure": 34,
+    "width_pt": 493.2,
+    "height_pt": 553.617,
+    "actual_min_font_pt": 15.546,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU001-OCR",
+    "page": 99,
+    "figure": 35,
+    "width_pt": 493.2,
+    "height_pt": 477.911,
+    "actual_min_font_pt": 11.056,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU001-Importacion",
+    "page": 100,
+    "figure": 36,
+    "width_pt": 477.25,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 14.911,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU001-Telegram",
+    "page": 101,
+    "figure": 37,
+    "width_pt": 458.851,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 17.496,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU001-Reglas",
+    "page": 102,
+    "figure": 38,
+    "width_pt": 429.613,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 16.958,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU001-Cron",
+    "page": 103,
+    "figure": 39,
+    "width_pt": 480.198,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 14.053,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU001-Aviso",
+    "page": 104,
+    "figure": 40,
+    "width_pt": 416.274,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.689,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU001-Presupuesto",
+    "page": 105,
+    "figure": 41,
+    "width_pt": 493.2,
+    "height_pt": 566.194,
+    "actual_min_font_pt": 17.04,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU001-Compartidos",
+    "page": 106,
+    "figure": 42,
+    "width_pt": 435.224,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 16.957,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU002-Cuentas",
+    "page": 107,
+    "figure": 43,
+    "width_pt": 460.482,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 15.786,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU002-Datos",
+    "page": 108,
+    "figure": 44,
+    "width_pt": 442.657,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 16.326,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU002-Preferencias",
+    "page": 109,
+    "figure": 45,
+    "width_pt": 422.15,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 16.376,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU002-Acceso",
+    "page": 110,
+    "figure": 46,
+    "width_pt": 483.382,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 16.959,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU002-Plan",
+    "page": 111,
+    "figure": 47,
+    "width_pt": 493.2,
+    "height_pt": 573.838,
+    "actual_min_font_pt": 17.272,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU003-Patrimonio",
+    "page": 112,
+    "figure": 48,
+    "width_pt": 493.2,
+    "height_pt": 460.895,
+    "actual_min_font_pt": 12.664,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU003-Cotizaciones",
+    "page": 113,
+    "figure": 49,
+    "width_pt": 332.592,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 12.602,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU003-Resumen",
+    "page": 114,
+    "figure": 50,
+    "width_pt": 416.423,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 17.554,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU003-Chat",
+    "page": 115,
+    "figure": 51,
+    "width_pt": 399.042,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 12.278,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU003-RF11",
+    "page": 116,
+    "figure": 52,
+    "width_pt": 424.918,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 15.833,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU004-Operacion",
+    "page": 117,
+    "figure": 53,
+    "width_pt": 493.2,
+    "height_pt": 379.764,
+    "actual_min_font_pt": 10.111,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU004-Referencias",
+    "page": 118,
+    "figure": 54,
+    "width_pt": 274.9,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.323,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ROB-CU004-Simulacion",
+    "page": 119,
+    "figure": 55,
+    "width_pt": 493.2,
+    "height_pt": 451.771,
+    "actual_min_font_pt": 13.783,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-Crear",
+    "page": 121,
+    "figure": 56,
+    "width_pt": 404.579,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 8.12,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-EditarEliminar",
+    "page": 122,
+    "figure": 57,
+    "width_pt": 427.723,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 8.783,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-OCR",
+    "page": 123,
+    "figure": 58,
+    "width_pt": 493.2,
+    "height_pt": 486.295,
+    "actual_min_font_pt": 9.385,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-Telegram",
+    "page": 124,
+    "figure": 59,
+    "width_pt": 395.927,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 10.185,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-Importar",
+    "page": 125,
+    "figure": 60,
+    "width_pt": 391.016,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 9.543,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-ReglasPresupuestos",
+    "page": 126,
+    "figure": 61,
+    "width_pt": 461.575,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.95,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-CronSeleccion",
+    "page": 127,
+    "figure": 62,
+    "width_pt": 372.176,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 10.603,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-CronOcurrencia",
+    "page": 128,
+    "figure": 63,
+    "width_pt": 360.668,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 9.154,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU002-AccesoPreferencias",
+    "page": 132,
+    "figure": 67,
+    "width_pt": 415.533,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 9.669,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU002-PagoInicio",
+    "page": 133,
+    "figure": 68,
+    "width_pt": 493.2,
+    "height_pt": 563.234,
+    "actual_min_font_pt": 12.654,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU002-PagoWebhook",
+    "page": 134,
+    "figure": 69,
+    "width_pt": 341.252,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 10.623,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU003-Dashboard",
+    "page": 135,
+    "figure": 70,
+    "width_pt": 430.565,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 9.284,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU003-Cotizaciones",
+    "page": 136,
+    "figure": 71,
+    "width_pt": 353.454,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 8.69,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU003-ChatIntencion",
+    "page": 137,
+    "figure": 72,
+    "width_pt": 493.2,
+    "height_pt": 549.918,
+    "actual_min_font_pt": 10.997,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU003-ChatRespuesta",
+    "page": 138,
+    "figure": 73,
+    "width_pt": 463.409,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.875,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU003-AnomaliasSeleccion",
+    "page": 139,
+    "figure": 74,
+    "width_pt": 493.2,
+    "height_pt": 556.083,
+    "actual_min_font_pt": 13.33,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU003-AnomaliasCalculo",
+    "page": 140,
+    "figure": 75,
+    "width_pt": 281.467,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 10.662,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU003-Proyeccion",
+    "page": 141,
+    "figure": 76,
+    "width_pt": 344.071,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 8.02,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU004-Compra",
+    "page": 142,
+    "figure": 77,
+    "width_pt": 420.931,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.524,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU004-VentaValidar",
+    "page": 143,
+    "figure": 78,
+    "width_pt": 451.568,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.699,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU004-VentaRPC",
+    "page": 144,
+    "figure": 79,
+    "width_pt": 476.86,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.401,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU004-Valoracion",
+    "page": 145,
+    "figure": 80,
+    "width_pt": 378.21,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 8.354,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-StrategyAdapter",
+    "page": 197,
+    "figure": 100,
+    "width_pt": 493.192,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 13.013,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-TemplateMethod",
+    "page": 198,
+    "figure": 101,
+    "width_pt": 370.168,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 10.919,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-CompartidosGrupo",
+    "page": 146,
+    "figure": 81,
+    "width_pt": 481.585,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.501,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-CompartidosReparto",
+    "page": 147,
+    "figure": 82,
+    "width_pt": 474.339,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 10.002,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU002-CuentasAlta",
+    "page": 148,
+    "figure": 83,
+    "width_pt": 431.201,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 11.215,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU002-CuentasDatos",
+    "page": 149,
+    "figure": 84,
+    "width_pt": 398.225,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 10.698,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-Cuotas",
+    "page": 129,
+    "figure": 64,
+    "width_pt": 370.874,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 9.14,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-Cola",
+    "page": 130,
+    "figure": 65,
+    "width_pt": 493.2,
+    "height_pt": 363.982,
+    "actual_min_font_pt": 13.991,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU001-Sincronizacion",
+    "page": 131,
+    "figure": 66,
+    "width_pt": 421.844,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 9.421,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "SEC-CU004-Simulacion-Detalle",
+    "page": 150,
+    "figure": 85,
+    "width_pt": 459.937,
+    "height_pt": 583.2,
+    "actual_min_font_pt": 8.366,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "DOM-Personal",
+    "page": 76,
+    "figure": 17,
+    "width_pt": 493.2,
+    "height_pt": 562.988,
+    "actual_min_font_pt": 19.639,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "ER-CU003-Snapshots",
+    "page": 84,
+    "figure": 23,
+    "width_pt": 493.2,
+    "height_pt": 462.128,
+    "actual_min_font_pt": 14.388,
+    "visual_integration_seen": true
+  },
+  {
+    "id": "PATRONES-Cotizaciones",
+    "page": 195,
+    "figure": 98,
+    "width_pt": 493.2,
+    "height_pt": 239.449,
+    "actual_min_font_pt": 9.681,
+    "visual_integration_seen": true
+  }
+]

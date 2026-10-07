@@ -1,0 +1,13 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ER: presupuestos y avisos"; labelloc=t; fontsize=22;
+budgets [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>budgets</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">uuid user_id FK</TD></TR><TR><TD ALIGN="LEFT">uuid category_id FK</TD></TR><TR><TD ALIGN="LEFT">date month</TD></TR><TR><TD ALIGN="LEFT">numeric amount</TD></TR><TR><TD ALIGN="LEFT">string currency</TD></TR><TR><TD ALIGN="LEFT">boolean rollover_enabled</TD></TR><TR><TD ALIGN="LEFT">numeric rollover_amount</TD></TR><TR><TD ALIGN="LEFT">numeric alert_at_percent</TD></TR></TABLE>>];
+budget_alerts [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>budget_alerts</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">uuid budget_id FK</TD></TR><TR><TD ALIGN="LEFT">integer percent_reached</TD></TR><TR><TD ALIGN="LEFT">timestamp sent_at</TD></TR></TABLE>>];
+users [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>users</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">contexto</TD></TR></TABLE>>];
+categories [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>categories</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">contexto</TD></TR></TABLE>>];
+users -> budgets [dir=none,label="define\nusers 1\nbudgets 0..*"];
+categories -> budgets [dir=none,label="limita\ncategories 0..1\nbudgets 0..*"];
+budgets -> budget_alerts [dir=none,label="avisa\nbudgets 1\nbudget_alerts 0..*"];
+}

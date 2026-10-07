@@ -1,0 +1,302 @@
+{
+  "date": "2026-10-06T23:55:34.559Z",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "mode": "original",
+  "scope": "PL/pgSQL de update_account_balance; esquema mínimo aislado, no RLS/proveedores/concurrencia remota",
+  "passed": 14,
+  "total": 18,
+  "results": [
+    {
+      "id": "SQL-01 gasto INSERT",
+      "status": "PASS",
+      "expected": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-02 ingreso INSERT",
+      "status": "PASS",
+      "expected": [
+        10500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-03 transferencia INSERT",
+      "status": "PASS",
+      "expected": [
+        8500,
+        3500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        3500,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-04 UPDATE monto gasto",
+      "status": "PASS",
+      "expected": [
+        8000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-05 UPDATE cuenta gasto",
+      "status": "PASS",
+      "expected": [
+        10000,
+        500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        500,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-06 UPDATE tipo gasto a ingreso",
+      "status": "FAIL",
+      "expected": [
+        11500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ],
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   8500,\n-   11500,\n    2000,\n    3000,\n    -10000\n  ]\n"
+    },
+    {
+      "id": "SQL-07 DELETE gasto",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-08 DELETE ingreso",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-09 UPDATE destino y monto transferencia",
+      "status": "PASS",
+      "expected": [
+        9000,
+        2000,
+        4000,
+        -10000
+      ],
+      "obtained": [
+        9000,
+        2000,
+        4000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-10 UPDATE origen transferencia",
+      "status": "FAIL",
+      "expected": [
+        10000,
+        3500,
+        1500,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        3500,
+        3000,
+        -10000
+      ],
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   8500,\n-   10000,\n    3500,\n+   3000,\n-   1500,\n    -10000\n  ]\n"
+    },
+    {
+      "id": "SQL-11 DELETE transferencia",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-12 ajuste secundario INSERT UPDATE DELETE",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-13 ajuste secundario a primario",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -9500
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -9500
+      ]
+    },
+    {
+      "id": "SQL-14 ingreso a transferencia",
+      "status": "FAIL",
+      "expected": [
+        9500,
+        2500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10500,
+        2500,
+        3000,
+        -10000
+      ],
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   10500,\n-   9500,\n    2500,\n    3000,\n    -10000\n  ]\n"
+    },
+    {
+      "id": "SQL-15 transferencia a gasto",
+      "status": "PASS",
+      "expected": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-16 rollback transferencia",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-17 transferencia FX DELETE",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-18 UPDATE tipo primario a ajuste secundario",
+      "status": "FAIL",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10010
+      ],
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    10000,\n    2000,\n    3000,\n+   -10010\n-   -10000\n  ]\n"
+    }
+  ]
+}

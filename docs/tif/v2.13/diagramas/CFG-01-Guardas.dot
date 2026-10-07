@@ -1,0 +1,32 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.12",nodesep="0.35",ranksep="0.22",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=diamond,style=filled,fillcolor="#eef2f6",color="#64748b",margin="0.06,0.035"];
+edge [fontname="Arial",fontsize=20,color="#475569",arrowsize=0.8];
+label="CFG 01: guardas del calendario"; labelloc=t; fontsize=22;
+S0 [shape=oval,label="S0 · Fecha civil\nArgentina"];
+S1 [label="S1 · Inicio\nválido"];
+S2 [label="S2 · Hoy anterior\nal inicio"];
+S3 [label="S3 · Fin\npresente"];
+S4 [label="S4 · Fin inválido\no anterior al inicio"];
+S5 [label="S5 · Hoy posterior\nal fin"];
+S6 [label="S6 · Última ejecución\npresente"];
+S7 [label="S7 · Última inválida\no ≥ hoy"];
+SF [shape=oval,label="SF · false"];
+NEXT [shape=box,fillcolor="#fff7ed",label="Continuación: S8\n(vista Frecuencia)"];
+S0 -> S1;
+S1 -> SF [label="no"];
+S1 -> S2 [label="sí"];
+S2 -> SF [label="sí"];
+S2 -> S3 [label="no"];
+S3 -> S4 [label="sí"];
+S3 -> S6 [label="no"];
+S4 -> SF [label="sí"];
+S4 -> S5 [label="no"];
+S5 -> SF [label="sí"];
+S5 -> S6 [label="no"];
+S6 -> S7 [label="sí"];
+S6 -> NEXT [label="no"];
+S7 -> SF [label="sí"];
+S7 -> NEXT [label="no"];
+{rank=same;SF;NEXT;}
+}

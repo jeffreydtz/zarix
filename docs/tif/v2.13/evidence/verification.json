@@ -89,5 +89,6 @@
       "pct": 100
     }
   },
-  "base_commit": "5cbd7ac984782b5f50e19f72ba7e0c3c8b5304fd"
+  "base_commit": "5cbd7ac984782b5f50e19f72ba7e0c3c8b5304fd",
+  "verified_code_commit": "98250f5dfb83bb88eeed241f80807a5770e4caaf"
 }

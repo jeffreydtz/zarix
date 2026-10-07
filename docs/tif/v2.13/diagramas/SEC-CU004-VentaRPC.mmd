@@ -1,0 +1,24 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Cartera (B)
+ participant C as Venta (C)
+ participant R as RPC (C)
+ participant D as Datos (E)
+ U->>B: Venta
+ B->>C: Operación iniciada
+ Note over B: Misma interacción tras<br/>VentaValidar
+ C->>R: RPC venta
+ R->>D: Lock/cantidad
+ alt Cantidad suficiente
+  R->>D: Venta y reducir lote
+  D-->>R: Commit
+  R-->>C: Venta/remanente
+  C-->>B: Confirmación
+ else Carrera / error
+  D-->>R: Rollback completo
+  R-->>C: Error
+  C-->>B: Sin cambio parcial
+ end
+ B-->>U: Resultado real
+ Note over R: sell_investment_<br/>position sin crédito<br/>de caja

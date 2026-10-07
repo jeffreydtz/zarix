@@ -1,0 +1,23 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU003: Básico/A05: saldos y composición"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+bd [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP07 Dashboard"];
+au [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+cf [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nConsulta"];
+es [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta / Saldo"];
+ep [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nPosición"];
+cv [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nConversion"];
+ef [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nPreferencias"];
+u -> bd [label="básico / A01 /\nA04 /\nA05"];
+bd -> au [label="identidad y\npermisos"];
+bd -> cf [dir=both,label="dashboard /\ndetalle\n↔\ncompleto /\nparcial / vacío"];
+cf -> es [label="snapshot\npropio"];
+cf -> ep [label="cantidad /\ncosto"];
+cf -> cv [label="convertir con\nmetadatos"];
+
+
+cf -> ef [label="moneda /\nwidgets"];
+}

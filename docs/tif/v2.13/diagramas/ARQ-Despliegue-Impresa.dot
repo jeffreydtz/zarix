@@ -1,0 +1,16 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.5",ranksep="0.65",splines=polyline];
+node [fontname="Arial",fontsize=20]; edge [fontname="Arial",fontsize=18,color="#64748b"];
+label="Arquitectura: despliegue objetivo"; labelloc=t; fontsize=22;
+usr [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Dispositivo Usuario\nNavegador PWA"];
+ver [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Vercel\nPWA/CDN + funciones\nNode/API"];
+cron [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Disparador Cron"];
+supa [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Proyecto Supabase\nAuth + PostgreSQL +\nStorage"];
+ext [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Sistemas externos\nTelegram / Gemini /\nPago / Precios"];
+usr -> ver [label="HTTPS"];
+usr -> supa [label="HTTPS: Auth /\nStorage privado"];
+ver -> supa [label="HTTPS/SQL\nautorizado\nsecretos sólo\nservidor"];
+cron -> ver [label="entrada\nautenticada"];
+ver -> ext [label="HTTPS, timeout,\nnormalización"];
+ext -> ver [label="webhooks\nverificados"];
+}

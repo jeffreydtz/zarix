@@ -1,0 +1,11 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="DTO: inversión y venta"; labelloc=t; fontsize=22;
+Investment [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Investment</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">+user_id: string</TD></TR><TR><TD ALIGN="LEFT">+account_id: string</TD></TR><TR><TD ALIGN="LEFT">+type: InvestmentType</TD></TR><TR><TD ALIGN="LEFT">+quantity: number</TD></TR><TR><TD ALIGN="LEFT">+purchase_price: number</TD></TR><TR><TD ALIGN="LEFT">+purchase_currency: string</TD></TR><TR><TD ALIGN="LEFT">+current_price: number</TD></TR><TR><TD ALIGN="LEFT">+is_active: boolean</TD></TR></TABLE>>];
+InvestmentSale [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>InvestmentSale</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">+investment_id: string</TD></TR><TR><TD ALIGN="LEFT">+quantity: number</TD></TR><TR><TD ALIGN="LEFT">+price: number</TD></TR><TR><TD ALIGN="LEFT">+currency: string</TD></TR><TR><TD ALIGN="LEFT">+purchase_price_at_sale: number</TD></TR><TR><TD ALIGN="LEFT">+realized_pnl_usd: number</TD></TR></TABLE>>];
+Account [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>Account</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">contexto: otra vista</TD></TR></TABLE>>];
+Account -> Investment [dir=none,label="Account 1\nInvestment 0..*"];
+Investment -> InvestmentSale [dir=none,label="Investment 1\nInvestmentSale 0..*"];
+}

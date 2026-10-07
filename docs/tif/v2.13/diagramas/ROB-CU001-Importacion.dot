@@ -1,0 +1,21 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: A04: importación por fila"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b2 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP02 Ticket / Importación"];
+v [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+imp [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nImportarLote"];
+m [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nMovimientos"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta / Saldo"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+u -> b2 [label="A04"];
+b2 -> v [label="identidad y plan"];
+b2 -> imp [dir=both,label="A04 preparar /\nconfirmar\n↔\nresumen por fila"];
+imp -> m [label="fila confirmada"];
+
+m -> ec [label="propiedad /\nsaldo"];
+m -> em [label="escritura\natómica"];
+m -> b2 [label="resultado\nconfirmado"];
+}

@@ -1,0 +1,19 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU002: A04: exportación propia"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b2 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP06 Configuración"];
+au [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+ex [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nExportar"];
+eh [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento / Posición /\nRegla"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta / Saldo"];
+u -> b2 [label="A04–A07"];
+b2 -> au [dir=both,label="registro /\ninicio /\nrecuperación /\ncierre\n↔\nsesión / rechazo\nseguro"];
+
+b2 -> ex [dir=both,label="A04 formato /\nperíodo\n↔\narchivo\nversionado /\nerror"];
+ex -> eh [label="sólo datos\npropios"];
+ex -> ec [label="relaciones\noriginales"];
+
+}

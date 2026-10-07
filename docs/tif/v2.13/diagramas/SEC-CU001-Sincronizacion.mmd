@@ -1,0 +1,25 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Captura (B)
+ participant Q as Cola local(C)
+ participant A as API (B)
+ participant C as Movimientos(C)
+ Q->>Q: Online / SYNC_QUEUE
+ Q->>Q: Leer pendientes,<br/>evitar sync simultáneo
+ loop Cada pendiente
+  Q->>A: POST(payload)
+  A->>C: Sesión y validación
+  C-->>A: Commit o rechazo
+  A-->>Q: Resultado HTTP
+  alt 2xx confirmado
+   Q->>Q: Borrar local, fallo:<br/>needsReview y detener
+   Q-->>B: Conteo / revisión
+   B-->>U: Confirmado / revisar
+  else Sin confirmación
+   Q->>Q: Conservar pendiente,<br/>detener lote
+   Q-->>B: Error y reintento
+   B-->>U: Recuperar sesión<br/>o corregir datos
+  end
+ end
+ Note over Q: needsReview bloquea<br/>sync automático.<br/>Respuesta perdida puede<br/>duplicar: RN06 pendiente

@@ -1,0 +1,14 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.5",ranksep="0.65",splines=polyline];
+node [fontname="Arial",fontsize=20]; edge [fontname="Arial",fontsize=18,color="#64748b"];
+label="Componentes: precios y análisis"; labelloc=t; fontsize=22;
+api [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Backend Node\nAPI y controles de\naplicación"];
+q [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Adaptadores\ncotización"];
+ia [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Adaptador Gemini"];
+extq [shape=plaintext,fontcolor="#243b53",label="Proveedores precios"];
+extg [shape=plaintext,fontcolor="#243b53",label="Gemini"];
+api -> q [label="resolver"];
+q -> extq [label="HTTP y\nnormalización"];
+api -> ia [label="OCR / intención /\nredacción"];
+ia -> extg [label="mínimo contenido"];
+}

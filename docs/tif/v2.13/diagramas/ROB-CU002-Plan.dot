@@ -1,0 +1,21 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU002: A07: estado comercial verificado"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b2 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP06 Configuración"];
+pl [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nPlan"];
+bp [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nAdaptador Pago / Webhook"];
+p [shape=plaintext,fontcolor="#243b53",label="Mercado Pago"];
+ep [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nSuscripciónPlan"];
+u -> b2 [label="A04–A07"];
+p -> bp [dir=both,label="evento externo\n↔\ncontrato\nproveedor"];
+b2 -> pl [dir=both,label="A07 contratar /\ncancelar\n↔\nestado real"];
+pl -> bp [dir=both,label="crear cobro /\nverificar estado\n↔\nestado validado"];
+
+
+
+pl -> ep [label="período y\nvigencia\nverificados"];
+
+}

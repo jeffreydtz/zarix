@@ -1,0 +1,18 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: A03: borrador confirmado"; labelloc=t; fontsize=22;
+t [shape=plaintext,fontcolor="#243b53",label="Telegram"];
+b3 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP03 Conversación\nTelegram"];
+v [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+m [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nMovimientos"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta / Saldo"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+t -> b3 [label="A03"];
+b3 -> v [label="vínculo y plan"];
+b3 -> m [dir=both,label="A03 borrador\nconfirmado\n↔\nID / saldo /\nrechazo"];
+m -> ec [label="propiedad /\nsaldo"];
+m -> em [label="escritura\natómica"];
+
+}

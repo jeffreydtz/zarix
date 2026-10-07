@@ -1,0 +1,21 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU003: E01/E03: referencia y respaldo"; labelloc=t; fontsize=22;
+cf [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nConsulta"];
+co [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nCotizaciones"];
+bx [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nAdaptador Cotización"];
+x [shape=plaintext,fontcolor="#243b53",label="Proveedores"];
+eq [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCotización"];
+bd [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP07 Dashboard"];
+bd -> cf [dir=both,label="dashboard /\ndetalle\n↔\ncompleto /\nparcial / vacío"];
+cf -> co [label="referencias"];
+co -> bx [dir=both,label="fuente\ncompatible\n↔\nnormalizado"];
+bx -> x [dir=both,label="solicitar\nreferencia\n↔\ndato / error"];
+
+
+co -> eq [label="persistir /\nrespaldo"];
+
+
+}

@@ -1,0 +1,22 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Widget (B)
+ participant C as RF11 (C)
+ U->>B: Consultar
+ B->>C: Operación iniciada
+ Note over B: Misma interacción tras<br/>Selección
+ C->>C: Histórico/3
+ C->>C: Actual hasta corte
+ alt Promedio positivo
+  C->>C: Ratio mayor/igual2
+ else Sin promedio
+  C->>C: Actual mayor5000
+ end
+ C-->>B: Alertas/parcialidad
+ alt Faltan tasas
+  B-->>U: Aviso aun0alertas
+ else Completo
+  B-->>U: Cifras del cálculo
+ end
+ Note over B: Mes no extrapolado

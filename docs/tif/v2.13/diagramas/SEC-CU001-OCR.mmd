@@ -1,0 +1,25 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Preview (B)
+ participant C as Captura (C)
+ participant I as OCR (B)
+ participant G as Gemini
+ participant M as Movim. (C)
+ U->>B: Subir JPG/PNG
+ B->>C: proponerTicket(archivo)
+ C->>C: Validar acceso y<br/>archivo
+ C->>I: Extraer contenido
+ I->>G: Solicitar extracción
+ G-->>I: Datos / falla
+ I-->>C: Propuesta / error
+ C-->>B: Preview o carga manual
+ U->>B: Corregir y confirmar
+ alt Cancelado o incompleto
+  B-->>U: Sin movimiento
+ else Confirmado
+  B->>M: create(comando<br/>validado)
+  Note over B: Persistencia y trigger<br/>SEC-CU001-Crear
+  M-->>B: ID y saldo / error
+  B-->>U: Resultado
+ end

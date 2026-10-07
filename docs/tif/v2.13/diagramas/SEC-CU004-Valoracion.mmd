@@ -1,0 +1,29 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Cartera (B)
+ participant C as PnL (C)
+ participant Q as Fuentes (B)
+ participant D as Datos (E)
+ U->>B: Consultar cartera
+ B->>C: Listar propias
+ C->>D: Lotes y ventas propias
+ D-->>C: Historia / error
+ C->>Q: Precio y FX
+ Q-->>C: Live/manual/cache/ausencia
+ alt No hay precio<br/>actual/cache
+  C->>C: Referencia en moneda<br/>compra
+ else Precio confirmado
+  C->>C: Usar moneda real de<br/>precio
+  opt Live válido
+   C->>D: Cachear precio,<br/>moneda, fecha
+  end
+ end
+ alt FX o historial faltante
+  C-->>B: Error de valoración
+ else Referencias suficientes
+  C->>C: Costo/valor del<br/>remanente
+  C->>C: Realizado y no<br/>realizado
+  C-->>B: PnL, fuente y fecha
+ end
+ B-->>U: Resultado y límites

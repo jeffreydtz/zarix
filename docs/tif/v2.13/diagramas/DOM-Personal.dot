@@ -1,0 +1,13 @@
+digraph G {
+graph [rankdir=LR,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="Dominio conceptual: preferencias y plan"; labelloc=t; fontsize=22;
+Usuario [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Usuario</B></TD></TR><TR><TD ALIGN="LEFT">nombre</TD></TR></TABLE>>];
+Preferencias [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Preferencias</B></TD></TR><TR><TD ALIGN="LEFT">monedaBase</TD></TR><TR><TD ALIGN="LEFT">widgets</TD></TR></TABLE>>];
+SuscripcionPlan [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>SuscripcionPlan</B></TD></TR><TR><TD ALIGN="LEFT">plan</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR><TR><TD ALIGN="LEFT">inicio</TD></TR><TR><TD ALIGN="LEFT">vencimiento</TD></TR></TABLE>>];
+VinculoTelegram [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>VinculoTelegram</B></TD></TR><TR><TD ALIGN="LEFT">identidadExterna</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR></TABLE>>];
+Usuario -> Preferencias [dir=none,label="elige\nUsuario 1\nPreferencias 1"];
+Usuario -> SuscripcionPlan [dir=none,label="contrata\nUsuario 1\nSuscripcionPlan\n0..*"];
+Usuario -> VinculoTelegram [dir=none,label="vincula\nUsuario 1\nVinculoTelegram\n0..1"];
+}

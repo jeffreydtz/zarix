@@ -1,0 +1,17 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.5",ranksep="0.65",splines=polyline];
+node [fontname="Arial",fontsize=20]; edge [fontname="Arial",fontsize=18,color="#64748b"];
+label="Componentes: identidad y datos"; labelloc=t; fontsize=22;
+pwa [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="PWA React / Next.js"];
+auth [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Supabase Auth\nidentidad"];
+api [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Backend Node\nAPI y controles de\naplicación"];
+db [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="PostgreSQL\nRLS + grants +\ntransacciones"];
+st [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Storage privado\ntickets con\nretención"];
+cron [shape=plaintext,fontcolor="#243b53",label="Programador\nautorizado"];
+pwa -> auth [label="inicio /\nrecuperación de\nsesión"];
+pwa -> api [label="JWT + comando /\nconsulta"];
+api -> db [label="transacción /\nlectura propia"];
+pwa -> st [label="carga privada\nautorizada"];
+api -> st [label="lectura mínima\nautorizada"];
+cron -> api [label="credencial\nservicio,\nvencimientos"];
+}

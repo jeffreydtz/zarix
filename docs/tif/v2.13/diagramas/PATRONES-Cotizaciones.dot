@@ -1,0 +1,18 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.65",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="Patrones: Strategy y Adapter"; labelloc=t; fontsize=22;
+CotizacionesService [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>CotizacionesService</B></TD></TR><TR><TD ALIGN="LEFT">&lt;&lt;Context&gt;&gt;</TD></TR><TR><TD ALIGN="LEFT">-dolarProviders</TD></TR><TR><TD ALIGN="LEFT">+getDolarQuotes(...)</TD></TR></TABLE>>];
+DolarRateProvider [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>DolarRateProvider</B></TD></TR><TR><TD ALIGN="LEFT">«Strategy»</TD></TR><TR><TD ALIGN="LEFT">+name: string</TD></TR><TR><TD ALIGN="LEFT">+fetch(...)</TD></TR></TABLE>>];
+CriptoYaProvider [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>CriptoYaProvider</B></TD></TR><TR><TD ALIGN="LEFT">«Strategy/Adapter»</TD></TR><TR><TD ALIGN="LEFT">-baseURL: string</TD></TR><TR><TD ALIGN="LEFT">+name: string</TD></TR><TR><TD ALIGN="LEFT">+fetch(...)</TD></TR></TABLE>>];
+DolarApiProvider [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>DolarApiProvider</B></TD></TR><TR><TD ALIGN="LEFT">«Strategy/Adapter»</TD></TR><TR><TD ALIGN="LEFT">-baseURL: string</TD></TR><TR><TD ALIGN="LEFT">+name: string</TD></TR><TR><TD ALIGN="LEFT">+fetch(...)</TD></TR></TABLE>>];
+DbCacheProvider [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>DbCacheProvider</B></TD></TR><TR><TD ALIGN="LEFT">«Strategy»</TD></TR><TR><TD ALIGN="LEFT">+name: string</TD></TR><TR><TD ALIGN="LEFT">+fetch(...)</TD></TR></TABLE>>];
+HTTPFuente [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>HTTPFuente</B></TD></TR><TR><TD ALIGN="LEFT">&lt;&lt;Adaptee&gt;&gt;</TD></TR><TR><TD ALIGN="LEFT">+fetch(...)</TD></TR></TABLE>>];
+CotizacionesService -> DolarRateProvider [dir=both,arrowtail=odiamond,arrowhead=none,label="proveedores\nordenados"];
+CriptoYaProvider -> DolarRateProvider [arrowhead=empty,style=dashed];
+DolarApiProvider -> DolarRateProvider [arrowhead=empty,style=dashed];
+DbCacheProvider -> DolarRateProvider [arrowhead=empty,style=dashed];
+CriptoYaProvider -> HTTPFuente [style=dashed,label="normaliza\nJSON"];
+DolarApiProvider -> HTTPFuente [style=dashed,label="normaliza\nJSON"];
+}
