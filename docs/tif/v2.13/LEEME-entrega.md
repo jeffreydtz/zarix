@@ -1,5 +1,7 @@
 # ZARIX v2.13 — Nota de entrega
 
+La presentación se actualizó el 8 de octubre de 2026: portada institucional con la marca oficial UAI, fecha y versión en la ficha interna, tablas bordó y blanco y encabezados/pies uniformes. Se conserva el contenido académico, el índice y la evidencia de la revisión técnica original. Ver evidence/qa_formato_uai.json.
+
 Revisión del 6 de octubre de 2026. El documento principal es `ZARIX-Plan-de-Desarrollo-Tecnologico-v2.13.docx`; la planilla complementaria es `ZARIX-Modelo-financiero-v2.13.xlsx`. La versión v2.13 consolida negocio, tecnología, diagramas, pruebas y pendientes alrededor de **exactamente cuatro casos de uso**. Para defender esta revisión deben conservarse juntos el documento, la planilla, el código corregido y los reportes de evidencia.
 
 El negocio describe una propuesta comercial futura: Free con tres cuentas y exportación de datos propios; Premium de USD 7,50/mes con capacidades y cupos. Precio, captación, contratación y provisiones fiscales son hipótesis explícitas. La planilla reproduce M0 y 24 meses de tres escenarios. En base, VAN de caja USD 6.385,45 y repago M14; al valorar el tiempo del fundador, VAN económico −USD 4.155,93 y sin repago económico en ese horizonte. Las cifras no demuestran demanda o rentabilidad comercial ya obtenidas.

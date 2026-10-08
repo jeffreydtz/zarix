@@ -1,0 +1,10 @@
+{
+  "catalogue": "https://nbapi.uai.edu.ar/reglamento-interno/logosuai/",
+  "native_vector_source": "https://nbapi.uai.edu.ar/reglamento-interno/logosuai/logos/uai/pdf-uai.zip",
+  "member": "pdf-uai.pdf",
+  "vector_sha256": "6a1d36dcbdf2c2c4d7024accda92fc4dd8ac2e249ff132ec4e5d38136b3e5a27",
+  "rendered_asset": "assets/uai-logo.png",
+  "rendered_asset_sha256": "1d3a2808fa14626468ba914b7b704ce1976499292604c0e98c352feb51e5a9e6",
+  "process": "Renderizado de la fuente vectorial oficial con Poppler; proporciones y colores originales preservados.",
+  "retrieved": "2026-10-08"
+}
