@@ -1,5 +1,7 @@
 # ZARIX Plan de desarrollo tecnológico
 
+Esta fuente consultable conserva las 101 figuras del paquete. El Word principal compacto tiene 122 páginas y 37 figuras centrales; su Anexo E enlaza el detalle completo. La revisión de negocio, los cuatro CU y la evidencia se conservan, con ajustes de coherencia documentados.
+
 Versión 2.13
 
 Trabajo Final de Ingeniería
@@ -293,7 +295,7 @@ Esta tabla es la política comercial propuesta única. Los límites son configur
 | Capacidad | Free | Premium propuesto 7,50 USD/mes | CU/RF de referencia |
 |---|---|---|---|
 | Cuentas | Hasta 3 activas | Hasta 20 activas, límite comercial propuesto | CU-002/RF04 |
-| Movimientos/transferencias manuales | Incluidos | Incluidos | CU-001/RF01 |
+| Movimientos y compartidos manuales | Incluidos | Incluidos | CU-001/RF01 |
 | Patrimonio/cotizaciones básicas | Incluidos, con fuente/fecha | Incluidos | CU-003/RF02–03 |
 | Exportación de datos propios | Siempre disponible, también al cancelar/bajar | Siempre disponible | CU-002/RF07 |
 | Inversiones y simulación | Sin nuevos registros; historial propio conservado y exportable | Incluidas | CU-004/RF05 |
@@ -303,7 +305,7 @@ Esta tabla es la política comercial propuesta única. Los límites son configur
 | Acceso, preferencias y control de datos | Incluidos | Incluidos | CU-002/RF13–14 |
 | Estado/cancelación del plan | Estado Free y alta futura | Ciclo y estado de suscripción | CU-002/RF15; escenario comercial |
 
-Los gastos compartidos se cubren como variante de gestión manual en CU-001, con división y seguimiento de saldos entre participantes. La persona invitada por enlace accede sólo al grupo y operaciones permitidas; no adquiere acceso a cuentas personales del propietario. Su participación no genera por sí sola una suscripción o un ingreso adicional del modelo. La política de 3/20 cuentas, 7,50 USD y cupos es una propuesta comercial: los valores de fallback y configuración actualmente encontrados en el código no acreditan que esta política ya esté operativa.
+Los gastos compartidos se cubren como gestión manual disponible en Free y Premium dentro de CU-001, con división y seguimiento de saldos entre participantes. La persona invitada por enlace accede sólo al grupo y operaciones permitidas; no adquiere acceso a cuentas personales del propietario. Su participación no genera por sí sola una suscripción o un ingreso adicional del modelo. La política de 3/20 cuentas, 7,50 USD y cupos es una propuesta comercial: los valores de fallback y configuración actualmente encontrados en el código no acreditan que esta política ya esté operativa.
 
 Se propone cobro mensual en ARS equivalente al precio de referencia, con valor final, fuente de conversión, fecha, tratamiento fiscal y período visibles antes de la aceptación. La regla de conversión contractual se fija al habilitar la pasarela; no se afirma que un “dólar oficial” indeterminado ya rija. No se presupone Stripe disponible o Mercado Pago contratado. La activación exige una notificación auténtica e idempotente y conciliación; un botón de simulación no acredita pago.
 
@@ -637,16 +639,16 @@ La versión académica registra cantidades de activos y precios en su moneda de 
 
 | Capacidad | Free autenticado | Premium activo |
 |---|---|---|
-| Movimientos manuales y correcciones | Sí | Sí |
+| Movimientos, correcciones y compartidos | Sí | Sí |
 | Cuentas activas | Hasta tres | Hasta veinte según hipótesis comercial; verificar enforcement real |
 | Patrimonio y cotizaciones de referencia | Sí | Sí |
 | Preferencias, acceso, gestión del plan y exportación de datos propios | Sí | Sí |
 | Portafolio y simulación | No, salvo lectura del historial propio ya existente al vencer el plan | Sí |
 | Análisis avanzado, chat, anomalías y proyecciones | No | Sí; hipótesis de 40 consultas IA, período y enforcement a verificar |
-| OCR, bot, recurrentes y grupos compartidos | No | Sí; hipótesis de 20 OCR, período y enforcement a verificar |
+| OCR, bot y recurrentes | No | Sí; hipótesis de 20 OCR, período y enforcement a verificar |
 | Importación y presupuestos | No | Sí |
 
-Free significa acceso con una identidad autenticada. Las cuentas personales no son públicas. El grupo compartido expone nombres visibles, gastos y repartos únicamente a quien posee su enlace de capacidad; no se presenta el enlace como autenticación nominal fuerte. Una cuenta multimoneda cuenta como una cuenta, no como una cuenta por moneda. Al vencer Premium se conserva todo el historial: se detienen las reglas automáticas y se impiden nuevas acciones Premium; no se eliminan datos ni se crean cargos nuevos. Si hay más de tres cuentas activas, se permite consultar y operar manualmente sobre las existentes, pero no crear otra mientras no se reduzca la cantidad o se reactive Premium. Los cupos comerciales de esta tabla no se dan por implementados sólo por existir en el plan de negocio. El precio y período de Premium pertenecen al catálogo comercial; la tecnología utiliza ese catálogo y no contiene un precio fijo distinto.
+Free significa acceso con una identidad autenticada. Las cuentas personales no son públicas. El grupo compartido expone nombres visibles, gastos y repartos únicamente a quien posee su enlace de capacidad; no se presenta el enlace como autenticación nominal fuerte. Una cuenta multimoneda cuenta como una cuenta, no como una cuenta por moneda. Al vencer Premium se conserva todo el historial: se detienen las reglas automáticas y se impiden nuevas acciones Premium; no se eliminan datos ni se crean cargos nuevos. Al bajar a Free se eligen hasta tres cuentas para nuevos movimientos; las demás conservan consulta y exportación. Crear otra exige quedar dentro de ese límite o reactivar Premium. Los cupos comerciales de esta tabla no se dan por implementados sólo por existir en el plan de negocio. El precio y período de Premium pertenecen al catálogo comercial; la tecnología utiliza ese catálogo y no contiene un precio fijo distinto.
 
 ### 10.4.3 Actores y glosario
 
@@ -945,7 +947,7 @@ Estas decisiones se apoyan en [RLS](https://supabase.com/docs/guides/database/po
 
 ### 10.5.6 Arquitectura objetivo y decisiones
 
-Las vistas de componentes y despliegue representan el diseño objetivo; su dibujo no certifica configuración ni retención del ambiente productivo. Las fuentes impresas son ARQ-Logica-Impresa, ARQ-Componentes-Datos/Analisis/Canales y ARQ-Despliegue-Impresa.
+Las vistas de componentes y despliegue representan el diseño objetivo; su dibujo no certifica configuración ni retención del ambiente productivo. Las fuentes del paquete son ARQ-Logica-Impresa, ARQ-Componentes-Datos/Analisis/Canales y ARQ-Despliegue-Impresa.
 
 Se utiliza un único backend de aplicación, con cuatro módulos funcionales y controles transversales; no se requieren microservicios para el alcance académico. Las vistas lógica, de componentes y de despliegue distinguen responsabilidades y distribución. La asignación observada utiliza Next.js/React, funciones Node en Vercel, Telegraf, Supabase y proveedores externos; versiones finales registradas en la evidencia de entrega. Fuentes: `diagramas/ARQ-Logica.dot`, `diagramas/ARQ-Componentes.dot` y `diagramas/ARQ-Despliegue.dot`.
 
@@ -995,7 +997,7 @@ Cada familia distingue `<<boundary>>`, `<<control>>` y `<<entity>>`. El actor s�
 | ROB-CU003 | P07/P08/P03 y fronteras cotización/IA; ConsultaFinanciera, Cotizaciones, Conversion, Resumen, ResolverConsulta y Heuristicas | Cuenta, SaldoMoneda, Movimiento, Posición, Cotización y Preferencias. Dashboard/detalle, filtros, chat PWA/Telegram, RF11 y widgets |
 | ROB-CU004 | P09/P10 y frontera precios; GestionarPortafolio, CostoPosicion, Cotizaciones y Simulacion | Cuenta, SaldoMoneda, Activo, Posición, VentaInversión y Cotización. Registro de lote, venta, manual, ausencia/precio de respaldo y simulación sin cambios |
 
-Las fuentes impresas son los fragmentos ROB-CU001-* a ROB-CU004-* del catálogo de vistas. Cada fragmento conserva su familia y escenarios; los cuatro dibujos generales se conservan como fuente de análisis. El etiquetado de aristas identifica escenarios, autorización y devolución; la omisión de una llamada de persistencia en una simulación es deliberada. Los dibujos complementan las fichas y no sustituyen sus reglas de cierre.
+Las fuentes del paquete son los fragmentos ROB-CU001-* a ROB-CU004-* del catálogo de vistas. Cada fragmento conserva su familia y escenarios; los cuatro dibujos generales se conservan como fuente de análisis. El etiquetado de aristas identifica escenarios, autorización y devolución; la omisión de una llamada de persistencia en una simulación es deliberada. Los dibujos complementan las fichas y no sustituyen sus reglas de cierre.
 
 
 ![ROB-CU001-Registro](figures/ROB-CU001-Registro.svg)
@@ -1151,11 +1153,11 @@ Cada criterio de aceptación se enlaza además con caso de prueba, resultado rea
 El registro de cada hito contiene nombre, rol, fecha, artefactos/revisión, observaciones, decisiones y aceptación real cuando exista. No se completan firmas, fechas ni nombres por inferencia.
 
 
-#### Catálogo de vistas impresas
+#### Catálogo de vistas del paquete
 
 Una familia conserva su caso de uso aunque tenga varios fragmentos. Los nombres breves de controles en ROB se corresponden con la tabla de responsabilidades y las entidades conservan su identidad entre vistas. B/«boundary» identifica frontera, C/«control» coordinación y E/«entity» dato del dominio. Los rechazos regresan al control y a la frontera; las vistas de detalle no agregan óvalos ni actores internos. En dominio, ER y DTO, la etiqueta de relación reúne el rol y las multiplicidades con el nombre de cada extremo para evitar superposición; las vistas ER de recurrentes identifican R/U/A/C/T en sus encabezados. Los fragmentos muestran distintas fases de un mismo escenario; no exigen repetir la acción del usuario.
 
-| Sección / familia | Fuentes de las vistas impresas |
+| Sección / familia | Fuentes de las vistas del paquete |
 |---|---|
 | 10.5.4 | DOM-Finanzas, DOM-Automatizacion, DOM-Inversiones, DOM-Personal, DOM-Compartidos |
 | 10.5.5 | ER-CU001-Movimientos, ER-CU002-Cuentas, ER-CU002-Usuario, ER-CU004-Inversiones, ER-CU003-Snapshots, ER-CU001-Recurrentes, ER-CU001-Presupuestos, ER-CU001-Grupos, ER-CU001-Reparto, ER-CU002-Integraciones |
@@ -1651,7 +1653,7 @@ Fuente: [Checklist SAP TFI 2026](https://cursos-uai.github.io/sap_tfi_2026/check
 | test-7 Trazabilidad hasta TEST comprobada Una prueba demuestra cada requisito del alcance. | 10.5.12; anexo A; casos CSV y reportes | **Pendiente de validación.** Existe diseño REQ→CU→TEST; faltan ejecuciones funcionales integrales y RNF para demostrar todos los requisitos. |
 ## Anexo D Patrones y evidencia de diseño
 
-La inspección estática de main `5cbd7ac` identifica Strategy y la normalización Adapter en `lib/services/cotizaciones.ts`, y TemplateMethod en `lib/cron/cron-job.ts` y `lib/cron/recurring-job.ts`. La lectura acredita estructura y colaboración de código; no acredita éxito de APIs ni pruebas ejecutadas. Facade se conserva como decisión de coordinación de la consulta, sin declararla una clase aplicada si la composición efectiva está distribuida en las rutas. Las vistas de estructura son PATRONES-Cotizaciones.dot y PATRONES-Cron.dot; las secuencias son SEC-StrategyAdapter.mmd y SEC-TemplateMethod.mmd. Cada colaboración se presenta por separado para lectura impresa. El criterio de descomposición por secretos y cambios se apoya en [Diseño de Software, Cristiá](https://www.fceia.unr.edu.ar/ingsoft/diseno-a.pdf) y [ejercicios](https://www.fceia.unr.edu.ar/ingsoft/p-diseno.pdf).
+La inspección estática de main `5cbd7ac` identifica Strategy y la normalización Adapter en `lib/services/cotizaciones.ts`, y TemplateMethod en `lib/cron/cron-job.ts` y `lib/cron/recurring-job.ts`. La lectura acredita estructura y colaboración de código; no acredita éxito de APIs ni pruebas ejecutadas. Facade se conserva como decisión de coordinación de la consulta, sin declararla una clase aplicada si la composición efectiva está distribuida en las rutas. Las vistas de estructura son PATRONES-Cotizaciones.dot y PATRONES-Cron.dot; las secuencias son SEC-StrategyAdapter.mmd y SEC-TemplateMethod.mmd. Cada colaboración se conserva por separado en el documento principal o el anexo digital. El criterio de descomposición por secretos y cambios se apoya en [Diseño de Software, Cristiá](https://www.fceia.unr.edu.ar/ingsoft/diseno-a.pdf) y [ejercicios](https://www.fceia.unr.edu.ar/ingsoft/p-diseno.pdf).
 
 ### D.1 Strategy: elección de una fuente de cotización
 

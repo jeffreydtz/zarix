@@ -1,6 +1,6 @@
 # ZARIX v2.13 — Nota de entrega
 
-La presentación se actualizó el 8 de octubre de 2026: portada institucional con la marca oficial UAI, fecha y versión en la ficha interna, tablas bordó y blanco y encabezados/pies uniformes. Se conserva el contenido académico, el índice y la evidencia de la revisión técnica original. Ver evidence/qa_formato_uai.json.
+Presentación compacta del 8 de octubre de 2026: Word de 122 páginas (antes 198), con 37 figuras centrales y un catálogo que enlaza las 101 figuras completas del anexo digital. Se conservan cuatro CU, capítulos, tablas y cifras; se corrigieron contradicciones de la política Free/Premium, referencias al anexo y comandos de prueba. Las reglas comerciales siguen siendo hipótesis, pendientes de enforcement y validación. La fecha y versión están en la ficha interna, no en la portada. Extraer el paquete completo para consultar los enlaces relativos. Ver ANEXO-digital.md y evidence/qa_compacto_final.json.
 
 Revisión del 6 de octubre de 2026. El documento principal es `ZARIX-Plan-de-Desarrollo-Tecnologico-v2.13.docx`; la planilla complementaria es `ZARIX-Modelo-financiero-v2.13.xlsx`. La versión v2.13 consolida negocio, tecnología, diagramas, pruebas y pendientes alrededor de **exactamente cuatro casos de uso**. Para defender esta revisión deben conservarse juntos el documento, la planilla, el código corregido y los reportes de evidencia.
 
@@ -25,3 +25,14 @@ El negocio describe una propuesta comercial futura: Free con tres cuentas y expo
 - Siete entradas de severidad alta en la auditoría de dependencias derivan de `braces`, sin parche publicado al revisar; no hubo entradas críticas ni moderadas. Debe conservarse el informe y volver a auditar al existir una solución compatible.
 
 Los resultados de pruebas y sus límites están en el anexo A; el estado de los 59 criterios está en el anexo C. Una defensa precisa distingue **diseñado**, **ejecutado localmente**, **pendiente de validación real** y **aprobado por la cátedra**.
+
+## Cierre de la entrega académica
+
+El documento está preparado para evaluación. Los seis pendientes del checklist no se cerraron por maquetación: acuerdo de alcance, revisión RRR, revisión de prototipos con usuarios, aprobación PDR, aprobación CDR y evidencia TEST de todos los requisitos del alcance.
+
+1. Registrar las revisiones reales de alcance y diseño, con interesados, fecha, observaciones y decisiones. Completar RRR/PDR/CDR sólo al efectuarse la revisión.
+2. Revisar prototipos con usuarios reales, guardar tareas, dificultades y cambios; no sustituir ese registro por imágenes del documento.
+3. Ejecutar los cuatro CU completos en un entorno controlado compatible con las migraciones, con dos usuarios y un invitado. Guardar resultados de permisos/aislamiento, comportamiento monetario, integraciones y RNF incluidos. Resolver o acordar explícitamente las garantías pendientes, entre ellas reintentos/idempotencia persistente, carga y recuperación. Los 304 tests locales y 39 SQL no equivalen a esta aceptación integral.
+4. Confirmar datos administrativos y acceso de la cátedra al Word, planilla, anexo y repositorio. La exposición debe distinguir diseño, evidencia local y aceptación pendiente.
+
+No es necesario lanzar comercialmente o ejecutar cobros reales para entregar el plan. Precio, captación, contratos y operación futura pueden mantenerse como hipótesis y acciones del negocio. Una exigencia que siga dentro del alcance académico debe validarse o acordarse con la cátedra; no se borra su pendiente por trasladar un diagrama al anexo.

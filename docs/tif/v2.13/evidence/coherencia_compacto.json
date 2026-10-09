@@ -1,0 +1,17 @@
+{
+  "replacements": {
+    "npm run test: db": 2,
+    "npm run test: coverage": 1,
+    "Las fuentes impresas son": 2,
+    "Catálogo de vistas impresas": 1,
+    "Fuentes de las vistas impresas": 1,
+    "Cada colaboración se presenta por separado para lectura impresa.": 1,
+    "Los gastos compartidos se cubren como variante de gestión manual en CU-001": 1,
+    "Si hay más de tres cuentas activas, se permite consultar y operar manualmente sobre las existentes, pero no crear otra mientras no se reduzca la cantidad o se reactive Premium.": 1,
+    "Movimientos/transferencias manuales": 1,
+    "Movimientos manuales y correcciones": 1,
+    "OCR, bot, recurrentes y grupos compartidos": 1
+  },
+  "policy": "Compartidos manuales Free/Premium; al bajar a Free, seleccionar hasta tres cuentas habilitadas sin borrar historia. Hipótesis comercial pendiente de enforcement y validación.",
+  "format_fixes": "Títulos CU/ADR unidos a su contenido; catálogo a 10 pt; evitar páginas de cierre casi vacías."
+}

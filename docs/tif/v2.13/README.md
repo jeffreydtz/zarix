@@ -1,6 +1,6 @@
 # ZARIX TFI v2.13
 
-La presentación se actualizó el 8 de octubre de 2026: portada institucional con la marca oficial UAI, fecha y versión en la ficha interna, tablas bordó y blanco y encabezados/pies uniformes. Se conserva el contenido académico, el índice y la evidencia de la revisión técnica original. Ver evidence/qa_formato_uai.json.
+Presentación compacta del 8 de octubre de 2026: Word de 122 páginas (antes 198), con 37 figuras centrales y un catálogo que enlaza las 101 figuras completas del anexo digital. Se conservan cuatro CU, capítulos, tablas y cifras; se corrigieron contradicciones de la política Free/Premium, referencias al anexo y comandos de prueba. Las reglas comerciales siguen siendo hipótesis, pendientes de enforcement y validación. La fecha y versión están en la ficha interna, no en la portada. Extraer el paquete completo para consultar los enlaces relativos. Ver ANEXO-digital.md y evidence/qa_compacto_final.json.
 
 Esta es la revisión canónica del trabajo académico del 6 de octubre de 2026. Sustituye para esta entrega los catálogos de CU y resultados históricos de docs/tif, docs/testing, EV-COD y la guía de defensa anteriores. Las fuentes completas del plan, checklist y diagramas se integran en esta carpeta.
 

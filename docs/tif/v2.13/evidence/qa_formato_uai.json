@@ -11,5 +11,7 @@
   "all_pages_visually_reviewed": true,
   "toc_entries": 46,
   "table_cells_checked": 1636,
-  "technical_content_unchanged": true
+  "technical_content_unchanged": true,
+  "historical_source_document": true,
+  "superseded_for_principal_by": "qa_compacto_final.json"
 }

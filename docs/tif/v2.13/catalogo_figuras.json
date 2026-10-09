@@ -1,0 +1,746 @@
+[
+  {
+    "id": "PT01",
+    "caption": "PT01",
+    "source_figure": 1,
+    "file": "figures/PT01.png",
+    "in_main": true,
+    "main_figure": 1
+  },
+  {
+    "id": "PT02",
+    "caption": "PT02",
+    "source_figure": 2,
+    "file": "figures/PT02.png",
+    "in_main": false
+  },
+  {
+    "id": "PT03",
+    "caption": "PT03",
+    "source_figure": 3,
+    "file": "figures/PT03.png",
+    "in_main": false
+  },
+  {
+    "id": "PT04",
+    "caption": "PT04",
+    "source_figure": 4,
+    "file": "figures/PT04.png",
+    "in_main": false
+  },
+  {
+    "id": "PT05",
+    "caption": "PT05",
+    "source_figure": 5,
+    "file": "figures/PT05.png",
+    "in_main": true,
+    "main_figure": 2
+  },
+  {
+    "id": "PT06",
+    "caption": "PT06",
+    "source_figure": 6,
+    "file": "figures/PT06.png",
+    "in_main": false
+  },
+  {
+    "id": "PT07",
+    "caption": "PT07",
+    "source_figure": 7,
+    "file": "figures/PT07.png",
+    "in_main": true,
+    "main_figure": 3
+  },
+  {
+    "id": "PT08",
+    "caption": "PT08",
+    "source_figure": 8,
+    "file": "figures/PT08.png",
+    "in_main": false
+  },
+  {
+    "id": "PT09",
+    "caption": "PT09",
+    "source_figure": 9,
+    "file": "figures/PT09.png",
+    "in_main": true,
+    "main_figure": 4
+  },
+  {
+    "id": "PT10",
+    "caption": "PT10",
+    "source_figure": 10,
+    "file": "figures/PT10.png",
+    "in_main": false
+  },
+  {
+    "id": "PT11",
+    "caption": "PT11",
+    "source_figure": 11,
+    "file": "figures/PT11.png",
+    "in_main": false
+  },
+  {
+    "id": "PT12",
+    "caption": "PT12",
+    "source_figure": 12,
+    "file": "figures/PT12.png",
+    "in_main": false
+  },
+  {
+    "id": "UC-General",
+    "caption": "Cuatro casos de uso y actores externos",
+    "source_figure": 13,
+    "file": "figures/UC-General.svg",
+    "in_main": true,
+    "main_figure": 5
+  },
+  {
+    "id": "DOM-Finanzas",
+    "caption": "Dominio conceptual: cuentas y movimientos",
+    "source_figure": 14,
+    "file": "figures/DOM-Finanzas.svg",
+    "in_main": true,
+    "main_figure": 6
+  },
+  {
+    "id": "DOM-Automatizacion",
+    "caption": "Dominio conceptual: reglas y presupuestos",
+    "source_figure": 15,
+    "file": "figures/DOM-Automatizacion.svg",
+    "in_main": true,
+    "main_figure": 7
+  },
+  {
+    "id": "DOM-Inversiones",
+    "caption": "Dominio conceptual: inversiones",
+    "source_figure": 16,
+    "file": "figures/DOM-Inversiones.svg",
+    "in_main": true,
+    "main_figure": 8
+  },
+  {
+    "id": "DOM-Personal",
+    "caption": "Dominio conceptual: preferencias y plan",
+    "source_figure": 17,
+    "file": "figures/DOM-Personal.svg",
+    "in_main": true,
+    "main_figure": 9
+  },
+  {
+    "id": "DOM-Compartidos",
+    "caption": "Dominio conceptual: gastos compartidos",
+    "source_figure": 18,
+    "file": "figures/DOM-Compartidos.svg",
+    "in_main": true,
+    "main_figure": 10
+  },
+  {
+    "id": "ER-CU001-Movimientos",
+    "caption": "ER: movimientos y destino exacto",
+    "source_figure": 19,
+    "file": "figures/ER-CU001-Movimientos.svg",
+    "in_main": true,
+    "main_figure": 11
+  },
+  {
+    "id": "ER-CU002-Cuentas",
+    "caption": "ER: cuentas y categorías",
+    "source_figure": 20,
+    "file": "figures/ER-CU002-Cuentas.svg",
+    "in_main": true,
+    "main_figure": 12
+  },
+  {
+    "id": "ER-CU002-Usuario",
+    "caption": "ER: identidad y estado comercial",
+    "source_figure": 21,
+    "file": "figures/ER-CU002-Usuario.svg",
+    "in_main": true,
+    "main_figure": 13
+  },
+  {
+    "id": "ER-CU004-Inversiones",
+    "caption": "ER: lotes y ventas",
+    "source_figure": 22,
+    "file": "figures/ER-CU004-Inversiones.svg",
+    "in_main": true,
+    "main_figure": 14
+  },
+  {
+    "id": "ER-CU003-Snapshots",
+    "caption": "ER: historial de patrimonio y portafolio",
+    "source_figure": 23,
+    "file": "figures/ER-CU003-Snapshots.svg",
+    "in_main": false
+  },
+  {
+    "id": "ER-CU001-Recurrentes",
+    "caption": "ER: reglas recurrentes",
+    "source_figure": 24,
+    "file": "figures/ER-CU001-Recurrentes.svg",
+    "in_main": false
+  },
+  {
+    "id": "ER-CU001-Presupuestos",
+    "caption": "ER: presupuestos y avisos",
+    "source_figure": 25,
+    "file": "figures/ER-CU001-Presupuestos.svg",
+    "in_main": false
+  },
+  {
+    "id": "ER-CU001-Grupos",
+    "caption": "ER: grupo y miembros",
+    "source_figure": 26,
+    "file": "figures/ER-CU001-Grupos.svg",
+    "in_main": true,
+    "main_figure": 15
+  },
+  {
+    "id": "ER-CU001-Reparto",
+    "caption": "ER: gasto y partes del reparto",
+    "source_figure": 27,
+    "file": "figures/ER-CU001-Reparto.svg",
+    "in_main": false
+  },
+  {
+    "id": "ER-CU002-Integraciones",
+    "caption": "ER: sesión bot y referencias",
+    "source_figure": 28,
+    "file": "figures/ER-CU002-Integraciones.svg",
+    "in_main": false
+  },
+  {
+    "id": "ARQ-Logica-Impresa",
+    "caption": "Arquitectura: vista lógica",
+    "source_figure": 29,
+    "file": "figures/ARQ-Logica-Impresa.svg",
+    "in_main": true,
+    "main_figure": 16
+  },
+  {
+    "id": "ARQ-Componentes-Datos",
+    "caption": "Componentes: identidad y datos",
+    "source_figure": 30,
+    "file": "figures/ARQ-Componentes-Datos.svg",
+    "in_main": false
+  },
+  {
+    "id": "ARQ-Componentes-Analisis",
+    "caption": "Componentes: precios y análisis",
+    "source_figure": 31,
+    "file": "figures/ARQ-Componentes-Analisis.svg",
+    "in_main": false
+  },
+  {
+    "id": "ARQ-Componentes-Canales",
+    "caption": "Componentes: Telegram y cobro",
+    "source_figure": 32,
+    "file": "figures/ARQ-Componentes-Canales.svg",
+    "in_main": false
+  },
+  {
+    "id": "ARQ-Despliegue-Impresa",
+    "caption": "Arquitectura: despliegue objetivo",
+    "source_figure": 33,
+    "file": "figures/ARQ-Despliegue-Impresa.svg",
+    "in_main": true,
+    "main_figure": 17
+  },
+  {
+    "id": "ROB-CU001-Registro",
+    "caption": "ROB-CU001: Básico, A01/A08/A10/A11",
+    "source_figure": 34,
+    "file": "figures/ROB-CU001-Registro.svg",
+    "in_main": true,
+    "main_figure": 18
+  },
+  {
+    "id": "ROB-CU001-OCR",
+    "caption": "ROB-CU001: A02: ticket y confirmación",
+    "source_figure": 35,
+    "file": "figures/ROB-CU001-OCR.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU001-Importacion",
+    "caption": "ROB-CU001: A04: importación por fila",
+    "source_figure": 36,
+    "file": "figures/ROB-CU001-Importacion.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU001-Telegram",
+    "caption": "ROB-CU001: A03: borrador confirmado",
+    "source_figure": 37,
+    "file": "figures/ROB-CU001-Telegram.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU001-Reglas",
+    "caption": "ROB-CU001: A05: regla y calendario",
+    "source_figure": 38,
+    "file": "figures/ROB-CU001-Reglas.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU001-Cron",
+    "caption": "ROB-CU001: A06: ejecución y recuperación",
+    "source_figure": 39,
+    "file": "figures/ROB-CU001-Cron.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU001-Aviso",
+    "caption": "ROB-CU001: A06: aviso posterior al registro",
+    "source_figure": 40,
+    "file": "figures/ROB-CU001-Aviso.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU001-Presupuesto",
+    "caption": "ROB-CU001: A07: presupuesto y consumo",
+    "source_figure": 41,
+    "file": "figures/ROB-CU001-Presupuesto.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU001-Compartidos",
+    "caption": "ROB-CU001: A09: grupo, invitado y reparto",
+    "source_figure": 42,
+    "file": "figures/ROB-CU001-Compartidos.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU002-Cuentas",
+    "caption": "ROB-CU002: Básico, A01/A02/A03: cuentas",
+    "source_figure": 43,
+    "file": "figures/ROB-CU002-Cuentas.svg",
+    "in_main": true,
+    "main_figure": 19
+  },
+  {
+    "id": "ROB-CU002-Datos",
+    "caption": "ROB-CU002: A04: exportación propia",
+    "source_figure": 44,
+    "file": "figures/ROB-CU002-Datos.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU002-Preferencias",
+    "caption": "ROB-CU002: A06: presentación e identidad",
+    "source_figure": 45,
+    "file": "figures/ROB-CU002-Preferencias.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU002-Acceso",
+    "caption": "ROB-CU002: A05: identidad y vínculo",
+    "source_figure": 46,
+    "file": "figures/ROB-CU002-Acceso.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU002-Plan",
+    "caption": "ROB-CU002: A07: estado comercial verificado",
+    "source_figure": 47,
+    "file": "figures/ROB-CU002-Plan.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU003-Patrimonio",
+    "caption": "ROB-CU003: Básico/A05: saldos y composición",
+    "source_figure": 48,
+    "file": "figures/ROB-CU003-Patrimonio.svg",
+    "in_main": true,
+    "main_figure": 20
+  },
+  {
+    "id": "ROB-CU003-Cotizaciones",
+    "caption": "ROB-CU003: E01/E03: referencia y respaldo",
+    "source_figure": 49,
+    "file": "figures/ROB-CU003-Cotizaciones.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU003-Resumen",
+    "caption": "ROB-CU003: A01: período y filtros",
+    "source_figure": 50,
+    "file": "figures/ROB-CU003-Resumen.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU003-Chat",
+    "caption": "ROB-CU003: A02/A03: consulta autorizada",
+    "source_figure": 51,
+    "file": "figures/ROB-CU003-Chat.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU003-RF11",
+    "caption": "ROB-CU003: A04: anomalías y proyección",
+    "source_figure": 52,
+    "file": "figures/ROB-CU003-RF11.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU004-Operacion",
+    "caption": "ROB-CU004: Básico/A01: lote y venta",
+    "source_figure": 53,
+    "file": "figures/ROB-CU004-Operacion.svg",
+    "in_main": true,
+    "main_figure": 21
+  },
+  {
+    "id": "ROB-CU004-Referencias",
+    "caption": "ROB-CU004: A02/A03: precio y respaldo",
+    "source_figure": 54,
+    "file": "figures/ROB-CU004-Referencias.svg",
+    "in_main": false
+  },
+  {
+    "id": "ROB-CU004-Simulacion",
+    "caption": "ROB-CU004: A04: comparación sin escritura",
+    "source_figure": 55,
+    "file": "figures/ROB-CU004-Simulacion.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-Crear",
+    "caption": "Secuencia CU001 Crear",
+    "source_figure": 56,
+    "file": "figures/SEC-CU001-Crear.svg",
+    "in_main": true,
+    "main_figure": 22
+  },
+  {
+    "id": "SEC-CU001-EditarEliminar",
+    "caption": "Secuencia CU001 EditarEliminar",
+    "source_figure": 57,
+    "file": "figures/SEC-CU001-EditarEliminar.svg",
+    "in_main": true,
+    "main_figure": 23
+  },
+  {
+    "id": "SEC-CU001-OCR",
+    "caption": "Secuencia CU001 OCR",
+    "source_figure": 58,
+    "file": "figures/SEC-CU001-OCR.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-Telegram",
+    "caption": "Secuencia CU001 Telegram",
+    "source_figure": 59,
+    "file": "figures/SEC-CU001-Telegram.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-Importar",
+    "caption": "Secuencia CU001 Importar",
+    "source_figure": 60,
+    "file": "figures/SEC-CU001-Importar.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-ReglasPresupuestos",
+    "caption": "Secuencia CU001 ReglasPresupuestos",
+    "source_figure": 61,
+    "file": "figures/SEC-CU001-ReglasPresupuestos.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-CronSeleccion",
+    "caption": "Secuencia CU001 CronSeleccion",
+    "source_figure": 62,
+    "file": "figures/SEC-CU001-CronSeleccion.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-CronOcurrencia",
+    "caption": "Secuencia CU001 CronOcurrencia",
+    "source_figure": 63,
+    "file": "figures/SEC-CU001-CronOcurrencia.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-Cuotas",
+    "caption": "Secuencia CU001 Cuotas",
+    "source_figure": 64,
+    "file": "figures/SEC-CU001-Cuotas.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-Cola",
+    "caption": "Secuencia CU001 Cola",
+    "source_figure": 65,
+    "file": "figures/SEC-CU001-Cola.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-Sincronizacion",
+    "caption": "Secuencia CU001 Sincronizacion",
+    "source_figure": 66,
+    "file": "figures/SEC-CU001-Sincronizacion.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU002-AccesoPreferencias",
+    "caption": "Secuencia CU002 AccesoPreferencias",
+    "source_figure": 67,
+    "file": "figures/SEC-CU002-AccesoPreferencias.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU002-PagoInicio",
+    "caption": "Secuencia CU002 PagoInicio",
+    "source_figure": 68,
+    "file": "figures/SEC-CU002-PagoInicio.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU002-PagoWebhook",
+    "caption": "Secuencia CU002 PagoWebhook",
+    "source_figure": 69,
+    "file": "figures/SEC-CU002-PagoWebhook.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU003-Dashboard",
+    "caption": "Secuencia CU003 Dashboard",
+    "source_figure": 70,
+    "file": "figures/SEC-CU003-Dashboard.svg",
+    "in_main": true,
+    "main_figure": 24
+  },
+  {
+    "id": "SEC-CU003-Cotizaciones",
+    "caption": "Secuencia CU003 Cotizaciones",
+    "source_figure": 71,
+    "file": "figures/SEC-CU003-Cotizaciones.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU003-ChatIntencion",
+    "caption": "Secuencia CU003 ChatIntencion",
+    "source_figure": 72,
+    "file": "figures/SEC-CU003-ChatIntencion.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU003-ChatRespuesta",
+    "caption": "Secuencia CU003 ChatRespuesta",
+    "source_figure": 73,
+    "file": "figures/SEC-CU003-ChatRespuesta.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU003-AnomaliasSeleccion",
+    "caption": "Secuencia CU003 AnomaliasSeleccion",
+    "source_figure": 74,
+    "file": "figures/SEC-CU003-AnomaliasSeleccion.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU003-AnomaliasCalculo",
+    "caption": "Secuencia CU003 AnomaliasCalculo",
+    "source_figure": 75,
+    "file": "figures/SEC-CU003-AnomaliasCalculo.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU003-Proyeccion",
+    "caption": "Secuencia CU003 Proyeccion",
+    "source_figure": 76,
+    "file": "figures/SEC-CU003-Proyeccion.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU004-Compra",
+    "caption": "Secuencia CU004 Compra",
+    "source_figure": 77,
+    "file": "figures/SEC-CU004-Compra.svg",
+    "in_main": true,
+    "main_figure": 25
+  },
+  {
+    "id": "SEC-CU004-VentaValidar",
+    "caption": "Secuencia CU004 VentaValidar",
+    "source_figure": 78,
+    "file": "figures/SEC-CU004-VentaValidar.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU004-VentaRPC",
+    "caption": "Secuencia CU004 VentaRPC",
+    "source_figure": 79,
+    "file": "figures/SEC-CU004-VentaRPC.svg",
+    "in_main": true,
+    "main_figure": 26
+  },
+  {
+    "id": "SEC-CU004-Valoracion",
+    "caption": "Secuencia CU004 Valoracion",
+    "source_figure": 80,
+    "file": "figures/SEC-CU004-Valoracion.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-CompartidosGrupo",
+    "caption": "Secuencia CU001 CompartidosGrupo",
+    "source_figure": 81,
+    "file": "figures/SEC-CU001-CompartidosGrupo.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU001-CompartidosReparto",
+    "caption": "Secuencia CU001 CompartidosReparto",
+    "source_figure": 82,
+    "file": "figures/SEC-CU001-CompartidosReparto.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU002-CuentasAlta",
+    "caption": "Secuencia CU002 CuentasAlta",
+    "source_figure": 83,
+    "file": "figures/SEC-CU002-CuentasAlta.svg",
+    "in_main": true,
+    "main_figure": 27
+  },
+  {
+    "id": "SEC-CU002-CuentasDatos",
+    "caption": "Secuencia CU002 CuentasDatos",
+    "source_figure": 84,
+    "file": "figures/SEC-CU002-CuentasDatos.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-CU004-Simulacion-Detalle",
+    "caption": "Secuencia CU004 Simulacion Detalle",
+    "source_figure": 85,
+    "file": "figures/SEC-CU004-Simulacion-Detalle.svg",
+    "in_main": false
+  },
+  {
+    "id": "CLASES-Datos-Movimientos",
+    "caption": "DTO: movimiento y clasificación",
+    "source_figure": 86,
+    "file": "figures/CLASES-Datos-Movimientos.svg",
+    "in_main": false
+  },
+  {
+    "id": "CLASES-Datos-Cuentas",
+    "caption": "DTO: cuenta y saldos",
+    "source_figure": 87,
+    "file": "figures/CLASES-Datos-Cuentas.svg",
+    "in_main": false
+  },
+  {
+    "id": "CLASES-Datos-Inversiones",
+    "caption": "DTO: inversión y venta",
+    "source_figure": 88,
+    "file": "figures/CLASES-Datos-Inversiones.svg",
+    "in_main": false
+  },
+  {
+    "id": "CLASES-Datos-Automatizacion",
+    "caption": "DTO: regla y presupuesto",
+    "source_figure": 89,
+    "file": "figures/CLASES-Datos-Automatizacion.svg",
+    "in_main": false
+  },
+  {
+    "id": "CLASES-CU001-Movimientos",
+    "caption": "Clases CU001: registro y conversión",
+    "source_figure": 90,
+    "file": "figures/CLASES-CU001-Movimientos.svg",
+    "in_main": true,
+    "main_figure": 28
+  },
+  {
+    "id": "CLASES-CU001-Automatizacion",
+    "caption": "Clases CU001: reglas y presupuestos",
+    "source_figure": 91,
+    "file": "figures/CLASES-CU001-Automatizacion.svg",
+    "in_main": true,
+    "main_figure": 29
+  },
+  {
+    "id": "CLASES-CU001-Compartidos",
+    "caption": "Clases CU001: gasto compartido",
+    "source_figure": 92,
+    "file": "figures/CLASES-CU001-Compartidos.svg",
+    "in_main": true,
+    "main_figure": 30
+  },
+  {
+    "id": "CLASES-CU002-Cuentas",
+    "caption": "Clases CU002: cuenta y consulta de saldos",
+    "source_figure": 93,
+    "file": "figures/CLASES-CU002-Cuentas.svg",
+    "in_main": true,
+    "main_figure": 31
+  },
+  {
+    "id": "CLASES-CU003-Analisis",
+    "caption": "Clases CU003: análisis determinista",
+    "source_figure": 94,
+    "file": "figures/CLASES-CU003-Analisis.svg",
+    "in_main": true,
+    "main_figure": 32
+  },
+  {
+    "id": "CLASES-CU004-Inversiones",
+    "caption": "Clases CU004: inversión y venta",
+    "source_figure": 95,
+    "file": "figures/CLASES-CU004-Inversiones.svg",
+    "in_main": true,
+    "main_figure": 33
+  },
+  {
+    "id": "CFG-01-Guardas",
+    "caption": "CFG 01 Guardas",
+    "source_figure": 96,
+    "file": "figures/CFG-01-Guardas.svg",
+    "in_main": true,
+    "main_figure": 34
+  },
+  {
+    "id": "CFG-01-Frecuencia",
+    "caption": "CFG 01 Frecuencia",
+    "source_figure": 97,
+    "file": "figures/CFG-01-Frecuencia.svg",
+    "in_main": true,
+    "main_figure": 35
+  },
+  {
+    "id": "PATRONES-Cotizaciones",
+    "caption": "Patrones: Strategy y Adapter",
+    "source_figure": 98,
+    "file": "figures/PATRONES-Cotizaciones.svg",
+    "in_main": true,
+    "main_figure": 36
+  },
+  {
+    "id": "PATRONES-Cron",
+    "caption": "Patrón: Template Method",
+    "source_figure": 99,
+    "file": "figures/PATRONES-Cron.svg",
+    "in_main": true,
+    "main_figure": 37
+  },
+  {
+    "id": "SEC-StrategyAdapter",
+    "caption": "Secuencia StrategyAdapter",
+    "source_figure": 100,
+    "file": "figures/SEC-StrategyAdapter.svg",
+    "in_main": false
+  },
+  {
+    "id": "SEC-TemplateMethod",
+    "caption": "Secuencia TemplateMethod",
+    "source_figure": 101,
+    "file": "figures/SEC-TemplateMethod.svg",
+    "in_main": false
+  }
+]
