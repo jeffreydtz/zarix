@@ -1,0 +1,60 @@
+{
+  "observed_at": "2026-10-09T04:10:29.994457+00:00",
+  "checks": [
+    {
+      "url": "https://criptoya.com/api/dolar",
+      "method": "GET",
+      "response_sha256": "3cf2ad344a3d7bfa34d956d8d661b8c87d954230febc748c6885ab473480231e",
+      "parsed_json": true,
+      "schema": [
+        "mayorista",
+        "oficial",
+        "ahorro",
+        "tarjeta",
+        "blue",
+        "cripto",
+        "mep",
+        "ccl"
+      ],
+      "scope": "Actual public HTTP response only; no private data, token, provider mutation, application end-to-end or availability claim"
+    },
+    {
+      "url": "https://dolarapi.com/v1/dolares",
+      "method": "GET",
+      "response_sha256": "8ba114a6ae696dd4041d3f24926df1327db781027bfe22267c42e2ecaf7ec968",
+      "parsed_json": true,
+      "schema": [
+        "moneda",
+        "casa",
+        "nombre",
+        "compra",
+        "venta",
+        "fechaActualizacion"
+      ],
+      "scope": "Actual public HTTP response only; no private data, token, provider mutation, application end-to-end or availability claim"
+    },
+    {
+      "provider": "Yahoo",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1d&interval=1d",
+      "method": "GET",
+      "http_status": "429",
+      "transport_exit": 0,
+      "observed_at": "2026-10-09T04:16:23.328675+00:00",
+      "scope": "Public provider HTTP/schema observation, not authenticated application integration",
+      "response_sha256": "0d24c98db98d3b4a87b9626a026e7d72c99754ab6bd88211a17bc372350b7d89",
+      "parsed_json": false
+    },
+    {
+      "provider": "CoinGecko",
+      "url": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,ars&include_24hr_change=true&include_last_updated_at=true",
+      "method": "GET",
+      "http_status": "200",
+      "transport_exit": 0,
+      "observed_at": "2026-10-09T04:16:28.805140+00:00",
+      "scope": "Public provider HTTP/schema observation, not authenticated application integration",
+      "response_sha256": "4a14dfc7ce557ad5fb235e83fdf629691320954e9b102c3cf1b93ee6e281a096",
+      "parsed_json": true,
+      "source_timestamp_present": true
+    }
+  ]
+}

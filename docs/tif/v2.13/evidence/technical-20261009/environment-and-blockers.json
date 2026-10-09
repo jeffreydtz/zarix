@@ -1,0 +1,36 @@
+{
+  "baseline_commit": "ed894431968775dba1d9ba01df99d9a442407865",
+  "baseline_tree": "22920e96aa79092ef6abe9704493b768d1b9b2af",
+  "environment": {
+    "os": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "kind": "isolated cloud executor; synthetic data only"
+  },
+  "runtime_attempt": {
+    "cli": "2.120.0",
+    "native_postgres": "17.11.0.004-r1",
+    "auth": "v2.197.0-r0",
+    "postgrest": "v16.4-r0",
+    "storage": "v1.79.36-r0",
+    "documentation": "https://supabase.com/docs/guides/local-development/docker-and-native-runtimes",
+    "downloads": "Official release artifacts checked against SHA256 pins bundled in CLI; curl used because CLI HTTP client could not use executor proxy correctly. TLS verification kept enabled.",
+    "result": "BLOCKED",
+    "blocker": "Unix socket creation returns EPERM. Reviewed elevated retry and minimal socket() probe also denied. No bypass attempted.",
+    "not_executed": [
+      "Supabase Auth sessions",
+      "PostgREST real API",
+      "authenticated UI journeys",
+      "true independent SQL sessions",
+      "real Auth/Storage restore",
+      "browser viewport matrix",
+      "dashboard canonical load profile"
+    ]
+  },
+  "providers": {
+    "MercadoPago": "Credentials absent; only explicit doubles",
+    "Gemini": "Credentials absent; only explicit doubles",
+    "Telegram": "Credentials absent; only explicit doubles"
+  },
+  "production": "No remote migration, real data modification, payment, merge, or deployment"
+}

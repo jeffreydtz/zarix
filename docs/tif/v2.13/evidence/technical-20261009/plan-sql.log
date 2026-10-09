@@ -1,0 +1,79 @@
+{
+  "engine": "PGlite (isolated real PL/pgSQL, serialized requests)",
+  "passed": 18,
+  "total": 18,
+  "results": [
+    {
+      "name": "Free first three allowed and fourth blocked",
+      "status": "PASS"
+    },
+    {
+      "name": "Free cannot bypass cap with reactivation",
+      "status": "PASS"
+    },
+    {
+      "name": "Premium permits 20 and rejects 21",
+      "status": "PASS"
+    },
+    {
+      "name": "Downgrade retains all accounts and historical transactions",
+      "status": "PASS"
+    },
+    {
+      "name": "Explicit selection preserves history and allows only chosen source/destination",
+      "status": "PASS"
+    },
+    {
+      "name": "Selection is atomic and rejects foreign/duplicate/over-limit IDs",
+      "status": "PASS"
+    },
+    {
+      "name": "Free recurring activation and execution rejected but read retained",
+      "status": "PASS"
+    },
+    {
+      "name": "Null/expired entitlement and Free AI fail closed",
+      "status": "PASS"
+    },
+    {
+      "name": "Cancellation keeps paid access to exact end; grace explicit",
+      "status": "PASS"
+    },
+    {
+      "name": "Reservation, in-flight duplicate and payload conflict",
+      "status": "PASS"
+    },
+    {
+      "name": "Success replays cached answer with no second consumption",
+      "status": "PASS"
+    },
+    {
+      "name": "Failed call releases quota and retry fences stale owner",
+      "status": "PASS"
+    },
+    {
+      "name": "40 AI limit independent of 20 OCR limit; excess reservations roll back",
+      "status": "PASS"
+    },
+    {
+      "name": "Mid-cycle webhook end changes do not reset quota",
+      "status": "PASS"
+    },
+    {
+      "name": "Renewal after frozen end starts new bucket; old request still replays",
+      "status": "PASS"
+    },
+    {
+      "name": "Quota tables/RPC inaccessible to public authenticated client",
+      "status": "PASS"
+    },
+    {
+      "name": "Service-role RPC executes without security-definer escalation",
+      "status": "PASS"
+    },
+    {
+      "name": "Account plus opening balance is atomic, idempotent, and conflict-safe",
+      "status": "PASS"
+    }
+  ]
+}
