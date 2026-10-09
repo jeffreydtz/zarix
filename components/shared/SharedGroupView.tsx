@@ -1,5 +1,8 @@
 'use client';
 
+import { QueueReview } from '@/components/offline/QueueReview';
+import { useFinancialOperation } from '@/lib/hooks/useFinancialOperation';
+import { useOfflineQueue } from '@/lib/hooks/useOfflineQueue';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,6 +31,7 @@ function formatDate(iso: string): string {
 }
 
 export default function SharedGroupView({ token, initialData }: Props) {
+  const { pendingCount, pendingItems, discard, syncing, syncError, sync } = useOfflineQueue(`/api/shared/${token}/expenses`);
   const [data, setData] = useState<SharedGroupDetail>(initialData);
   const [tab, setTab] = useState<Tab>('gastos');
   const [memberId, setMemberId] = useState<string | null>(null);
@@ -78,6 +82,14 @@ export default function SharedGroupView({ token, initialData }: Props) {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4 pb-16">
+        {pendingCount > 0 && <div className="card p-3 text-sm" role="status">
+          {pendingCount} operación(es) guardadas para revisar.
+          {syncError && <p>{syncError}</p>}
+          <button type="button" className="underline" disabled={syncing} onClick={async () => { await sync(); await reload(); }}>
+            {syncing ? 'Sincronizando…' : 'Reintentar sin duplicar'}
+          </button>
+          <QueueReview items={pendingItems} discard={discard} />
+        </div>}
         <div className="card p-5">
           <h1 className="text-xl font-semibold">{data.group.name}</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -381,6 +393,7 @@ function ExpenseForm({
   onDone: () => Promise<void>;
   onCancel: () => void;
 }) {
+  const { submit: submitOperation } = useFinancialOperation();
   const isEdit = expense !== null;
   const [description, setDescription] = useState(expense?.description ?? '');
   const [amount, setAmount] = useState(expense ? String(expense.amount) : '');
@@ -414,19 +427,12 @@ function ExpenseForm({
       const url = isEdit
         ? `/api/shared/${token}/expenses/${expense!.id}`
         : `/api/shared/${token}/expenses`;
-      const res = await fetch(url, {
-        method: isEdit ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          actorMemberId: meId,
-          description: description.trim(),
-          amount: parsed,
-          paidByMemberId: paidBy,
-          splitMemberIds: Array.from(participants),
-        }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || 'Error al guardar el gasto');
+      const result = await submitOperation(url, {
+        actorMemberId: meId, description: description.trim(), amount: parsed,
+        paidByMemberId: paidBy, splitMemberIds: Array.from(participants),
+      }, isEdit ? 'PUT' : 'POST');
+      if (!result) return;
+      if (result.state === 'pending') { setError(result.error || 'Gasto guardado pendiente de confirmación.'); setSaving(false); return; }
       await onDone();
     } catch (e: any) {
       setError(e.message);

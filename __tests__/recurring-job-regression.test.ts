@@ -11,7 +11,7 @@ class ProbeJob extends RecurringRulesJob {
 }
 const rule = { id:'R1', user_id:'U1', account_id:'A', type:'expense', amount:1000, currency:'ARS',
   description:'Alquiler', frequency:'daily', start_date:'2026-10-01', last_executed_date:'2026-10-05',
-  notification_enabled:true, account:{ is_active:true } };
+  notification_enabled:true, account:{ is_active:true }, user:{ status:'ACTIVE', current_period_end:'2026-11-01T00:00:00Z', grace_period_end:null } };
 let requests:Array<{ table:string; update?:any; filters:any[] }>;
 function clientFor(replies:Array<{ data?:any; error?:any }>) {
   return { from:vi.fn((table:string) => {
@@ -42,13 +42,15 @@ describe('CU-001 A06 recurring coordinator regressions',()=>{
     expect(client.from).not.toHaveBeenCalled();
     expect(mocks.send).not.toHaveBeenCalled();
   });
-  it('marks after creation and sends one notice to the winner',async()=>{
+  it('uses one stable occurrence key and leaves delivery to the durable outbox',async()=>{
     const client=clientFor([{ data:null },{ data:{ telegram_chat_id:123, telegram_bot_token:null } }]);
     await new ProbeJob().process(client,rule);
     expect(mocks.create).toHaveBeenCalledWith(expect.objectContaining({ isRecurring:true, recurringRuleId:'R1', transactionDate:'2026-10-06T12:00:00.000Z' }));
     expect(requests[0].update).toEqual({ last_executed_date:'2026-10-06' });
     expect(mocks.create.mock.invocationCallOrder[0]).toBeLessThan(client.from.mock.invocationCallOrder[0]);
-    expect(mocks.send).toHaveBeenCalledTimes(1);
+    expect(mocks.create).toHaveBeenCalledWith(expect.objectContaining({ requestId:'recurring:R1:2026-10-06' }));
+    expect(mocks.send).not.toHaveBeenCalled();
+    expect(requests).toHaveLength(1);
   });
   it('recovers an existing occurrence without sending another notification',async()=>{
     mocks.create.mockRejectedValue({ code:'23505', message:'duplicate' });
@@ -72,15 +74,9 @@ describe('CU-001 A06 recurring coordinator regressions',()=>{
     expect(mocks.create).toHaveBeenCalledTimes(1);
     expect(mocks.send).not.toHaveBeenCalled();
   });
-  it('does not undo a confirmed movement when Telegram is unavailable',async()=>{
-    const errorLog=vi.spyOn(console,'error').mockImplementation(()=>{});
-    try {
-      mocks.send.mockRejectedValue(new Error('Telegram offline'));
-      const client=clientFor([{ data:null },{ data:{ telegram_chat_id:123, telegram_bot_token:null } }]);
-      await new ProbeJob().process(client,rule);
-      expect(mocks.create).toHaveBeenCalledTimes(1);
-      expect(errorLog).toHaveBeenCalledWith(expect.stringContaining('notification failed'),expect.any(Error));
-    } finally { errorLog.mockRestore(); }
+  it('pauses Free recurrence without mutating rules or historical transactions',()=>{
+    expect(new ProbeJob().eligible({ ...rule, user:{ status:'PAST_DUE', current_period_end:'2026-10-01', grace_period_end:null } })).toBe(false);
+    expect(mocks.create).not.toHaveBeenCalled();
   });
   it('deactivates only rules strictly past their inclusive end',async()=>{
     const client=clientFor([{ data:null },{ data:[] }]);
@@ -92,4 +88,18 @@ describe('CU-001 A06 recurring coordinator regressions',()=>{
     expect(new ProbeJob().eligible({ ...rule, account:{ is_active:false } })).toBe(false);
     expect(mocks.create).not.toHaveBeenCalled();
   });
+});
+
+import { readFileSync } from 'node:fs';
+describe('recurring relation disambiguation after owner composite FK',()=>{
+  it.each(['lib/cron/recurring-job.ts','lib/services/recurring.ts','app/api/recurring/route.ts'])('names the account FK in %s',path=>{
+    const source=readFileSync(path,'utf8');
+    expect(source).not.toContain('account:accounts(');
+    expect(source).toContain('account:accounts!recurring_rules_account_id_fkey(');
+  });
+});
+
+it('pauses rules against movement-disabled accounts without creating effects',()=>{
+  expect(new ProbeJob().eligible({ ...rule,account:{is_active:true,movement_enabled:false} })).toBe(false);
+  expect(mocks.create).not.toHaveBeenCalled();
 });

@@ -1,5 +1,7 @@
 'use client';
 
+import { submitAccountCreation, type AccountCreationAttempt } from '@/lib/account-create-request';
+
 import { useEffect, useRef, useState } from 'react';
 import {
   ACCOUNT_FORM_CURRENCIES,
@@ -153,9 +155,22 @@ export function QuickCreateAccountPanel({
   const [initialBalance, setInitialBalance] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const attempt = useRef<AccountCreationAttempt>({});
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     nameRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const discarded = (event: Event) => {
+      if ((event as CustomEvent<string>).detail !== attempt.current.pending?.id) return;
+      attempt.current.pending = undefined;
+      setPending(false);
+      setError('Solicitud pendiente descartada. Podés editar los datos antes de crear otra.');
+    };
+    window.addEventListener('zarix-operation-discarded', discarded);
+    return () => window.removeEventListener('zarix-operation-discarded', discarded);
   }, []);
 
   const handleCreate = async () => {
@@ -165,25 +180,24 @@ export function QuickCreateAccountPanel({
     const typeData = ACCOUNT_FORM_TYPES.find((t) => t.value === typeValue);
     const balanceParsed = parseFloat(initialBalance.replace(',', '.'));
     try {
-      const res = await fetch('/api/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          type: typeValue,
-          currency,
-          icon: typeData?.icon || '💳',
-          color: typeData?.color || '#3B82F6',
-          isDebt: false,
-          initialBalance: Number.isFinite(balanceParsed) ? balanceParsed : 0,
-          includeInTotal: true,
-          includeInLiquid: true,
-        }),
+      const payload = {
+        name: name.trim(), type: typeValue, currency,
+        icon: typeData?.icon || '💳', color: typeData?.color || '#3B82F6', isDebt: false,
+        initialBalance: Number.isFinite(balanceParsed) ? balanceParsed : 0,
+        includeInTotal: true, includeInLiquid: true,
+      };
+      const outcome = await submitAccountCreation(attempt.current, payload, {
+        online: navigator.onLine, onPending: original => {
+          setPending(true);
+          setName(String(original.name || ''));
+          setTypeValue(String(original.type || 'bank'));
+          setCurrency(String(original.currency || 'ARS'));
+          setInitialBalance(String(original.initialBalance ?? ''));
+        },
       });
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.id) {
-        throw new Error(data?.error || 'Error al crear la cuenta');
-      }
+      if (outcome.state !== 'confirmed') { setError(outcome.message); return; }
+      setPending(false);
+      const data = outcome.account;
       onCreated({
         id: data.id,
         name: data.name ?? name.trim(),
@@ -210,6 +224,7 @@ export function QuickCreateAccountPanel({
     <div className={panelClass}>
       <p className="text-xs font-semibold text-primary">Nueva cuenta</p>
       <input
+        disabled={pending || loading}
         ref={nameRef}
         type="text"
         value={name}
@@ -220,6 +235,7 @@ export function QuickCreateAccountPanel({
       />
       <div className="grid grid-cols-2 gap-2">
         <select
+          disabled={pending || loading}
           value={typeValue}
           onChange={(e) => setTypeValue(e.target.value)}
           className={inputClass}
@@ -232,6 +248,7 @@ export function QuickCreateAccountPanel({
           ))}
         </select>
         <select
+          disabled={pending || loading}
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
           className={inputClass}
@@ -245,6 +262,7 @@ export function QuickCreateAccountPanel({
         </select>
       </div>
       <input
+        disabled={pending || loading}
         type="text"
         inputMode="decimal"
         value={initialBalance}
@@ -264,10 +282,10 @@ export function QuickCreateAccountPanel({
           disabled={loading || !name.trim()}
           className="btn btn-primary text-sm px-3 py-1.5 disabled:opacity-50"
         >
-          {loading ? 'Creando…' : 'Crear y usar'}
+          {loading ? 'Creando…' : pending ? 'Reintentar la misma solicitud' : 'Crear y usar'}
         </button>
         <button type="button" onClick={onCancel} className={cancelClass}>
-          Cancelar
+          {pending ? 'Cerrar (queda pendiente)' : 'Cancelar'}
         </button>
       </div>
     </div>

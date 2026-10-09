@@ -1,3 +1,4 @@
+import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { NextRequest, NextResponse } from 'next/server';
 import { sharedExpensesService, isValidShareToken } from '@/lib/services/sharedExpenses';
 import { errorResponse } from '@/lib/api-handler';
@@ -16,6 +17,10 @@ export async function PUT(
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });
     }
 
+    const requestId = req.headers.get('Idempotency-Key');
+    if (!validTransactionRequestId(requestId)) {
+      return NextResponse.json({ error: 'Falta un identificador de solicitud válido.' }, { status: 400 });
+    }
     const body = await req.json();
 
     const description =
@@ -54,13 +59,13 @@ export async function PUT(
     const expense = await sharedExpensesService.updateExpenseByToken(
       params.token,
       params.expenseId,
-      { actorMemberId, paidByMemberId, description, amount, expenseDate, splitMemberIds }
+      { requestId, actorMemberId, paidByMemberId, description, amount, expenseDate, splitMemberIds }
     );
     if (!expense) {
       return NextResponse.json({ error: 'Gasto no encontrado' }, { status: 404 });
     }
 
-    return NextResponse.json(expense);
+    return NextResponse.json(expense, { headers: { 'Idempotency-Key': requestId } });
   } catch (error: any) {
     console.error('Shared expense PUT error:', error);
     return errorResponse(error);

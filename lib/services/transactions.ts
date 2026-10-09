@@ -1,3 +1,6 @@
+import { nextFinancialRequestId } from '@/lib/financial-request-context';
+import { ApiError } from '@/lib/api-handler';
+import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
 import { accountsService, normalizeDebtBalanceForStorage } from './accounts';
@@ -150,6 +153,8 @@ export async function computeTransferAmounts(
 }
 
 export interface CreateTransactionInput {
+  /** Stable logical operation ID, retained by the caller across every retry. */
+  requestId?: string;
   userId: string;
   type: 'expense' | 'income' | 'transfer' | 'adjustment';
   accountId: string;
@@ -192,7 +197,7 @@ class TransactionsService {
     // Normalizamos la moneda a mayúsculas antes de cualquier insert: el CHECK
     // `currency = upper(currency)` (migración data_integrity) lo exige, y evita
     // los mismatches por comparación de strings aguas abajo.
-    input = { ...input, currency: (input.currency || 'ARS').trim().toUpperCase() };
+    input = { ...input, requestId: input.requestId ?? nextFinancialRequestId(), currency: (input.currency || 'ARS').trim().toUpperCase() };
     if (!['expense', 'income', 'transfer', 'adjustment'].includes(input.type)) {
       throw new Error('Tipo de movimiento inválido.');
     }
@@ -219,6 +224,33 @@ class TransactionsService {
       throw new Error('La cotización manual debe ser finita y mayor a cero.');
     }
     const supabase = createServiceClientSync();
+    const requestHash = input.requestId ? transactionRequestHash(input as unknown as Record<string, unknown>) : null;
+    if (input.requestId) {
+      if (!validTransactionRequestId(input.requestId)) throw new ApiError('Identificador de solicitud inválido.');
+      // A committed reply survives response loss, account archival, and changed FX rates.
+      const { data: prior, error } = await supabase.from('transaction_requests')
+        .select('request_hash, response').eq('user_id', input.userId)
+        .eq('request_id', input.requestId).maybeSingle();
+      if (error) throw error;
+      if (prior) {
+        if (prior.request_hash !== requestHash) throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+        return prior.response as Transaction;
+      }
+    }
+    const persist = async (row: Record<string, unknown>, installments = 1): Promise<Transaction> => {
+      if (input.requestId) {
+        const { data, error } = await supabase.rpc('create_transaction_once', {
+          p_user_id: input.userId, p_request_id: input.requestId, p_request_hash: requestHash,
+          p_transaction: row, p_installments: installments,
+        });
+        if (error?.code === 'Z0001') throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+        if (error) throw error;
+        return data as Transaction;
+      }
+      const { data, error } = await supabase.from('transactions').insert(row).select().single();
+      if (error) throw error;
+      return data;
+    };
 
     const account = await supabase
       .from('accounts')
@@ -268,6 +300,13 @@ class TransactionsService {
       if (input.installments < 2 || input.installments > 36) {
         throw new Error('Las cuotas tienen que ser entre 2 y 36.');
       }
+      if (input.requestId) {
+        return persist({ user_id: input.userId, account_id: input.accountId, type: input.type,
+          amount: input.amount, currency: input.currency, category_id: input.categoryId || null,
+          description: input.description || 'Compra en cuotas',
+          transaction_date: input.transactionDate || new Date().toISOString(),
+        }, input.installments);
+      }
       const { data, error } = await supabase.rpc('create_installment_transactions', {
         p_user_id: input.userId,
         p_account_id: input.accountId,
@@ -313,9 +352,7 @@ class TransactionsService {
         destAccount.data.currency, input.exchangeRateOverride
       );
 
-      const { data, error } = await supabase
-        .from('transactions')
-        .insert({
+      return persist({
           user_id: input.userId,
           type: 'transfer',
           account_id: input.accountId,
@@ -327,12 +364,7 @@ class TransactionsService {
           exchange_rate: transfer.exchangeRate !== 1 ? transfer.exchangeRate : null,
           description: input.description || 'Transferencia entre cuentas',
           transaction_date: input.transactionDate || new Date().toISOString(),
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+        });
     }
 
     const roundedAmount = roundFiat(input.amount, input.currency);
@@ -341,9 +373,7 @@ class TransactionsService {
       throw new Error('El importe convertido del movimiento debe ser mayor a cero.');
     }
 
-    const { data, error } = await supabase
-      .from('transactions')
-      .insert({
+    return persist({
         user_id: input.userId,
         type: input.type,
         account_id: input.accountId,
@@ -358,12 +388,7 @@ class TransactionsService {
         transaction_date: input.transactionDate || new Date().toISOString(),
         is_recurring: input.isRecurring === true,
         recurring_rule_id: input.recurringRuleId || null,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+      });
   }
 
   async list(

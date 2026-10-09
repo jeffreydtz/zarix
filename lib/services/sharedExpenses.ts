@@ -1,3 +1,4 @@
+import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { randomBytes } from 'crypto';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { ApiError } from '@/lib/api-handler';
@@ -351,6 +352,7 @@ class SharedExpensesService {
   async addExpenseByToken(
     token: string,
     input: {
+      requestId?: string;
       actorMemberId: string;
       paidByMemberId: string;
       description: string;
@@ -367,6 +369,7 @@ class SharedExpensesService {
     token: string,
     expenseId: string,
     input: {
+      requestId?: string;
       actorMemberId: string;
       paidByMemberId: string;
       description: string;
@@ -381,6 +384,7 @@ class SharedExpensesService {
   private async saveExpenseByToken(
     token: string,
     input: {
+      requestId?: string;
       actorMemberId: string;
       paidByMemberId: string;
       description: string;
@@ -394,7 +398,8 @@ class SharedExpensesService {
     const supabase = createServiceClientSync();
     // The RPC resolves token/group itself, checks every participant and saves
     // the expense plus its splits in one PostgreSQL transaction.
-    const { data, error } = await supabase.rpc('save_shared_expense', {
+    if (input.requestId && !validTransactionRequestId(input.requestId)) throw new ApiError('Identificador de solicitud inválido.');
+    const parameters = {
       p_share_token: token,
       p_actor_member_id: input.actorMemberId,
       p_paid_by_member_id: input.paidByMemberId,
@@ -403,7 +408,12 @@ class SharedExpensesService {
       p_expense_date: input.expenseDate ?? null,
       p_split_member_ids: input.splitMemberIds ?? null,
       p_expense_id: expenseId ?? null,
-    });
+    };
+    const { data, error } = input.requestId
+      ? await supabase.rpc('save_shared_expense_once', { p_share_token: token, p_request_id: input.requestId,
+          p_request_hash: transactionRequestHash({ ...input, expenseId }), p_expense: parameters })
+      : await supabase.rpc('save_shared_expense', parameters);
+    if (error?.code === 'Z0001') throw new ApiError('La solicitud ya se usó con otros datos.', 409);
     if (error) {
       if (error.code === '42501') throw new ApiError(error.message, 403);
       if (['22023', '22P02', '22007', '22008', '23514'].includes(error.code)) {

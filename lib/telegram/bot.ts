@@ -1,6 +1,10 @@
+import { downloadTelegramMedia } from '@/lib/telegram/download-media';
+import { ApiError } from '@/lib/api-handler';
+import { withPlanQuota, AmbiguousPlanWorkError } from '@/lib/plans/service';
 import { Telegraf, Context } from 'telegraf';
 import { Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
+import { withFinancialRequestContext } from '@/lib/financial-request-context';
 import {
   getGeminiForUser,
   GeminiMissingKeyError,
@@ -83,8 +87,12 @@ async function getUserById(userId: string) {
 // dueño. En el bot compartido no hay dueño fijo: se resuelve por chat.id (cada
 // usuario habla con el mismo bot), que ya está vinculado con prueba de posesión.
 async function resolveActingUser(ctx: BotContext) {
-  const forcedId = (ctx.state as CustomBotState | undefined)?.forcedUserId;
+  const state = ctx.state as CustomBotState | undefined;
+  const forcedId = state?.forcedUserId;
   if (forcedId) return getUserById(forcedId);
+  // Un bot propio sin vincular solo puede canjear el código de su dueño.
+  // Nunca hereda la identidad de un chat ya vinculado al bot compartido.
+  if (state?.ownerUserId) return null;
   const chatId = ctx.chat?.id;
   if (chatId == null) return null;
   return getUserFromTelegramId(chatId);
@@ -176,6 +184,16 @@ function toInternalHistoryItems(history: Array<{ role?: string; parts?: Array<{ 
 }
 
 function registerBotHandlers(bot: Telegraf) {
+  // Una vinculación pertenece a una persona, no a todos los miembros de un grupo.
+  // No leer datos ni canjear códigos desde grupos, supergrupos o canales.
+  bot.use(async (ctx, next) => {
+    if (ctx.chat?.type !== 'private') return;
+    return withFinancialRequestContext(
+      `telegram:${ctx.botInfo.id}:${ctx.update.update_id}`,
+      next
+    );
+  });
+
   bot.command('start', async (ctx) => {
   const existingUser = await resolveActingUser(ctx);
 
@@ -205,6 +223,7 @@ bot.command('cuentas', async (ctx) => {
   if (!user) {
     return ctx.reply('No estás vinculado. Usá /start primero.');
   }
+  if (!subscriptionsService.hasOrchestratorAccess(user)) return ctx.reply(getSubscriptionBlockedMessage(user.status));
 
   const accounts = await accountsService.list(user.id);
   const total = await accountsService.getTotalBalance(user.id);
@@ -259,6 +278,7 @@ bot.command('resumen', async (ctx) => {
   if (!user) {
     return ctx.reply('No estás vinculado. Usá /start primero.');
   }
+  if (!subscriptionsService.hasOrchestratorAccess(user)) return ctx.reply(getSubscriptionBlockedMessage(user.status));
 
   const summary = await transactionsService.getMonthSummary(user.id, new Date());
 
@@ -431,7 +451,7 @@ bot.on(message('photo'), async (ctx) => {
   if (!user) {
     return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
   }
-  if (!subscriptionsService.hasOrchestratorAccess(user.status)) {
+  if (!subscriptionsService.hasOrchestratorAccess(user)) {
     return ctx.reply(getSubscriptionBlockedMessage(user.status));
   }
 
@@ -449,16 +469,7 @@ bot.on(message('photo'), async (ctx) => {
     await ctx.reply('📷 Analizando la imagen...');
 
     const photo = ctx.message.photo[ctx.message.photo.length - 1];
-    const fileLink = await ctx.telegram.getFileLink(photo.file_id);
-
-    const response = await fetch(fileLink.href);
-    if (!response.ok) {
-      throw new Error(`Error descargando la imagen de Telegram: ${response.status}`);
-    }
-    const arrayBuffer = await response.arrayBuffer();
-    if (arrayBuffer.byteLength > 10 * 1024 * 1024) {
-      return ctx.reply('La imagen es muy pesada (máximo 10 MB). ¿Podés mandar una más liviana?');
-    }
+    const arrayBuffer = await downloadTelegramMedia(ctx.telegram, photo.file_id, 10 * 1024 * 1024);
     const base64 = Buffer.from(arrayBuffer).toString('base64');
     
     const financialContext = await getFinancialContext(user.id);
@@ -497,12 +508,14 @@ Si no es un ticket/factura o no podés extraer información:
   "message": "razón"
 }`;
 
-    const result = await gPhoto.chatWithImage(
+    const result = await withPlanQuota({ userId: user.id, feature: 'ocr',
+      requestKey: `telegram:${ctx.botInfo.id}:${ctx.update.update_id}:ocr`, fingerprint: photo.file_unique_id,
+    }, () => gPhoto.chatWithImage(
       prompt,
       base64,
       'image/jpeg',
       { maxTokens: 1024 }
-    );
+    ));
 
     let parsed;
     try {
@@ -550,14 +563,18 @@ Si no es un ticket/factura o no podés extraer información:
       `, descripción "${description}"` +
       (parsed.date ? `, fecha ${parsed.date}` : '') +
       `. Le pregunté al usuario si lo registro; si confirma, registrá este gasto con estos datos.`;
-    await appendBotTurn(user.id, ctx.chat.id, '[Foto de un ticket de compra]', memoryTurn).catch(
-      (err) => console.error('[telegram] appendBotTurn failed', err)
-    );
+    try {
+      await appendBotTurn(user.id, ctx.chat.id, '[Foto de un ticket de compra]', memoryTurn);
+    } catch (error) {
+      console.error('[telegram] receipt proposal persistence failed', error);
+      return ctx.reply('No pude guardar los datos del ticket para confirmarlos. Todavía no registré el gasto. Mandame de nuevo la foto o escribime los datos completos.');
+    }
 
     return ctx.reply(confirmMessage, { parse_mode: 'Markdown' });
 
   } catch (error) {
     console.error('Photo processing error:', error);
+    if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
     if (error instanceof GeminiMissingKeyError) {
       return ctx.reply(GEMINI_SETUP_MSG);
     }
@@ -570,7 +587,7 @@ bot.on(message('voice'), async (ctx) => {
   if (!user) {
     return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
   }
-  if (!subscriptionsService.hasOrchestratorAccess(user.status)) {
+  if (!subscriptionsService.hasOrchestratorAccess(user)) {
     return ctx.reply(getSubscriptionBlockedMessage(user.status));
   }
 
@@ -588,43 +605,38 @@ bot.on(message('voice'), async (ctx) => {
     await ctx.reply('🎤 Transcribiendo audio...');
 
     const voice = ctx.message.voice;
-    const fileLink = await ctx.telegram.getFileLink(voice.file_id);
-
-    // Download OGG audio
-    const audioResponse = await fetch(fileLink.href);
-    if (!audioResponse.ok) {
-      throw new Error(`Error descargando el audio de Telegram: ${audioResponse.status}`);
-    }
-    const audioBuffer = await audioResponse.arrayBuffer();
-    if (audioBuffer.byteLength > 20 * 1024 * 1024) {
-      return ctx.reply('El audio es muy pesado (máximo 20 MB). ¿Podés mandar uno más corto?');
-    }
+    const audioBuffer = await downloadTelegramMedia(ctx.telegram, voice.file_id, 20 * 1024 * 1024);
     const audioBase64 = Buffer.from(audioBuffer).toString('base64');
 
-    const transcriptResult = await gVoice.chatWithImage(
-      `Transcribí exactamente este mensaje de voz en español. 
-      El usuario está hablando sobre sus finanzas personales.
-      Solo devolvé el texto transcripto, sin explicaciones ni formato JSON.
-      Si no podés transcribir, devolvé "ERROR".`,
-      audioBase64,
-      'audio/ogg',
-      { maxTokens: 512, json: false }
-    );
+    let transcribed = '[Mensaje de voz]';
+    const prepareMessage = async () => {
+      const transcriptResult = await gVoice.chatWithImage(
+        `Transcribí exactamente este mensaje de voz en español.
+        El usuario está hablando sobre sus finanzas personales.
+        Solo devolvé el texto transcripto, sin explicaciones ni formato JSON.
+        Si no podés transcribir, devolvé "ERROR".`,
+        audioBase64,
+        'audio/ogg',
+        { maxTokens: 512, json: false }
+      );
 
-    // Clean JSON wrapper if Gemini returns it
-    let transcribed = transcriptResult.trim();
-    try {
-      const parsed = JSON.parse(transcribed);
-      transcribed = parsed.text || parsed.transcript || parsed.response || transcribed;
-    } catch {
-      // not JSON, use as-is
-    }
+      // Clean JSON wrapper if Gemini returns it
+      transcribed = transcriptResult.trim();
+      try {
+        const parsed = JSON.parse(transcribed);
+        transcribed = parsed.text || parsed.transcript || parsed.response || transcribed;
+      } catch {
+        // not JSON, use as-is
+      }
 
-    if (!transcribed || transcribed === 'ERROR' || transcribed.length < 3) {
-      return ctx.reply('No pude entender el audio. ¿Podés escribirme el gasto?');
-    }
+      if (!transcribed || transcribed === 'ERROR' || transcribed.length < 3) {
+        throw new ApiError('No pude entender el audio. ¿Podés escribirme el gasto?');
+      }
 
-    await ctx.reply(`🎤 Escuché: _"${escapeMd(transcribed)}"_`, { parse_mode: 'Markdown' });
+      await ctx.reply(`🎤 Escuché: _"${escapeMd(transcribed)}"_`, { parse_mode: 'Markdown' });
+
+      return transcribed;
+    };
 
     const financialContext = await getFinancialContext(user.id);
     const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
@@ -633,7 +645,10 @@ bot.on(message('voice'), async (ctx) => {
     try {
       const result = await processInternalAiChatMessage({
         userId: user.id,
-        message: transcribed,
+        requestKey: `telegram:${ctx.botInfo.id}:${ctx.update.update_id}:chat`,
+        eventFingerprint: JSON.stringify({ botId: ctx.botInfo.id, updateId: ctx.update.update_id, message: ctx.message }),
+        message: `voice:${voice.file_unique_id}`,
+        prepareMessage,
         allowLegacyWriteFallback: true,
         history,
         financialContext,
@@ -642,13 +657,15 @@ bot.on(message('voice'), async (ctx) => {
       return ctx.reply(result.assistant_message);
     } finally {
       if (rawResponse) {
-        await appendBotTurn(user.id, ctx.chat.id, transcribed, rawResponse).catch((err) =>
-          console.error('[telegram] appendBotTurn failed', err)
-        );
+        await appendBotTurn(user.id, ctx.chat.id, transcribed, rawResponse).catch(async (err) => {
+          console.error('[telegram] appendBotTurn failed', err);
+          await ctx.reply('No pude guardar el contexto de esta conversación. Para el próximo mensaje, escribime los datos completos.').catch(() => {});
+        });
       }
     }
   } catch (error) {
     console.error('Voice processing error:', error);
+    if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
     if (error instanceof GeminiMissingKeyError) {
       return ctx.reply(GEMINI_SETUP_MSG);
     }
@@ -691,7 +708,7 @@ bot.on(message('text'), async (ctx) => {
       'No estás vinculado todavía. Entrá a la app → Configuración → Telegram, generá un código y pegámelo acá.'
     );
   }
-  if (!subscriptionsService.hasOrchestratorAccess(user.status)) {
+  if (!subscriptionsService.hasOrchestratorAccess(user)) {
     return ctx.reply(getSubscriptionBlockedMessage(user.status));
   }
 
@@ -719,6 +736,8 @@ bot.on(message('text'), async (ctx) => {
     try {
       const result = await processInternalAiChatMessage({
         userId: user.id,
+        requestKey: `telegram:${ctx.botInfo.id}:${ctx.update.update_id}:chat`,
+        eventFingerprint: JSON.stringify({ botId: ctx.botInfo.id, updateId: ctx.update.update_id, message: ctx.message }),
         message: userMessage,
         history,
         financialContext,
@@ -728,14 +747,16 @@ bot.on(message('text'), async (ctx) => {
       return ctx.reply(result.assistant_message);
     } finally {
       if (rawResponse) {
-        await appendBotTurn(user.id, ctx.chat.id, userMessage, rawResponse).catch((err) =>
-          console.error('[telegram] appendBotTurn failed', err)
-        );
+        await appendBotTurn(user.id, ctx.chat.id, userMessage, rawResponse).catch(async (err) => {
+          console.error('[telegram] appendBotTurn failed', err);
+          await ctx.reply('No pude guardar el contexto de esta conversación. Para el próximo mensaje, escribime los datos completos.').catch(() => {});
+        });
       }
     }
   } catch (error: any) {
     console.error('Bot error:', error);
 
+    if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
     if (error instanceof GeminiMissingKeyError) {
       return ctx.reply(GEMINI_SETUP_MSG);
     }

@@ -1,3 +1,4 @@
+import { planError } from '@/lib/plans/rules';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { User as AuthUser } from '@supabase/supabase-js';
@@ -51,6 +52,8 @@ export function errorResponse(error: unknown): NextResponse {
   if (error instanceof ApiError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
+  const plan = planError(error);
+  if (plan) return NextResponse.json({ error: plan.message }, { status: plan.status });
   // Error no controlado: log completo del lado server, genérico al cliente.
   console.error('[api] unhandled error:', error);
   return NextResponse.json(

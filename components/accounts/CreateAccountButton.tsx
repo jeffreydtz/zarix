@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { submitAccountCreation, type AccountCreationAttempt } from '@/lib/account-create-request';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import {
@@ -16,6 +17,8 @@ export default function CreateAccountButton() {
   useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const attempt = useRef<AccountCreationAttempt>({});
+  const [pending, setPending] = useState(false);
   const [name, setName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('💳');
   const [selectedType, setSelectedType] = useState('bank');
@@ -30,11 +33,23 @@ export default function CreateAccountButton() {
   const [isMulticurrency, setIsMulticurrency] = useState(false);
   const [secondaryCurrency, setSecondaryCurrency] = useState('USD');
 
+  useEffect(() => {
+    const discarded = (event: Event) => {
+      if ((event as CustomEvent<string>).detail !== attempt.current.pending?.id) return;
+      attempt.current.pending = undefined;
+      setPending(false);
+      setError('Solicitud pendiente descartada. Podés editar los datos antes de crear otra.');
+    };
+    window.addEventListener('zarix-operation-discarded', discarded);
+    return () => window.removeEventListener('zarix-operation-discarded', discarded);
+  }, []);
+
   const selectedTypeData = ACCOUNT_FORM_TYPES.find((t) => t.value === selectedType);
   const isCreditCard = selectedType === 'credit_card';
   const isInvestment = selectedType === 'investment';
 
   const handleCreate = async () => {
+    if (loading || attempt.current.inFlight) return;
     setError('');
     if (!name.trim()) {
       setError('El nombre es requerido');
@@ -71,17 +86,25 @@ export default function CreateAccountButton() {
         }
       }
 
-      const response = await fetch('/api/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      const outcome = await submitAccountCreation(attempt.current, payload, {
+        online: navigator.onLine, onPending: original => {
+          setPending(true);
+          setName(String(original.name || ''));
+          setSelectedType(String(original.type || 'bank'));
+          setSelectedCurrency(String(original.currency || 'ARS'));
+          setSelectedIcon(String(original.icon || '💳'));
+          setInitialBalance(String(original.initialBalance ?? ''));
+          setIsDebt(Boolean(original.isDebt));
+          setIncludeInLiquid(original.includeInLiquid !== false);
+          setCreditLimit(String(original.creditLimit ?? ''));
+          setClosingDay(String(original.closingDay ?? ''));
+          setDueDay(String(original.dueDay ?? ''));
+          setIsMulticurrency(Boolean(original.isMulticurrency));
+          setSecondaryCurrency(String(original.secondaryCurrency || 'USD'));
+        },
       });
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Error al crear la cuenta');
-      }
-
+      if (outcome.state !== 'confirmed') { setError(outcome.message); return; }
+      setPending(false);
       setName('');
       setSelectedIcon('💳');
       setSelectedType('bank');
@@ -156,6 +179,7 @@ export default function CreateAccountButton() {
                 <div>
                   <label className="block text-sm font-medium text-muted-foreground mb-2">Nombre</label>
                   <input
+                        disabled={pending || loading}
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -173,6 +197,7 @@ export default function CreateAccountButton() {
                         key={type.value}
                         type="button"
                         whileTap={{ scale: 0.97 }}
+                        disabled={pending || loading}
                         onClick={() => setSelectedType(type.value)}
                         className={`p-3 rounded-xl border-2 transition-all text-left flex items-center gap-2 ${
                           selectedType === type.value
@@ -195,7 +220,8 @@ export default function CreateAccountButton() {
                         key={icon}
                         type="button"
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => setSelectedIcon(icon)}
+                        disabled={pending || loading}
+                          onClick={() => setSelectedIcon(icon)}
                         className={`p-2.5 text-2xl rounded-xl border-2 transition-all ${
                           selectedIcon === icon
                             ? 'border-primary bg-primary/10'
@@ -216,6 +242,7 @@ export default function CreateAccountButton() {
                         key={currency.value}
                         type="button"
                         whileTap={{ scale: 0.95 }}
+                        disabled={pending || loading}
                         onClick={() => setSelectedCurrency(currency.value)}
                         className={`p-2 rounded-xl border-2 transition-all text-center ${
                           selectedCurrency === currency.value
@@ -235,6 +262,7 @@ export default function CreateAccountButton() {
                     Saldo inicial
                   </label>
                   <input
+                        disabled={pending || loading}
                     type="text"
                     inputMode="decimal"
                     value={initialBalance}
@@ -263,6 +291,7 @@ export default function CreateAccountButton() {
                               Límite de crédito *
                             </label>
                             <input
+                        disabled={pending || loading}
                               type="text"
                               inputMode="decimal"
                               value={creditLimit}
@@ -278,6 +307,7 @@ export default function CreateAccountButton() {
                                 Dia de cierre
                               </label>
                               <input
+                        disabled={pending || loading}
                                 type="number"
                                 min="1"
                                 max="31"
@@ -293,6 +323,7 @@ export default function CreateAccountButton() {
                                 Dia de vencimiento
                               </label>
                               <input
+                        disabled={pending || loading}
                                 type="number"
                                 min="1"
                                 max="31"
@@ -306,6 +337,7 @@ export default function CreateAccountButton() {
 
                           <div className="flex items-center gap-3 p-3 bg-card rounded-lg border border-warning/30">
                             <input
+                        disabled={pending || loading}
                               type="checkbox"
                               id="isMulticurrency"
                               checked={isMulticurrency}
@@ -328,6 +360,7 @@ export default function CreateAccountButton() {
                                 Segunda moneda
                               </label>
                               <select
+                        disabled={pending || loading}
                                 value={secondaryCurrency}
                                 onChange={(e) => setSecondaryCurrency(e.target.value)}
                                 className="input"
@@ -353,6 +386,7 @@ export default function CreateAccountButton() {
                       className="flex items-center gap-3 p-3 bg-secondary rounded-xl"
                     >
                       <input
+                        disabled={pending || loading}
                         type="checkbox"
                         id="isDebt"
                         checked={isDebt}
@@ -373,6 +407,7 @@ export default function CreateAccountButton() {
                       className="flex items-start gap-3 p-3 bg-secondary rounded-xl"
                     >
                       <input
+                        disabled={pending || loading}
                         type="checkbox"
                         id="includeInLiquid"
                         checked={includeInLiquid}
@@ -405,7 +440,7 @@ export default function CreateAccountButton() {
                       Creando...
                     </motion.span>
                   ) : (
-                    'Crear Cuenta'
+                    pending ? 'Reintentar la misma solicitud' : 'Crear Cuenta'
                   )}
                 </motion.button>
               </div>

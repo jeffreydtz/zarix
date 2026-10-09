@@ -19,3 +19,19 @@ describe('explicit billing configuration',()=>{
     expect(getBillingPlans()).toHaveLength(1);expect(getBillingPlanById('annual')).toMatchObject({amount:12000,currency:'ARS',interval:'yearly',reason:'Anual - Zarix'});expect(getBillingPlanById('unknown')).toBeNull();
   });
 });
+
+describe('unambiguous commercial terms', () => {
+  it('rejects boolean amounts rather than coercing true to a unit price', () => {
+    reset(); vi.stubEnv('MP_SUBSCRIPTION_PLANS_JSON', JSON.stringify([{ id: 'bad', name: 'Bad', description: 'Bad', amount: true, currency: 'ARS', interval: 'monthly' }]));
+    expect(getBillingPlans()).toEqual([]);
+  });
+  it('rejects duplicate identifiers rather than silently choosing a price', () => {
+    reset(); const base = { id: 'duplicate', name: 'Plan', description: 'Plan', currency: 'ARS', interval: 'monthly' };
+    vi.stubEnv('MP_SUBSCRIPTION_PLANS_JSON', JSON.stringify([{ ...base, amount: 1 }, { ...base, amount: 1000 }]));
+    expect(getBillingPlans()).toEqual([]);
+  });
+  it('rejects malformed currency configuration', () => {
+    reset(); vi.stubEnv('MP_SUBSCRIPTION_AMOUNT', '1500'); vi.stubEnv('MP_SUBSCRIPTION_CURRENCY', 'invalid');
+    expect(getBillingPlans()).toEqual([]);
+  });
+});

@@ -1,3 +1,6 @@
+import MovementAccountSelection from '@/components/accounts/MovementAccountSelection';
+import { effectivePlan } from '@/lib/plans/rules';
+import { subscriptionsService } from '@/lib/services/subscriptions';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
@@ -17,9 +20,11 @@ export default async function AccountsPage() {
       redirect('/login');
     }
 
-    const [accounts, archivedAccounts] = await Promise.all([
+    const [accounts, archivedAccounts, choices, subscription] = await Promise.all([
       accountsService.list(user.id).catch(() => []),
       accountsService.listArchived(user.id).catch(() => []),
+      supabase.from('accounts').select('id, name, movement_enabled').eq('user_id', user.id).eq('is_active', true).order('sort_order'),
+      subscriptionsService.getUserState(user.id),
     ]);
     const aggregates =
       accounts.length > 0 ? accountsService.aggregateAccountTotals(accounts) : null;
@@ -40,6 +45,10 @@ export default async function AccountsPage() {
             </div>
           </div>
 
+          {!choices.error && <MovementAccountSelection
+            key={(choices.data || []).map(a => `${a.id}:${a.movement_enabled}`).join(',')}
+            accounts={choices.data || []} plan={effectivePlan(subscription)}
+          />}
           <AccountsList accounts={accounts} aggregates={aggregates} />
           <ArchivedAccountsPanel accounts={archivedAccounts} />
         </div>

@@ -1,5 +1,7 @@
 'use client';
 
+import { investmentSalePreview } from '@/lib/investment-sale-preview';
+import { useFinancialOperation } from '@/lib/hooks/useFinancialOperation';
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
@@ -18,6 +20,7 @@ function todayIso(): string {
 
 export default function SellPositionDialog({ investment, onClose, onSold }: SellPositionDialogProps) {
   useBodyScrollLock(Boolean(investment));
+  const { submit } = useFinancialOperation();
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
   const [currency, setCurrency] = useState('USD');
@@ -40,15 +43,10 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
     setError(null);
   }, [investment]);
 
-  const previewRealizedNative = useMemo(() => {
-    if (!investment) return null;
-    const qty = Number(quantity);
-    const p = Number(price);
-    if (!Number.isFinite(qty) || qty <= 0) return null;
-    if (!Number.isFinite(p) || p <= 0) return null;
-    const factor = investment.type === 'bond' ? 100 : 1;
-    return ((p - Number(investment.purchase_price)) * qty) / factor;
-  }, [quantity, price, investment]);
+  const previewRealizedNative = useMemo(() => investment ? investmentSalePreview({
+    quantity: Number(quantity), price: Number(price), purchasePrice: Number(investment.purchase_price),
+    currency, purchaseCurrency: investment.purchase_currency, type: investment.type,
+  }) : null, [quantity, price, investment, currency]);
 
   const maxQty = investment?.quantity ?? 0;
 
@@ -79,21 +77,11 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
 
     setSubmitting(true);
     try {
-      const r = await fetch(`/api/investments/${investment.id}/sell`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          quantity: qty,
-          price: p,
-          currency,
-          soldAt,
-          notes: notes.trim() || undefined,
-        }),
+      const result = await submit(`/api/investments/${investment.id}/sell`, {
+        quantity: qty, price: p, currency, soldAt, notes: notes.trim() || undefined,
       });
-      const data = await r.json();
-      if (!r.ok) {
-        throw new Error(data.error || 'No se pudo registrar la venta');
-      }
+      if (!result) return;
+      if (result.state === 'pending') { setError(result.error || 'Venta guardada pendiente de confirmación.'); return; }
       onSold();
       onClose();
     } catch (err) {
@@ -254,7 +242,9 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
                   : `${previewRealizedNative >= 0 ? '+' : ''}${currency} ${Math.abs(previewRealizedNative).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`}
               </div>
               <p className="text-[11px] text-muted-foreground mt-1">
-                Se convierte a USD con el dólar blue del día al guardar.
+                {currency.toUpperCase() !== investment.purchase_currency.toUpperCase()
+                  ? 'La ganancia se calcula con la cotización al confirmar, porque compra y venta tienen monedas distintas.'
+                  : 'Se convierte a USD con el dólar blue del día al guardar.'}
               </p>
             </div>
 

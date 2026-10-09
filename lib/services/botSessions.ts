@@ -18,13 +18,14 @@ export async function getStoredTurns(
   telegramChatId: number
 ): Promise<StoredBotTurn[]> {
   const supabase = createServiceClientSync();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('bot_sessions')
     .select('context')
     .eq('telegram_chat_id', telegramChatId)
     .eq('user_id', userId)
     .maybeSingle();
 
+  if (error) throw error;
   return parseStoredContext(data?.context);
 }
 
@@ -46,13 +47,14 @@ export async function appendBotTurn(
   modelText: string
 ): Promise<void> {
   const supabase = createServiceClientSync();
-  const { data: row } = await supabase
+  const { data: row, error: readError } = await supabase
     .from('bot_sessions')
     .select('id, context')
     .eq('telegram_chat_id', telegramChatId)
     .eq('user_id', userId)
     .maybeSingle();
 
+  if (readError) throw readError;
   const prev = parseStoredContext(row?.context);
   const next: StoredBotTurn[] = [
     ...prev,
@@ -65,33 +67,39 @@ export async function appendBotTurn(
   const now = new Date().toISOString();
 
   if (row?.id) {
-    await supabase
+    const { error } = await supabase
       .from('bot_sessions')
       .update({ context: sliced, last_message_at: now })
-      .eq('id', row.id);
+      .eq('id', row.id)
+      .eq('user_id', userId);
+    if (error) throw error;
   } else {
-    await supabase.from('bot_sessions').insert({
+    const { error } = await supabase.from('bot_sessions').insert({
       user_id: userId,
       telegram_chat_id: telegramChatId,
       context: sliced,
       last_message_at: now,
     });
+    if (error) throw error;
   }
 }
 
 export async function clearBotSession(userId: string, telegramChatId: number): Promise<void> {
   const supabase = createServiceClientSync();
-  const { data: row } = await supabase
+  const { data: row, error: readError } = await supabase
     .from('bot_sessions')
     .select('id')
     .eq('telegram_chat_id', telegramChatId)
     .eq('user_id', userId)
     .maybeSingle();
 
+  if (readError) throw readError;
   if (row?.id) {
-    await supabase
+    const { error } = await supabase
       .from('bot_sessions')
       .update({ context: [], last_message_at: new Date().toISOString() })
-      .eq('id', row.id);
+      .eq('id', row.id)
+      .eq('user_id', userId);
+    if (error) throw error;
   }
 }

@@ -1,5 +1,7 @@
 # Zarix
 
+Estado técnico del 09/10/2026: [correcciones, evidencia y bloqueos de verificación aislada](docs/tif/v2.13/VERIFICACION-TECNICA-20261009.md). Entrega parcial en borrador; la aceptación UI/API/Auth y proveedores reales sigue pendiente.
+
 Zarix es una app de finanzas personales para uso individual, enfocada en Argentina.
 
 > Control simple, rapido y visual de tu dinero en un solo lugar.
@@ -127,7 +129,7 @@ Zarix
 
 ### 1) Requisitos
 
-- Node.js 18+
+- Node.js >=22 y <25 (CI: Node 22)
 - npm 9+
 - Proyecto Supabase configurado
 
@@ -235,7 +237,7 @@ Si, esta optimizada para mobile y se puede usar como PWA.
 Si, podes importar desde CSV o JSON.
 
 ### Puedo exportar mi informacion?
-Si, podes exportar transacciones y tambien backup completo.
+Sí, podés exportar transacciones y cinco tablas de datos personales. Esa exportación no restaura el esquema, Auth ni Storage; ver el procedimiento técnico de recuperación.
 
 ### Tiene soporte para inversiones?
 Si, incluye portafolio y seguimiento de rendimiento.

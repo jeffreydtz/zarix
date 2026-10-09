@@ -17,7 +17,11 @@
     "test:bot": "tsx lib/telegram/test-bot.ts",
     "set-password": "node scripts/set-password.js",
     "compare:import": "tsx scripts/compare-import-with-export.ts",
-    "test:db": "node scripts/test-balance-trigger.mjs && node scripts/test-shared-expenses-sql.mjs"
+    "test:db": "node scripts/test-balance-trigger.mjs && node scripts/test-shared-expenses-sql.mjs && node scripts/test-plan-limits.mjs && node scripts/test-durable-financial-operations.mjs && node scripts/test-durable-import.mjs && node scripts/test-isolated-schema-mirror.mjs && node scripts/test-isolated-database.mjs",
+    "test:db:native": "node scripts/test-isolated-native-supabase.mjs",
+    "test:performance": "node scripts/test-isolated-performance.mjs",
+    "db:schema:check": "node scripts/test-isolated-schema-mirror.mjs",
+    "test:technical": "node scripts/run-technical-verification.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.19.0",
@@ -48,6 +52,7 @@
     "postcss-selector-parser": "7.1.6"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -55,12 +60,12 @@
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-next": "15.5.27",
+    "fake-indexeddb": "6.2.4",
     "postcss": "8.5.29",
     "tailwindcss": "^3.4.4",
     "tsx": "^4.7.0",
     "typescript": "^5.5.2",
-    "vitest": "5.0.3",
-    "@electric-sql/pglite": "0.5.8"
+    "vitest": "5.0.3"
   },
   "engines": {
     "node": ">=22 <25"

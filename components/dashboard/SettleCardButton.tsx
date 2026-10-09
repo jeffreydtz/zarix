@@ -1,5 +1,7 @@
 'use client';
 
+import { useFinancialOperation } from '@/lib/hooks/useFinancialOperation';
+
 import { useMemo, useState } from 'react';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { useRouter } from 'next/navigation';
@@ -66,6 +68,8 @@ export default function SettleCardButton({
   const amountNum = parseFloat(amount.replace(',', '.'));
   const amountValid = Number.isFinite(amountNum) && amountNum > 0 && amountNum <= maxSettle + 1e-9;
 
+  const { submit } = useFinancialOperation(`settle:${card.id}`);
+
   if (primaryDebt <= 0) return null;
 
   const openModal = () => {
@@ -100,19 +104,12 @@ export default function SettleCardButton({
     setError('');
     setLoading(true);
     try {
-      const response = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'transfer',
-          accountId: fundingId,
-          destinationAccountId: card.id,
-          amount: amountNum,
-          currency: card.currency,
-          description: `Pago de tarjeta ${card.name}`,
-        }),
+      const result = await submit('/api/transactions', {
+        type: 'transfer', accountId: fundingId, destinationAccountId: card.id,
+        amount: amountNum, currency: card.currency, description: `Pago de tarjeta ${card.name}`,
       });
-      if (!response.ok) throw new Error('settle failed');
+      if (!result) return;
+      if (result.state === 'pending') { setError(result.error || 'Pago guardado pendiente de confirmación.'); setLoading(false); return; }
       handleClose();
       router.refresh();
     } catch {

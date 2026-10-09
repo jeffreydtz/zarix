@@ -11,6 +11,8 @@ import {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import { MessageSquare, Plus, X } from 'lucide-react';
+import { QueueReview } from '@/components/offline/QueueReview';
+import { useFinancialOperation } from '@/lib/hooks/useFinancialOperation';
 import { useOfflineQueue } from '@/lib/hooks/useOfflineQueue';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { formatAccountSelectLabel } from '@/lib/format-account-select';
@@ -93,7 +95,8 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   const [description, setDescription] = useState('');
   const [transactionDateYmd, setTransactionDateYmd] = useState(() => todayLocalYmd());
 
-  const { isOnline, pendingCount, syncing, syncError, needsReview, enqueue, sync } = useOfflineQueue();
+  const { isOnline, pendingCount, pendingItems, discard, syncing, syncError, needsReview, sync } = useOfflineQueue();
+  const { submit } = useFinancialOperation('manual-transaction');
 
   const resetForm = useCallback(() => {
     setType('expense');
@@ -220,31 +223,14 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
       transactionDate: calendarDateToUtcNoonIso(transactionDateYmd),
     };
     try {
-      if (!isOnline) {
-        await enqueue(payload);
-        close();
-        return;
-      }
-      const res = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(
-          typeof data.error === 'string' ? data.error : 'Error al crear el movimiento'
-        );
-      }
+      const result = await submit('/api/transactions', payload);
+      if (!result) return;
+      if (result.state === 'pending') { setError(result.error || 'Operación guardada pendiente de confirmación.'); return; }
       close();
       router.refresh();
     } catch (err) {
-      if (typeof navigator !== 'undefined' && !navigator.onLine) {
-        await enqueue(payload);
-        close();
-      } else {
-        setError(err instanceof Error ? err.message : 'No se pudo guardar. Probá de nuevo.');
-      }
+      setError(err instanceof Error ? err.message : 'No se pudo guardar en este dispositivo. Probá de nuevo.');
+
     } finally {
       setLoading(false);
     }
@@ -277,11 +263,13 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
       {children}
       {(pendingCount > 0 || syncing) && (
         <div className="fixed z-50 bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 md:bottom-6 md:left-auto md:right-6 md:translate-x-0 text-xs bg-card border border-warning/30 text-warning rounded-xl px-3 py-2 shadow-md max-w-xs">
-          {syncing ? 'Sincronizando...' : `${pendingCount} pendiente${pendingCount !== 1 ? 's' : ''}`}
+          {syncing ? 'Sincronizando...' : `${pendingCount} operación${pendingCount !== 1 ? 'es' : ''} para revisar`}
           {syncError && <p className="mt-1" role="alert">{syncError}</p>}
-          {needsReview ? <a href="/expenses" className="block mt-1 underline">Revisar movimientos</a> : (
+          {needsReview && <a href="/expenses" className="block mt-1 underline">Ver movimientos registrados</a>}
+          {(
             <button type="button" onClick={() => void sync()} disabled={!isOnline || syncing} className="ml-2 underline disabled:opacity-50">Reintentar</button>
           )}
+          <QueueReview items={pendingItems} discard={discard} />
         </div>
       )}
       {isOpen && (

@@ -1,3 +1,4 @@
+import { withPlanQuota } from '@/lib/plans/service';
 import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { createServiceClientSync } from '@/lib/supabase/server';
@@ -8,7 +9,7 @@ import {
   excludedCurrenciesNote,
 } from '@/lib/services/transactions';
 import { getGeminiForUser, GeminiMissingKeyError } from '@/lib/ai/gemini';
-import { sendTelegramDm } from '@/lib/telegram/send';
+import { enqueueNotification } from '@/lib/services/notification-outbox';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -69,7 +70,8 @@ function previousWeekRange(
 async function analyzeWeek(
   currentWeek: any[],
   previousWeek: any[],
-  userId: string
+  userId: string,
+  quotaKey: string
 ): Promise<WeekAnalysis> {
   const expenses = currentWeek.filter((t) => t.type === 'expense');
   const income = currentWeek.filter((t) => t.type === 'income');
@@ -130,7 +132,7 @@ Respondé en JSON:
 
   try {
     const gemini = await getGeminiForUser(userId);
-    const result = await gemini.chat(prompt);
+    const result = await withPlanQuota({ userId, feature: 'ai', requestKey: quotaKey, fingerprint: quotaKey }, () => gemini.chat(prompt));
     const parsed = JSON.parse(result);
     insights = parsed.insights || [];
     sugerencias = parsed.sugerencias || [];
@@ -252,13 +254,10 @@ class WeeklySummaryJob extends IterativeCronJob<any> {
 
     if (currentWeekData.length === 0) return false;
 
-    const analysis = await analyzeWeek(currentWeekData, previousWeekData, user.id);
+    const analysis = await analyzeWeek(currentWeekData, previousWeekData, user.id, `weekly:${this.weekStart.toISOString().slice(0, 10)}`);
     const message = formatWeekMessage(analysis, this.labelRange);
 
-    await sendTelegramDm(user.telegram_chat_id, message, {
-      parse_mode: 'Markdown',
-      botToken: user.telegram_bot_token,
-    });
+    await enqueueNotification(_supabase, user.id, `weekly:${this.weekStart.toISOString().slice(0, 10)}`, message);
     return true;
   }
 

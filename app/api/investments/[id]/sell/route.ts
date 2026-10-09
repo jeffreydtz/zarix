@@ -1,3 +1,4 @@
+import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { investmentsService } from '@/lib/services/investments';
@@ -31,6 +32,14 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const queueOwner = req.headers.get('X-Queue-Owner');
+    if (queueOwner && queueOwner !== user.id) {
+      return NextResponse.json({ error: 'La operación pertenece a otra sesión.' }, { status: 403 });
+    }
+    const requestId = req.headers.get('Idempotency-Key');
+    if (!validTransactionRequestId(requestId)) {
+      return NextResponse.json({ error: 'Falta un identificador de solicitud válido.' }, { status: 400 });
+    }
     const body = (await req.json()) as SellBody;
     const quantity = parsePositive(body.quantity);
     const price = parsePositive(body.price);
@@ -47,12 +56,13 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
       : 'USD';
     const soldAt = typeof body.soldAt === 'string' && body.soldAt
       ? body.soldAt
-      : new Date().toISOString().split('T')[0];
+      : undefined;
     const notes = typeof body.notes === 'string' && body.notes.trim()
       ? body.notes.trim()
       : undefined;
 
     const result = await investmentsService.sell({
+      requestId,
       userId: user.id,
       investmentId: params.id,
       quantity,
@@ -62,7 +72,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
       notes,
     });
 
-    return NextResponse.json(result, { status: 201 });
+    return NextResponse.json(result, { status: 201, headers: { 'Idempotency-Key': requestId } });
   } catch (error: unknown) {
     console.error('investments sell error:', error);
     return errorResponse(error);

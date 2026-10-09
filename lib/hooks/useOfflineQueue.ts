@@ -1,142 +1,109 @@
 'use client';
 
+import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { syncPendingTransactions } from '@/lib/offline-queue-sync';
+import { syncPendingOperations, sendQueuedTransaction, queueItemInScope, type FinancialOperationOutcome } from '@/lib/offline-queue-sync';
 
-const DB_NAME = 'zarix-offline';
-const DB_VERSION = 1;
-const STORE_NAME = 'pending_transactions';
+import { dbGetAll, dbRemove, dbConfirm, enqueueTransaction, enqueueOperation as persistOperation, getQueueOwnerId, type QueuedTransaction, type QueuedOperation } from '@/lib/offline-transaction-store';
+export type { QueuedTransaction } from '@/lib/offline-transaction-store';
 
-export interface QueuedTransaction {
-  id: string;
-  payload: {
-    type: string;
-    accountId: string;
-    destinationAccountId?: string;
-    amount: number;
-    currency: string;
-    categoryId: string | null;
-    description: string;
-    transactionDate: string;
-    exchangeRateOverride?: number;
-  };
-  createdAt: number;
-}
-
-function openDB(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = (e) => {
-      const db = (e.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-      }
+export function useOfflineQueue(endpointPrefix?: string) {
+  const readScopedQueue = useCallback(async () => {
+    const items = await dbGetAll();
+    const ownerId = endpointPrefix ? null : await getQueueOwnerId();
+    return {
+      items: items.filter(item => queueItemInScope(item, ownerId, endpointPrefix)),
+      legacy: endpointPrefix ? [] : items.filter(item => !item.ownerId && !item.endpoint?.startsWith('/api/shared/')),
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function dbGetAll(): Promise<QueuedTransaction[]> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readonly');
-    const req = tx.objectStore(STORE_NAME).getAll();
-    req.onsuccess = () => resolve(req.result ?? []);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function dbAdd(item: QueuedTransaction): Promise<void> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    tx.objectStore(STORE_NAME).put(item);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-async function dbRemove(id: string): Promise<void> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    tx.objectStore(STORE_NAME).delete(id);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-export function useOfflineQueue() {
+  }, [endpointPrefix]);
   const [isOnline, setIsOnline] = useState(
     typeof navigator !== 'undefined' ? navigator.onLine : true
   );
   const [pendingCount, setPendingCount] = useState(0);
+  const [pendingItems, setPendingItems] = useState<QueuedOperation[]>([]);
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [needsReview, setNeedsReview] = useState(false);
   const syncingRef = useRef(false);
-  const reviewRequiredRef = useRef(false);
 
   const refreshCount = useCallback(async () => {
     try {
-      const items = await dbGetAll();
-      setPendingCount(items.length);
+      const { items, legacy } = await readScopedQueue();
+      setPendingCount(items.length + legacy.length);
+      setPendingItems([...items, ...legacy]);
+      setNeedsReview(legacy.length > 0);
+      if (legacy.length) setSyncError('Hay operaciones antiguas sin una sesión identificada. Revisá tus movimientos antes de volver a cargarlas.');
     } catch {
       // IndexedDB unavailable (e.g. Safari private mode)
     }
-  }, []);
+  }, [readScopedQueue]);
 
   const enqueue = useCallback(
     async (payload: QueuedTransaction['payload']): Promise<void> => {
-      const item: QueuedTransaction = {
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-        payload,
-        createdAt: Date.now(),
-      };
-      await dbAdd(item);
+      await enqueueTransaction(payload);
       await refreshCount();
     },
     [refreshCount]
   );
 
-  const sync = useCallback(async () => {
-    if (syncingRef.current || reviewRequiredRef.current) return;
+  const enqueueOperation = useCallback(async (endpoint: string, payload: unknown, method: 'POST' | 'PUT' = 'POST') => {
+    const item = await persistOperation(endpoint, payload, method);
+    await refreshCount();
+    return item;
+  }, [refreshCount]);
+
+  const sync = useCallback(async (): Promise<FinancialOperationOutcome[]> => {
+    if (syncingRef.current) return [];
     syncingRef.current = true;
     setSyncing(true);
     setSyncError(null);
     setNeedsReview(false);
     try {
-      const items = await dbGetAll();
-      const result = await syncPendingTransactions(
-        items,
-        (item) => fetch('/api/transactions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item.payload),
-          }),
-        dbRemove
+      const { items } = await readScopedQueue();
+      const outcomes = await syncPendingOperations(
+        items.filter(item => !item.confirmedReceipt),
+        sendQueuedTransaction,
+        async (id, receipt) => {
+          const item = items.find(candidate => candidate.id === id);
+          if (item?.draftScope) await dbConfirm(id, receipt);
+          else await dbRemove(id);
+        }
       );
-      if (result.failure === 'storage') {
-        reviewRequiredRef.current = true;
-        setNeedsReview(true);
-        setSyncError('Se confirmó un registro, pero no se pudo actualizar la cola. Revisá tus movimientos antes de volver a sincronizar.');
-      } else if (result.status === 401 || result.status === 403) {
-        setSyncError('Tus movimientos siguen guardados. Iniciá sesión y reintentá.');
-      } else if (result.failure) {
-        setSyncError('No se pudo confirmar el registro. Tus movimientos siguen guardados para reintentar.');
+      const failure = outcomes.find(outcome => outcome.state === 'pending' || outcome.failure);
+      if (failure?.failure === 'storage') {
+        setSyncError('La operación quedó confirmada y la cola sigue guardada. Podés reintentar sin duplicarla.');
+      } else if (failure?.status === 401) {
+        setSyncError('Tus operaciones siguen guardadas. Iniciá sesión y reintentá.');
+      } else if (failure) {
+        setSyncError('Hay operaciones sin confirmar. Revisá la cola y reintentá sin volver a cargarlas.');
       }
+      return outcomes;
     } catch {
       setSyncError('No se pudo leer la cola guardada. Reintentá cuando esté disponible.');
+      return [];
     } finally {
       syncingRef.current = false;
       setSyncing(false);
       await refreshCount();
     }
-  }, [refreshCount]);
+  }, [refreshCount, readScopedQueue]);
+
+  const discard = useCallback(async (id: string) => {
+    const { items, legacy } = await readScopedQueue();
+    if (![...items, ...legacy].some(item => item.id === id)) return;
+    await dbRemove(id);
+    window.dispatchEvent(new CustomEvent('zarix-operation-discarded', { detail: id }));
+    await refreshCount();
+  }, [readScopedQueue, refreshCount]);
 
   useEffect(() => {
     refreshCount();
+    if (navigator.onLine) void sync();
+    window.addEventListener('zarix-queue-changed', refreshCount);
+    const authListener = endpointPrefix ? null : createClient().auth.onAuthStateChange(() => {
+      // Leave the auth lock before reading the current session.
+      setTimeout(() => { void refreshCount(); if (navigator.onLine) void sync(); }, 0);
+    });
 
     const handleOnline = () => {
       setIsOnline(true);
@@ -154,11 +121,13 @@ export function useOfflineQueue() {
     navigator.serviceWorker?.addEventListener('message', handleSwMessage);
 
     return () => {
+      authListener?.data.subscription.unsubscribe();
+      window.removeEventListener('zarix-queue-changed', refreshCount);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       navigator.serviceWorker?.removeEventListener('message', handleSwMessage);
     };
-  }, [refreshCount, sync]);
+  }, [refreshCount, sync, endpointPrefix]);
 
-  return { isOnline, pendingCount, syncing, syncError, needsReview, enqueue, sync };
+  return { isOnline, pendingCount, pendingItems, discard, syncing, syncError, needsReview, enqueue, enqueueOperation, sync };
 }

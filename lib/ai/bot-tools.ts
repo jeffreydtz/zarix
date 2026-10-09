@@ -1,3 +1,4 @@
+import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import { SchemaType, type FunctionDeclaration } from '@google/generative-ai';
 import type { FinancialContext } from '@/lib/ai/prompts';
 import { executeBotTransaction, type BotTxPayload } from '@/lib/telegram/executeBotTransaction';
@@ -396,7 +397,7 @@ const ACCOUNT_TYPES = new Set([
   'other',
 ]);
 
-export async function executeBotTool(
+async function executeBotToolImpl(
   name: string,
   args: ToolArgs,
   ctx: BotToolContext
@@ -464,7 +465,7 @@ export async function executeBotTool(
         return { response: { success: true, name: accountName } };
       } catch (error) {
         console.error('[bot-tools] create_account failed', error);
-        return { response: { success: false, error: 'No pude crear la cuenta.' } };
+        throw new AmbiguousFinancialMutationError(error);
       }
     }
 
@@ -540,16 +541,8 @@ export async function executeBotTool(
       try {
         await transactionsService.delete(last.id, userId);
       } catch (e) {
-        // El nuevo ya quedó; si no pudimos borrar el viejo, avisamos para evitar duplicado silencioso.
-        console.error('edit_last_transaction: no se pudo borrar el movimiento anterior', e);
-        return {
-          response: {
-            success: true,
-            warning: 'Registré la corrección pero no pude borrar el movimiento anterior; revisalo en la app.',
-            summary: res.reply,
-          },
-          executed: res.executed ? [res.executed] : undefined,
-        };
+        // Creation committed; an uncertain delete must stop the entire model loop.
+        throw new AmbiguousFinancialMutationError(e);
       }
       return {
         response: { success: true, summary: res.reply },
@@ -826,11 +819,22 @@ export async function executeBotTool(
         };
       } catch (error) {
         console.error('[bot-tools] create_recurring failed', error);
-        return { response: { success: false, error: 'No pude crear la regla recurrente.' } };
+        throw new AmbiguousFinancialMutationError(error);
       }
     }
 
     default:
       return { response: { error: `Herramienta desconocida: ${name}` } };
+  }
+}
+
+/** Mutations must stop the whole model loop when their outcome is uncertain. */
+export async function executeBotTool(name: string, args: ToolArgs, ctx: BotToolContext): Promise<BotToolResult> {
+  try { return await executeBotToolImpl(name, args, ctx); }
+  catch (error) {
+    if (BOT_WRITE_TOOLS.has(name)) {
+      throw error instanceof AmbiguousFinancialMutationError ? error : new AmbiguousFinancialMutationError(error);
+    }
+    throw error;
   }
 }

@@ -1,8 +1,10 @@
+import { effectivePlan, type PlanState } from '@/lib/plans/rules';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import type { SubscriptionStatus } from '@/types/database';
 
 export interface UserSubscriptionState {
   status: SubscriptionStatus;
+  mp_preapproval_id: string | null;
   current_period_end: string | null;
   grace_period_end: string | null;
 }
@@ -13,12 +15,9 @@ export interface UpdateSubscriptionStateInput {
   currentPeriodEnd?: string | null;
   gracePeriodEnd?: string | null;
   mpPreapprovalId?: string | null;
+  /** Snapshot read before a provider lookup; stale concurrent writes must retry. */
+  expectedState?: UserSubscriptionState;
 }
-
-const ALLOWED_ORCHESTRATOR_STATUSES: ReadonlySet<SubscriptionStatus> = new Set([
-  'ACTIVE',
-  'GRACE_PERIOD',
-]);
 
 export class SubscriptionAccessError extends Error {
   readonly status: SubscriptionStatus | null;
@@ -35,7 +34,7 @@ class SubscriptionsService {
     const supabase = createServiceClientSync();
     const { data, error } = await supabase
       .from('users')
-      .select('status, current_period_end, grace_period_end')
+      .select('status, current_period_end, grace_period_end, mp_preapproval_id')
       .eq('id', userId)
       .single();
 
@@ -49,8 +48,8 @@ class SubscriptionsService {
     return data;
   }
 
-  hasOrchestratorAccess(status: SubscriptionStatus): boolean {
-    return ALLOWED_ORCHESTRATOR_STATUSES.has(status);
+  hasOrchestratorAccess(state: PlanState): boolean {
+    return effectivePlan(state) === 'premium';
   }
 
   getDeniedMessage(status: SubscriptionStatus | null): string {
@@ -66,10 +65,10 @@ class SubscriptionsService {
   async ensureOrchestratorAccess(userId: string): Promise<SubscriptionStatus> {
     const state = await this.getUserState(userId);
     const status = state?.status ?? null;
-    if (!status || !this.hasOrchestratorAccess(status)) {
+    if (!state || !this.hasOrchestratorAccess(state)) {
       throw new SubscriptionAccessError(this.getDeniedMessage(status), status);
     }
-    return status;
+    return state.status;
   }
 
   async updateUserState(input: UpdateSubscriptionStateInput): Promise<UserSubscriptionState> {
@@ -93,11 +92,16 @@ class SubscriptionsService {
       payload.mp_preapproval_id = input.mpPreapprovalId;
     }
 
-    const { data, error } = await supabase
-      .from('users')
-      .update(payload)
-      .eq('id', input.userId)
-      .select('status, current_period_end, grace_period_end')
+    let query = supabase.from('users').update(payload).eq('id', input.userId);
+    if (input.expectedState) {
+      query = query.eq('status', input.expectedState.status);
+      for (const field of ['mp_preapproval_id', 'current_period_end', 'grace_period_end'] as const) {
+        const value = input.expectedState[field];
+        query = value == null ? query.is(field, null) : query.eq(field, value);
+      }
+    }
+    const { data, error } = await query
+      .select('status, current_period_end, grace_period_end, mp_preapproval_id')
       .single();
 
     if (error) throw error;

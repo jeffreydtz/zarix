@@ -1,0 +1,1180 @@
+-- RECONSTRUCTED FRESH-INSTALL BASELINE, not a historical production dump.
+-- Derived from PR12 commit ed894431968775dba1d9ba01df99d9a442407865 schema.sql
+-- SHA256 01255724ef94aced4836bf074d9e6abc571aaa640d25d41705433e91123be9f5.
+-- Core tables and portfolio snapshots have no creation migration in the repo.
+-- This file supplies them BEFORE every timestamped migration is run, unchanged,
+-- in lexicographic order. investment_sales and shared-expense objects are omitted
+-- because their historical migrations create them. Later IF NOT EXISTS columns
+-- remain from the snapshot. Do not apply this baseline to an existing database.
+-- It does not assert or repair any remote migration-history state.
+
+-- Extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- Para búsqueda full-text rápida
+
+-- Estado de suscripción del producto SaaS (feature flags de acceso).
+CREATE TYPE subscription_status AS ENUM (
+  'ACTIVE',
+  'GRACE_PERIOD',
+  'PAST_DUE',
+  'CANCELED'
+);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 1. USERS (extend Supabase Auth)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE users (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  telegram_chat_id BIGINT UNIQUE,
+  telegram_username TEXT,
+  gemini_api_key TEXT,
+  telegram_bot_token TEXT,
+  telegram_webhook_secret TEXT,
+  mp_preapproval_id TEXT,
+  status subscription_status NOT NULL DEFAULT 'ACTIVE',
+  current_period_end TIMESTAMPTZ,
+  grace_period_end TIMESTAMPTZ,
+  default_currency TEXT NOT NULL DEFAULT 'ARS',
+  timezone TEXT NOT NULL DEFAULT 'America/Argentina/Buenos_Aires',
+  notification_time TIME DEFAULT '22:00:00',
+  daily_summary_enabled BOOLEAN DEFAULT TRUE,
+  weekly_summary_enabled BOOLEAN DEFAULT TRUE,
+  monthly_summary_enabled BOOLEAN DEFAULT TRUE,
+  onboarding_done BOOLEAN NOT NULL DEFAULT FALSE,
+  -- Vinculación de Telegram con prueba de posesión (código de un solo uso).
+  -- Ver migración 20260811120000_security_hardening.sql.
+  telegram_link_code TEXT,
+  telegram_link_code_expires_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_users_telegram ON users(telegram_chat_id) WHERE telegram_chat_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_users_mp_preapproval_id ON users(mp_preapproval_id)
+  WHERE mp_preapproval_id IS NOT NULL;
+CREATE INDEX idx_users_subscription_status ON users(status);
+CREATE INDEX idx_users_grace_period_end ON users(grace_period_end)
+  WHERE status = 'GRACE_PERIOD';
+
+CREATE UNIQUE INDEX idx_users_telegram_webhook_secret ON users(telegram_webhook_secret)
+  WHERE telegram_webhook_secret IS NOT NULL;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 2. ACCOUNTS (cuentas — el core de la app)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TYPE account_type AS ENUM (
+  'cash',            -- Efectivo
+  'bank',            -- Banco
+  'credit_card',     -- Tarjeta de crédito
+  'investment',      -- Cuenta de inversiones
+  'crypto',          -- Wallet crypto
+  'digital_wallet',  -- Mercado Pago, Wise, Payoneer
+  'other'
+);
+
+CREATE TABLE accounts (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  type account_type NOT NULL DEFAULT 'bank',
+  currency TEXT NOT NULL DEFAULT 'ARS',
+  balance NUMERIC(20, 8) NOT NULL DEFAULT 0,
+  icon TEXT,
+  color TEXT DEFAULT '#3B82F6',
+  is_debt BOOLEAN DEFAULT FALSE,
+  include_in_total BOOLEAN DEFAULT TRUE,
+  include_in_liquid BOOLEAN NOT NULL DEFAULT TRUE,
+  min_balance NUMERIC(20, 8),
+  sort_order INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  
+  -- Campos específicos para tarjetas de crédito
+  credit_limit NUMERIC(20, 8),
+  closing_day INTEGER CHECK (closing_day >= 1 AND closing_day <= 31),
+  due_day INTEGER CHECK (due_day >= 1 AND due_day <= 31),
+  last_4_digits TEXT CHECK (length(last_4_digits) = 4),
+  
+  -- Soporte para tarjetas bi-moneda (ej: Visa que acepta ARS y USD)
+  is_multicurrency BOOLEAN DEFAULT FALSE,
+  secondary_currency TEXT, -- ej: 'USD' si la principal es ARS
+  
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_accounts_user ON accounts(user_id, is_active, sort_order);
+CREATE INDEX idx_accounts_currency ON accounts(currency) WHERE is_active = TRUE;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 3. CATEGORIES (categorías de gasto/ingreso)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TYPE category_type AS ENUM ('expense', 'income');
+
+CREATE TABLE categories (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  type category_type NOT NULL,
+  icon TEXT NOT NULL DEFAULT '🔁',
+  parent_id UUID REFERENCES categories(id) ON DELETE CASCADE,
+  is_system BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_categories_user ON categories(user_id, type);
+CREATE INDEX idx_categories_parent ON categories(parent_id) WHERE parent_id IS NOT NULL;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 4. TRANSACTIONS (transacciones — el corazón del sistema)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TYPE transaction_type AS ENUM (
+  'expense',      -- Gasto
+  'income',       -- Ingreso
+  'transfer',     -- Transferencia entre cuentas propias
+  'adjustment'    -- Ajuste manual de saldo
+);
+
+CREATE TABLE transactions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type transaction_type NOT NULL,
+  account_id UUID REFERENCES accounts(id) ON DELETE RESTRICT,
+  destination_account_id UUID REFERENCES accounts(id) ON DELETE RESTRICT,
+  amount NUMERIC(20, 8) NOT NULL,
+  currency TEXT NOT NULL,
+  amount_in_account_currency NUMERIC(20, 8) NOT NULL,
+  exchange_rate NUMERIC(20, 8),
+  destination_amount_in_account_currency NUMERIC(20, 8) CHECK (destination_amount_in_account_currency > 0),
+  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  description TEXT,
+  notes TEXT,
+  tags TEXT[],
+  transaction_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  receipt_url TEXT,
+  location JSONB,
+  is_recurring BOOLEAN DEFAULT FALSE,
+  recurring_rule_id UUID,
+  installment_number INTEGER,
+  installment_total INTEGER,
+  installment_group_id UUID,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  CONSTRAINT positive_amount CHECK (amount > 0),
+  CONSTRAINT valid_transfer CHECK (
+    type != 'transfer' OR destination_account_id IS NOT NULL
+  ),
+  CONSTRAINT valid_installment CHECK (
+    installment_number IS NULL OR 
+    (installment_number > 0 AND installment_number <= installment_total)
+  )
+);
+
+-- Índices compuestos para queries típicos
+CREATE INDEX idx_transactions_user_date ON transactions(user_id, transaction_date DESC);
+CREATE INDEX idx_transactions_account ON transactions(account_id, transaction_date DESC);
+CREATE INDEX idx_transactions_category ON transactions(category_id) WHERE category_id IS NOT NULL;
+CREATE INDEX idx_transactions_installment_group ON transactions(installment_group_id) 
+  WHERE installment_group_id IS NOT NULL;
+CREATE INDEX idx_transactions_tags ON transactions USING gin(tags);
+CREATE INDEX idx_transactions_search ON transactions USING gin(to_tsvector('spanish', description));
+CREATE INDEX IF NOT EXISTS idx_transactions_user_type_date_desc
+  ON transactions (user_id, type, transaction_date DESC);
+CREATE INDEX IF NOT EXISTS idx_transactions_user_account_date_desc
+  ON transactions (user_id, account_id, transaction_date DESC);
+CREATE INDEX IF NOT EXISTS idx_transactions_user_destination_date_desc
+  ON transactions (user_id, destination_account_id, transaction_date DESC)
+  WHERE destination_account_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_transactions_user_description_trgm
+  ON transactions USING gin ((COALESCE(description, '')) gin_trgm_ops);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 5. RECURRING RULES (reglas de recurrencia)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TYPE recurrence_frequency AS ENUM ('daily', 'weekly', 'monthly', 'yearly');
+
+CREATE TABLE recurring_rules (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  type transaction_type NOT NULL,
+  amount NUMERIC(20, 8) NOT NULL,
+  currency TEXT NOT NULL,
+  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  description TEXT NOT NULL,
+  is_subscription BOOLEAN NOT NULL DEFAULT FALSE,
+  subscription_name TEXT,
+  subscription_plan TEXT,
+  notification_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  frequency recurrence_frequency NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE,
+  last_executed_date DATE,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_recurring_user ON recurring_rules(user_id, is_active);
+CREATE INDEX idx_recurring_subscriptions ON recurring_rules(user_id, is_subscription, is_active);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 6. BUDGETS (presupuestos mensuales)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE budgets (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
+  month DATE NOT NULL,
+  amount NUMERIC(20, 8) NOT NULL,
+  currency TEXT NOT NULL DEFAULT 'ARS',
+  rollover_enabled BOOLEAN DEFAULT FALSE,
+  rollover_amount NUMERIC(20, 8) DEFAULT 0,
+  alert_at_percent INTEGER DEFAULT 80,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  CONSTRAINT unique_budget_per_category_month UNIQUE(user_id, category_id, month),
+  CONSTRAINT positive_amount CHECK (amount > 0),
+  CONSTRAINT valid_alert CHECK (alert_at_percent > 0 AND alert_at_percent <= 100)
+);
+
+CREATE INDEX idx_budgets_user_month ON budgets(user_id, month DESC);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 7. INVESTMENTS (inversiones y posiciones)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TYPE investment_type AS ENUM (
+  'stock_arg',      -- Acción argentina (MERVAL)
+  'cedear',         -- CEDEAR
+  'stock_us',       -- Acción USA
+  'etf',            -- ETF
+  'crypto',         -- Crypto
+  'plazo_fijo',     -- Plazo fijo
+  'fci',            -- Fondo Común de Inversión
+  'bond',           -- Bono
+  'caucion',        -- Caución
+  'real_estate',    -- Inmueble
+  'other'
+);
+
+CREATE TABLE investments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
+  type investment_type NOT NULL,
+  ticker TEXT,
+  name TEXT NOT NULL,
+  quantity NUMERIC(20, 8) NOT NULL,
+  purchase_price NUMERIC(20, 8) NOT NULL,
+  purchase_currency TEXT NOT NULL,
+  purchase_date DATE NOT NULL,
+  current_price NUMERIC(20, 8),
+  current_price_updated_at TIMESTAMPTZ,
+  current_price_change_pct NUMERIC(10, 4),
+  -- Override de moneda de cotización (USD/ARS). NULL = default por tipo.
+  market_currency TEXT,
+  -- Si TRUE, el precio actual lo carga el usuario a mano y no se refresca desde la API.
+  is_manual_price BOOLEAN NOT NULL DEFAULT FALSE,
+  maturity_date DATE,
+  interest_rate NUMERIC(8, 4),
+  notes TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  -- >= 0: el cierre total de posición deja quantity = 0 (ver migración 20260702120000)
+  CONSTRAINT positive_quantity CHECK (quantity >= 0),
+  CONSTRAINT positive_price CHECK (purchase_price > 0)
+);
+
+CREATE INDEX idx_investments_user ON investments(user_id, is_active);
+CREATE INDEX idx_investments_account ON investments(account_id);
+CREATE INDEX idx_investments_type ON investments(type, is_active);
+CREATE INDEX idx_investments_ticker ON investments(ticker) WHERE ticker IS NOT NULL;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 7b. PORTFOLIO PERFORMANCE SNAPSHOTS (ROI / PnL diario, USD + blue)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE portfolio_performance_snapshots (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  snapshot_date DATE NOT NULL,
+  cost_basis_usd NUMERIC(20, 8) NOT NULL,
+  market_value_usd NUMERIC(20, 8) NOT NULL,
+  unrealized_pnl_usd NUMERIC(20, 8) NOT NULL,
+  roi_percent NUMERIC(14, 6) NOT NULL,
+  blue_ars_per_usd NUMERIC(20, 8) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT portfolio_snapshots_user_day UNIQUE (user_id, snapshot_date)
+);
+
+CREATE INDEX idx_portfolio_snapshots_user_day ON portfolio_performance_snapshots(user_id, snapshot_date DESC);
+
+ALTER TABLE portfolio_performance_snapshots ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY portfolio_performance_snapshots_all
+  ON portfolio_performance_snapshots
+  FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 8. BOT SESSIONS (sales are created by the 20260526130000 migration)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE bot_sessions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  telegram_chat_id BIGINT NOT NULL,
+  context JSONB NOT NULL DEFAULT '[]',
+  last_message_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_bot_sessions_user ON bot_sessions(user_id, last_message_at DESC);
+CREATE INDEX idx_bot_sessions_telegram ON bot_sessions(telegram_chat_id);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 9. EXCHANGE RATES (histórico de cotizaciones)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE exchange_rates (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  source TEXT NOT NULL,
+  from_currency TEXT NOT NULL,
+  to_currency TEXT NOT NULL DEFAULT 'ARS',
+  rate NUMERIC(20, 8) NOT NULL,
+  timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  CONSTRAINT unique_rate_per_timestamp UNIQUE(source, from_currency, to_currency, timestamp)
+);
+
+CREATE INDEX idx_exchange_rates_lookup ON exchange_rates(
+  from_currency, to_currency, timestamp DESC
+);
+CREATE INDEX idx_exchange_rates_timestamp ON exchange_rates(timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_exchange_rates_source_pair_timestamp_desc
+  ON exchange_rates (source, from_currency, to_currency, timestamp DESC);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- 10. BUDGET ALERTS (registro de alertas enviadas)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE TABLE budget_alerts (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  budget_id UUID NOT NULL REFERENCES budgets(id) ON DELETE CASCADE,
+  percent_reached INTEGER NOT NULL,
+  sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_budget_alerts_budget ON budget_alerts(budget_id, sent_at DESC);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- TRIGGERS — AUTO UPDATE timestamps
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para crear usuario automáticamente en signup
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.users (id, default_currency, timezone)
+  VALUES (
+    NEW.id,
+    'ARS',
+    'America/Argentina/Buenos_Aires'
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+CREATE TRIGGER trigger_users_updated_at BEFORE UPDATE ON users
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE TRIGGER trigger_accounts_updated_at BEFORE UPDATE ON accounts
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE TRIGGER trigger_transactions_updated_at BEFORE UPDATE ON transactions
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE TRIGGER trigger_investments_updated_at BEFORE UPDATE ON investments
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- FUNCTION — Actualizar saldo de cuenta al insertar/actualizar transacción
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATE OR REPLACE FUNCTION update_account_balance()
+RETURNS TRIGGER AS $$
+DECLARE
+  touched_accounts UUID[] := ARRAY[]::UUID[];
+  old_is_secondary_adjustment BOOLEAN := FALSE;
+  new_is_secondary_adjustment BOOLEAN := FALSE;
+BEGIN
+  IF TG_OP IN ('DELETE', 'UPDATE') THEN
+    touched_accounts := touched_accounts || ARRAY[OLD.account_id, OLD.destination_account_id];
+  END IF;
+  IF TG_OP IN ('INSERT', 'UPDATE') THEN
+    touched_accounts := touched_accounts || ARRAY[NEW.account_id, NEW.destination_account_id];
+  END IF;
+
+  -- Mismo orden de locks para A→B y B→A; los dos impactos son parte de la
+  -- transacción que modificó el movimiento, incluidos UPDATE y DELETE.
+  PERFORM id FROM public.accounts
+  WHERE id = ANY(touched_accounts)
+  ORDER BY id
+  FOR UPDATE;
+
+  IF TG_OP IN ('DELETE', 'UPDATE') AND OLD.type = 'adjustment' THEN
+    SELECT COALESCE(
+      a.type = 'credit_card' AND a.is_multicurrency
+      AND a.secondary_currency IS NOT NULL
+      AND upper(trim(COALESCE(OLD.currency, ''))) = upper(trim(a.secondary_currency)),
+      FALSE
+    ) INTO old_is_secondary_adjustment
+    FROM public.accounts a WHERE a.id = OLD.account_id;
+    old_is_secondary_adjustment := COALESCE(old_is_secondary_adjustment, FALSE);
+  END IF;
+  IF TG_OP IN ('INSERT', 'UPDATE') AND NEW.type = 'adjustment' THEN
+    SELECT COALESCE(
+      a.type = 'credit_card' AND a.is_multicurrency
+      AND a.secondary_currency IS NOT NULL
+      AND upper(trim(COALESCE(NEW.currency, ''))) = upper(trim(a.secondary_currency)),
+      FALSE
+    ) INTO new_is_secondary_adjustment
+    FROM public.accounts a WHERE a.id = NEW.account_id;
+    new_is_secondary_adjustment := COALESCE(new_is_secondary_adjustment, FALSE);
+  END IF;
+
+  -- Quitar el impacto anterior usando OLD.type, no el tipo de la fila nueva.
+  IF TG_OP IN ('DELETE', 'UPDATE') THEN
+    IF OLD.type IN ('expense', 'transfer') THEN
+      UPDATE public.accounts SET balance = balance + OLD.amount_in_account_currency
+      WHERE id = OLD.account_id;
+    ELSIF OLD.type = 'income' OR (OLD.type = 'adjustment' AND NOT old_is_secondary_adjustment) THEN
+      UPDATE public.accounts SET balance = balance - OLD.amount_in_account_currency
+      WHERE id = OLD.account_id;
+    END IF;
+    IF OLD.type = 'transfer' AND OLD.destination_account_id IS NOT NULL THEN
+      UPDATE public.accounts SET balance = balance - COALESCE(OLD.destination_amount_in_account_currency, OLD.amount * COALESCE(OLD.exchange_rate, 1))
+      WHERE id = OLD.destination_account_id;
+    END IF;
+  END IF;
+
+  -- Aplicar el impacto nuevo usando NEW.type y sus propias cuentas/monedas.
+  IF TG_OP IN ('INSERT', 'UPDATE') THEN
+    IF NEW.type IN ('expense', 'transfer') THEN
+      UPDATE public.accounts SET balance = balance - NEW.amount_in_account_currency
+      WHERE id = NEW.account_id;
+    ELSIF NEW.type = 'income' OR (NEW.type = 'adjustment' AND NOT new_is_secondary_adjustment) THEN
+      UPDATE public.accounts SET balance = balance + NEW.amount_in_account_currency
+      WHERE id = NEW.account_id;
+    END IF;
+    IF NEW.type = 'transfer' AND NEW.destination_account_id IS NOT NULL THEN
+      UPDATE public.accounts SET balance = balance + COALESCE(NEW.destination_amount_in_account_currency, NEW.amount * COALESCE(NEW.exchange_rate, 1))
+      WHERE id = NEW.destination_account_id;
+    END IF;
+  END IF;
+
+  IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SET search_path = public;
+
+CREATE TRIGGER trigger_update_account_balance
+  AFTER INSERT OR UPDATE OR DELETE ON transactions
+  FOR EACH ROW EXECUTE FUNCTION update_account_balance();
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- ROW LEVEL SECURITY (RLS) — Seguridad por usuario
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE accounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE recurring_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE budgets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE budget_alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE investments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bot_sessions ENABLE ROW LEVEL SECURITY;
+
+-- Users: solo puede ver y editar su propio perfil
+CREATE POLICY users_select ON users FOR SELECT USING (auth.uid() = id);
+CREATE POLICY users_update ON users
+  FOR UPDATE
+  USING (auth.uid() = id)
+  WITH CHECK (
+    auth.uid() = id
+    AND status = (SELECT u.status FROM users u WHERE u.id = auth.uid())
+    AND mp_preapproval_id IS NOT DISTINCT FROM (
+      SELECT u.mp_preapproval_id FROM users u WHERE u.id = auth.uid()
+    )
+    AND current_period_end IS NOT DISTINCT FROM (
+      SELECT u.current_period_end FROM users u WHERE u.id = auth.uid()
+    )
+    AND grace_period_end IS NOT DISTINCT FROM (
+      SELECT u.grace_period_end FROM users u WHERE u.id = auth.uid()
+    )
+  );
+
+-- Accounts: solo sus propias cuentas (TO authenticated; anon sin política = sin acceso)
+CREATE POLICY accounts_select_own ON accounts FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY accounts_insert_own ON accounts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY accounts_update_own ON accounts FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY accounts_delete_own ON accounts FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+-- Categories: sistema (is_system=true) son visibles para todos, custom solo para owner
+CREATE POLICY categories_select ON categories FOR SELECT USING (
+  is_system = TRUE OR auth.uid() = user_id
+);
+CREATE POLICY categories_insert ON categories FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id AND is_system = FALSE);
+CREATE POLICY categories_update ON categories FOR UPDATE TO authenticated
+  USING (auth.uid() = user_id AND is_system = FALSE)
+  WITH CHECK (auth.uid() = user_id AND is_system = FALSE);
+CREATE POLICY categories_delete ON categories FOR DELETE USING (auth.uid() = user_id);
+
+-- Transactions: solo las propias
+CREATE POLICY transactions_all ON transactions FOR ALL USING (auth.uid() = user_id);
+
+-- Recurring rules: solo las propias
+CREATE POLICY recurring_rules_all ON recurring_rules FOR ALL USING (auth.uid() = user_id);
+
+-- Budgets: solo los propios
+CREATE POLICY budgets_all ON budgets FOR ALL USING (auth.uid() = user_id);
+
+-- Budget alerts: solo filas ligadas a presupuestos del usuario
+CREATE POLICY budget_alerts_all ON budget_alerts FOR ALL USING (
+  EXISTS (SELECT 1 FROM budgets b WHERE b.id = budget_alerts.budget_id AND b.user_id = auth.uid())
+);
+
+-- Investments: solo las propias
+CREATE POLICY investments_all ON investments FOR ALL USING (auth.uid() = user_id);
+
+-- Bot sessions: solo las propias
+CREATE POLICY bot_sessions_all ON bot_sessions FOR ALL USING (auth.uid() = user_id);
+
+-- Exchange rates: lectura para authenticated; escritura SOLO service_role
+-- (fix rate poisoning — antes el INSERT estaba abierto a anon/authenticated).
+ALTER TABLE exchange_rates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY exchange_rates_select ON exchange_rates FOR SELECT TO authenticated USING (true);
+CREATE POLICY exchange_rates_insert ON exchange_rates FOR INSERT TO service_role WITH CHECK (true);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- SEED DATA — Categorías del sistema (argentinas)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INSERT INTO categories (id, user_id, name, type, icon, is_system) VALUES
+-- GASTOS
+(uuid_generate_v4(), NULL, 'Comida', 'expense', '🍔', TRUE),
+(uuid_generate_v4(), NULL, 'Transporte', 'expense', '🚗', TRUE),
+(uuid_generate_v4(), NULL, 'Hogar', 'expense', '🏠', TRUE),
+(uuid_generate_v4(), NULL, 'Salud', 'expense', '💊', TRUE),
+(uuid_generate_v4(), NULL, 'Ocio', 'expense', '🎮', TRUE),
+(uuid_generate_v4(), NULL, 'Suscripciones', 'expense', '📱', TRUE),
+(uuid_generate_v4(), NULL, 'Ropa', 'expense', '👕', TRUE),
+(uuid_generate_v4(), NULL, 'Educación', 'expense', '📚', TRUE),
+(uuid_generate_v4(), NULL, 'Trabajo', 'expense', '💼', TRUE),
+(uuid_generate_v4(), NULL, 'Viajes', 'expense', '✈️', TRUE),
+(uuid_generate_v4(), NULL, 'Mascotas', 'expense', '🐾', TRUE),
+(uuid_generate_v4(), NULL, 'Regalos', 'expense', '🎁', TRUE),
+(uuid_generate_v4(), NULL, 'Impuestos', 'expense', '💸', TRUE),
+(uuid_generate_v4(), NULL, 'Mantenimiento', 'expense', '🔧', TRUE),
+(uuid_generate_v4(), NULL, 'Salidas', 'expense', '🍺', TRUE),
+(uuid_generate_v4(), NULL, 'Deporte', 'expense', '🏋️', TRUE),
+(uuid_generate_v4(), NULL, 'Otros', 'expense', '🔁', TRUE),
+
+-- INGRESOS
+(uuid_generate_v4(), NULL, 'Sueldo', 'income', '💼', TRUE),
+(uuid_generate_v4(), NULL, 'Freelance', 'income', '💻', TRUE),
+(uuid_generate_v4(), NULL, 'Inversiones', 'income', '📈', TRUE),
+(uuid_generate_v4(), NULL, 'Alquiler', 'income', '🏘️', TRUE),
+(uuid_generate_v4(), NULL, 'Regalo', 'income', '🎁', TRUE),
+(uuid_generate_v4(), NULL, 'Reembolso', 'income', '🔄', TRUE),
+(uuid_generate_v4(), NULL, 'Venta', 'income', '💰', TRUE),
+(uuid_generate_v4(), NULL, 'Otros', 'income', '🔁', TRUE);
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- VIEWS — Queries complejos optimizados
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+-- Vista de saldos totales por usuario (con conversión a ARS blue y USD)
+-- security_invoker: evalúa con permisos del usuario que consulta (RLS en tablas base)
+CREATE OR REPLACE VIEW v_user_balance_summary
+WITH (security_invoker = true)
+AS
+WITH latest_rates AS (
+  SELECT DISTINCT ON (from_currency, to_currency)
+    from_currency,
+    to_currency,
+    rate,
+    source
+  FROM exchange_rates
+  WHERE source IN ('blue', 'oficial', 'coingecko')
+  ORDER BY from_currency, to_currency, timestamp DESC
+),
+blue_rate AS (
+  SELECT rate FROM latest_rates 
+  WHERE from_currency = 'USD' AND to_currency = 'ARS' AND source = 'blue'
+  LIMIT 1
+)
+SELECT
+  a.user_id,
+  COUNT(a.id) AS total_accounts,
+  SUM(CASE WHEN a.include_in_total THEN a.balance ELSE 0 END) AS total_balance_native,
+  SUM(
+    CASE
+      WHEN NOT a.include_in_total THEN 0
+      WHEN a.currency = 'ARS' THEN a.balance / COALESCE((SELECT rate FROM blue_rate), 1300)
+      WHEN a.currency = 'USD' THEN a.balance
+      ELSE a.balance * COALESCE(lr.rate, 1)
+    END
+  ) AS total_balance_usd,
+  SUM(
+    CASE
+      WHEN NOT a.include_in_total THEN 0
+      WHEN a.currency = 'ARS' THEN a.balance
+      WHEN a.currency = 'USD' THEN a.balance * COALESCE((SELECT rate FROM blue_rate), 1300)
+      ELSE a.balance * COALESCE(lr.rate, 1) * COALESCE((SELECT rate FROM blue_rate), 1300)
+    END
+  ) AS total_balance_ars_blue
+FROM accounts a
+LEFT JOIN latest_rates lr ON lr.from_currency = a.currency AND lr.to_currency = 'USD'
+WHERE a.is_active = TRUE
+GROUP BY a.user_id;
+
+-- Vista de gastos por categoría (mes actual)
+CREATE OR REPLACE VIEW v_current_month_expenses
+WITH (security_invoker = true)
+AS
+SELECT
+  t.user_id,
+  c.name AS category_name,
+  c.icon AS category_icon,
+  COUNT(t.id) AS transaction_count,
+  SUM(t.amount_in_account_currency) AS total_amount,
+  t.currency
+FROM transactions t
+JOIN categories c ON c.id = t.category_id
+WHERE
+  t.type = 'expense'
+  AND t.transaction_date >= date_trunc('month', NOW())
+  AND t.transaction_date < date_trunc('month', NOW()) + INTERVAL '1 month'
+GROUP BY t.user_id, c.name, c.icon, t.currency;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- FUNCTIONS — Business Logic en DB (mejor performance)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+-- Crear transacción en cuotas (genera N transacciones futuras)
+CREATE OR REPLACE FUNCTION create_installment_transactions(
+  p_user_id UUID,
+  p_account_id UUID,
+  p_total_amount NUMERIC,
+  p_currency TEXT,
+  p_installments INTEGER,
+  p_category_id UUID,
+  p_description TEXT,
+  p_start_date TIMESTAMPTZ DEFAULT NOW()
+)
+RETURNS UUID AS $$
+DECLARE
+  group_id UUID := uuid_generate_v4();
+  installment_amount NUMERIC;
+  installment_date TIMESTAMPTZ;
+  i INTEGER;
+BEGIN
+  installment_amount := p_total_amount / p_installments;
+  
+  FOR i IN 1..p_installments LOOP
+    installment_date := p_start_date + (i - 1) * INTERVAL '1 month';
+    
+    INSERT INTO transactions (
+      user_id,
+      type,
+      account_id,
+      amount,
+      currency,
+      amount_in_account_currency,
+      category_id,
+      description,
+      transaction_date,
+      installment_number,
+      installment_total,
+      installment_group_id
+    ) VALUES (
+      p_user_id,
+      'expense',
+      p_account_id,
+      installment_amount,
+      p_currency,
+      installment_amount,
+      p_category_id,
+      p_description || ' (' || i || '/' || p_installments || ')',
+      installment_date,
+      i,
+      p_installments,
+      group_id
+    );
+  END LOOP;
+  
+  RETURN group_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_multicurrency_balances(
+  p_user_id uuid,
+  p_account_ids uuid[]
+)
+RETURNS TABLE (
+  account_id uuid,
+  primary_balance numeric,
+  secondary_balance numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+WITH RECURSIVE multi_accounts AS (
+  SELECT
+    a.id,
+    upper(trim(a.currency)) AS primary_currency,
+    upper(trim(COALESCE(a.secondary_currency, ''))) AS secondary_currency
+  FROM accounts a
+  WHERE a.user_id = p_user_id
+    AND a.id = ANY(p_account_ids)
+    AND a.is_multicurrency = true
+    AND a.secondary_currency IS NOT NULL
+),
+source_entries AS (
+  SELECT
+    tx.account_id,
+    tx.transaction_date,
+    tx.id AS tx_id,
+    upper(trim(tx.currency)) AS tx_currency,
+    CASE
+      WHEN tx.type = 'expense' THEN -abs(tx.amount)
+      WHEN tx.type = 'income' THEN abs(tx.amount)
+      WHEN tx.type = 'adjustment' THEN sign(tx.amount_in_account_currency) * abs(tx.amount)
+      WHEN tx.type = 'transfer' THEN -abs(tx.amount)
+      ELSE 0
+    END AS signed_original_amount,
+    CASE
+      WHEN tx.type = 'expense' THEN -abs(tx.amount_in_account_currency)
+      WHEN tx.type = 'income' THEN abs(tx.amount_in_account_currency)
+      WHEN tx.type = 'adjustment' THEN tx.amount_in_account_currency
+      WHEN tx.type = 'transfer' THEN -abs(tx.amount_in_account_currency)
+      ELSE 0
+    END AS signed_primary_fallback,
+    false AS is_secondary_payment_waterfall,
+    NULL::numeric AS secondary_inflow_amount,
+    NULL::numeric AS secondary_to_primary_rate,
+    false AS is_primary_payment_waterfall,
+    NULL::numeric AS primary_inflow_amount,
+    NULL::numeric AS primary_to_secondary_rate
+  FROM transactions tx
+  JOIN multi_accounts ma ON ma.id = tx.account_id
+  WHERE tx.user_id = p_user_id
+),
+destination_entries AS (
+  SELECT
+    tx.destination_account_id AS account_id,
+    tx.transaction_date,
+    tx.id AS tx_id,
+    upper(trim(tx.currency)) AS tx_currency,
+    COALESCE(tx.destination_amount_in_account_currency, abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1)) AS signed_original_amount,
+    COALESCE(tx.destination_amount_in_account_currency, abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1)) AS signed_primary_fallback,
+    (
+      upper(trim(tx.currency)) = ma.secondary_currency
+      AND COALESCE(tx.exchange_rate, 1) <> 1
+    ) AS is_secondary_payment_waterfall,
+    CASE
+      WHEN upper(trim(tx.currency)) = ma.secondary_currency
+           AND COALESCE(tx.exchange_rate, 1) <> 1
+      THEN abs(tx.amount)
+      ELSE NULL::numeric
+    END AS secondary_inflow_amount,
+    CASE
+      WHEN upper(trim(tx.currency)) = ma.secondary_currency
+           AND COALESCE(tx.exchange_rate, 1) <> 1
+      THEN COALESCE(NULLIF(tx.exchange_rate, 0), 1)
+      ELSE NULL::numeric
+    END AS secondary_to_primary_rate,
+    (
+      upper(trim(tx.currency)) = ma.primary_currency
+      AND COALESCE(tx.exchange_rate, 1) <> 1
+    ) AS is_primary_payment_waterfall,
+    CASE
+      WHEN upper(trim(tx.currency)) = ma.primary_currency
+           AND COALESCE(tx.exchange_rate, 1) <> 1
+      THEN COALESCE(tx.destination_amount_in_account_currency, abs(tx.amount) * COALESCE(NULLIF(tx.exchange_rate, 0), 1))
+      ELSE NULL::numeric
+    END AS primary_inflow_amount,
+    CASE
+      WHEN upper(trim(tx.currency)) = ma.primary_currency
+           AND COALESCE(tx.exchange_rate, 1) <> 1
+      THEN 1 / COALESCE(NULLIF(tx.exchange_rate, 0), 1)
+      ELSE NULL::numeric
+    END AS primary_to_secondary_rate
+  FROM transactions tx
+  JOIN multi_accounts ma ON ma.id = tx.destination_account_id
+  WHERE tx.user_id = p_user_id
+    AND tx.type = 'transfer'
+),
+entries AS (
+  SELECT * FROM source_entries
+  UNION ALL
+  SELECT * FROM destination_entries
+),
+ordered_entries AS (
+  SELECT
+    e.*,
+    ROW_NUMBER() OVER (PARTITION BY e.account_id ORDER BY e.transaction_date, e.tx_id) AS rn
+  FROM entries e
+),
+walk AS (
+  SELECT
+    oe.account_id,
+    oe.rn,
+    CASE
+      WHEN oe.is_secondary_payment_waterfall THEN
+        oe.secondary_inflow_amount * COALESCE(oe.secondary_to_primary_rate, 1)
+      WHEN oe.is_primary_payment_waterfall THEN
+        oe.primary_inflow_amount
+      ELSE
+        CASE
+          WHEN oe.tx_currency = ma.primary_currency THEN oe.signed_original_amount
+          WHEN oe.tx_currency = ma.secondary_currency THEN 0
+          ELSE oe.signed_primary_fallback
+        END
+    END AS primary_balance,
+    CASE
+      WHEN oe.is_secondary_payment_waterfall THEN
+        0
+      WHEN oe.is_primary_payment_waterfall THEN
+        0
+      ELSE
+        CASE
+          WHEN oe.tx_currency = ma.secondary_currency THEN oe.signed_original_amount
+          ELSE 0
+        END
+    END AS secondary_balance
+  FROM ordered_entries oe
+  JOIN multi_accounts ma ON ma.id = oe.account_id
+  WHERE oe.rn = 1
+
+  UNION ALL
+
+  SELECT
+    oe.account_id,
+    oe.rn,
+    w.primary_balance +
+      CASE
+        WHEN oe.is_secondary_payment_waterfall THEN
+          (
+            oe.secondary_inflow_amount -
+            CASE
+              WHEN w.secondary_balance < 0 THEN LEAST(oe.secondary_inflow_amount, abs(w.secondary_balance))
+              ELSE 0
+            END
+          ) * COALESCE(oe.secondary_to_primary_rate, 1)
+        WHEN oe.is_primary_payment_waterfall THEN
+          CASE
+            WHEN w.primary_balance < 0 THEN LEAST(oe.primary_inflow_amount, abs(w.primary_balance))
+            ELSE 0
+          END
+        ELSE
+          CASE
+            WHEN oe.tx_currency = ma.primary_currency THEN oe.signed_original_amount
+            WHEN oe.tx_currency = ma.secondary_currency THEN 0
+            ELSE oe.signed_primary_fallback
+          END
+      END AS primary_balance,
+    w.secondary_balance +
+      CASE
+        WHEN oe.is_secondary_payment_waterfall THEN
+          CASE
+            WHEN w.secondary_balance < 0 THEN LEAST(oe.secondary_inflow_amount, abs(w.secondary_balance))
+            ELSE 0
+          END
+        WHEN oe.is_primary_payment_waterfall THEN
+          (
+            oe.primary_inflow_amount -
+            CASE
+              WHEN w.primary_balance < 0 THEN LEAST(oe.primary_inflow_amount, abs(w.primary_balance))
+              ELSE 0
+            END
+          ) * COALESCE(oe.primary_to_secondary_rate, 1)
+        ELSE
+          CASE
+            WHEN oe.tx_currency = ma.secondary_currency THEN oe.signed_original_amount
+            ELSE 0
+          END
+      END AS secondary_balance
+  FROM walk w
+  JOIN ordered_entries oe
+    ON oe.account_id = w.account_id
+   AND oe.rn = w.rn + 1
+  JOIN multi_accounts ma ON ma.id = oe.account_id
+),
+latest AS (
+  SELECT DISTINCT ON (account_id)
+    account_id,
+    primary_balance,
+    secondary_balance
+  FROM walk
+  ORDER BY account_id, rn DESC
+)
+SELECT
+  ma.id AS account_id,
+  COALESCE(l.primary_balance, 0) AS primary_balance,
+  COALESCE(l.secondary_balance, 0) AS secondary_balance
+FROM multi_accounts ma
+LEFT JOIN latest l ON l.account_id = ma.id;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_category_breakdown(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz,
+  p_type transaction_type
+)
+RETURNS TABLE (
+  category_id uuid,
+  category_name text,
+  category_icon text,
+  amount numeric,
+  tx_count bigint
+)
+LANGUAGE sql
+STABLE
+AS $$
+SELECT
+  t.category_id,
+  COALESCE(c.name, 'Sin categoría') AS category_name,
+  COALESCE(c.icon, '❓') AS category_icon,
+  SUM(t.amount_in_account_currency) AS amount,
+  COUNT(*) AS tx_count
+FROM transactions t
+LEFT JOIN categories c ON c.id = t.category_id
+JOIN accounts a ON a.id = t.account_id
+LEFT JOIN accounts da ON da.id = t.destination_account_id
+WHERE t.user_id = p_user_id
+  AND t.type = p_type
+  AND t.transaction_date >= p_start
+  AND t.transaction_date <= p_end
+  AND a.is_active = true
+  AND (t.destination_account_id IS NULL OR da.is_active = true)
+GROUP BY t.category_id, COALESCE(c.name, 'Sin categoría'), COALESCE(c.icon, '❓')
+ORDER BY amount DESC;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_monthly_trend(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz
+)
+RETURNS TABLE (
+  month_key text,
+  expenses numeric,
+  income numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+WITH series AS (
+  SELECT generate_series(
+    date_trunc('month', p_start),
+    date_trunc('month', p_end),
+    interval '1 month'
+  ) AS month_start
+),
+base AS (
+  SELECT
+    date_trunc('month', t.transaction_date) AS month_start,
+    SUM(CASE WHEN t.type = 'expense' THEN t.amount_in_account_currency ELSE 0 END) AS expenses,
+    SUM(CASE WHEN t.type = 'income' THEN t.amount_in_account_currency ELSE 0 END) AS income
+  FROM transactions t
+  JOIN accounts a ON a.id = t.account_id
+  LEFT JOIN accounts da ON da.id = t.destination_account_id
+  WHERE t.user_id = p_user_id
+    AND t.transaction_date >= p_start
+    AND t.transaction_date <= p_end
+    AND a.is_active = true
+    AND (t.destination_account_id IS NULL OR da.is_active = true)
+  GROUP BY date_trunc('month', t.transaction_date)
+)
+SELECT
+  to_char(s.month_start, 'YYYY-MM') AS month_key,
+  COALESCE(b.expenses, 0) AS expenses,
+  COALESCE(b.income, 0) AS income
+FROM series s
+LEFT JOIN base b ON b.month_start = s.month_start
+ORDER BY s.month_start ASC;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_daily_trend(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz
+)
+RETURNS TABLE (
+  day_key date,
+  expenses numeric,
+  income numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+WITH series AS (
+  SELECT generate_series(
+    date_trunc('day', p_start)::date,
+    date_trunc('day', p_end)::date,
+    interval '1 day'
+  )::date AS day_key
+),
+base AS (
+  SELECT
+    (t.transaction_date AT TIME ZONE 'UTC')::date AS day_key,
+    SUM(CASE WHEN t.type = 'expense' THEN t.amount_in_account_currency ELSE 0 END) AS expenses,
+    SUM(CASE WHEN t.type = 'income' THEN t.amount_in_account_currency ELSE 0 END) AS income
+  FROM transactions t
+  JOIN accounts a ON a.id = t.account_id
+  LEFT JOIN accounts da ON da.id = t.destination_account_id
+  WHERE t.user_id = p_user_id
+    AND t.transaction_date >= p_start
+    AND t.transaction_date <= p_end
+    AND a.is_active = true
+    AND (t.destination_account_id IS NULL OR da.is_active = true)
+  GROUP BY (t.transaction_date AT TIME ZONE 'UTC')::date
+)
+SELECT
+  s.day_key,
+  COALESCE(b.expenses, 0) AS expenses,
+  COALESCE(b.income, 0) AS income
+FROM series s
+LEFT JOIN base b ON b.day_key = s.day_key
+ORDER BY s.day_key ASC;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_account_breakdown(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz
+)
+RETURNS TABLE (
+  account_name text,
+  account_icon text,
+  account_color text,
+  amount numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+SELECT
+  COALESCE(a.name, 'Sin cuenta') AS account_name,
+  COALESCE(a.icon, '💳') AS account_icon,
+  COALESCE(a.color, '#6B7280') AS account_color,
+  SUM(t.amount_in_account_currency) AS amount
+FROM transactions t
+LEFT JOIN accounts a ON a.id = t.account_id
+LEFT JOIN accounts da ON da.id = t.destination_account_id
+WHERE t.user_id = p_user_id
+  AND t.type = 'expense'
+  AND t.transaction_date >= p_start
+  AND t.transaction_date <= p_end
+  AND a.is_active = true
+  AND (t.destination_account_id IS NULL OR da.is_active = true)
+GROUP BY COALESCE(a.name, 'Sin cuenta'), COALESCE(a.icon, '💳'), COALESCE(a.color, '#6B7280')
+ORDER BY amount DESC;
+$$;
+
+CREATE OR REPLACE FUNCTION analytics_top_expenses(
+  p_user_id uuid,
+  p_start timestamptz,
+  p_end timestamptz,
+  p_limit integer DEFAULT 10
+)
+RETURNS SETOF transactions
+LANGUAGE sql
+STABLE
+AS $$
+SELECT t.*
+FROM transactions t
+JOIN accounts a ON a.id = t.account_id
+LEFT JOIN accounts da ON da.id = t.destination_account_id
+WHERE t.user_id = p_user_id
+  AND t.type = 'expense'
+  AND t.transaction_date >= p_start
+  AND t.transaction_date <= p_end
+  AND a.is_active = true
+  AND (t.destination_account_id IS NULL OR da.is_active = true)
+ORDER BY t.amount_in_account_currency DESC
+LIMIT GREATEST(1, LEAST(p_limit, 100));
+$$;
+
+-- Obtener gasto vs presupuesto del mes actual
+CREATE OR REPLACE FUNCTION get_budget_status(
+  p_user_id UUID,
+  p_month DATE DEFAULT date_trunc('month', NOW())::DATE
+)
+RETURNS TABLE (
+  category_id UUID,
+  category_name TEXT,
+  budget_amount NUMERIC,
+  spent_amount NUMERIC,
+  remaining_amount NUMERIC,
+  percent_used NUMERIC
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    b.category_id,
+    c.name,
+    b.amount,
+    COALESCE(SUM(t.amount_in_account_currency), 0) AS spent,
+    b.amount - COALESCE(SUM(t.amount_in_account_currency), 0) AS remaining,
+    ROUND((COALESCE(SUM(t.amount_in_account_currency), 0) / b.amount * 100)::NUMERIC, 2) AS percent
+  FROM budgets b
+  JOIN categories c ON c.id = b.category_id
+  LEFT JOIN transactions t ON
+    t.category_id = b.category_id
+    AND t.user_id = p_user_id
+    AND t.type = 'expense'
+    AND DATE_TRUNC('month', t.transaction_date) = DATE_TRUNC('month', p_month::TIMESTAMPTZ)
+  WHERE b.user_id = p_user_id AND b.month = p_month
+  GROUP BY b.category_id, c.name, b.amount;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Vincular Telegram a usuario
+CREATE OR REPLACE FUNCTION link_telegram_to_user(
+  p_user_id UUID,
+  p_telegram_chat_id BIGINT
+)
+RETURNS VOID AS $$
+BEGIN
+  -- SECURITY DEFINER: no confiar en el caller. Se vincula SIEMPRE al
+  -- usuario autenticado (auth.uid()); p_user_id se ignora salvo para
+  -- rechazar un intento de vincular a otra cuenta.
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'No autenticado';
+  END IF;
+  IF p_user_id IS NOT NULL AND p_user_id <> auth.uid() THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+
+  UPDATE users
+  SET telegram_chat_id = p_telegram_chat_id
+  WHERE id = auth.uid();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE ALL ON FUNCTION link_telegram_to_user(UUID, BIGINT) FROM PUBLIC, anon, authenticated;
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

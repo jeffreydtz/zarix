@@ -1,3 +1,4 @@
+import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import type { FinancialContext } from '@/lib/ai/prompts';
 import { parseBotTransactionDateInput } from '@/lib/transaction-date';
 import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
@@ -217,13 +218,8 @@ export async function executeBotTransaction(
     };
   } catch (txError: unknown) {
     console.error('Transaction error:', txError);
-    // Nota: no bloqueamos saldos negativos — las cuentas de deuda / tarjetas de
-    // crédito quedan en negativo por diseño. (Antes había un handler para un
-    // constraint `positive_balance` que no existe en el schema: código muerto,
-    // removido 2026-08-11.)
-    return {
-      kind: 'abort',
-      reply: 'Hubo un error al registrar la transacción. ¿Podés intentar de nuevo?',
-    };
+    // A transport error can happen after the ledger commit. Returning abort here
+    // invites the model to issue a second write with a fresh operation key.
+    throw new AmbiguousFinancialMutationError(txError);
   }
 }

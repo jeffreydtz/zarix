@@ -5,6 +5,8 @@ import { defineConfig } from 'vitest/config';
 // `vite-tsconfig-paths` is intentionally NOT used (not a dependency);
 // the alias is resolved manually here to keep the test toolchain minimal.
 export default defineConfig({
+  // Next preserves JSX for its compiler; Vitest needs executable component code.
+  oxc: { jsx: { runtime: 'automatic' } },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
@@ -20,6 +22,24 @@ export default defineConfig({
       reporter: ['text', 'text-summary', 'lcov', 'html', 'json-summary'],
       reportsDirectory: './coverage',
       include: [
+        // Risk-focused instrumentation, not whole-application coverage.
+        'lib/plans/**/*.ts',
+        'lib/billing/**/*.ts',
+        'lib/services/accounts.ts',
+        'lib/services/subscriptions.ts',
+        'lib/services/mercado-pago-service.ts',
+        'lib/services/notification-outbox.ts',
+        'lib/services/botSessions.ts',
+        'lib/services/cotizaciones.ts',
+        'lib/services/internal-ai-chat.ts',
+        'lib/offline-transaction-store.ts',
+        'lib/hooks/useOfflineQueue.ts',
+        'lib/transaction-idempotency.ts',
+        'lib/financial-request-context.ts',
+        'app/api/accounts/movement-selection/route.ts',
+        'app/api/billing/cancel/route.ts',
+        'app/api/export/backup/route.ts',
+        'components/settings/SettingsForm.tsx',
         'lib/services/transactions.ts',
         'lib/cron/cron-job.ts',
         'lib/cron/recurring-schedule.ts',

@@ -1,3 +1,6 @@
+import { randomUUID } from 'node:crypto';
+import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
+import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { ApiError } from '@/lib/api-handler';
 import { cotizacionesService } from './cotizaciones';
@@ -62,6 +65,7 @@ const STABLECOIN_USD = new Set(['USDT', 'USDC', 'DAI', 'BUSD']);
 
 export interface CreateAccountInput {
   userId: string;
+  requestId?: string;
   name: string;
   type: string;
   currency: string;
@@ -186,15 +190,6 @@ class AccountsService {
         : input.secondaryCurrency,
     };
 
-    const { data: accounts } = await supabase
-      .from('accounts')
-      .select('sort_order')
-      .eq('user_id', input.userId)
-      .order('sort_order', { ascending: false })
-      .limit(1);
-
-    const nextSortOrder = accounts && accounts.length > 0 ? accounts[0].sort_order + 1 : 0;
-
     const initial = Number(input.initialBalance ?? 0);
     const balanceStored = normalizeDebtBalanceForStorage(
       Boolean(input.isDebt),
@@ -202,54 +197,29 @@ class AccountsService {
       initial
     );
 
-    // El saldo inicial se registra como un movimiento `adjustment` (abajo), no
-    // escribiendo balance directo: así el ledger es la única fuente de verdad y
-    // recomputeAccountBalanceFromLedger reproduce el saldo (antes lo borraba).
-    const { data, error } = await supabase
-      .from('accounts')
-      .insert({
-        user_id: input.userId,
-        name: input.name,
-        type: input.type as any,
-        currency: input.currency,
-        balance: 0,
-        icon: input.icon || null,
-        color: input.color || '#3B82F6',
-        is_debt: input.isDebt || false,
-        include_in_total: input.includeInTotal !== undefined ? input.includeInTotal : true,
-        include_in_liquid: input.includeInLiquid !== undefined ? input.includeInLiquid : true,
-        min_balance: input.minBalance || null,
-        credit_limit: input.creditLimit || null,
-        closing_day: input.closingDay || null,
-        due_day: input.dueDay || null,
-        last_4_digits: input.last4Digits || null,
-        is_multicurrency: input.isMulticurrency || false,
-        secondary_currency: input.secondaryCurrency || null,
-        sort_order: nextSortOrder,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Saldo inicial como movimiento de ajuste (fuente única = ledger). El trigger
-    // de saldo lleva accounts.balance de 0 a balanceStored.
-    if (balanceStored !== 0) {
-      const { error: adjErr } = await supabase.from('transactions').insert({
-        user_id: input.userId,
-        type: 'adjustment',
-        account_id: data.id,
-        amount: Math.abs(balanceStored),
-        currency: input.currency,
-        amount_in_account_currency: balanceStored,
-        description: 'Saldo inicial',
-        transaction_date: new Date().toISOString(),
-      });
-      if (adjErr) throw adjErr;
-      return { ...data, balance: balanceStored };
+    if (!Number.isFinite(balanceStored)) throw new ApiError('El saldo inicial debe ser finito.');
+    const requestId = input.requestId ?? nextFinancialRequestId() ?? randomUUID();
+    if (!validTransactionRequestId(requestId)) {
+      throw new ApiError('Identificador de solicitud inválido.');
     }
-
-    return data;
+    const values = {
+      name: input.name, type: input.type, currency: input.currency,
+      icon: input.icon || null, color: input.color || '#3B82F6', is_debt: input.isDebt || false,
+      include_in_total: input.includeInTotal ?? true, include_in_liquid: input.includeInLiquid ?? true,
+      min_balance: input.minBalance || null, credit_limit: input.creditLimit || null,
+      closing_day: input.closingDay || null, due_day: input.dueDay || null,
+      last_4_digits: input.last4Digits || null, is_multicurrency: input.isMulticurrency || false,
+      secondary_currency: input.secondaryCurrency || null,
+    };
+    const { data, error } = await supabase.rpc('create_account_with_opening_balance', {
+      p_user_id: input.userId,
+      p_request_id: requestId,
+      p_request_hash: transactionRequestHash({ account: values, initialBalance: balanceStored }),
+      p_account: values,
+      p_initial_balance: balanceStored,
+    });
+    if (error) throw error;
+    return data as Account;
   }
 
   /**

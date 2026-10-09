@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 
-const mocks = vi.hoisted(() => ({ getPreapproval: vi.fn(), update: vi.fn(), lookup: vi.fn() }));
+const mocks = vi.hoisted(() => ({ getPreapproval: vi.fn(), getAuthorizedPayment: vi.fn(), getUserState: vi.fn(), update: vi.fn(), lookup: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => ({
   from: () => {
     const query: any = { select: () => query, eq: () => query,
@@ -12,10 +12,11 @@ vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => ({
 }) }));
 vi.mock('@/lib/services/mercado-pago-service', () => ({ mercadoPagoService: {
   getPreapproval: mocks.getPreapproval,
-  mapPreapprovalStatusToSubscription: () => ({ status: 'ACTIVE' }),
+  getAuthorizedPayment: mocks.getAuthorizedPayment,
+  mapPreapprovalStatusToSubscription: () => ({ status: 'CANCELED', gracePeriodEnd: null }),
 } }));
 vi.mock('@/lib/services/subscriptions', () => ({ subscriptionsService: {
-  getUserState: async () => ({ status: 'ACTIVE' }), updateUserState: mocks.update,
+  getUserState: mocks.getUserState, updateUserState: mocks.update,
 } }));
 import { POST, GET } from '@/app/api/webhooks/mercado-pago/route';
 
@@ -31,6 +32,11 @@ function request(method: 'GET' | 'POST', query: string, payload?: unknown, signR
 beforeEach(() => {
   vi.stubEnv('MP_WEBHOOK_SECRET', secret);
   mocks.getPreapproval.mockReset().mockResolvedValue({ id: resourceId, external_reference: 'user-a', status: 'authorized' });
+  vi.stubEnv('MP_SUBSCRIPTION_AMOUNT', '1500');
+  vi.stubEnv('MP_SUBSCRIPTION_CURRENCY', 'ARS');
+  vi.stubEnv('MP_SUBSCRIPTION_PLANS_JSON', '');
+  mocks.getAuthorizedPayment.mockReset();
+  mocks.getUserState.mockReset().mockResolvedValue({ status: 'ACTIVE', mp_preapproval_id: resourceId, current_period_end: null, grace_period_end: null });
   mocks.lookup.mockReset().mockResolvedValue({ data: { id: 'user-a' } });
   mocks.update.mockReset().mockResolvedValue({ status: 'ACTIVE' });
 });
@@ -73,5 +79,70 @@ describe('Mercado Pago signed resource binding without live payments', () => {
     expect((await POST(request('POST', '', { resource: `https://api.mercadopago.com/preapproval/${resourceId}` }, null))).status).toBe(401);
     expect(mocks.getPreapproval).not.toHaveBeenCalled();
     expect(mocks.update).not.toHaveBeenCalled();
+  });
+});
+
+describe('billing webhook provider/tenant failures with isolated doubles', () => {
+  it('requires a configured secret', async () => {
+    vi.stubEnv('MP_WEBHOOK_SECRET', '');
+    expect((await GET(request('GET', `data.id=${resourceId}`))).status).toBe(401);
+    expect(mocks.lookup).not.toHaveBeenCalled();
+  });
+  it('rejects a forged signature before any database or provider work', async () => {
+    const req = request('GET', `data.id=${resourceId}`);
+    req.headers.set('x-signature', 'ts=123,v1=forged');
+    expect((await GET(req)).status).toBe(401);
+    expect(mocks.lookup).not.toHaveBeenCalled();
+  });
+  it('does not attach an old or unassociated subscription using external_reference', async () => {
+    mocks.lookup.mockResolvedValue({ data: null });
+    expect((await GET(request('GET', `data.id=${resourceId}`))).status).toBe(200);
+    expect(mocks.lookup).toHaveBeenCalledTimes(1);
+    expect(mocks.getPreapproval).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
+  });
+  it.each([{ id: 'other-resource', external_reference: 'user-a' }, { id: resourceId, external_reference: 'other-user' }])('rejects mismatched provider association %j', fixture => {
+    mocks.getPreapproval.mockResolvedValue({ ...fixture, status: 'authorized' });
+    return GET(request('GET', `data.id=${resourceId}`)).then(response => {
+      expect(response.status).toBe(500);
+      expect(mocks.update).not.toHaveBeenCalled();
+    });
+  });
+  it('does not mutate when the association changes between lookups', async () => {
+    mocks.getUserState.mockResolvedValue({ status: 'ACTIVE', mp_preapproval_id: 'newer-agreement' });
+    expect((await GET(request('GET', `data.id=${resourceId}`))).status).toBe(200);
+    expect(mocks.getPreapproval).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
+  });
+  it('passes the pre-fetch snapshot into a conditional write and retries database failures', async () => {
+    mocks.update.mockRejectedValue(new Error('snapshot changed'));
+    expect((await GET(request('GET', `data.id=${resourceId}`))).status).toBe(500);
+    expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ expectedState: expect.objectContaining({ mp_preapproval_id: resourceId, status: 'ACTIVE' }) }));
+  });
+  it('does not acknowledge a failed owner lookup as success', async () => {
+    mocks.lookup.mockResolvedValue({ data: null, error: new Error('database unavailable') });
+    expect((await GET(request('GET', `data.id=${resourceId}`))).status).toBe(500);
+    expect(mocks.update).not.toHaveBeenCalled();
+  });
+  it('is idempotent when a repeated event has no state change', async () => {
+    mocks.getUserState.mockResolvedValue({ status: 'CANCELED', mp_preapproval_id: resourceId, current_period_end: null, grace_period_end: null });
+    expect((await GET(request('GET', `data.id=${resourceId}`))).status).toBe(200);
+    expect(mocks.update).not.toHaveBeenCalled();
+  });
+  it('ignores unsupported event types rather than treating payments as subscriptions', async () => {
+    expect((await POST(request('POST', `data.id=${resourceId}&type=payment`, { data: { id: resourceId }, type: 'payment' }))).status).toBe(200);
+    expect(mocks.getPreapproval).not.toHaveBeenCalled();
+    expect(mocks.lookup).not.toHaveBeenCalled();
+  });
+  it('processes a signed installment only after verifying its subscription and user', async () => {
+    vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T03:00:00Z'));
+    try {
+      mocks.getAuthorizedPayment.mockResolvedValue({ id: '123', preapproval_id: resourceId, external_reference: 'user-a', currency_id: 'ARS', transaction_amount: 1500, debit_date: '2026-10-01T00:00:00Z', payment: { id: '456', status: 'approved' } });
+      mocks.getPreapproval.mockResolvedValue({ id: resourceId, external_reference: 'user-a', status: 'authorized', auto_recurring: { frequency: 1, frequency_type: 'months', currency_id: 'ARS', transaction_amount: 1500 } });
+      const response = await POST(request('POST', 'data.id=123&type=subscription_authorized_payment', { data: { id: 123 }, type: 'subscription_authorized_payment' }, '123'));
+      expect(response.status).toBe(200);
+      expect(mocks.getAuthorizedPayment).toHaveBeenCalledTimes(2);
+      expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user-a', currentPeriodEnd: '2026-11-01T00:00:00.000Z' }));
+    } finally { vi.useRealTimers(); }
   });
 });

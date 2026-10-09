@@ -7,10 +7,12 @@ import { coerceTransactionCurrency, isTransactionCurrency } from '@/lib/constant
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
-import { transactionsService } from '@/lib/services/transactions';
+import { createHash } from 'node:crypto';
+import { computeTransferAmounts } from '@/lib/services/transactions';
+import { transactionRequestHash } from '@/lib/transaction-idempotency';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
 import type { ImportSkippedDetail } from '@/types/import';
-import { errorResponse } from '@/lib/api-handler';
+import { ApiError, errorResponse } from '@/lib/api-handler';
 
 const MAX_SKIPPED_DETAILS = 250;
 /** Límite de tamaño de archivo de import (mitiga DoS y reduce superficie de bugs en parsers). */
@@ -872,6 +874,26 @@ export async function POST(request: NextRequest) {
     const dateParseOpts: ParseImportDateOpts = { ambiguousOrder };
 
     const lowerName = file.name.toLowerCase();
+    const fileHash = createHash('sha256').update(Buffer.from(await file.arrayBuffer())).digest('hex');
+    const batchId = formData.get('batchId');
+    if (mode === 'import' && (typeof batchId !== 'string' ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(batchId))) {
+      throw new ApiError('Previsualizá el archivo y confirmá un lote con identificador estable.', 400);
+    }
+    if (mode === 'import' && formData.get('ownerId') !== user.id) {
+      throw new ApiError('El lote pertenece a otra sesión. Volvé a seleccionarlo con la cuenta original.', 409);
+    }
+    const skipDuplicates = formData.get('skipDuplicates') === 'true';
+    const resolutionsSchema = z.record(z.object({
+      action: z.enum(['none', 'map', 'keep_name']), accountId: z.string().optional(),
+    }));
+    let resolutions: Record<string, UnresolvedResolution> = {};
+    if (mode === 'import') {
+      try { resolutions = resolutionsSchema.parse(JSON.parse(String(formData.get('resolutions') || '{}'))); }
+      catch { throw new ApiError('El mapeo de cuentas no es válido.', 400); }
+    }
+    const batchHash = transactionRequestHash({ fileHash, format: lowerName.split('.').pop(),
+      dateFormat: ambiguousOrder, resolutions, skipDuplicates, protocol: 1 });
 
     let combined: ParsedImport;
 
@@ -1104,21 +1126,36 @@ export async function POST(request: NextRequest) {
 
     const serviceSupabase = createServiceClientSync();
 
-    const { data: accountsRaw } = await serviceSupabase
+    const { data: accountsRaw, error: accountsError } = await serviceSupabase
       .from('accounts')
       .select('id, name, currency')
       .eq('user_id', user.id)
       .eq('is_active', true);
 
-    const accounts = [...(accountsRaw || [])].sort((a, b) =>
+    if (accountsError) throw accountsError;
+    let accounts = [...(accountsRaw || [])].sort((a, b) =>
       a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
     );
 
-    const { data: categories } = await serviceSupabase
+    const { data: categoriesRaw, error: categoriesError } = await serviceSupabase
       .from('categories')
       .select('id, name')
       .or(`user_id.eq.${user.id},is_system.eq.true`);
 
+    if (categoriesError) throw categoriesError;
+    let categories = categoriesRaw || [];
+    if (mode === 'import') {
+      // Freeze automatic name mapping as well as user choices for the entire
+      // batch. An account rename while retrying must never redirect a row.
+      const { data: context, error } = await serviceSupabase.rpc('begin_import_batch', {
+        p_user_id: user.id, p_batch_id: batchId, p_intent_hash: batchHash,
+        p_context: { accounts, categories },
+      });
+      if (error?.code === 'Z0001') throw new ApiError('Ese lote ya está vinculado a otro archivo o configuración. Usá sus datos originales.', 409);
+      if (error) throw error;
+      accounts = context.accounts;
+      categories = context.categories;
+    }
     const accountMap = buildImportLookupMap(accounts || []);
     const validAccountIds = new Set(accounts.map((a) => a.id));
     const accountCurrencyById = new Map(accounts.map((a) => [a.id, a.currency]));
@@ -1140,6 +1177,8 @@ export async function POST(request: NextRequest) {
     if (mode === 'preview') {
       return NextResponse.json({
         success: true,
+        fileHash,
+        ownerId: user.id,
         total: totalCount,
         importKind: importKindPreview,
         unresolvedAccounts: unresolvedAccountNames,
@@ -1147,16 +1186,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    let resolutions: Record<string, UnresolvedResolution> = {};
-    try {
-      const rawResolutions = formData.get('resolutions') as string | null;
-      resolutions = rawResolutions ? JSON.parse(rawResolutions) : {};
-    } catch {
-      resolutions = {};
-    }
-
     let imported = 0;
     let skipped = 0;
+    let pending = 0;
     const skippedDetails: ImportSkippedDetail[] = [];
 
     const pushSkip = (detail: ImportSkippedDetail) => {
@@ -1167,16 +1199,86 @@ export async function POST(request: NextRequest) {
     };
 
     // Filas descartadas durante el parseo (fecha/monto ilegibles): cuentan
-    // como omitidas con su detalle, igual que los errores de inserción.
+    // como omitidas con su detalle. Una escritura sin confirmar nunca se omite.
     for (const parseSkip of combined.skips) {
       pushSkip(parseSkip);
     }
 
-    const seenFingerprints = new Set<string>();
-    const fingerprint = (...parts: Array<string | number | null | undefined>) =>
-      parts.map((p) => String(p ?? '').trim().toLowerCase()).join('|');
+    // Receipts are loaded before resolving accounts or fetching FX. A committed
+    // row remains confirmed even if the account is later archived or FX fails.
+    const priorRows = new Map<string, { request_hash: string; response: unknown }>();
+    for (let offset = 0; ; offset += 1000) {
+      const { data: receipts, error: receiptError } = await serviceSupabase.from('transaction_requests')
+        .select('request_id, request_hash, response').eq('user_id', user.id)
+        .like('request_id', `import:${batchId}:%`).order('request_id').range(offset, offset + 999);
+      if (receiptError) throw receiptError;
+      for (const receipt of receipts || []) priorRows.set(receipt.request_id, receipt);
+      if ((receipts?.length || 0) < 1000) break;
+    }
+    const rowIdentity = (kind: string, index: number, row: object) => ({
+      requestId: `import:${batchId}:${kind}:${index}`,
+      requestHash: transactionRequestHash({ batchHash, kind, index, row }),
+    });
+    const duplicateSkip = () => pushSkip({
+      title: 'Movimiento omitido — coincidencia exacta',
+      reason: 'Elegiste omitir coincidencias por fecha y hora, tipo, monto, moneda, cuentas, equivalentes, categoría, descripción y notas.',
+      suggestion: 'Si son operaciones distintas, importá un lote nuevo sin omitir coincidencias.',
+    });
+    const countAcknowledgedRow = (response: unknown): boolean => {
+      if (!response || typeof response !== 'object') return false;
+      if ('import_skipped_duplicate' in response && response.import_skipped_duplicate === true) {
+        duplicateSkip();
+      } else if ('id' in response && typeof response.id === 'string' && response.id.length > 0 &&
+          'user_id' in response && response.user_id === user.id) {
+        imported++;
+      } else {
+        return false;
+      }
+      return true;
+    };
+    const replayRow = ({ requestId, requestHash }: ReturnType<typeof rowIdentity>): boolean => {
+      const prior = priorRows.get(requestId);
+      if (!prior) return false;
+      if (prior.request_hash !== requestHash) throw new ApiError('El contenido de esta fila cambió para el mismo lote.', 409);
+      if (!countAcknowledgedRow(prior.response)) pending++;
+      return true;
+    };
+    const reconcileRow = async (identity: ReturnType<typeof rowIdentity>) => {
+      try {
+        const { data: receipt, error } = await serviceSupabase.from('transaction_requests')
+          .select('request_hash, response').eq('user_id', user.id)
+          .eq('request_id', identity.requestId).maybeSingle();
+        if (!error && receipt) {
+          if (receipt.request_hash !== identity.requestHash) {
+            throw new ApiError('El contenido de esta fila cambió para el mismo lote.', 409);
+          }
+          if (countAcknowledgedRow(receipt.response)) return;
+        }
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+      }
+      // An absent/unreadable receipt can race an in-flight commit. Keep the
+      // original batch pending; only its same-ID replay may settle the outcome.
+      pending++;
+    };
+    const persistRow = async (identity: ReturnType<typeof rowIdentity>, row: Record<string, unknown>) => {
+      // A transport/RPC error (or malformed acknowledgement) does not prove a
+      // rollback. Reconcile the exact durable receipt before classifying a row.
+      try {
+        const { data, error } = await serviceSupabase.rpc('create_import_transaction_once', {
+          p_user_id: user.id, p_batch_id: batchId, p_request_id: identity.requestId,
+          p_request_hash: identity.requestHash, p_transaction: row, p_skip_duplicates: skipDuplicates,
+        });
+        if (!error && countAcknowledgedRow(data)) return;
+      } catch {
+        // The request may have committed even when the client threw.
+      }
+      await reconcileRow(identity);
+    };
 
-    for (const tr of combined.transfers) {
+    for (const [index, tr] of combined.transfers.entries()) {
+      const identity = rowIdentity('transfer', index, tr);
+      if (replayRow(identity)) continue;
       const outRes = resolveAccountId(
         tr.outgoingName,
         accountMap,
@@ -1260,40 +1362,25 @@ export async function POST(request: NextRequest) {
         description += ` (${amountIncoming} ${destinationCurrency} en destino)`;
       }
 
-      const fp = fingerprint(
-        'transfer',
-        tr.date,
-        tr.outgoingName,
-        tr.incomingName,
-        tr.amountOutgoing,
-        tr.currencyOutgoing
-      );
-      if (seenFingerprints.has(fp)) {
-        pushSkip({
-          title: 'Transferencia omitida — duplicada en el archivo',
-          reason: 'Ya se importó una transferencia idéntica en esta corrida.',
-          suggestion: 'Revisá filas repetidas en el CSV.',
-          context: formatTransferContext(tr),
-        });
-        continue;
-      }
-      seenFingerprints.add(fp);
-
       try {
-        await transactionsService.create({
-          userId: user.id,
+        const amounts = await computeTransferAmounts(tr.amountOutgoing, sourceCurrency,
+          sourceCurrency, destinationCurrency, exchangeRateOverride);
+        await persistRow(identity, {
+          user_id: user.id,
           type: 'transfer',
-          accountId: outRes.accountId,
-          destinationAccountId: inRes.accountId,
+          account_id: outRes.accountId,
+          destination_account_id: inRes.accountId,
           amount: tr.amountOutgoing,
           currency: sourceCurrency,
+          amount_in_account_currency: amounts.amountInSource,
+          destination_amount_in_account_currency: amounts.amountInDestination,
+          exchange_rate: amounts.exchangeRate !== 1 ? amounts.exchangeRate : null,
           description,
-          transactionDate: tr.date,
-          exchangeRateOverride,
+          transaction_date: tr.date,
         });
-        imported++;
       } catch (e: unknown) {
-        const errMsg = e instanceof Error ? e.message : String(e);
+        if (e instanceof ApiError) throw e;
+        const errMsg = e && typeof e === 'object' && 'message' in e ? String(e.message) : String(e);
         pushSkip({
           title: `Transferencia omitida — ${tr.outgoingName} → ${tr.incomingName}`,
           reason: `Error al crear el movimiento: ${errMsg}`,
@@ -1304,7 +1391,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    for (const tx of combined.transactions) {
+    for (const [index, tx] of combined.transactions.entries()) {
+      const identity = rowIdentity('transaction', index, tx);
+      if (replayRow(identity)) continue;
       const rawAccountName = (tx.account || '').trim();
       const hasAccountInFile = rawAccountName.length > 0;
       let account = hasAccountInFile ? accountMap.get(normalizeImportMatchKey(rawAccountName)) : undefined;
@@ -1408,37 +1497,15 @@ export async function POST(request: NextRequest) {
             amountInAccountCurrency = tx.amount * rate;
             exchangeRate = rate !== 1 ? rate : null;
           } catch {
-            pushSkip({
-              title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
-              reason: `No se pudo obtener la cotización ${tx.currency}→${accountCurrency} para convertir el monto a la moneda de la cuenta.`,
-              suggestion:
-                'Reintentá el import más tarde, o agregá la columna "Monto en Cuenta" con el equivalente en la moneda de la cuenta.',
-              context: formatTxContext(tx),
-            });
+            // A retry may miss a still-running earlier write before FX fails.
+            // Unlike immutable file validation, unavailable live data cannot
+            // prove that the original same-ID operation did not commit.
+            await reconcileRow(identity);
             continue;
           }
         }
 
-        const fp = fingerprint(
-          tx.type,
-          tx.date,
-          tx.amount,
-          tx.currency,
-          accountId,
-          tx.description
-        );
-        if (seenFingerprints.has(fp)) {
-          pushSkip({
-            title: `Movimiento omitido — duplicado`,
-            reason: 'Ya se importó un movimiento idéntico en esta corrida.',
-            suggestion: 'Revisá filas repetidas en el archivo.',
-            context: formatTxContext(tx),
-          });
-          continue;
-        }
-        seenFingerprints.add(fp);
-
-        const { error: insertError } = await serviceSupabase.from('transactions').insert({
+        await persistRow(identity, {
           user_id: user.id,
           type: tx.type,
           account_id: accountId,
@@ -1452,20 +1519,9 @@ export async function POST(request: NextRequest) {
           transaction_date: tx.date,
         });
 
-        if (insertError) {
-          pushSkip({
-            title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
-            reason: `Error al guardar: ${insertError.message}${insertError.code ? ` (${insertError.code})` : ''}`,
-            suggestion:
-              'Revisá fecha (formato válido), monto numérico, moneda y que el tipo (gasto/ingreso) sea coherente. Si falta cuenta y la base lo exige, asigná cuenta en el archivo o en la revisión.',
-            context: formatTxContext(tx),
-          });
-          continue;
-        }
-
-        imported++;
       } catch (e: unknown) {
-        const errMsg = e instanceof Error ? e.message : String(e);
+        if (e instanceof ApiError) throw e;
+        const errMsg = e && typeof e === 'object' && 'message' in e ? String(e.message) : String(e);
         pushSkip({
           title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
           reason: `Error inesperado: ${errMsg}`,
@@ -1480,17 +1536,21 @@ export async function POST(request: NextRequest) {
     const errorsLegacy = skippedDetails.map((d) => `${d.title}: ${d.reason}`);
 
     return NextResponse.json({
-      success: true,
+      success: pending === 0,
+      status: pending > 0 ? 'pending' : 'completed',
+      ...(pending > 0 ? { error: 'Hay movimientos pendientes de confirmación. Reintentá el mismo lote con el archivo original sin editarlo; no inicies un lote nuevo.' } : {}),
+      batchId,
       imported,
       skipped,
-      // Incluye las filas descartadas en el parseo para que imported + skipped = total.
+      pending,
+      // Only proven skips are omitted: imported + skipped + pending = total.
       total: totalCount + combined.skips.length,
       importKind: importKindPreview,
       /** @deprecated Preferir skippedDetails */
       errors: errorsLegacy,
       skippedDetails,
       skippedDetailsTruncated: truncated,
-    });
+    }, { status: pending > 0 ? 503 : 200 });
   } catch (error) {
     console.error('Import error:', error);
     return errorResponse(error);

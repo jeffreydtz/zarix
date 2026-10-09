@@ -1,3 +1,6 @@
+import { randomUUID } from 'node:crypto';
+import { ApiError } from '@/lib/api-handler';
+import { AmbiguousPlanWorkError } from '@/lib/plans/service';
 import { NextRequest, NextResponse } from 'next/server';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 import {
@@ -32,6 +35,10 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const queuedOwner = req.headers.get('x-queue-owner');
+    if (queuedOwner && queuedOwner !== user.id) return NextResponse.json({ error: 'La solicitud pertenece a otra sesión.' }, { status: 403 });
+    const requestKey = req.headers.get('idempotency-key') || randomUUID();
 
     if (!rateLimitAllow(`ai-chat:${user.id}:${clientIpFromRequest(req)}`, 40, 60 * 60 * 1000)) {
       return NextResponse.json({ error: 'Demasiados mensajes. Esperá un rato.' }, { status: 429 });
@@ -107,12 +114,15 @@ export async function POST(req: NextRequest) {
 
     const response: InternalAiChatSuccessResponse = await processInternalAiChatMessage({
       userId: user.id,
+      requestKey,
       message: message.trim(),
       history: safeHistory,
       financialContext,
     });
-    return NextResponse.json(response);
+    return NextResponse.json(response, { headers: { 'Idempotency-Key': requestKey } });
   } catch (error) {
+    if (error instanceof ApiError) return NextResponse.json({ error: error.message }, { status: error.status });
+    if (error instanceof AmbiguousPlanWorkError) return NextResponse.json({ error: error.message }, { status: 409 });
     if (error instanceof SubscriptionAccessError) {
       const payload: InternalAiChatErrorResponse = {
         error: error.message,

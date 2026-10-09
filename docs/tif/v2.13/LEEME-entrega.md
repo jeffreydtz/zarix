@@ -1,3 +1,5 @@
+> Actualización técnica 09/10/2026: ver [verificación aislada y bloqueos](VERIFICACION-TECNICA-20261009.md). Las cifras anteriores son evidencia histórica, no aceptación integral nueva.
+
 # ZARIX v2.13 — Nota de entrega
 
 Presentación compacta del 8 de octubre de 2026: Word de 122 páginas (antes 198), con 37 figuras centrales y un catálogo que enlaza las 101 figuras completas del anexo digital. Se conservan cuatro CU, capítulos, tablas y cifras; se corrigieron contradicciones de la política Free/Premium, referencias al anexo y comandos de prueba. Las reglas comerciales siguen siendo hipótesis, pendientes de enforcement y validación. La fecha y versión están en la ficha interna, no en la portada. Extraer el paquete completo para consultar los enlaces relativos. Ver ANEXO-digital.md y evidence/qa_compacto_final.json.

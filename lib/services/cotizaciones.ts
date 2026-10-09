@@ -30,12 +30,50 @@ interface CacheEntry {
 }
 
 const cache: Record<string, CacheEntry> = {};
-const CACHE_TTL = parseInt(process.env.EXCHANGE_RATE_CACHE_TTL || '300') * 1000;
+function positiveConfig(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+const CACHE_TTL = positiveConfig(process.env.EXCHANGE_RATE_CACHE_TTL, 300) * 1000;
+const MAX_RATE_AGE_MS = positiveConfig(process.env.EXCHANGE_RATE_MAX_AGE_SECONDS, 86400) * 1000;
+const MARKET_TIMEOUT_MS = positiveConfig(process.env.MARKET_DATA_TIMEOUT_MS, 8000);
+const DOLAR_SOURCES = ['blue', 'oficial', 'mep', 'ccl'] as const;
+
+function assertFreshQuote(timestamp: Date, prices: number[]): void {
+  const time = timestamp.getTime();
+  if (!Number.isFinite(time) || Date.now() - time > MAX_RATE_AGE_MS || time > Date.now() + 300000 ||
+      prices.some(price => !Number.isFinite(price) || price <= 0)) {
+    throw new Error('Cotización no disponible, inválida o vencida');
+  }
+}
+
+function validateDolarQuotes(quotes: Record<string, DolarQuote>): void {
+  for (const source of DOLAR_SOURCES) {
+    const quote = quotes[source];
+    const timestamp = quote?.timestamp?.getTime();
+    if (
+      !quote || !Number.isFinite(quote.buy) || quote.buy <= 0 ||
+      !Number.isFinite(quote.sell) || quote.sell <= 0 ||
+      !Number.isFinite(timestamp) || Date.now() - timestamp > MAX_RATE_AGE_MS ||
+      timestamp > Date.now() + 5 * 60 * 1000
+    ) {
+      throw new Error(`Cotización ${source} no disponible, inválida o vencida`);
+    }
+  }
+}
 
 interface DolarApiRow {
   casa: string;
   compra: number;
   venta: number;
+  fechaActualizacion?: string;
+}
+
+/** Provider time, never retrieval time: absent/invalid dates must fail freshness checks. */
+function sourceTimestamp(value: unknown): Date {
+  if (typeof value === 'number' && Number.isFinite(value)) return new Date(value * 1000);
+  if (typeof value === 'string' && value.trim()) return new Date(value);
+  return new Date(Number.NaN);
 }
 
 /**
@@ -58,6 +96,7 @@ class CriptoYaProvider implements DolarRateProvider {
   async fetch(): Promise<Record<string, DolarQuote>> {
     const response = await fetch(`${this.baseURL}/dolar`, {
       next: { revalidate: 300 },
+      signal: AbortSignal.timeout(MARKET_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -73,25 +112,25 @@ class CriptoYaProvider implements DolarRateProvider {
         type: 'blue',
         buy: data.blue?.bid || data.blue || 0,
         sell: data.blue?.ask || data.blue || 0,
-        timestamp: new Date(),
+        timestamp: sourceTimestamp(data.blue?.timestamp),
       },
       oficial: {
         type: 'oficial',
         buy: data.oficial?.bid || data.oficial || 0,
         sell: data.oficial?.ask || data.oficial || 0,
-        timestamp: new Date(),
+        timestamp: sourceTimestamp(data.oficial?.timestamp),
       },
       mep: {
         type: 'mep',
         buy: data.mep?.al30?.['24hs']?.price || 0,
         sell: data.mep?.al30?.['24hs']?.price || 0,
-        timestamp: new Date(),
+        timestamp: sourceTimestamp(data.mep?.al30?.['24hs']?.timestamp),
       },
       ccl: {
         type: 'ccl',
         buy: data.ccl?.al30?.['24hs']?.price || 0,
         sell: data.ccl?.al30?.['24hs']?.price || 0,
-        timestamp: new Date(),
+        timestamp: sourceTimestamp(data.ccl?.al30?.['24hs']?.timestamp),
       },
     };
 
@@ -114,7 +153,7 @@ class DolarApiProvider implements DolarRateProvider {
     const response = await fetch(`${this.baseURL}/dolares`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 300 },
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(MARKET_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -138,13 +177,11 @@ class DolarApiProvider implements DolarRateProvider {
     const oficial = byCasa.get('oficial');
     const bolsa = byCasa.get('bolsa');
     const ccl = byCasa.get('contadoconliqui');
-    const timestamp = new Date();
-
     const quotes: Record<string, DolarQuote> = {
-      blue: { type: 'blue', buy: Number(blue?.compra) || 0, sell: Number(blue?.venta) || 0, timestamp },
-      oficial: { type: 'oficial', buy: Number(oficial?.compra) || 0, sell: Number(oficial?.venta) || 0, timestamp },
-      mep: { type: 'mep', buy: Number(bolsa?.compra) || 0, sell: Number(bolsa?.venta) || 0, timestamp },
-      ccl: { type: 'ccl', buy: Number(ccl?.compra) || 0, sell: Number(ccl?.venta) || 0, timestamp },
+      blue: { type: 'blue', buy: Number(blue?.compra) || 0, sell: Number(blue?.venta) || 0, timestamp: sourceTimestamp(blue?.fechaActualizacion) },
+      oficial: { type: 'oficial', buy: Number(oficial?.compra) || 0, sell: Number(oficial?.venta) || 0, timestamp: sourceTimestamp(oficial?.fechaActualizacion) },
+      mep: { type: 'mep', buy: Number(bolsa?.compra) || 0, sell: Number(bolsa?.venta) || 0, timestamp: sourceTimestamp(bolsa?.fechaActualizacion) },
+      ccl: { type: 'ccl', buy: Number(ccl?.compra) || 0, sell: Number(ccl?.venta) || 0, timestamp: sourceTimestamp(ccl?.fechaActualizacion) },
     };
 
     // Igual que CriptoYa: blue en 0 = respuesta degradada → fallar para caer al
@@ -163,11 +200,11 @@ class DbCacheProvider implements DolarRateProvider {
 
   async fetch(): Promise<Record<string, DolarQuote>> {
     const supabase = createServiceClientSync();
-    const sources = ['blue', 'oficial', 'mep', 'ccl'];
+    const sources = DOLAR_SOURCES;
 
     const queries = await Promise.all(
       sources.map(async (source) => {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('exchange_rates')
           .select('rate, timestamp')
           .eq('source', source)
@@ -177,7 +214,15 @@ class DbCacheProvider implements DolarRateProvider {
           .limit(1)
           .single();
 
-        return { source, data };
+        if (error) throw error;
+        // Legacy rows contain only sell. Require a buy side from the same sample;
+        // copying sell into buy silently fabricates a zero spread.
+        const { data: buy, error: buyError } = data ? await supabase
+          .from('exchange_rates').select('rate, timestamp')
+          .eq('source', `${source}_buy`).eq('from_currency', 'USD').eq('to_currency', 'ARS')
+          .eq('timestamp', data.timestamp).limit(1).maybeSingle() : { data: null, error: null };
+        if (buyError) throw buyError;
+        return { source, data, buy };
       })
     );
 
@@ -197,13 +242,14 @@ class DbCacheProvider implements DolarRateProvider {
       if (q.data?.rate) {
         result[q.source] = {
           type: q.source as DolarQuote['type'],
-          buy: Number(q.data.rate),
+          buy: q.buy ? Number(q.buy.rate) : 0,
           sell: Number(q.data.rate),
           timestamp: new Date(q.data.timestamp),
         };
       }
     }
 
+    validateDolarQuotes(result);
     return result;
   }
 }
@@ -253,22 +299,19 @@ class CotizacionesService {
   private async saveLatestDolarQuotes(quotes: Record<string, DolarQuote>): Promise<void> {
     try {
       const supabase = createServiceClientSync();
-      const nowIso = new Date().toISOString();
 
       // Nunca persistir tasas <= 0: quedan en exchange_rates y las lee DbCacheProvider.
       const rows = Object.values(quotes)
-        .map((q) => ({
-          source: q.type,
-          from_currency: 'USD',
-          to_currency: 'ARS',
-          rate: q.sell || q.buy || 0,
-          timestamp: nowIso,
-        }))
+        .flatMap((q) => [
+          { source: q.type, from_currency: 'USD', to_currency: 'ARS', rate: q.sell, timestamp: q.timestamp.toISOString() },
+          { source: `${q.type}_buy`, from_currency: 'USD', to_currency: 'ARS', rate: q.buy, timestamp: q.timestamp.toISOString() },
+        ])
         .filter((r) => r.rate > 0);
 
       if (rows.length === 0) return;
 
-      await supabase.from('exchange_rates').insert(rows);
+      const { error } = await supabase.from('exchange_rates').insert(rows);
+      if (error) throw error;
     } catch (error) {
       console.error('Error saving dollar quotes:', error);
     }
@@ -278,10 +321,16 @@ class CotizacionesService {
     opts?: { preferCache?: boolean }
   ): Promise<Record<string, DolarQuote>> {
     const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
+    const dbCacheKey = this.getCacheKey('db', 'dolar', 'all');
     const cached = this.getFromCache<Record<string, DolarQuote>>(cacheKey);
 
     if (cached) {
-      return cached;
+      try {
+        validateDolarQuotes(cached);
+        return cached;
+      } catch {
+        delete cache[cacheKey];
+      }
     }
 
     // Camino rápido (dashboard): última cotización persistida en DB en vez de
@@ -289,11 +338,20 @@ class CotizacionesService {
     // frescura la mantiene el cron update-prices. Si no hay cache en DB, cae al
     // camino en vivo. El caller (dashboard) lo envuelve en un timeout duro.
     if (opts?.preferCache) {
+      const dbCached = this.getFromCache<Record<string, DolarQuote>>(dbCacheKey);
+      if (dbCached) {
+        try {
+          validateDolarQuotes(dbCached);
+          return dbCached;
+        } catch {
+          delete cache[dbCacheKey];
+        }
+      }
       const dbProvider = this.dolarProviders.find((p) => p.name === 'db');
       if (dbProvider) {
         try {
           const quotes = await dbProvider.fetch();
-          this.setCache(cacheKey, quotes);
+          this.setCache(dbCacheKey, quotes);
           return quotes;
         } catch {
           // sin cache previa en DB → seguimos al camino en vivo
@@ -308,9 +366,10 @@ class CotizacionesService {
     for (const provider of this.dolarProviders) {
       try {
         const quotes = await provider.fetch();
-        this.setCache(cacheKey, quotes);
+        validateDolarQuotes(quotes);
+        this.setCache(provider.name === 'db' ? dbCacheKey : cacheKey, quotes);
         if (provider.name !== 'db') {
-          void this.saveLatestDolarQuotes(quotes);
+          await this.saveLatestDolarQuotes(quotes);
         }
         return quotes;
       } catch (error) {
@@ -327,7 +386,8 @@ class CotizacionesService {
     const cached = this.getFromCache<CryptoQuote>(cacheKey);
 
     if (cached) {
-      return cached;
+      try { assertFreshQuote(cached.timestamp, [cached.priceUSD, cached.priceARS]); return cached; }
+      catch { delete cache[cacheKey]; }
     }
 
     const coinIdMap: Record<string, string> = {
@@ -342,8 +402,8 @@ class CotizacionesService {
 
     try {
       const response = await fetch(
-        `${this.coingeckoBaseURL}/simple/price?ids=${coinId}&vs_currencies=usd,ars&include_24hr_change=true`,
-        { next: { revalidate: 60 } }
+        `${this.coingeckoBaseURL}/simple/price?ids=${coinId}&vs_currencies=usd,ars&include_24hr_change=true&include_last_updated_at=true`,
+        { next: { revalidate: 60 }, signal: AbortSignal.timeout(MARKET_TIMEOUT_MS) }
       );
 
       if (!response.ok) {
@@ -362,8 +422,9 @@ class CotizacionesService {
         priceUSD: coinData.usd || 0,
         priceARS: coinData.ars || 0,
         change24h: coinData.usd_24h_change || 0,
-        timestamp: new Date(),
+        timestamp: sourceTimestamp(coinData.last_updated_at),
       };
+      assertFreshQuote(quote.timestamp, [quote.priceUSD, quote.priceARS]);
 
       this.setCache(cacheKey, quote);
       return quote;
@@ -380,7 +441,10 @@ class CotizacionesService {
     const normalizedTicker = ticker.trim().toUpperCase();
     const cacheKey = this.getCacheKey('yahoo', normalizedTicker, market);
     const cached = this.getFromCache<StockQuote>(cacheKey);
-    if (cached) return cached;
+    if (cached) {
+      try { assertFreshQuote(cached.timestamp, [cached.price]); return cached; }
+      catch { delete cache[cacheKey]; }
+    }
 
     const yahooSymbol =
       market === 'us'
@@ -392,7 +456,7 @@ class CotizacionesService {
     try {
       const response = await fetch(
         `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=1d&interval=1d`,
-        { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 } }
+        { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 }, signal: AbortSignal.timeout(MARKET_TIMEOUT_MS) }
       );
 
       if (!response.ok) {
@@ -417,8 +481,9 @@ class CotizacionesService {
         price,
         currency,
         change,
-        timestamp: new Date(),
+        timestamp: sourceTimestamp(meta?.regularMarketTime),
       };
+      assertFreshQuote(quote.timestamp, [quote.price]);
 
       this.setCache(cacheKey, quote);
       return quote;
@@ -433,12 +498,15 @@ class CotizacionesService {
    */
   private async getEurUsdRate(): Promise<number> {
     const cacheKey = this.getCacheKey('yahoo', 'EURUSD', 'spot');
-    const cached = this.getFromCache<number>(cacheKey);
-    if (cached) return cached;
+    const cached = this.getFromCache<{ rate: number; timestamp: Date }>(cacheKey);
+    if (cached) {
+      try { assertFreshQuote(cached.timestamp, [cached.rate]); return cached.rate; }
+      catch { delete cache[cacheKey]; }
+    }
 
     const response = await fetch(
       'https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?range=1d&interval=1d',
-      { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 } }
+      { headers: { ...YAHOO_FINANCE_HEADERS }, next: { revalidate: 300 }, signal: AbortSignal.timeout(MARKET_TIMEOUT_MS) }
     );
     if (!response.ok) {
       throw new Error(`Yahoo EURUSD error: ${response.status}`);
@@ -448,7 +516,9 @@ class CotizacionesService {
     if (!Number.isFinite(price) || price <= 0) {
       throw new Error('Invalid EUR/USD from Yahoo');
     }
-    this.setCache(cacheKey, price);
+    const timestamp = sourceTimestamp(data?.chart?.result?.[0]?.meta?.regularMarketTime);
+    assertFreshQuote(timestamp, [price]);
+    this.setCache(cacheKey, { rate: price, timestamp });
     return price;
   }
 
@@ -471,9 +541,7 @@ class CotizacionesService {
     const toU = to.trim().toUpperCase();
     if (fromU === toU) return 1;
 
-    const cacheKey = this.getCacheKey('auto', fromU, toU);
-    const cached = this.getFromCache<number>(cacheKey);
-    if (cached) return cached;
+    // Source caches retain quote time; a derived numeric cache would extend freshness.
 
     if (fromU === 'USD' && toU === 'ARS') {
       const dolar = await this.getDolarQuotes();
@@ -483,7 +551,6 @@ class CotizacionesService {
       if (!(rate > 0)) {
         throw new Error('Cotización USD→ARS no disponible');
       }
-      this.setCache(cacheKey, rate);
       return rate;
     }
 
@@ -495,7 +562,6 @@ class CotizacionesService {
         throw new Error('Cotización ARS→USD no disponible');
       }
       const rate = 1 / buy;
-      this.setCache(cacheKey, rate);
       return rate;
     }
 
@@ -506,40 +572,34 @@ class CotizacionesService {
         throw new Error('Cotización EUR→ARS no disponible');
       }
       const rate = eurUsd * dolar.blue.sell;
-      this.setCache(cacheKey, rate);
       return rate;
     }
 
     if (fromU === 'ARS' && toU === 'EUR') {
       const eurArs = await this.getExchangeRate('EUR', 'ARS');
       const rate = 1 / eurArs;
-      this.setCache(cacheKey, rate);
       return rate;
     }
 
     if (fromU === 'EUR' && toU === 'USD') {
       const rate = await this.getEurUsdRate();
-      this.setCache(cacheKey, rate);
       return rate;
     }
 
     if (fromU === 'USD' && toU === 'EUR') {
       const eurUsd = await this.getEurUsdRate();
       const rate = 1 / eurUsd;
-      this.setCache(cacheKey, rate);
       return rate;
     }
 
     const cryptoSymbols = new Set(['BTC', 'ETH', 'USDT', 'USDC', 'DAI']);
-    if (cryptoSymbols.has(from) && to === 'USD') {
-      const crypto = await this.getCryptoQuote(from);
-      this.setCache(cacheKey, crypto.priceUSD);
+    if (cryptoSymbols.has(fromU) && toU === 'USD') {
+      const crypto = await this.getCryptoQuote(fromU);
       return crypto.priceUSD;
     }
 
-    if (cryptoSymbols.has(from) && to === 'ARS') {
-      const crypto = await this.getCryptoQuote(from);
-      this.setCache(cacheKey, crypto.priceARS);
+    if (cryptoSymbols.has(fromU) && toU === 'ARS') {
+      const crypto = await this.getCryptoQuote(fromU);
       return crypto.priceARS;
     }
 

@@ -36,10 +36,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const queuedOwner = req.headers.get('x-queue-owner');
+    if (queuedOwner && queuedOwner !== user.id) {
+      return NextResponse.json({ error: 'La operación pertenece a otra sesión.' }, { status: 403 });
+    }
+
     const body = await req.json();
 
     const account = await accountsService.create({
       userId: user.id,
+      requestId: req.headers.get('idempotency-key') || undefined,
       name: body.name,
       type: body.type,
       currency: body.currency,
@@ -59,7 +65,8 @@ export async function POST(req: NextRequest) {
       secondaryCurrency: body.secondaryCurrency,
     });
 
-    return NextResponse.json(account, { status: 201 });
+    return NextResponse.json(account, { status: 201, headers: req.headers.get('idempotency-key')
+      ? { 'Idempotency-Key': req.headers.get('idempotency-key')! } : undefined });
   } catch (error: any) {
     console.error('Accounts POST error:', error);
     return errorResponse(error);

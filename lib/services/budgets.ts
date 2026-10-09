@@ -1,6 +1,6 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import type { Budget, BudgetStatus } from '@/types/database';
-import { sendTelegramDm } from '@/lib/telegram/send';
+import { enqueueNotification } from '@/lib/services/notification-outbox';
 
 export interface CreateBudgetInput {
   userId: string;
@@ -94,49 +94,9 @@ class BudgetsService {
     const percentUsed = Number(status.percent_used);
     const alertThreshold = budget.alert_at_percent;
 
-    // Check if we already sent an alert at this level
-    const alertLevels = [100, alertThreshold].filter((l, i, a) => a.indexOf(l) === i);
-    
-    for (const alertLevel of alertLevels) {
-      if (percentUsed >= alertLevel) {
-        const { data: existingAlerts } = await supabase
-          .from('budget_alerts')
-          .select('*')
-          .eq('budget_id', budget.id)
-          .gte('percent_reached', alertLevel)
-          .order('sent_at', { ascending: false })
-          .limit(1);
-
-        const alertAlreadySent = existingAlerts && existingAlerts.length > 0;
-        
-        if (!alertAlreadySent) {
-          // Save alert record
-          await supabase.from('budget_alerts').insert({
-            budget_id: budget.id,
-            percent_reached: Math.floor(percentUsed),
-          });
-
-          // Send Telegram notification
-          await this.sendBudgetAlert(userId, status, alertLevel);
-        }
-      }
-    }
-  }
-
-  private async sendBudgetAlert(
-    userId: string,
-    status: BudgetStatus,
-    alertLevel: number
-  ): Promise<void> {
-    const supabase = createServiceClientSync();
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('telegram_chat_id, telegram_bot_token')
-      .eq('id', userId)
-      .single();
-
-    if (!user?.telegram_chat_id) return;
+    const alertLevel = [100, alertThreshold].sort((a, b) => b - a)
+      .find((level) => percentUsed >= level);
+    if (alertLevel == null) return;
 
     const isOver = alertLevel >= 100;
     const emoji = isOver ? '🔴' : '⚠️';
@@ -152,14 +112,9 @@ class BudgetsService {
         ? `¡Superaste el límite! Revisá tus gastos de ${status.category_name.toLowerCase()} este mes.`
         : `Llegaste al ${alertLevel}% de tu presupuesto en ${status.category_name.toLowerCase()}.`);
 
-    try {
-      await sendTelegramDm(user.telegram_chat_id, message, {
-        parse_mode: 'Markdown',
-        botToken: user.telegram_bot_token,
-      });
-    } catch (e) {
-      console.error('Error sending budget alert via Telegram:', e);
-    }
+    // The durable event itself is the dedupe marker. No send-before-mark or
+    // mark-before-send window; provider failure leaves the same event pending.
+    await enqueueNotification(supabase, userId, `budget:${budget.id}:${alertLevel}`, message);
   }
 
   async update(

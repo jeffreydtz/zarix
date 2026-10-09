@@ -1,3 +1,7 @@
+import { randomUUID } from 'node:crypto';
+import { ApiError } from '@/lib/api-handler';
+import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
+import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
@@ -6,6 +10,7 @@ import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
 import type { Investment, InvestmentSale, InvestmentType } from '@/types/database';
 
 export interface CreateInvestmentInput {
+  requestId?: string;
   userId: string;
   accountId: string;
   type: InvestmentType;
@@ -67,12 +72,13 @@ export interface InvestmentWithPnL extends Investment {
 }
 
 export interface SellPositionInput {
+  requestId?: string;
   userId: string;
   investmentId: string;
   quantity: number;
   price: number;
   currency: string;
-  soldAt: string;
+  soldAt?: string;
   notes?: string;
 }
 
@@ -180,6 +186,16 @@ interface QuoteResult {
   price: number;
   changePct: number | null;
   currency: string;
+  /** Provider observation time, never the portfolio fetch/cache-write time. */
+  timestamp: string | null;
+}
+
+function quoteSourceTimestamp(quote: unknown): string | null {
+  if (!quote || typeof quote !== 'object' || !('timestamp' in quote)) return null;
+  const timestamp = quote.timestamp;
+  const time = timestamp instanceof Date ? timestamp.getTime()
+    : typeof timestamp === 'string' && timestamp ? Date.parse(timestamp) : Number.NaN;
+  return Number.isFinite(time) ? new Date(time).toISOString() : null;
 }
 
 async function assertOwnedInvestmentAccount(
@@ -230,6 +246,7 @@ function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
 
 class InvestmentsService {
   async create(input: CreateInvestmentInput): Promise<Investment> {
+    input = { ...input, requestId: input.requestId ?? nextFinancialRequestId() };
     if (!Number.isFinite(input.quantity) || input.quantity <= 0 ||
         !Number.isFinite(input.purchasePrice) || input.purchasePrice <= 0) {
       throw new Error('La cantidad y el precio de compra deben ser finitos y mayores a cero.');
@@ -239,11 +256,23 @@ class InvestmentsService {
       throw new Error('El precio manual debe ser finito y mayor a cero.');
     }
     const supabase = createServiceClientSync();
+    const requestId = input.requestId ?? randomUUID();
+    if (!validTransactionRequestId(requestId)) throw new ApiError('Identificador de solicitud inválido.');
+    const requestHash = transactionRequestHash(input as unknown as Record<string, unknown>);
+    if (input.requestId) {
+      const { data: prior, error } = await supabase.from('investment_create_requests')
+        .select('request_hash, response').eq('user_id', input.userId).eq('request_id', requestId).maybeSingle();
+      if (error) throw error;
+      if (prior) {
+        if (prior.request_hash !== requestHash) throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+        return prior.response as Investment;
+      }
+    }
     await assertOwnedInvestmentAccount(supabase, input.accountId, input.userId);
 
-    const { data, error } = await supabase
-      .from('investments')
-      .insert({
+    const { data, error } = await supabase.rpc('create_investment_once', {
+      p_user_id: input.userId, p_request_id: requestId, p_request_hash: requestHash,
+      p_investment: {
         user_id: input.userId,
         account_id: input.accountId,
         type: input.type,
@@ -254,18 +283,18 @@ class InvestmentsService {
         purchase_currency: input.purchaseCurrency,
         purchase_date: input.purchaseDate,
         maturity_date: input.maturityDate || null,
-        interest_rate: input.interestRate || null,
+        interest_rate: input.interestRate ?? null,
         notes: input.notes || null,
         market_currency: input.marketCurrency || null,
         is_manual_price: input.isManualPrice ?? false,
         current_price: input.currentPrice ?? null,
         current_price_updated_at: input.currentPrice != null ? new Date().toISOString() : null,
-      })
-      .select()
-      .single();
-
+      },
+    });
+    if (error?.code === 'Z0001') throw new ApiError('La solicitud ya se usó con otros datos.', 409);
     if (error) throw error;
-    return data;
+    if (!data?.id) throw new Error('No se pudo confirmar la inversión.');
+    return data as Investment;
   }
 
   /**
@@ -316,6 +345,7 @@ class InvestmentsService {
               price: hit.price,
               changePct: hit.changePct,
               currency: hit.currency,
+              timestamp: quoteSourceTimestamp(hit),
             });
           } else {
             // No matcheó data912: derivar a Yahoo .BA como fallback.
@@ -342,6 +372,7 @@ class InvestmentsService {
             price: q.price,
             changePct: Number.isFinite(q.changePct) ? q.changePct : null,
             currency: q.currency,
+            timestamp: quoteSourceTimestamp(q),
           });
         } else {
           missingForStooq.push(ySym);
@@ -359,6 +390,7 @@ class InvestmentsService {
               price: stooq.price,
               changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
               currency: stooq.currency,
+              timestamp: quoteSourceTimestamp(stooq),
             });
           }
         } catch {
@@ -374,6 +406,7 @@ class InvestmentsService {
           price: q.priceUSD,
           changePct: Number.isFinite(q.change24h) ? q.change24h : null,
           currency: 'USD',
+          timestamp: quoteSourceTimestamp(q),
         });
       } catch {
         /* sin crypto: nos quedamos con el último guardado */
@@ -454,7 +487,7 @@ class InvestmentsService {
       ? await this.refreshQuotesForInvestments(candidatesForRefresh)
       : new Map<string, QuoteResult>();
 
-    const updates: Array<{ id: string; price: number; changePct: number | null; currency: string }> = [];
+    const updates: Array<QuoteResult & { id: string }> = [];
 
     const investmentsWithPnL: InvestmentWithPnL[] = investments.map((inv) => {
       let currentPrice = Number(inv.current_price ?? inv.purchase_price);
@@ -473,8 +506,8 @@ class InvestmentsService {
           dailyChangePct = fresh.changePct;
           liveCurrency = fresh.currency;
           priceSource = 'live';
-          priceUpdatedAt = new Date(now).toISOString();
-          updates.push({ id: inv.id, price: fresh.price, changePct: fresh.changePct, currency:fresh.currency });
+          priceUpdatedAt = fresh.timestamp;
+          updates.push({ id: inv.id, ...fresh });
         }
       }
 
@@ -535,14 +568,13 @@ class InvestmentsService {
     });
 
     if (updates.length > 0) {
-      const nowIso = new Date().toISOString();
       await Promise.all(
         updates.map((u) =>
           supabase
             .from('investments')
             .update({
               current_price: u.price,
-              current_price_updated_at: nowIso,
+              current_price_updated_at: u.timestamp,
               current_price_change_pct: u.changePct,
               market_currency: u.currency.trim().toUpperCase(),
             })
@@ -618,6 +650,7 @@ class InvestmentsService {
    * Si la cantidad restante llega a 0, marca la posición como archivada.
    */
   async sell(input: SellPositionInput): Promise<SellPositionResult> {
+    input = { ...input, requestId: input.requestId ?? nextFinancialRequestId() };
     if (!Number.isFinite(input.quantity) || input.quantity <= 0) {
       throw new Error('La cantidad a vender debe ser mayor a 0.');
     }
@@ -626,6 +659,19 @@ class InvestmentsService {
     }
 
     const supabase = createServiceClientSync();
+    const requestHash = transactionRequestHash(input as unknown as Record<string, unknown>);
+    if (input.requestId) {
+      if (!validTransactionRequestId(input.requestId)) throw new ApiError('Identificador de solicitud inválido.');
+      const { data: prior, error } = await supabase.from('investment_sale_requests')
+        .select('request_hash, response').eq('user_id', input.userId).eq('request_id', input.requestId).maybeSingle();
+      if (error) throw error;
+      if (prior) {
+        if (prior.request_hash !== requestHash) throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+        return { sale: prior.response.sale, remainingQuantity: Number(prior.response.remaining_quantity),
+          positionClosed: Boolean(prior.response.position_closed) };
+      }
+    }
+
 
     const { data: invRow, error: invErr } = await supabase
       .from('investments')
@@ -673,18 +719,31 @@ class InvestmentsService {
     // RPC atómico (una transacción): descuenta quantity SOLO si alcanza e
     // inserta la venta. Elimina la carrera lectura-validación-escritura que
     // permitía sobrevender con dos requests simultáneos.
-    const { data: rpcData, error: rpcErr } = await supabase.rpc('sell_investment_position', {
+    const saleParameters = {
       p_user_id: input.userId,
       p_investment_id: input.investmentId,
       p_quantity: input.quantity,
       p_price: input.price,
       p_currency: saleCurrency,
-      p_sold_at: input.soldAt,
+      p_sold_at: input.soldAt ?? new Date().toISOString().split('T')[0],
       p_realized_pnl_native: realizedNative,
       p_realized_pnl_usd: realizedUsd,
       p_ars_per_usd: arsPerUsd,
       p_notes: input.notes ?? null,
+      // These exact basis fields are checked while the SQL row lock is held.
+      // Provider IO above must never let a concurrent edit change the sale basis.
+      p_expected_purchase_price: invRow.purchase_price,
+      p_expected_purchase_currency: invRow.purchase_currency,
+      p_expected_type: invRow.type,
+    };
+    const { data: rpcData, error: rpcErr } = await supabase.rpc('sell_investment_once', {
+      p_user_id: input.userId, p_request_id: input.requestId ?? randomUUID(),
+      p_request_hash: requestHash, p_sale: saleParameters,
     });
+    if (rpcErr?.code === 'Z0001') throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+    if (rpcErr?.code === 'Z0002') {
+      throw new ApiError('La base de compra cambió mientras se calculaba la venta. Reintentá la misma solicitud para actualizar el cálculo.', 409);
+    }
 
     if (rpcErr) {
       if (rpcErr.message?.includes('CANTIDAD_INSUFICIENTE')) {

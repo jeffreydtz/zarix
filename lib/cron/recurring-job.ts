@@ -1,8 +1,8 @@
+import { effectivePlan } from '@/lib/plans/rules';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { shouldExecuteToday, todayYmdAr } from '@/lib/cron/recurring-schedule';
 import { transactionsService } from '@/lib/services/transactions';
 import { addDaysYmd } from '@/lib/transaction-date';
-import { sendTelegramDm } from '@/lib/telegram/send';
 
 export class RecurringRulesJob extends IterativeCronJob<any> {
   readonly name = 'recurring';
@@ -19,7 +19,7 @@ export class RecurringRulesJob extends IterativeCronJob<any> {
     // Get all active recurring rules with their accounts
     const { data: rules, error } = await supabase
       .from('recurring_rules')
-      .select('*, account:accounts(name, currency, is_active)')
+      .select('*, account:accounts!recurring_rules_account_id_fkey(name, currency, is_active, movement_enabled), user:users(status, current_period_end, grace_period_end)')
       .eq('is_active', true);
 
     if (error) throw error;
@@ -27,11 +27,12 @@ export class RecurringRulesJob extends IterativeCronJob<any> {
   }
 
   protected shouldProcess(rule: any): boolean {
+    if (effectivePlan(rule.user) !== 'premium') return false;
     if (!shouldExecuteToday(rule)) return false;
 
     // No generar movimientos contra una cuenta desactivada (el usuario la
     // considera cerrada). La regla sigue activa pero se saltea.
-    if (rule.account && rule.account.is_active === false) return false;
+    if (rule.account && (rule.account.is_active === false || rule.account.movement_enabled === false)) return false;
 
     return true;
   }
@@ -41,6 +42,7 @@ export class RecurringRulesJob extends IterativeCronJob<any> {
     let created = true;
     try {
       await transactionsService.create({
+      requestId: `recurring:${rule.id}:${today}`,
       userId: rule.user_id,
       type: rule.type,
       accountId: rule.account_id,
@@ -80,35 +82,8 @@ export class RecurringRulesJob extends IterativeCronJob<any> {
     if (markError) throw markError;
     if (!created) return false;
 
-    // Send Telegram notification
-    const { data: user } = await supabase
-      .from('users')
-      .select('telegram_chat_id, telegram_bot_token')
-      .eq('id', rule.user_id)
-      .single();
-
-    if (rule.notification_enabled && user?.telegram_chat_id) {
-      const typeEmoji = rule.type === 'expense' ? '💸' : '💰';
-      const typeLabel = rule.type === 'expense' ? 'Gasto' : 'Ingreso';
-      const freqLabel = {
-        daily: 'diario',
-        weekly: 'semanal',
-        monthly: 'mensual',
-        yearly: 'anual',
-      }[rule.frequency as string] || rule.frequency;
-
-      await sendTelegramDm(
-        user.telegram_chat_id,
-        `🔄 *Transacción recurrente ejecutada*\n\n` +
-        `${typeEmoji} ${typeLabel} ${freqLabel}: *${rule.description}*\n` +
-        `💰 $${Number(rule.amount).toLocaleString('es-AR')} ${rule.currency}`,
-        { parse_mode: 'Markdown', botToken: user.telegram_bot_token }
-      ).catch((error) => {
-        // Un aviso fallido no revierte el movimiento. No hay outbox durable:
-        // dejar el fallo visible, sin prometer reentrega ni exactly-once externo.
-        console.error(`[cron:recurring] notification failed for rule ${rule.id}:`, error);
-      });
-    }
+    // Notification and execution marker are committed by the INSERT trigger.
+    // Delivery is retried independently by the durable outbox dispatcher.
   }
 
   protected emptyMessage(): string {

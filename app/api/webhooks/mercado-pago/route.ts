@@ -3,6 +3,7 @@ import { createHmac } from 'node:crypto';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { mercadoPagoService } from '@/lib/services/mercado-pago-service';
 import { subscriptionsService } from '@/lib/services/subscriptions';
+import { mapAuthorizedPayment } from '@/lib/billing/subscription-events';
 import { timingSafeStringEqual } from '@/lib/secure-compare';
 
 export const dynamic = 'force-dynamic';
@@ -73,7 +74,7 @@ function hasMatchingBodyResource(payload: unknown, signedId: string): boolean {
   // Only the legacy body without data.id treated top-level id as a resource alias.
   if (dataId === undefined && body.id !== undefined && normalizeResourceId(body.id) !== signedId) return false;
   if (typeof body.resource === 'string') {
-    const match = body.resource.match(/\/preapproval\/([^/?#]+)/i);
+    const match = body.resource.match(/\/(?:preapproval|authorized_payments)\/([^/?#]+)/i);
     if (match?.[1]) {
       try {
         if (normalizeResourceId(decodeURIComponent(match[1])) !== signedId) return false;
@@ -85,62 +86,61 @@ function hasMatchingBodyResource(payload: unknown, signedId: string): boolean {
   return true;
 }
 
-async function resolveUserIdFromPreapproval(
-  preapprovalId: string,
-  externalReference: string | null
-): Promise<string | null> {
+function notificationType(req: NextRequest, payload?: unknown): string | null {
+  const body = payload && typeof payload === 'object' ? payload as { type?: unknown; topic?: unknown } : {};
+  const aliases = [...req.nextUrl.searchParams.getAll('type'), ...req.nextUrl.searchParams.getAll('topic'), body.type, body.topic]
+    .filter(value => value !== undefined && value !== null);
+  if (aliases.some(value => typeof value !== 'string') || new Set(aliases).size > 1) return null;
+  return aliases.length ? String(aliases[0]) : 'subscription_preapproval';
+}
+
+async function processWebhook(resourceId: string, type: string): Promise<void> {
+  if (!['subscription_preapproval', 'preapproval', 'subscription_authorized_payment'].includes(type)) return;
+  let invoice = type === 'subscription_authorized_payment'
+    ? await mercadoPagoService.getAuthorizedPayment(resourceId) : null;
+  if (invoice && String(invoice.id) !== resourceId) throw new Error('Mercado Pago invoice resource mismatch');
+  const preapprovalId = invoice ? invoice.preapproval_id : resourceId;
+  if (!preapprovalId) throw new Error('Mercado Pago invoice has no subscription');
+  // Checkout persists this association before exposing a payment link. Never let
+  // external_reference attach an unrelated or retired agreement to a user.
   const supabase = createServiceClientSync();
-  const byPreapproval = await supabase
+  const { data: owner, error } = await supabase
     .from('users')
     .select('id')
     .eq('mp_preapproval_id', preapprovalId)
     .maybeSingle();
+  if (error) throw error;
+  if (!owner) return;
 
-  if (byPreapproval.data?.id) {
-    return byPreapproval.data.id;
+  // Read the snapshot BEFORE fetching provider state. A concurrent checkout or
+  // newer webhook must make the conditional write fail and trigger a retry.
+  const currentState = await subscriptionsService.getUserState(owner.id);
+  if (!currentState || currentState.mp_preapproval_id !== preapprovalId) return;
+  if (invoice) {
+    invoice = await mercadoPagoService.getAuthorizedPayment(resourceId);
+    if (String(invoice.id) !== resourceId || invoice.preapproval_id !== preapprovalId) {
+      throw new Error('Mercado Pago invoice association changed');
+    }
   }
-
-  if (!externalReference) {
-    return null;
-  }
-
-  const byExternalRef = await supabase
-    .from('users')
-    .select('id')
-    .eq('id', externalReference)
-    .maybeSingle();
-
-  return byExternalRef.data?.id || null;
-}
-
-async function processWebhook(preapprovalId: string): Promise<void> {
   const preapproval = await mercadoPagoService.getPreapproval(preapprovalId);
-  const userId = await resolveUserIdFromPreapproval(
-    preapproval.id,
-    preapproval.external_reference
-  );
-
-  if (!userId) {
-    console.warn('Mercado Pago webhook without matching user', {
-      preapprovalId: preapproval.id,
-      externalReference: preapproval.external_reference,
-    });
-    return;
+  if (preapproval.id !== preapprovalId || preapproval.external_reference !== owner.id ||
+      (invoice && invoice.external_reference !== owner.id)) {
+    throw new Error('Mercado Pago subscription association mismatch');
   }
-
-  const currentState = await subscriptionsService.getUserState(userId);
-  const currentStatus = currentState?.status || 'PAST_DUE';
-  const nextState = mercadoPagoService.mapPreapprovalStatusToSubscription(
-    preapproval,
-    currentStatus
-  );
+  const nextState = invoice ? mapAuthorizedPayment(invoice, preapproval, currentState)
+    : mercadoPagoService.mapPreapprovalStatusToSubscription(preapproval, currentState.status);
+  if (!nextState) return;
+  if (nextState.status === currentState.status &&
+      (nextState.currentPeriodEnd === undefined || nextState.currentPeriodEnd === currentState.current_period_end) &&
+      (nextState.gracePeriodEnd === undefined || nextState.gracePeriodEnd === currentState.grace_period_end)) return;
 
   await subscriptionsService.updateUserState({
-    userId,
+    userId: owner.id,
     status: nextState.status,
     currentPeriodEnd: nextState.currentPeriodEnd,
     gracePeriodEnd: nextState.gracePeriodEnd,
     mpPreapprovalId: preapproval.id,
+    expectedState: currentState,
   });
 }
 
@@ -153,8 +153,10 @@ export async function POST(req: NextRequest) {
   if (!hasMatchingBodyResource(payload, signedId)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
+  const type = notificationType(req, payload);
+  if (!type) return NextResponse.json({ error: 'Invalid notification type' }, { status: 400 });
   try {
-    await processWebhook(signedId);
+    await processWebhook(signedId, type);
   } catch (error) {
     console.error('Mercado Pago webhook processing error:', error);
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
@@ -169,8 +171,10 @@ export async function GET(req: NextRequest) {
   if (!signedId || !verifyMercadoPagoSignature(req, signedId)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
+  const type = notificationType(req);
+  if (!type) return NextResponse.json({ error: 'Invalid notification type' }, { status: 400 });
   try {
-    await processWebhook(signedId);
+    await processWebhook(signedId, type);
   } catch (error) {
     console.error('Mercado Pago webhook processing error:', error);
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });

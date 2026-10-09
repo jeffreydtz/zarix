@@ -136,6 +136,8 @@ export interface Account {
   secondary_currency: string | null;
   sort_order: number;
   is_active: boolean;
+  /** Separate from archival: a plan downgrade never hides history. */
+  movement_enabled?: boolean;
   created_at: string;
   updated_at: string;
 }

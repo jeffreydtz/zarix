@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   client: { from: vi.fn(), rpc: vi.fn() },
-  fx: vi.fn(), dolar: vi.fn(), yahoo: vi.fn(), stooq: vi.fn(), arg: vi.fn(),
+  fx: vi.fn(), dolar: vi.fn(), crypto: vi.fn(), yahoo: vi.fn(), stooq: vi.fn(), arg: vi.fn(),
 }));
 vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => mocks.client }));
 vi.mock('@/lib/services/accounts', () => ({ accountsService: {}, normalizeDebtBalanceForStorage: vi.fn() }));
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
-  getExchangeRate: mocks.fx, getDolarQuotes: mocks.dolar,
+  getExchangeRate: mocks.fx, getDolarQuotes: mocks.dolar, getCryptoQuote: mocks.crypto,
 } }));
 vi.mock('@/lib/yahoo-finance-quotes', () => ({ fetchYahooStockQuotesMap: mocks.yahoo }));
 vi.mock('@/lib/stooq-us-quote', () => ({ fetchStooqUsQuote: mocks.stooq }));
@@ -165,15 +165,15 @@ describe('CU-004 financial regressions', () => {
     mocks.fx.mockResolvedValue(1.2);
     mocks.client.rpc.mockResolvedValue({ data:{ sale:{ id:'S1' }, remaining_quantity:6, position_closed:false } });
     await investmentsService.sell({ userId:'U1', investmentId:'I1', quantity:4, price:120, currency:'EUR', soldAt:'2026-10-06' });
-    expect(mocks.client.rpc).toHaveBeenCalledWith('sell_investment_position', expect.objectContaining({
-      p_realized_pnl_native:80, p_realized_pnl_usd:96,
+    expect(mocks.client.rpc).toHaveBeenCalledWith('sell_investment_once', expect.objectContaining({
+      p_sale: expect.objectContaining({ p_realized_pnl_native:80, p_realized_pnl_usd:96 }),
     }));
   });
   it('keeps bond prices per VN100 in realized profit', async () => {
     replies = [{ data:{ ...inv, type:'bond', quantity:1000, purchase_price:100 } }];
     mocks.client.rpc.mockResolvedValue({ data:{ sale:{ id:'S1' }, remaining_quantity:600, position_closed:false } });
     await investmentsService.sell({ userId:'U1', investmentId:'I1', quantity:400, price:120, currency:'USD', soldAt:'2026-10-06' });
-    expect(mocks.client.rpc).toHaveBeenCalledWith('sell_investment_position', expect.objectContaining({ p_realized_pnl_usd:80 }));
+    expect(mocks.client.rpc).toHaveBeenCalledWith('sell_investment_once', expect.objectContaining({ p_sale: expect.objectContaining({ p_realized_pnl_usd:80 }) }));
   });
   it('rejects a sale larger than the current holding before invoking RPC', async () => {
     replies = [{ data:inv }];
@@ -186,5 +186,77 @@ describe('CU-004 financial regressions', () => {
       purchasePrice:100, purchaseCurrency:'USD', purchaseDate:'2026-10-06', isManualPrice:true }))
       .rejects.toThrow('precio manual');
     expect(mocks.client.from).not.toHaveBeenCalled();
+  });
+});
+
+describe('transaction service durable request receipts', () => {
+  it('uses the atomic RPC for a keyed request and never inserts separately', async () => {
+    replies=[{ data:null },{ data:account() }];
+    mocks.client.rpc.mockResolvedValue({ data:{ id:'T1' } });
+    expect(await transactionsService.create({ ...tx, requestId:'manual:request:1' })).toEqual({ id:'T1' });
+    expect(mocks.client.rpc).toHaveBeenCalledWith('create_transaction_once',expect.objectContaining({
+      p_user_id:'U1',p_request_id:'manual:request:1',p_installments:1,
+      p_request_hash:expect.stringMatching(/^[0-9a-f]{64}$/),p_transaction:expect.objectContaining({ amount:1500 }),
+    }));
+    expect(writes).toHaveLength(0);
+  });
+  it('returns a committed reply without account eligibility or FX reads',async()=>{
+    const { transactionRequestHash }=await import('@/lib/transaction-idempotency');
+    const input={ ...tx,requestId:'manual:request:1' };
+    replies=[{ data:{ request_hash:transactionRequestHash(input),response:{ id:'T1' } } }];
+    expect(await transactionsService.create(input)).toEqual({ id:'T1' });
+    expect(mocks.client.from).toHaveBeenCalledTimes(1);expect(mocks.fx).not.toHaveBeenCalled();
+  });
+  it('does not retry via a raw insert after a receipt lookup or atomic RPC failure',async()=>{
+    replies=[{ error:new Error('lookup unavailable') }];
+    await expect(transactionsService.create({ ...tx,requestId:'manual:request:1' })).rejects.toThrow('lookup unavailable');
+    expect(mocks.client.rpc).not.toHaveBeenCalled();expect(writes).toHaveLength(0);
+  });
+  it('maps the atomic race payload conflict to HTTP 409',async()=>{
+    replies=[{ data:null },{ data:account() }];
+    mocks.client.rpc.mockResolvedValue({ error:{ code:'Z0001' } });
+    await expect(transactionsService.create({ ...tx,requestId:'manual:request:1' })).rejects.toMatchObject({status:409});
+    expect(writes).toHaveLength(0);
+  });
+});
+
+
+describe('portfolio quote cache keeps provider observation time', () => {
+  const sourceTime = '2026-10-09T10:00:00.000Z';
+  it('does not renew a crypto provider timestamp when displaying or caching its price', async () => {
+    replies = [{ data: [{ ...inv, type: 'crypto', ticker: 'BTC', is_manual_price: false }] }, { data: [] }, { data: null }];
+    mocks.crypto.mockResolvedValue({ priceUSD: 120, change24h: 2, timestamp: new Date(sourceTime) });
+    const [position] = await investmentsService.list('U1', { forceRefreshQuotes: true });
+    expect(position.current_price_updated_at).toBe(sourceTime);
+    expect(writes[0].value).toMatchObject({ current_price: 120, current_price_updated_at: sourceTime });
+  });
+  it.each(['data912', 'yahoo', 'stooq'])('preserves a source timestamp supplied by %s', async provider => {
+    const type = provider === 'data912' ? 'stock_arg' : 'stock_us';
+    replies = [{ data: [{ ...inv, type, ticker: 'AAPL', is_manual_price: false }] }, { data: [] }, { data: null }];
+    const quote = { price: 120, changePct: 2, currency: 'USD', timestamp: sourceTime };
+    if (provider === 'data912') mocks.arg.mockResolvedValue({ byStock: new Map([['AAPL', quote]]), byCedear: new Map(), byBond: new Map() });
+    if (provider === 'yahoo') mocks.yahoo.mockResolvedValue(new Map([['AAPL', quote]]));
+    if (provider === 'stooq') mocks.stooq.mockResolvedValue(quote);
+    const [position] = await investmentsService.list('U1', { forceRefreshQuotes: true });
+    expect(position.current_price_updated_at).toBe(sourceTime);
+    expect(writes[0].value.current_price_updated_at).toBe(sourceTime);
+  });
+  it.each(['data912', 'yahoo', 'stooq'])('leaves unavailable %s observation time unknown rather than relabeling it now', async provider => {
+    const type = provider === 'data912' ? 'stock_arg' : 'stock_us';
+    replies = [{ data: [{ ...inv, type, ticker: 'AAPL', is_manual_price: false }] }, { data: [] }, { data: null }];
+    const quote = { price: 120, changePct: 2, currency: 'USD' };
+    if (provider === 'data912') mocks.arg.mockResolvedValue({ byStock: new Map([['AAPL', quote]]), byCedear: new Map(), byBond: new Map() });
+    if (provider === 'yahoo') mocks.yahoo.mockResolvedValue(new Map([['AAPL', quote]]));
+    if (provider === 'stooq') mocks.stooq.mockResolvedValue(quote);
+    const [position] = await investmentsService.list('U1', { forceRefreshQuotes: true });
+    expect(position.current_price_updated_at).toBeNull();
+    expect(writes[0].value.current_price_updated_at).toBeNull();
+  });
+  it('keeps manual prices and their user-edit timestamp without a provider refresh', async () => {
+    replies = [{ data: [inv] }, { data: [] }];
+    const [position] = await investmentsService.list('U1', { forceRefreshQuotes: true });
+    expect(position.current_price_updated_at).toBe(inv.current_price_updated_at);
+    expect(position.valuation_price_source).toBe('manual');
+    expect(writes).toHaveLength(0);
   });
 });

@@ -1,3 +1,4 @@
+import { withPlanQuota } from '@/lib/plans/service';
 import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { createServiceClientSync } from '@/lib/supabase/server';
@@ -11,7 +12,7 @@ import {
   getGeminiForUser,
   GeminiMissingKeyError,
 } from '@/lib/ai/gemini';
-import { sendTelegramDm } from '@/lib/telegram/send';
+import { enqueueNotification } from '@/lib/services/notification-outbox';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -54,7 +55,8 @@ async function getMonthData(userId: string, year: number, month: number) {
 async function analyzeMonth(
   currentMonth: any[],
   previousMonth: any[],
-  userId: string
+  userId: string,
+  quotaKey: string
 ): Promise<MonthlyAnalysis> {
   const expenses = currentMonth.filter(t => t.type === 'expense');
   const income = currentMonth.filter(t => t.type === 'income');
@@ -125,7 +127,7 @@ Las sugerencias deben ser acciones concretas para mejorar.
 
   try {
     const gemini = await getGeminiForUser(userId);
-    const result = await gemini.chat(prompt);
+    const result = await withPlanQuota({ userId, feature: 'ai', requestKey: quotaKey, fingerprint: quotaKey }, () => gemini.chat(prompt));
     const parsed = JSON.parse(result);
     insights = parsed.insights || [];
     sugerencias = parsed.sugerencias || [];
@@ -257,13 +259,10 @@ class MonthlySummaryJob extends IterativeCronJob<any> {
 
     if (currentMonthData.length === 0) return false;
 
-    const analysis = await analyzeMonth(currentMonthData, previousMonthData, user.id);
+    const analysis = await analyzeMonth(currentMonthData, previousMonthData, user.id, `monthly:${this.prevYear}:${this.prevMonth + 1}`);
     const message = formatMessage(analysis, this.monthName);
 
-    await sendTelegramDm(user.telegram_chat_id, message, {
-      parse_mode: 'Markdown',
-      botToken: user.telegram_bot_token,
-    });
+    await enqueueNotification(_supabase, user.id, `monthly:${this.prevYear}:${this.prevMonth + 1}`, message);
 
     return true;
   }

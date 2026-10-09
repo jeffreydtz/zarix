@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService } from '@/lib/services/transactions';
+import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { errorResponse } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest) {
@@ -56,6 +57,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const queueOwner = req.headers.get('X-Queue-Owner');
+    if (queueOwner && queueOwner !== user.id) {
+      return NextResponse.json({ error: 'La operación pertenece a otra sesión.' }, { status: 403 });
+    }
+    const requestId = req.headers.get('Idempotency-Key');
+    if (!validTransactionRequestId(requestId)) {
+      return NextResponse.json({ error: 'Falta un identificador de solicitud válido.' }, { status: 400 });
+    }
     const body = await req.json();
 
     if (!body.accountId) {
@@ -93,6 +102,7 @@ export async function POST(req: NextRequest) {
     }
 
     const transaction = await transactionsService.create({
+      requestId,
       userId: user.id,
       type: body.type,
       accountId: body.accountId,
@@ -113,7 +123,7 @@ export async function POST(req: NextRequest) {
       })(),
     });
 
-    return NextResponse.json(transaction, { status: 201 });
+    return NextResponse.json(transaction, { status: 201, headers: { 'Idempotency-Key': requestId } });
   } catch (error: any) {
     console.error('Transactions POST error:', error);
     return errorResponse(error);
