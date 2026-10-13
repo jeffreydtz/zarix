@@ -8,6 +8,8 @@ import InvestmentsWorkspace from '@/components/investments/InvestmentsWorkspace'
 import type { Account, Investment, InvestmentType } from '@/types/database';
 import { PageHero, PageScaffold } from '@/components/ui/PageScaffold';
 import MotionSection from '@/components/ui/MotionSection';
+import { subscriptionsService } from '@/lib/services/subscriptions';
+import { effectivePlan } from '@/lib/plans/rules';
 
 
 const INVESTMENT_LABELS: Partial<Record<InvestmentType, string>> = {
@@ -47,7 +49,7 @@ export default async function InvestmentsPage() {
     const in30Days = new Date(now);
     in30Days.setDate(in30Days.getDate() + 30);
 
-    const [portfolio, investmentAccounts, upcomingMaturities] = await Promise.all([
+    const [portfolio, investmentAccounts, upcomingMaturities, subscription] = await Promise.all([
       investmentsService.getPortfolioSummary(user.id, {
         skipDailySnapshot: true,
         skipQuoteRefresh: true,
@@ -65,6 +67,7 @@ export default async function InvestmentsPage() {
           .order('maturity_date', { ascending: true });
         return (data ?? []) as Investment[];
       })().catch((): Investment[] => []),
+      subscriptionsService.getUserState(user.id).catch(() => null),
     ]);
 
     return (
@@ -87,6 +90,7 @@ export default async function InvestmentsPage() {
           <InvestmentsWorkspace
             initialPortfolio={portfolio}
             investmentAccounts={investmentAccounts}
+            canSimulate={effectivePlan(subscription, now) === 'premium'}
           />
         </MotionSection>
 

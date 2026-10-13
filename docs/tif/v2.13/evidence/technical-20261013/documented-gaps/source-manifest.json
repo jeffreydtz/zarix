@@ -1,0 +1,12 @@
+{
+  "baseRevision": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df",
+  "capturedAt": "2026-10-13T21:52:51.935758+00:00",
+  "files": {
+    "lib/investment-simulation.ts": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea",
+    "components/investments/InvestmentSimulationPanel.tsx": "32ef3a5b4d99dbdee89d094d1eed88d4f3297ba8a8818bae96d6ed1e60857585",
+    "components/investments/InvestmentsWorkspace.tsx": "a2c1721c3d60378a1507626b9cb210c5637f03d50dd1f1d9171f8b56f50c770d",
+    "app/(authenticated)/investments/page.tsx": "e61aca78a8fcc06c877ff77c6cd388b6bb9038350323876f63b78d6c3107170f",
+    "__tests__/investment-simulation.test.ts": "12fb6e4746d7f71647ad5951e50e5f64d0a20654594e8db4bea77c1a45a4fa37",
+    "__tests__/investment-simulation-component.test.ts": "ef9748d355267f555362e3b408a43b0d1b0d1b55e972aa872a3e007fe5f60f79"
+  }
+}
