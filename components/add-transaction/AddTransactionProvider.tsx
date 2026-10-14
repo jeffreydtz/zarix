@@ -95,7 +95,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   const [description, setDescription] = useState('');
   const [transactionDateYmd, setTransactionDateYmd] = useState(() => todayLocalYmd());
 
-  const { isOnline, pendingCount, pendingItems, discard, syncing, syncError, needsReview, sync } = useOfflineQueue();
+  const { isOnline, pendingCount, pendingItems, discard, retry, syncing, syncError, needsReview, sync } = useOfflineQueue();
   const { submit } = useFinancialOperation('manual-transaction');
 
   const resetForm = useCallback(() => {
@@ -269,7 +269,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
           {(
             <button type="button" onClick={() => void sync()} disabled={!isOnline || syncing} className="ml-2 underline disabled:opacity-50">Reintentar</button>
           )}
-          <QueueReview items={pendingItems} discard={discard} />
+          <QueueReview items={pendingItems} discard={discard} retry={retry} />
         </div>
       )}
       {isOpen && (

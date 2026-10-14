@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { IDBFactory } from 'fake-indexeddb';
 const session = vi.hoisted(() => ({ owner: 'owner-a' }));
 vi.mock('@/lib/supabase/client', () => ({ createClient: () => ({ auth: { getSession: async () => ({ data: { session: { user: { id: session.owner } } } }) } }) }));
-import { dbGetAll, submitFinancialOperation } from '@/lib/offline-transaction-store';
+import { dbGetAll, recoverFinancialOperation, submitFinancialOperation } from '@/lib/offline-transaction-store';
 const payload = { accountId: 'account', type: 'stock_us', name: 'Apple', quantity: 10, purchasePrice: 100, purchaseCurrency: 'USD', purchaseDate: '2026-10-09' };
 beforeEach(() => { session.owner = 'owner-a'; vi.stubGlobal('indexedDB', new IDBFactory()); vi.stubGlobal('window', new EventTarget()); });
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
@@ -21,7 +21,7 @@ it('persists investment creation before transmission and reuses the same key aft
   vi.stubGlobal('fetch', fetcher);
   const first = await submitFinancialOperation('/api/investments', payload, 'POST', undefined, 'investment:create');
   expect(first.state).toBe('pending'); expect(effects.size).toBe(1);
-  const retry = await submitFinancialOperation('/api/investments', payload, 'POST', undefined, 'investment:create');
+  const retry = await recoverFinancialOperation((await dbGetAll())[0].id);
   expect(retry.state).toBe('confirmed'); expect(retry.item.id).toBe(first.item.id); expect(effects.size).toBe(1);
   expect(await dbGetAll()).toEqual([]);
   const distinct = await submitFinancialOperation('/api/investments', payload, 'POST', undefined, 'investment:create');

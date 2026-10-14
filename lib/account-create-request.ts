@@ -18,8 +18,9 @@ export async function submitAccountCreation(
   if (attempt.inFlight) return { state: 'pending', message: 'La solicitud ya está en proceso.' };
   attempt.inFlight = true;
   try {
-    // The shared submission layer recovers the owner-scoped durable draft BEFORE
-    // creating an ID, including after this component or browser has restarted.
+    // Each form owns its attempt. Only its explicit pending ID denotes a retry;
+    // a new form may legitimately create an identical account. After restart,
+    // the queue can resume a selected persisted operation with its original ID.
     const result = await dependencies.submit('/api/accounts', payload, 'POST', attempt.pending, '/api/accounts');
     if (result.state !== 'confirmed') {
       attempt.pending = result.item;

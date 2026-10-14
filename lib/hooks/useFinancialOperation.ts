@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { submitFinancialOperation, type QueuedOperation } from '@/lib/offline-transaction-store';
 
-/** A form's retry reuses its persisted operation, including after it was closed. */
+/** A live form retries only its own selected ID. A new form creates a new
+ * intent; after reload, recover a saved operation explicitly from the queue. */
 export function useFinancialOperation(scope?: string) {
   const current = useRef<QueuedOperation>();
   const busy = useRef(false);
@@ -21,7 +22,8 @@ export function useFinancialOperation(scope?: string) {
     if (busy.current) return null;
     busy.current = true;
     try {
-      const result = await submitFinancialOperation(endpoint, payload, method, current.current?.endpoint === endpoint && current.current.draftScope === (scope ?? endpoint) ? current.current : undefined, scope ?? endpoint);
+      const prior = current.current?.endpoint === endpoint && current.current.draftScope === (scope ?? endpoint) ? current.current : undefined;
+      const result = await submitFinancialOperation(endpoint, payload, method, prior, scope ?? endpoint, prior?.id);
       current.current = result.state === 'pending' ? result.item : undefined;
       setPending(result.state === 'pending');
       return result;

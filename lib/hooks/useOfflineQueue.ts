@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { syncPendingOperations, sendQueuedTransaction, queueItemInScope, type FinancialOperationOutcome } from '@/lib/offline-queue-sync';
 
-import { dbGetAll, dbRemove, dbConfirm, enqueueTransaction, enqueueOperation as persistOperation, getQueueOwnerId, type QueuedTransaction, type QueuedOperation } from '@/lib/offline-transaction-store';
+import { dbGetAll, dbRemove, dbConfirm, recoverFinancialOperation, enqueueTransaction, enqueueOperation as persistOperation, getQueueOwnerId, type FinancialSubmitResult, type QueuedTransaction, type QueuedOperation } from '@/lib/offline-transaction-store';
 export type { QueuedTransaction } from '@/lib/offline-transaction-store';
 
 export function useOfflineQueue(endpointPrefix?: string) {
@@ -88,6 +88,38 @@ export function useOfflineQueue(endpointPrefix?: string) {
     }
   }, [refreshCount, readScopedQueue]);
 
+  /** The user selects an ID, never a matching payload/form scope. */
+  const retry = useCallback(async (id: string): Promise<FinancialSubmitResult | null> => {
+    if (syncingRef.current) return null;
+    syncingRef.current = true;
+    setSyncing(true);
+    setSyncError(null);
+    try {
+      const { items } = await readScopedQueue();
+      const index = items.findIndex(item => item.id === id);
+      if (index < 0) {
+        setSyncError('La solicitud no pertenece a esta sesión o grupo.');
+        return null;
+      }
+      const selected = items[index];
+      const ordered = selected.method === 'PUT' || selected.endpoint?.endsWith('/sell');
+      if (ordered && items.slice(0, index).some(item => item.endpoint === selected.endpoint && !item.confirmedReceipt)) {
+        setSyncError('Reintentá primero la solicitud anterior de esta operación.');
+        return null;
+      }
+      const result = await recoverFinancialOperation(id);
+      if (result.state === 'pending') setSyncError(result.error || 'La solicitud sigue guardada sin confirmar.');
+      return result;
+    } catch {
+      setSyncError('No se pudo retomar la solicitud. Sigue guardada para reintentar.');
+      return null;
+    } finally {
+      syncingRef.current = false;
+      setSyncing(false);
+      await refreshCount();
+    }
+  }, [refreshCount, readScopedQueue]);
+
   const discard = useCallback(async (id: string) => {
     const { items, legacy } = await readScopedQueue();
     if (![...items, ...legacy].some(item => item.id === id)) return;
@@ -129,5 +161,5 @@ export function useOfflineQueue(endpointPrefix?: string) {
     };
   }, [refreshCount, sync, endpointPrefix]);
 
-  return { isOnline, pendingCount, pendingItems, discard, syncing, syncError, needsReview, enqueue, enqueueOperation, sync };
+  return { isOnline, pendingCount, pendingItems, discard, retry, syncing, syncError, needsReview, enqueue, enqueueOperation, sync };
 }

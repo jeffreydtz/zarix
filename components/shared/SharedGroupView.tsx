@@ -31,7 +31,7 @@ function formatDate(iso: string): string {
 }
 
 export default function SharedGroupView({ token, initialData }: Props) {
-  const { pendingCount, pendingItems, discard, syncing, syncError, sync } = useOfflineQueue(`/api/shared/${token}/expenses`);
+  const { pendingCount, pendingItems, discard, retry, syncing, syncError, sync } = useOfflineQueue(`/api/shared/${token}/expenses`);
   const [data, setData] = useState<SharedGroupDetail>(initialData);
   const [tab, setTab] = useState<Tab>('gastos');
   const [memberId, setMemberId] = useState<string | null>(null);
@@ -88,7 +88,7 @@ export default function SharedGroupView({ token, initialData }: Props) {
           <button type="button" className="underline" disabled={syncing} onClick={async () => { await sync(); await reload(); }}>
             {syncing ? 'Sincronizando…' : 'Reintentar sin duplicar'}
           </button>
-          <QueueReview items={pendingItems} discard={discard} />
+          <QueueReview items={pendingItems} discard={discard} retry={retry} />
         </div>}
         <div className="card p-5">
           <h1 className="text-xl font-semibold">{data.group.name}</h1>

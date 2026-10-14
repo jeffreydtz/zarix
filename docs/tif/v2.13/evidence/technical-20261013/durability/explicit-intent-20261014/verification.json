@@ -1,0 +1,278 @@
+{
+  "base_revision": "316b393577fe15ffac81cf5595459a191337aeaf",
+  "working_tree_changes": true,
+  "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+  "started_at": "2026-10-14T01:04:42.346282+00:00",
+  "completed_at": "2026-10-14T01:04:47.393993+00:00",
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "__tests__/offline-durable-store.test.ts",
+    "__tests__/offline-queue-sync.test.ts",
+    "__tests__/investment-create-durable-store.test.ts",
+    "__tests__/financial-intent-hooks.test.ts",
+    "__tests__/account-create-handler-outcomes.test.ts",
+    "__tests__/notification-outbox.test.ts",
+    "__tests__/recurring-job-regression.test.ts",
+    "__tests__/recurring-outbox-equivalence.test.ts",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261013/durability/explicit-intent-20261014/focused-vitest.json"
+  ],
+  "exit_code": 0,
+  "node_version": "v22.17.0",
+  "sources_stable_during_execution": true,
+  "source_manifest": [
+    {
+      "path": "lib/offline-transaction-store.ts",
+      "sha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b"
+    },
+    {
+      "path": "lib/offline-queue-sync.ts",
+      "sha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d"
+    },
+    {
+      "path": "lib/services/notification-outbox.ts",
+      "sha256": "82fdc8e5611bbf64601cec687ad29669fda081a5d48107ec80d3612756e868fd"
+    },
+    {
+      "path": "lib/telegram/send.ts",
+      "sha256": "276e4faa5508249c6aef89f2d920fd39a7522c9b8e532c2d0e3612cb02beff62"
+    },
+    {
+      "path": "lib/cron/recurring-job.ts",
+      "sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72"
+    },
+    {
+      "path": "lib/account-create-request.ts",
+      "sha256": "20e2824d536ebbd4687c7d87a647cab7e4cf12868e8bca0f3d97af23be6a8e5c"
+    },
+    {
+      "path": "scripts/lib/test-isolated-database.mjs",
+      "sha256": "395514d590d118c4b7b40a6ceca974db36fc2684a68447c857600be40e22da9b"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "04d0d49eb194f2a7c6515e5d3877fd40642d56ddb7a86d2641c29b9f7a199417"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "ed2bc19510589ae5c0940b5e4504c6c0413ba285ae35a3d4ad9db5f5d3a8eb51"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    },
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "__tests__/offline-durable-store.test.ts",
+      "sha256": "ae4bb86c6a1d1f54be0a56b7ef91618b16e397070a03a7b2a8c048beb4fba20a"
+    },
+    {
+      "path": "__tests__/offline-queue-sync.test.ts",
+      "sha256": "86a69f0917dba16ecd254999a3bcf75e95dea6dfe70c3605e401e559420caa85"
+    },
+    {
+      "path": "__tests__/account-create-handler-outcomes.test.ts",
+      "sha256": "44b055387a94ac0b99eb52f53566ffba24af2bc8dc5f9c4ffb35709c60cea8d3"
+    },
+    {
+      "path": "__tests__/notification-outbox.test.ts",
+      "sha256": "865517148c166b10a0ed5d42ed82e11b89955329c8123c5b23195ce7367e7a7f"
+    },
+    {
+      "path": "__tests__/recurring-job-regression.test.ts",
+      "sha256": "dc727641111aa76965bda4c15e7857cd40c5722b6f014b2a38daf2e4834150d8"
+    },
+    {
+      "path": "__tests__/recurring-outbox-equivalence.test.ts",
+      "sha256": "2ae50a96cf8ecc09d3b8ba4c5aa6b415d513b92a584a90ffacf29931374189ac"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "lib/hooks/useFinancialOperation.ts",
+      "sha256": "85d2156743a9c611b55c4a99d0113e133b7542e01ae164ab2570ca69b7495733"
+    },
+    {
+      "path": "lib/hooks/useOfflineQueue.ts",
+      "sha256": "19f9803ce466afde4df59aec3ae9adbda569b1d0cb291d86e832796d8e04a1a1"
+    },
+    {
+      "path": "lib/supabase/client.ts",
+      "sha256": "dbf42580931fb4016d4b9b96adc853531e0cfdb74dc2348e2679a8ebfd50d7ad"
+    },
+    {
+      "path": "components/offline/QueueReview.tsx",
+      "sha256": "94268e4c1a361cbd2fd46660865dc127fc4478f3232a9e512c702fef4c559fc3"
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "sha256": "38a2ebb25151c366faf6b51191dcb17248c768ff3c123f2568bb8242fbef581e"
+    },
+    {
+      "path": "components/shared/SharedGroupView.tsx",
+      "sha256": "8f8964b158bab87797515afffa86eaf1764bee6a30dc1761f4cd077344bf7fdc"
+    },
+    {
+      "path": "__tests__/investment-create-durable-store.test.ts",
+      "sha256": "dc7b189ed862199ad01f3948d1260cb22cbc0fa7978d5ee35f4a8221b99eb77e"
+    },
+    {
+      "path": "__tests__/financial-intent-hooks.test.ts",
+      "sha256": "a3ad6279687ed0f62f2fca21c0284e170adcd76bdeb03cd25345cabf36c58f33"
+    }
+  ],
+  "test_files": 8,
+  "assertions": 76,
+  "passed_assertions": 76,
+  "failed_assertions": 0,
+  "scope": "Explicit financial intents: real queue/store/hook/handler code, fake-indexeddb API fixture, React lifecycle and financial server doubles; actual file-backed PostgreSQL WASM for recurring/outbox tests with synthetic Auth, PostgREST adapter and Telegram double. No live stack mutation, real-browser or real-provider acceptance.",
+  "supersedes": "../verification.json: historical 64-test run used an incorrect concurrency expectation; it is not evidence of the corrected explicit-intent protocol.",
+  "additional_checks": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "evidence": "Executed successfully on these sources before the recorded focused run; global verification records the final full-project check."
+    },
+    {
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "lib/offline-transaction-store.ts",
+        "lib/hooks/useFinancialOperation.ts",
+        "lib/hooks/useOfflineQueue.ts",
+        "lib/account-create-request.ts",
+        "components/offline/QueueReview.tsx",
+        "components/add-transaction/AddTransactionProvider.tsx",
+        "components/shared/SharedGroupView.tsx",
+        "__tests__/offline-durable-store.test.ts",
+        "__tests__/financial-intent-hooks.test.ts",
+        "__tests__/investment-create-durable-store.test.ts",
+        "__tests__/account-create-handler-outcomes.test.ts"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "environment": {
+        "DEVELOPER_DIR": "/Library/Developer/CommandLineTools"
+      },
+      "exit_code": 0
+    }
+  ]
+}

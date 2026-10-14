@@ -23,12 +23,14 @@ describe('shared account form submission handler',()=>{
   const state:AccountCreationAttempt={};const deps=dependencies();deps.submit.mockResolvedValue({item,state:'pending'});
   expect((await submitAccountCreation(state,payload,{online:false},deps)).state).toBe('pending');expect(state.pending).toBe(item);
  });
- it('recovers the durable draft scope after remount rather than pre-enqueueing a new ID',async()=>{
+ it('an independent newly mounted form submits a fresh intent instead of adopting another form scope',async()=>{
   const state:AccountCreationAttempt={};const deps=dependencies();const restore=vi.fn();
-  deps.submit.mockResolvedValue({item,state:'pending',error:'Original pendiente'});
-  await submitAccountCreation(state,{...payload,name:'Different reopened form'},{online:true,onPending:restore},deps);
+  const freshPayload={...payload,name:'Independent new account'};
+  const fresh={...item,id:'independent-key',payload:freshPayload};
+  deps.submit.mockResolvedValue({item:fresh,state:'pending',error:'Nueva pendiente'});
+  await submitAccountCreation(state,freshPayload,{online:true,onPending:restore},deps);
   expect(deps.submit).toHaveBeenCalledWith('/api/accounts',expect.any(Object),'POST',undefined,'/api/accounts');
-  expect(restore).toHaveBeenCalledWith(payload);expect(state.pending?.id).toBe(item.id);
+  expect(restore).toHaveBeenCalledWith(freshPayload);expect(state.pending?.id).toBe(fresh.id);
  });
  it('guards simultaneous double submit before persistence resolves',async()=>{
   const state:AccountCreationAttempt={};const deps=dependencies();let finish!:(value:any)=>void;

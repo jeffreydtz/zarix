@@ -117,16 +117,49 @@ export interface FinancialSubmitResult {
   error?: string;
 }
 
+/** Persist one explicit intent before sending. A scope identifies the form,
+ * never the financial command: independent forms may submit identical data. */
+async function recoverOrEnqueueDraft(
+  endpoint: string, payload: unknown, method: 'POST' | 'PUT', draftScope: string,
+  ownerId: string | undefined, intentId: string, pending?: QueuedOperation
+): Promise<QueuedOperation> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+    let selected: QueuedOperation;
+    let created = false;
+    request.onsuccess = () => {
+      const saved = (request.result as QueuedOperation[])
+        .sort((a, b) => (a.sequence ?? a.createdAt) - (b.sequence ?? b.createdAt));
+      const prior = saved.find(item => item.id === intentId) ?? pending;
+      if (prior) { selected = prior; return; }
+      selected = { id: intentId, endpoint, method, payload, draftScope, ownerId,
+        createdAt: Date.now(), sequence: saved.reduce((max, item) => Math.max(max, item.sequence ?? item.createdAt), 0) + 1 };
+      store.add(selected);
+      created = true;
+    };
+    tx.oncomplete = () => {
+      db.close();
+      if (created) window.dispatchEvent(new Event('zarix-queue-changed'));
+      resolve(selected);
+    };
+    tx.onabort = tx.onerror = () => { db.close(); reject(tx.error); };
+  });
+}
+
 /** The form retains result.item until confirmed. A retry never mints another ID. */
 export async function submitFinancialOperation(
-  endpoint: string, payload: unknown, method: 'POST' | 'PUT' = 'POST', pending?: QueuedOperation, draftScope = endpoint
+  endpoint: string, payload: unknown, method: 'POST' | 'PUT' = 'POST', pending?: QueuedOperation, draftScope = endpoint,
+  intentId = pending?.id ?? crypto.randomUUID()
 ): Promise<FinancialSubmitResult> {
+  if (pending && pending.id !== intentId) throw new Error('El reintento debe conservar el identificador de la operación.');
   const ownerId = endpoint.startsWith('/api/shared/') ? undefined : await getQueueOwnerId();
-  // A pending form survives component teardown, reload and browser restart.
-  const stored = await dbGetAll();
-  const saved = pending ? stored.find(item => item.id === pending.id) ?? pending
-    : stored.find(item => item.draftScope === draftScope && item.ownerId === ownerId);
-  const item = saved ?? await enqueueOperation(endpoint, payload, method, draftScope);
+  if (!endpoint.startsWith('/api/shared/') && !ownerId && !pending) throw new Error('Iniciá sesión antes de guardar una operación.');
+  // Recovery requires the selected persisted ID; equal scopes/payloads do not
+  // identify retries. The durable queue retains every independent intent.
+  const item = await recoverOrEnqueueDraft(endpoint, payload, method, draftScope, ownerId ?? undefined, intentId, pending);
   if (item.endpoint !== endpoint || item.method !== method || JSON.stringify(item.payload) !== JSON.stringify(payload)) {
     return { item, state: 'pending', error: 'La operación anterior sigue pendiente. Reintentá con sus datos originales o revisá la cola antes de cargar otra.' };
   }
@@ -149,6 +182,14 @@ export async function submitFinancialOperation(
   } catch {
     return { item, state: 'pending', error: 'No se recibió una confirmación. La operación sigue guardada; reintentá sin volver a cargarla.' };
   }
+}
+
+/** Explicitly resume a selected durable operation after reload/browser restart.
+ * Uses its original payload and ID; it never guesses a match by form/content. */
+export async function recoverFinancialOperation(id: string): Promise<FinancialSubmitResult> {
+  const item = (await dbGetAll()).find(operation => operation.id === id);
+  if (!item?.endpoint) throw new Error('Seleccioná una operación guardada con un destino identificado.');
+  return submitFinancialOperation(item.endpoint, item.payload, item.method ?? 'POST', item, item.draftScope ?? item.endpoint, item.id);
 }
 
 /** Background confirmations remain attached to the draft until the form observes
