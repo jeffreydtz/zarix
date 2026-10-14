@@ -1,3 +1,5 @@
+> Actualización 14/10/2026: [verificación nativa y recuperación Auth/Storage ejecutadas](../tif/v2.13/evidence/technical-20261013/native/README.md). El cuerpo siguiente conserva el alcance y los resultados históricos del 09/10; las nuevas fases y sus límites están en ese informe.
+
 # Verificación SQL y recuperación aislada
 
 ## Alcance y seguridad

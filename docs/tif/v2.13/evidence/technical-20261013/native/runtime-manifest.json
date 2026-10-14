@@ -1,0 +1,120 @@
+{
+  "prepared_at_utc": "2026-10-13T21:48:38.279620+00:00",
+  "host": {
+    "os": "macOS",
+    "version": "27.0.1",
+    "build": "26A434",
+    "arch": "arm64"
+  },
+  "cli": {
+    "version": "2.120.0",
+    "path": "/tmp/zarix-runtime/bin/supabase",
+    "sha256_tar_gz": "3b8546cc61aeabab6fd1f68edc7f664ebdfa96bdd6a9b18d8d612708f430ae28",
+    "official_release": "https://github.com/supabase/cli/releases/tag/v2.120.0",
+    "official_checksums": "https://github.com/supabase/cli/releases/download/v2.120.0/checksums.txt"
+  },
+  "runtime": "native experimental",
+  "home": "/tmp/zarix-runtime/home",
+  "pg_bin": "/tmp/zarix-runtime/home/cache/stack/slim-services/postgres/17.11.0.004-r1/darwin-arm64/bin",
+  "versions": {
+    "postgres": "17.11.0.004-r1 (server/client 17.11)",
+    "auth": "v2.197.0-r0",
+    "postgrest": "v16.4-r0",
+    "storage": "v1.79.36-r0"
+  },
+  "excluded_capabilities": [
+    "studio",
+    "realtime",
+    "functions",
+    "analytics",
+    "pooler",
+    "mail"
+  ],
+  "activation": "eager",
+  "secrets_file": "/tmp/zarix-runtime/runtime.env",
+  "secrets_file_mode": "0600",
+  "stacks": {
+    "source": {
+      "id": "39ea4de5e113d7b10bfbeb7bccf17fc60b067eecb62b8d68208e02afbc445f31",
+      "project_dir": "/tmp/zarix-runtime/source",
+      "api_url": "http://127.0.0.1:54321",
+      "db_endpoint": "tcp://127.0.0.1:54322",
+      "status_file": "/tmp/zarix-runtime/source-start.json"
+    },
+    "restore": {
+      "id": "c45b7c116064926f7be4cf3d40ca6b2cf90d4d0b62ad2a149e8d9694de049551",
+      "project_dir": "/tmp/zarix-runtime/restore",
+      "api_url": "http://127.0.0.1:55321",
+      "db_endpoint": "tcp://127.0.0.1:55322",
+      "status_file": "/tmp/zarix-runtime/restore-start.json"
+    },
+    "load": {
+      "id": "1dad49e4c6d01173fefc4a4a5cf0c465762ba1f49b4bbb80db721fd8fe03aad5",
+      "project_dir": "/tmp/zarix-runtime/load",
+      "api_url": "http://127.0.0.1:56321",
+      "db_endpoint": "tcp://127.0.0.1:56322",
+      "status_file": "/tmp/zarix-runtime/load-start.json",
+      "env_file": "/tmp/zarix-runtime/load.env",
+      "prepared_at_utc": "2026-10-13T22:43:06.374116+00:00",
+      "purpose": "CNF01 canonical synthetic load; source/restore untouched",
+      "baseline": "17.11|0|0|0; Auth/REST HTTP200"
+    }
+  },
+  "baseline_checks": {
+    "scope": "Before application migrations and synthetic fixtures",
+    "SQL": [
+      "auth.users=0",
+      "storage.objects=0",
+      "public table count=0"
+    ],
+    "HTTP": [
+      "Auth health=200",
+      "REST=200"
+    ]
+  },
+  "limits": [
+    "HTTP loopback endpoints; HTTPS requirement not demonstrated",
+    "Platform schemas initialized; application data/Auth users/Storage objects were empty",
+    "Source/destination remain running for integration tests; no automatic destroy",
+    "No production/remote connector/global install/system license change"
+  ],
+  "documentation": [
+    "https://raw.githubusercontent.com/supabase/cli/v2.120.0/apps/cli/docs/stack-commands.md",
+    "https://raw.githubusercontent.com/supabase/cli/v2.120.0/apps/cli/docs/supabase-home.md",
+    "https://raw.githubusercontent.com/supabase/cli/v2.120.0/packages/stack/README.md"
+  ],
+  "resets": [
+    {
+      "at_utc": "2026-10-13T21:56:36.089105+00:00",
+      "scope": [
+        "/tmp/zarix-runtime/source",
+        "/tmp/zarix-runtime/restore"
+      ],
+      "command": "supabase db reset --local --no-seed --yes",
+      "reason": "Second complete harness run from empty synthetic baseline; attempt1 report preserved",
+      "baseline": "17.11|0|0|0; Auth/REST HTTP200",
+      "env_renewed": true
+    },
+    {
+      "at_utc": "2026-10-13T22:41:29.039860+00:00",
+      "scope": [
+        "/tmp/zarix-runtime/source",
+        "/tmp/zarix-runtime/restore"
+      ],
+      "command": "supabase db reset --local --no-seed --yes",
+      "reason": "Third complete harness run after connection reconnect and Connection:close fix; attempts1/2 preserved",
+      "baseline": "17.11|0|0|0; Auth/REST HTTP200",
+      "env_renewed": true
+    },
+    {
+      "at_utc": "2026-10-14T01:05:09.681965+00:00",
+      "scope": [
+        "/tmp/zarix-runtime/restore"
+      ],
+      "command": "supabase db reset --local --no-seed --yes",
+      "reason": "Resume recovery only after default ACL comparison fix; source/load retained",
+      "baseline": "17.11|0|0|0; Auth/REST HTTP200",
+      "env_renewed": "restore entries only"
+    }
+  ]
+}

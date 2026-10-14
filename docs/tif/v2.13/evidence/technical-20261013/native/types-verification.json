@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "tables": 27,
+  "functions": 29,
+  "generatedSha256": "7afaa2cb212f9b38b9e7112bb6d4df05f3118cb717907ecf4d7fd40218874ba1",
+  "generation": "write then byte-for-byte check against disposable localhost using official Supabase CLI 2.120.0",
+  "typecheck": "PASS",
+  "nativeGuardTests": {
+    "status": "PASS",
+    "passed": 15
+  },
+  "scope": "Complete public database contract; display models retained separately"
+}

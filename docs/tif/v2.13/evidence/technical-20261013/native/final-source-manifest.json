@@ -1,0 +1,10 @@
+{
+  "scripts/test-isolated-native-supabase.mjs": "877b2b7a29c16752bd726f3d75303a49c5175fef7c4d66e5d0a50ea84c8de71f",
+  "scripts/lib/test-isolated-native-target.mjs": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+  "scripts/generate-isolated-database-types.mjs": "e2c9465975bd40d4100ea4dd43b3e13abb0a97800d56539c509b8ef8b79c0dfa",
+  "types/database.ts": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982",
+  "types/supabase-generated.ts": "7afaa2cb212f9b38b9e7112bb6d4df05f3118cb717907ecf4d7fd40218874ba1",
+  "__tests__/isolated-native-target.test.ts": "21d727fc7b113efe25acf19909424119b8bc37efea64817ef7b0d460d331d561",
+  "docs/testing/isolated-database-recovery.md": "1308a7eb1f5d4a0061218fc7aa68442b2558745e151c1b9faabe2b7f12df0a3c",
+  "docs/tif/v2.13/evidence/technical-20261013/native/README.md": "35a4a89093c61c122d79914085567d91d1b29e0ffac0f4a8fe20988b649a9ec4"
+}

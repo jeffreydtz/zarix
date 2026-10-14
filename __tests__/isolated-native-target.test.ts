@@ -1,11 +1,19 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { isolatedNativeTargets, isolatedPgEnvironment, isolatedApiFetch } from '../scripts/lib/test-isolated-native-target.mjs';
+import { isolatedNativeTargets, isolatedPgEnvironment, isolatedApiFetch, safeNativeFailure } from '../scripts/lib/test-isolated-native-target.mjs';
 
 const confirmation = { ZARIX_ISOLATED_DATABASE_CONFIRM: 'synthetic-only' };
 
 afterEach(() => vi.unstubAllGlobals());
 
 describe('isolated native harness connection safety without network access', () => {
+  it('excludes SQL/API messages, Auth row details and capabilities from failure evidence', () => {
+    const fixture = 'SYNTHETIC_CAPABILITY_NEVER_PUBLIC';
+    const error = Object.assign(new Error(`Failing Auth row contains ${fixture}`), { code: '23514', privateDetails: fixture });
+    const evidence = safeNativeFailure(error, 'restore catalog');
+    expect(evidence).toEqual({ type: 'Error', code: '23514', context: 'restore catalog' });
+    expect(JSON.stringify(evidence)).not.toContain(fixture);
+    expect(safeNativeFailure({ name: fixture, code: fixture }, 'restore catalog')).toEqual({ type: 'Error', code: null, context: 'restore catalog' });
+  });
   it('requires the disposable synthetic-only acknowledgement', () => {
     expect(() => isolatedNativeTargets({})).toThrow('synthetic-only');
   });

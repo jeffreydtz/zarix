@@ -47,3 +47,12 @@ export function isolatedApiFetch(input, init = {}) {
   // Never forward a local stack key to a redirect destination.
   return fetch(input, { ...init, redirect: 'error' });
 }
+
+// Database/API diagnostics can include Auth rows or capability tokens. Evidence
+// keeps only known error kinds/codes and a context supplied by the harness.
+export function safeNativeFailure(error, context) {
+  const names = new Set(['Error', 'AssertionError', 'TypeError', 'RangeError', 'SyntaxError', 'NativeCommandError', 'NativeApiError']);
+  const name = names.has(error?.name) ? error.name : 'Error';
+  const code = typeof error?.code === 'string' && /^(?:[0-9A-Z]{5}|ERR_[A-Z0-9_]+|EXIT_[0-9]+)$/.test(error.code) ? error.code : null;
+  return { type: name, code, context };
+}
