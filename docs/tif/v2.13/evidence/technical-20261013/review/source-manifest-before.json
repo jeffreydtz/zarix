@@ -1,0 +1,154 @@
+{
+  "startedAt": "2026-10-13T22:43:21.848Z",
+  "baseRevision": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df",
+  "headRevision": "f3218f97efc4f1a84c8f41a3491952d55c283d60",
+  "sourceWorkingTree": "mutable; root will consolidate after corrections",
+  "snapshotDirectory": "/tmp/zarix-independent-review-dz23id",
+  "sources": [
+    {
+      "path": "lib/offline-transaction-store.ts",
+      "sha256": "af8a73c5638558ec3136a4b1faefefcf2a5fbe78f63872fa76f084f32786d0e8"
+    },
+    {
+      "path": "lib/offline-queue-sync.ts",
+      "sha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d"
+    },
+    {
+      "path": "lib/hooks/useFinancialOperation.ts",
+      "sha256": "010a89db79af06ed0338c66ade49faab00c974a72fc17bbb9ab547a263539db8"
+    },
+    {
+      "path": "lib/account-create-request.ts",
+      "sha256": "eae121acef448559fe36b75afa03d4441e4811dfa50834d873a0593f486a0560"
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "sha256": "5203895a09471e307d183f3726c9fc4d4ac36884726e3c6b92a846d68b6e819b"
+    },
+    {
+      "path": "components/investments/AddInvestmentPanel.tsx",
+      "sha256": "c38904e65f5efc72aee998b89637cb04942a99ae21a88cc07aa91cca470aea89"
+    },
+    {
+      "path": "components/investments/SellPositionDialog.tsx",
+      "sha256": "2eb8dd1c28248e9eaa54b6178c2aed51bbf58a961e73ff050e74c1a080b596fc"
+    },
+    {
+      "path": "components/investments/InvestmentSimulationPanel.tsx",
+      "sha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb"
+    },
+    {
+      "path": "lib/investment-simulation.ts",
+      "sha256": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea"
+    },
+    {
+      "path": "app/(authenticated)/investments/page.tsx",
+      "sha256": "e61aca78a8fcc06c877ff77c6cd388b6bb9038350323876f63b78d6c3107170f"
+    },
+    {
+      "path": "components/investments/InvestmentsWorkspace.tsx",
+      "sha256": "a2c1721c3d60378a1507626b9cb210c5637f03d50dd1f1d9171f8b56f50c770d"
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "sha256": "5d8be446cf8be00277f42bc79cb04a3893ca03754d2c01ca8b4f5663415b8fd5"
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "sha256": "09caabac5758f32281e72733a3ad1acbef90e5588c9a551942f36f4fb8429587"
+    },
+    {
+      "path": "scripts/test-isolated-native-supabase.mjs",
+      "sha256": "6cc4a7be2c0d03f9653b11e582fe401c88b58764d9c21c1b4b1eb1315dd9a49f"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "285ec00189f09d04ea99e20f3a986dcea9a4482cce55e165c672b230ef9d8060"
+    },
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "sha256": "dbfdcfb7f0461bfb3194e4df2c80f831ed40fa829d853ec4c02ac7961e587f8a"
+    },
+    {
+      "path": "scripts/run-technical-verification.mjs",
+      "sha256": "70ee6849f4654b928e066064f9fe18bf046de5cdedc9851de4e7d5ae812ef4a3"
+    },
+    {
+      "path": "scripts/build-technical-traceability.py",
+      "sha256": "d0118f6f964c0cb9bc2bfe14340569684cbcc799fb2a95a353bc8e31a2e353c1"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "5c6fe1303a9e1c918c7f034c6f64a56e0f19c4219b3f693cf2726fb5eda2287f"
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "6ec3915b5fe655a912133275700cc77a6750a31e732ac94092b162da1d8a54cb"
+    },
+    {
+      "path": "lib/blue-fx-reference.ts",
+      "sha256": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c"
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "sha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207"
+    },
+    {
+      "path": "components/accounts/AccountBalanceEquivalents.tsx",
+      "sha256": "f7540e2e5a121431c69af9e0f4796bbc88c5aa2b36ae088bac15f2e3548956d8"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea"
+    },
+    {
+      "path": "__tests__/offline-durable-store.test.ts",
+      "sha256": "5d905534b9340cbd6b41b474f882ef9a1f8f5ca9367110d78ed29159034c392e"
+    },
+    {
+      "path": "__tests__/isolated-native-target.test.ts",
+      "sha256": "20f4ff25db70cd96afa6bd2e700aca8e423c94aacdbc5dbc5a792c2f3f230f7e"
+    },
+    {
+      "path": "__tests__/investment-simulation.test.ts",
+      "sha256": "12fb6e4746d7f71647ad5951e50e5f64d0a20654594e8db4bea77c1a45a4fa37"
+    },
+    {
+      "path": "__tests__/investment-simulation-component.test.ts",
+      "sha256": "ef9748d355267f555362e3b408a43b0d1b0d1b55e972aa872a3e007fe5f60f79"
+    },
+    {
+      "path": "__tests__/blue-fx-metadata.test.ts",
+      "sha256": "9cd92e57cc0f2bb782cb2e211a33edbf9c1e666ccedbf40c9e1abaa7f890e9b2"
+    },
+    {
+      "path": "__tests__/blue-fx-metadata-components.test.ts",
+      "sha256": "9b7135c3f9ef3b3704e02a67105e0e117fd8116605b89d2604546e163a0bcef5"
+    },
+    {
+      "path": "__tests__/recurring-outbox-equivalence.test.ts",
+      "sha256": "2ae50a96cf8ecc09d3b8ba4c5aa6b415d513b92a584a90ffacf29931374189ac"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "04d0d49eb194f2a7c6515e5d3877fd40642d56ddb7a86d2641c29b9f7a199417"
+    },
+    {
+      "path": "docs/testing/isolated-e2e.md",
+      "sha256": "e55ee7453c984c58b0b8e855e3e0dd4ae758ce17e01af4bd48c896829af3efb6"
+    }
+  ],
+  "manifestSha256": "450cb532a8e4d656a2281e32b9f2b59ae987e0fb442af0859087fa77c727913a"
+}

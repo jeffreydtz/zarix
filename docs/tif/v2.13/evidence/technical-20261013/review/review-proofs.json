@@ -1,0 +1,55 @@
+{
+  "capturedAt": "2026-10-14T01:08:01.193Z",
+  "sourceManifestSha256": "faa9b854fd0da301bc3be2038e74d9ec512b26fb9993f80787f774a0a8922547",
+  "commands": [
+    {
+      "command": "python3 scripts/test-technical-traceability.py",
+      "before": "traceability-before-fix.log",
+      "beforeExitCode": 1,
+      "after": "traceability-after-fix.log",
+      "afterExitCode": 0,
+      "result": "3 Python regression methods pass; synthetic status aggregation, not original CU acceptance"
+    },
+    {
+      "command": "node docs/tif/v2.13/evidence/technical-20261013/review/reproduce-independent-focals.mjs --before --output=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261013/review/independent-focals-pre-fix.json",
+      "before": "independent-focals-pre-fix.json",
+      "beforeExitCode": 1,
+      "beforeOutcome": {
+        "passed": 3,
+        "failed": 1
+      },
+      "scope": "Captured pre-fix offline/health sources: independent new equal intents collapse to one ID; actual providers/storage/Auth doubled"
+    },
+    {
+      "command": "node docs/tif/v2.13/evidence/technical-20261013/review/reproduce-independent-focals.mjs --output=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261013/review/independent-focals-after-fix.json",
+      "after": "independent-focals-after-fix.json",
+      "afterExitCode": 0,
+      "afterOutcome": {
+        "passed": 4,
+        "failed": 0
+      },
+      "scope": "Current offline identity and minimal health success/error response, explicit doubles"
+    },
+    {
+      "command": "node node_modules/vitest/vitest.mjs run __tests__/investment-simulation.test.ts __tests__/investment-simulation-component.test.ts __tests__/blue-fx-metadata.test.ts __tests__/blue-fx-metadata-components.test.ts __tests__/isolated-native-target.test.ts --reporter=json --outputFile=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261013/review/review-focals.json",
+      "evidence": "review-focals.json",
+      "exitCode": 0,
+      "outcome": {
+        "passed": 58,
+        "failed": 0,
+        "files": 5
+      },
+      "scope": "Focused unit/component/source guards with explicit HTTP/database/hook doubles; not native/E2E/provider acceptance"
+    }
+  ],
+  "initialFixtureCorrection": "The initial temporary race fixture omitted required Idempotency-Key acknowledgment header. It was corrected before the pre-fix reproduction was classified; original unclassified output is not counted as product failure.",
+  "finalExecutionPending": true,
+  "artifactHashes": {
+    "independent-race-health.test.ts.fixture": "1910a70daa120b3675b82b0296381af82dc6693c2bf4dd3661b52e35f503d876",
+    "reproduce-independent-focals.mjs": "f152672844176dda26fe6fc2ce486a330a037dba1f12f1cfd82466d0b224d471",
+    "offline-store-before.ts.snapshot": "af8a73c5638558ec3136a4b1faefefcf2a5fbe78f63872fa76f084f32786d0e8",
+    "offline-sync-before.ts.snapshot": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d",
+    "health-before.ts.snapshot": "5d8be446cf8be00277f42bc79cb04a3893ca03754d2c01ca8b4f5663415b8fd5",
+    "traceability-before.py.snapshot": "d0118f6f964c0cb9bc2bfe14340569684cbcc799fb2a95a353bc8e31a2e353c1"
+  }
+}
