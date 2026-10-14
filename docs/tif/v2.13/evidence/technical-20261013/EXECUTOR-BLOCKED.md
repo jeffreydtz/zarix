@@ -1,5 +1,35 @@
 # Retoma técnica ZARIX — 13/10/2026 — ejecución interrumpida
 
+## Estado posterior a la reconexión de 22:38 UTC
+
+**El canal de ejecución de la Mac volvió a desconectarse.** `exec_command`, `apply_patch`, Codex App y el fallback CUA devolvieron Transport closed/exec-server transport disconnected. La recuperación automática volvió a fallar; no hubo rechazo de auto-review. El estado connected/attached del dispositivo no basta para demostrar que su executor sigue operativo.
+
+Progreso confirmado durante la ventana recuperada:
+
+- Se integró el commit documental remoto `9ba101e` con el commit local `856fdf5` mediante merge **local** `f3218f97efc4f1a84c8f41a3491952d55c283d60`, sin reset, force-push ni pérdida de cambios.
+- `Connection: close` fue aplicado al transporte del harness nativo, sin retry automático de escrituras. Intento3: **19 grupos únicos PASS**, que sustituyen el conteo parcial anterior (no sumar13+19). Incluye rollback de venta, carreras de conexiones con espera de locks observada, recibo/efecto únicos, fixtures en27 tablas, revocación de refresh y acceso privado Storage con owner/otro usuario/anon. El JWT de acceso previo respondió200 hasta expiración; no se promete revocación instantánea.
+- `pg_dump` y `pg_restore` terminaron en base literal vacía; las filas public/auth/storage coincidieron. La comparación de catálogo falló sólo por el orden de ACL. El comparador fue corregido y su sintaxis aprobada; **no se volvió a ejecutar**. Falta el login y objeto Storage restaurados en el segundo stack. El grupo completo de recuperación continúa sin PASS.
+- Intentos1/2/3 preservados. Reporte último: `/tmp/zarix-runtime/native-evidence/native-verification-attempt-3.json`. Logins y guest ahora existen en archivo privado0600 `/tmp/zarix-runtime/test-logins.json`; no copiar valores a evidencia.
+- El reset4 **no inició** por desconexión; fuente conserva el intento3. Revisar ese estado antes de resetear, y preferir terminar recuperación desde la fuente preservada si el harness lo permite.
+- Metadatos FX finalizaron con **143/143 pruebas focalizadas PASS**, lint/typecheckPASS y manifiesto de20 fuentes. Label de cotización guardada y aviso de históricos sin fuente/fecha FX quedaron corregidos; resultados y fuentes siguen locales.
+- El cambio local de salud a GET mínimo backend fue guardado y revisado estáticamente sin observar exposición nueva. Falta verificación ejecutada final.
+- Tercer stack temporal de carga preparado, inicialmente vacío: API127.0.0.1:56321/PG56322, sin tocar fuente/restauración. No se sembró aún el perfil canónico ni se ejecutó carga.
+- `scripts/test-isolated-api.mjs` quedó creado y su primera versión tuvo node--checkPASS. E2E/API/load **no se ejecutaron**; la expansión shared/cron y ajustes finales no están confirmados/aplicados. Los scripts preparados no aprueban los cuatro CU.
+
+Revisión independiente parcial encontró pendientes que impiden publicar el código como corregido:
+
+1. **P1 offline:** el primer fix puede fusionar dos intenciones nuevas legítimas de igual contenido. La prueba concurrente anterior no distinguía alta nueva de retry. Hay que usar identidad explícita por intención y conservar distintas claves para dos altas. Un patch posterior del store retornó éxito, pero su relectura/pruebas no fueron posibles; hook, helpers, tests y evidencia todavía requieren integración/revisión. **No se atribuye PASS al nuevo protocolo ni se publica el fix previo como final.**
+2. **P2 matriz:** el script local de trazabilidad acepta statusBLOCKED en system-case-results, pero su agregado lo transforma enFAIL. Debe preservar los tres estados y probar esa rama antes de generar/publicar la matriz.
+3. **Riesgo de resumen/carga a reproducir:** getMonthSummary y reconstrucción de saldo contienen SELECT sin paginación. Se leyó el código remoto vigente de transactions.ts; el ensayo de5000 filas debe contrastar totales SQL y límite real de PostgREST. No hay todavía un fallo dinámico demostrado ni se aprueba rendimiento por mostrar sólo headings.
+
+Manifiesto de revisión parcial: `review/source-manifest-before.json`,36 fuentes, HEADlocalf3218f97, SHA256 `450cb532a8e4d656a2281e32b9f2b59ae987e0fb442af0859087fa77c727913a`. No representa el estado final mutable ni una aprobación independiente completa.
+
+Sigue pendiente: protocolo offline, matriz, tipos generados (creación del generador sin confirmar), corrida íntegra native/restore, API/E2E/load y controles npm completos del código final. Ningún código nuevo fue publicado; esta actualización remota sigue siendo documental. Conservar todo el checkout y reconciliar este nuevo commit documental al retomar.
+
+---
+
+## Registro anterior conservado
+
 **Entrega parcial. No constituye aceptación integral, despliegue ni autorización de fusión.**
 Se conserva exactamente CU001–CU004. No se usaron producción, datos reales, cobros reales, Matilda PDV ni recursos externos nuevos.
 
