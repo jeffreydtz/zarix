@@ -9,6 +9,7 @@
   "nextPid": 78214,
   "supervisorOwnedBy": "parent",
   "sourceStable": true,
-  "providerMode": "Explicit local HTTP503 double and pre-existing synthetic DB references; no real external-provider acceptance",
-  "harnessSha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b"
+  "providerMode": "Financial fiat/crypto quote service uses configured local HTTP503 endpoints and persisted synthetic FX/manual FOOFIX references. The separate Markets widget may fetch real public CoinGecko/Yahoo/Stooq using hardcoded endpoints or their local cache. These incidental reads do not establish formal provider acceptance.",
+  "harnessSha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+  "providerProvenance": "provider-provenance.json"
 }

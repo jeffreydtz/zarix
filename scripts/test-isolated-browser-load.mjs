@@ -206,6 +206,33 @@ try {
     for (const name of oracle.accountNames) await page.getByRole('link', { name: `Ver movimientos de ${name}`, exact: true }).waitFor({ state: 'visible' });
     await page.getByRole('heading', { name: 'Ultimos Movimientos', exact: true }).waitFor({ state: 'visible' });
     for (const description of oracle.recentDescriptions) await page.getByText(description, { exact: true }).waitFor({ state: 'visible' });
+    // Playwright's visible state permits opacity0. Include actual financial
+    // content at effective opacity>=0.99 in the conservative timing boundary.
+    await page.evaluate(async expected => {
+      const heading = name => [...document.querySelectorAll('h2,h3')].find(node => node.textContent?.trim() === name);
+      const nodes = () => {
+        const hero = heading('Patrimonio total')?.closest('section');
+        const flow = heading('Este mes')?.closest('a');
+        const links = [...document.querySelectorAll('a[aria-label]')];
+        const descriptions = [...document.querySelectorAll('div,span,p')].filter(node => node.childElementCount === 0);
+        return [...(hero?.querySelectorAll('data') || [])].slice(0,2)
+          .concat([...(flow?.querySelectorAll('data') || [])].slice(0,3))
+          .concat(expected.accountNames.map(name => { const link = links.find(node => node.getAttribute('aria-label') === `Ver movimientos de ${name}`); return link?.firstElementChild || link; }))
+          .concat(expected.recentDescriptions.map(text => descriptions.find(node => node.textContent?.trim() === text)));
+      };
+      const opacity = node => { let value = 1; for (let current = node; current instanceof Element; current = current.parentElement) value *= Number(getComputedStyle(current).opacity); return value; };
+      await new Promise((resolve, reject) => {
+        let done = false;
+        const timeout = setTimeout(() => { done = true; reject(new Error('Financial content opacity timeout')); }, 20000);
+        const check = () => {
+          if (done) return;
+          const current = nodes();
+          if (current.length === 5 + expected.accountNames.length + expected.recentDescriptions.length && current.every(node => node?.isConnected && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0 && opacity(node) >= 0.99)) {
+            done = true; clearTimeout(timeout); resolve(true);
+          } else requestAnimationFrame(check);
+        }; check();
+      });
+    }, { accountNames: oracle.accountNames, recentDescriptions: oracle.recentDescriptions });
     assert.equal(participant.errors, 0, 'Browser JavaScript error');
     assert.equal(participant.financialFailures, 0, 'Financial API failure');
   }
@@ -264,7 +291,7 @@ try {
   }
   const warm = report.profiles.warm;
   warm.summary = summary(warm.observations);
-  warm.measurementBoundary = 'Immediately before page.goto through rendered non-hidden own net worth, month income/expense/balance, all ten account links and five recent descriptions matching independent full SQL. Login, post-measurement screenshots and SQL integrity checks excluded.';
+  warm.measurementBoundary = 'Immediately before page.goto through correct own net worth/month income-expense-balance, all ten account cards/links and five recent descriptions matching independent full SQL AND effective opacity (element times all ancestors)>=0.99. This conservative boundary includes entrance animations, rather than stopping at DOM-ready/Playwright visible. Login, post-measurement screenshots and SQL integrity checks excluded; every navigation error/timeout remains in its profile denominator.';
   warm.localThreshold = { required: 'p95 < 2000 ms AND zero failed observations AND successful warmup', met: warm.summary.count === 100 && warm.summary.failures === 0 && warm.warmupFailures === 0 && warm.summary.p95Ms < 2000 };
   warm.status = warm.localThreshold.met ? 'PASS' : 'FAIL';
   async function measureProfileWave(profile, wave) {
@@ -287,7 +314,7 @@ try {
   if (controller) {
     activeProfile = 'coldStart';
     const cold = report.profiles.coldStart;
-    Object.assign(cold, { status: 'RUNNING', reason: undefined, scheduledObservations: 100, concurrentContexts: 20, processEvents: [], scope: controller.scope, sessionScope: 'The same 20 normally authenticated browser contexts retain sessions across five owned Next process restarts; no login occurs in the measured boundary.' });
+    Object.assign(cold, { status: 'RUNNING', reason: undefined, scheduledObservations: 100, concurrentContexts: 20, processEvents: [], scope: controller.scope, measurementBoundary: warm.measurementBoundary, sessionScope: 'The same 20 normally authenticated browser contexts retain sessions across five owned Next process restarts; no login occurs in the measured boundary.' });
     for (let wave = 1; wave <= 5; wave++) {
       cold.processEvents.push(await controller.start('normal'));
       await measureProfileWave('coldStart', wave);
@@ -295,7 +322,7 @@ try {
     cold.summary = summary(cold.observations); cold.status = cold.summary.failures === 0 && cold.summary.p95Ms < 2000 ? 'PASS' : 'FAIL';
     activeProfile = 'providerOutage';
     const outage = report.profiles.providerOutage;
-    Object.assign(outage, { status: 'RUNNING', reason: undefined, scheduledObservations: 100, concurrentContexts: 20, processEvents: [], protectedApiProbes: [], scope: 'Fresh owned application process per wave, persisted SQL FX valid, upstream quote-provider HTTP503 doubles. Authenticated /api/cotizaciones probes actually invoke upstream routes; their timing is separate from dashboard navigation.' });
+    Object.assign(outage, { status: 'RUNNING', reason: undefined, scheduledObservations: 100, concurrentContexts: 20, processEvents: [], protectedApiProbes: [], measurementBoundary: warm.measurementBoundary, scope: 'Fresh owned application process per wave, persisted SQL FX valid, upstream quote-provider HTTP503 doubles for configured cotizaciones routes only; hardcoded public market providers are outside the injected outage. Authenticated /api/cotizaciones probes actually invoke upstream routes; their timing is separate from dashboard navigation.' });
     for (let wave = 1; wave <= 5; wave++) {
       outage.processEvents.push(await controller.start('outage'));
       const before = controller.counters().outage503;

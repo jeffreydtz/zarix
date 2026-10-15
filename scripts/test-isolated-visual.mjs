@@ -30,14 +30,39 @@ try{
  const settings=await context.newPage();await settings.goto('chrome://settings/appearance');await settings.locator('#zoomLevel').selectOption('1');
  const page=await context.newPage();page.setDefaultTimeout(15000);await page.goto(new URL('/login',appUrl).href);await page.getByLabel('Email',{exact:true}).fill(user.email);await page.locator('#password').fill(user.password);await page.getByRole('button',{name:'Ingresar',exact:true}).click();await page.waitForURL('**/dashboard');
  const probeControl=async locator=>{await locator.scrollIntoViewIfNeeded();await locator.waitFor({state:'visible'});return locator.evaluate(element=>{const b=element.getBoundingClientRect(),hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return {visible:!!b.width&&!!b.height,horizontalBounds:b.left>=-1&&b.right<=innerWidth+1,centerReachable:hit===element||element.contains(hit),left:b.left,right:b.right};});};
- const capture=async name=>{const file=`${name}.png`;await page.screenshot({path:path.join(output,file),fullPage:true});report.screenshots.push({path:file,sha256:hash(await fs.readFile(path.join(output,file)))});};
+ const capture=async name=>{
+  const failureCapture=name.endsWith('-failure');
+  if(!failureCapture){
+   await page.evaluate(async cu=>{
+    await document.fonts.ready;
+    const title={CU001:'Nuevo movimiento',CU002:'Nueva Cuenta',CU003:'Análisis financiero',CU004:'Simulación'}[cu];
+    const heading=()=>[...document.querySelectorAll('h1,h2,h3')].find(node=>node.textContent.trim()===title);
+    const anchors=()=>cu==='CU004'?[heading(),document.querySelector('[data-testid="investment-simulation-result"]')]:cu==='CU003'?[heading(),...document.querySelectorAll('main h2,main h3,main .recharts-wrapper')]:[heading()];
+    const opaque=node=>{for(let current=node;current instanceof Element;current=current.parentElement){if(Number(getComputedStyle(current).opacity)<0.99)return false;}return true;};
+    await new Promise((resolve,reject)=>{
+     let previous='',stableFrames=0,done=false;
+     const timeout=setTimeout(()=>{done=true;reject(new Error('Capture semantic readiness timeout'));},10000);
+     const sample=()=>{
+      if(done)return;
+      const nodes=anchors();
+      const busyChart=cu==='CU003'&&document.querySelector('[aria-busy="true"][aria-label="Cargando gráfico"]');
+      const ready=!busyChart&&nodes.every(node=>node&&node.getBoundingClientRect().width>0&&node.getBoundingClientRect().height>0&&opaque(node));
+      const signature=ready?JSON.stringify(nodes.map(node=>{const b=node.getBoundingClientRect();return [Math.round(b.x),Math.round(b.y),Math.round(b.width),Math.round(b.height),node.textContent];})):'';
+      stableFrames=ready&&signature===previous?stableFrames+1:0;previous=signature;
+      if(stableFrames>=6){done=true;clearTimeout(timeout);resolve(true);}else requestAnimationFrame(sample);
+     };sample();
+    });
+   },name.slice(0,5));
+  }
+  const file=`${name}.png`;await page.screenshot({path:path.join(output,file),fullPage:true});report.screenshots.push({path:file,sha256:hash(await fs.readFile(path.join(output,file))),captureReadiness:failureCapture?'Failure state retained without readiness claim':'Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent'});
+ };
  for(const viewport of [{width:320,height:568},{width:375,height:812},{width:768,height:1024},{width:1440,height:900}]) for(const zoom of [1,2]){
   await page.setViewportSize(viewport);await settings.locator('#zoomLevel').selectOption(String(zoom));
   for(const cu of ['CU001','CU002','CU003','CU004']){
    const cell={cu,viewport,zoomPercent:zoom*100,status:'RUNNING',actions:[]};report.cells.push(cell);
    try{
     await page.goto(new URL({CU001:'/expenses',CU002:'/accounts',CU003:'/analysis',CU004:'/investments'}[cu],appUrl).href,{waitUntil:'domcontentloaded'});
-    if(cu==='CU001'){await page.getByRole('button',{name:'Nuevo',exact:true}).click();await page.getByPlaceholder('0',{exact:true}).fill('1250');await page.getByPlaceholder('ej: Compra en el súper').fill('Visual sintética sin guardar');await page.keyboard.press('Tab');cell.actions.push('open/fill expense; Tab; no submit');cell.control=await probeControl(page.getByRole('button',{name:'Guardar',exact:true}));}
+    if(cu==='CU001'){await page.getByRole('button',{name:/^Nuevo(?: movimiento)?$/}).click();await page.getByPlaceholder('0',{exact:true}).fill('1250');await page.getByPlaceholder('ej: Compra en el súper').fill('Visual sintética sin guardar');await page.keyboard.press('Tab');cell.actions.push('open/fill expense; Tab; no submit');cell.control=await probeControl(page.getByRole('button',{name:'Guardar',exact:true}));}
     if(cu==='CU002'){await page.getByRole('button',{name:'Nueva Cuenta',exact:true}).click();const panel=page.locator('div.bg-card.rounded-3xl').filter({has:page.getByRole('heading',{name:'Nueva Cuenta',exact:true})});await panel.getByPlaceholder('Ej: Banco Galicia, Mercado Pago',{exact:true}).fill('Visual sintética sin guardar');await page.keyboard.press('Tab');cell.actions.push('open/fill account; Tab; no submit');cell.control=await probeControl(panel.getByRole('button',{name:'Crear Cuenta',exact:true}));}
     if(cu==='CU003'){await page.getByRole('heading',{name:'Análisis financiero',exact:true}).waitFor();await page.keyboard.press('Tab');cell.actions.push('analysis loaded; keyboard focus and page scroll');await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));}
     if(cu==='CU004'){await page.getByRole('button',{name:'Simular escenario',exact:true}).click();const form=page.locator('#investment-simulation-form');await form.getByLabel('Variación del precio (%)',{exact:true}).fill('10');await form.getByRole('button',{name:'Simular',exact:true}).click();await page.getByTestId('investment-simulation-result').waitFor();cell.actions.push('actual pure simulation10%; keyboard focus; no financial write');cell.control=await probeControl(form.getByRole('button',{name:'Simular',exact:true}));}

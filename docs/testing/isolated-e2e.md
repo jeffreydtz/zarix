@@ -46,6 +46,10 @@ Las cuatro capturas de escritorio no prueban CNF-05–08. Esos casos exigen 320�
 
 Las 32 celdas ejercitan sólo las acciones registradas: gasto/cuenta sin guardar y teclado Tab, alcance del botón mediante hit-test después de scroll, lectura de análisis, simulación 10% y descarga JSON por UI. Verifica desborde global y una huella monetaria antes/después; no introduce operaciones nuevas ni copia cuerpos de página, sesiones o descargas a evidencia. Conserva captura y hash por celda, incluida la fallida. Si todas pasan, el estado general sigue `PARTIAL`: preview de OCR, presupuestos, login/reset, chat de IA/anomalías y compra/venta completa en cada viewport requieren sus propios pasos ejecutados. El ensayo no completa CNF-05–08 por inferencia.
 
+Después de observar capturas de transición en la primera fase, el helper visual espera fuentes cargadas, heading/resultado real, ancestros opacos y dimensiones/texto estables durante seis frames; en análisis espera además que desaparezcan los placeholders de gráficos. La captura de una falla se conserva sin afirmar esa preparación. El selector de navegación admite los nombres existentes `Nuevo` en desktop y `Nuevo movimiento` en mobile. Son correcciones del harness posteriores al build/global de producto `0169860`, con SHA separado; las 819 pruebas globales se atribuyen únicamente a aquella revisión.
+
+Las referencias financieras y posiciones manuales son sintéticas. El widget Mercados de `/api/market-data` puede obtener cotizaciones públicas reales de CoinGecko/Yahoo/Stooq mediante URLs hardcoded o su caché, separado de las URLs configurables del doble de cotizaciones. Las lecturas incidentales visibles en las capturas no constituyen una aceptación formal de esas integraciones; la [proveniencia registrada](../tif/v2.13/evidence/technical-20261015/e2e/ui/provider-provenance.json) conserva esa distinción.
+
 ```sh
 export ZARIX_VISUAL_OUTPUT=/tmp/zarix-runtime-20261015/visual-evidence
 node scripts/test-isolated-visual.mjs

@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-15T01:36:34.680Z",
+  "scope": "Authorized test-harness timing correction before any LOAD observations; product/build/global819 remain bound to0169860.",
+  "productRevision": "0169860016125480c19f1284890e2b578f3236af",
+  "harness": {
+    "path": "scripts/test-isolated-browser-load.mjs",
+    "beforeSha256": "fce8fc4217066f351f2aa185bfb731b3a0b4799bcbceec5b5d1bc9eb79f5eb93",
+    "afterSha256": "5c5723acc934b56a30290d4655e196572b20ecfea164c6417472397c3db395a7"
+  },
+  "observationsBeforeChange": 0,
+  "boundary": "Independent SQL financial oracles and all10accountcards/links+5recentdescriptions must have positive bounds and effective opacity (element times all ancestor opacities)>=0.99. Includes entrance animations; no CSS manipulation or fixed sleep. Every failed navigation/timeout retained in its own100-sample denominator.",
+  "buildSeparation": "The copied product source manifest0169860 remains the binding for the completed build. This external runner SHA is posterior; no claim that global819 tested the timing helper.",
+  "syntax": {
+    "command": "node --check scripts/test-isolated-browser-load.mjs",
+    "exitCode": 0
+  },
+  "executed": false
+}
