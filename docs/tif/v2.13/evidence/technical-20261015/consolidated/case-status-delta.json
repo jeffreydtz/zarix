@@ -1,0 +1,57 @@
+{
+  "generated_at_utc": "2026-10-15T01:30:51.739340+00:00",
+  "original_case_count": 273,
+  "historical": {
+    "path": "../../technical-20261009/case-traceability.csv",
+    "sha256": "e21971877a0489c069c6c32d77f291b93a692af602d54e9c431ab1022da4707e",
+    "counts": {
+      "PASS": 168,
+      "FAIL": 0,
+      "BLOCKED": 105
+    }
+  },
+  "phase1_prior": {
+    "preserved_commit": "e187b6cfe457838ea1647f732002bae64e24922b",
+    "core_directory": "core",
+    "csv_sha256": "ecffcbba9aad6629a313c6192583f1c9f64aea895473c4eef6de4270c77235d2",
+    "counts": {
+      "PASS": 170,
+      "FAIL": 0,
+      "BLOCKED": 103
+    }
+  },
+  "current": {
+    "path": "../case-traceability.csv",
+    "core_directory": "core-final",
+    "source_revision": "0169860016125480c19f1284890e2b578f3236af",
+    "sha256": "740f1d040112e35c868d2474a17bbb5205ad8fe522de6b69e45eb616adafd77e",
+    "counts": {
+      "PASS": 170,
+      "FAIL": 0,
+      "BLOCKED": 103
+    },
+    "artifact_line_endings": "LF normalized for Git; CSV semantics and273statuses unchanged"
+  },
+  "changed_statuses": [
+    {
+      "case_id": "RTV-034",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery",
+      "contract_revision": "Explicit reconciliation: marks after creation and sends one notice to the winner -> historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery. Original inline mechanism was replaced, not silently reexecuted.",
+      "evidence": "core-final/final-vitest.json; durability/reconciled-contracts.json",
+      "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
+    },
+    {
+      "case_id": "RTV-038",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart",
+      "contract_revision": "Explicit reconciliation: does not undo a confirmed movement when Telegram is unavailable -> historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart. Original inline mechanism was replaced, not silently reexecuted.",
+      "evidence": "core-final/final-vitest.json; durability/reconciled-contracts.json",
+      "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
+    }
+  ],
+  "unchanged_statuses": 271,
+  "rule": "Only the two exact outbox equivalences changed from the originalhistorical matrix;819current tests reexecuted their exact names. Partial native/UI/provider scopes promote no complete originalcase."
+}

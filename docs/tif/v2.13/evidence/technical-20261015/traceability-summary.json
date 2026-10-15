@@ -1,5 +1,6 @@
 {
-  "generated_at": "2026-10-15T01:08:41.277019+00:00",
+  "generated_at": "2026-10-15T01:30:51.704369+00:00",
+  "core_directory": "core-final",
   "original_cases": 273,
   "use_cases": [
     "CU001",

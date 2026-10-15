@@ -1,0 +1,24 @@
+[
+  {
+    "case_id": "RTV-034",
+    "historical_contract": "marks after creation and sends one notice to the winner",
+    "replacement_contract": "historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery",
+    "status": "PASS",
+    "evidence": "core-final/final-vitest.json",
+    "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance.",
+    "current_revision": "0169860016125480c19f1284890e2b578f3236af",
+    "historical_mapping_source": "../technical-20261013/durability/reconciled-contracts.json",
+    "rule": "Current exact assertion reexecuted; historical inline mechanism remains replaced, not silently approved as unchanged"
+  },
+  {
+    "case_id": "RTV-038",
+    "historical_contract": "does not undo a confirmed movement when Telegram is unavailable",
+    "replacement_contract": "historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart",
+    "status": "PASS",
+    "evidence": "core-final/final-vitest.json",
+    "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance.",
+    "current_revision": "0169860016125480c19f1284890e2b578f3236af",
+    "historical_mapping_source": "../technical-20261013/durability/reconciled-contracts.json",
+    "rule": "Current exact assertion reexecuted; historical inline mechanism remains replaced, not silently approved as unchanged"
+  }
+]

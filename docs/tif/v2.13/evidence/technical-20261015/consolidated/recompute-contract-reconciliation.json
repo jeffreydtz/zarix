@@ -1,0 +1,35 @@
+[
+  {
+    "original_case_id": "NONE: these three new pagination assertions are not rows in the original273 CSV",
+    "historical_revision": "d0ccd1a7f54ee4b1f302074ea70fb7d47d00049a",
+    "historical_contract": "financial aggregate reads beyond PostgREST max_rows reconstruction completes the ledger before issuing the mocked account update",
+    "current_revision": "0169860016125480c19f1284890e2b578f3236af",
+    "current_contract": "financial aggregate reads beyond PostgREST max_rows delegates reconstruction to the atomic owner-scoped RPC without separate ledger reads or writes",
+    "current_status": "PASS",
+    "scope": "Ledger complete sum moved to atomic SQL; RECOMPUTE-06 and native locking proofs separate",
+    "evidence": "../core-final/final-vitest.json; ../account-recompute/README.md",
+    "contract_revision": "Explicit replacement; historical client algorithm not rerun as unchanged"
+  },
+  {
+    "original_case_id": "NONE: these three new pagination assertions are not rows in the original273 CSV",
+    "historical_revision": "d0ccd1a7f54ee4b1f302074ea70fb7d47d00049a",
+    "historical_contract": "financial aggregate reads beyond PostgREST max_rows reconstruction preserves the authoritative destination amount and owner/account scope across pages",
+    "current_revision": "0169860016125480c19f1284890e2b578f3236af",
+    "current_contract": "financial aggregate reads beyond PostgREST max_rows delegates reconstruction to the atomic owner-scoped RPC without separate ledger reads or writes",
+    "current_status": "PASS",
+    "scope": "Owner/stored-transfer behavior moved to SQLRECOMPUTE-03/07/08/09 and canonical native precision; no one-to-one equivalence to client page arithmetic",
+    "evidence": "../core-final/final-vitest.json; ../account-recompute/README.md",
+    "contract_revision": "Explicit replacement; historical client algorithm not rerun as unchanged"
+  },
+  {
+    "original_case_id": "NONE: these three new pagination assertions are not rows in the original273 CSV",
+    "historical_revision": "d0ccd1a7f54ee4b1f302074ea70fb7d47d00049a",
+    "historical_contract": "financial aggregate reads beyond PostgREST max_rows never updates an account after an intermediate reconstruction page fails",
+    "current_revision": "0169860016125480c19f1284890e2b578f3236af",
+    "current_contract": "financial aggregate reads beyond PostgREST max_rows propagates a failed atomic reconstruction without retrying or making a separate account update",
+    "current_status": "PASS",
+    "scope": "Intermediate client paging no longer used; RPC failure propagates, SQLrollback RECOMPUTE-13 separate",
+    "evidence": "../core-final/final-vitest.json; ../account-recompute/README.md",
+    "contract_revision": "Explicit replacement; historical client algorithm not rerun as unchanged"
+  }
+]
