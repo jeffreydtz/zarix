@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-15T07:11:15.128343+00:00",
+  "status": "PASS",
+  "sourceRevisionExecuted": "d9501a795b88a0627d01426cb2c45f1cc848fd2b",
+  "runtimeCodeBaseline": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "onlyBaselineDifference": [
+    "tsconfig.json: exclude archived evidence; application roots/options unchanged"
+  ],
+  "checkoutHeadBeforeThisDocumentationCheckpoint": "6d4f01254d6dadcf4ecd19983402cc86579c4c45",
+  "coreReportSha256": "3d72c60735e4faea38a8c0bd5970557d8164808845fb92077e51b1974ec24216",
+  "coreSourceManifestSha256": "448ac26f8d5badbf0112b1320515374bd5eaa81eb65ac98af5139dc7114b664e",
+  "sourcesCompared": 458,
+  "gitSourcesCompared": 457,
+  "allCurrentSourceBytesMatchExecutedFreeze": true,
+  "postFreezeChangedPathsAreDocumentationOnly": true,
+  "postFreezeDocumentationPathCount": 67,
+  "originalCases": {
+    "count": 273,
+    "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+    "unchanged": true
+  },
+  "fourRequestedOriginalMigrations": [
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296",
+      "unchangedFromOriginalHead": true
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9",
+      "unchangedFromOriginalHead": true
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f",
+      "unchangedFromOriginalHead": true
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3",
+      "unchangedFromOriginalHead": true
+    }
+  ],
+  "scope": "Source and case integrity only. This read-only checkpoint compares the final required npm-gate freeze and records its sole compiler exclusion relative to runtime proofs at CI6. It does not rerun browsers, providers or the acceptance matrix. Later documentation commits require the same source comparison before publication."
+}
