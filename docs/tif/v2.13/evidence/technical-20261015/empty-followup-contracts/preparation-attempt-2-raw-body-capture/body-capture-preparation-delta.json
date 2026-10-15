@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-15T06:12:57.862007+00:00",
+  "scope": "Preparation-only harness observability delta; preserve exactly received dashboard response in own private0600 file before any Flight parser/assertion, allowing offline diagnosis without another request. No changed financial or HTTP acceptance oracle, product source, fixture or runtime execution.",
+  "beforeRunSha256": "1bb810f8a6e6d5298978c4cae3b755cf00a856b1f7ca366ab58dde3fb3c9ffb9",
+  "afterRunSha256": "260425690f8c42d2d9b5d9d385089b8ed22ea2809054b0eae5b65fd36afc05ab",
+  "nodeCheckExitCode": 0,
+  "runtimeExecuted": false,
+  "beforePreservedIn": "preparation-attempt-1-no-raw-capture"
+}

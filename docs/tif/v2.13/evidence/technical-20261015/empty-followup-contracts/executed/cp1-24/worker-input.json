@@ -1,0 +1,12 @@
+{
+  "purpose": "empty-followup-worker",
+  "apiOrigin": "http://127.0.0.1:60321",
+  "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+  "accountId": "609e756b-8e5f-4284-8109-1c9dc56e2551",
+  "ruleId": "b2be44b3-1cd6-410e-b3cc-7395eb9c0843",
+  "requestId": "recurring:b2be44b3-1cd6-410e-b3cc-7395eb9c0843:2026-10-06",
+  "outboxId": "06b5b454-6f72-40bd-9fe8-5bc955785619",
+  "syntheticChatId": -8600000124,
+  "description": "EmptyFollowup124 e87c54b9-6455-4c38-ab51-6fdbd34f7d0f",
+  "outputFile": "/tmp/zarix-runtime-20261015/empty-followup-contracts-e87c54b9-6455-4c38-ab51-6fdbd34f7d0f/worker-observation.json"
+}

@@ -1,0 +1,24 @@
+// No top-level I/O or execution of HTML/Flight JavaScript.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {parseFlight} from '../account-analysis-contracts/ssr-financial-read.mjs';
+const decode=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,' ').replace(/&nbsp;|&#160;/g,' ').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
+async function moduleBinding(c,component){const file='.next/server/app/(authenticated)/dashboard/page_client-reference-manifest.js',bytes=await fs.readFile(path.join(c.copyRoot,file)),marker='globalThis.__RSC_MANIFEST["/(authenticated)/dashboard/page"]=',at=bytes.toString().indexOf(marker);assert.ok(at>=0);const manifest=JSON.parse(bytes.toString().slice(at+marker.length).trim().replace(/;$/,'')),entries=Object.entries(manifest.clientModules).filter(([key])=>key.endsWith('/'+component));assert.equal(entries.length,1);return{moduleId:entries[0][1].id,component,manifestPath:file,manifestSha256:c.digest(bytes)};}
+function propsFor(flight,moduleId,accepts){const refs=new Set([...flight.imports].filter(([,v])=>String(v[0])===String(moduleId)).map(([id])=>'$L'+id)),found=[];function visit(value,seen=new Set()){if(typeof value==='string'&&/^\$[\da-f]+$/i.test(value)){const id=value.slice(1);if(!seen.has(id)&&flight.rows.has(id))visit(flight.rows.get(id),new Set([...seen,id]));}else if(Array.isArray(value)){if(value[0]==='$'&&refs.has(value[1])&&value[3]&&accepts(value[3]))found.push(value[3]);for(const x of value)visit(x,seen);}else if(value&&typeof value==='object')for(const x of Object.values(value))visit(x,seen);}for(const value of flight.rows.values())visit(value);const unique=[...new Map(found.map(v=>[JSON.stringify(v),v])).values()];assert.equal(unique.length,1);return unique[0];}
+export async function readRecentDashboard(c,transactionId,accountId,categoryId){
+ assert.equal(c.productRevision,'84df929ab2f169251a49f3e95d0e0c148dfcb87c');assert.equal(c.nativeProofVerified,true);assert.equal(c.sourceManifestVerified,true);
+ const before=c.rows(`SELECT * FROM public.net_worth_snapshots WHERE user_id=${c.lit(c.user.id)} ORDER BY id`);assert.equal(before.length,1);assert.equal(before[0].id,c.ownedSnapshotId);
+ const recentBinding=await moduleBinding(c,'components/dashboard/RecentTransactions.tsx'),heroBinding=await moduleBinding(c,'components/dashboard/NetWorthHero.tsx');
+ const response=await c.serverGet('/dashboard');c.check('Actual normal dashboard SSR200',response.status,200);
+ const flight=parseFlight(response.body),recent=propsFor(flight,recentBinding.moduleId,p=>Array.isArray(p.transactions)).transactions,now=propsFor(flight,heroBinding.moduleId,p=>p.now).now;
+ const selected=recent.find(t=>t.id===transactionId);
+ c.check('Actual server global top5 contains the exact own1500 row',selected?{id:selected.id,owner:selected.user_id,account:selected.account_id,category:selected.category_id,amount:Number(selected.amount),currency:selected.currency,type:selected.type,date:selected.transaction_date.slice(0,10)}:null,{id:transactionId,owner:c.user.id,account:accountId,category:categoryId,amount:1500,currency:'ARS',type:'expense',date:'2026-10-06'});
+ c.check('Actual global recent payload has only the three known own rows',recent.length,3);
+ c.near('Actual dashboard aggregate includes original50000 plus new8500',now.totalARSBlue,58500);
+ const text=decode(response.body);c.check('Actual server HTML formats the expense1500 ARS',/-\s*\$1\.500,00\s+ARS/.test(text),true);c.check('Actual server HTML includes recent movements',text.includes('Ultimos Movimientos'),true);
+ let after;const until=Date.now()+15000;do{after=c.rows(`SELECT * FROM public.net_worth_snapshots WHERE user_id=${c.lit(c.user.id)} ORDER BY id`);if(after.length===1&&['liquid_usd','investments_usd','total_usd','total_ars_blue'].every((key,i)=>Math.abs(Number(after[0][key])-[now.liquidUSD,now.investmentsUSD,now.totalUSD,now.totalARSBlue][i])<1e-8))break;await new Promise(r=>setTimeout(r,200));}while(Date.now()<until);
+ c.check('Only the exact prior harness-owned snapshot is updated',after.map(row=>row.id),[c.ownedSnapshotId]);for(const[key,expected]of Object.entries({liquid_usd:now.liquidUSD,investments_usd:now.investmentsUSD,total_usd:now.totalUSD,total_ars_blue:now.totalARSBlue}))c.near('Observed own snapshot completion '+key,after[0][key],expected);
+ for(const key of['id','user_id','snapshot_date','created_at'])c.check('Owned snapshot preserves identity '+key,after[0][key],before[0][key]);
+ return{responseSha256:c.digest(response.body),recentBinding,heroBinding,recentTransactions:recent,now,snapshot:{before,after,intendedOwnedUpsert:true,completedBeforeCleanup:true},scope:'Actual normalAuth HTTP server HTML plus compiled RecentTransactions Flight identity/top5 payload and independent nativeSQL. No browser, hydration, animation, expanded mobile panel or visible viewport claim.'};
+}

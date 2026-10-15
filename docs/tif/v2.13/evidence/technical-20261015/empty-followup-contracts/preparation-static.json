@@ -1,0 +1,6 @@
+{
+  "status": "HISTORICAL_PREPARATION_ARCHIVED",
+  "scope": "This preparation was followed by the executed cases in manifest.json. Exact original preparation bytes are retained without retroactively claiming acceptance. Current runtime source files remain byte-identical to executed/sources.",
+  "path": "preparation-attempt-2-raw-body-capture/preparation-static.json",
+  "sha256": "9d1de227f4b58b7471bb523357b0610534c952bbb30e98366000207047d8fe2e"
+}

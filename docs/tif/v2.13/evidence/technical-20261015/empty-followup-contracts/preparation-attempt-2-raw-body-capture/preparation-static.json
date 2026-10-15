@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-15T06:12:57.862545+00:00",
+  "status": "PASS_STATIC_ONLY",
+  "runtimeExecuted": false,
+  "scope": "Only node syntax checks and TypeScript transpile syntax parse. No Auth/API/SQL/Vitest/Next/browser calls. Future cases require separate Native-ready+parent release.",
+  "checks": [
+    {
+      "command": [
+        "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+        "--check",
+        "docs/tif/v2.13/evidence/technical-20261015/empty-followup-contracts/run.mjs"
+      ],
+      "exitCode": 0,
+      "scope": "syntax only; no execution",
+      "recheckedAfterBodyCaptureDelta": true
+    },
+    {
+      "command": [
+        "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+        "--check",
+        "docs/tif/v2.13/evidence/technical-20261015/empty-followup-contracts/ssr-recent.mjs"
+      ],
+      "exitCode": 0,
+      "scope": "syntax only; no execution"
+    },
+    {
+      "command": [
+        "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+        "--check",
+        "docs/tif/v2.13/evidence/technical-20261015/empty-followup-contracts/worker-delivery.vitest.config.mjs"
+      ],
+      "exitCode": 0,
+      "scope": "syntax only; no execution"
+    },
+    {
+      "command": [
+        "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+        "--input-type=module",
+        "-e",
+        "import ts from 'typescript';import fs from 'node:fs';const r=ts.transpileModule(fs.readFileSync(process.argv[1],'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext},reportDiagnostics:true});const n=(r.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length;process.stdout.write(JSON.stringify({syntaxErrors:n,scope:'transpile syntax only'}));process.exitCode=n?1:0;",
+        "docs/tif/v2.13/evidence/technical-20261015/empty-followup-contracts/worker-delivery.test-source.ts"
+      ],
+      "exitCode": 0,
+      "result": {
+        "syntaxErrors": 0,
+        "scope": "transpile syntax only"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": "README.md",
+      "sha256": "8ad73ea920f175c3b8a0eb5d902734accae6a88f1380105cc0396b7491f02c8c"
+    },
+    {
+      "path": "body-capture-preparation-delta.json",
+      "sha256": "679c808f17f4d513d2eb76696f4cd326c3cd2c02860738dea3ef1fefaf7a32dc"
+    },
+    {
+      "path": "run.mjs",
+      "sha256": "260425690f8c42d2d9b5d9d385089b8ed22ea2809054b0eae5b65fd36afc05ab"
+    },
+    {
+      "path": "ssr-recent.mjs",
+      "sha256": "3c8f69fe65db8fceed84f7956a038d78a2a63b39e93326d173fd8cf60163aeb5"
+    },
+    {
+      "path": "worker-delivery.test-source.ts",
+      "sha256": "0f8131f124cdaca09b2556c44c728a13c8e6660131c9c2ce4bcad6ee24090ce1"
+    },
+    {
+      "path": "worker-delivery.vitest.config.mjs",
+      "sha256": "e7b296fbfa4938a743c8926458adcf508ccc8b65bc3644bae13c8f61c6efaef9"
+    }
+  ]
+}

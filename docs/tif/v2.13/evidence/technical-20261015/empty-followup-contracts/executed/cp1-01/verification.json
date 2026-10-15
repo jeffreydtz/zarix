@@ -1,0 +1,891 @@
+{
+  "run": "cf95a36a-b826-48e0-a47e-dd66d7f4914a",
+  "startedAt": "2026-10-15T06:13:21.158Z",
+  "status": "PASS",
+  "scope": "One released followup CP101 or CP124 on the exact new UUID database after three independently completed empty contracts. Actual normalAuth/API/SQL/SSR or recurring cron/worker scope as recorded; no browser, external Telegram, completeAuthrestore or Storage claim.",
+  "cases": [
+    {
+      "case_id": "CP1-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Actual normal account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal category list200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Own literal Alimentos category201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "New account has exactly its opening adjustment",
+          "actual": [
+            {
+              "type": "adjustment",
+              "amount": 10000
+            }
+          ],
+          "expected": [
+            {
+              "type": "adjustment",
+              "amount": 10000
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Normal literal expense API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly one economic row persists",
+          "actual": {
+            "count": 1,
+            "id": "7a963879-6771-4ed1-b764-c797e86e4091",
+            "user": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "amount": 1500,
+            "currency": "ARS",
+            "category": "30558ef3-bacc-4dac-95ef-ade1d6c420e9",
+            "date": "2026-10-06"
+          },
+          "expected": {
+            "count": 1,
+            "id": "7a963879-6771-4ed1-b764-c797e86e4091",
+            "user": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "amount": 1500,
+            "currency": "ARS",
+            "category": "30558ef3-bacc-4dac-95ef-ade1d6c420e9",
+            "date": "2026-10-06"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Literal expense leaves8500",
+          "numericActual": 8500,
+          "numericExpected": 8500,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual list API contains same1500 identity",
+          "actual": {
+            "status": 200,
+            "rows": [
+              {
+                "id": "7a963879-6771-4ed1-b764-c797e86e4091",
+                "amount": 1500
+              }
+            ]
+          },
+          "expected": {
+            "status": 200,
+            "rows": [
+              {
+                "id": "7a963879-6771-4ed1-b764-c797e86e4091",
+                "amount": 1500
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal dashboard SSR200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual server global top5 contains the exact own1500 row",
+          "actual": {
+            "id": "7a963879-6771-4ed1-b764-c797e86e4091",
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "account": "8a2d68db-327b-4f11-9390-300080aaf1d6",
+            "category": "30558ef3-bacc-4dac-95ef-ade1d6c420e9",
+            "amount": 1500,
+            "currency": "ARS",
+            "type": "expense",
+            "date": "2026-10-06"
+          },
+          "expected": {
+            "id": "7a963879-6771-4ed1-b764-c797e86e4091",
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "account": "8a2d68db-327b-4f11-9390-300080aaf1d6",
+            "category": "30558ef3-bacc-4dac-95ef-ade1d6c420e9",
+            "amount": 1500,
+            "currency": "ARS",
+            "type": "expense",
+            "date": "2026-10-06"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Actual global recent payload has only the three known own rows",
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual dashboard aggregate includes original50000 plus new8500",
+          "numericActual": 58500,
+          "numericExpected": 58500,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual server HTML formats the expense1500 ARS",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual server HTML includes recent movements",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Only the exact prior harness-owned snapshot is updated",
+          "actual": [
+            "4f8abad4-1c2d-49a2-8bab-032bc71a288d"
+          ],
+          "expected": [
+            "4f8abad4-1c2d-49a2-8bab-032bc71a288d"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Observed own snapshot completion liquid_usd",
+          "numericActual": 48.75,
+          "numericExpected": 48.75,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Observed own snapshot completion investments_usd",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Observed own snapshot completion total_usd",
+          "numericActual": 48.75,
+          "numericExpected": 48.75,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Observed own snapshot completion total_ars_blue",
+          "numericActual": 58500,
+          "numericExpected": 58500,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Owned snapshot preserves identity id",
+          "actual": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+          "expected": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+          "status": "PASS"
+        },
+        {
+          "name": "Owned snapshot preserves identity user_id",
+          "actual": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "expected": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "status": "PASS"
+        },
+        {
+          "name": "Owned snapshot preserves identity snapshot_date",
+          "actual": "2026-10-06",
+          "expected": "2026-10-06",
+          "status": "PASS"
+        },
+        {
+          "name": "Owned snapshot preserves identity created_at",
+          "actual": "2026-10-15T06:04:49.689148+00:00",
+          "expected": "2026-10-15T06:04:49.689148+00:00",
+          "status": "PASS"
+        }
+      ],
+      "startedAt": "2026-10-15T06:13:26.806Z",
+      "evidence": {
+        "accountId": "8a2d68db-327b-4f11-9390-300080aaf1d6",
+        "transactionId": "7a963879-6771-4ed1-b764-c797e86e4091",
+        "categoryId": "30558ef3-bacc-4dac-95ef-ade1d6c420e9",
+        "ssr": {
+          "responseSha256": "05614ebc13ef0da80ba1b9b13f71ddfb59654094a0680e6560c7038b4e76288b",
+          "recentBinding": {
+            "moduleId": 80237,
+            "component": "components/dashboard/RecentTransactions.tsx",
+            "manifestPath": ".next/server/app/(authenticated)/dashboard/page_client-reference-manifest.js",
+            "manifestSha256": "3848ac909b91bf6c22b04e534088424a1ca09f88844d764c71e1bfcdf86ba391"
+          },
+          "heroBinding": {
+            "moduleId": 48648,
+            "component": "components/dashboard/NetWorthHero.tsx",
+            "manifestPath": ".next/server/app/(authenticated)/dashboard/page_client-reference-manifest.js",
+            "manifestSha256": "3848ac909b91bf6c22b04e534088424a1ca09f88844d764c71e1bfcdf86ba391"
+          },
+          "recentTransactions": [
+            {
+              "id": "da49c890-02ab-4986-938e-8392d0081ac9",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "type": "adjustment",
+              "account_id": "8a2d68db-327b-4f11-9390-300080aaf1d6",
+              "destination_account_id": null,
+              "amount": 10000,
+              "currency": "ARS",
+              "amount_in_account_currency": 10000,
+              "exchange_rate": null,
+              "destination_amount_in_account_currency": null,
+              "category_id": null,
+              "description": "Saldo inicial",
+              "notes": null,
+              "tags": null,
+              "transaction_date": "2026-10-15T06:13:26.956516+00:00",
+              "receipt_url": null,
+              "location": null,
+              "is_recurring": false,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_total": null,
+              "installment_group_id": null,
+              "created_at": "2026-10-15T06:13:26.956516+00:00",
+              "updated_at": "2026-10-15T06:13:26.956516+00:00",
+              "category": null,
+              "account": {
+                "name": "EmptyFollowup101 cf95a36a-b826-48e0-a47e-dd66d7f4914a",
+                "currency": "ARS"
+              },
+              "destination_account": null
+            },
+            {
+              "id": "e267e169-53de-4577-aab4-1a052351bdfc",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "type": "adjustment",
+              "account_id": "cbc90531-5097-4309-912b-eb1e703e6787",
+              "destination_account_id": null,
+              "amount": 50000,
+              "currency": "ARS",
+              "amount_in_account_currency": 50000,
+              "exchange_rate": null,
+              "destination_amount_in_account_currency": null,
+              "category_id": null,
+              "description": "Saldo inicial",
+              "notes": null,
+              "tags": null,
+              "transaction_date": "2026-10-15T06:04:49.993009+00:00",
+              "receipt_url": null,
+              "location": null,
+              "is_recurring": false,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_total": null,
+              "installment_group_id": null,
+              "created_at": "2026-10-15T06:04:49.993009+00:00",
+              "updated_at": "2026-10-15T06:04:49.993009+00:00",
+              "category": null,
+              "account": {
+                "name": "BancoARS",
+                "currency": "ARS"
+              },
+              "destination_account": null
+            },
+            {
+              "id": "7a963879-6771-4ed1-b764-c797e86e4091",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "type": "expense",
+              "account_id": "8a2d68db-327b-4f11-9390-300080aaf1d6",
+              "destination_account_id": null,
+              "amount": 1500,
+              "currency": "ARS",
+              "amount_in_account_currency": 1500,
+              "exchange_rate": null,
+              "destination_amount_in_account_currency": null,
+              "category_id": "30558ef3-bacc-4dac-95ef-ade1d6c420e9",
+              "description": "EmptyFollowup101 cf95a36a-b826-48e0-a47e-dd66d7f4914a",
+              "notes": null,
+              "tags": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "receipt_url": null,
+              "location": null,
+              "is_recurring": false,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_total": null,
+              "installment_group_id": null,
+              "created_at": "2026-10-15T06:13:27.266606+00:00",
+              "updated_at": "2026-10-15T06:13:27.266606+00:00",
+              "category": {
+                "icon": "🍎",
+                "name": "Alimentos"
+              },
+              "account": {
+                "name": "EmptyFollowup101 cf95a36a-b826-48e0-a47e-dd66d7f4914a",
+                "currency": "ARS"
+              },
+              "destination_account": null
+            }
+          ],
+          "now": {
+            "liquidUSD": 48.75,
+            "investmentsUSD": 0,
+            "totalUSD": 48.75,
+            "totalARSBlue": 58500,
+            "blueRate": 1200,
+            "blueReferences": [
+              {
+                "component": "accounts",
+                "reference": {
+                  "type": "blue",
+                  "side": "sell",
+                  "rate": 1200,
+                  "observedAt": "2026-10-06T12:00:00.000Z",
+                  "provider": "criptoya",
+                  "origin": "provider"
+                }
+              }
+            ]
+          },
+          "snapshot": {
+            "before": [
+              {
+                "id": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+                "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                "total_usd": 41.67,
+                "created_at": "2026-10-15T06:04:49.689148+00:00",
+                "liquid_usd": 41.67,
+                "snapshot_date": "2026-10-06",
+                "total_ars_blue": 50000,
+                "investments_usd": 0,
+                "blue_ars_per_usd": 1200
+              }
+            ],
+            "after": [
+              {
+                "id": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+                "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                "total_usd": 48.75,
+                "created_at": "2026-10-15T06:04:49.689148+00:00",
+                "liquid_usd": 48.75,
+                "snapshot_date": "2026-10-06",
+                "total_ars_blue": 58500,
+                "investments_usd": 0,
+                "blue_ars_per_usd": 1200
+              }
+            ],
+            "intendedOwnedUpsert": true,
+            "completedBeforeCleanup": true
+          },
+          "scope": "Actual normalAuth HTTP server HTML plus compiled RecentTransactions Flight identity/top5 payload and independent nativeSQL. No browser, hydration, animation, expanded mobile panel or visible viewport claim."
+        },
+        "scope": "Actual new-fixture normalAuth API/SQL and compiledSSRDashboard top5/HTML, not a composition that assumes historical membership."
+      },
+      "endedAt": "2026-10-15T06:13:27.837Z"
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "ROUTING_PRECONDITION",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "13e9d744-0668-49df-bb0f-4dbd1e748444",
+      "startedAt": "2026-10-15T06:13:26.345Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "46a4e98fb179358389305cc13932aa89c11da505f7e59b96cd2c79c7e1411530",
+      "endedAt": "2026-10-15T06:13:26.385Z"
+    },
+    {
+      "caseId": "ROUTING_PRECONDITION",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "1f8fd8b1-ca06-480c-8c61-39bb8f67d3e7",
+      "startedAt": "2026-10-15T06:13:26.625Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "df5fb14754a1f4353cba97f4e3ca0d5170db3f78a575fed1e2ba31cc8f110dee",
+      "endedAt": "2026-10-15T06:13:26.656Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "5e0b3303-9a15-478d-8acc-1d3ddc179b51",
+      "startedAt": "2026-10-15T06:13:26.925Z",
+      "state": "COMPLETED",
+      "status": 201,
+      "responseSha256": "cfca24ca11f3c6b81ee2e4112af7d7af4cf9ef9ac3883f7d2c4d7f03295302fc",
+      "endedAt": "2026-10-15T06:13:26.965Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "GET",
+      "path": "/api/categories",
+      "requestId": "ac6469c5-6b00-4f0b-a98c-d47a858aafd7",
+      "startedAt": "2026-10-15T06:13:27.006Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "endedAt": "2026-10-15T06:13:27.038Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "POST",
+      "path": "/api/categories",
+      "requestId": "c1acbdb1-7786-4a29-ab40-5da149b463b8",
+      "startedAt": "2026-10-15T06:13:27.079Z",
+      "state": "COMPLETED",
+      "status": 201,
+      "responseSha256": "13bea5313b99340d1e63d9ee3237d48f88cebc877b187c44db9f3e0ab9deb0a6",
+      "endedAt": "2026-10-15T06:13:27.110Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "5e390081-3707-4b5a-a2d4-3fa50fc64590",
+      "startedAt": "2026-10-15T06:13:27.230Z",
+      "state": "COMPLETED",
+      "status": 201,
+      "responseSha256": "94619f7c748c72adcd3a47965e12a5bcfeef51704379951b91ab77a5c9f99b52",
+      "endedAt": "2026-10-15T06:13:27.274Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "GET",
+      "path": "/api/transactions",
+      "requestId": "87af6ffa-8376-445f-85a8-761b90b0459c",
+      "startedAt": "2026-10-15T06:13:27.468Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "51d9215b47fa64b588e9be00aa5dd636276d1bc54a88e4e30fc979f215497309",
+      "endedAt": "2026-10-15T06:13:27.503Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "GET",
+      "path": "/dashboard",
+      "requestId": "0cd76e74-4937-4dad-854a-501d4ae70a33",
+      "startedAt": "2026-10-15T06:13:27.626Z",
+      "state": "COMPLETED",
+      "privateHtml": {
+        "file": "dashboard-0cd76e74-4937-4dad-854a-501d4ae70a33.html",
+        "sha256": "05614ebc13ef0da80ba1b9b13f71ddfb59654094a0680e6560c7038b4e76288b",
+        "preservedBeforeAnyParserOrAssertion": true
+      },
+      "status": 200,
+      "responseSha256": "05614ebc13ef0da80ba1b9b13f71ddfb59654094a0680e6560c7038b4e76288b",
+      "endedAt": "2026-10-15T06:13:27.758Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "DELETE",
+      "path": "/api/accounts/8a2d68db-327b-4f11-9390-300080aaf1d6",
+      "requestId": "9a439b0b-ed68-4449-a62f-c7981952d7d6",
+      "startedAt": "2026-10-15T06:13:27.959Z",
+      "state": "COMPLETED",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T06:13:27.992Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "8a2d68db-327b-4f11-9390-300080aaf1d6",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "currency": "ARS",
+      "initialBalance": 10000,
+      "createdByNormalApi": true,
+      "run": "cf95a36a-b826-48e0-a47e-dd66d7f4914a"
+    },
+    {
+      "kind": "category",
+      "id": "30558ef3-bacc-4dac-95ef-ade1d6c420e9",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "name": "Alimentos"
+    }
+  ],
+  "priorHarnessFailurePreserved": {
+    "case_id": "CP3-07",
+    "status": "FAIL",
+    "phase": "Actual empty Hero/history/snapshot preconditions passed; AccountCards RSC parser failed before original completion. Parent authorized independent followups using preserved actual state. No CP3-07 PASS claimed here.",
+    "sha256": "6c07f7acfd23f1832b650288edbe8cb745a79e87956074d8f2e2244d9e5514a8"
+  },
+  "priorThreeCaseEvidence": {
+    "sha256": "6c07f7acfd23f1832b650288edbe8cb745a79e87956074d8f2e2244d9e5514a8",
+    "run": "57d4f74e-3dcb-487c-821d-569363972055",
+    "caseIds": [
+      "CP3-03",
+      "CP3-07",
+      "CP2-01"
+    ],
+    "acceptanceEligible": false,
+    "ownedSnapshotId": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+    "originalAccountId": "cbc90531-5097-4309-912b-eb1e703e6787",
+    "scope": "Exact same new DB/build and prior accepted normalAuth fixture. SnapshotB is harness-created ownership, not a restored original."
+  },
+  "ownedSnapshotBefore": {
+    "id": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+    "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+    "total_usd": 41.67,
+    "created_at": "2026-10-15T06:04:49.689148+00:00",
+    "liquid_usd": 41.67,
+    "snapshot_date": "2026-10-06",
+    "total_ars_blue": 50000,
+    "investments_usd": 0,
+    "blue_ars_per_usd": 1200
+  },
+  "binding": {
+    "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+    "appBuildProofSha256": "41aec3bdac210c4c7695274fd81104c6cee4f8a02ca6ac1408a497e367f206c8",
+    "clockObservationSha256": "f8ca4295984ad72f1e9c63c1faea0b64d109050fb38dfbc951d4ee4b67fac3ee",
+    "coreVerificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+    "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "buildId": "Yi9bH3FttO71PxvY-EwCH",
+    "copyRoot": "/tmp/zarix-app-empty-account-20261015",
+    "appOrigin": "http://127.0.0.1:3004",
+    "apiOrigin": "http://127.0.0.1:60321",
+    "restOrigin": "http://127.0.0.1:60323",
+    "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+    "databasePort": 55322,
+    "authUpstream": "http://127.0.0.1:60327",
+    "originalAuthUpstream": "http://127.0.0.1:55321",
+    "authIsolation": "separate-cache-binary-on-new-database",
+    "completeAuthRestorationClaimed": false,
+    "storageCoverage": "Explicitly unavailable404; not tested",
+    "physicalSourceCount": 483,
+    "frozenGitSourceCount": 482,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "ownedListenerAndCwdVerified": true,
+    "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+    "normalUsers": [
+      {
+        "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "logicalLabel": "A"
+      },
+      {
+        "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "logicalLabel": "B"
+      }
+    ]
+  },
+  "harnessManifest": [
+    {
+      "path": "run.mjs",
+      "sha256": "260425690f8c42d2d9b5d9d385089b8ed22ea2809054b0eae5b65fd36afc05ab"
+    },
+    {
+      "path": "ssr-recent.mjs",
+      "sha256": "3c8f69fe65db8fceed84f7956a038d78a2a63b39e93326d173fd8cf60163aeb5"
+    },
+    {
+      "path": "worker-delivery.test-source.ts",
+      "sha256": "0f8131f124cdaca09b2556c44c728a13c8e6660131c9c2ce4bcad6ee24090ce1"
+    },
+    {
+      "path": "worker-delivery.vitest.config.mjs",
+      "sha256": "e7b296fbfa4938a743c8926458adcf508ccc8b65bc3644bae13c8f61c6efaef9"
+    },
+    {
+      "path": "../account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "../../../../../../scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    }
+  ],
+  "routingPreflight": [
+    {
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "normalJwtRestMatchesTarget": true,
+      "actualNextReferencesMatchTarget": true
+    },
+    {
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "normalJwtRestMatchesTarget": true,
+      "actualNextReferencesMatchTarget": true
+    }
+  ],
+  "ownedSnapshotAfter": {
+    "id": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+    "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+    "total_usd": 48.75,
+    "created_at": "2026-10-15T06:04:49.689148+00:00",
+    "liquid_usd": 48.75,
+    "snapshot_date": "2026-10-06",
+    "total_ars_blue": 58500,
+    "investments_usd": 0,
+    "blue_ars_per_usd": 1200
+  },
+  "sourceStable": true,
+  "fixtureCleanup": [
+    {
+      "kind": "archiveOwnNewAccount",
+      "id": "8a2d68db-327b-4f11-9390-300080aaf1d6",
+      "status": 204
+    }
+  ],
+  "fixtureOriginalIntegrity": [
+    {
+      "table": "users",
+      "originalRows": 2,
+      "beforeMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "afterMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "accounts",
+      "originalRows": 3,
+      "beforeMd5": "6cb0d2eecbdd42bdc972ad4e3909db3a",
+      "afterMd5": "6cb0d2eecbdd42bdc972ad4e3909db3a",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "transactions",
+      "originalRows": 3,
+      "beforeMd5": "9cdeed69cc341ee9702a115b2ce865a5",
+      "afterMd5": "9cdeed69cc341ee9702a115b2ce865a5",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "investments",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "investment_sales",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "shared_groups",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "shared_group_members",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "shared_expenses",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "shared_expense_splits",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "categories",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "budgets",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "recurring_rules",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "net_worth_snapshots",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "Exclude only exact previously harness-created owned B snapshot UUID with prior report ownership evidence"
+    }
+  ],
+  "restoreOriginalIntegrity": [
+    {
+      "table": "users",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "afterMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "05f20fcbb1448779155f1694cfc5f776",
+      "afterMd5": "05f20fcbb1448779155f1694cfc5f776",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "e6edd04b9342ecd6094b08295f689ea5",
+      "afterMd5": "e6edd04b9342ecd6094b08295f689ea5",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "7ca48f59bd91dfe7ea7b2927795bd057",
+      "afterMd5": "7ca48f59bd91dfe7ea7b2927795bd057",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "a3c33f23f367d04be93c5e329e0b2c95",
+      "afterMd5": "a3c33f23f367d04be93c5e329e0b2c95",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "3196215a431950e33c0fa4280880d926",
+      "afterMd5": "3196215a431950e33c0fa4280880d926",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "b5f150791b6b3ae585518117ad73ee99",
+      "afterMd5": "b5f150791b6b3ae585518117ad73ee99",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "5d2d7875b6378b5d6fff97b66c5b4760",
+      "afterMd5": "5d2d7875b6378b5d6fff97b66c5b4760",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 4,
+      "afterRows": 4,
+      "beforeMd5": "65c1961b4887b94ec1ca7dbf264fa13c",
+      "afterMd5": "65c1961b4887b94ec1ca7dbf264fa13c",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 26,
+      "afterRows": 26,
+      "beforeMd5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+      "afterMd5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "b429e1dccdff7b869652c393c48f233d",
+      "afterMd5": "b429e1dccdff7b869652c393c48f233d",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "cdcf2a6929cbb5882797587a3eb5aaca",
+      "afterMd5": "cdcf2a6929cbb5882797587a3eb5aaca",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "1502ff1ff671e5bce7be044cc2d2df2c",
+      "afterMd5": "1502ff1ff671e5bce7be044cc2d2df2c",
+      "unchanged": true
+    }
+  ],
+  "sessions": [
+    {
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "localSignOutError": null,
+      "closed": true
+    },
+    {
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "localSignOutError": null,
+      "closed": true
+    }
+  ],
+  "finishedAt": "2026-10-15T06:13:30.141Z",
+  "preservationScope": {
+    "protectedTablesPerDatabase": 13,
+    "originalRestoreAllFullRows": true,
+    "fixtureOwnedSnapshotExcluded": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+    "clonedBAllowedFixtureFields": [],
+    "authorizedClonedBFixtureApplied": false,
+    "allOtherOriginalFieldsUnchanged": true
+  },
+  "acceptanceGuardsSatisfied": true,
+  "acceptanceEligible": true
+}
