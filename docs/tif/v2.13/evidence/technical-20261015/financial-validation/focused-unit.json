@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-15T00:53:37.161Z",
+  "status": "PASS",
+  "command": "npx vitest run __tests__/financial-validation-http.test.ts __tests__/investment-retry-boundaries.test.ts",
+  "testFiles": 2,
+  "tests": 15,
+  "durationMs": 174,
+  "scope": "Focused unit HTTP classification with Auth/DB/provider doubles. Existing precision and quantity validation rules preserved; this is not real-session integration evidence.",
+  "changes": [
+    "Existing sub-cent transaction validation reports HTTP400",
+    "Existing early and locked RPC excessive sale quantity rejection reports HTTP400",
+    "Unknown backend errors remain masked HTTP500",
+    "Foreign account DELETE contract remains204 owner-scoped noop; API harness compares all foreign row columns"
+  ],
+  "sourceManifest": [
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "efcda8eb87f3b7d790239166a9c1c4dadf1300dc8610bb0b24364d89900e494d"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "6088cdae1aa84644a1879bcba57dfd6f9c2c96254904a32b6a3390f9970c0358"
+    },
+    {
+      "path": "__tests__/financial-validation-http.test.ts",
+      "sha256": "1ead18820e1818438a38238477ea6d5447e0be4212d8628e6c3e14a40c7fa56a"
+    },
+    {
+      "path": "__tests__/investment-retry-boundaries.test.ts",
+      "sha256": "68f37bd9e4a74ab37a3265848f0d1c6f76e5bfc4ed1c230eb9d61bd0788b206b"
+    },
+    {
+      "path": "scripts/test-isolated-api.mjs",
+      "sha256": "79980da2891870029c46ed9a942c15bda3dd142ae0bcfc369cf1b6bf1bfc9c92"
+    }
+  ]
+}

@@ -207,7 +207,7 @@ class TransactionsService {
     }
     const amount = roundFiat(input.amount, input.currency);
     if (amount <= 0 || Math.abs(amount - input.amount) > 1e-8) {
-      throw new Error('El monto en ARS, USD o EUR admite hasta dos decimales.');
+      throw new ApiError('El monto en ARS, USD o EUR admite hasta dos decimales.');
     }
     input = { ...input, amount };
     if (input.installments != null &&

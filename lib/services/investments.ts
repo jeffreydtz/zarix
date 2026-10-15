@@ -694,7 +694,7 @@ class InvestmentsService {
     // Validación temprana para un mensaje amigable; la garantía real contra
     // oversell (doble click / ventas concurrentes) la da el RPC atómico.
     if (input.quantity > currentQty + 1e-9) {
-      throw new Error(`No podés vender más de lo que tenés (${currentQty}).`);
+      throw new ApiError(`No podés vender más de lo que tenés (${currentQty}).`);
     }
 
     const dolar = await cotizacionesService.getDolarQuotes();
@@ -751,7 +751,7 @@ class InvestmentsService {
 
     if (rpcErr) {
       if (rpcErr.message?.includes('CANTIDAD_INSUFICIENTE')) {
-        throw new Error(
+        throw new ApiError(
           'No podés vender más de lo que tenés (la posición cambió o ya se vendió en otra operación).'
         );
       }

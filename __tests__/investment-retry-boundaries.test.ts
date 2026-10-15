@@ -8,6 +8,7 @@ vi.mock('@/lib/market-data/data912-client', () => ({ loadArgentineQuotes: vi.fn(
 import { investmentsService } from '@/lib/services/investments';
 import { transactionRequestHash } from '@/lib/transaction-idempotency';
 import { withFinancialRequestContext } from '@/lib/financial-request-context';
+import { errorResponse } from '@/lib/api-handler';
 const position = { id: 'position', user_id: 'owner', type: 'bond', quantity: 1000,
   purchase_price: 100, purchase_currency: 'USD' };
 const sale = { requestId: 'sale:request:1', userId: 'owner', investmentId: 'position', quantity: 400,
@@ -30,6 +31,22 @@ beforeEach(() => {
 });
 
 describe('investment sale basis and receipt boundaries', () => {
+  it('reports early excessive quantity as HTTP400 without quote lookup or mutation', async () => {
+    replies = [{ data: null }, { data: position }];
+    const response = await investmentsService.sell({ ...sale, quantity: 1001 }).catch(errorResponse);
+    expect(response).toHaveProperty('status', 400);
+    expect(mocks.dolar).not.toHaveBeenCalled();
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(inserts).not.toHaveBeenCalled();
+  });
+  it('reports the locked RPC excessive-quantity rejection as HTTP400', async () => {
+    replies = [{ data: null }, { data: position }];
+    mocks.rpc.mockResolvedValue({ error: { code: 'P0001', message: 'CANTIDAD_INSUFICIENTE' } });
+    const response = await investmentsService.sell(sale).catch(errorResponse);
+    expect(response).toHaveProperty('status', 400);
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(inserts).not.toHaveBeenCalled();
+  });
   it('sends exact purchase price, currency and type alongside the computed P&L to the locked RPC', async () => {
     replies = [{ data: null }, { data: position }];
     await investmentsService.sell(sale);

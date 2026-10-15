@@ -92,16 +92,17 @@ try {
     const accountA = await account('API sintética ARS', 'ARS', 200000), usdA = await account('API sintética USD', 'USD', 50), brokerA = await account('API broker', 'USD', 0, 'investment');
     const foreignAccount = await request(b, 'POST', '/api/accounts', { name: `API private B ${run}`, type: 'bank', currency: 'ARS', initialBalance: 7000 });
     assert.equal(foreignAccount.status, 201);
-    const beforeB = rows(`SELECT id,balance,name FROM accounts WHERE user_id=${literal(b.id)} ORDER BY id`);
+    const beforeB = rows(`SELECT * FROM accounts WHERE user_id=${literal(b.id)} ORDER BY id`);
     await test('CU002', 'normal session API isolation, invalid auth, grants and downgrade reading/export', async () => {
-      const foreign = beforeB[0].id;
+      const foreign = foreignAccount.body.id;
       assert.equal((await request(null, 'GET', '/api/accounts')).status, 401);
       assert.equal((await request(null, 'GET', '/api/accounts', undefined, randomUUID(), { Cookie: 'sb-127-auth-token=not-a-valid-session' })).status, 401);
       const own = await request(a, 'GET', '/api/accounts'); assert.equal(own.status, 200); assert.ok(!own.body.some(r => r.id === foreign));
       assert.equal((await request(a, 'GET', `/api/accounts/${foreign}`)).status, 404);
       assert.ok(rejected((await request(a, 'PATCH', `/api/accounts/${foreign}`, { name: 'Synthetic cross-tenant attempt' })).status));
-      assert.ok(rejected((await request(a, 'DELETE', `/api/accounts/${foreign}`)).status));
-      assert.deepEqual(rows(`SELECT id,balance,name FROM accounts WHERE user_id=${literal(b.id)} ORDER BY id`), beforeB);
+      const foreignDelete = await request(a, 'DELETE', `/api/accounts/${foreign}`);
+      assert.equal(foreignDelete.status, 204);
+      assert.deepEqual(rows(`SELECT * FROM accounts WHERE user_id=${literal(b.id)} ORDER BY id`), beforeB);
       const secretDenied = await a.client.from('users').select('gemini_api_key');
       const paidStatusDenied = await a.client.from('users').update({ status: 'ACTIVE' }).eq('id', a.id);
       assert.equal(secretDenied.error?.code, '42501');
@@ -114,7 +115,7 @@ try {
       assert.equal((await request(a, 'GET', '/api/export/transactions?format=json')).status, 200);
       sql(`UPDATE users SET status='ACTIVE',current_period_end=now()+interval '30 days' WHERE id=${literal(a.id)}`);
       const activeAccountsAtDowngrade = Number(sql(`SELECT count(*) FROM accounts WHERE user_id=${literal(a.id)} AND is_active AND movement_enabled`));
-      return { ids: ['CP2-19', 'CP2-20', 'CP2-09', 'CP2-15'], privateAccountRowsUnchanged: beforeB.length, anonymousStatuses: [401, 401], normalProfileSecretFieldAndPaidStatusDenied: true, normalProfileDenialCodes: [secretDenied.error.code, paidStatusDenied.error.code], activeAccountsAtDowngrade, historyAndExportAvailable: true, exactThreeAccountFixture: false };
+      return { ids: ['CP2-19', 'CP2-20', 'CP2-09', 'CP2-15'], privateAccountRowsUnchanged: beforeB.length, foreignDelete: { status: foreignDelete.status, ownerScopedNoop: true, allForeignAccountColumnsUnchanged: true, beforeSha256: hash(JSON.stringify(beforeB)) }, anonymousStatuses: [401, 401], normalProfileSecretFieldAndPaidStatusDenied: true, normalProfileDenialCodes: [secretDenied.error.code, paidStatusDenied.error.code], activeAccountsAtDowngrade, historyAndExportAvailable: true, exactThreeAccountFixture: false };
     });
     await test('CU001', 'different-currency transfer, edit/delete, rounding, ten retries and controlled lost acknowledgment', async () => {
       const payload = { type: 'transfer', accountId: accountA, destinationAccountId: usdA, amount: 120000, currency: 'ARS', exchangeRateOverride: 1 / 1200, description: `API FX ${run}` };
