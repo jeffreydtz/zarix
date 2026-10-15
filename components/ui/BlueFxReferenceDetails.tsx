@@ -15,7 +15,7 @@ export default function BlueFxReferenceDetails({ reference, label = 'Referencia 
       {label}: dólar blue {reference.side === 'sell' ? 'venta' : 'compra'}
       {' · '}1 USD = ARS {reference.rate.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}
       {' · '}Fuente: {provider}
-      {' · '}Fecha: {validDate ? <time dateTime={reference.observedAt!}>{new Date(reference.observedAt!).toLocaleString('es-AR', { timeZone: 'UTC' })} UTC</time> : 'no informada'}.
+      {' · '}Fecha: {validDate ? <time dateTime={reference.observedAt!}>{new Date(reference.observedAt!).toLocaleString('es-AR', { timeZone: 'UTC', hour12: false })} UTC</time> : 'no informada'}.
       {' '}Referencia indicativa.
     </p>
   );
