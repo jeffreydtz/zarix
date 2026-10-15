@@ -23,6 +23,7 @@ const money = value => Math.round(value * 100) / 100;
 const sourcePaths = [
   'scripts/test-isolated-offline-durability.mjs', 'scripts/lib/test-isolated-native-target.mjs',
   'app/login/page.tsx', 'components/settings/LogoutButton.tsx', 'components/add-transaction/AddTransactionProvider.tsx',
+  'components/expenses/InlineQuickCreate.tsx',
   'components/offline/QueueReview.tsx', 'components/OfflineReferenceWarmup.tsx',
   'lib/offline-reference-cache.ts', 'lib/offline-transaction-store.ts', 'lib/offline-queue-sync.ts',
   'lib/hooks/useFinancialOperation.ts', 'lib/hooks/useOfflineQueue.ts', 'lib/hooks/useServiceWorker.ts',

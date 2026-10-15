@@ -1,7 +1,7 @@
 {
-  "executedAt": "2026-10-15T00:31:11.577396+00:00",
+  "executedAt": "2026-10-15T00:42:39.594318+00:00",
   "scope": "Target guards only; no Auth/browser/SQL execution or acceptance claim. Real journey remains pending coordinated isolated app readiness.",
-  "script_sha256": "eb447b928bda45f54bc350ac09f3000d2adb4f843da6d97fb6588ff13e9be443",
+  "script_sha256": "01ff75697b986d44b22e4e212ba57a566ae3867034f7a8ee0652bcac90f569d2",
   "sourceStable": true,
   "checks": {
     "syntax": 0,
