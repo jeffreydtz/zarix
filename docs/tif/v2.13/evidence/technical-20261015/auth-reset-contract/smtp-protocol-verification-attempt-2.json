@@ -1,0 +1,133 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T05:46:54.766420+00:00",
+  "scope": "Synthetic SMTP protocol only; no Auth, accounts, passwords, recovery tokens or external email.",
+  "smtpSourceSha256": "0c1d72411a5204e9f7483b0c494364a920ba0ce25775ac9c749a775afae20342",
+  "checkerSha256": "286d572c2233fa4d23e01d539f652220661a1fa85c0df4d30e2759f86a41c3ce",
+  "checks": [
+    {
+      "name": "Owned child reports exact local target",
+      "actual": [
+        "READY",
+        53749,
+        "127.0.0.1",
+        60325
+      ],
+      "expected": [
+        "READY",
+        53749,
+        "127.0.0.1",
+        60325
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "EHLO accepted",
+      "actual": 250,
+      "expected": 250,
+      "status": "PASS"
+    },
+    {
+      "name": "No TLS AUTH or forwarding endpoint advertised",
+      "actual": false,
+      "expected": false,
+      "status": "PASS"
+    },
+    {
+      "name": "Synthetic sender accepted",
+      "actual": 250,
+      "expected": 250,
+      "status": "PASS"
+    },
+    {
+      "name": "Foreign synthetic recipient rejected",
+      "actual": 550,
+      "expected": 550,
+      "status": "PASS"
+    },
+    {
+      "name": "DATA without accepted recipient rejected",
+      "actual": 503,
+      "expected": 503,
+      "status": "PASS"
+    },
+    {
+      "name": "Accepted local message receives no recipient errors",
+      "actual": {},
+      "expected": {},
+      "status": "PASS"
+    },
+    {
+      "name": "Exactly one private receipt exists after ACK",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "Receipt binds only selected recipient",
+      "actual": [
+        "zarix-smtp-probe-a@example.invalid"
+      ],
+      "expected": [
+        "zarix-smtp-probe-a@example.invalid"
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Message hash binds reconstructed MIME bytes",
+      "actual": "8016883876980889d6385cb5d9e93c833bcf1ecd9adbce8bed1c3864c6f5e94e",
+      "expected": "8016883876980889d6385cb5d9e93c833bcf1ecd9adbce8bed1c3864c6f5e94e",
+      "status": "PASS"
+    },
+    {
+      "name": "SMTP dot-stuffing reconstructed correctly",
+      "actual": true,
+      "expected": true,
+      "status": "PASS"
+    },
+    {
+      "name": "Message and receipt permissions0600",
+      "actual": [
+        384,
+        384
+      ],
+      "expected": [
+        384,
+        384
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Private attempt directory0700",
+      "actual": 448,
+      "expected": 448,
+      "status": "PASS"
+    },
+    {
+      "name": "Exact owned child stopped normally",
+      "actual": 0,
+      "expected": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "Final durable state has one accepted message and no active connections",
+      "actual": [
+        1,
+        0
+      ],
+      "expected": [
+        1,
+        0
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Stop timestamp recorded",
+      "actual": true,
+      "expected": true,
+      "status": "PASS"
+    }
+  ],
+  "finishedAt": "2026-10-15T05:46:54.906117+00:00",
+  "actualSeconds": 0.13971208300063154
+}
