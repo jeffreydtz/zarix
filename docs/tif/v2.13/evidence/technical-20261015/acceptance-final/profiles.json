@@ -1,0 +1,43 @@
+{
+  "final-core-acceptance": {
+    "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+    "artifactPrefix": "final-proof",
+    "coreDirectory": "core-acceptance",
+    "fixedRevision": null,
+    "allowCurrentProductDeltas": false,
+    "clockOnly": false,
+    "normalState": "final-proof-app-state.json",
+    "clockState": "final-proof-clock-app-state.json",
+    "clockObservation": "final-proof-clock-observation.json",
+    "normalGeminiPrefix": "final-proof",
+    "clockGeminiPrefix": "final-proof-clock"
+  },
+  "intermediate-core-reliability-clock": {
+    "copyRoot": "/tmp/zarix-app-contract-clock-20261015",
+    "artifactPrefix": "contract-clock",
+    "coreDirectory": "core-reliability",
+    "fixedRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "allowCurrentProductDeltas": true,
+    "clockOnly": true,
+    "normalState": null,
+    "clockState": "contract-clock-app-state.json",
+    "clockObservation": "contract-clock-observation.json",
+    "normalGeminiPrefix": null,
+    "clockGeminiPrefix": "contract-clock"
+  },
+  "intermediate-core-reliability-clock-retry": {
+    "copyRoot": "/tmp/zarix-app-contract-clock-20261015",
+    "artifactPrefix": "contract-clock",
+    "coreDirectory": "core-reliability",
+    "fixedRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "allowCurrentProductDeltas": true,
+    "clockOnly": true,
+    "normalState": null,
+    "clockState": "contract-clock-retry-app-state.json",
+    "clockObservation": "contract-clock-retry-observation.json",
+    "normalGeminiPrefix": null,
+    "clockGeminiPrefix": "contract-clock-retry",
+    "buildProfile": "intermediate-core-reliability-clock",
+    "runtimeLogPrefix": "contract-clock-retry"
+  }
+}

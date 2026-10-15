@@ -1,0 +1,8 @@
+{
+  "status": "PASS_SCOPED_EXACT_PRIVATE_VALUE_SCAN",
+  "files": 36,
+  "distinctPrivateValuesCompared": 6,
+  "exactMatches": 0,
+  "checkedAt": "2026-10-15T04:34:28.353933+00:00",
+  "scope": "Full exact local credential/password/databaseURL values\u226512characters from named existing private fixturefiles compared only to these publicationpaths. No universal/encoded-secret absence claim; anon public config also checked. No raw value or private filename contents published."
+}

@@ -1,0 +1,58 @@
+{
+  "purpose": "account-analysis-proof",
+  "nextPid": 448,
+  "appOrigin": "http://127.0.0.1:3002",
+  "apiOrigin": "http://127.0.0.1:58321",
+  "copyRoot": "/tmp/zarix-app-contract-clock-20261015",
+  "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+  "sourceManifestSha256": "837127b25fdb1cb2a0f8ae03a09fd65b73bdb239026427b6ad38b882380905e8",
+  "startedAt": "2026-10-15T04:27:54.477634+00:00",
+  "fetchGuardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+  "guardInstalledBeforeNext": true,
+  "geminiUnavailableProofFile": "/tmp/zarix-runtime-20261015/contract-clock-gemini-unavailable.json",
+  "geminiInstrumentationSha256": "371259d30aa35955c5a62ec6751cb18afbe04c6376259cc4f02c6e5293d14f12",
+  "runtimeProfile": "intermediate-core-reliability-clock",
+  "currentProductDeltasNotExecuted": [
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "frozenSha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "currentSha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "executedByThisBuild": false
+    },
+    {
+      "path": "components/budgets/BudgetCard.tsx",
+      "frozenSha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b",
+      "currentSha256": "b4a66c24408997fdc90656b02d16ca574090302b0288aaebb3cbdae4a2b21a74",
+      "executedByThisBuild": false
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "frozenSha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+      "currentSha256": "674fe1139550b084a8e9afbce04bb9fea42e7de060f582512219586ef3d6c2bd",
+      "executedByThisBuild": false
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "frozenSha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8",
+      "currentSha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401",
+      "executedByThisBuild": false
+    }
+  ],
+  "adminAlertsDisabled": true,
+  "runtimeProviderOrigins": {
+    "CRIPTOYA_API_URL": "http://127.0.0.1:57912",
+    "DOLARAPI_URL": "http://127.0.0.1:57912",
+    "COINGECKO_API_URL": "http://127.0.0.1:57912"
+  },
+  "coreDirectory": "core-reliability",
+  "privateEnvSha256": "527e8e8a878ea3cee76cebaaabac7ce5fd03c7591c82afd816b0b7c126193929",
+  "exactOwnListenerAndCwd": true,
+  "clockProfile": "fixed-20261006T120000Z",
+  "fixedTime": "2026-10-06T12:00:00.000Z",
+  "clockPreloadSha256": "9f8a984500e6f7150c124c2364275379d7a07e32521a295ec1238eef9511333c",
+  "clockObservationSha256": "acdc4e212114a7cbfb9197b3de66a5bcb9aa71db5cae0731e42a5e0059b40a5b",
+  "clockProofFile": "/tmp/zarix-runtime-20261015/contract-clock-observation.json",
+  "realAuthControlRequiredBeforeAcceptance": true,
+  "geminiUnavailableProofSha256": "47ba7bf318e237799df22d6f125e23129668e8c5fc72efcfd795047fe9799180"
+}

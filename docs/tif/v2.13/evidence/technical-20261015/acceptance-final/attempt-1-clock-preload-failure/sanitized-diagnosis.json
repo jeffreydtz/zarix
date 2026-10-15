@@ -1,0 +1,15 @@
+{
+  "status": "FAIL_HARNESS_ONLY",
+  "cause": "TypeError: Date.parse is not a function",
+  "httpStatus": 500,
+  "contentType": "text/html; charset=utf-8",
+  "endpoint": "/api/user/notification-preferences",
+  "observedControls": 2,
+  "financeRequests": 0,
+  "clockShimSourcePreservation": "Original shim bytes reconstructed by removing the exact three-line patch and SHA256 matched to the immutable process-install observation; not a claim of file copy before edit.",
+  "executedPreloadSha256": "9f8a984500e6f7150c124c2364275379d7a07e32521a295ec1238eef9511333c",
+  "nextDateWrapper": "Object.getOwnPropertyDescriptors(originalConstructor); inherited Date.parse/UTC not copied",
+  "oldNextPid": 448,
+  "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+  "productSourceChanged": false
+}

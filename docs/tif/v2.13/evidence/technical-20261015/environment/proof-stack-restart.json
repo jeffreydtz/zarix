@@ -1,0 +1,974 @@
+{
+  "status": "PASS_SCOPED_PRESERVATION_AND_APP_HEALTH",
+  "scope": "One official restart of fifth synthetic native stack; no financial operation, reset/destroy, migrations, credential changes or other stack restart. Normal Auth receipt replay is a separate owner report.",
+  "cliVersion": "2.120.0",
+  "cliArgv": [
+    "/tmp/zarix-runtime-20261015/bin/supabase",
+    "stack",
+    "restart",
+    "--workdir",
+    "/tmp/zarix-runtime-20261015/proof",
+    "--stack-id",
+    "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+    "--output-format",
+    "json"
+  ],
+  "cliExitCode": 0,
+  "before": {
+    "capturedAt": "2026-10-15T04:24:20.394411+00:00",
+    "phase": "before",
+    "stackId": "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+    "projectRoot": "/tmp/zarix-runtime-20261015/proof",
+    "publicApi": "http://127.0.0.1:58321",
+    "postgresHost": "127.0.0.1",
+    "postgresPort": 58322,
+    "database": "postgres",
+    "guardResults": {
+      "exactLoopbackEndpoints": true,
+      "manifestStartAndStateIdentityMatch": true,
+      "authUserCount": 2,
+      "storageObjectCount": 0,
+      "onlyExpectedFourServiceKinds": true,
+      "datadirMatchesProofInstance": true,
+      "authUserIdsExactlyMatchPrivateProofLogins": true
+    },
+    "postgres": {
+      "postmasterStartTime": "2026-10-15T03:11:55.958009+00:00",
+      "version": "17.11",
+      "users": 2,
+      "storageObjects": 0,
+      "postmasterPid": 48287
+    },
+    "instanceIds": {
+      "database": "4ecc06ec-a5f0-4086-a18e-721fe9731718",
+      "rest": "ba07d051-8830-4a76-a7e6-944e3a4378c6",
+      "auth": "1d6cf0fa-7186-4a85-8326-a247a2a82073",
+      "storage": "934c4926-5c9e-4026-ba89-8976c03c8b48"
+    },
+    "schemaSha256": "217da2aacaeb0d8c3a292dc75ab99e82d0013e4d2bac86d282d38261ac72e9b5",
+    "tableRows": [
+      {
+        "schema": "auth",
+        "table": "audit_log_entries",
+        "count": 965,
+        "canonicalRowsMd5": "39082a081d5d32b5de430d97eadf855e"
+      },
+      {
+        "schema": "auth",
+        "table": "custom_oauth_providers",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "flow_state",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "identities",
+        "count": 2,
+        "canonicalRowsMd5": "f9c8b231247c0762232d8924bc1746bc"
+      },
+      {
+        "schema": "auth",
+        "table": "instances",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_amr_claims",
+        "count": 4,
+        "canonicalRowsMd5": "375ec8dbb4ae85155cb4fd7bed2a3843"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_challenges",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_factors",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_recovery_code_sets",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_recovery_codes",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "oauth_authorizations",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "oauth_client_states",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "oauth_clients",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "oauth_consents",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "one_time_tokens",
+        "count": 1,
+        "canonicalRowsMd5": "dd708099cdd2ee89399a08bb975ff8c1"
+      },
+      {
+        "schema": "auth",
+        "table": "refresh_tokens",
+        "count": 14,
+        "canonicalRowsMd5": "36f324cefd7f1f5ede00657c003a32d3"
+      },
+      {
+        "schema": "auth",
+        "table": "saml_providers",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "saml_relay_states",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "schema_migrations",
+        "count": 82,
+        "canonicalRowsMd5": "6efbfc749c2707934b8f14762432637d"
+      },
+      {
+        "schema": "auth",
+        "table": "scim_tokens",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "scim_users",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "sessions",
+        "count": 4,
+        "canonicalRowsMd5": "7e9e71aad1361477d65baec90284b793"
+      },
+      {
+        "schema": "auth",
+        "table": "sso_domains",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "sso_providers",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "users",
+        "count": 2,
+        "canonicalRowsMd5": "c29fbf54380b164f19f4c787fbacfbfe"
+      },
+      {
+        "schema": "auth",
+        "table": "webauthn_challenges",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "webauthn_credentials",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "account_creation_requests",
+        "count": 47,
+        "canonicalRowsMd5": "6b5ebf7471d23c70e27944ee1e58e7a2"
+      },
+      {
+        "schema": "public",
+        "table": "accounts",
+        "count": 47,
+        "canonicalRowsMd5": "16d369961ff5e3965cac437eac2a34d8"
+      },
+      {
+        "schema": "public",
+        "table": "bot_sessions",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "budget_alerts",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "budgets",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "categories",
+        "count": 29,
+        "canonicalRowsMd5": "e59ec8fead0e3b105dec19ad5de5290e"
+      },
+      {
+        "schema": "public",
+        "table": "exchange_rates",
+        "count": 80,
+        "canonicalRowsMd5": "64527340013f95ec8a834c836914ab33"
+      },
+      {
+        "schema": "public",
+        "table": "import_batches",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "investment_create_requests",
+        "count": 19,
+        "canonicalRowsMd5": "7a16725837f3cce07093f587c6a3b9f3"
+      },
+      {
+        "schema": "public",
+        "table": "investment_sale_requests",
+        "count": 8,
+        "canonicalRowsMd5": "c694e86db4b936416b76f86c455c95e6"
+      },
+      {
+        "schema": "public",
+        "table": "investment_sales",
+        "count": 8,
+        "canonicalRowsMd5": "40ac04c4fd86b83dd57f6d9ea75637ec"
+      },
+      {
+        "schema": "public",
+        "table": "investments",
+        "count": 19,
+        "canonicalRowsMd5": "fac8133c97bd88cb927cac924b398a14"
+      },
+      {
+        "schema": "public",
+        "table": "market_data_cache",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "net_worth_snapshots",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "notification_outbox",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "plan_usage_cycles",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "plan_usage_requests",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "portfolio_performance_snapshots",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "recurring_rules",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_expense_requests",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_expense_splits",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_expenses",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_group_members",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_groups",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "transaction_requests",
+        "count": 19,
+        "canonicalRowsMd5": "dcbba6f1792194caf3300f7e16cea9e6"
+      },
+      {
+        "schema": "public",
+        "table": "transactions",
+        "count": 43,
+        "canonicalRowsMd5": "dd4fd6a25d82bc026c1a3997af015023"
+      },
+      {
+        "schema": "public",
+        "table": "users",
+        "count": 2,
+        "canonicalRowsMd5": "779f6b2656bcbd2c755fd653e2789129"
+      },
+      {
+        "schema": "storage",
+        "table": "buckets",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "buckets_analytics",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "buckets_vectors",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "iceberg_namespaces",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "iceberg_tables",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "migrations",
+        "count": 74,
+        "canonicalRowsMd5": "3a9d8e60c5f58461b179dbcbee07da65"
+      },
+      {
+        "schema": "storage",
+        "table": "objects",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "s3_multipart_uploads",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "s3_multipart_uploads_parts",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "vector_indexes",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      }
+    ],
+    "credentialsSha256": "885417563908d9c3b26190e4899ec07a8cc6ee76561ad928fe6507360c55a0be",
+    "serviceConfigurationSha256": "3db83461ce18583b26586ec900954d30ae7905d49e4881a9c700bfe74e1b75da",
+    "privateEnvFileSha256": "458ab7a64235af220db8e88a607efac8b52f6502af29b8055f6001001d7fde24",
+    "privateLoginFileSha256": "808f6b0ad10f6f3b05234192f466369c097363a2cbe7ede12ccddd7428d56c2e",
+    "projectConfigSha256": "db0806ebec099c70b205c5bcd9b2d014bbdf0621a5adf983bdc3619c315df4ed",
+    "otherStackStateFiles": {
+      "source": {
+        "id": "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+        "stateSha256": "f7460908ff153a9cd222b3348072b8c2ee4001534df32d46b2b315be5b9cfea0"
+      },
+      "restore": {
+        "id": "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+        "stateSha256": "fdb127250af1450a21fa55943378eabd8d5301553229a4641ecbf0bb08030d66"
+      },
+      "load": {
+        "id": "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+        "stateSha256": "16a205703d0c65a1409c7c0aa1e6d6cecd285e810875bb9f7179ddf348601e74"
+      },
+      "e2e": {
+        "id": "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+        "stateSha256": "31fc22ef0e00c7173692051445ac5fb20dfb595641353ddedaef0d23f47a258f"
+      },
+      "import-target": {
+        "id": "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+        "stateSha256": "96eaa4ff5408ec39d167b3128f19c93755f5bd5108aa294d89551eb361e1036a"
+      }
+    },
+    "fingerprintAlgorithm": "per table count and md5 of ordered canonical PostgreSQL JSONB row text; schema pg_dump SHA256 after removing random restrict tokens",
+    "secretsIncluded": false,
+    "privateFullDump": {
+      "sha256": "38a2126d395696eee6de1620f12842c6649c1def275e813b5ca7ebc91a98b4f6",
+      "bytes": 599716,
+      "archiveTocReadable": true,
+      "restoreExecuted": false
+    }
+  },
+  "after": {
+    "capturedAt": "2026-10-15T04:25:13.323517+00:00",
+    "phase": "after",
+    "stackId": "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+    "projectRoot": "/tmp/zarix-runtime-20261015/proof",
+    "publicApi": "http://127.0.0.1:58321",
+    "postgresHost": "127.0.0.1",
+    "postgresPort": 58322,
+    "database": "postgres",
+    "guardResults": {
+      "exactLoopbackEndpoints": true,
+      "manifestStartAndStateIdentityMatch": true,
+      "authUserCount": 2,
+      "storageObjectCount": 0,
+      "onlyExpectedFourServiceKinds": true,
+      "datadirMatchesProofInstance": true,
+      "authUserIdsExactlyMatchPrivateProofLogins": true
+    },
+    "postgres": {
+      "postmasterStartTime": "2026-10-15T04:24:54.608301+00:00",
+      "version": "17.11",
+      "users": 2,
+      "storageObjects": 0,
+      "postmasterPid": 98670
+    },
+    "instanceIds": {
+      "database": "4ecc06ec-a5f0-4086-a18e-721fe9731718",
+      "rest": "ba07d051-8830-4a76-a7e6-944e3a4378c6",
+      "auth": "1d6cf0fa-7186-4a85-8326-a247a2a82073",
+      "storage": "934c4926-5c9e-4026-ba89-8976c03c8b48"
+    },
+    "schemaSha256": "217da2aacaeb0d8c3a292dc75ab99e82d0013e4d2bac86d282d38261ac72e9b5",
+    "tableRows": [
+      {
+        "schema": "auth",
+        "table": "audit_log_entries",
+        "count": 965,
+        "canonicalRowsMd5": "39082a081d5d32b5de430d97eadf855e"
+      },
+      {
+        "schema": "auth",
+        "table": "custom_oauth_providers",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "flow_state",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "identities",
+        "count": 2,
+        "canonicalRowsMd5": "f9c8b231247c0762232d8924bc1746bc"
+      },
+      {
+        "schema": "auth",
+        "table": "instances",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_amr_claims",
+        "count": 4,
+        "canonicalRowsMd5": "375ec8dbb4ae85155cb4fd7bed2a3843"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_challenges",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_factors",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_recovery_code_sets",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "mfa_recovery_codes",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "oauth_authorizations",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "oauth_client_states",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "oauth_clients",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "oauth_consents",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "one_time_tokens",
+        "count": 1,
+        "canonicalRowsMd5": "dd708099cdd2ee89399a08bb975ff8c1"
+      },
+      {
+        "schema": "auth",
+        "table": "refresh_tokens",
+        "count": 14,
+        "canonicalRowsMd5": "36f324cefd7f1f5ede00657c003a32d3"
+      },
+      {
+        "schema": "auth",
+        "table": "saml_providers",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "saml_relay_states",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "schema_migrations",
+        "count": 82,
+        "canonicalRowsMd5": "6efbfc749c2707934b8f14762432637d"
+      },
+      {
+        "schema": "auth",
+        "table": "scim_tokens",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "scim_users",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "sessions",
+        "count": 4,
+        "canonicalRowsMd5": "7e9e71aad1361477d65baec90284b793"
+      },
+      {
+        "schema": "auth",
+        "table": "sso_domains",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "sso_providers",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "users",
+        "count": 2,
+        "canonicalRowsMd5": "c29fbf54380b164f19f4c787fbacfbfe"
+      },
+      {
+        "schema": "auth",
+        "table": "webauthn_challenges",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "auth",
+        "table": "webauthn_credentials",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "account_creation_requests",
+        "count": 47,
+        "canonicalRowsMd5": "6b5ebf7471d23c70e27944ee1e58e7a2"
+      },
+      {
+        "schema": "public",
+        "table": "accounts",
+        "count": 47,
+        "canonicalRowsMd5": "16d369961ff5e3965cac437eac2a34d8"
+      },
+      {
+        "schema": "public",
+        "table": "bot_sessions",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "budget_alerts",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "budgets",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "categories",
+        "count": 29,
+        "canonicalRowsMd5": "e59ec8fead0e3b105dec19ad5de5290e"
+      },
+      {
+        "schema": "public",
+        "table": "exchange_rates",
+        "count": 80,
+        "canonicalRowsMd5": "64527340013f95ec8a834c836914ab33"
+      },
+      {
+        "schema": "public",
+        "table": "import_batches",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "investment_create_requests",
+        "count": 19,
+        "canonicalRowsMd5": "7a16725837f3cce07093f587c6a3b9f3"
+      },
+      {
+        "schema": "public",
+        "table": "investment_sale_requests",
+        "count": 8,
+        "canonicalRowsMd5": "c694e86db4b936416b76f86c455c95e6"
+      },
+      {
+        "schema": "public",
+        "table": "investment_sales",
+        "count": 8,
+        "canonicalRowsMd5": "40ac04c4fd86b83dd57f6d9ea75637ec"
+      },
+      {
+        "schema": "public",
+        "table": "investments",
+        "count": 19,
+        "canonicalRowsMd5": "fac8133c97bd88cb927cac924b398a14"
+      },
+      {
+        "schema": "public",
+        "table": "market_data_cache",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "net_worth_snapshots",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "notification_outbox",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "plan_usage_cycles",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "plan_usage_requests",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "portfolio_performance_snapshots",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "recurring_rules",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_expense_requests",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_expense_splits",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_expenses",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_group_members",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "shared_groups",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "public",
+        "table": "transaction_requests",
+        "count": 19,
+        "canonicalRowsMd5": "dcbba6f1792194caf3300f7e16cea9e6"
+      },
+      {
+        "schema": "public",
+        "table": "transactions",
+        "count": 43,
+        "canonicalRowsMd5": "dd4fd6a25d82bc026c1a3997af015023"
+      },
+      {
+        "schema": "public",
+        "table": "users",
+        "count": 2,
+        "canonicalRowsMd5": "779f6b2656bcbd2c755fd653e2789129"
+      },
+      {
+        "schema": "storage",
+        "table": "buckets",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "buckets_analytics",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "buckets_vectors",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "iceberg_namespaces",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "iceberg_tables",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "migrations",
+        "count": 74,
+        "canonicalRowsMd5": "3a9d8e60c5f58461b179dbcbee07da65"
+      },
+      {
+        "schema": "storage",
+        "table": "objects",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "s3_multipart_uploads",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "s3_multipart_uploads_parts",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "schema": "storage",
+        "table": "vector_indexes",
+        "count": 0,
+        "canonicalRowsMd5": "d41d8cd98f00b204e9800998ecf8427e"
+      }
+    ],
+    "credentialsSha256": "885417563908d9c3b26190e4899ec07a8cc6ee76561ad928fe6507360c55a0be",
+    "serviceConfigurationSha256": "3db83461ce18583b26586ec900954d30ae7905d49e4881a9c700bfe74e1b75da",
+    "privateEnvFileSha256": "458ab7a64235af220db8e88a607efac8b52f6502af29b8055f6001001d7fde24",
+    "privateLoginFileSha256": "808f6b0ad10f6f3b05234192f466369c097363a2cbe7ede12ccddd7428d56c2e",
+    "projectConfigSha256": "db0806ebec099c70b205c5bcd9b2d014bbdf0621a5adf983bdc3619c315df4ed",
+    "otherStackStateFiles": {
+      "source": {
+        "id": "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+        "stateSha256": "f7460908ff153a9cd222b3348072b8c2ee4001534df32d46b2b315be5b9cfea0"
+      },
+      "restore": {
+        "id": "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+        "stateSha256": "fdb127250af1450a21fa55943378eabd8d5301553229a4641ecbf0bb08030d66"
+      },
+      "load": {
+        "id": "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+        "stateSha256": "16a205703d0c65a1409c7c0aa1e6d6cecd285e810875bb9f7179ddf348601e74"
+      },
+      "e2e": {
+        "id": "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+        "stateSha256": "31fc22ef0e00c7173692051445ac5fb20dfb595641353ddedaef0d23f47a258f"
+      },
+      "import-target": {
+        "id": "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+        "stateSha256": "96eaa4ff5408ec39d167b3128f19c93755f5bd5108aa294d89551eb361e1036a"
+      }
+    },
+    "fingerprintAlgorithm": "per table count and md5 of ordered canonical PostgreSQL JSONB row text; schema pg_dump SHA256 after removing random restrict tokens",
+    "secretsIncluded": false
+  },
+  "comparisons": {
+    "tableRows": true,
+    "schemaSha256": true,
+    "credentialsSha256": true,
+    "serviceConfigurationSha256": true,
+    "privateEnvFileSha256": true,
+    "privateLoginFileSha256": true,
+    "projectConfigSha256": true,
+    "otherStackStateFiles": true,
+    "instanceIds": true,
+    "pgPidChanged": true,
+    "pgStartTimeChanged": true
+  },
+  "comparisonsCount": 11,
+  "oldNext": {
+    "pid": 52579,
+    "startedAt": "Thu Oct 15 03:23:06 2026",
+    "exited": true
+  },
+  "newNext": {
+    "status": "READY",
+    "checkedAt": "2026-10-15T04:25:45.554674+00:00",
+    "nextPid": 99286,
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "ownListener": true,
+    "exactCwd": true,
+    "loginHttpStatus": 200,
+    "authHealthStatus": 200,
+    "normalDateProfile": true,
+    "sameOriginalPrivateEnv": true,
+    "newAppState": "/tmp/zarix-runtime-20261015/proof-restart-app-state.json",
+    "normalAuthReplayPending": true
+  },
+  "sourceFiles": [
+    {
+      "path": "environment/proof-restart/capture.py",
+      "sha256": "2288e45195e4741f9b41851532fd3b3b18ca67c0d4095e31a814db6c9f850307"
+    },
+    {
+      "path": "environment/proof-restart/restart.py",
+      "sha256": "ae8e8e1c1df43aed68eb6bc52ba18b6b2cbc0046724bb9e607fc575cbc08d518"
+    },
+    {
+      "path": "environment/proof-restart/start-same-build.py",
+      "sha256": "68c444a3897936c027c3190ca754f1935e66ae69b26287cd5a2d8c3dc3c1640d"
+    }
+  ],
+  "limits": [
+    "Full dump was retained privately and its TOC decoded; no new restore was executed in this restart test.",
+    "Other five stack preservation checks compare state files only; they do not connect to their databases or claim unchanged rows.",
+    "64-table fingerprints were captured before normal Auth replay; replay may create its own temporary sessions.",
+    "Public API and PostgreSQL ports remain58321/58322; internal REST binding/port is not attested here. Previous native inspection observed wildcard REST, so this does not prove LAN isolation or TLS.",
+    "Served product is historical CI4 revision836fd18 and original builda2WB; later repository fixes are not included."
+  ],
+  "secretsIncluded": false
+}
