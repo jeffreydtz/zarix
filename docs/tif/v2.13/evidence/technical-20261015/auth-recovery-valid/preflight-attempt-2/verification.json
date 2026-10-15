@@ -1,0 +1,28 @@
+{
+  "status": "FAIL_PREFLIGHT",
+  "case_id": "CP2-10",
+  "complete_original_contract": false,
+  "processExitCode": 1,
+  "privateOutput": "/tmp/zarix-runtime-20261015/auth-valid-recovery-63686253-fb7c-4c90-a8e0-454a3d3360d3",
+  "privateFiles": [
+    "failure.json"
+  ],
+  "sources": [
+    {
+      "path": "run.mjs",
+      "sha256": "f8a3bce8f22afa943d25031d323cda0f395705e1f37f400ba72d073927b06272"
+    },
+    {
+      "path": "contract.mjs",
+      "sha256": "c558b79986164be8ca24813b65504685a296c4b3ba646c8308e70b17d5797f5c"
+    },
+    {
+      "path": "smtp-message.mjs",
+      "sha256": "adfe2ce69186df6fbef6ffbc90c2e3a48c2293e77a798aecc35378ffd0687d70"
+    }
+  ],
+  "noPasswordOrTokenGenerated": true,
+  "noAuthOrSmtpRequest": true,
+  "cause": "Exact existing GoTrue DSN includes only sslmode=disable; the harness incorrectly required empty URL search. Routing host/port/database and config hash match the READY.",
+  "scope": "Harness precondition only; no recovery operation was dispatched."
+}

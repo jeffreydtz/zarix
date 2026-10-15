@@ -1,0 +1,7 @@
+{
+  "accepted": 1,
+  "rejected": 0,
+  "usedRetainedMessageCount": 1,
+  "recoveryRequestsInContinuation": 0,
+  "scope": "Read of local SMTP state after continuation. One total local email accepted, no external delivery or email-link click asserted."
+}

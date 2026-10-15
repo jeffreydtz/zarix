@@ -1,0 +1,1603 @@
+{
+  "run": "57d4f74e-3dcb-487c-821d-569363972055",
+  "startedAt": "2026-10-15T06:04:42.101Z",
+  "status": "FAIL",
+  "scope": "Three exact original API/SSR contracts on the new UUID fixture database. Separate cached GoTrue uses only the same two cloned identities/keys; this is not full Auth-restoration evidence. No browser, Storage or original-service mutation.",
+  "cases": [
+    {
+      "case_id": "CP3-03",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Actual new fixture has no persisted quote cache",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "No-cache unavailable quote returns the bound API500 rather than an Auth rejection",
+          "actual": 500,
+          "expected": 500,
+          "status": "PASS"
+        },
+        {
+          "name": "Unavailable quote response contains only an explicit safe error",
+          "actual": [
+            "error"
+          ],
+          "expected": [
+            "error"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Mixed wealth returns the bound safe500 rather than fabricated rates or an Auth rejection",
+          "actual": 500,
+          "expected": 500,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-03 fixture DB has no persisted quote cache before request",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-03 actual authenticated safe-error page status",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-03 actual safe error explicitly declares financial unavailability",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-03 actual retry is an anchor to dashboard, not an invented button",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-03 no financial hero fabricates a consolidated zero or unit rate",
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-03 actual Flight contains no financial Hero aggregate",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-03 failed quote requests persisted no0 or1 fallback",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-03 unavailable read does not create or overwrite any snapshot",
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "name": "Unavailable reads preserve both complete account rows",
+          "actual": [
+            {
+              "id": "5ec86212-0ac0-4c55-83c3-14cbccd591f4",
+              "icon": null,
+              "name": "EmptyContracts303USD 57d4f74e-3dcb-487c-821d-569363972055",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 100,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T06:04:48.038071+00:00",
+              "sort_order": 1,
+              "updated_at": "2026-10-15T06:04:48.038071+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "ef815340-5b35-498b-be59-80af72b50509",
+              "icon": null,
+              "name": "EmptyContracts303ARS 57d4f74e-3dcb-487c-821d-569363972055",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 120000,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "is_active": true,
+              "created_at": "2026-10-15T06:04:47.873219+00:00",
+              "sort_order": 0,
+              "updated_at": "2026-10-15T06:04:47.873219+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "5ec86212-0ac0-4c55-83c3-14cbccd591f4",
+              "icon": null,
+              "name": "EmptyContracts303USD 57d4f74e-3dcb-487c-821d-569363972055",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 100,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T06:04:48.038071+00:00",
+              "sort_order": 1,
+              "updated_at": "2026-10-15T06:04:48.038071+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "ef815340-5b35-498b-be59-80af72b50509",
+              "icon": null,
+              "name": "EmptyContracts303ARS 57d4f74e-3dcb-487c-821d-569363972055",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 120000,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "is_active": true,
+              "created_at": "2026-10-15T06:04:47.873219+00:00",
+              "sort_order": 0,
+              "updated_at": "2026-10-15T06:04:47.873219+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Mixed original balances remain120000ARS and100USD",
+          "actual": [
+            120000,
+            100
+          ],
+          "expected": [
+            120000,
+            100
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Cold provider journal is append-only",
+          "actual": [
+            {
+              "sequence": 1,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 2,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            }
+          ],
+          "expected": [
+            {
+              "sequence": 1,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 2,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "This exact failed read observed new real503 provider requests",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Every cold provider sample failed with the exact unavailable control",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        }
+      ],
+      "startedAt": "2026-10-15T06:04:47.649Z",
+      "evidence": {
+        "accountIds": [
+          "ef815340-5b35-498b-be59-80af72b50509",
+          "5ec86212-0ac0-4c55-83c3-14cbccd591f4"
+        ],
+        "statuses": {
+          "quotes": 500,
+          "wealth": 500
+        },
+        "ssr": {
+          "status": 200,
+          "responseSha256": "458e617dcdad45118cb93f7cc0a3afaa0d367eee08310869c31a76a829766201",
+          "noHeroBinding": {
+            "moduleId": 48648,
+            "component": "components/dashboard/NetWorthHero.tsx",
+            "manifestPath": ".next/server/app/(authenticated)/dashboard/page_client-reference-manifest.js",
+            "manifestSha256": "3848ac909b91bf6c22b04e534088424a1ca09f88844d764c71e1bfcdf86ba391"
+          },
+          "snapshotCount": 0,
+          "scope": "Safe unavailable financial SSR; zero-valued market strip placeholders are not treated as a financial total. Provider503/cold process proof and mixed-balance API checks must be supplied by the released runner."
+        },
+        "providerJournal": {
+          "bytesSha256": "8f6c63c6ba903813de772a1e70f165e23b257a0c337b4860566c1c723ea4abc3",
+          "entries": [
+            {
+              "sequence": 1,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 2,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 3,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 4,
+              "status": 503,
+              "path": "/simple/price",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 5,
+              "status": 503,
+              "path": "/simple/price",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 6,
+              "status": 503,
+              "path": "/simple/price",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 7,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 8,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 9,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 10,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 11,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 12,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 13,
+              "status": 503,
+              "path": "/simple/price",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 14,
+              "status": 503,
+              "path": "/simple/price",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 15,
+              "status": 503,
+              "path": "/simple/price",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 16,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 17,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 18,
+              "status": 503,
+              "path": "/dolar",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 19,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            },
+            {
+              "sequence": 20,
+              "status": 503,
+              "path": "/dolares",
+              "mode": "unavailable",
+              "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+            }
+          ]
+        },
+        "scope": "Real failed synthetic HTTP provider/cold-cache integration, normal Auth/API/SSR/native oracles. No external provider outage asserted."
+      },
+      "endedAt": "2026-10-15T06:04:49.119Z"
+    },
+    {
+      "case_id": "CP3-07",
+      "status": "FAIL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "CP3-07 literal absence includes archived accounts and all own history/positions",
+          "actual": {
+            "accounts": 0,
+            "transactions": 0,
+            "investments": 0
+          },
+          "expected": {
+            "accounts": 0,
+            "transactions": 0,
+            "investments": 0
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-07 no prior synthetic history is presented as existing history",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal-authenticated dashboard SSR status",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual server aggregate total ARS",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Known valid fixture never becomes partial",
+          "status": "PASS"
+        },
+        {
+          "name": "No safe-error alert on this valid-FX empty/account dashboard",
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual own SSR snapshot completion observed before any fixture cleanup",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Own snapshot liquid_usd",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Own snapshot investments_usd",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Own snapshot total_usd",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Own snapshot total_ars_blue",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-07 liquid zero",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-07 portfolio zero",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-07 total USD zero",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "CP3-07 actual server returned no invented historic points",
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        }
+      ],
+      "startedAt": "2026-10-15T06:04:49.120Z",
+      "failure": {
+        "type": "AssertionError",
+        "location": "ssr-contracts.mjs:46:10",
+        "context": "Named contract assertion failed; private diagnostics withheld"
+      },
+      "endedAt": "2026-10-15T06:04:49.773Z"
+    },
+    {
+      "case_id": "CP2-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "CP2-01 literal first account precondition includes archived rows",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal-authenticated dashboard SSR status",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual server aggregate total ARS",
+          "numericActual": 50000,
+          "numericExpected": 50000,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Known valid fixture never becomes partial",
+          "status": "PASS"
+        },
+        {
+          "name": "No safe-error alert on this valid-FX empty/account dashboard",
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual own SSR snapshot completion observed before any fixture cleanup",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Own snapshot liquid_usd",
+          "numericActual": 41.67,
+          "numericExpected": 41.67,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Own snapshot investments_usd",
+          "numericActual": 0,
+          "numericExpected": 0,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Own snapshot total_usd",
+          "numericActual": 41.67,
+          "numericExpected": 41.67,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Own snapshot total_ars_blue",
+          "numericActual": 50000,
+          "numericExpected": 50000,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Only the same newly owned empty-dashboard snapshot was updated",
+          "actual": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+          "expected": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+          "status": "PASS"
+        },
+        {
+          "name": "CP2-01 exactly one own active bank account exists",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "CP2-01 account is active and ARS",
+          "actual": {
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "active": true,
+            "currency": "ARS"
+          },
+          "expected": {
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "active": true,
+            "currency": "ARS"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "CP2-01 literal BancoARS is a bank account",
+          "actual": {
+            "name": "BancoARS",
+            "type": "bank"
+          },
+          "expected": {
+            "name": "BancoARS",
+            "type": "bank"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "CP2-01 bank account balance",
+          "numericActual": 50000,
+          "numericExpected": 50000,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "CP2-01 one explicit opening adjustment documents the 50000 origin",
+          "actual": [
+            {
+              "type": "adjustment",
+              "amount": 50000,
+              "authoritative": 50000,
+              "description": "Saldo inicial"
+            }
+          ],
+          "expected": [
+            {
+              "type": "adjustment",
+              "amount": 50000,
+              "authoritative": 50000,
+              "description": "Saldo inicial"
+            }
+          ],
+          "status": "PASS"
+        }
+      ],
+      "startedAt": "2026-10-15T06:04:49.773Z",
+      "evidence": {
+        "responseSha256": "9bea75a2f378a913000317c30816f5a2fd690b8808af12cbfb7e404be09c7049",
+        "binding": {
+          "moduleId": 48648,
+          "component": "components/dashboard/NetWorthHero.tsx",
+          "manifestPath": ".next/server/app/(authenticated)/dashboard/page_client-reference-manifest.js",
+          "manifestSha256": "3848ac909b91bf6c22b04e534088424a1ca09f88844d764c71e1bfcdf86ba391"
+        },
+        "now": {
+          "liquidUSD": 41.67,
+          "investmentsUSD": 0,
+          "totalUSD": 41.67,
+          "totalARSBlue": 50000,
+          "blueRate": 1200,
+          "blueReferences": [
+            {
+              "component": "accounts",
+              "reference": {
+                "type": "blue",
+                "side": "sell",
+                "rate": 1200,
+                "observedAt": "2026-10-06T12:00:00.000Z",
+                "provider": "criptoya",
+                "origin": "provider"
+              }
+            }
+          ]
+        },
+        "history": [
+          {
+            "snapshot_date": "2026-10-06",
+            "liquid_usd": 0,
+            "investments_usd": 0,
+            "total_usd": 0,
+            "total_ars_blue": 0,
+            "blue_ars_per_usd": 1200
+          }
+        ],
+        "snapshot": {
+          "before": [
+            {
+              "id": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "total_usd": 0,
+              "created_at": "2026-10-15T06:04:49.689148+00:00",
+              "liquid_usd": 0,
+              "snapshot_date": "2026-10-06",
+              "total_ars_blue": 0,
+              "investments_usd": 0,
+              "blue_ars_per_usd": 1200
+            }
+          ],
+          "after": [
+            {
+              "id": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "total_usd": 41.67,
+              "created_at": "2026-10-15T06:04:49.689148+00:00",
+              "liquid_usd": 41.67,
+              "snapshot_date": "2026-10-06",
+              "total_ars_blue": 50000,
+              "investments_usd": 0,
+              "blue_ars_per_usd": 1200
+            }
+          ],
+          "ownedSnapshotId": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+          "ownership": "Initially absent in this fresh fixture DB; created by this ordinary authenticated SSR request"
+        },
+        "account": {
+          "id": "cbc90531-5097-4309-912b-eb1e703e6787",
+          "name": "BancoARS",
+          "type": "bank",
+          "balance": 50000,
+          "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "currency": "ARS",
+          "is_active": true
+        },
+        "openingHistory": [
+          {
+            "type": "adjustment",
+            "amount": "50000.00000000",
+            "description": "Saldo inicial",
+            "amount_in_account_currency": "50000.00000000"
+          }
+        ],
+        "scope": "Actual normal account API result plus independent SQL and authenticated server-calculated patrimony increase0→50000ARS; no browser claim.",
+        "createdAccountId": "cbc90531-5097-4309-912b-eb1e703e6787",
+        "patrimonyBeforeARS": 0,
+        "patrimonyAfterARS": 50000
+      },
+      "endedAt": "2026-10-15T06:04:50.470Z"
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "ROUTING_PRECONDITION",
+      "method": "GET",
+      "path": "/api/user/notification-preferences",
+      "requestId": "7ddfeb9c-aea3-4778-906e-f1a75183f68f",
+      "startedAt": "2026-10-15T06:04:47.479Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "fc13cf5c0e61b3059ba266581b0cd34a3b97431a47241a50a9afbce933ca248a",
+      "endedAt": "2026-10-15T06:04:47.523Z"
+    },
+    {
+      "caseId": "ROUTING_PRECONDITION",
+      "method": "GET",
+      "path": "/api/user/notification-preferences",
+      "requestId": "d40e67b5-c384-4aa5-9373-53342b1050e1",
+      "startedAt": "2026-10-15T06:04:47.612Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "e03c2ada010591c211cc5c6ae796b0874708877cde422cce7e4e9a2992b278ac",
+      "endedAt": "2026-10-15T06:04:47.648Z"
+    },
+    {
+      "caseId": "CP3-03",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "35823ace-c520-45d5-9460-26173a36ba01",
+      "startedAt": "2026-10-15T06:04:47.840Z",
+      "state": "COMPLETED",
+      "status": 201,
+      "responseSha256": "7ef8ab52a78015ca8efd2831a587b3a61614fc04df35e534c89bbc71f56e7c79",
+      "endedAt": "2026-10-15T06:04:47.887Z"
+    },
+    {
+      "caseId": "CP3-03",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "231d0846-4adb-48f1-be0c-1391564896eb",
+      "startedAt": "2026-10-15T06:04:48.007Z",
+      "state": "COMPLETED",
+      "status": 201,
+      "responseSha256": "057a74520186b6a21efcbe550965d00ab1aab7ea869c98dc27ca728051156207",
+      "endedAt": "2026-10-15T06:04:48.047Z"
+    },
+    {
+      "caseId": "CP3-03",
+      "method": "GET",
+      "path": "/api/cotizaciones",
+      "requestId": "28a8f69d-4b6a-49f7-9b9d-2ab191664155",
+      "startedAt": "2026-10-15T06:04:48.168Z",
+      "state": "COMPLETED",
+      "status": 500,
+      "responseSha256": "b3a6516752ddc7f028c58b3a5be0841a3b7e8bc8c372f61b411626ec708dfb61",
+      "endedAt": "2026-10-15T06:04:48.211Z"
+    },
+    {
+      "caseId": "CP3-03",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "f98328ba-b0b8-492d-9c6f-648500ce9b25",
+      "startedAt": "2026-10-15T06:04:48.257Z",
+      "state": "COMPLETED",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5",
+      "endedAt": "2026-10-15T06:04:48.304Z"
+    },
+    {
+      "caseId": "CP3-03",
+      "method": "GET",
+      "path": "/dashboard",
+      "requestId": "3940feed-62e2-493b-b54d-098b25abd804",
+      "startedAt": "2026-10-15T06:04:48.496Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "458e617dcdad45118cb93f7cc0a3afaa0d367eee08310869c31a76a829766201",
+      "endedAt": "2026-10-15T06:04:48.741Z"
+    },
+    {
+      "caseId": "CP3-07",
+      "method": "GET",
+      "path": "/dashboard",
+      "requestId": "4e245a03-99f8-4c2f-9351-ddf0b2e3909a",
+      "startedAt": "2026-10-15T06:04:49.535Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "915931fb33d1fefbfe48bfb7621664bb5b5111d63c4343a7236901a63d2be31d",
+      "endedAt": "2026-10-15T06:04:49.694Z"
+    },
+    {
+      "caseId": "CP2-01",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "1e0eb323-2bc1-40d8-bff1-70ee673d4f54",
+      "startedAt": "2026-10-15T06:04:49.963Z",
+      "state": "COMPLETED",
+      "status": 201,
+      "responseSha256": "f163c28abf21106db679d8a1f6fc59d1e288b9ead67878ce119a86462b6546df",
+      "endedAt": "2026-10-15T06:04:49.996Z"
+    },
+    {
+      "caseId": "CP2-01",
+      "method": "GET",
+      "path": "/dashboard",
+      "requestId": "e5ea5c6d-b44d-4164-a09d-f20f0698f582",
+      "startedAt": "2026-10-15T06:04:50.117Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "9bea75a2f378a913000317c30816f5a2fd690b8808af12cbfb7e404be09c7049",
+      "endedAt": "2026-10-15T06:04:50.245Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "ef815340-5b35-498b-be59-80af72b50509",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "currency": "ARS",
+      "initialBalance": 120000,
+      "createdByNormalApi": true,
+      "run": "57d4f74e-3dcb-487c-821d-569363972055"
+    },
+    {
+      "kind": "account",
+      "id": "5ec86212-0ac0-4c55-83c3-14cbccd591f4",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "currency": "USD",
+      "initialBalance": 100,
+      "createdByNormalApi": true,
+      "run": "57d4f74e-3dcb-487c-821d-569363972055"
+    },
+    {
+      "kind": "account",
+      "id": "cbc90531-5097-4309-912b-eb1e703e6787",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "currency": "ARS",
+      "initialBalance": 50000,
+      "createdByNormalApi": true,
+      "run": "57d4f74e-3dcb-487c-821d-569363972055"
+    }
+  ],
+  "binding": {
+    "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+    "appBuildProofSha256": "41aec3bdac210c4c7695274fd81104c6cee4f8a02ca6ac1408a497e367f206c8",
+    "clockObservationSha256": "f8ca4295984ad72f1e9c63c1faea0b64d109050fb38dfbc951d4ee4b67fac3ee",
+    "coreVerificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+    "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "buildId": "Yi9bH3FttO71PxvY-EwCH",
+    "copyRoot": "/tmp/zarix-app-empty-account-20261015",
+    "appOrigin": "http://127.0.0.1:3004",
+    "apiOrigin": "http://127.0.0.1:60321",
+    "restOrigin": "http://127.0.0.1:60323",
+    "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+    "databasePort": 55322,
+    "authUpstream": "http://127.0.0.1:60327",
+    "originalAuthUpstream": "http://127.0.0.1:55321",
+    "authIsolation": "separate-cache-binary-on-new-database",
+    "completeAuthRestorationClaimed": false,
+    "storageCoverage": "Explicitly unavailable404; not tested",
+    "physicalSourceCount": 483,
+    "frozenGitSourceCount": 482,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "ownedListenerAndCwdVerified": true,
+    "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+    "normalUsers": [
+      {
+        "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "logicalLabel": "A"
+      },
+      {
+        "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "logicalLabel": "B"
+      }
+    ]
+  },
+  "harnessManifest": [
+    {
+      "path": "run.mjs",
+      "sha256": "9dfd768487f363a39b5d78979915b0646055e3b95acdf3d33ae37f11720a05d5"
+    },
+    {
+      "path": "ssr-contracts.mjs",
+      "sha256": "b7700e6d25ace41d404fdb4c4e68e270ce915b4fb3d8390298815d74e9516c38"
+    },
+    {
+      "path": "../account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "../../../../../../scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    }
+  ],
+  "routingPreflight": [
+    {
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "normalJwtRestEmpty": true,
+      "actualNextNormalAuthControl": true,
+      "nextEndpoint": "/api/user/notification-preferences",
+      "financialOrQuoteRead": false
+    },
+    {
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "normalJwtRestEmpty": true,
+      "actualNextNormalAuthControl": true,
+      "nextEndpoint": "/api/user/notification-preferences",
+      "financialOrQuoteRead": false
+    }
+  ],
+  "quoteBinding": {
+    "pid": 57404,
+    "sourceSha256": "6c10679ed7cbcb31439ec6f77ef7faab15ec503df92d26ca5867f0d37aeca5f6",
+    "origin": "http://127.0.0.1:57914",
+    "startedAt": "2026-10-15T05:57:28.667Z",
+    "journalPath": "empty-account-private/empty-quote-journal.jsonl",
+    "initialJournal": {
+      "bytesSha256": "1e6b182ef7b3ef39373440301eb87d292f8ff8be288485b767ae4125dd0bd2b6",
+      "entries": [
+        {
+          "sequence": 1,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 2,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        }
+      ]
+    },
+    "scope": "Only declared synthetic HTTP provider requests; dedicated health checks are excluded from this journal",
+    "unavailableJournal": {
+      "bytesSha256": "8f6c63c6ba903813de772a1e70f165e23b257a0c337b4860566c1c723ea4abc3",
+      "entries": [
+        {
+          "sequence": 1,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 2,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 3,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 4,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 5,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 6,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 7,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 8,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 9,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 10,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 11,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 12,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 13,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 14,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 15,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 16,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 17,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 18,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 19,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 20,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        }
+      ]
+    },
+    "finalJournal": {
+      "bytesSha256": "fca44f1fe6b0fc01deb24fa9dea32a3986d8b3e611e31f4fc8fa238c016f33af",
+      "entries": [
+        {
+          "sequence": 1,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 2,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 3,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 4,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 5,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 6,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 7,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 8,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 9,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 10,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 11,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 12,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 13,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 14,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 15,
+          "status": 503,
+          "path": "/simple/price",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 16,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 17,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 18,
+          "status": 503,
+          "path": "/dolar",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 19,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 20,
+          "status": 503,
+          "path": "/dolares",
+          "mode": "unavailable",
+          "controlSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9"
+        },
+        {
+          "sequence": 21,
+          "status": 200,
+          "path": "/dolar",
+          "mode": "available",
+          "controlSha256": "02c782cf1104faa6655cc2b2143dea1afbd7b4a69f0cf864a1c8adb4f94b0137"
+        },
+        {
+          "sequence": 22,
+          "status": 200,
+          "path": "/simple/price",
+          "mode": "available",
+          "controlSha256": "02c782cf1104faa6655cc2b2143dea1afbd7b4a69f0cf864a1c8adb4f94b0137"
+        },
+        {
+          "sequence": 23,
+          "status": 200,
+          "path": "/simple/price",
+          "mode": "available",
+          "controlSha256": "02c782cf1104faa6655cc2b2143dea1afbd7b4a69f0cf864a1c8adb4f94b0137"
+        },
+        {
+          "sequence": 24,
+          "status": 200,
+          "path": "/simple/price",
+          "mode": "available",
+          "controlSha256": "02c782cf1104faa6655cc2b2143dea1afbd7b4a69f0cf864a1c8adb4f94b0137"
+        }
+      ]
+    }
+  },
+  "quoteControlTransition": {
+    "path": "empty-account-private/empty-quote-control.json",
+    "previousSha256": "4a332bc0dce8a1b25a70255e6117564b2dd80f5fd42c70f439d88d581cc910d9",
+    "nextSha256": "02c782cf1104faa6655cc2b2143dea1afbd7b4a69f0cf864a1c8adb4f94b0137",
+    "transition": "unavailable503→available1200",
+    "originalSharedProvidersUntouched": true
+  },
+  "fixtureOriginalIntegrity": [
+    {
+      "table": "users",
+      "originalRows": 2,
+      "beforeMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "afterMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "restoreOriginalIntegrity": [
+    {
+      "table": "users",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "afterMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "05f20fcbb1448779155f1694cfc5f776",
+      "afterMd5": "05f20fcbb1448779155f1694cfc5f776",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "e6edd04b9342ecd6094b08295f689ea5",
+      "afterMd5": "e6edd04b9342ecd6094b08295f689ea5",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "7ca48f59bd91dfe7ea7b2927795bd057",
+      "afterMd5": "7ca48f59bd91dfe7ea7b2927795bd057",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "a3c33f23f367d04be93c5e329e0b2c95",
+      "afterMd5": "a3c33f23f367d04be93c5e329e0b2c95",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "3196215a431950e33c0fa4280880d926",
+      "afterMd5": "3196215a431950e33c0fa4280880d926",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "b5f150791b6b3ae585518117ad73ee99",
+      "afterMd5": "b5f150791b6b3ae585518117ad73ee99",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "5d2d7875b6378b5d6fff97b66c5b4760",
+      "afterMd5": "5d2d7875b6378b5d6fff97b66c5b4760",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 4,
+      "afterRows": 4,
+      "beforeMd5": "65c1961b4887b94ec1ca7dbf264fa13c",
+      "afterMd5": "65c1961b4887b94ec1ca7dbf264fa13c",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 26,
+      "afterRows": 26,
+      "beforeMd5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+      "afterMd5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "b429e1dccdff7b869652c393c48f233d",
+      "afterMd5": "b429e1dccdff7b869652c393c48f233d",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "cdcf2a6929cbb5882797587a3eb5aaca",
+      "afterMd5": "cdcf2a6929cbb5882797587a3eb5aaca",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "1502ff1ff671e5bce7be044cc2d2df2c",
+      "afterMd5": "1502ff1ff671e5bce7be044cc2d2df2c",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "localSessionCleanup": {
+    "sessionsCreated": 2,
+    "localLogout": [
+      {
+        "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "ownSessionOnly": true,
+        "confirmed": true
+      },
+      {
+        "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "ownSessionOnly": true,
+        "confirmed": true
+      }
+    ],
+    "allOwnSessionsClosed": true,
+    "globalSignOut": false
+  },
+  "endedAt": "2026-10-15T06:04:52.637Z",
+  "counts": {
+    "PASS": 2,
+    "FAIL": 1,
+    "BLOCKED": 0
+  },
+  "cleanup": {
+    "originalPublicRowsUnchanged": true,
+    "preservationScope": "Thirteen public tables in each database; normal sessions exist only in the isolated Auth clone, not a full Auth-restoration claim",
+    "newFinancialFixturesRetained": [
+      "ef815340-5b35-498b-be59-80af72b50509",
+      "5ec86212-0ac0-4c55-83c3-14cbccd591f4",
+      "cbc90531-5097-4309-912b-eb1e703e6787"
+    ],
+    "ownedSnapshotId": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+    "processesOrDatabasesStopped": false
+  },
+  "acceptanceGuardsSatisfied": true,
+  "acceptanceEligible": false
+}

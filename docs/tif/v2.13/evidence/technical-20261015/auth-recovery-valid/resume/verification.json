@@ -1,0 +1,1005 @@
+{
+  "case_id": "CP2-10",
+  "status": "PASS",
+  "complete_original_contract": true,
+  "assertions": [
+    {
+      "name": "Original password accepts before the one reset request",
+      "status": "PASS"
+    },
+    {
+      "name": "Successful ordinary Auth response belongs to the same existing identity",
+      "status": "PASS"
+    },
+    {
+      "name": "The same retained real recovery request200 and private SMTP input are verified before continuation",
+      "status": "PASS"
+    },
+    {
+      "name": "Continuation dispatches no second recovery request or new SMTP message",
+      "status": "PASS"
+    },
+    {
+      "name": "The exact new recovery token came from the requested local SMTP message",
+      "status": "PASS"
+    },
+    {
+      "name": "Delivered valid recovery token yields a real authenticated session",
+      "status": "PASS"
+    },
+    {
+      "name": "Successful ordinary Auth response belongs to the same existing identity",
+      "status": "PASS"
+    },
+    {
+      "name": "Recovery session replaces the password for the same identity",
+      "status": "PASS"
+    },
+    {
+      "name": "Old password is denied after recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "New password accepts after recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "Successful ordinary Auth response belongs to the same existing identity",
+      "status": "PASS"
+    },
+    {
+      "name": "The same delivered recovery token is consumed and cannot create another session",
+      "status": "PASS"
+    },
+    {
+      "name": "Original password is restored and accepts on the isolated clone",
+      "status": "PASS"
+    },
+    {
+      "name": "Successful ordinary Auth response belongs to the same existing identity",
+      "status": "PASS"
+    },
+    {
+      "name": "Temporary replacement password is denied after restoration",
+      "status": "PASS"
+    },
+    {
+      "name": "All newly owned Auth sessions and their refresh grants are closed",
+      "status": "PASS"
+    },
+    {
+      "name": "No original/replacement password or issued token appears in ordinary Auth/SMTP logs",
+      "status": "PASS"
+    },
+    {
+      "name": "Original and fixture public rows remain unchanged",
+      "status": "PASS"
+    }
+  ],
+  "scope": "Original API Auth contract using one existing cloned identity and a real local SMTP exchange with a declared Node transport double. No browser, external email delivery, new identity or original Auth mutation.",
+  "request": {
+    "httpStatus": 200,
+    "errorCode": null,
+    "retainedOriginalRequest": true
+  },
+  "resume": {
+    "priorRequestHttp": 200,
+    "noPriorPasswordUpdate": true,
+    "priorReportSha256": "379ca988b15d592a4ce70bfd2686f5639fabf9f002f323c926f79b79616dc78b",
+    "priorReportFile": "/tmp/zarix-runtime-20261015/auth-valid-recovery-7f219369-42f2-4224-86d7-d0b32349aaf8/verification.json",
+    "emailLinkClicked": false,
+    "emailLinkUiRoutingVerified": false
+  },
+  "smtp": {
+    "sequence": 1,
+    "receiptSha256": "da707aa001d2d9ca157306ac4ff3525bb78fe84a0ee5a47a220b802644893e30",
+    "acceptedByLocalSmtp": true,
+    "realExternalDelivery": false
+  },
+  "verification": {
+    "httpStatus": 200,
+    "errorCode": null
+  },
+  "passwordUpdate": {
+    "httpStatus": 200,
+    "errorCode": null
+  },
+  "oldPassword": {
+    "httpStatus": 400,
+    "errorCode": "invalid_credentials"
+  },
+  "newPassword": {
+    "httpStatus": 200,
+    "errorCode": null
+  },
+  "reusedToken": {
+    "httpStatus": 403,
+    "errorCode": "otp_expired"
+  },
+  "restoredOriginal": {
+    "httpStatus": 200,
+    "errorCode": null
+  },
+  "restoredTemporaryDenied": {
+    "httpStatus": 400,
+    "errorCode": "invalid_credentials"
+  },
+  "localSessionClosures": [
+    {
+      "httpStatus": 403,
+      "ownSessionOnly": true
+    },
+    {
+      "httpStatus": 403,
+      "ownSessionOnly": true
+    },
+    {
+      "httpStatus": 204,
+      "ownSessionOnly": true
+    },
+    {
+      "httpStatus": 204,
+      "ownSessionOnly": true
+    }
+  ],
+  "ownSessionClosure": {
+    "knownOwnSessions": 4,
+    "remainingSessions": 0,
+    "unrevokedRefreshTokens": 0,
+    "allOwnSessionsClosed": true,
+    "scope": "Read-only observation of newly owned sessions only; no global logout or unrelated-session revocation"
+  },
+  "logSecretScan": {
+    "examinedFiles": 4,
+    "secretMatches": 0,
+    "scope": "Exact in-memory comparison in explicit ordinary Auth/SMTP logs only; intentional private MIME/checkpoint/env files excluded, no values or matching excerpts published"
+  },
+  "preservation": {
+    "complete": true,
+    "unchanged": true,
+    "before": [
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "account_creation_requests",
+        "md5": "ed8a02de4ea83a3ae22e942c304ab34a",
+        "rows": 5
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "accounts",
+        "md5": "3e8d9be05639825c101d999965b42ba3",
+        "rows": 5
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "bot_sessions",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "budget_alerts",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "budgets",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "categories",
+        "md5": "6e93627ca7866f461b2690674b2fd9b2",
+        "rows": 1
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "exchange_rates",
+        "md5": "ba6bf8de1bbc5773fa5e979bf853fcb6",
+        "rows": 8
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "import_batches",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "investment_create_requests",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "investment_sale_requests",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "investment_sales",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "investments",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "market_data_cache",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "net_worth_snapshots",
+        "md5": "e91175c3cdff4699c85404fd04933ce2",
+        "rows": 1
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "notification_outbox",
+        "md5": "10ef3f2ae43e3377899cf1d39ebf142e",
+        "rows": 1
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "plan_usage_cycles",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "plan_usage_requests",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "portfolio_performance_snapshots",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "recurring_rules",
+        "md5": "bb3e1a0b2e6da5cc46b57785fbefff05",
+        "rows": 1
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_expense_requests",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_expense_splits",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_expenses",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_group_members",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_groups",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "transaction_requests",
+        "md5": "9d59eb2d0838f8f5cc6210ecaffb2368",
+        "rows": 2
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "transactions",
+        "md5": "e1f605bd76eb1ada8d9b3bad65e273b0",
+        "rows": 7
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "users",
+        "md5": "5b7a4bb5df6d6ec4036e24a77a0af699",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "account_creation_requests",
+        "md5": "f2c50d3cafeb2fd274834cb671f86827",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "accounts",
+        "md5": "05f20fcbb1448779155f1694cfc5f776",
+        "rows": 3
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "bot_sessions",
+        "md5": "13c37c1a173ee2e8d2d2a3fa7f3f3d93",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "budget_alerts",
+        "md5": "1e0bb3ff07fc0e12dee7f8b1bd8e3c9c",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "budgets",
+        "md5": "b429e1dccdff7b869652c393c48f233d",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "categories",
+        "md5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+        "rows": 26
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "exchange_rates",
+        "md5": "96e66156d43470d849e1ece3112c799f",
+        "rows": 9
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "import_batches",
+        "md5": "fb38edf3b002ad0feb3fa5415d032616",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "investment_create_requests",
+        "md5": "c34736234c6763cf1c76331418e18760",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "investment_sale_requests",
+        "md5": "a240978bd65118593ab15cf8a9cd57d2",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "investment_sales",
+        "md5": "a3c33f23f367d04be93c5e329e0b2c95",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "investments",
+        "md5": "7ca48f59bd91dfe7ea7b2927795bd057",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "market_data_cache",
+        "md5": "d2c36a5c994956ea03345c6515903fad",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "net_worth_snapshots",
+        "md5": "1502ff1ff671e5bce7be044cc2d2df2c",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "notification_outbox",
+        "md5": "f59b1bf61f00a3bca5fa706b7873c88e",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "plan_usage_cycles",
+        "md5": "2ea4afe7b4df3c724fdc945c0af28e09",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "plan_usage_requests",
+        "md5": "9ea9561d1489547ce3e57b4b5fd1f8e4",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "portfolio_performance_snapshots",
+        "md5": "4f3af346cc7f50fdb1ebb7a622ebc68c",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "recurring_rules",
+        "md5": "cdcf2a6929cbb5882797587a3eb5aaca",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_expense_requests",
+        "md5": "3e9bf63c9a3ed41f52e6ebe4e3e23ed3",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_expense_splits",
+        "md5": "65c1961b4887b94ec1ca7dbf264fa13c",
+        "rows": 4
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_expenses",
+        "md5": "5d2d7875b6378b5d6fff97b66c5b4760",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_group_members",
+        "md5": "b5f150791b6b3ae585518117ad73ee99",
+        "rows": 3
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_groups",
+        "md5": "3196215a431950e33c0fa4280880d926",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "transaction_requests",
+        "md5": "e73e14c80ca76ee9b2bea11207122df6",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "transactions",
+        "md5": "e6edd04b9342ecd6094b08295f689ea5",
+        "rows": 3
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "users",
+        "md5": "26477effc17090c62a9aaec9d3b2a3b4",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "auth",
+        "table": "users",
+        "md5": "b70c457faf7bdb46e6f488095b875fd3",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "auth",
+        "table": "sessions",
+        "md5": "7a90f85cee6453e936fb3cd85118267d",
+        "rows": 4
+      },
+      {
+        "database": "original",
+        "schema": "auth",
+        "table": "refresh_tokens",
+        "md5": "dde0bd955f54d09f7620291db75851d6",
+        "rows": 4
+      }
+    ],
+    "after": [
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "account_creation_requests",
+        "md5": "ed8a02de4ea83a3ae22e942c304ab34a",
+        "rows": 5
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "accounts",
+        "md5": "3e8d9be05639825c101d999965b42ba3",
+        "rows": 5
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "bot_sessions",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "budget_alerts",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "budgets",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "categories",
+        "md5": "6e93627ca7866f461b2690674b2fd9b2",
+        "rows": 1
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "exchange_rates",
+        "md5": "ba6bf8de1bbc5773fa5e979bf853fcb6",
+        "rows": 8
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "import_batches",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "investment_create_requests",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "investment_sale_requests",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "investment_sales",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "investments",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "market_data_cache",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "net_worth_snapshots",
+        "md5": "e91175c3cdff4699c85404fd04933ce2",
+        "rows": 1
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "notification_outbox",
+        "md5": "10ef3f2ae43e3377899cf1d39ebf142e",
+        "rows": 1
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "plan_usage_cycles",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "plan_usage_requests",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "portfolio_performance_snapshots",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "recurring_rules",
+        "md5": "bb3e1a0b2e6da5cc46b57785fbefff05",
+        "rows": 1
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_expense_requests",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_expense_splits",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_expenses",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_group_members",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "shared_groups",
+        "md5": "d751713988987e9331980363e24189ce",
+        "rows": 0
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "transaction_requests",
+        "md5": "9d59eb2d0838f8f5cc6210ecaffb2368",
+        "rows": 2
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "transactions",
+        "md5": "e1f605bd76eb1ada8d9b3bad65e273b0",
+        "rows": 7
+      },
+      {
+        "database": "target",
+        "schema": "public",
+        "table": "users",
+        "md5": "5b7a4bb5df6d6ec4036e24a77a0af699",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "account_creation_requests",
+        "md5": "f2c50d3cafeb2fd274834cb671f86827",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "accounts",
+        "md5": "05f20fcbb1448779155f1694cfc5f776",
+        "rows": 3
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "bot_sessions",
+        "md5": "13c37c1a173ee2e8d2d2a3fa7f3f3d93",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "budget_alerts",
+        "md5": "1e0bb3ff07fc0e12dee7f8b1bd8e3c9c",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "budgets",
+        "md5": "b429e1dccdff7b869652c393c48f233d",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "categories",
+        "md5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+        "rows": 26
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "exchange_rates",
+        "md5": "96e66156d43470d849e1ece3112c799f",
+        "rows": 9
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "import_batches",
+        "md5": "fb38edf3b002ad0feb3fa5415d032616",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "investment_create_requests",
+        "md5": "c34736234c6763cf1c76331418e18760",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "investment_sale_requests",
+        "md5": "a240978bd65118593ab15cf8a9cd57d2",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "investment_sales",
+        "md5": "a3c33f23f367d04be93c5e329e0b2c95",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "investments",
+        "md5": "7ca48f59bd91dfe7ea7b2927795bd057",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "market_data_cache",
+        "md5": "d2c36a5c994956ea03345c6515903fad",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "net_worth_snapshots",
+        "md5": "1502ff1ff671e5bce7be044cc2d2df2c",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "notification_outbox",
+        "md5": "f59b1bf61f00a3bca5fa706b7873c88e",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "plan_usage_cycles",
+        "md5": "2ea4afe7b4df3c724fdc945c0af28e09",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "plan_usage_requests",
+        "md5": "9ea9561d1489547ce3e57b4b5fd1f8e4",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "portfolio_performance_snapshots",
+        "md5": "4f3af346cc7f50fdb1ebb7a622ebc68c",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "recurring_rules",
+        "md5": "cdcf2a6929cbb5882797587a3eb5aaca",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_expense_requests",
+        "md5": "3e9bf63c9a3ed41f52e6ebe4e3e23ed3",
+        "rows": 1
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_expense_splits",
+        "md5": "65c1961b4887b94ec1ca7dbf264fa13c",
+        "rows": 4
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_expenses",
+        "md5": "5d2d7875b6378b5d6fff97b66c5b4760",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_group_members",
+        "md5": "b5f150791b6b3ae585518117ad73ee99",
+        "rows": 3
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "shared_groups",
+        "md5": "3196215a431950e33c0fa4280880d926",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "transaction_requests",
+        "md5": "e73e14c80ca76ee9b2bea11207122df6",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "transactions",
+        "md5": "e6edd04b9342ecd6094b08295f689ea5",
+        "rows": 3
+      },
+      {
+        "database": "original",
+        "schema": "public",
+        "table": "users",
+        "md5": "26477effc17090c62a9aaec9d3b2a3b4",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "auth",
+        "table": "users",
+        "md5": "b70c457faf7bdb46e6f488095b875fd3",
+        "rows": 2
+      },
+      {
+        "database": "original",
+        "schema": "auth",
+        "table": "sessions",
+        "md5": "7a90f85cee6453e936fb3cd85118267d",
+        "rows": 4
+      },
+      {
+        "database": "original",
+        "schema": "auth",
+        "table": "refresh_tokens",
+        "md5": "dde0bd955f54d09f7620291db75851d6",
+        "rows": 4
+      }
+    ],
+    "scope": "All public tables in both databases plus original Auth users/sessions/refresh_tokens; isolated Auth changes are expected and separate"
+  },
+  "passwordRestorationRequired": true,
+  "passwordRestorationConfirmed": true,
+  "binding": {
+    "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+    "apiOrigin": "http://127.0.0.1:60321",
+    "authUpstream": "http://127.0.0.1:60327",
+    "authPid": 57390,
+    "authConfigSha256": "a7b4370c98c36b7fa097233f98c97aba11661514c95b6a571cd8a9571a8e3d16",
+    "authLauncherSha256": "2814745719ac5830d28152874dfe23d2bd703c1c985569115d9568d6b9345115",
+    "authExecutableSha256": "04606de0bd299c575f2459daa8768e2529c95334ef1af878d21bb93e358bebba",
+    "authRuntimeProfileSha256": "8269c5167fa1730f82618ec100053ca84ff2256e8bde19b53e9190bd39a5aef8",
+    "authReadinessSha256": "1e848dfdc955a43476465a94f8b15488eb064cee05d32595851d400ae2a7f952",
+    "gatewayConfigSha256": "db92508bdd9410df6f9003615ff4ac2f47eba3f678ce2fdccc3796c1057e748a",
+    "exactListenerAndExecutableOwnershipVerified": true,
+    "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+    "smtpPid": 57372,
+    "smtpScriptSha256": "0c1d72411a5204e9f7483b0c494364a920ba0ce25775ac9c749a775afae20342",
+    "smtpConfigSha256": "9e7b723996cd862ef6687b455e3197babb132c620dbc20266b8deffa20d3b61b",
+    "ownerId": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "identitiesAdded": 0,
+    "newExternalCredentials": 0
+  },
+  "harnessManifest": [
+    {
+      "path": "run.mjs",
+      "sha256": "39deb5aad522efc548dbb21acb06552fbe06e75c1421f45f625c65f307548b28"
+    },
+    {
+      "path": "contract.mjs",
+      "sha256": "4bd5d264b60369334c5802562d3ad49554e85acec6aa0e50bf8fff972fa7b06a"
+    },
+    {
+      "path": "smtp-message.mjs",
+      "sha256": "a85f050b258b6482624e317bae12cf2bb8b106bb4ae5ee1dfcca58c4630b38c3"
+    },
+    {
+      "path": "../../../../../../scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    }
+  ],
+  "sourceStable": true
+}

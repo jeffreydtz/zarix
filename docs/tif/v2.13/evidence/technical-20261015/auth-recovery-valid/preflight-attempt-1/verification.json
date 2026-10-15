@@ -1,0 +1,34 @@
+{
+  "case_id": "CP2-10",
+  "status": "FAIL_PREFLIGHT",
+  "complete_original_contract": false,
+  "processExitCode": 1,
+  "stdoutResult": {
+    "case_id": "CP2-10",
+    "status": "FAIL",
+    "complete_original_contract": false,
+    "output": null
+  },
+  "command": "ZARIX_VALID_RECOVERY_WINDOW=parent-released-after-native-ready ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only node docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/run.mjs",
+  "sources": [
+    {
+      "path": "run.mjs",
+      "sha256": "27225897b3c370735d6d1cbbae08bec6b4c2c2a1c28d485d8b306b61cd649b11"
+    },
+    {
+      "path": "contract.mjs",
+      "sha256": "c558b79986164be8ca24813b65504685a296c4b3ba646c8308e70b17d5797f5c"
+    },
+    {
+      "path": "smtp-message.mjs",
+      "sha256": "adfe2ce69186df6fbef6ffbc90c2e3a48c2293e77a798aecc35378ffd0687d70"
+    }
+  ],
+  "cause": "The exact mapped Mach-O executable is .auth-wrapped, while targets.authBinary correctly identifies the official auth launcher. The original guard wrongly required both paths to be identical.",
+  "diagnosis": "Four listener PID/ports and config/readiness hashes were correct; metadata-only lsof and source inspection identified the launcher exec chain. No configuration or process was changed.",
+  "noPasswordOrTokenGenerated": true,
+  "noAuthOrSmtpRequest": true,
+  "proofLimit": "The original process did not persist a fatal location before output creation; output:null and exact source control flow establish it stopped before output/password generation and Auth calls. The cause was isolated by subsequent read-only metadata/source checks.",
+  "scope": "Harness preflight failure, not a product recovery failure.",
+  "diagnosisCorrection": "The original fatal location was not retained. The later exact diagnostic demonstrates the earlier DSN empty-search assertion fails before mapped-executable checking; the launcher/mapped-executable distinction was an additional real harness constraint, not a proven first thrown location. Both were examined using immutable configuration and metadata; neither involved Auth/SMTP calls."
+}

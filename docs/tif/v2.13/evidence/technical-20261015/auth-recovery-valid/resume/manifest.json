@@ -1,0 +1,26 @@
+{
+  "sources": [
+    {
+      "path": "run.mjs",
+      "sha256": "39deb5aad522efc548dbb21acb06552fbe06e75c1421f45f625c65f307548b28",
+      "snapshot": "run.mjs"
+    },
+    {
+      "path": "contract.mjs",
+      "sha256": "4bd5d264b60369334c5802562d3ad49554e85acec6aa0e50bf8fff972fa7b06a",
+      "snapshot": "contract.mjs"
+    },
+    {
+      "path": "smtp-message.mjs",
+      "sha256": "a85f050b258b6482624e317bae12cf2bb8b106bb4ae5ee1dfcca58c4630b38c3",
+      "snapshot": "smtp-message.mjs"
+    },
+    {
+      "path": "../../../../../../scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "snapshot": "test-isolated-native-target.mjs"
+    }
+  ],
+  "reportSha256": "ae3c4747fd9da45af01ce9cb7000e95aa027fec906931451730230c866402b9e",
+  "scope": "Exact continuation sources/report. Same retained private SMTP email/token/temporary password; no second recovery request."
+}
