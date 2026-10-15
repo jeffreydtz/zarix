@@ -1,0 +1,29 @@
+[
+  {
+    "argv": [
+      "npm",
+      "audit",
+      "--json",
+      "--registry=https://registry.npmjs.org"
+    ],
+    "startedAt": "2026-10-15T05:17:09.705356+00:00",
+    "finishedAt": "2026-10-15T05:17:10.777747+00:00",
+    "exitCode": 1,
+    "stdout": "audit-full.json",
+    "stderr": "audit-full.stderr.log"
+  },
+  {
+    "argv": [
+      "npm",
+      "audit",
+      "--omit=dev",
+      "--json",
+      "--registry=https://registry.npmjs.org"
+    ],
+    "startedAt": "2026-10-15T05:17:10.777759+00:00",
+    "finishedAt": "2026-10-15T05:17:11.319539+00:00",
+    "exitCode": 0,
+    "stdout": "audit-production.json",
+    "stderr": "audit-production.stderr.log"
+  }
+]

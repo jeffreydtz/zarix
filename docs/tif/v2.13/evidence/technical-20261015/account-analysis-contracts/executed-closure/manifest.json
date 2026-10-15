@@ -1,0 +1,419 @@
+{
+  "at": "2026-10-15T05:23:22.674966+00:00",
+  "scope": "Six serial actual native SSR/API/SQL original-contract runs after explicit parent release on new CI6 copy. Earlier CI5rawFAILs/partials remain immutable.",
+  "sourceRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "runtimeProfile": "final-core-closure",
+  "runtimeMode": "clock",
+  "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+  "nextPid": 39320,
+  "physicalSources": 483,
+  "executionOrder": [
+    "CP3-18",
+    "CP3-06",
+    "CP2-05",
+    "CP3-04",
+    "CP3-05",
+    "CP3-08"
+  ],
+  "reports": [
+    {
+      "case_id": "CP2-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp2-05.json",
+      "sha256": "e01d6ebbb1832b2906e697baa3d1d98b48ea2410fb41506c09f313391bdf9cbe",
+      "assertions": 19,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "protectedTableCount": 13,
+      "originalTablesUnchanged": true,
+      "cleanupFailure": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/casos_prueba.csv",
+          "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+          "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+          "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+          "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+          "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+          "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+          "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+          "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+          "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e.txt"
+        },
+        {
+          "executedPath": "scripts/lib/test-isolated-native-target.mjs",
+          "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP3-04",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-04.json",
+      "sha256": "49868d8804ca930a031233e37ec50c68f5c672328be7af252dc227537819553f",
+      "assertions": 11,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "protectedTableCount": 13,
+      "originalTablesUnchanged": true,
+      "cleanupFailure": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/casos_prueba.csv",
+          "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+          "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+          "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+          "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+          "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+          "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+          "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+          "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+          "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e.txt"
+        },
+        {
+          "executedPath": "scripts/lib/test-isolated-native-target.mjs",
+          "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP3-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-05.json",
+      "sha256": "d7dece8081f63917ed97441e9bfea5d3141b59a31691acde5528585b258b7d80",
+      "assertions": 15,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "protectedTableCount": 13,
+      "originalTablesUnchanged": true,
+      "cleanupFailure": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/casos_prueba.csv",
+          "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+          "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+          "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+          "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+          "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+          "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+          "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+          "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+          "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e.txt"
+        },
+        {
+          "executedPath": "scripts/lib/test-isolated-native-target.mjs",
+          "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP3-06",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-06.json",
+      "sha256": "7f3fcd77c4dc153b97a0b6de17a5a2fd3d94f53e2a0c867991e7197c146ac100",
+      "assertions": 19,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "protectedTableCount": 13,
+      "originalTablesUnchanged": true,
+      "cleanupFailure": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/casos_prueba.csv",
+          "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+          "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+          "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+          "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+          "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+          "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+          "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+          "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+          "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e.txt"
+        },
+        {
+          "executedPath": "scripts/lib/test-isolated-native-target.mjs",
+          "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP3-08",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-08.json",
+      "sha256": "7d64622fa9509900e9c932ed46a3f66fc87624bfac4aa8980246f9f81357ad92",
+      "assertions": 17,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "protectedTableCount": 13,
+      "originalTablesUnchanged": true,
+      "cleanupFailure": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/casos_prueba.csv",
+          "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+          "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+          "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+          "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+          "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+          "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+          "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+          "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+          "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e.txt"
+        },
+        {
+          "executedPath": "scripts/lib/test-isolated-native-target.mjs",
+          "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP3-18",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-18.json",
+      "sha256": "2aea1d830bb475de0810eed706036cd3f00c58e65ce7cfe062d1605fd251426d",
+      "assertions": 22,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "protectedTableCount": 13,
+      "originalTablesUnchanged": true,
+      "cleanupFailure": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/casos_prueba.csv",
+          "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+          "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+          "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+          "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+          "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+          "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+          "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+          "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+          "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-06-ssr.json",
+          "sha256": "350053178d193a19a6be5b685a0fb335f9a107e78af9d9feab9ea817b9398364",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-06-ssr.json"
+        },
+        {
+          "executedPath": "scripts/lib/test-isolated-native-target.mjs",
+          "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt"
+        }
+      ]
+    }
+  ],
+  "assertions": 103,
+  "passedCases": 6,
+  "failedCases": 0,
+  "snapshotScope": "CP318 includes every existing snapshot in13-table protection and proves full-table/full-row parity against prior CI5complete point before/after partial GET. Later complete SSR upserts only the proven newlycreatedUUID125cf6c5; each completes before own fixture archival. Final complete point760USD/912000ARS retained afterCP305; CP308analysis leaves it unchanged."
+}

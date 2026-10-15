@@ -1,0 +1,179 @@
+{
+  "results": [
+    {
+      "case_id": "CP2-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-closure/cp2-05.json",
+        "account-analysis-contracts/executed-closure/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Own secondary-debt setup200",
+        "Read own converted accounts200",
+        "Original primary debt is unchanged",
+        "Exact secondary debt",
+        "Physical primary account balance unchanged",
+        "Actual dashboard SSR200",
+        "Actual SSR aggregate totalARSBlue",
+        "Actual SSR aggregate totalUSD",
+        "SSR secondary data numeric value",
+        "ExplicitUSD10payment200",
+        "Read own converted accounts200",
+        "Original primary debt is unchanged",
+        "Exact secondary debt",
+        "Physical primary account balance unchanged",
+        "Actual dashboard SSR200",
+        "Actual SSR aggregate totalARSBlue",
+        "Actual SSR aggregate totalUSD",
+        "SSR secondary data numeric value"
+      ],
+      "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred."
+    },
+    {
+      "case_id": "CP3-04",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-closure/cp3-04.json",
+        "account-analysis-contracts/executed-closure/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Fixture account API201",
+        "Converted own account API200",
+        "No foreign account owner in result",
+        "OriginalARS120000",
+        "OriginalUSD100",
+        "Own API converted wealthUSD",
+        "Actual dashboard SSR200",
+        "Actual SSR aggregate totalARSBlue",
+        "Actual SSR aggregate totalUSD",
+        "SSR secondary data numeric value"
+      ],
+      "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred."
+    },
+    {
+      "case_id": "CP3-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-closure/cp3-05.json",
+        "account-analysis-contracts/executed-closure/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Fixture account API201",
+        "Fixture manual position API201",
+        "Actual portfolio API200",
+        "Position6x110 is660USD",
+        "Position purchase cost600",
+        "Exactly own expected active position",
+        "Actual dashboard SSR200",
+        "Actual SSR aggregate totalARSBlue",
+        "Actual SSR aggregate totalUSD",
+        "Actual SSR liquidUSD",
+        "Actual SSR investmentsUSD",
+        "SSR secondary data numeric value",
+        "Cash account full row remains untouched by portfolio valuation",
+        "Broker cash remains0"
+      ],
+      "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred."
+    },
+    {
+      "case_id": "CP3-06",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-closure/cp3-06.json",
+        "account-analysis-contracts/executed-closure/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Fixture account API201",
+        "Fixture account API201",
+        "Own secondary-debt setup200",
+        "Read own converted accounts200",
+        "Original primary debt is unchanged",
+        "Exact secondary debt",
+        "Physical primary account balance unchanged",
+        "ExactUSD10debt setup200",
+        "Read own converted accounts200",
+        "Original primary debt is unchanged",
+        "Exact secondary debt",
+        "Physical primary account balance unchanged",
+        "Actual dashboard SSR200",
+        "Actual SSR aggregate totalARSBlue",
+        "Actual SSR aggregate totalUSD",
+        "SSR secondary data numeric value",
+        "SSR secondary amount retains original documented precision",
+        "Cashoriginal balances preserved"
+      ],
+      "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred."
+    },
+    {
+      "case_id": "CP3-08",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-closure/cp3-08.json",
+        "account-analysis-contracts/executed-closure/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Fixture account API201",
+        "Fixture account API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Normal JWT query is owner only",
+        "Owner category/period independent sum",
+        "Actual analysis SSR200",
+        "Actual server custom inclusive period",
+        "Actual server expense category aggregate excludes transfer, U2 and September",
+        "Actual server income aggregate",
+        "Actual server rendered period totals"
+      ],
+      "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred."
+    },
+    {
+      "case_id": "CP3-18",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-closure/cp3-18.json",
+        "account-analysis-contracts/executed-closure/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Fixture account API201",
+        "Normal RLS own legacy-currency setup has no error",
+        "Normal RLS sets only the own zero-balance fixture currency",
+        "Normal RLS consistent legacy opening adjustment accepted",
+        "Legacy unknown balance is10",
+        "Legacy row has one consistent opening amount",
+        "Unknown currency retains original balances",
+        "Read does not mutate either account",
+        "Read preserves legacy ledger",
+        "Known account converts to120000ARS",
+        "Unknown account keeps currency/balance and explicit exclusion",
+        "Unknown FX is not fabricated as0or1",
+        "Retained snapshot equals the prior complete CI5 row before any partial GET",
+        "Partial dashboard SSR200",
+        "Partial valuation preserves every existing snapshot and creates none",
+        "Known ARS subtotal is120000",
+        "Known USD subtotal uses actual1200rate",
+        "Server explicitly reports partial valuation",
+        "Server excludes only the own unknown10ZZZ account",
+        "Actual SSR partial notice explains ZZZ exclusion",
+        "Known account remains present"
+      ],
+      "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred."
+    }
+  ]
+}
