@@ -8,6 +8,7 @@ import { createServerClient } from '@supabase/ssr';
 import { isolatedNativeTargets, isolatedPgEnvironment, isolatedApiFetch } from './lib/test-isolated-native-target.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
+const rejected = status => status >= 400 && status < 500;
 const literal = value => `'${String(value).replaceAll("'", "''")}'`;
 const output = path.resolve(process.env.ZARIX_API_OUTPUT || '/tmp/zarix-isolated-api');
 await fs.mkdir(output, { recursive: true, mode: 0o700 });
@@ -98,20 +99,22 @@ try {
       assert.equal((await request(null, 'GET', '/api/accounts', undefined, randomUUID(), { Cookie: 'sb-127-auth-token=not-a-valid-session' })).status, 401);
       const own = await request(a, 'GET', '/api/accounts'); assert.equal(own.status, 200); assert.ok(!own.body.some(r => r.id === foreign));
       assert.equal((await request(a, 'GET', `/api/accounts/${foreign}`)).status, 404);
-      assert.ok((await request(a, 'PATCH', `/api/accounts/${foreign}`, { name: 'Synthetic cross-tenant attempt' })).status >= 400);
-      assert.ok((await request(a, 'DELETE', `/api/accounts/${foreign}`)).status >= 400);
+      assert.ok(rejected((await request(a, 'PATCH', `/api/accounts/${foreign}`, { name: 'Synthetic cross-tenant attempt' })).status));
+      assert.ok(rejected((await request(a, 'DELETE', `/api/accounts/${foreign}`)).status));
       assert.deepEqual(rows(`SELECT id,balance,name FROM accounts WHERE user_id=${literal(b.id)} ORDER BY id`), beforeB);
-      assert.ok((await a.client.from('users').select('gemini_api_key')).error);
-      assert.ok((await a.client.from('users').update({ status: 'ACTIVE' }).eq('id', a.id)).error);
+      const secretDenied = await a.client.from('users').select('gemini_api_key');
+      const paidStatusDenied = await a.client.from('users').update({ status: 'ACTIVE' }).eq('id', a.id);
+      assert.equal(secretDenied.error?.code, '42501');
+      assert.equal(paidStatusDenied.error?.code, '42501');
       sql(`UPDATE users SET status='CANCELED',current_period_end=NULL,grace_period_end=NULL WHERE id=${literal(a.id)}`);
       const before = Number(sql(`SELECT count(*) FROM accounts WHERE user_id=${literal(a.id)}`));
-      assert.ok((await request(a, 'POST', '/api/accounts', { name: `Free over-cap ${run}`, type: 'bank', currency: 'ARS' })).status >= 400);
+      assert.ok(rejected((await request(a, 'POST', '/api/accounts', { name: `Free over-cap ${run}`, type: 'bank', currency: 'ARS' })).status));
       assert.equal(Number(sql(`SELECT count(*) FROM accounts WHERE user_id=${literal(a.id)}`)), before);
       assert.equal((await request(a, 'GET', '/api/accounts')).status, 200);
       assert.equal((await request(a, 'GET', '/api/export/transactions?format=json')).status, 200);
       sql(`UPDATE users SET status='ACTIVE',current_period_end=now()+interval '30 days' WHERE id=${literal(a.id)}`);
       const activeAccountsAtDowngrade = Number(sql(`SELECT count(*) FROM accounts WHERE user_id=${literal(a.id)} AND is_active AND movement_enabled`));
-      return { ids: ['CP2-19', 'CP2-20', 'CP2-09', 'CP2-15'], privateAccountRowsUnchanged: beforeB.length, anonymousStatuses: [401, 401], normalProfileSecretFieldAndPaidStatusDenied: true, activeAccountsAtDowngrade, historyAndExportAvailable: true, exactThreeAccountFixture: false };
+      return { ids: ['CP2-19', 'CP2-20', 'CP2-09', 'CP2-15'], privateAccountRowsUnchanged: beforeB.length, anonymousStatuses: [401, 401], normalProfileSecretFieldAndPaidStatusDenied: true, normalProfileDenialCodes: [secretDenied.error.code, paidStatusDenied.error.code], activeAccountsAtDowngrade, historyAndExportAvailable: true, exactThreeAccountFixture: false };
     });
     await test('CU001', 'different-currency transfer, edit/delete, rounding, ten retries and controlled lost acknowledgment', async () => {
       const payload = { type: 'transfer', accountId: accountA, destinationAccountId: usdA, amount: 120000, currency: 'ARS', exchangeRateOverride: 1 / 1200, description: `API FX ${run}` };
@@ -125,7 +128,7 @@ try {
       assert.equal(edited.status, 200); assert.equal(balance(accountA), 140000); assert.equal(balance(usdA), 100);
       assert.equal((await request(a, 'DELETE', `/api/transactions/${id}`)).status, 204); assert.equal(balance(accountA), 200000); assert.equal(balance(usdA), 50);
       const invalid = await request(a, 'POST', '/api/transactions', { type: 'expense', accountId: accountA, amount: 1.001, currency: 'ARS' });
-      assert.ok(invalid.status >= 400); assert.equal(balance(accountA), 200000);
+      assert.ok(rejected(invalid.status)); assert.equal(balance(accountA), 200000);
       const replayPayload = { type: 'expense', accountId: accountA, amount: 1500, currency: 'ARS', description: `Replay receipt ${run}` }, replayKey = randomUUID();
       const committedButNotObservedByClient = await request(a, 'POST', '/api/transactions', replayPayload, replayKey);
       assert.equal(committedButNotObservedByClient.status, 201); assert.equal(balance(accountA), 198500);
@@ -151,7 +154,7 @@ try {
       assert.ok(sales.every(s => s.status === 201)); assert.ok(sales.every(s => s.body.sale.id === sales[0].body.sale.id));
       assert.equal(Number(sql(`SELECT quantity FROM investments WHERE id=${literal(id)}`)), 6);
       assert.equal(Number(sql(`SELECT sum(realized_pnl_native) FROM investment_sales WHERE investment_id=${literal(id)}`)), 80);
-      assert.ok((await request(a, 'POST', `/api/investments/${id}/sell`, { ...body, quantity: 7 })).status >= 400);
+      assert.ok(rejected((await request(a, 'POST', `/api/investments/${id}/sell`, { ...body, quantity: 7 })).status));
       assert.equal(Number(sql(`SELECT count(*) FROM investment_sales WHERE investment_id=${literal(id)}`)), 1); assert.equal(balance(brokerA), 0);
       return { ids: ['CP4-02', 'CP4-04', 'CP4-06', 'CP4-12', 'CNF-11'], remainingQuantity: 6, realizedUSD: 80, saleAttempts: 10, effects: 1, brokerCashUnchanged: 0 };
     });
@@ -176,7 +179,7 @@ try {
       assert.deepEqual(splits.map(row => Number(row.amount)), [33.34, 33.33, 33.33]);
       const foreignMember = guest.foreignMemberId;
       assert.ok(foreignMember);
-      assert.ok((await request(null, 'POST', `/api/shared/${token}/expenses`, { ...body, actorMemberId: foreignMember })).status >= 400);
+      assert.ok(rejected((await request(null, 'POST', `/api/shared/${token}/expenses`, { ...body, actorMemberId: foreignMember })).status));
       assert.equal(Number(sql(`SELECT count(*) FROM shared_expenses WHERE group_id=${literal(groupId)}`)), before + 1);
       assert.equal((await request(null, 'POST', `/api/shared/${'0'.repeat(32)}/expenses`, body)).status, 404);
       sql(`UPDATE shared_groups SET is_active=false WHERE id=${literal(groupId)} AND owner_user_id=${literal(a.id)}`);

@@ -157,11 +157,11 @@ try {
     const own = await (await request(pageA, 'GET', '/api/accounts')).json();
     assert.ok(own.some(r => r.id === accountA)); assert.ok(!own.some(r => r.id === foreign));
     const modified = await request(pageA, 'PATCH', `/api/accounts/${foreign}`, { name: 'Intento sintético ajeno' });
-    assert.ok(modified.status() >= 400); assert.equal(balance(foreign), 7000);
+    assert.ok(modified.status() >= 400 && modified.status() < 500); assert.equal(balance(foreign), 7000);
     sql(`UPDATE users SET status='CANCELED',current_period_end=NULL WHERE id=${literal(a.id)}`);
     const countBefore = Number(sql(`SELECT count(*) FROM accounts WHERE user_id=${literal(a.id)}`));
     const fourth = await request(pageA, 'POST', '/api/accounts', { name: `Cuarta ${run}`, type: 'bank', currency: 'ARS', initialBalance: 0 });
-    assert.ok(fourth.status() >= 400);
+    assert.ok(fourth.status() >= 400 && fourth.status() < 500);
     assert.equal(Number(sql(`SELECT count(*) FROM accounts WHERE user_id=${literal(a.id)}`)), countBefore);
     const history = await request(pageA, 'GET', '/api/accounts'); assert.equal(history.status(), 200);
     const exportAfterDowngrade = await request(pageA, 'GET', '/api/export/transactions?format=json'); assert.equal(exportAfterDowngrade.status(), 200);
@@ -265,7 +265,7 @@ try {
     assert.equal(Number(sql(`SELECT sum(realized_pnl_native) FROM investment_sales WHERE investment_id=${literal(position.id)}`)), 80);
     const countBefore = sql(`SELECT count(*) FROM investment_sales WHERE investment_id=${literal(position.id)}`);
     const oversale = await request(pageA, 'POST', `/api/investments/${position.id}/sell`, { quantity: 7, price: 120, currency: 'USD' });
-    assert.ok(oversale.status() >= 400); assert.equal(sql(`SELECT count(*) FROM investment_sales WHERE investment_id=${literal(position.id)}`), countBefore);
+    assert.ok(oversale.status() >= 400 && oversale.status() < 500); assert.equal(sql(`SELECT count(*) FROM investment_sales WHERE investment_id=${literal(position.id)}`), countBefore);
     assert.equal(Number(sql(`SELECT quantity FROM investments WHERE id=${literal(position.id)}`)), 6);
     checks.push({ ids: ['CP4-02', 'CP4-04', 'CP4-06', 'CP4-08', 'CP4-09', 'CP4-12'], scope: 'UI manual-price position + UI partial sale + API oversale + pure UI simulation; fixture is local ledger, no broker/trading operation', remainingQuantity: 6, realizedPnlUSD: 80, cashBalance: balance(investmentAccount), simulationValues: { current: 660, plusTenPercent: 726, minusHundredPercent: 0, invalidRejected: ['-100.01', 'NaN'] }, financeSha256BeforeAndAfter: beforeSimulation });
     await screenshots(pageA, 'CU004-investments');

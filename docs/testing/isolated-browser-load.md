@@ -58,7 +58,7 @@ export ZARIX_PLAYWRIGHT_MODULE=/tmp/zarix-e2e-20261015/node_modules/playwright/i
 node scripts/test-isolated-browser-load.mjs
 ```
 
-La copia debe incluir `copy-source-manifest.json` con `revision` y `sources: [{ path, sha256 }]`, idénticos al manifiesto congelado indicado. El controlador recalcula cada hash sobre la copia física y registra `.next/BUILD_ID`; una discrepancia bloquea el ensayo. Antes de cada proceso verifica que 3101 está libre y, después de health200, exige que `lsof` atribuya el listener al PID recién creado. Una respuesta de otro servidor no acredita readiness.
+La copia debe incluir `copy-source-manifest.json` con `revision` y `sources: [{ path, sha256 }]`, idénticos al manifiesto congelado indicado, `buildId` obligatorio y `buildProof: { startedAt, finishedAt, exitCode, sourceManifestSha256 }`. El controlador recalcula cada hash sobre la copia física, exige que `.next/BUILD_ID` coincida y contrasta el hash exacto del archivo de manifiesto congelado con la prueba del build finalizado con salida0; una discrepancia bloquea el ensayo. Antes de cada proceso verifica que 3101 está libre y, después de health200, exige que `lsof` atribuya el listener al PID recién creado. Una respuesta de otro servidor no acredita readiness.
 
 `ZARIX_CHROME_EXECUTABLE` permite elegir otra instalación real de Chrome; por defecto `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`. `ZARIX_E2E_HEADED=1` permite observarlo. No se puede atribuir esta corrida a Safari ni a otros navegadores.
 

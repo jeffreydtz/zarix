@@ -25,7 +25,8 @@ export async function createProfileController({ appUrl, output, fx, env = proces
   assert.ok(env.ZARIX_LOAD_FROZEN_MANIFEST, 'A root frozen source manifest is required');
   const copiedManifestBytes = await fs.readFile(path.join(appDirectory, 'copy-source-manifest.json'));
   const copiedManifest = JSON.parse(copiedManifestBytes);
-  const frozenManifest = JSON.parse(await fs.readFile(env.ZARIX_LOAD_FROZEN_MANIFEST, 'utf8'));
+  const frozenManifestBytes = await fs.readFile(env.ZARIX_LOAD_FROZEN_MANIFEST);
+  const frozenManifest = JSON.parse(frozenManifestBytes);
   assert.deepEqual(copiedManifest.sources, frozenManifest.sources, 'Physical copy and root frozen source manifest differ');
   assert.equal(copiedManifest.revision, frozenManifest.revision, 'Physical copy and root revision differ');
   assert.ok(copiedManifest.sources?.length, 'An empty physical source manifest is not evidence');
@@ -35,8 +36,13 @@ export async function createProfileController({ appUrl, output, fx, env = proces
     assert.equal(hash(await fs.readFile(path.join(appDirectory, source.path))), source.sha256, 'Copied source file differs from frozen manifest');
   }
   const buildId = (await fs.readFile(path.join(appDirectory, '.next/BUILD_ID'), 'utf8')).trim();
-  if (copiedManifest.buildId) assert.equal(buildId, copiedManifest.buildId);
-  const buildEvidence = { buildId, copiedManifestSha256: hash(copiedManifestBytes), revision: copiedManifest.revision, sourceCount: copiedManifest.sources.length, frozenManifestEqual: true };
+  assert.ok(typeof copiedManifest.buildId === 'string' && copiedManifest.buildId.trim(), 'The physical copy must identify its completed build');
+  assert.equal(buildId, copiedManifest.buildId);
+  const proof = copiedManifest.buildProof;
+  assert.equal(proof?.exitCode, 0, 'A completed successful fresh build must be recorded');
+  assert.ok(Number.isFinite(Date.parse(proof.startedAt)) && Number.isFinite(Date.parse(proof.finishedAt)) && Date.parse(proof.finishedAt) >= Date.parse(proof.startedAt), 'Build start/end timestamps are required');
+  assert.equal(proof.sourceManifestSha256, hash(frozenManifestBytes), 'Build proof must refer to the exact frozen root manifest bytes');
+  const buildEvidence = { buildId, copiedManifestSha256: hash(copiedManifestBytes), frozenManifestSha256: hash(frozenManifestBytes), revision: copiedManifest.revision, sourceCount: copiedManifest.sources.length, frozenManifestEqual: true, buildProof: { startedAt: proof.startedAt, finishedAt: proof.finishedAt, exitCode: proof.exitCode, sourceManifestSha256: proof.sourceManifestSha256 } };
   const providerPort = 3311;
   const sell = Object.fromEntries(fx.map(quote => [quote.source, Number(quote.rate)]));
   const sourceTime = fx.find(quote => quote.source === 'blue').timestamp;
