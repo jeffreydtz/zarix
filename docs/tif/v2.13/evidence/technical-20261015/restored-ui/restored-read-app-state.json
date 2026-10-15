@@ -1,0 +1,12 @@
+{
+  "purpose": "restored-ui-read-only",
+  "pid": 39226,
+  "appOrigin": "http://127.0.0.1:3002",
+  "restoreOrigin": "http://127.0.0.1:55321",
+  "copyRoot": "/tmp/zarix-app-restored-read-20261015",
+  "revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+  "buildId": "8KCE9yl_NuWCW33jQ5gBP",
+  "startedAt": "2026-10-15T02:51:07.063595+00:00",
+  "fetchGuardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+  "guardInstalledBeforeNext": true
+}

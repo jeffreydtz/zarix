@@ -1,0 +1,48 @@
+{
+  "status": "PASS_SCOPED_VISUAL_REVIEW",
+  "reviewedAt": "2026-10-15T03:00:57.977543+00:00",
+  "reviewer": "Independent subagent restore_fetch_guard",
+  "method": "Opened each existing PNG with view_image and matched financial values to the existing local JSON; no app/browser/SQL/network requests",
+  "screenshots": [
+    {
+      "cu": "CU001",
+      "path": "CU001-restored-read.png",
+      "sha256": "80b49ef20c4121bf0d51a0540507a394873effeb649e6c2b1ece98460a69cc37",
+      "privacy": "No passwords,tokens,keys or identifiable real personal data seen",
+      "legibility": "Title and relevant final financial content readable; fade/count-up no longer intermediate"
+    },
+    {
+      "cu": "CU002",
+      "path": "CU002-restored-read.png",
+      "sha256": "5fb886c771c255df3059b0caa50790d493a4894a034e1a3b94bcce5f23863332",
+      "privacy": "No passwords,tokens,keys or identifiable real personal data seen",
+      "legibility": "Title and relevant final financial content readable; fade/count-up no longer intermediate"
+    },
+    {
+      "cu": "CU003",
+      "path": "CU003-restored-read.png",
+      "sha256": "c661329d9a05ee1fb6c00f516a7df7a8780b7a38ed74e700496fde382a9ce10d",
+      "privacy": "No passwords,tokens,keys or identifiable real personal data seen",
+      "legibility": "Title and relevant final financial content readable; fade/count-up no longer intermediate"
+    },
+    {
+      "cu": "CU004",
+      "path": "CU004-restored-read.png",
+      "sha256": "46202d54bd78ba4d8d34c567db3a2e6b013d66d15d33c4d3b9d586854ef1aff1",
+      "privacy": "No passwords,tokens,keys or identifiable real personal data seen",
+      "legibility": "Title and relevant final financial content readable; fade/count-up no longer intermediate"
+    }
+  ],
+  "expectedReadings": {
+    "CU001": "Reintento sintético expense12.34ARS; Traídos1",
+    "CU002": "Account balance9987.66ARS; aggregate rounds9988ARS",
+    "CU003": "Income0;expenses12.34;balance-12.34; cards round0/12/-12",
+    "CU004": "Portfolio80USD; realized30USD; auxiliaryblue1200"
+  },
+  "earlierCaptures": {
+    "attempt-1/CU002": "LIMITED: low opacity/intermediate counter",
+    "attempt-2/CU001": "LIMITED: low opacity row",
+    "attempt-2/CU002": "LIMITED: low opacity/intermediate2671.25ARS"
+  },
+  "scope": "Readability/privacy review of synthetic local screenshots only; not full CP/CNF/browser/provider acceptance"
+}
