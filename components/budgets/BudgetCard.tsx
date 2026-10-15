@@ -27,15 +27,15 @@ interface BudgetCardProps {
 }
 
 // Umbrales sobre tokens semánticos (ver DESIGN.md): success → warning → destructive.
-function getProgressColor(percent: number): string {
-  if (percent >= 100) return 'rgb(var(--destructive))';
-  if (percent >= 80) return 'rgb(var(--warning))';
+function getProgressColor(percent: number, remaining: number): string {
+  if (remaining < 0) return 'rgb(var(--destructive))';
+  if (percent >= 80 || remaining === 0) return 'rgb(var(--warning))';
   return 'rgb(var(--success))';
 }
 
-function getProgressBg(percent: number): string {
-  if (percent >= 100) return 'bg-destructive/10 dark:bg-destructive/20';
-  if (percent >= 80) return 'bg-warning/10 dark:bg-warning/20';
+function getProgressBg(percent: number, remaining: number): string {
+  if (remaining < 0) return 'bg-destructive/10 dark:bg-destructive/20';
+  if (percent >= 80 || remaining === 0) return 'bg-warning/10 dark:bg-warning/20';
   return 'bg-primary/10 dark:bg-primary/20';
 }
 
@@ -45,9 +45,10 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
 
   const percent = Math.min(Number(budget.percent_used) || 0, 100);
   const spent = Number(budget.spent_amount) || 0;
-  const remaining = Number(budget.remaining_amount) ?? (budget.amount - spent);
   const totalAmount = Number(budget.amount);
-  const progressColor = getProgressColor(percent);
+  const reportedRemaining = budget.remaining_amount == null ? NaN : Number(budget.remaining_amount);
+  const remaining = Number.isFinite(reportedRemaining) ? reportedRemaining : totalAmount - spent;
+  const progressColor = getProgressColor(percent, remaining);
   const realPercent = Number(budget.percent_used) || 0;
 
   const categoryName = budget.category?.name || 'General';
@@ -82,9 +83,9 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className={`rounded-2xl p-5 border ${
-        realPercent >= 100
+        remaining < 0
           ? 'border-destructive/30 bg-destructive/10'
-          : realPercent >= 80
+          : realPercent >= 80 || remaining === 0
           ? 'border-warning/30 bg-warning/10'
           : 'border-border bg-card'
       }`}
@@ -92,7 +93,7 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${getProgressBg(realPercent)}`}>
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${getProgressBg(realPercent, remaining)}`}>
             <CategoryIcon icon={categoryIcon} className="w-5 h-5" />
           </div>
           <div>
@@ -127,7 +128,7 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
         </div>
         <div className="flex justify-between text-xs mt-1">
           <span className="text-muted-foreground">
-            ${spent.toLocaleString('es-AR', { maximumFractionDigits: 0 })} gastado
+            ${spent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} gastado
           </span>
           <span className="font-semibold" style={{ color: progressColor }}>
             {realPercent.toFixed(1)}%
@@ -140,7 +141,7 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
         <div className="rounded-xl p-3 bg-secondary">
           <div className="text-xs text-muted-foreground mb-0.5">Presupuesto</div>
           <div className="font-bold text-foreground">
-            ${totalAmount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+            ${totalAmount.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div className="text-xs text-muted-foreground">{budget.currency}</div>
         </div>
@@ -149,19 +150,24 @@ export default function BudgetCard({ budget, onDelete, onRefresh }: BudgetCardPr
             {remaining < 0 ? 'Excedido' : 'Restante'}
           </div>
           <div className={`font-bold ${remaining < 0 ? 'text-destructive' : 'text-success'}`}>
-            ${Math.abs(remaining).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+            ${Math.abs(remaining).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div className="text-xs text-muted-foreground">{budget.currency}</div>
         </div>
       </div>
 
       {/* Alert badges */}
-      {realPercent >= 100 && (
+      {remaining < 0 && (
         <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-destructive">
           <span>🔴</span> Presupuesto superado
         </div>
       )}
-      {realPercent >= budget.alert_at_percent && realPercent < 100 && (
+      {remaining === 0 && (
+        <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-warning">
+          <span>⚠️</span> Presupuesto en el límite
+        </div>
+      )}
+      {remaining > 0 && realPercent >= budget.alert_at_percent && (
         <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-warning">
           <span>⚠️</span> Cerca del límite ({budget.alert_at_percent}%)
         </div>
