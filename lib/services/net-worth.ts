@@ -1,5 +1,5 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
-import { accountsService } from '@/lib/services/accounts';
+import { accountsService, type PartialAccountValuation } from '@/lib/services/accounts';
 import { investmentsService } from '@/lib/services/investments';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import type { BlueFxComponentReference } from '@/lib/blue-fx-reference';
@@ -21,6 +21,7 @@ export interface NetWorthNow {
   blueRate: number;
   /** Current components can have different quote samples; no universal source is inferred. */
   blueReferences?: BlueFxComponentReference[];
+  valuation?: PartialAccountValuation;
 }
 
 /**
@@ -30,7 +31,7 @@ export interface NetWorthNow {
  */
 export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
   const [accounts, portfolio, dolar] = await Promise.all([
-    accountsService.list(userId),
+    accountsService.list(userId, { allowPartialValuation: true }),
     investmentsService
       .getPortfolioSummary(userId, { skipQuoteRefresh: true, skipDailySnapshot: true }),
     cotizacionesService.getDolarQuotes({ preferCache: true }).catch(() => null),
@@ -39,12 +40,13 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
   const balances =
     accounts.length > 0
       ? accountsService.aggregateAccountTotals(accounts)
-      : { liquidUSD: 0, investmentsUSD: 0, totalUSD: 0, totalARSBlue: 0 };
+      : { liquidUSD: 0, investmentsUSD: 0, totalUSD: 0, totalARSBlue: 0, valuation: undefined };
 
   const portfolioUSD = portfolio?.totalCurrentValue ?? 0;
   const portfolioARSBlue = portfolio?.totalCurrentValueArsBlue ?? 0;
 
   return {
+    ...(balances.valuation ? { valuation: balances.valuation } : {}),
     liquidUSD: balances.liquidUSD,
     investmentsUSD: balances.investmentsUSD + portfolioUSD,
     totalUSD: balances.totalUSD + portfolioUSD,
@@ -65,6 +67,10 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
 export async function recordNetWorthSnapshot(userId: string): Promise<boolean> {
   try {
     const now = await computeNetWorth(userId);
+    if (now.valuation?.status === 'partial') {
+      console.warn('[net-worth] snapshot salteado: valoración parcial');
+      return false;
+    }
     // Sin cotización no hay conversión confiable: mejor saltear el día que
     // guardar un total en 0 que ensucie el gráfico. Se loguea para que un
     // hueco en la serie sea diagnosticable.

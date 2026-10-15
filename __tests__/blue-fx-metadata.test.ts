@@ -91,7 +91,7 @@ afterEach(() => {
 });
 
 describe('blue FX reference helper', () => {
-  it.each([false, true])('does not value a missing EUR conversion as zero (secondary=%s)', async secondary => {
+  it.each([[false, false], [false, true], [true, false], [true, true]] as const)('does not value a missing EUR conversion as zero (secondary=%s partial=%s)', async (secondary, allowPartialValuation) => {
     mocks.accounts = [{ id: 'EUR-fixture', user_id: 'U1', type: secondary ? 'credit_card' : 'bank',
       currency: secondary ? 'ARS' : 'EUR', balance: secondary ? -10000 : 100,
       is_multicurrency: secondary, secondary_currency: secondary ? 'EUR' : null,
@@ -100,7 +100,64 @@ describe('blue FX reference helper', () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     vi.spyOn(cotizacionesService, 'getExchangeRate').mockRejectedValue(new Error('synthetic EUR provider outage'));
     const { accountsService } = await import('@/lib/services/accounts');
-    await expect(accountsService.list('U1')).rejects.toThrow('Cotización EUR/USD no disponible');
+    await expect(accountsService.list('U1', { allowPartialValuation })).rejects.toThrow('Cotización EUR/USD no disponible');
+  });
+
+  it('CP3-18 shows only the known 120000 ARS and explicitly excludes original 10 ZZZ in read mode', async () => {
+    mocks.accounts = [
+      { id: 'known', user_id: 'U1', name: 'ARS propia', type: 'bank', currency: 'ARS', balance: 120000, include_in_total: true, include_in_liquid: true },
+      { id: 'legacy', user_id: 'U1', name: 'Legacy propia', type: 'bank', currency: 'ZZZ', balance: 10, include_in_total: true, include_in_liquid: true },
+    ];
+    const original = structuredClone(mocks.accounts);
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    const dolar = await cotizacionesService.getDolarQuotes();
+    vi.spyOn(cotizacionesService, 'getDolarQuotes').mockResolvedValue({ ...dolar, blue: { ...dolar.blue, buy: 1200, sell: 1200 } });
+    const cross = vi.spyOn(cotizacionesService, 'getExchangeRate');
+    const { accountsService } = await import('@/lib/services/accounts');
+    const result = await accountsService.list('U1', { allowPartialValuation: true });
+    const legacy = result.find(account => account.id === 'legacy')!;
+    expect(legacy).toMatchObject({ balance: 10, currency: 'ZZZ', valuationIssue: { currencies: ['ZZZ'], reason: 'unsupported_currency' } });
+    expect(legacy).not.toHaveProperty('balance_usd');
+    expect(legacy).not.toHaveProperty('balance_ars_blue');
+    expect(cross).not.toHaveBeenCalledWith('ZZZ', 'USD');
+    expect(accountsService.aggregateAccountTotals(result)).toMatchObject({
+      totalARSBlue: 120000, totalUSD: 100,
+      valuation: { status: 'partial', excludedAccounts: [{ accountId: 'legacy', name: 'Legacy propia', currency: 'ZZZ', balance: 10, currencies: ['ZZZ'], reason: 'unsupported_currency' }] },
+    });
+    expect(mocks.accounts).toEqual(original);
+  });
+
+  it('keeps unknown legacy currencies strict unless partial read mode is explicitly selected', async () => {
+    mocks.accounts = [{ id: 'legacy', user_id: 'U1', type: 'bank', currency: 'ZZZ', balance: 10 }];
+    const { accountsService } = await import('@/lib/services/accounts');
+    await expect(accountsService.list('U1')).rejects.toThrow('Cotización ZZZ/USD no disponible');
+  });
+
+  it('does not make the chosen total partial for an excluded-by-user legacy account', async () => {
+    mocks.accounts = [{ id: 'legacy', user_id: 'U1', name: 'Legacy', type: 'bank', currency: 'ZZZ', balance: 10, include_in_total: false }];
+    const { accountsService } = await import('@/lib/services/accounts');
+    const result = await accountsService.list('U1', { allowPartialValuation: true });
+    expect(result[0].valuationIssue).toMatchObject({ currencies: ['ZZZ'] });
+    expect(accountsService.aggregateAccountTotals(result).valuation).toBeUndefined();
+  });
+
+  it('preserves both original balances and excludes a card with an unsupported secondary currency', async () => {
+    mocks.accounts = [{ id: 'card', user_id: 'U1', name: 'Card', type: 'credit_card', currency: 'ARS', balance: -10010, is_multicurrency: true, secondary_currency: 'ZZZ', include_in_total: true }];
+    mocks.rpc.mockResolvedValue({ data: [{ account_id: 'card', primary_balance: -10000, secondary_balance: -10 }], error: null });
+    const { accountsService } = await import('@/lib/services/accounts');
+    const result = await accountsService.list('U1', { allowPartialValuation: true });
+    expect(result[0]).toMatchObject({ balance: -10010, multicurrency_balance_primary: -10000, multicurrency_balance_secondary: -10, secondary_currency: 'ZZZ', valuationIssue: { currencies: ['ZZZ'] } });
+    expect(result[0]).not.toHaveProperty('multicurrency_total_ars_blue');
+    expect(accountsService.aggregateAccountTotals(result).valuation?.excludedAccounts[0]).toMatchObject({ currency: 'ARS', balance: -10000, secondaryCurrency: 'ZZZ', secondaryBalance: -10 });
+  });
+
+  it('still rejects a failed blue provider in partial read mode', async () => {
+    mocks.accounts = [{ id: 'known', user_id: 'U1', type: 'bank', currency: 'ARS', balance: 120000 }];
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    const unavailable = new Error('Synthetic blue provider outage');
+    vi.spyOn(cotizacionesService, 'getDolarQuotes').mockRejectedValue(unavailable);
+    const { accountsService } = await import('@/lib/services/accounts');
+    await expect(accountsService.list('U1', { allowPartialValuation: true })).rejects.toBe(unavailable);
   });
 
   it('still values a valid EUR balance with its actual positive FX leg', async () => {

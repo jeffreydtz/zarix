@@ -66,7 +66,7 @@ export default async function DashboardPage() {
       upcoming,
       budgets,
     ] = await Promise.all([
-      accountsService.list(user.id),
+      accountsService.list(user.id, { allowPartialValuation: true }),
       transactionsService.list(user.id, { limit: 5 }),
       investmentsService
         .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }),
@@ -81,10 +81,6 @@ export default async function DashboardPage() {
       getUpcoming(user.id),
       getTopBudgets(user.id),
     ]);
-
-    // Snapshot del día best-effort (idempotente con el cron por unique user+día):
-    // así el gráfico ancla acumula historia aunque el cron no haya corrido.
-    void recordNetWorthSnapshot(user.id);
 
     // Patrimonio HOY: misma composición que computeNetWorth pero reutilizando
     // lo ya traído (evita repetir las queries de accounts/portfolio).
@@ -102,8 +98,10 @@ export default async function DashboardPage() {
             totalCreditLimit: 0,
             creditUtilization: 0,
             blueReferences: [],
+            valuation: undefined,
           };
     const netWorthNow = {
+      ...(balances.valuation ? { valuation: balances.valuation } : {}),
       liquidUSD: balances.liquidUSD,
       investmentsUSD: balances.investmentsUSD + (portfolio?.totalCurrentValue ?? 0),
       totalUSD: balances.totalUSD + (portfolio?.totalCurrentValue ?? 0),
@@ -115,6 +113,9 @@ export default async function DashboardPage() {
           ? [{ component: 'portfolio' as const, reference: portfolio.blueReference }] : []),
       ],
     };
+
+    // A partial current subtotal must never overwrite a complete historical point.
+    if (!balances.valuation) void recordNetWorthSnapshot(user.id);
 
     // Top 2 posiciones por valor para el strip de mercado
     const topHoldings = (portfolio?.investments ?? [])
@@ -130,11 +131,11 @@ export default async function DashboardPage() {
 
     return (
       <>
-        <StickyNetWorthBar
+        {!balances.valuation && <StickyNetWorthBar
           totalARSBlue={netWorthNow.totalARSBlue}
           totalUSD={netWorthNow.totalUSD}
           sentinelId="networth-sentinel"
-        />
+        />}
         <PageScaffold
           hero={(
             <>

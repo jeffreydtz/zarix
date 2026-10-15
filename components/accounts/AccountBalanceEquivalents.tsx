@@ -28,6 +28,13 @@ export default function AccountBalanceEquivalents({
   const usd = account.balance_usd != null ? Number(account.balance_usd) : null;
   const hasBalance = Math.abs(rawBal) > 1e-8;
 
+  if (account.valuationIssue) {
+    return <p role="status" className="text-xs text-warning">
+      Sin cotización compatible para {account.valuationIssue.currencies.join(', ')}.
+      {' '}Cuenta excluida del total; los saldos originales se conservan.
+    </p>;
+  }
+
   if (!hasBalance) return null;
 
   const absArs = ars != null ? Math.abs(ars) : null;

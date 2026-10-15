@@ -46,6 +46,7 @@ export default function StickyNetWorthBar({
           <Amount
             value={totalUSD}
             currency="USD"
+            decimals={Number.isInteger(totalUSD) ? 0 : 2}
             prefix="≈ "
             className="text-xs text-muted-foreground"
           />

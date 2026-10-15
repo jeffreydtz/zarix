@@ -30,7 +30,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
     // resolver getById en paralelo con el resto (un round-trip menos).
     const [account, accounts, transactions, categoriesResult, fxRates] = await Promise.all([
       accountsService.getById(params.id, user.id).catch(() => null),
-      accountsService.list(user.id).catch(() => []),
+      accountsService.list(user.id, { allowPartialValuation: true }).catch(() => []),
       transactionsService
         .list(user.id, { involveAccountId: params.id, limit: 500 })
         .catch(() => []),
@@ -110,7 +110,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
                         {account.secondary_currency}
                       </span>
                     </p>
-                    <p className="text-sm font-medium tabular-nums text-muted-foreground">
+                    {!enriched.valuationIssue && <p className="text-sm font-medium tabular-nums text-muted-foreground">
                       Total (ARS blue):{' '}
                       <span className="font-semibold text-destructive">
                         -$
@@ -122,7 +122,7 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
                         })}{' '}
                         ARS
                       </span>
-                    </p>
+                    </p>}
                   </div>
                 ) : (
                   <p
@@ -139,11 +139,11 @@ export default async function AccountDetailPage(props: { params: Promise<{ id: s
                   </p>
                 )}
                 {enriched &&
-                  (isMulticurrencyCard
+                  (enriched.valuationIssue || (isMulticurrencyCard
                     ? Math.abs(
                         Number(enriched.multicurrency_total_ars_blue ?? enriched.balance_ars_blue ?? 0)
                       ) > 1e-8
-                    : Math.abs(balance) > 1e-8) && (
+                    : Math.abs(balance) > 1e-8)) && (
                   <div className="mt-1">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground mb-0.5">
                       Referencia en otras monedas

@@ -104,7 +104,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
                       })}{' '}
                       {account.secondary_currency}
                     </div>
-                    <div className="text-xs font-semibold opacity-90 tabular-nums">
+                    {!account.valuationIssue && <div className="text-xs font-semibold opacity-90 tabular-nums">
                       Total (ARS blue): -$
                       {Math.abs(
                         Number(account.multicurrency_total_ars_blue ?? account.balance_ars_blue ?? 0)
@@ -113,7 +113,7 @@ function AccountCards({ accounts }: AccountCardsProps) {
                         maximumFractionDigits: 2,
                       })}{' '}
                       ARS
-                    </div>
+                    </div>}
                   </div>
                 ) : (
                   <div className="text-3xl font-bold tracking-tight">
@@ -128,11 +128,11 @@ function AccountCards({ accounts }: AccountCardsProps) {
                 )}
               </div>
 
-              {Number(account.balance) !== 0 && (
+              {(account.valuationIssue || Number(account.balance) !== 0) && (
                 <AccountBalanceEquivalents account={account} variant="dark" />
               )}
 
-              {isCreditCard && creditLimit > 0 && (
+              {!account.valuationIssue && isCreditCard && creditLimit > 0 && (
                 <div className="mt-4 pt-3 border-t border-white/20">
                   <div className="flex justify-between text-xs font-medium mb-1.5">
                     <span>Usado</span>

@@ -1,0 +1,188 @@
+{
+  "status": "PASS_STATIC_REVIEW_SCOPED_PENDING_GLOBAL_AND_NATIVE_RETEST",
+  "reviewedAt": "2026-10-15T05:12:26.400559+00:00",
+  "method": "Independent read-only inspection of final diff, source, callers, real component tests and owner-produced JSON/log evidence. No reviewer imports, tests, build, browser, API, database, credential reads or process operations.",
+  "scope": "Authorized RF03/CP3-18 legacy unsupported-currency partial valuation and CP3-06 fractional USD display only. Twelve product sources and six tests are pinned.",
+  "reviewedManifest": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/manifest.json",
+    "sha256": "556afb703d65bbf502fc4c0008e744151f3c8df3405b147dee1f3eaea48b9bf7"
+  },
+  "all18ManifestFilesIndependentlyHashed": true,
+  "findings": [],
+  "resolvedDuringReview": [
+    {
+      "issue": "Hero partial message described only accounts although total can include portfolio.",
+      "resolution": "Final source says subtotal de los componentes con valoración disponible."
+    },
+    {
+      "issue": "Bimonetary excluded-account metadata could label stored mixed balance as the primary currency amount.",
+      "resolution": "Final aggregate uses multicurrency_balance_primary for credit-card primary metadata and preserves secondary balance separately; returned original account.balance stays unchanged. Significant regression uses stored−10010, primary−10000, secondary−10."
+    }
+  ],
+  "designChecks": [
+    {
+      "area": "Opt-in and defaults",
+      "result": "PASS",
+      "evidence": "accountsService.list adds optional allowPartialValuation; omitted/false options retain original strict FX path. getTotalBalance/getTotalBalanceWithInvestments, AI get_accounts/get_net_worth and Telegram calls retain strict defaults."
+    },
+    {
+      "area": "Failure boundaries",
+      "result": "PASS",
+      "evidence": "No new catch wraps account query, multicurrency RPC, blue provider or supported currency rates. Only currencies outside the exact existing ACCOUNT_CURRENCIES set are skipped when explicitly opted in. Supported EUR or blue failures and database errors propagate; Auth is still checked by routes before owner-scoped account query."
+    },
+    {
+      "area": "No invented conversions",
+      "result": "PASS",
+      "evidence": "Excluded rows retain original balance/currency and primary/secondary balances; converted USD/ARS fields are absent, not fabricated0/1. AccountEquivalents and card/list/detail components gate conversion UI on valuationIssue and show explicit reason."
+    },
+    {
+      "area": "Included-account filters",
+      "result": "PASS",
+      "evidence": "User scope and active-account query remain unchanged. includeInvestments:false remains functional. aggregate checks include_in_total:false before valuation exclusion, so intentionally excluded rows do not make the selected total incomplete. include_in_liquid classification and supported/debt valuation remain unchanged."
+    },
+    {
+      "area": "Bimonetary semantics",
+      "result": "PASS",
+      "evidence": "An unsupported leg excludes the whole bimonetary account conservatively and explicitly, as approved by parent; both original leg amounts are disclosed. It does not present only the known leg as the full account value or silently treat secondary debt as0."
+    },
+    {
+      "area": "Snapshots and history",
+      "result": "PASS",
+      "evidence": "recordNetWorthSnapshot returnsfalse before obtaining/upserting a snapshot when valuation.partial. Dashboard also suppresses snapshot call and StickyNetWorthBar on partial totals. Hero suppresses complete-vs-partial delta; existing history-only chart series remains unchanged, with no invented today point. History is still readable."
+    },
+    {
+      "area": "Partial UI and privacy",
+      "result": "PASS",
+      "evidence": "Real Hero exposes explicit subtotal/excluded account names, original currencies/amounts and reason; hidden Hero amounts respect its existing privacy mask. JSX escapes the dynamic strings. Accounts/card/detail prevent fake converted zero rows."
+    },
+    {
+      "area": "USD precision",
+      "result": "PASS",
+      "evidence": "Hero main/secondary/delta and monetary tooltip use2decimals for fractionalUSD and0for integers; Sticky USD uses same selection. ARS formatting and compact chart ticks are unchanged. Unit SSR reaches the actual Hero defaultARS equivalent; it honestly does not claim hydrated USD toggle or Sticky visibility."
+    }
+  ],
+  "ownerValidation": {
+    "verification": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/verification.json",
+      "sha256": "5101b21584351905acc4a6b4f19063405bf8ac6ba3758a61686b940116c5b09b"
+    },
+    "finalFocal": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/focused-final.json",
+      "sha256": "75f0eea8549952781e3da1947964afe2f390948e608c53ff13ebff91512749bc"
+    },
+    "passed": 51,
+    "failed": 0,
+    "physicalTestFiles": 6,
+    "all51AssertionsIndividuallyCheckedInJson": true,
+    "typecheckExitCode": 0,
+    "lintExitCode": 0,
+    "diffCheckExitCode": 0,
+    "reviewerExecutedTheseChecks": false,
+    "initialAndFinalRunsOverlapNot102UniqueChecks": true
+  },
+  "limitations": [
+    "This source/unit/SSR change is not original CP3-18 authenticated API/system PASS or a CI6 global build. Those separately authorized tests remain required.",
+    "Original CI5 CP3-18 API500 and CP3-06 SSR182 failures remain immutable historical evidence bound to7c3e872/vPLj. No new source is attributed to that old served app.",
+    "Account pages already had catch-to-empty behavior; this patch does not add that catch and does not prove universal failure handling for those pages. API/dashboard/service failure boundaries inspected here are narrower.",
+    "SSR main Hero value still starts0 pending its existing client count-up. Static tests use actual secondary value and do not invent a completed animation/visual check.",
+    "Supported FX provider availability, production behavior, new currency support and schema changes are outside this review."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/manifest.json",
+      "sha256": "556afb703d65bbf502fc4c0008e744151f3c8df3405b147dee1f3eaea48b9bf7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/verification.json",
+      "sha256": "5101b21584351905acc4a6b4f19063405bf8ac6ba3758a61686b940116c5b09b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/focused-initial.json",
+      "sha256": "14766bd35fe82400ef06982b0fee5e6dd086bff99a177cf6eac6d8cb9fe5bde6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/focused-final.json",
+      "sha256": "75f0eea8549952781e3da1947964afe2f390948e608c53ff13ebff91512749bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/typecheck-final.log",
+      "sha256": "469f7b7deaf0603039d0351d61b584c9c9a9f9e495a3dde5eeb847324a9e7e24"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/partial-account-valuation/lint-final.log",
+      "sha256": "51c8dd63532a872bf1372aad08ac7b185bb4edf7596b8e7344f32326d425a56b"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "8d054941142c18363bac25f027aade6e88e111c38665a3ac1e8f53ce2fa8fdab"
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "4ccb9c3fcd79fb087d23a97e7dd42797b3a66b9439cb31647eb48a4eae142bf9"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "109cf8c390ab92d611e3485c803275c4692c2d514b546ff14f4d1d5f374912d3"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "c5f7dc9c57ac269b6016779db679d78406ec68c67187ac40bf40cb2ed92417c8"
+    },
+    {
+      "path": "app/(authenticated)/accounts/page.tsx",
+      "sha256": "49e45f931bce4aefd3b054fbde5c79310dc471f267df3005ca5d3307fee33fb6"
+    },
+    {
+      "path": "app/(authenticated)/accounts/[id]/page.tsx",
+      "sha256": "aee251477b6cbec25b59b09478305384c57268140ab562b65eea6615e5368b8d"
+    },
+    {
+      "path": "components/accounts/AccountBalanceEquivalents.tsx",
+      "sha256": "d25b2eb092adbc5cbe8813963d9e302668bf49765da433129c4bb1923e9d18c2"
+    },
+    {
+      "path": "components/accounts/AccountsList.tsx",
+      "sha256": "431eccb2bd6a9876eccfcdbfd842da09267bdc48982ab309b48d15380180f04e"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "de22df2cd35af938fdda8123099efa229ce503ad3785cf05229fd8e1e7f40762"
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "sha256": "776f4787fd7de770de77fa75b4f102fc0b530cfd92fdd3e891bf9864422b3847"
+    },
+    {
+      "path": "components/dashboard/AccountCards.tsx",
+      "sha256": "1db7fa58c2d880e560197b1791ecf2569c2ea4d5610b047c3cd53637a6d3efad"
+    },
+    {
+      "path": "components/dashboard/CreditCardsWidget.tsx",
+      "sha256": "ae66dc3ad2d3795a310751ec23734a1523f524d612aa4af4ab5e781d5ab59886"
+    },
+    {
+      "path": "__tests__/blue-fx-metadata.test.ts",
+      "sha256": "1041264afe9634859514e3db1aeafb95c2d8927ac25850cd8b49468e5b0f52a0"
+    },
+    {
+      "path": "__tests__/financial-read-errors.test.ts",
+      "sha256": "c842c11581ef76fd9e9cf45f39d0ca336d40bc65b3a1d7aa83a521fca2b8c4bb"
+    },
+    {
+      "path": "__tests__/dashboard-read-failures.test.ts",
+      "sha256": "df7c83bd026608ea36ee4149412b2bc2049fce16f6f9edf4fac5574f47da35dc"
+    },
+    {
+      "path": "__tests__/cp318-account-equivalents.test.ts",
+      "sha256": "64b08e2f0821262cd56d1b1ca361004045fde227e957caca260c890dcdd938c8"
+    },
+    {
+      "path": "__tests__/cp318-net-worth-hero.test.ts",
+      "sha256": "2b35c6195d3d6f9e06cb56ecb7f26acbf52b455db9e10f8e2f1f7a3d3fea076d"
+    },
+    {
+      "path": "__tests__/net-worth-usd-formatting.test.ts",
+      "sha256": "7a05c358b2f9513b229cedc1b8089017bdc48a891619a083036397162c30c629"
+    }
+  ]
+}

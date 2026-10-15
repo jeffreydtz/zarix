@@ -46,6 +46,15 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('Financial read failures keep unavailable data distinct from zero', () => {
+  it('does not overwrite a complete snapshot with an explicitly partial known subtotal', async () => {
+    const valuation = { status: 'partial', excludedAccounts: [{ accountId: 'legacy', name: 'Legacy', currency: 'ZZZ', balance: 10, currencies: ['ZZZ'], reason: 'unsupported_currency' }] };
+    mocks.aggregateAccounts.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000, valuation });
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ totalARSBlue: 180000, valuation });
+    await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
+    expect(mocks.accounts).toHaveBeenCalledWith('user-A', { allowPartialValuation: true });
+    expect(mocks.upsert).not.toHaveBeenCalled();
+    expect(mocks.from).not.toHaveBeenCalledWith('net_worth_snapshots');
+  });
   it.each(['accounts', 'portfolio'] as const)('does not overwrite a snapshot when %s fails despite a valid blue rate', async component => {
     const failure = new Error(`${component} unavailable`);
     mocks[component].mockRejectedValue(failure);

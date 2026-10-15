@@ -54,6 +54,18 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('dashboard read failures preserve financial truth', () => {
+  it('propagates explicit known-subtotal exclusions and never records a partial current point', async () => {
+    mocks.portfolio.mockResolvedValue({ totalCurrentValue: 0, totalCurrentValueArsBlue: 0, investments: [] });
+    mocks.totals.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
+      valuation: { status: 'partial', excludedAccounts: [{ accountId: 'legacy', name: 'Legacy', currency: 'ZZZ', balance: 10, currencies: ['ZZZ'], reason: 'unsupported_currency' }] } });
+    const html = renderToStaticMarkup(await DashboardPage());
+    expect(html).toContain('&quot;totalARSBlue&quot;:120000');
+    expect(html).toContain('&quot;status&quot;:&quot;partial&quot;');
+    expect(html).toContain('&quot;currency&quot;:&quot;ZZZ&quot;');
+    expect(html).not.toContain('No pudimos cargar tus datos financieros');
+    expect(mocks.accounts).toHaveBeenCalledWith('synthetic-user', { allowPartialValuation: true });
+    expect(mocks.snapshot).not.toHaveBeenCalled();
+  });
   it.each(['accounts', 'transactions', 'portfolio', 'history', 'monthFlow', 'upcoming', 'budgets'] as const)(
     'shows unavailable and retry instead of partial financial values when %s fails', async source => {
       mocks[source].mockRejectedValueOnce(new Error('synthetic database timeout'));

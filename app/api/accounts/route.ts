@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const lite = req.nextUrl.searchParams.get('lite') === '1';
     const accounts = lite
       ? await accountsService.listReferenceAccounts(user.id)
-      : await accountsService.list(user.id);
+      : await accountsService.list(user.id, { allowPartialValuation: true });
     return NextResponse.json(accounts);
   } catch (error: any) {
     console.error('Accounts GET error:', error);

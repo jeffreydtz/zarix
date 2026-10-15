@@ -21,7 +21,7 @@ export default async function AccountsPage() {
     }
 
     const [accounts, archivedAccounts, choices, subscription] = await Promise.all([
-      accountsService.list(user.id).catch(() => []),
+      accountsService.list(user.id, { allowPartialValuation: true }).catch(() => []),
       accountsService.listArchived(user.id).catch(() => []),
       supabase.from('accounts').select('id, name, movement_enabled').eq('user_id', user.id).eq('is_active', true).order('sort_order'),
       subscriptionsService.getUserState(user.id),

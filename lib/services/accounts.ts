@@ -97,6 +97,22 @@ export interface AccountWithBalance extends Account {
   multicurrency_total_ars_blue?: number;
   /** USD/ARS leg only; other currency crosses may use separate references. */
   blueReference?: BlueFxReference;
+  /** Read-only exclusion; original balances/currencies are never replaced. */
+  valuationIssue?: { reason: 'unsupported_currency'; currencies: string[] };
+}
+
+export interface PartialAccountValuation {
+  status: 'partial';
+  excludedAccounts: Array<{
+    accountId: string;
+    name: string;
+    currency: string;
+    balance: number;
+    secondaryCurrency?: string;
+    secondaryBalance?: number;
+    reason: 'unsupported_currency';
+    currencies: string[];
+  }>;
 }
 
 /** Totales derivados de `list()` — misma cotización que cada fila. */
@@ -112,6 +128,8 @@ export interface AccountAggregates {
   totalCreditLimit: number;
   creditUtilization: number;
   blueReferences?: BlueFxReference[];
+  /** When present, numeric totals contain only fully valued included accounts. */
+  valuation?: PartialAccountValuation;
 }
 
 function roundMoney(n: number): number {
@@ -251,7 +269,7 @@ class AccountsService {
    * Lista cuentas activas del usuario, incluyendo tipo `investment` (brokers, etc.) por defecto.
    * Pasá `includeInvestments: false` solo si necesitás ocultar esas cuentas.
    */
-  async list(userId: string, options?: { includeInvestments?: boolean }): Promise<AccountWithBalance[]> {
+  async list(userId: string, options?: { includeInvestments?: boolean; allowPartialValuation?: boolean }): Promise<AccountWithBalance[]> {
     const supabase = createServiceClientSync();
 
     let query = supabase
@@ -278,7 +296,8 @@ class AccountsService {
 
     const [usdRates, multicurrencyBalances] = await Promise.all([
       this.buildUsdRates(
-        accounts.flatMap((a) => [a.currency, a.secondary_currency || '']),
+        accounts.flatMap((a) => [a.currency, a.secondary_currency || ''])
+          .filter(currency => !options?.allowPartialValuation || ACCOUNT_CURRENCIES.has(normalizeAccountCurrency(currency))),
         blueRate
       ),
       this.computeMulticurrencyBalances(userId, accounts as Account[]),
@@ -286,10 +305,24 @@ class AccountsService {
 
     const accountsWithConversion = accounts.map((account) => {
       const balance = Number(account.balance);
+      const multi = multicurrencyBalances.get(account.id);
+      const unsupported = [account.currency,
+        ...(account.is_multicurrency && account.secondary_currency ? [account.secondary_currency] : []),
+      ].map(normalizeAccountCurrency).filter(currency => !ACCOUNT_CURRENCIES.has(currency));
+      if (options?.allowPartialValuation && unsupported.length > 0) {
+        // Exclude the whole account if either currency cannot be valued. Do not
+        // silently treat a secondary debt as zero or request arbitrary FX pairs.
+        return {
+          ...account,
+          balance,
+          multicurrency_balance_primary: multi?.primary,
+          multicurrency_balance_secondary: multi?.secondary,
+          valuationIssue: { reason: 'unsupported_currency' as const, currencies: [...new Set(unsupported)] },
+        };
+      }
       const rateToUSD = this.getRateToUsd(usdRates, account.currency);
       let balanceUSD = 0;
       let balanceARSBlue = 0;
-      const multi = multicurrencyBalances.get(account.id);
       const secondaryRateToUSD = this.getRateToUsd(usdRates, account.secondary_currency);
       if (rateToUSD > 0) {
         balanceUSD = balance * rateToUSD;
@@ -338,6 +371,7 @@ class AccountsService {
    * - Inversiones: `type === 'investment'`.
    */
   aggregateAccountTotals(accounts: AccountWithBalance[]): AccountAggregates {
+    const excludedAccounts: PartialAccountValuation['excludedAccounts'] = [];
     let liquidUSD = 0;
     let liquidARSBlue = 0;
     let nonLiquidUSD = 0;
@@ -349,6 +383,19 @@ class AccountsService {
 
     for (const a of accounts) {
       if (a.include_in_total === false) continue;
+      if (a.valuationIssue) {
+        excludedAccounts.push({
+          accountId: a.id, name: a.name, currency: a.currency,
+          balance: Number(a.type === 'credit_card' && a.is_multicurrency
+            ? a.multicurrency_balance_primary ?? a.balance : a.balance),
+          ...(a.is_multicurrency && a.secondary_currency ? {
+            secondaryCurrency: a.secondary_currency,
+            secondaryBalance: a.multicurrency_balance_secondary,
+          } : {}),
+          ...a.valuationIssue,
+        });
+        continue;
+      }
 
       if (a.type === 'credit_card') {
         const creditUsed = a.is_multicurrency
@@ -387,6 +434,7 @@ class AccountsService {
     const totalARSBlue = liquidARSBlue + nonLiquidARSBlue + investmentsARSBlue;
 
     return {
+      ...(excludedAccounts.length ? { valuation: { status: 'partial' as const, excludedAccounts } } : {}),
       blueReferences: uniqueBlueFxReferences(accounts.filter(account => account.include_in_total !== false)
         .map(account => account.blueReference)),
       liquidUSD: roundMoney(liquidUSD),
