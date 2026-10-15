@@ -1,0 +1,113 @@
+
+> zarix@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.27
+   - Experiments (use with caution):
+     · serverActions
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/31) ...
+   Generating static pages (7/31) 
+   Generating static pages (15/31) 
+   Generating static pages (23/31) 
+ ✓ Generating static pages (31/31)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                         Size  First Load JS
+┌ ƒ /                                            15.3 kB         173 kB
+├ ○ /_not-found                                     1 kB         104 kB
+├ ƒ /accounts                                    10.2 kB         256 kB
+├ ƒ /accounts/[id]                               2.39 kB         261 kB
+├ ƒ /analysis                                    4.36 kB         151 kB
+├ ƒ /api/accounts                                  283 B         103 kB
+├ ƒ /api/accounts/[id]                             283 B         103 kB
+├ ƒ /api/accounts/[id]/adjust-balance              283 B         103 kB
+├ ƒ /api/accounts/[id]/adjust-secondary-balance    283 B         103 kB
+├ ƒ /api/accounts/[id]/correct-debt-sign           283 B         103 kB
+├ ƒ /api/accounts/[id]/reconcile-balance           283 B         103 kB
+├ ƒ /api/accounts/[id]/repair-currency-range       283 B         103 kB
+├ ƒ /api/accounts/movement-selection               283 B         103 kB
+├ ƒ /api/ai/anomalies                              283 B         103 kB
+├ ƒ /api/ai/chat                                   283 B         103 kB
+├ ƒ /api/ai/projections                            283 B         103 kB
+├ ƒ /api/auth/dev-login                            283 B         103 kB
+├ ƒ /api/auth/link-telegram                        283 B         103 kB
+├ ƒ /api/auth/telegram-link-code                   283 B         103 kB
+├ ƒ /api/billing/cancel                            283 B         103 kB
+├ ƒ /api/billing/subscription-link                 283 B         103 kB
+├ ƒ /api/budgets                                   283 B         103 kB
+├ ƒ /api/budgets/[id]                              283 B         103 kB
+├ ƒ /api/budgets/status                            283 B         103 kB
+├ ƒ /api/categories                                283 B         103 kB
+├ ƒ /api/categories/[id]                           283 B         103 kB
+├ ƒ /api/cotizaciones                              283 B         103 kB
+├ ƒ /api/cotizaciones/transactions-fx              283 B         103 kB
+├ ƒ /api/cron/budget-alerts                        283 B         103 kB
+├ ƒ /api/cron/maturity-alerts                      283 B         103 kB
+├ ƒ /api/cron/monthly-summary                      283 B         103 kB
+├ ƒ /api/cron/net-worth-snapshot                   283 B         103 kB
+├ ƒ /api/cron/notification-outbox                  283 B         103 kB
+├ ƒ /api/cron/recurring                            283 B         103 kB
+├ ƒ /api/cron/subscription-grace                   283 B         103 kB
+├ ƒ /api/cron/update-prices                        283 B         103 kB
+├ ƒ /api/cron/weekly-summary                       283 B         103 kB
+├ ƒ /api/export/backup                             283 B         103 kB
+├ ƒ /api/export/transactions                       283 B         103 kB
+├ ƒ /api/health                                    283 B         103 kB
+├ ƒ /api/import/transactions                       283 B         103 kB
+├ ƒ /api/investments                               283 B         103 kB
+├ ƒ /api/investments/[id]                          283 B         103 kB
+├ ƒ /api/investments/[id]/sell                     283 B         103 kB
+├ ƒ /api/investments/performance                   283 B         103 kB
+├ ƒ /api/investments/portfolio                     283 B         103 kB
+├ ƒ /api/investments/quote                         283 B         103 kB
+├ ƒ /api/investments/ticker-search                 283 B         103 kB
+├ ƒ /api/market-data                               283 B         103 kB
+├ ƒ /api/recurring                                 283 B         103 kB
+├ ƒ /api/recurring/[id]                            283 B         103 kB
+├ ƒ /api/shared-groups                             283 B         103 kB
+├ ƒ /api/shared-groups/[id]                        283 B         103 kB
+├ ƒ /api/shared/[token]                            283 B         103 kB
+├ ƒ /api/shared/[token]/expenses                   283 B         103 kB
+├ ƒ /api/shared/[token]/expenses/[expenseId]       283 B         103 kB
+├ ƒ /api/telegram/webhook                          283 B         103 kB
+├ ƒ /api/telegram/webhook/u/[secret]               283 B         103 kB
+├ ƒ /api/transactions                              283 B         103 kB
+├ ƒ /api/transactions/[id]                         283 B         103 kB
+├ ƒ /api/transactions/bulk                         283 B         103 kB
+├ ƒ /api/transactions/summary                      283 B         103 kB
+├ ƒ /api/user/integrations                         283 B         103 kB
+├ ƒ /api/user/notification-preferences             283 B         103 kB
+├ ƒ /api/user/onboarding                           283 B         103 kB
+├ ƒ /api/user/subscription                         283 B         103 kB
+├ ƒ /api/webhooks/mercado-pago                     283 B         103 kB
+├ ƒ /auth/callback                                 283 B         103 kB
+├ ƒ /budgets                                     8.55 kB         158 kB
+├ ƒ /categories                                     5 kB         111 kB
+├ ƒ /dashboard                                    128 kB         355 kB
+├ ○ /demo                                        3.12 kB         109 kB
+├ ƒ /expenses                                    2.73 kB         254 kB
+├ ƒ /investments                                 17.7 kB         242 kB
+├ ○ /login                                       7.25 kB         226 kB
+├ ƒ /recurring                                     10 kB         163 kB
+├ ○ /register                                    5.11 kB         224 kB
+├ ƒ /settings                                    19.7 kB         238 kB
+├ ƒ /shared                                      3.23 kB         109 kB
+└ ƒ /shared/[token]                              6.68 kB         190 kB
++ First Load JS shared by all                     103 kB
+  ├ chunks/1255-8dc91b756d944555.js              46.2 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js          54.2 kB
+  └ other shared chunks (total)                  2.37 kB
+
+
+ƒ Middleware                                     94.4 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

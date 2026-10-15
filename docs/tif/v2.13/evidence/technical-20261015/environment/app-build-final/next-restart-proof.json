@@ -1,0 +1,18 @@
+{
+  "purpose": "isolated-offline-server-restart",
+  "appOrigin": "http://127.0.0.1:3000",
+  "before": {
+    "pid": 94395,
+    "buildId": "kxdFHyjeNiKh0b2feujgO",
+    "stoppedAt": "2026-10-15T01:32:20.337984Z",
+    "stopConfirmed": true
+  },
+  "after": {
+    "pid": 96909,
+    "buildId": "kxdFHyjeNiKh0b2feujgO",
+    "startedAt": "2026-10-15T01:32:20.339907Z",
+    "readyAt": "2026-10-15T01:32:21.047165Z",
+    "startConfirmed": true,
+    "listenerOwned": true
+  }
+}

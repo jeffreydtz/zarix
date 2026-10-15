@@ -1,0 +1,40 @@
+{
+  "purpose": "isolated-e2e-app-supervisor",
+  "supervisorPid": 94393,
+  "appOrigin": "http://127.0.0.1:3000",
+  "apiOrigin": "http://127.0.0.1:57321",
+  "buildId": "kxdFHyjeNiKh0b2feujgO",
+  "nextPid": 96909,
+  "providerDouble": {
+    "port": 57910,
+    "response": 503,
+    "realIntegration": false
+  },
+  "events": [
+    {
+      "type": "start",
+      "pid": 94395,
+      "buildId": "kxdFHyjeNiKh0b2feujgO",
+      "startedAt": "2026-10-15T01:27:57.018298Z",
+      "readyAt": "2026-10-15T01:27:57.590652Z",
+      "startConfirmed": true,
+      "listenerOwned": true
+    },
+    {
+      "type": "stop",
+      "pid": 94395,
+      "buildId": "kxdFHyjeNiKh0b2feujgO",
+      "stoppedAt": "2026-10-15T01:32:20.337984Z",
+      "stopConfirmed": true
+    },
+    {
+      "type": "start",
+      "pid": 96909,
+      "buildId": "kxdFHyjeNiKh0b2feujgO",
+      "startedAt": "2026-10-15T01:32:20.339907Z",
+      "readyAt": "2026-10-15T01:32:21.047165Z",
+      "startConfirmed": true,
+      "listenerOwned": true
+    }
+  ]
+}
