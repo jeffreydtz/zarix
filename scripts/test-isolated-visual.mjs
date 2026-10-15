@@ -47,14 +47,20 @@ try{
       const nodes=anchors();
       const busyChart=cu==='CU003'&&document.querySelector('[aria-busy="true"][aria-label="Cargando gráfico"]');
       const ready=!busyChart&&nodes.every(node=>node&&node.getBoundingClientRect().width>0&&node.getBoundingClientRect().height>0&&opaque(node));
-      const signature=ready?JSON.stringify(nodes.map(node=>{const b=node.getBoundingClientRect();return [Math.round(b.x),Math.round(b.y),Math.round(b.width),Math.round(b.height),node.textContent];})):'';
+      const signature=ready?JSON.stringify({anchors:nodes.map(node=>{const b=node.getBoundingClientRect();return [Math.round(b.x),Math.round(b.y),Math.round(b.width),Math.round(b.height),node.textContent];}),svg:cu==='CU003'?[...document.querySelectorAll('main svg path,main svg rect,main svg g')].map(node=>['d','x','y','width','height','transform','style'].map(key=>node.getAttribute(key))):[]}):'';
       stableFrames=ready&&signature===previous?stableFrames+1:0;previous=signature;
       if(stableFrames>=6){done=true;clearTimeout(timeout);resolve(true);}else requestAnimationFrame(sample);
      };sample();
     });
    },name.slice(0,5));
   }
-  const file=`${name}.png`;await page.screenshot({path:path.join(output,file),fullPage:true});report.screenshots.push({path:file,sha256:hash(await fs.readFile(path.join(output,file))),captureReadiness:failureCapture?'Failure state retained without readiness claim':'Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent'});
+  // Native viewport capture avoids real200% fullPage clipping and the
+  // fixed-modal compositor artifact also observed at100%.
+  const fullPage=false;
+  const file=`${name}.png`;await page.screenshot({path:path.join(output,file),fullPage});const bytes=await fs.readFile(path.join(output,file));
+  const png={width:bytes.readUInt32BE(16),height:bytes.readUInt32BE(20)};
+  if(!failureCapture)assert.deepEqual(png,page.viewportSize(),'Native bitmap must preserve the complete configured physical viewport');
+  report.screenshots.push({path:file,sha256:hash(bytes),mode:'native viewport; no fullPage resize at either actual browser zoom',png,captureReadiness:failureCapture?'Failure state retained without readiness claim':'Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent'});
  };
  for(const viewport of [{width:320,height:568},{width:375,height:812},{width:768,height:1024},{width:1440,height:900}]) for(const zoom of [1,2]){
   await page.setViewportSize(viewport);await settings.locator('#zoomLevel').selectOption(String(zoom));
@@ -64,7 +70,14 @@ try{
     await page.goto(new URL({CU001:'/expenses',CU002:'/accounts',CU003:'/analysis',CU004:'/investments'}[cu],appUrl).href,{waitUntil:'domcontentloaded'});
     if(cu==='CU001'){await page.getByRole('button',{name:/^Nuevo(?: movimiento)?$/}).click();await page.getByPlaceholder('0',{exact:true}).fill('1250');await page.getByPlaceholder('ej: Compra en el súper').fill('Visual sintética sin guardar');await page.keyboard.press('Tab');cell.actions.push('open/fill expense; Tab; no submit');cell.control=await probeControl(page.getByRole('button',{name:'Guardar',exact:true}));}
     if(cu==='CU002'){await page.getByRole('button',{name:'Nueva Cuenta',exact:true}).click();const panel=page.locator('div.bg-card.rounded-3xl').filter({has:page.getByRole('heading',{name:'Nueva Cuenta',exact:true})});await panel.getByPlaceholder('Ej: Banco Galicia, Mercado Pago',{exact:true}).fill('Visual sintética sin guardar');await page.keyboard.press('Tab');cell.actions.push('open/fill account; Tab; no submit');cell.control=await probeControl(panel.getByRole('button',{name:'Crear Cuenta',exact:true}));}
-    if(cu==='CU003'){await page.getByRole('heading',{name:'Análisis financiero',exact:true}).waitFor();await page.keyboard.press('Tab');cell.actions.push('analysis loaded; keyboard focus and page scroll');await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));}
+    if(cu==='CU003'){
+     await page.getByRole('heading',{name:'Análisis financiero',exact:true}).waitFor();await page.keyboard.press('Tab');
+     await capture(`${cu}-${viewport.width}x${viewport.height}-zoom${zoom*100}-before-scroll`);
+     const scrollState=()=>page.evaluate(()=>({document:document.scrollingElement.scrollTop,main:document.querySelector('main')?.scrollTop||0}));
+     const before=await scrollState();await page.getByRole('heading',{name:'Análisis rápido',exact:true}).scrollIntoViewIfNeeded();const after=await scrollState();
+     cell.scroll={before,after,target:'Análisis rápido',moved:before.document!==after.document||before.main!==after.main};assert.ok(cell.scroll.moved,'Actual document or main scroll must move to the lower analysis section');
+     cell.actions.push('analysis loaded; keyboard Tab; actual document/main scroll to lower analysis section; viewport before/after retained');
+    }
     if(cu==='CU004'){await page.getByRole('button',{name:'Simular escenario',exact:true}).click();const form=page.locator('#investment-simulation-form');await form.getByLabel('Variación del precio (%)',{exact:true}).fill('10');await form.getByRole('button',{name:'Simular',exact:true}).click();await page.getByTestId('investment-simulation-result').waitFor();cell.actions.push('actual pure simulation10%; keyboard focus; no financial write');cell.control=await probeControl(form.getByRole('button',{name:'Simular',exact:true}));}
     cell.metrics=await page.evaluate(()=>({innerWidth,outerWidth,devicePixelRatio,visualViewportWidth:visualViewport.width,visualViewportScale:visualViewport.scale,scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,focusedTag:document.activeElement.tagName}));
     assert.equal(cell.metrics.devicePixelRatio,zoom,'Actual browser zoom must change CSS pixel ratio');assert.ok(Math.abs(cell.metrics.innerWidth*zoom-viewport.width)<=2,'Actual browser zoom must halve layout viewport at200%');assert.ok(cell.metrics.scrollWidth<=cell.metrics.clientWidth+1,'Global horizontal overflow');if(cell.control)assert.ok(cell.control.visible&&cell.control.horizontalBounds&&cell.control.centerReachable,'Action clipped or covered');

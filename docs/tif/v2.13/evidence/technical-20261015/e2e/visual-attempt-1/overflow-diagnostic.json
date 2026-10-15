@@ -1,0 +1,198 @@
+{
+  "startedAt": "2026-10-15T01:46:25.464Z",
+  "scope": "Read-only synthetic normal UI account login; DOM bounding/style diagnosis only at768x1024. No product/financial changes.",
+  "pages": [
+    {
+      "path": "/accounts",
+      "innerWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 781,
+      "body": {
+        "width": 768,
+        "overflow": "visible",
+        "paddingRight": "0px"
+      },
+      "offenders": [
+        {
+          "tag": "DIV",
+          "class": "flex items-center gap-1",
+          "left": 98.046875,
+          "right": 781.453125,
+          "width": 683.40625,
+          "display": "flex",
+          "position": "static",
+          "flexShrink": "1",
+          "minWidth": "auto",
+          "gap": "4px",
+          "padding": "0px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        },
+        {
+          "tag": "BUTTON",
+          "class": "relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-secondary flex items-center justify-center overflow-hidden touch-manipulation hover:bg-surface-soft transition-colors",
+          "left": 737.453125,
+          "right": 781.453125,
+          "width": 44,
+          "display": "flex",
+          "position": "relative",
+          "flexShrink": "1",
+          "minWidth": "44px",
+          "gap": "normal",
+          "padding": "0px",
+          "overflowX": "hidden",
+          "ariaLabel": "Tema: Automático (sistema). Tocar para Claro"
+        },
+        {
+          "tag": "SPAN",
+          "class": "text-foreground",
+          "left": 749.453125,
+          "right": 769.453125,
+          "width": 20,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "1",
+          "minWidth": "auto",
+          "gap": "normal",
+          "padding": "0px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        },
+        {
+          "tag": "svg",
+          "class": "lucide lucide-monitor w-5 h-5",
+          "left": 749.453125,
+          "right": 769.453125,
+          "width": 20,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "1",
+          "minWidth": "0px",
+          "gap": "normal",
+          "padding": "0px",
+          "overflowX": "hidden",
+          "ariaLabel": null
+        }
+      ]
+    },
+    {
+      "path": "/analysis",
+      "innerWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 781,
+      "body": {
+        "width": 768,
+        "overflow": "visible",
+        "paddingRight": "0px"
+      },
+      "offenders": [
+        {
+          "tag": "DIV",
+          "class": "flex items-center gap-1",
+          "left": 98.046875,
+          "right": 781.453125,
+          "width": 683.40625,
+          "display": "flex",
+          "position": "static",
+          "flexShrink": "1",
+          "minWidth": "auto",
+          "gap": "4px",
+          "padding": "0px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        },
+        {
+          "tag": "BUTTON",
+          "class": "relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-secondary flex items-center justify-center overflow-hidden touch-manipulation hover:bg-surface-soft transition-colors",
+          "left": 737.453125,
+          "right": 781.453125,
+          "width": 44,
+          "display": "flex",
+          "position": "relative",
+          "flexShrink": "1",
+          "minWidth": "44px",
+          "gap": "normal",
+          "padding": "0px",
+          "overflowX": "hidden",
+          "ariaLabel": "Tema: Automático (sistema). Tocar para Claro"
+        },
+        {
+          "tag": "SPAN",
+          "class": "text-foreground",
+          "left": 749.453125,
+          "right": 769.453125,
+          "width": 20,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "1",
+          "minWidth": "auto",
+          "gap": "normal",
+          "padding": "0px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        },
+        {
+          "tag": "svg",
+          "class": "lucide lucide-monitor w-5 h-5",
+          "left": 749.453125,
+          "right": 769.453125,
+          "width": 20,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "1",
+          "minWidth": "0px",
+          "gap": "normal",
+          "padding": "0px",
+          "overflowX": "hidden",
+          "ariaLabel": null
+        },
+        {
+          "tag": "BUTTON",
+          "class": "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold min-h-[36px] transition-colors bg-secondary text-muted-foreground hover:text-foreground",
+          "left": 716.1875,
+          "right": 836.328125,
+          "width": 120.140625,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "0",
+          "minWidth": "auto",
+          "gap": "normal",
+          "padding": "6px 12px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        },
+        {
+          "tag": "BUTTON",
+          "class": "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold min-h-[36px] transition-colors bg-secondary text-muted-foreground hover:text-foreground",
+          "left": 844.328125,
+          "right": 917.96875,
+          "width": 73.640625,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "0",
+          "minWidth": "auto",
+          "gap": "normal",
+          "padding": "6px 12px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        },
+        {
+          "tag": "BUTTON",
+          "class": "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold min-h-[36px] transition-colors bg-secondary text-muted-foreground hover:text-foreground",
+          "left": 925.96875,
+          "right": 1032.375,
+          "width": 106.40625,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "0",
+          "minWidth": "auto",
+          "gap": "normal",
+          "padding": "6px 12px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-10-15T01:46:27.963Z"
+}

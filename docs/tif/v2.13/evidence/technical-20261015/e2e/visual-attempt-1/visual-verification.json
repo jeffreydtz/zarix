@@ -1,0 +1,1193 @@
+{
+  "startedAt": "2026-10-15T01:44:21.407Z",
+  "status": "FAIL",
+  "scope": "Exactly four CU; installed Chrome responsive read/unsaved form keyboard probes and ordinary JSON download. Partial visual scope; no OCR, budget, reset, AI chat or completed purchase/sale across each viewport.",
+  "cells": [
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 283
+      },
+      "metrics": {
+        "innerWidth": 320,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 320,
+        "visualViewportScale": 1,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 279
+      },
+      "metrics": {
+        "innerWidth": 320,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 320,
+        "visualViewportScale": 1,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 133.15625
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard focus and page scroll"
+      ],
+      "metrics": {
+        "innerWidth": 320,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 320,
+        "visualViewportScale": 1,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 320,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 320,
+        "visualViewportScale": 1,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 123
+      },
+      "metrics": {
+        "innerWidth": 160,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 160,
+        "visualViewportScale": 1,
+        "scrollWidth": 160,
+        "clientWidth": 160,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 119
+      },
+      "metrics": {
+        "innerWidth": 160,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 160,
+        "visualViewportScale": 1,
+        "scrollWidth": 160,
+        "clientWidth": 160,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 127
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard focus and page scroll"
+      ],
+      "metrics": {
+        "innerWidth": 160,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 160,
+        "visualViewportScale": 1,
+        "scrollWidth": 160,
+        "clientWidth": 160,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 160,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 160,
+        "visualViewportScale": 1,
+        "scrollWidth": 160,
+        "clientWidth": 160,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 338
+      },
+      "metrics": {
+        "innerWidth": 375,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 375,
+        "visualViewportScale": 1,
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 334
+      },
+      "metrics": {
+        "innerWidth": 375,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 375,
+        "visualViewportScale": 1,
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 192.25,
+        "right": 292.40625
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard focus and page scroll"
+      ],
+      "metrics": {
+        "innerWidth": 375,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 375,
+        "visualViewportScale": 1,
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 375,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 375,
+        "visualViewportScale": 1,
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 150.5
+      },
+      "metrics": {
+        "innerWidth": 187,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 187.5,
+        "visualViewportScale": 1,
+        "scrollWidth": 187,
+        "clientWidth": 187,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 146.5
+      },
+      "metrics": {
+        "innerWidth": 187,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 187.5,
+        "visualViewportScale": 1,
+        "scrollWidth": 187,
+        "clientWidth": 187,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 129.15625
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard focus and page scroll"
+      ],
+      "metrics": {
+        "innerWidth": 187,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 187.5,
+        "visualViewportScale": 1,
+        "scrollWidth": 187,
+        "clientWidth": 187,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 187,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 187.5,
+        "visualViewportScale": 1,
+        "scrollWidth": 187,
+        "clientWidth": 187,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "status": "FAIL",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 185,
+        "right": 583
+      },
+      "metrics": {
+        "innerWidth": 768,
+        "outerWidth": 768,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 768,
+        "visualViewportScale": 1,
+        "scrollWidth": 781,
+        "clientWidth": 768,
+        "focusedTag": "BUTTON"
+      },
+      "errorType": "AssertionError"
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "status": "FAIL",
+      "actions": [
+        "open/fill account; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 185,
+        "right": 583
+      },
+      "metrics": {
+        "innerWidth": 768,
+        "outerWidth": 768,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 768,
+        "visualViewportScale": 1,
+        "scrollWidth": 781,
+        "clientWidth": 768,
+        "focusedTag": "BUTTON"
+      },
+      "errorType": "AssertionError"
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "status": "FAIL",
+      "actions": [
+        "analysis loaded; keyboard focus and page scroll"
+      ],
+      "metrics": {
+        "innerWidth": 768,
+        "outerWidth": 768,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 768,
+        "visualViewportScale": 1,
+        "scrollWidth": 781,
+        "clientWidth": 768,
+        "focusedTag": "A"
+      },
+      "errorType": "AssertionError"
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "status": "FAIL",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 131.515625
+      },
+      "metrics": {
+        "innerWidth": 768,
+        "outerWidth": 768,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 768,
+        "visualViewportScale": 1,
+        "scrollWidth": 781,
+        "clientWidth": 768,
+        "focusedTag": "BUTTON"
+      },
+      "errorType": "AssertionError"
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 347
+      },
+      "metrics": {
+        "innerWidth": 384,
+        "outerWidth": 768,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 384,
+        "visualViewportScale": 1,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 343
+      },
+      "metrics": {
+        "innerWidth": 384,
+        "outerWidth": 768,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 384,
+        "visualViewportScale": 1,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 188.25,
+        "right": 284.40625
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard focus and page scroll"
+      ],
+      "metrics": {
+        "innerWidth": 384,
+        "outerWidth": 768,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 384,
+        "visualViewportScale": 1,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 384,
+        "outerWidth": 768,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 384,
+        "visualViewportScale": 1,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 521,
+        "right": 919
+      },
+      "metrics": {
+        "innerWidth": 1440,
+        "outerWidth": 1440,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 1440,
+        "visualViewportScale": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 521,
+        "right": 919
+      },
+      "metrics": {
+        "innerWidth": 1440,
+        "outerWidth": 1440,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 1440,
+        "visualViewportScale": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 458.34375,
+        "right": 550.484375
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard focus and page scroll"
+      ],
+      "metrics": {
+        "innerWidth": 1440,
+        "outerWidth": 1440,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 1440,
+        "visualViewportScale": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 165,
+        "right": 255.515625
+      },
+      "metrics": {
+        "innerWidth": 1440,
+        "outerWidth": 1440,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 1440,
+        "visualViewportScale": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 161,
+        "right": 559
+      },
+      "metrics": {
+        "innerWidth": 720,
+        "outerWidth": 1440,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 720,
+        "visualViewportScale": 1,
+        "scrollWidth": 720,
+        "clientWidth": 720,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 161,
+        "right": 559
+      },
+      "metrics": {
+        "innerWidth": 720,
+        "outerWidth": 1440,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 720,
+        "visualViewportScale": 1,
+        "scrollWidth": 720,
+        "clientWidth": 720,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 182.34375,
+        "right": 270.484375
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard focus and page scroll"
+      ],
+      "metrics": {
+        "innerWidth": 720,
+        "outerWidth": 1440,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 720,
+        "visualViewportScale": 1,
+        "scrollWidth": 720,
+        "clientWidth": 720,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 720,
+        "outerWidth": 1440,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 720,
+        "visualViewportScale": 1,
+        "scrollWidth": 720,
+        "clientWidth": 720,
+        "focusedTag": "BUTTON"
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "CU001-320x568-zoom100.png",
+      "sha256": "5aea80ded4cd98dfd367d35ed5572a00a1d6940cee21030dfa5d37ea0111a3bc",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-320x568-zoom100.png",
+      "sha256": "6a1504a841f5330f829fb4892d4a52b1205be9bdf2122d4900669bde710bf346",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-320x568-zoom100.png",
+      "sha256": "1e44f791340ad2f665465ed20166a2eda7d72515d3321fc31c901e0fd272e154",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-320x568-zoom100.png",
+      "sha256": "c956d9a4e454e75c8784d60989b99a2c2b80140a7e0b6fd76d2ac16bfa775996",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-320x568-zoom200.png",
+      "sha256": "22b1d0f5d92880747798457855ceda2ec6b9ba64c0d034fd259d8eb91d54dda5",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-320x568-zoom200.png",
+      "sha256": "f819c1310f1de1d8886a34e6e55db9f9cea0f10206ef6ac9f71d61b82ed72e83",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-320x568-zoom200.png",
+      "sha256": "992d6668a893f01d8a7510745dcb6bb150847755d74c56a148aafc4febdf68bc",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-320x568-zoom200.png",
+      "sha256": "7b41b126e900171ba81c5a4e177773d62e94a931d068474d0a923ab28f8ebc7f",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-375x812-zoom100.png",
+      "sha256": "3a12841b5bb89f9098ecf0104651f0dc5a73dfa3b1296abafb7144313487d3d7",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-375x812-zoom100.png",
+      "sha256": "7674ccd37b1690c9c375e799aa141154f75bc1ec39534498f16799c9ec9b8070",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-375x812-zoom100.png",
+      "sha256": "37f09284a6fd36a7b0dcfb35d630389a32424618c395702b92d167c06bf4adc5",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-375x812-zoom100.png",
+      "sha256": "676665f7256353e5dbfdea3083a6a49c3498fa886b79c997058a8a368e3e043a",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-375x812-zoom200.png",
+      "sha256": "a8fd278428b6066e7f19e0a8aa931fb6b5f56bdfc9e4691635f14ff127e31f3e",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-375x812-zoom200.png",
+      "sha256": "56f9a766624fc93afaf302491ca0f61608836fab7144691e1e33104b03ab5d8b",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-375x812-zoom200.png",
+      "sha256": "a439c75b265a3fb1f40a86b6be2ce0057f068cf207f2860e437a2ebd466bb064",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-375x812-zoom200.png",
+      "sha256": "ccfe6bd20a41ad5df85dc4f692ae6859277774e2c3e6ad9c1778208a8d165f2b",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-768x1024-zoom100-failure.png",
+      "sha256": "bbc3c69ed4b1d71d6beb1644086e293ee5165613c14649b7cba4e754b667bd82",
+      "captureReadiness": "Failure state retained without readiness claim"
+    },
+    {
+      "path": "CU002-768x1024-zoom100-failure.png",
+      "sha256": "6f560278dc8bbff11491eeb0cf3b3a0debd9f07a03946f82328d643a0c58726d",
+      "captureReadiness": "Failure state retained without readiness claim"
+    },
+    {
+      "path": "CU003-768x1024-zoom100-failure.png",
+      "sha256": "4ec4703e2eee15241b4d59d55ce4d4776424f69674fd5ff7297d0383587e56d8",
+      "captureReadiness": "Failure state retained without readiness claim"
+    },
+    {
+      "path": "CU004-768x1024-zoom100-failure.png",
+      "sha256": "12705abeccde600c755c42c486a8b0ff47b2e41a6147bc68f79f64802f6ccb82",
+      "captureReadiness": "Failure state retained without readiness claim"
+    },
+    {
+      "path": "CU001-768x1024-zoom200.png",
+      "sha256": "740dbffbd6fad2cf9e3e98f1f4d14f526364552cdbcc4bab21843b2ca19c5405",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-768x1024-zoom200.png",
+      "sha256": "c40a15cff1bdc2b1a113d889752255c7671ca91d563763ba5c171aa32143ec37",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-768x1024-zoom200.png",
+      "sha256": "11d7151da32c05e1e5b6db636be47e6e7b8f9ede1623578f84e2f216de5f1882",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-768x1024-zoom200.png",
+      "sha256": "e83ae002146bafab75bae4c72d5ed03d0723a44c4848cbcb1f0597cb68372ff3",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-1440x900-zoom100.png",
+      "sha256": "9d4a8bd17ea3f60736308d32755ffacdf23652b87f3fdbf9db77754f74222893",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-1440x900-zoom100.png",
+      "sha256": "391e85a17ba0ea9584da0ec298da64f44209058f5637a17fc918a97ca54f2b96",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-1440x900-zoom100.png",
+      "sha256": "5d41012bdc10fd97999d9addca8c6bb51065f85ffb6300e5303a70920871cff6",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-1440x900-zoom100.png",
+      "sha256": "835ae1172be9654fb8a879ca5be30e7282c4e79b76ceecafa32195a5355c9f16",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-1440x900-zoom200.png",
+      "sha256": "2ee9d3b5870191fa0475c28d970ef995feca2e3b5337e75de0ed00768ae3d29a",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-1440x900-zoom200.png",
+      "sha256": "23b8966d3f1bf307d332036032db544fd63f96061de408e84004c7c64c5576e7",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-1440x900-zoom200.png",
+      "sha256": "82e497097010296e73bdadbe421bff41cfdfe026629d7c9fdf7d1401e3378fe1",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-1440x900-zoom200.png",
+      "sha256": "4d9d326181af261d1aad102f5c482c78cf28d5fd87984f2e585a75ce20c00dd0",
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    }
+  ],
+  "blockers": [
+    {
+      "ids": [
+        "CNF-05",
+        "CNF-06",
+        "CNF-07",
+        "CNF-08"
+      ],
+      "reason": "This submatrix proves only listed visible/read/unsaved-form/simulation/download actions. OCRpreview, budget rules, login/reset, AI chat/anomalies and actual buy/sell completion per viewport remain separate."
+    },
+    {
+      "id": "CNF-09",
+      "reason": "Only installed Chrome executed; real Safari, Firefox and Edge have separate cells and are never inferred."
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "scripts/test-isolated-visual.mjs",
+      "sha256": "ca6ea0de639dfe2ded17fb3ecf5ad21ff55cb58ac45907c6e242ae9410d37ff9"
+    },
+    {
+      "path": "docs/testing/isolated-e2e.md",
+      "sha256": "542ddc787ce86807b6cb9459896cafb66b0be1a6df1fe1c847e1978255d478bc"
+    },
+    {
+      "path": "components/accounts/CreateAccountButton.tsx",
+      "sha256": "1615cfbbbc2643e2faf687d72cdbebee0d644187bda7b9fef73a64b41dc1be34"
+    },
+    {
+      "path": "components/settings/ExportImport.tsx",
+      "sha256": "e9aebda0ec4b2feffa2a13d431d1cfbd2def81af2c9515227e7cd5061f238d9d"
+    },
+    {
+      "path": "components/investments/AddInvestmentPanel.tsx",
+      "sha256": "c38904e65f5efc72aee998b89637cb04942a99ae21a88cc07aa91cca470aea89"
+    },
+    {
+      "path": "components/investments/InvestmentSimulationPanel.tsx",
+      "sha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb"
+    },
+    {
+      "path": "app/globals.css",
+      "sha256": "40291f3821cf43f34241e0cd3628dff06b73d63d963df480dc01106a12e2f4d2"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "revision": "4f65d26f0d4acd79ab4e335b4ed983c6da13c79a",
+  "browser": {
+    "product": "Installed Google Chrome",
+    "version": "146.0.7680.165",
+    "headless": true,
+    "profile": "New ephemeral dedicated profile; removed after run",
+    "node": "v22.17.0"
+  },
+  "financeIntegrity": {
+    "beforeSha256": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+    "afterSha256": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+    "status": "PASS"
+  },
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T01:45:04.436Z"
+}

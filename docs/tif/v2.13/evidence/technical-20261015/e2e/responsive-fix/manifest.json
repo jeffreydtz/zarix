@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-15T01:50:10.156Z",
+  "status": "PREPARED",
+  "reason": "Actual Chrome768px navigation overflow13px confirmed by DOM; preserve target44px and original>=lg spacing. Real200% fullPage compositor crop separately calibrated.",
+  "product": {
+    "path": "components/Navigation.tsx",
+    "beforeRevision": "0169860016125480c19f1284890e2b578f3236af",
+    "beforeSha256": "49267ee3e513a3de80c46c907ff9f2a1245085487923942b53ac3346b2f88c56",
+    "afterSha256": "8f0499570866751165282cdf0a07fdb0fea5db6886db799db31310185fee176c",
+    "change": "PRIMARY_LINKS four existing links use px-2 lg:px-3; no overflow masking or theme target reduction"
+  },
+  "harness": {
+    "path": "scripts/test-isolated-visual.mjs",
+    "beforeSha256": "ca6ea0de639dfe2ded17fb3ecf5ad21ff55cb58ac45907c6e242ae9410d37ff9",
+    "afterSha256": "13d1c529598a1446fbf5a3b601978a4256942cc76ae5b35513ead64e7391a998",
+    "change": "Native viewport screenshots at both real100/200% to avoid fullPage compositor clipping; every successful PNG IHDR must match configured physical viewport. CU003 retains before/after viewport captures and requires actual document/main scroll movement to the existing lower analysis heading.",
+    "svgReadiness": "Analysis SVG path/rect/group geometry/style must also remain stable for6frames before capture; no animation/CSS disabled or fabricated."
+  },
+  "beforeEvidence": "../visual-attempt-1/visual-verification.json",
+  "bitmapCalibration": "../capture-calibration/calibration.json",
+  "beforeResult": {
+    "cells": 32,
+    "geometryPass": 28,
+    "geometryFail": 4,
+    "bitmap200": "LIMITED:fullPage compositor crops; do not use as complete visual evidence"
+  },
+  "scopedVerification": {
+    "nodeCheck": {
+      "command": "node --check scripts/test-isolated-visual.mjs",
+      "exitCode": 0
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    "lint": {
+      "command": "npm run lint -- --file components/Navigation.tsx",
+      "exitCode": 0
+    }
+  },
+  "afterActualBuildVerification": "PENDING rootCI3build and32newcells; no old-runtime DOM injection used",
+  "modalCalibration": "../capture-calibration/modal/modal-calibration.json",
+  "modalFinding": "Actual button rect815..863 within modal36..864 and native viewport shows Guardar complete; fullPage bitmap clips it. No modal product change."
+}

@@ -1,0 +1,73 @@
+{
+  "scope": "Harmless local dataURL border fixture; no Auth, app, SQL, network provider or product change.",
+  "results": [
+    {
+      "zoomPercent": 100,
+      "fullPage": false,
+      "metrics": {
+        "innerWidth": 320,
+        "innerHeight": 568,
+        "devicePixelRatio": 1,
+        "contentWidth": 320,
+        "contentHeight": 568,
+        "visualScale": 1
+      },
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "path": "zoom100-viewport.png"
+    },
+    {
+      "zoomPercent": 100,
+      "fullPage": true,
+      "metrics": {
+        "innerWidth": 320,
+        "innerHeight": 568,
+        "devicePixelRatio": 1,
+        "contentWidth": 320,
+        "contentHeight": 568,
+        "visualScale": 1
+      },
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "path": "zoom100-full-page.png"
+    },
+    {
+      "zoomPercent": 200,
+      "fullPage": false,
+      "metrics": {
+        "innerWidth": 160,
+        "innerHeight": 284,
+        "devicePixelRatio": 2,
+        "contentWidth": 160,
+        "contentHeight": 284,
+        "visualScale": 1
+      },
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "path": "zoom200-viewport.png"
+    },
+    {
+      "zoomPercent": 200,
+      "fullPage": true,
+      "metrics": {
+        "innerWidth": 160,
+        "innerHeight": 284,
+        "devicePixelRatio": 2,
+        "contentWidth": 160,
+        "contentHeight": 284,
+        "visualScale": 1
+      },
+      "png": {
+        "width": 160,
+        "height": 284
+      },
+      "path": "zoom200-full-page.png"
+    }
+  ]
+}
