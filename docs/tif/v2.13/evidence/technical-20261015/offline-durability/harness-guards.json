@@ -1,0 +1,53 @@
+{
+  "executedAt": "2026-10-15T00:31:11.577396+00:00",
+  "scope": "Target guards only; no Auth/browser/SQL execution or acceptance claim. Real journey remains pending coordinated isolated app readiness.",
+  "script_sha256": "eb447b928bda45f54bc350ac09f3000d2adb4f843da6d97fb6588ff13e9be443",
+  "sourceStable": true,
+  "checks": {
+    "syntax": 0,
+    "eslint": 0
+  },
+  "results": [
+    {
+      "case": "source",
+      "apiPort": 54321,
+      "databasePort": 54322,
+      "expectedExit": 1,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "restore",
+      "apiPort": 55321,
+      "databasePort": 55322,
+      "expectedExit": 1,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "load",
+      "apiPort": 56321,
+      "databasePort": 56322,
+      "expectedExit": 1,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "mixed",
+      "apiPort": 57321,
+      "databasePort": 54322,
+      "expectedExit": 1,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
