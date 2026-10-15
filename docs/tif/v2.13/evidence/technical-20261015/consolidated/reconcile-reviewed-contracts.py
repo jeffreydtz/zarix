@@ -223,5 +223,84 @@ if (BASE/rf11_review_path).exists():
           'executed_revision':report['buildBinding'],'source_review_sha256':hashlib.sha256((BASE/rf11_review_path).read_bytes()).hexdigest(),
           'adapter_scope':'Four explicit independently reviewed RF11 original contracts only. No new execution or promotion of other account/analysis/UI cases.'}
 
+
+ten_review_path='remaining-cu001/independent-review-ten-cases.json'
+if (BASE/ten_review_path).exists():
+    review=checked_json(ten_review_path,'06d1d8c9f7be08fcb4a3d9682dc5a78555ffc921b254031d339b413e78a1616d')
+    assert review['status']=='TEN_HISTORICAL_ORIGINAL_CONTRACTS_SUPPORTED_ONE_BY_EXPLICIT_COMPOSITE_DECISION'
+    assert {row['id'] for row in review['originalCases']}=={'CP1-02','CP1-03','CP1-09','CP1-11','CP1-33','CP1-04','CP1-12','CP1-22','CP1-29','CP1-35'}
+    for artifact in review['artifacts']:assert hashlib.sha256((ROOT/artifact['path']).read_bytes()).hexdigest()==artifact['sha256']
+    details={row['id']:row for row in review['caseReviews']}
+    for row in review['originalCases']:
+        assert row['status']=='PASS' and row['complete_original_contract'] is True and not row['claimFinalCI5Runtime']
+        evidence=row['evidence'][0];path=ROOT/evidence['path'];assert hashlib.sha256(path.read_bytes()).hexdigest()==evidence['sha256']
+        report=json.loads(path.read_text());case=report
+        for part in evidence['jsonPointer'].strip('/').split('/'):case=case[int(part)] if isinstance(case,list) else case[part]
+        assert case.get('case_id',case.get('id'))==row['id'] and case['status']=='PASS' and all(a['status']=='PASS' for a in case['assertions'])
+        assert row['runtimeRevision']=='836fd18b310a51cced9074b372a80ce5d7e1a870' and details[row['id']]['reviewCompleteOriginalContract']
+        scope=details[row['id']]['reviewRationale']+' '+review['scope']+' Exact historical836 binding, not finalCI5 compiled acceptance.'
+        if row['id']=='CP1-22':
+            assert row['directNativeImportBatchesObservation'] is False
+            scope+=' Raw no-batch assertion measures transaction_requests only. No direct native import_batches observation; full clause uses reviewed malformed input+runtime400+immutable early-return code before batch creation.'
+        merged[row['id']]={'case_id':row['id'],'status':'PASS','complete_original_contract':True,'assertions':[a['name'] for a in case['assertions']],
+          'evidence':str(path.relative_to(BASE))+'; '+ten_review_path+'; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs',
+          'scope':scope,'executed_revision':{'product':row['runtimeRevision'],'buildId':row['runtimeBuildId']},
+          'source_review_sha256':hashlib.sha256((BASE/ten_review_path).read_bytes()).hexdigest(),'acceptance_basis':row['acceptanceBasis'],'new_execution':False}
+cp120_review_path='remaining-cu001/independent-final-cp1-20-review.json'
+if (BASE/cp120_review_path).exists():
+    review=checked_json(cp120_review_path,'bcea76b311dba45feb87867282e6e764a597dd8cbcbc619e3a044474258a8858')
+    assert review['status']=='PASS_SCOPED_FINAL_CP1_20' and len(review['originalCases'])==1
+    for artifact in review['artifacts']:assert hashlib.sha256((ROOT/artifact['path']).read_bytes()).hexdigest()==artifact['sha256']
+    report=checked_json('remaining-cu001/attempt-5-final-cp1-20-and-replay/verification.json')
+    assert report['sourceStable'] and report['servedCopyStable']
+    row=next(r for r in report['results'] if r.get('case_id',r.get('id'))=='CP1-20');accepted=review['originalCases'][0]
+    assert row['status']=='PASS' and accepted['status']=='PASS' and accepted['complete_original_contract'] and len(row['assertions'])==accepted['assertions']==6 and all(a['status']=='PASS' for a in row['assertions'])
+    merged['CP1-20']={'case_id':'CP1-20','status':'PASS','complete_original_contract':True,'assertions':[a['name'] for a in row['assertions']],
+      'evidence':'remaining-cu001/attempt-5-final-cp1-20-and-replay/verification.json; '+cp120_review_path,
+      'scope':' '.join(accepted['proof'])+' Final compiled7c3 with independent JSON fixture. Historical503 remains preserved; nine replay assertions are a separate derived probe, not another original case.',
+      'executed_revision':report['buildBinding'],'source_review_sha256':hashlib.sha256((BASE/cp120_review_path).read_bytes()).hexdigest()}
+
+ci5_accounts_review_path='account-analysis-contracts/independent-executed-final-review.json'
+if (BASE/ci5_accounts_review_path).exists():
+    review_hash='ed780d153721fccef63eb605e566cacc218c271f55a2f757bac7e1a5bcbd2474'
+    review=checked_json(ci5_accounts_review_path,review_hash)
+    assert review['status']=='REVIEW_COMPLETE_8_ORIGINAL_PASS_2_CONFIRMED_PRODUCT_FAIL'
+    assert not review['newMaterialEvidenceDefects'] and not review['rawFilesModified']
+    packet=checked_json('account-analysis-contracts/executed-final/manifest.json','424e0b050f9d8ce4c60e00a34a6b0b4702fa86689de57f1acf3163c7854dd481')
+    assert hashlib.sha256((ROOT/review['manifest']['path']).read_bytes()).hexdigest()==review['manifest']['sha256']
+    assert packet['sourceRevision']==review['binding']['revision']=='7c3e8722d8fcdc5d95d205e9a12eb856647e0e06'
+    assert packet['buildId']==review['binding']['buildId']=='vPLjt1QViugJhUWR62DPp'
+    reports={}
+    for recorded in packet['reports']:
+        path=ROOT/recorded['report'];assert hashlib.sha256(path.read_bytes()).hexdigest()==recorded['sha256']
+        assert recorded['sourceStable'] and recorded['servedBuildStable'] and recorded['originalTablesUnchanged'] and not recorded['cleanupFailure']
+        for source in recorded['sourceSnapshots']:assert hashlib.sha256((ROOT/source['snapshot']).read_bytes()).hexdigest()==source['sha256']
+        reports[str(path.relative_to(BASE))]=json.loads(path.read_text())
+    accepted={row['id']:row['status'] for row in review['acceptedOriginals']}
+    assert accepted=={'CP2-02':'PASS','CP2-03':'PASS','CP2-05':'PASS','CP2-06':'PASS','CP2-20':'PASS','CP3-04':'PASS','CP3-05':'PASS','CP3-06':'FAIL','CP3-08':'PASS','CP3-18':'FAIL'}
+    rows=checked_json('account-analysis-contracts/executed-final/system-case-results.json')['results']
+    assert len(rows)==len(accepted) and {row['case_id'] for row in rows}==set(accepted)
+    for row in rows:
+        case_id=row['case_id'];assert row['status']==accepted[case_id]
+        if row['status']=='PASS':assert row['complete_original_contract']
+        report=reports[row['evidence'][0]];case=report['case']
+        assert case['case_id']==case_id and report['sourceStable'] and report['servedBuildStable']
+        passed=[a['name'] for a in case['assertions'] if a['status']=='PASS']
+        failures=[a for a in case['assertions'] if a['status']=='FAIL']
+        assert row['assertion_names']==passed
+        if row['status']=='FAIL':assert report['status']=='FAIL' and failures
+        elif case_id=='CP2-05':assert report['status']=='FAIL' and len(failures)==2 and row['derived_failures_preserved']==failures
+        else:assert report['status']=='PASS' and not failures
+        scope=row['semantic_attestation']+' '+review['caseInterpretations'].get(case_id,'')+' '+review['scope']+' Exact CI5 7c/buildvPLj execution, no CI6 acceptance.'
+        if row['status']=='FAIL':scope+=' Observed original failures: '+json.dumps(failures,ensure_ascii=False)
+        merged[case_id]={'case_id':case_id,'status':row['status'],'complete_original_contract':True,
+          'assertions':[a['name'] for a in case['assertions']] if row['status']=='FAIL' else passed,
+          'failed_original_assertions':failures if row['status']=='FAIL' else [],
+          'preserved_derived_failures':row.get('derived_failures_preserved',[]),
+          'evidence':'; '.join(row['evidence'])+'; '+ci5_accounts_review_path,
+          'scope':scope,'executed_revision':report['buildBinding'],'source_review_sha256':review_hash,
+          'raw_execution_status':report['status'],'raw_complete_original_contract_flag':row['complete_original_contract'],'new_execution':False,
+          'adapter_scope':'Ten explicitly independently reviewed original contracts; recorded FAIL is preserved as FAIL. CP2-05 original calculation PASS does not hide the two additional text-format FAIL assertions. No browser/hydration or future fix acceptance.'}
+
 target.write_text(json.dumps([merged[key] for key in sorted(merged)], indent=2, ensure_ascii=False) + '\n')
 print(json.dumps({'historical_reviewed_contracts': sorted(item['case_id'] for item in reviewed), 'reviewed_contracts': sorted(merged), 'total_reviewed_entries': len(merged), 'negative_contract_failures': [key for key in merged if merged[key]['status']=='FAIL'], 'source_review_sha256': source_hash, 'new_execution': False}))

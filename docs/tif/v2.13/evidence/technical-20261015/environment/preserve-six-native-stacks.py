@@ -30,6 +30,10 @@ EXPECTED = [
     ('proof', 'c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09', 58322, 'ZARIX_PROOF'),
     ('import-target', '464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44', 59322, 'ZARIX_IMPORT'),
 ]
+APPLICATION_COPIES = [
+    ('ci5', 'final-proof', '/tmp/zarix-app-acceptance-final-20261015', 'core-acceptance', 'final-core-acceptance'),
+    ('ci6', 'closure-proof', '/tmp/zarix-app-closure-final-20261015', 'core-closure', 'final-core-closure'),
+]
 EXCLUDED = {'home', 'bin', 'node_modules', '.git', '.next', 'downloads', '__pycache__', 'cache'}
 PRIVATE_TAGS = ('private', 'auth', 'session')
 SENSITIVE_TAGS = ('cookie', 'session', 'login', 'recovery', '.env')
@@ -367,7 +371,7 @@ def selected_artifacts(plan):
         if child.is_file():
             selected.add(p)
         elif child.is_dir():
-            full = any(tag in child.name.lower() for tag in PRIVATE_TAGS) or child.name.startswith(('proof-', 'import-target-'))
+            full = any(tag in child.name.lower() for tag in PRIVATE_TAGS) or child.name.startswith(('proof-', 'import-target-', 'final-proof-', 'closure-proof-'))
             for file in walk_files(p):
                 if full or any(tag in str(file.relative_to(RUNTIME.resolve())).lower() for tag in SENSITIVE_TAGS):
                     selected.add(file)
@@ -385,6 +389,66 @@ def selected_artifacts(plan):
     for name in ('proof-private', 'import-target-private', 'proof-recovery-private', 'proof-auth-expiry-private-attempt-2', 'proof-auth-expiry-resume'):
         require((RUNTIME / name).is_dir(), 'required_nested_auth_directory_missing')
     return sorted(selected)
+
+
+def application_sources(plan):
+    """Validate only the two declared isolated copies, each against its own core.
+
+    No .next tree or node_modules is archived. BUILD_ID is checked and retained
+    as metadata; rebuilding is required after losing the original /tmp copies.
+    """
+    require(plan['applicationCopies'] == [
+        {'name': name, 'prefix': prefix, 'copyRoot': root, 'coreDirectory': core, 'runtimeProfile': profile}
+        for name, prefix, root, core, profile in APPLICATION_COPIES
+    ], 'application_copy_plan_not_exact')
+    snapshots = []
+    for name, prefix, root, core, profile in APPLICATION_COPIES:
+        copy_root = normalize_tmp(root)
+        require(copy_root.is_dir() and not copy_root.is_symlink(), 'application_copy_missing_or_linked')
+        proof_path = inside(RUNTIME / (prefix + '-build-proof.json'), RUNTIME)
+        proof = read_json(proof_path, private=True)
+        core_path = inside(REPO / 'docs/tif/v2.13/evidence/technical-20261015' / core / 'verification.json', REPO)
+        core_report = read_json(core_path)
+        require(core_report['sourceStable'] is True and core_report['sourceWorkingTreeClean'] is True
+                and re.fullmatch(r'[0-9a-f]{40}', core_report['codeRevision']), 'application_core_not_frozen')
+        require(proof['exitCode'] == 0 and proof['runtimeProfile'] == profile and proof['coreDirectory'] == core
+                and normalize_tmp(proof['copyRoot']) == copy_root
+                and proof['revision'] == core_report['codeRevision']
+                and proof['publicSupabaseOrigin'] == 'http://127.0.0.1:58321'
+                and proof['currentProductDeltasNotExecuted'] == [], 'application_build_binding_mismatch')
+        if name == 'ci5':
+            require(proof['revision'] == '7c3e8722d8fcdc5d95d205e9a12eb856647e0e06', 'historical_ci5_revision_changed')
+        env_path = inside(RUNTIME / (prefix + '-app.env'), RUNTIME)
+        regular(env_path, private=True)
+        require(sha_file(env_path) == proof['privateEnvSha256'], 'application_env_hash_changed')
+        sources = proof['sources']
+        require(isinstance(sources, list) and len(sources) == proof['sourceCount'] and sources, 'application_manifest_missing')
+        require(hashlib.sha256(json.dumps(sources, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+                == proof['sourceManifestSha256'], 'application_manifest_hash_changed')
+        files = []
+        for item in sources:
+            require(set(item) == {'path', 'sha256'} and isinstance(item['path'], str)
+                    and re.fullmatch(r'[0-9a-f]{64}', item['sha256']), 'unsafe_application_source_metadata')
+            parts = Path(item['path']).parts
+            require(parts and not Path(item['path']).is_absolute() and '..' not in parts and '.' not in parts
+                    and not any(part in ('.next', 'node_modules', '.git') for part in parts), 'unsafe_application_source_path')
+            source = inside(copy_root / item['path'], copy_root)
+            info = regular(source)
+            require(sha_file(source) == item['sha256'], 'application_source_changed')
+            files.append({'path': item['path'], 'source': str(source), 'bytes': info.st_size, 'sha256': item['sha256']})
+        mapped = {item['path']: item['sha256'] for item in sources}
+        require(len(mapped) == len(sources), 'duplicate_application_source')
+        require(all(mapped.get(item['path']) == item['sha256'] for item in core_report['sourceManifest']), 'application_core_sources_differ')
+        build_path = inside(copy_root / '.next/BUILD_ID', copy_root)
+        regular(build_path)
+        require(build_path.read_text().strip() == proof['buildId'] and proof['buildId'], 'application_build_id_changed')
+        snapshots.append({'name': name, 'copyRoot': str(copy_root), 'revision': proof['revision'], 'buildId': proof['buildId'],
+                          'proofPath': str(proof_path), 'proofSha256': sha_file(proof_path),
+                          'coreVerificationPath': str(core_path), 'coreVerificationSha256': sha_file(core_path),
+                          'privateEnvSha256': proof['privateEnvSha256'], 'sourceManifestSha256': proof['sourceManifestSha256'],
+                          'buildIdPath': str(build_path), 'buildIdSha256': sha_file(build_path), 'files': files,
+                          'binaryBuildRetained': False, 'rebuildRequiredAfterTmpLoss': True})
+    return snapshots
 
 
 def artifact_inventory(root):
@@ -433,9 +497,11 @@ def retention_directory(plan, value=None, create=False):
 
 def retain(plan, value):
     snapshots = {s['name']: preflight(plan, s) for s in plan['stacks']}
+    app_snapshots = application_sources(plan)
     root = retention_directory(plan, value, create=True)
     report = {'status': 'RETAIN_RUNNING', 'createdAt': utc(), 'privateDirectory': str(root), 'planSha256': sha_file(PLAN),
-              'controllerSha256': sha_file(SELF), 'restoreAcceptanceClaimed': False, 'stacks': [], 'sourceArtifacts': []}
+              'controllerSha256': sha_file(SELF), 'restoreAcceptanceClaimed': False, 'stacks': [], 'sourceArtifacts': [],
+              'applicationCopies': app_snapshots}
     try:
         for entry in plan['stacks']:
             name = entry['name']
@@ -476,6 +542,14 @@ def retain(plan, value):
             copy_file(source, destination)
             report['sourceArtifacts'].append({'source': str(source), 'retained': str(destination.relative_to(root)), 'sha256': sha_file(destination),
                                               'criticalBeforeStop': source.suffix not in ('.log', '.stderr')})
+        for app in app_snapshots:
+            target = root / 'application-sources' / app['name']
+            for item in app['files']:
+                copy_file(item['source'], target / 'sources' / item['path'])
+            copy_file(app['buildIdPath'], target / 'build-id.txt')
+            copy_file(app['proofPath'], target / 'build-proof.private.json')
+            copy_file(app['coreVerificationPath'], target / 'core-verification.json')
+        require(application_sources(plan) == app_snapshots, 'application_sources_changed_during_retention')
         # Recheck all six after every archive and artifact has been retained.
         for entry in plan['stacks']:
             current = preflight(plan, entry)
@@ -510,6 +584,7 @@ def validate_retained(plan, root, report):
     previous_critical = {a['source'] for a in report['sourceArtifacts'] if a['criticalBeforeStop']}
     current_critical = {str(p) for p in selected_artifacts(plan) if p.suffix not in ('.log', '.stderr')}
     require(current_critical == previous_critical, 'auth_or_configuration_artifact_set_changed_after_retention')
+    require(application_sources(plan) == report['applicationCopies'], 'application_source_or_build_changed_after_retention')
 
 
 def after_stop(entry, retained, shutdown_snapshot):

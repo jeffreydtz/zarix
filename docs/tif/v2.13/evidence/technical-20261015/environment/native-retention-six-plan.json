@@ -197,7 +197,8 @@
     "Read-only fingerprints public tables/Auth.users/Auth.identities/Storage.objects stable before/after retention and before stop. Auth audit/session cleanup tables are not falsely declared immutable.",
     "Storage source-before/source-after/private-copy hashes equal; reject links/special files and any PG raw-data copying.",
     "Complete private checkpoint and every retained file digest, bound to controller/plan hashes; all six dumps must PASS before any stop.",
-    "Unreadable directory enumeration fails closed; all retained file/directory entries fsynced before the complete private checkpoint. Process start probes use TZ=Etc/UTC and locale C."
+    "Unreadable directory enumeration fails closed; all retained file/directory entries fsynced before the complete private checkpoint. Process start probes use TZ=Etc/UTC and locale C.",
+    "Two exact isolated application copies CI5+CI6: own core revision, manifest/source bytes, private env digest and BUILD_ID checked before/after retention and before stop; archive only declared sources and build ID metadata, without node_modules or .next binaries."
   ],
   "stopRequirements": [
     "Separate invocation and explicit root release after all writers/browsers/harnesses have stopped.",
@@ -208,7 +209,7 @@
   ],
   "artifactSelection": {
     "allTopLevelRuntimeRegularFiles": true,
-    "completeNestedDirectories": "Names containing private/auth/session or starting proof-/import-target-, excluding caches/binaries/app builds.",
+    "completeNestedDirectories": "Names containing private/auth/session or starting proof-/import-target-/final-proof-/closure-proof-, excluding caches/binaries/app builds.",
     "otherNestedSensitiveNames": [
       "cookie",
       "session",
@@ -233,8 +234,25 @@
     "TOC/decompression/checksums prove retention checks only, not a successful restore or complete machine recovery.",
     "Retention contains local credentials/password hashes/globals/roles/session and recovery cookies; outside Git, directories0700/files0600, no raw stdout.",
     "No vendor binaries/build trees copied as a complete offline-recovery claim.",
-    "Existing native internal REST wildcard limitation remains; no firewall/global permissions added."
+    "Existing native internal REST wildcard limitation remains; no firewall/global permissions added.",
+    "After losing /tmp, the retained application sources require reinstalling dependencies and recompiling; no complete application binary or machine image is claimed."
   ],
   "mutationsPerformed": false,
-  "secretsIncluded": false
+  "secretsIncluded": false,
+  "applicationCopies": [
+    {
+      "name": "ci5",
+      "prefix": "final-proof",
+      "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+      "coreDirectory": "core-acceptance",
+      "runtimeProfile": "final-core-acceptance"
+    },
+    {
+      "name": "ci6",
+      "prefix": "closure-proof",
+      "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+      "coreDirectory": "core-closure",
+      "runtimeProfile": "final-core-closure"
+    }
+  ]
 }

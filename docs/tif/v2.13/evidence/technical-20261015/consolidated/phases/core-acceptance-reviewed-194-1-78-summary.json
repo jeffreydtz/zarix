@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-10-15T04:47:44.137769+00:00",
+  "core_directory": "core-acceptance",
+  "original_cases": 273,
+  "use_cases": [
+    "CU001",
+    "CU002",
+    "CU003",
+    "CU004"
+  ],
+  "counts": {
+    "PASS": 194,
+    "FAIL": 1,
+    "BLOCKED": 78
+  },
+  "rule": "PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence."
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T04:47:44.176209+00:00",
+  "generated_at_utc": "2026-10-15T05:20:41.010206+00:00",
   "original_case_count": 273,
   "historical": {
     "path": "../../technical-20261009/case-traceability.csv",
@@ -22,17 +22,44 @@
   },
   "current": {
     "path": "../case-traceability.csv",
-    "core_directory": "core-acceptance",
-    "source_revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
-    "sha256": "9123162c847a88e8f9e71548c68442a7239eead99aaaf3e0395f21b203909e65",
+    "core_directory": "core-closure",
+    "source_revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "sha256": "1715a7bafe4550748bb425023338c786d81ee7bcff9164fb0b12bd56b9fb1313",
     "counts": {
-      "PASS": 194,
-      "BLOCKED": 78,
-      "FAIL": 1
+      "PASS": 213,
+      "BLOCKED": 57,
+      "FAIL": 3
     },
     "artifact_line_endings": "LF normalized for Git;273rows exact named contracts/independent semantic review"
   },
   "changed_statuses": [
+    {
+      "case_id": "CP1-02",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Visible categories200 | Own literal category201 | October summary200 | Normal API fixture transaction201 | Exactly one500 income and10500 balance | Literal500 income category/date/owner persisted | October summary200 | Financial flow income increases500 only",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Fresh10000ARS account; single income500 persisted with Sueldo,2026-10-06 and owner; balance10500; independent October summary delta income500/expense0/net500. Opening adjustment is preserved and excluded only from economic movement count. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
+    },
+    {
+      "case_id": "CP1-03",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | October summary200 | Normal API fixture transaction201 | One transfer/two exact impacts and conserved total | October summary200 | Transfer excluded from income/expense/flow",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Fresh10000/2000ARS accounts; one logical1500 transfer with canonical debit/credit1500, balances8500/3500,total12000; October summary income,expenses,net remain unchanged. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
+    },
+    {
+      "case_id": "CP1-04",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Injected destination-impact failure returns error | Destination failure hook was reached once | Both balances and economic rows rolled back | Failed financial request did not leave a committed receipt | Same durable key succeeds after removing only the own fault201 | Retry commits once and conserves12000",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Target destination account BEFORE UPDATE fault is reached once inside real transfer INSERT after source debit step. Native SQL proves10000/2000,zero economic rows and no receipt after failure. Removing only owned fault and retrying identical key commits one row/receipt and8500/3500. This exercises second-impact rollback, not COMMIT/network failure. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
+    },
     {
       "case_id": "CP1-06",
       "historical_status": "BLOCKED",
@@ -43,6 +70,15 @@
       "scope": "Selected exact original integration contracts. Normal password Auth -> SSR cookies -> actual Next HTTP APIs -> independent native PostgreSQL. No browser/UI-suite, provider-acceptance or new-identity claim; no product edits. Existing pricing paths may consult configured providers/doubles or database cache. Independent exact-contract review and protected original rows preserved; no later formatter/export-fix acceptance."
     },
     {
+      "case_id": "CP1-09",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Normal API fixture transaction201 | Income500 initial balance10500 | Direct SQL income DELETE exact reverse",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Fresh10000 account and500 income reaches10500; target-ID-and-owner directSQL DELETE leaves10000 and zero economic rows. This directly exercises SQL reversal rather than API recomputation. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
+    },
+    {
       "case_id": "CP1-10",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
@@ -50,6 +86,24 @@
       "contract_revision": "Original case contract",
       "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
       "scope": "Selected exact original integration contracts. Normal password Auth -> SSR cookies -> actual Next HTTP APIs -> independent native PostgreSQL. No browser/UI-suite, provider-acceptance or new-identity claim; no product edits. Existing pricing paths may consult configured providers/doubles or database cache. Independent exact-contract review and protected original rows preserved; no later formatter/export-fix acceptance."
+    },
+    {
+      "case_id": "CP1-11",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Normal API fixture transaction201 | Literal predelete balances8500/3500 | Direct SQL transfer DELETE reverses both impacts exactly",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Fresh10000/2000 accounts and1500 transfer reach8500/3500; target-ID-and-owner directSQL DELETE restores10000/2000 with zero economic rows. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
+    },
+    {
+      "case_id": "CP1-12",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Initial own USD debt setup200 | SignedUSD delta+10 accepted200 | Secondary currency changes independently of primary debt | Exactly one signed currency-identified audit row",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "CSV explicitly permits adapting bimonetary representation. Existing adjust-secondary-balance API initializesUSD-100 then targets-90; observed signedUSD adjustment+10 is exactly one new audit row; independent RPC reportsARS-10000/USD-90 and physical primary remains-10000. Absolute target API is a documented representation adapter, not a new delta input field. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
     },
     {
       "case_id": "CP1-13",
@@ -70,6 +124,87 @@
       "scope": "Independent new account starts10000. Exact CSV500expense/700income/0 at06Oct yields HTTP200, exactly two economic rows500/700, balance10200, total3. One invalid amount rejection and no other omission are observed. No browser or literal JSONkey requirement appears in the originalCSV. Read-only originalCSV/executed fixture/normal-Auth API/nativeSQL evidence review. No new requests, DB queries, runtime, counters or raw-artifact edits. This review closes only the nomenclature question in CP1-19. Literal original does not require invented response keys. RawPARTIAL nomenclature and other whole-run failures remain unchanged."
     },
     {
+      "case_id": "CP1-20",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Partial valid local import200 | Exactly two economic writes and balance10200 | Raw current importer counters | Exactly one documented invalid-amount rejection detail",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-5-final-cp1-20-and-replay/verification.json; remaining-cu001/independent-final-cp1-20-review.json",
+      "scope": "Independent new account starts10000 with only its opening adjustment; no CP1-19 CSV economic rows are reused in the new fixture. Actual normal-session JSON import HTTP200; native oracle exactly2economic rows500expense/700income, balance10200. Raw imported2/skipped1/pending0/total3 plus exactly one invalid-amount detail proves2valid/1rejected/0other-omissions under the explicit reviewed semantic mapping. No new API response properties invented. Fresh JSON complete keys/date/currency/account/category/description/notes inspected; invalid0 omitted; duplicate omission false. Owned fresh account archived through successful normal DELETE204; prior rows and12original tables preserved. Final compiled7c3 with independent JSON fixture. Historical503 remains preserved; nine replay assertions are a separate derived probe, not another original case."
+    },
+    {
+      "case_id": "CP1-22",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Foreign-name file preview200 | Actual preview returns an account array | Foreign account and balance absent from actual selectable preview | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt | Foreign account is not disclosed as a selectable account | Archive only own new independent fixture204 | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Three independent fresh fixtures: CSV missing amount400; foreign-name CSV preview excludes foreign account/balances and import200 confirms imported0; truncatedJSON400. Full account/ledger snapshots remain unchanged; no transaction_requests receipt for each invalid import. Preserved truncated bytes plus frozen836 JSON.parse early400 return precede begin_import_batch structurally. Raw native assertion does not query import_batches; Root explicitly accepted the composed exactinput+runtime400+frozencontrolflow evidence for the no-batch clause. No direct native observation of import_batches is claimed. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance. Raw no-batch assertion measures transaction_requests only. No direct native import_batches observation; full clause uses reviewed malformed input+runtime400+immutable early-return code before batch creation."
+    },
+    {
+      "case_id": "CP1-29",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Negative balance is allowed by the documented rule",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Existing synthetic PremiumB with fresh account500 and expense1000 rule under actual fixed application clock2026-10-06T12:00Z; actual cron200,one occurrence,balance-500,last_executed_date2026-10-06. No allowOverdraft field or insufficient-balance rejection is invented. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
+    },
+    {
+      "case_id": "CP1-33",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Archive own new account204 | inactive-own rejected with an error response | inactive-own no account or full-ledger change | inactive-own response excludes account/balance data | foreign-owner rejected with an error response | foreign-owner no account or full-ledger change | foreign-owner response excludes account/balance data",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-2-cp1-33/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Selected retry independently exercises1500 expense against own inactive account and another owner account. Both return500,error-only shape, with complete account/full-ledger digest unchanged. CSV specifies state/access error but no HTTP status; initial4xx-only harness failure is retained.500 is observed behavior, not declared a desirable/general HTTP contract. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
+    },
+    {
+      "case_id": "CP1-35",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Independent empty batch exact counters | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Mixed batch counts only successful and failed active items | Persisted mixed outcomes independently reconcile | Current summary does not invent a skipped field",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "scope": "Actual fixed-clock empty cron returns total0/processed0/errors0. Independent three-rule mixed fixture has one success,one inactive,one injectedSQL failure; summary total2/processed1/errors1 because only active rules are fetched. SQL counts/balances prove good1/9000,inactive0/10000,bad0/10000. No skipped field is invented; omission is reconciled against the three-rule fixture. Owned fault catalog returns to exact prior hash/count. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
+    },
+    {
+      "case_id": "CP2-02",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Invalid variant1 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant2 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant3 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant4 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant5 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant6 rejected without incomplete account (CSV does not mandate4xx) | All documented invalid variants rejected",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp2-02.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance.  Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance."
+    },
+    {
+      "case_id": "CP2-03",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture transaction API201 | Fixture manual position API201 | Rename/deactivate200 | New name and inactive state | Existing movements retained | Existing positions retained | Inactive account operation is denied (CSV does not mandate4xx) | Rejected operation has no ledger effect",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp2-03.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance.  Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance."
+    },
+    {
+      "case_id": "CP2-05",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Own secondary-debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | ExplicitUSD10payment200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp2-05-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "CSV205 requires debtsARS10000/USD100→USD90 and actual converted wealth subtracting both, with noUSD applied toARSledger. Actual API/SQL and two SSRnow aggregates prove this fully; additional textprecision asserts are preserved as derivedFAIL and are not an original205 criterion. OriginalPASS: primaryARS debt10000 untouched, secondaryUSD100→90 through explicit payment, actual API/SQL and SSRnow−130000ARS/−108.33USD then−118000ARS/−98.33USD subtract both debts. Two text precisionFAIL remain raw/derived; the literalCP205 has no cent-display criterion. This does not conceal CP306 which does require it. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance."
+    },
+    {
+      "case_id": "CP2-06",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | OwnCSVexport200 | Complete documented15column format | Exactly three own period records | CSV preserves exact dates/types/amounts/currencies/relations | Export explicitly informs version and timezone",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp2-06.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance.  Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance."
+    },
+    {
       "case_id": "CP2-07",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
@@ -88,6 +223,15 @@
       "scope": "Original integration negative contract executed over five input classes: wrong password, altered current normal JWT, genuinely expired JWT, expired recovery, reused recovery. Ten named checks include anti-enumeration, A/B ordinary Auth/API controls, expired-access+revoked-refresh ZARIX401, and unchanged12financialtables/two previous normal sessions. complete_original_contract denotes execution coverage; FAIL retains GoTrue400 invalid_credentials versus required401/403. No browser, SMTP, whole-Auth-zero-writes or full-CU acceptance."
     },
     {
+      "case_id": "CP2-20",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | LiteralFree3accountprecondition | Freefourthrejects4xx | Rejectedfourthcreatesnoaccount | Deactivateonlynewownedfirstaccount204 | Fixture account API201 | Freereplacementkeeps3active | Fixture account API201 | Premiumacceptsfourth | OwnexportremainsFree200",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp2-20.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance.  Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance."
+    },
+    {
       "case_id": "CP3-01",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
@@ -104,6 +248,42 @@
       "contract_revision": "Original case contract",
       "evidence": "quote-contracts/attempt-1/hit299.json; quote-contracts/attempt-1/refresh300.json; quote-contracts/attempt-1/refresh301.json; quote-contracts/attempt-1/failure300.json; quote-contracts/ssr-followup-after-fix.json; quote-contracts/independent-composite-review.json; quote-contracts/postfix-contracts.json",
       "scope": "Independent processes establish299hit/300refresh/301refresh and300failure with retained1200/T0. Same actual captured fallback quote passes through real helper and corrected component: savedquote/unknownoriginalprovider/dateTimeT0/visible16:00UTC. Read-only review of exact original CP3-01/02 CSV contracts, executed service/DB evidence and later captured-quote SSR. No API/SQL/Auth/browser/process/test execution by reviewer. The CSV does not require a browser for these two cases; no browser or single compiled Next build acceptance is inferred. Service836 and presentation528 are explicitly separate. This does not assert that old PROOF Next836 contained528, that one compiled Next executed both, or that finalCI5/currentcompiledUI was verified here."
+    },
+    {
+      "case_id": "CP3-04",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture account API201 | Converted own account API200 | No foreign account owner in result | OriginalARS120000 | OriginalUSD100 | Own API converted wealthUSD | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp3-04-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance. Actual authenticated server response/compiledHero props now240000ARS/200USD and original120000ARS/100USD preserved. Client/hydration not inferred. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance."
+    },
+    {
+      "case_id": "CP3-05",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture account API201 | Fixture manual position API201 | Actual portfolio API200 | Position6x110 is660USD | Position purchase cost600 | Exactly own expected active position | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | Actual SSR liquidUSD | Actual SSR investmentsUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision | Cash account full row remains untouched by portfolio valuation | Broker cash remains0",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp3-05-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance. Actual portfolio6×110=660USD plus separate liquidcash100 yields760USD/912000ARS, with cashfullrow stable and brokercash0. The fixture interpretation (liquidbankcash separate from investmentposition) is explicit and consistent with the expected liquid100/RN09; it does not claim that arbitrary investment-accountcash is liquid. Preliminary cost-property oracleFAIL is preserved, not hidden. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance."
+    },
+    {
+      "case_id": "CP3-06",
+      "historical_status": "BLOCKED",
+      "current_status": "FAIL",
+      "current_assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Own secondary-debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | ExactUSD10debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision | Cashoriginal balances preserved",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp3-06-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Executed original contract failure remains FAIL; no missing access or unexecuted neighboring check is substituted. OriginalFAIL confirmed: actual server now218000ARS/181.67USD and data181.67, visible equivalent182 instead of literal181.67. Initial SSR countup0 is not mistaken for the financial total; the failing USD secondary is the reachable SSR amount. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance. Observed original failures: [{\"name\": \"SSR secondary amount retains original documented precision\", \"actual\": \"≈ US$ 182\", \"expected\": \"≈ US$ 181,67\", \"status\": \"FAIL\"}]"
+    },
+    {
+      "case_id": "CP3-08",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Normal JWT query is owner only | Owner category/period independent sum | Actual analysis SSR200 | Actual server custom inclusive period | Actual server expense category aggregate excludes transfer, U2 and September | Actual server income aggregate | Actual server rendered period totals",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp3-08-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance. Actual custom1–6October inclusive serverperiod, normal-owner SQL and compiled chart props give Alimentos2000/count3 and income5000; transfer/U2/September excluded. Actual HTML total cards2000/5000 match. Category uses a declared synthetic unique suffix and ownerID; no pixels/filterinteraction claimed. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance."
     },
     {
       "case_id": "CP3-13",
@@ -140,6 +320,15 @@
       "contract_revision": "Original case contract",
       "evidence": "account-analysis-contracts/executed-rf11/cp3-16.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
       "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD. Independent read-only originalCSV/report/executed-source/immutableGit/copy-source review. No imports/tests/API/SQL/Auth/browser/runtime action by reviewer. Four original integration/system RF11 contracts, not CI5 or browser/provider acceptance. Normal real-time Auth60s, only Nextfixed6Oct; real Google outage/integration and final compiled7c3 are not asserted by this historical836 run."
+    },
+    {
+      "case_id": "CP3-18",
+      "historical_status": "BLOCKED",
+      "current_status": "FAIL",
+      "current_assertions": "Fixture account API201 | Fixture account API201 | Normal RLS own legacy-currency setup has no error | Normal RLS sets only the own zero-balance fixture currency | Normal RLS consistent legacy opening adjustment accepted | Legacy unknown balance is10 | Legacy row has one consistent opening amount | Unknown currency retains original balances | Read does not mutate either account | Read preserves legacy ledger | Missing FX safely returns unavailable instead of fabricated total | Literal known subtotal with explicit ZZZ exclusion is implemented",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-final/cp3-18.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+      "scope": "Executed original contract failure remains FAIL; no missing access or unexecuted neighboring check is substituted. OriginalFAIL confirmed: preserved legacyZZZ10 plus knownARS120000 remain intact, GETaccounts500 avoids fabricating a total but does not implement the required knownsubtotal+explicitexclusion+partialresult. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance. Observed original failures: [{\"name\": \"Literal known subtotal with explicit ZZZ exclusion is implemented\", \"actual\": false, \"expected\": true, \"status\": \"FAIL\"}]"
     },
     {
       "case_id": "CP4-02",
@@ -264,7 +453,7 @@
       "current_status": "PASS",
       "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery",
       "contract_revision": "Explicit reconciliation: marks after creation and sends one notice to the winner -> historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery. Original inline mechanism was replaced, not silently reexecuted.",
-      "evidence": "core-acceptance/final-vitest.json; durability/reconciled-contracts.json",
+      "evidence": "core-closure/final-vitest.json; durability/reconciled-contracts.json",
       "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
     },
     {
@@ -273,12 +462,12 @@
       "current_status": "PASS",
       "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart",
       "contract_revision": "Explicit reconciliation: does not undo a confirmed movement when Telegram is unavailable -> historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart. Original inline mechanism was replaced, not silently reexecuted.",
-      "evidence": "core-acceptance/final-vitest.json; durability/reconciled-contracts.json",
+      "evidence": "core-closure/final-vitest.json; durability/reconciled-contracts.json",
       "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
     }
   ],
-  "unchanged_statuses": 261,
-  "rule": "Exact historical168 comparison: two outbox equivalences and two historical simulations retained; explicit complete negative CP2-09FAIL; four current native API contracts, two exact shared SQL contracts, one same-identity separate-target JSON roundtrip PASS. Preserve distinct revisions/scopes and never promote neighboring original cases.",
+  "unchanged_statuses": 225,
+  "rule": "Compare each of273 original IDs to historical168/0/105. Statuses require exact named executed assertions and pinned independent complete-contract review; FAIL stays FAIL, and composed/historical revisions remain explicit. No CSV original edit or new execution.",
   "phase2_prior": {
     "path": "../case-traceability.csv",
     "core_directory": "core-final",
@@ -332,8 +521,8 @@
     "artifact_line_endings": "LF normalized for Git;273rows exact named contracts/independent semantic review",
     "summary": "phases/core-reliability-pre-local-contracts-summary.json"
   },
-  "number_of_changed_cases": 27,
-  "number_of_unchanged_cases": 246,
+  "number_of_changed_cases": 48,
+  "number_of_unchanged_cases": 225,
   "phase4_reviewed_before_ci5": {
     "path": "phases/core-reliability-reviewed-189-1-83.csv",
     "summary": "phases/core-reliability-reviewed-189-1-83-summary.json",
@@ -344,5 +533,40 @@
     },
     "core_directory": "core-reliability",
     "source_revision": "836fd18b310a51cced9074b372a80ce5d7e1a870"
+  },
+  "phase5_initial_reviewed": {
+    "path": "phases/core-acceptance-reviewed-194-1-78.csv",
+    "summary": "phases/core-acceptance-reviewed-194-1-78-summary.json",
+    "counts": {
+      "PASS": 194,
+      "FAIL": 1,
+      "BLOCKED": 78
+    },
+    "core_directory": "core-acceptance",
+    "source_revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06"
+  },
+  "phase5_reviewed_before_account_analysis": {
+    "path": "phases/core-acceptance-reviewed-205-1-67.csv",
+    "summary": "phases/core-acceptance-reviewed-205-1-67-summary.json",
+    "counts": {
+      "PASS": 205,
+      "FAIL": 1,
+      "BLOCKED": 67
+    },
+    "core_directory": "core-acceptance",
+    "source_revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "sha256": "57a3dc7161edc163140347b0744c4d3a66df11924fcc40893db61836380b76ee"
+  },
+  "phase5_reviewed_complete_accounts": {
+    "path": "phases/core-acceptance-reviewed-213-3-57.csv",
+    "summary": "phases/core-acceptance-reviewed-213-3-57-summary.json",
+    "counts": {
+      "PASS": 213,
+      "FAIL": 3,
+      "BLOCKED": 57
+    },
+    "core_directory": "core-acceptance",
+    "source_revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "sha256": "95dc0f9bbcebc259d9f52cb51732a3c913608d23d7ac2376b959f795ba04eb03"
   }
 }

@@ -49,13 +49,14 @@ core_final=read('core-final/verification.json')
 core_responsive=read('core-responsive/verification.json')
 core_reliability=read('core-reliability/verification.json')
 core_acceptance=read('core-acceptance/verification.json')
-for prefix in ['core','core-final','core-responsive','core-reliability','core-acceptance']:
+core_closure=read('core-closure/verification.json')
+for prefix in ['core','core-final','core-responsive','core-reliability','core-acceptance','core-closure']:
     for name in ['final-vitest','coverage-summary','dependency-audit','balance-sql','shared-sql',
                  'plan-sql','durable-sql','import-sql','account-recompute-sql','database-verification']:
         read(prefix+'/'+name+'.json')
 for rel in ['dependencies/metadata.json','review/source-manifest-final.json','review/source-manifest-global2.json']:
     read(rel)
-for label, report, prefix in [('PHASE1',core,'core'),('PHASE2',core_final,'core-final'),('PHASE3',core_responsive,'core-responsive'),('PHASE4',core_reliability,'core-reliability'),('PHASE5',core_acceptance,'core-acceptance')]:
+for label, report, prefix in [('PHASE1',core,'core'),('PHASE2',core_final,'core-final'),('PHASE3',core_responsive,'core-responsive'),('PHASE4',core_reliability,'core-reliability'),('PHASE5',core_acceptance,'core-acceptance'),('PHASE6',core_closure,'core-closure')]:
     if report:
         for command in report['commands']:
             scope=report['buildEnvironment'] if command['name']=='build' else 'Comando global de fase identificada; no sustituye aceptación UI/proveedor'

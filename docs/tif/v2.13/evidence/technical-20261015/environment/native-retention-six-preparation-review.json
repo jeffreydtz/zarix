@@ -1,0 +1,36 @@
+{
+  "status": "PASS_STATIC_PREPARATION_ONLY",
+  "reviewedAt": "2026-10-15T05:19:46.609277+00:00",
+  "reviewer": "/root/native_runtime/restore_fetch_guard",
+  "scope": "Independent file-only review. No controller import or function invocation, tests, runtime inspection, process probes, network, SQL, dump, retention or stop executed.",
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks.py",
+      "sha256": "ec952cec38d711a10f2c64dd932c2823c3b2eaff93597dfc91a1e129bff535bb"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/native-retention-six-plan.json",
+      "sha256": "8efec32571436fd792de6c91f455c61d058adbb5db126b91f51b3c7007260394"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/native-retention-six-plan.md",
+      "sha256": "95cc898b54e4fcadf0f4e6e6814403ef0c7db68d7b1f3671c765c22f5c92f244"
+    }
+  ],
+  "initialFindingsResolved": [
+    {
+      "finding": "Nested final-proof/closure-proof directories were not fully selected unless their names matched sensitive tags.",
+      "resolution": "Both explicit prefixes now select complete trees; validate_retained compares the critical artifact set and hashes."
+    },
+    {
+      "finding": "Isolated application copies outside runtime were not physically validated or retained.",
+      "resolution": "Two closed CI5/CI6 roots now validate own frozen core/revision, all declared source bytes/manifest, env digest and BUILD_ID before/after retention and before stop. Only sources plus build/core metadata retained."
+    }
+  ],
+  "findings": [],
+  "limits": [
+    "Missing future CI6 copy or mismatching source/profile fails closed; this review does not prove future runtime success.",
+    "No node_modules or .next binary tree retained; application dependency reinstall and rebuild required after losing /tmp.",
+    "Six full logical database/schema/Auth archives and separately copied Storage still need execution and validation; this is not a new restore proof."
+  ]
+}

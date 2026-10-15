@@ -606,49 +606,49 @@
   },
   "updated_at": "2026-10-15T04:39:38.155511+00:00",
   "current_reconciliation": {
-    "recorded_at": "2026-10-15T04:51:10.664496+00:00",
+    "recorded_at": "2026-10-15T05:20:41.010206+00:00",
     "source_matrix": "../case-traceability.csv",
-    "source_matrix_sha256": "9123162c847a88e8f9e71548c68442a7239eead99aaaf3e0395f21b203909e65",
+    "source_matrix_sha256": "1715a7bafe4550748bb425023338c786d81ee7bcff9164fb0b12bd56b9fb1313",
     "scope": "Original disjoint103-case triage snapshot remains unchanged. This is only metadata reconciliation against currently reviewed complete contracts; no new execution or claim that all locally actionable original scopes are complete.",
     "initially_triaged_cases": 103,
     "current_status_counts": {
-      "BLOCKED": 78,
-      "PASS": 24,
-      "FAIL": 1
+      "BLOCKED": 57,
+      "PASS": 43,
+      "FAIL": 3
     },
     "cases": [
       {
         "case_id": "CP1-01",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-02",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Visible categories200 | Own literal category201 | October summary200 | Normal API fixture transaction201 | Exactly one500 income and10500 balance | Literal500 income category/date/owner persisted | October summary200 | Financial flow income increases500 only",
+        "blocker": ""
       },
       {
         "case_id": "CP1-03",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | October summary200 | Normal API fixture transaction201 | One transfer/two exact impacts and conserved total | October summary200 | Transfer excluded from income/expense/flow",
+        "blocker": ""
       },
       {
         "case_id": "CP1-04",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Injected destination-impact failure returns error | Destination failure hook was reached once | Both balances and economic rows rolled back | Failed financial request did not leave a committed receipt | Same durable key succeeds after removing only the own fault201 | Retry commits once and conserves12000",
+        "blocker": ""
       },
       {
         "case_id": "CP1-05",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
@@ -660,11 +660,25 @@
         "blocker": ""
       },
       {
-        "case_id": "CP1-09",
+        "case_id": "CP1-07",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-08",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-09",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Normal API fixture transaction201 | Income500 initial balance10500 | Direct SQL income DELETE exact reverse",
+        "blocker": ""
       },
       {
         "case_id": "CP1-10",
@@ -675,17 +689,17 @@
       },
       {
         "case_id": "CP1-11",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Normal API fixture transaction201 | Literal predelete balances8500/3500 | Direct SQL transfer DELETE reverses both impacts exactly",
+        "blocker": ""
       },
       {
         "case_id": "CP1-12",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Initial own USD debt setup200 | SignedUSD delta+10 accepted200 | Secondary currency changes independently of primary debt | Exactly one signed currency-identified audit row",
+        "blocker": ""
       },
       {
         "case_id": "CP1-13",
@@ -693,6 +707,41 @@
         "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
         "assertions": "CP1-13 two independent database connections overlap behind own-row barrier | CP1-13 neither blocked request committed before barrier release | CP1-13 two distinct logical keys | CP1-13 both distinct expense commands commit | CP1-13 exactly two distinct 6000 expense effects | CP1-13 final balance is -2000 without lost updates | CP1-13 two durable receipts exist for the two commands",
         "blocker": ""
+      },
+      {
+        "case_id": "CP1-14",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-15",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-16",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-17",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP1-18",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-19",
@@ -703,150 +752,157 @@
       },
       {
         "case_id": "CP1-20",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-5-final-cp1-20-and-replay/verification.json; remaining-cu001/independent-final-cp1-20-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Partial valid local import200 | Exactly two economic writes and balance10200 | Raw current importer counters | Exactly one documented invalid-amount rejection detail",
+        "blocker": ""
       },
       {
         "case_id": "CP1-21",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-22",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Foreign-name file preview200 | Actual preview returns an account array | Foreign account and balance absent from actual selectable preview | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt | Foreign account is not disclosed as a selectable account | Archive only own new independent fixture204 | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt",
+        "blocker": ""
       },
       {
         "case_id": "CP1-23",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-24",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-25",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-26",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-27",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-28",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-29",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Negative balance is allowed by the documented rule",
+        "blocker": ""
       },
       {
         "case_id": "CP1-30",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-31",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-32",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-33",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-2-cp1-33/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Archive own new account204 | inactive-own rejected with an error response | inactive-own no account or full-ledger change | inactive-own response excludes account/balance data | foreign-owner rejected with an error response | foreign-owner no account or full-ledger change | foreign-owner response excludes account/balance data",
+        "blocker": ""
       },
       {
         "case_id": "CP1-34",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP1-35",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP1-36",
         "status": "PASS",
-        "evidence": "focal-contracts/attempt-1-existing-full-plan/verification.json; focal-contracts/cp1-36-review.json; e2e/api/api-verification.json",
-        "assertions": "CP1-36 original API assertion passed on this exact expense ID | CP1-36 owned archived group remains inactive | CP1-36 original group currency is ARS | CP1-36 exact original group has three members | CP1-36 original expense is exactly 100 ARS | CP1-36 exactly three distinct same-group split members | CP1-36 split amounts are 33.34 33.33 33.33 | CP1-36 exact expense split sum equals its 100 amount | CP1-36 payer belongs to exact original group | CP1-36 original 100 expense net total is exact numeric zero | CP1-36 every existing expense in the same group independently reconciles and has same-group members | CP1-36 same original group net total is independently exact numeric zero",
-        "blocker": ""
-      },
-      {
-        "case_id": "CP1-37",
-        "status": "PASS",
-        "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
-        "assertions": "SH-SQL-02 create and remainder cents conserve total | SH-SQL-03 update replaces amount and splits atomically",
-        "blocker": ""
-      },
-      {
-        "case_id": "CP1-38",
-        "status": "PASS",
-        "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
-        "assertions": "SH-SQL-04 actor from another group | SH-SQL-05 payer from another group | SH-SQL-06 split from another group | SH-SQL-08 another group cannot edit an existing expense | SH-SQL-09 invalid/revoked capabilities do not mutate | SH-SQL-10 split insert failure rolls back UPDATE and removed old splits | SH-SQL-11 split insert failure leaves no orphan new expense",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Independent empty batch exact counters | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Mixed batch counts only successful and failed active items | Persisted mixed outcomes independently reconcile | Current summary does not invent a skipped field",
         "blocker": ""
       },
       {
         "case_id": "CP2-01",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP2-02",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-02.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Invalid variant1 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant2 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant3 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant4 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant5 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant6 rejected without incomplete account (CSV does not mandate4xx) | All documented invalid variants rejected",
+        "blocker": ""
       },
       {
         "case_id": "CP2-03",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-03.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture transaction API201 | Fixture manual position API201 | Rename/deactivate200 | New name and inactive state | Existing movements retained | Existing positions retained | Inactive account operation is denied (CSV does not mandate4xx) | Rejected operation has no ledger effect",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-04",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP2-05",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-05-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Own secondary-debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | ExplicitUSD10payment200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value",
+        "blocker": ""
       },
       {
         "case_id": "CP2-06",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-06.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | OwnCSVexport200 | Complete documented15column format | Exactly three own period records | CSV preserves exact dates/types/amounts/currencies/relations | Export explicitly informs version and timezone",
+        "blocker": ""
       },
       {
         "case_id": "CP2-07",
@@ -858,7 +914,7 @@
       {
         "case_id": "CP2-08",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
@@ -870,16 +926,86 @@
         "blocker": ""
       },
       {
-        "case_id": "CP2-20",
+        "case_id": "CP2-10",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
+        "case_id": "CP2-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-13",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-14",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-15",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-16",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-17",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-18",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-19",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-20",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-20.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | LiteralFree3accountprecondition | Freefourthrejects4xx | Rejectedfourthcreatesnoaccount | Deactivateonlynewownedfirstaccount204 | Fixture account API201 | Freereplacementkeeps3active | Fixture account API201 | Premiumacceptsfourth | OwnexportremainsFree200",
+        "blocker": ""
+      },
+      {
         "case_id": "CP2-21",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
@@ -900,44 +1026,72 @@
       {
         "case_id": "CP3-03",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP3-04",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp3-04-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Converted own account API200 | No foreign account owner in result | OriginalARS120000 | OriginalUSD100 | Own API converted wealthUSD | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision",
+        "blocker": ""
       },
       {
         "case_id": "CP3-05",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp3-05-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture manual position API201 | Actual portfolio API200 | Position6x110 is660USD | Position purchase cost600 | Exactly own expected active position | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | Actual SSR liquidUSD | Actual SSR investmentsUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision | Cash account full row remains untouched by portfolio valuation | Broker cash remains0",
+        "blocker": ""
       },
       {
         "case_id": "CP3-06",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "FAIL",
+        "evidence": "account-analysis-contracts/executed-final/cp3-06-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Own secondary-debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | ExactUSD10debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision | Cashoriginal balances preserved",
+        "blocker": ""
       },
       {
         "case_id": "CP3-07",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
         "case_id": "CP3-08",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp3-08-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Normal JWT query is owner only | Owner category/period independent sum | Actual analysis SSR200 | Actual server custom inclusive period | Actual server expense category aggregate excludes transfer, U2 and September | Actual server income aggregate | Actual server rendered period totals",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-09",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP3-10",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP3-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
       },
       {
         "case_id": "CP3-13",
@@ -968,16 +1122,30 @@
         "blocker": ""
       },
       {
-        "case_id": "CP3-18",
+        "case_id": "CP3-17",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
+        "case_id": "CP3-18",
+        "status": "FAIL",
+        "evidence": "account-analysis-contracts/executed-final/cp3-18.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Normal RLS own legacy-currency setup has no error | Normal RLS sets only the own zero-balance fixture currency | Normal RLS consistent legacy opening adjustment accepted | Legacy unknown balance is10 | Legacy row has one consistent opening amount | Unknown currency retains original balances | Read does not mutate either account | Read preserves legacy ledger | Missing FX safely returns unavailable instead of fabricated total | Literal known subtotal with explicit ZZZ exclusion is implemented",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-19",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Documented conflict: case requires selectable MEP whereas RN08 and implementation fix blue sell. Derived blue consistency evidence does not approve the original MEP fixture."
+      },
+      {
         "case_id": "CP4-01",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
@@ -1012,7 +1180,7 @@
       {
         "case_id": "CP4-06",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
@@ -1059,284 +1227,116 @@
         "blocker": ""
       },
       {
-        "case_id": "CNF-10",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP1-14",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP1-15",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP1-16",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP1-17",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CP1-18",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP1-27",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP2-10",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP2-13",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CP2-14",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CP2-15",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CP2-16",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP2-17",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CP2-18",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CP3-09",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CP3-10",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CP3-11",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP3-12",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CNF-05",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CNF-06",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CNF-07",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
-        "case_id": "CNF-11",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CNF-09",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Required real versioned Chrome/Firefox/Safari/Edge matrix has not been completed; WebKit is not Safari."
-      },
-      {
-        "case_id": "CNF-02",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "No identified month-long authenticated observation series; a short synthetic run cannot establish monthly availability. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
-      },
-      {
         "case_id": "CNF-01",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Canonical 100 authenticated UI navigations with 20 sessions at 20Mbps/50ms in an equivalent deployment environment have no complete executed observation series. SQL/API measurements are separate."
       },
       {
+        "case_id": "CNF-02",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "No identified month-long authenticated observation series; a short synthetic run cannot establish monthly availability. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
         "case_id": "CNF-03",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native test stack uses HTTP loopback; no authorized HTTPS test endpoint/certificate and redirect verification for financial requests."
       },
       {
         "case_id": "CNF-04",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json; environment/at-rest.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; environment/at-rest.json",
         "assertions": "",
         "blocker": "Current local FileVault volume-encryption evidence exists separately; the complete original provider/configuration and CP2-19 API/JWT isolation fixture have no exact executed acceptance assertion."
       },
       {
-        "case_id": "CNF-12",
+        "case_id": "CNF-05",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
-        "blocker": "Native schema/data/Auth/Storage restore has separate evidence; this original timed snapshot fixture and complete post-restore browser journey have no exact executed assertion."
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
       },
       {
-        "case_id": "CP1-07",
+        "case_id": "CNF-06",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP1-08",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
       },
       {
-        "case_id": "CP1-26",
+        "case_id": "CNF-07",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP1-32",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP2-04",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP2-11",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP2-12",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP2-19",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP3-17",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
-      },
-      {
-        "case_id": "CP3-19",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Documented conflict: case requires selectable MEP whereas RN08 and implementation fix blue sell. Derived blue consistency evidence does not approve the original MEP fixture."
-      },
-      {
-        "case_id": "CNF-13",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
       },
       {
         "case_id": "CNF-08",
         "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
         "assertions": "",
         "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CNF-09",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Required real versioned Chrome/Firefox/Safari/Edge matrix has not been completed; WebKit is not Safari."
+      },
+      {
+        "case_id": "CNF-10",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-36",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-1-existing-full-plan/verification.json; focal-contracts/cp1-36-review.json; e2e/api/api-verification.json",
+        "assertions": "CP1-36 original API assertion passed on this exact expense ID | CP1-36 owned archived group remains inactive | CP1-36 original group currency is ARS | CP1-36 exact original group has three members | CP1-36 original expense is exactly 100 ARS | CP1-36 exactly three distinct same-group split members | CP1-36 split amounts are 33.34 33.33 33.33 | CP1-36 exact expense split sum equals its 100 amount | CP1-36 payer belongs to exact original group | CP1-36 original 100 expense net total is exact numeric zero | CP1-36 every existing expense in the same group independently reconciles and has same-group members | CP1-36 same original group net total is independently exact numeric zero",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-37",
+        "status": "PASS",
+        "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
+        "assertions": "SH-SQL-02 create and remainder cents conserve total | SH-SQL-03 update replaces amount and splits atomically",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-38",
+        "status": "PASS",
+        "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
+        "assertions": "SH-SQL-04 actor from another group | SH-SQL-05 payer from another group | SH-SQL-06 split from another group | SH-SQL-08 another group cannot edit an existing expense | SH-SQL-09 invalid/revoked capabilities do not mutate | SH-SQL-10 split insert failure rolls back UPDATE and removed old splits | SH-SQL-11 split insert failure leaves no orphan new expense",
+        "blocker": ""
+      },
+      {
+        "case_id": "CNF-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CNF-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native schema/data/Auth/Storage restore has separate evidence; this original timed snapshot fixture and complete post-restore browser journey have no exact executed assertion."
+      },
+      {
+        "case_id": "CNF-13",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
       }
     ]
   }
