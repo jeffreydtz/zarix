@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-15T01:38:50.720748+00:00",
+  "scope": "read-only inspection of the existing E2E native stack only; no lifecycle action performed",
+  "cliVersion": "2.120.0",
+  "postgresVersion": "17.11",
+  "postgrestVersion": "16.4-r0",
+  "e2e": {
+    "apiPort": 57321,
+    "postgresPort": 57322,
+    "stackId": "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+    "databaseInstanceId": "381bb253-405b-44dc-b192-f2c54c3ddc18",
+    "postmasterPid": 56368,
+    "postmasterStartTime": "2026-10-15T00:03:06.982076+00:00",
+    "authUsers": 2,
+    "storageObjects": 0,
+    "publicTables": 27
+  },
+  "listeners": {
+    "observedAt": "2026-10-15T01:38:50.720748+00:00",
+    "stack": "e2e",
+    "ownerPid": 56326,
+    "restPid": 56718,
+    "restInternalListen": [
+      "*:27781"
+    ],
+    "apiPublicListen": [
+      "127.0.0.1:57321"
+    ],
+    "lanReachabilityTested": false,
+    "mutationsPerformed": false
+  },
+  "postgresRestart": {
+    "cliServiceSelectorAvailable": false,
+    "databaseHasActiveDependents": [
+      "rest",
+      "auth",
+      "storage"
+    ],
+    "supportedAlternative": "supabase stack restart --workdir /tmp/zarix-runtime-20261015/e2e",
+    "alternativeScope": "all four services of E2E only; saved data, identity, credentials, endpoints, activation policy preserved",
+    "manualPgCtlRestartRecommended": false,
+    "reason": "managed native process lifecycle observes child exit, owns temporary Unix socket cleanup, and guards active dependencies; direct pg_ctl would bypass that owner",
+    "executionPendingParentRelease": true
+  },
+  "restBinding": {
+    "postgrestSupportsServerHost": true,
+    "environment": "PGRST_SERVER_HOST",
+    "reloadable": false,
+    "cliRestRecipeExposesServerHost": false,
+    "cliRestRecipeExposesExtraEnvironment": false,
+    "nativeLauncherInheritsArbitraryEnvironment": false,
+    "supportedCliOnlyChangeFound": false,
+    "allNativeSocketsLoopbackClaim": false,
+    "lanReachabilityTested": false,
+    "changesPerformed": false
+  },
+  "officialSources": {
+    "stackReadme": "https://github.com/supabase/cli/blob/v2.120.0/packages/stack/README.md",
+    "restRecipe": "https://github.com/supabase/cli/blob/v2.120.0/packages/stack/src/services/Rest.ts",
+    "orchestrator": "https://github.com/supabase/cli/blob/v2.120.0/packages/stack/src/Orchestrator.ts",
+    "databaseRecipe": "https://github.com/supabase/cli/blob/v2.120.0/packages/stack/src/services/Database.ts",
+    "launcher": "https://github.com/supabase/cli/blob/v2.120.0/packages/stack/src/runtime/native-launcher.ts",
+    "postgrestConfiguration": "https://docs.postgrest.org/en/v16/references/configuration.html#server-host"
+  },
+  "officialFilesSha256": {
+    "Rest.ts": "2088cb607c24c2182ff4cdd3c08bc65445b5f616218b4c4664252076fcef4278",
+    "Database.ts": "1fea5a95a4a8a6ecd8f8f96054fb2bf066de776dc8a5118d54b7f9dc1c63aa34",
+    "Orchestrator.ts": "b03c7e78bd115626d2f46e2ccceecb89b2105d4268b39ead2bdc2333b5a344bd",
+    "NativeProcess.ts": "8db122fdefe9b98bbf940602e418b7f21377e4be27cc5966842de308a1fe8d47",
+    "ProcessRecipe.ts": "3ffffaee208771806d8e47ec4329405f5086ebc51f776d0b8c0603ce1e04ce5e",
+    "native-launcher.ts": "f75f71fdb202e106745462947dcc24698464d7575ed63ffeae35b110cc494fde",
+    "package.json": "e9ef3fa8541faa7746b1fc4bf1875622880fa27d415bc57fb75c00a04b45e5f8"
+  },
+  "secretsIncluded": false
+}

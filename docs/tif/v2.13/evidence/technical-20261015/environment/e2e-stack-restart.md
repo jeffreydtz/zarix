@@ -1,0 +1,13 @@
+# Reinicio oficial controlado del stack E2E
+
+PASS de preservación y salud. El 15/10/2026, entre 01:41:24 y 01:41:26 UTC, se ejecutó `supabase stack restart` 2.120.0 sobre el ID exacto del stack E2E en `/tmp/zarix-runtime-20261015/e2e`, con HOME de Supabase aislado. Reinició sus cuatro servicios porque el CLI no ofrece reinicio por servicio y PostgreSQL tiene dependientes activos. No se usó reset, destroy, resembrado, aplicación SQL ni `pg_ctl` fuera del owner. La [inspección previa](native-lifecycle-inspection.md) justifica esta elección.
+
+Guards previos PASS: gateway `127.0.0.1:57321`, PostgreSQL `127.0.0.1:57322/postgres`, coincidencia de manifiesto/start/state/workdir/data directory, exactamente los dos IDs Auth del archivo privado de usuarios E2E y cero objetos Storage. Sólo se publica el booleano de coincidencia de IDs. Los owners de navegador y durabilidad confirmaron la ventana libre tras cerrar Chrome y sus sesiones locales de prueba.
+
+PostgreSQL cambió de PID **56368 → 2947** y de `pg_postmaster_start_time()` **00:03:06.982076Z → 01:41:24.642927Z**. Las 17 comparaciones dieron PASS: 64 tablas (27 públicas, 27 Auth y 10 Storage) conservaron conteo y hash de filas canónicas; el dump de esquema conservó SHA256 `217da2aacaeb0d8c3a292dc75ab99e82d0013e4d2bac86d282d38261ac72e9b5`, incluyendo propietarios y grants. Identidad, instancias, puertos, configuración, claves y archivos privados de entorno/usuarios conservaron sus hashes. Los archivos de estado de SOURCE, RESTORE y LOAD permanecieron iguales; no se abrió conexión a sus bases.
+
+Después de capturar esas huellas, `/login` de la app y Auth health respondieron 200. Un login sintético normal y `getUser` devolvieron 200 y coincidieron con el usuario esperado; se cerró sólo la nueva sesión de esa sonda con `scope=local` (204). Esa actividad Auth posterior puede cambiar metadata de sesiones de forma esperada; no se presenta como prueba de cero escrituras Auth globales. No se usó sign-out global.
+
+El replay financiero del recibo API queda en evidencia separada del owner E2E. Este reinicio prueba persistencia y funcionamiento básico tras una parada normal administrada; no simula pérdida del host, corrupción, fallo de energía ni recuperación automática.
+
+El gateway público sigue loopback, pero REST interno continúa en wildcard. El puerto interno posterior y la comprobación `lsof` figuran en el [JSON saneado completo](e2e-stack-restart.json). No se midió accesibilidad LAN y no se modificaron binarios, caché, state, firewall ni permisos del sistema para cambiar ese binding. No acredita TLS ni aislamiento completo de red.
