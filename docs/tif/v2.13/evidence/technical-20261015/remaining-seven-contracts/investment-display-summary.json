@@ -1,0 +1,121 @@
+{
+  "recordedAt": "2026-10-15T05:37:07.305952+00:00",
+  "status": "PASS_TWO_ACTUAL_COMPONENT_SSR_RENDERS",
+  "completeOriginalContract": false,
+  "scope": "Additional component rendering assertions to compose explicitly with the historical API/DB reports; not a Next request or browser flow. Parent reconciliation owns original-case status.",
+  "execution": {
+    "path": "investment-display-attempt-2-manual-fixture/investment-display-execution.json",
+    "sha256": "278d73843f9a0f136c08fd8c9e44b44b69aaaed27dbf1aa509b836f34b0ac7c3",
+    "exitCode": 0,
+    "sourceStable": true,
+    "node": "v22.17.0"
+  },
+  "vitest": {
+    "path": "investment-display-attempt-2-manual-fixture/investment-display-result.json",
+    "sha256": "a7c326b60991c3f5dbb24cde5dc38a1d730184c8bc420fadfa5a85d76064c8c4",
+    "tests": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "historicalApiSql": [
+    {
+      "path": "investment-contracts/executed/cp4-01-partial.json",
+      "sha256": "e93c2031277f225c9699ed7eccf94d564aa95ab337e0b50186ee1397c8ebbf29",
+      "case": "CP4-01",
+      "historicalApiSqlAssertionsPassed": 11,
+      "rawStatusPreserved": "PARTIAL"
+    },
+    {
+      "path": "investment-contracts/executed/cp4-06-partial.json",
+      "sha256": "921f2e7f404b8c063883820f861c2b825d61952be5ce56aa9dc5a144ee1a99ac",
+      "case": "CP4-06",
+      "historicalApiSqlAssertionsPassed": 16,
+      "rawStatusPreserved": "PARTIAL"
+    }
+  ],
+  "renderedHtml": [
+    {
+      "case": "CP4-01",
+      "path": "investment-display-attempt-2-manual-fixture/investment-display-cp4-01.html",
+      "sha256": "856903db88c92b7df76861988dc18678fb6e68bbf65955904ee5e24e62216ea1",
+      "assertedText": [
+        "AAPL",
+        "5 unidades",
+        "Compra: USD 185.00",
+        "Precio: USD 190.50",
+        "USD 952.50",
+        "+USD 27.50",
+        "(+2.97%)",
+        "Precio ingresado",
+        "Manual"
+      ],
+      "forbiddenText": "Cotización de mercado"
+    },
+    {
+      "case": "CP4-06",
+      "path": "investment-display-attempt-2-manual-fixture/investment-display-cp4-06.html",
+      "sha256": "4b69ce68e09681b56d3a246074b280c238ee7242b2f16530b9eb79adcfebc09a",
+      "assertedText": [
+        "FOOFIX",
+        "2 unidades",
+        "Compra: USD 50.00",
+        "Precio: USD 55.00",
+        "USD 110.00",
+        "+USD 10.00",
+        "Precio ingresado",
+        "Manual"
+      ],
+      "forbiddenText": "Cotización de mercado"
+    }
+  ],
+  "realModules": [
+    {
+      "path": "components/investments/InvestmentsList.tsx",
+      "sha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5",
+      "matchesProductGit84df929": true
+    },
+    {
+      "path": "components/ui/ConfirmDialog.tsx",
+      "sha256": "83e898aa9c91a25f23b3dc52d8561050bb8f447a631e4b5e243bd1213edb803f",
+      "matchesProductGit84df929": true
+    },
+    {
+      "path": "lib/hooks/use-investments-privacy.ts",
+      "sha256": "d76c3b7d27b8059cbfa18c4f5c8b65ed1d6fc3e91819dd6f5ea686c1edc9d850",
+      "matchesProductGit84df929": true
+    },
+    {
+      "path": "lib/hooks/useBodyScrollLock.ts",
+      "sha256": "2e1c25d9e396e2c3a28f84ea49094a9eae7597a62b412ff5ec70827ee3dd40fd",
+      "matchesProductGit84df929": true
+    },
+    {
+      "path": "lib/motion.ts",
+      "sha256": "94d37324bc30960dd664136dc468b72db76b594076edfa433f4bfbd785f85f5d",
+      "matchesProductGit84df929": true
+    }
+  ],
+  "mockedModules": [],
+  "browserCalls": 0,
+  "apiCalls": 0,
+  "databaseCalls": 0,
+  "limits": [
+    "SSR preserves initial framer-motion opacity; no pixel legibility, animation completion or hydrated action is claimed.",
+    "Fixture props are independently specified from the already executed API/DB scenarios, not a new financial service calculation or a live security session.",
+    "The CP4-06 fixed timestamp6Oct12Z was observed by the historical API/DB report. Manual-price date rendering is not asserted in this component SSR.",
+    "The price fixture190.50 is synthetic; no formal real market provider acceptance is established.",
+    "The explicit focal config discovers only this archived .test-source.ts; the normal global test glob is unchanged. These2 are not added to the913 CI6 aggregate."
+  ],
+  "selectedPhase": "investment-display-attempt-2-manual-fixture",
+  "preservedInitialDifferentProvenance": {
+    "path": "investment-display-attempt-1-different-provenance/manifest.json",
+    "sha256": "2102a080497b9a02d12c7a07f26a055ff939a9f196c7e2b22b9fdf1f04189e59",
+    "tests": 2,
+    "passed": 2,
+    "equivalentHistoricalCP401": false
+  },
+  "fixtureProvenance": {
+    "CP4-01": "explicit synthetic manual190.50, matching historical marketFixture; no live provider claim",
+    "CP4-06": "explicit manual55, historical API/DB fixed timestamp6Oct12Z"
+  }
+}

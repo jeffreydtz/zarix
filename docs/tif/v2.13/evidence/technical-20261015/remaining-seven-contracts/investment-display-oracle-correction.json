@@ -1,0 +1,14 @@
+{
+  "status": "CORRECTED_FIXTURE_PROVENANCE_BEFORE_COMPOSITION_ACCEPTANCE",
+  "oldAttempt": "investment-display-attempt-1-different-provenance/",
+  "cause": "Initial SSR used is_manual_price=false and valuation_source=live for AAPL, while historical CP4-01 explicitly used the synthetic manual190.50 fixture. Numerics were correct but source provenance differed.",
+  "change": "AAPL now manual=true/source=manual; position name comes from ticker rather than manual flag. Product and original historical reports unchanged.",
+  "oldAssertionsPreserved": true,
+  "oldTests": 2,
+  "oldPassed": 2,
+  "oldEquivalentToHistoricalCP401": false,
+  "oldSourceSha256": "59246318ed950be316d20cb730a6e0f84c401e252dc5aeb6131c632f1f18c78c",
+  "newSourceSha256": "6616a348f905d5c10c8740c94fce005c4656fb10b5a1170de5d7477479544dc6",
+  "correctedAttempt": "investment-display-attempt-2-manual-fixture/",
+  "newAssertionsIncludeManualProvenance": true
+}

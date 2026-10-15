@@ -1,0 +1,588 @@
+{
+  "status": "PASS",
+  "run": "e48e2ce0-eab6-4759-b18c-213dc8c8fdf0",
+  "case_id": "CP1-05",
+  "startedAt": "2026-10-15T05:33:30.098Z",
+  "scope": "One real ordinaryAuth API edit against CI6closure. No browser/source/product/plan/provider changes. Original SQL amount-only8500 observation remains a different preserved input.",
+  "results": [
+    {
+      "name": "Normal own account API201",
+      "actual": 201,
+      "expected": 201,
+      "status": "PASS"
+    },
+    {
+      "name": "Original fixture balance10000",
+      "actual": 10000,
+      "expected": 10000,
+      "status": "PASS"
+    },
+    {
+      "name": "Normal own expense API201",
+      "actual": 201,
+      "expected": 201,
+      "status": "PASS"
+    },
+    {
+      "name": "Expense1500 leaves8500",
+      "actual": 8500,
+      "expected": 8500,
+      "status": "PASS"
+    },
+    {
+      "name": "Normal API amount edit200",
+      "actual": 200,
+      "expected": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Edited amount changes one economic impact",
+      "actual": {
+        "balance": 8000,
+        "rows": 1,
+        "id": "99b3d385-6bb6-4840-9172-c1aeb52cebe9",
+        "amount": 2000,
+        "canonical": 2000
+      },
+      "expected": {
+        "balance": 8000,
+        "rows": 1,
+        "id": "99b3d385-6bb6-4840-9172-c1aeb52cebe9",
+        "amount": 2000,
+        "canonical": 2000
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "Opening adjustment row is unchanged",
+      "actual": [
+        {
+          "id": "b11d105f-5d68-4ecb-ab13-f1f4e6e8a195",
+          "tags": null,
+          "type": "adjustment",
+          "notes": null,
+          "amount": 10000,
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "location": null,
+          "account_id": "7fcf06e7-1da5-463c-957e-f288e668789b",
+          "created_at": "2026-10-15T05:33:33.007534+00:00",
+          "updated_at": "2026-10-15T05:33:33.007534+00:00",
+          "category_id": null,
+          "description": "Saldo inicial",
+          "receipt_url": null,
+          "is_recurring": false,
+          "exchange_rate": null,
+          "transaction_date": "2026-10-15T05:33:33.007534+00:00",
+          "installment_total": null,
+          "recurring_rule_id": null,
+          "installment_number": null,
+          "installment_group_id": null,
+          "destination_account_id": null,
+          "amount_in_account_currency": 10000,
+          "destination_amount_in_account_currency": null
+        }
+      ],
+      "expected": [
+        {
+          "id": "b11d105f-5d68-4ecb-ab13-f1f4e6e8a195",
+          "tags": null,
+          "type": "adjustment",
+          "notes": null,
+          "amount": 10000,
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "location": null,
+          "account_id": "7fcf06e7-1da5-463c-957e-f288e668789b",
+          "created_at": "2026-10-15T05:33:33.007534+00:00",
+          "updated_at": "2026-10-15T05:33:33.007534+00:00",
+          "category_id": null,
+          "description": "Saldo inicial",
+          "receipt_url": null,
+          "is_recurring": false,
+          "exchange_rate": null,
+          "transaction_date": "2026-10-15T05:33:33.007534+00:00",
+          "installment_total": null,
+          "recurring_rule_id": null,
+          "installment_number": null,
+          "installment_group_id": null,
+          "destination_account_id": null,
+          "amount_in_account_currency": 10000,
+          "destination_amount_in_account_currency": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Owner remains exact",
+      "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "expected": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "status": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "startedAt": "2026-10-15T05:33:32.962Z",
+      "status": 201,
+      "responseSha256": "b2ef713ab9230ebcc59e75ca194cfed8fe1d9880437a59aa4a5f6c3e97bc347b",
+      "finishedAt": "2026-10-15T05:33:33.020Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "startedAt": "2026-10-15T05:33:33.229Z",
+      "status": 201,
+      "responseSha256": "13e0ae5caeaa2370cae53b0ab692f65e4ffb4c833e22d367d71a806bf159358d",
+      "finishedAt": "2026-10-15T05:33:33.292Z"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/transactions/99b3d385-6bb6-4840-9172-c1aeb52cebe9",
+      "startedAt": "2026-10-15T05:33:33.574Z",
+      "status": 200,
+      "responseSha256": "d177623a804f4efa852fdaf1c2a81a69fcd624d99d1886d78f9c75ed04c9fa0b",
+      "finishedAt": "2026-10-15T05:33:33.623Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/accounts/7fcf06e7-1da5-463c-957e-f288e668789b",
+      "startedAt": "2026-10-15T05:33:33.908Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finishedAt": "2026-10-15T05:33:33.945Z"
+    }
+  ],
+  "normalAuth": {
+    "ownerId": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "physicalOwner": "A",
+    "passwordLogin": true,
+    "getUser": true
+  },
+  "buildBinding": {
+    "profile": "final-core-closure",
+    "runtimeMode": "clock",
+    "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+    "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+    "nextPid": 39320,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "coreVerificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+    "buildProofSha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+    "physicalSourceCount": 483,
+    "frozenGitSourceCount": 482,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "privateEnvBoundToExactNativeProject": true,
+    "ownedListenerAndCwdVerified": true,
+    "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+  },
+  "clockProof": {
+    "path": "closure-proof-clock-observation.json",
+    "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+    "fixedTime": "2026-10-06T12:00:00.000Z",
+    "observedApplicationTime": "2026-10-06T12:00:00.000Z",
+    "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+  },
+  "workingSourceManifest": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/run-account-edit.mjs",
+      "sha256": "50793efc024d6d693af88d22e90ce6ca13dbd4fdb25b887543cb01a2bc7d2dd5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/profile-binding.mjs",
+      "sha256": "67154c8d605a70fc1d75e745e2a8449862a61107cad60cf6c4ce40f71a79dc2f"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+      "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "109cf8c390ab92d611e3485c803275c4692c2d514b546ff14f4d1d5f374912d3"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "8d054941142c18363bac25f027aade6e88e111c38665a3ac1e8f53ce2fa8fdab"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/run-account-edit.mjs",
+      "sha256": "50793efc024d6d693af88d22e90ce6ca13dbd4fdb25b887543cb01a2bc7d2dd5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/profile-binding.mjs",
+      "sha256": "67154c8d605a70fc1d75e745e2a8449862a61107cad60cf6c4ce40f71a79dc2f"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+      "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "109cf8c390ab92d611e3485c803275c4692c2d514b546ff14f4d1d5f374912d3",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "8d054941142c18363bac25f027aade6e88e111c38665a3ac1e8f53ce2fa8fdab",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    }
+  ],
+  "unbuiltCurrentDeltas": [],
+  "before": {
+    "account": [
+      {
+        "id": "7fcf06e7-1da5-463c-957e-f288e668789b",
+        "icon": null,
+        "name": "RemainingSeven CP1-05 e48e2ce0-eab6-4759-b18c-213dc8c8fdf0",
+        "type": "bank",
+        "color": "#3B82F6",
+        "balance": 8500,
+        "due_day": null,
+        "is_debt": false,
+        "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "currency": "ARS",
+        "is_active": true,
+        "created_at": "2026-10-15T05:33:33.007534+00:00",
+        "sort_order": 91,
+        "updated_at": "2026-10-15T05:33:33.284082+00:00",
+        "closing_day": null,
+        "min_balance": null,
+        "credit_limit": null,
+        "last_4_digits": null,
+        "include_in_total": true,
+        "is_multicurrency": false,
+        "movement_enabled": true,
+        "include_in_liquid": true,
+        "secondary_currency": null
+      }
+    ],
+    "ledger": [
+      {
+        "id": "99b3d385-6bb6-4840-9172-c1aeb52cebe9",
+        "tags": null,
+        "type": "expense",
+        "notes": null,
+        "amount": 1500,
+        "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "currency": "ARS",
+        "location": null,
+        "account_id": "7fcf06e7-1da5-463c-957e-f288e668789b",
+        "created_at": "2026-10-15T05:33:33.284082+00:00",
+        "updated_at": "2026-10-15T05:33:33.284082+00:00",
+        "category_id": null,
+        "description": "RemainingSeven CP1-05 e48e2ce0-eab6-4759-b18c-213dc8c8fdf0",
+        "receipt_url": null,
+        "is_recurring": false,
+        "exchange_rate": null,
+        "transaction_date": "2026-10-06T12:00:00+00:00",
+        "installment_total": null,
+        "recurring_rule_id": null,
+        "installment_number": null,
+        "installment_group_id": null,
+        "destination_account_id": null,
+        "amount_in_account_currency": 1500,
+        "destination_amount_in_account_currency": null
+      },
+      {
+        "id": "b11d105f-5d68-4ecb-ab13-f1f4e6e8a195",
+        "tags": null,
+        "type": "adjustment",
+        "notes": null,
+        "amount": 10000,
+        "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "currency": "ARS",
+        "location": null,
+        "account_id": "7fcf06e7-1da5-463c-957e-f288e668789b",
+        "created_at": "2026-10-15T05:33:33.007534+00:00",
+        "updated_at": "2026-10-15T05:33:33.007534+00:00",
+        "category_id": null,
+        "description": "Saldo inicial",
+        "receipt_url": null,
+        "is_recurring": false,
+        "exchange_rate": null,
+        "transaction_date": "2026-10-15T05:33:33.007534+00:00",
+        "installment_total": null,
+        "recurring_rule_id": null,
+        "installment_number": null,
+        "installment_group_id": null,
+        "destination_account_id": null,
+        "amount_in_account_currency": 10000,
+        "destination_amount_in_account_currency": null
+      }
+    ]
+  },
+  "patchPayload": {
+    "amount": 2000,
+    "currency": "ARS",
+    "account_id": "7fcf06e7-1da5-463c-957e-f288e668789b"
+  },
+  "patchScope": "Only existing public fields; caller does not supply amount_in_account_currency. PATCH recomputes canonical applied amount as the real editing form does.",
+  "after": {
+    "account": [
+      {
+        "id": "7fcf06e7-1da5-463c-957e-f288e668789b",
+        "icon": null,
+        "name": "RemainingSeven CP1-05 e48e2ce0-eab6-4759-b18c-213dc8c8fdf0",
+        "type": "bank",
+        "color": "#3B82F6",
+        "balance": 8000,
+        "due_day": null,
+        "is_debt": false,
+        "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "currency": "ARS",
+        "is_active": true,
+        "created_at": "2026-10-15T05:33:33.007534+00:00",
+        "sort_order": 91,
+        "updated_at": "2026-10-15T05:33:33.619777+00:00",
+        "closing_day": null,
+        "min_balance": null,
+        "credit_limit": null,
+        "last_4_digits": null,
+        "include_in_total": true,
+        "is_multicurrency": false,
+        "movement_enabled": true,
+        "include_in_liquid": true,
+        "secondary_currency": null
+      }
+    ],
+    "ledger": [
+      {
+        "id": "99b3d385-6bb6-4840-9172-c1aeb52cebe9",
+        "tags": null,
+        "type": "expense",
+        "notes": null,
+        "amount": 2000,
+        "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "currency": "ARS",
+        "location": null,
+        "account_id": "7fcf06e7-1da5-463c-957e-f288e668789b",
+        "created_at": "2026-10-15T05:33:33.284082+00:00",
+        "updated_at": "2026-10-15T05:33:33.619777+00:00",
+        "category_id": null,
+        "description": null,
+        "receipt_url": null,
+        "is_recurring": false,
+        "exchange_rate": null,
+        "transaction_date": "2026-10-06T12:00:00+00:00",
+        "installment_total": null,
+        "recurring_rule_id": null,
+        "installment_number": null,
+        "installment_group_id": null,
+        "destination_account_id": null,
+        "amount_in_account_currency": 2000,
+        "destination_amount_in_account_currency": null
+      },
+      {
+        "id": "b11d105f-5d68-4ecb-ab13-f1f4e6e8a195",
+        "tags": null,
+        "type": "adjustment",
+        "notes": null,
+        "amount": 10000,
+        "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "currency": "ARS",
+        "location": null,
+        "account_id": "7fcf06e7-1da5-463c-957e-f288e668789b",
+        "created_at": "2026-10-15T05:33:33.007534+00:00",
+        "updated_at": "2026-10-15T05:33:33.007534+00:00",
+        "category_id": null,
+        "description": "Saldo inicial",
+        "receipt_url": null,
+        "is_recurring": false,
+        "exchange_rate": null,
+        "transaction_date": "2026-10-15T05:33:33.007534+00:00",
+        "installment_total": null,
+        "recurring_rule_id": null,
+        "installment_number": null,
+        "installment_group_id": null,
+        "destination_account_id": null,
+        "amount_in_account_currency": 10000,
+        "destination_amount_in_account_currency": null
+      }
+    ]
+  },
+  "complete_original_contract": true,
+  "cleanup": {
+    "status": "PASS",
+    "scope": "Only own newlycreated account archived; ledger history retained"
+  },
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "count": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "count": 129,
+      "beforeMd5": "aa78f7c2b392c5b60a08138ad1511fc5",
+      "afterMd5": "aa78f7c2b392c5b60a08138ad1511fc5",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "count": 178,
+      "beforeMd5": "e82c0040c8ae25a5e2075bdc823e18ad",
+      "afterMd5": "e82c0040c8ae25a5e2075bdc823e18ad",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "count": 23,
+      "beforeMd5": "ebc90b2ad1090616466a6dca8a67cc90",
+      "afterMd5": "ebc90b2ad1090616466a6dca8a67cc90",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "count": 8,
+      "beforeMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "afterMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "count": 42,
+      "beforeMd5": "65ae76283798f4316db4722fd3e39846",
+      "afterMd5": "65ae76283798f4316db4722fd3e39846",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "count": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "count": 10,
+      "beforeMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "afterMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "count": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "count": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "count": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "count": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "count": 1,
+      "beforeMd5": "419cc37dbc7e9f60f2997ac1d22e3597",
+      "afterMd5": "419cc37dbc7e9f60f2997ac1d22e3597",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "servedBuildStable": true,
+  "ownSessionClosed": true,
+  "finishedAt": "2026-10-15T05:33:35.076Z"
+}

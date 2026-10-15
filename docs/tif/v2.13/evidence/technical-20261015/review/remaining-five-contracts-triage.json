@@ -1,0 +1,83 @@
+{
+  "at": "2026-10-15T05:41:08.778756+00:00",
+  "scope": "Read-only five additional original-contract triage after closing seven. No new tests, Auth, API, database, provider or browser runs for these five; no matrix edits.",
+  "cases": [
+    {
+      "case_id": "CP1-23",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-4-cp1-23-premium/verification.json",
+          "sha256": "636fec29a219dc91a35612870b571cf54846c6d00bee4752fa7c1c82f1c4ae24"
+        }
+      ],
+      "actualAssertionsPassed": 9,
+      "rawStatus": "PARTIAL",
+      "gap": "Only next-occurrence presentation was marked blocked; literal has no browser requirement.",
+      "minimum": "Compose normalPremiumCRUD/noeffects/endinclusive with exact-source getNextRenewalDate dailyOct1\u20136 onOct6=>Oct6 andpausedactivefalse. Existing shouldExecuteToday focal proves inclusiveend; if source reasoning insufficient, pure focal of the exact existing next-date helper only (no product extraction or browser needed).",
+      "recommendation": "REVIEWABLE_COMPOSITE_OR_PURE_FOCAL"
+    },
+    {
+      "case_id": "CP1-24",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+        }
+      ],
+      "actualAssertionsPassed": 5,
+      "rawStatus": "PARTIAL",
+      "gap": "Actual B fixture has chatLinkedfalse vs literal botlinked. All financial outcomes/real overlappingHTTPtwo+retry/oneoutbox are already observed.",
+      "minimum": "Independent reviewer may compose native6Octproof with existing SQL-backed simulated-provider linkedchat fixture, while explicitly distinguishing differentcases/dates. Otherwise a bounded syntheticlinked-provider focal6Oct is required; no realTelegram credential or send. Do not claimnativebotwaslinked.",
+      "recommendation": "PRECONDITION_COMPOSITION_REVIEW"
+    },
+    {
+      "case_id": "CP1-25",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+        },
+        {
+          "path": "remaining-cu001/cron-contract-review.json",
+          "sha256": "ef8c5449db566b71b596826e654fd4defa3e2ea25d187ad15e0f0b7802961a90"
+        }
+      ],
+      "actualAssertionsPassed": 8,
+      "rawStatus": "PARTIAL",
+      "gap": "Real beforeINSERT failure/rollback/retry is covered. Literal committedINSERT/unmarked/retry23505 contradicts the current atomictransactionmarker/outbox anddurable replay. Existing mocks test23505 recovery code separately, not this unreachable nativeinterleaving.",
+      "minimum": "Keep genuine architecture/contract gap explicit. No disablingtriggers/deletingreceipts/weakeningatomicity to manufacture PASS. A labelled legacyfixture is a different scope requiring explicit interpretation.",
+      "recommendation": "GENUINE_CONTRACT_ARCHITECTURE_MISMATCH"
+    },
+    {
+      "case_id": "CP1-27",
+      "evidence": [
+        {
+          "path": "core-closure/final-vitest.json",
+          "sha256": "32f376cc3687dc3b737ccc4cc823fe5eaf9b951b123100338ab7abaab50651f0"
+        },
+        {
+          "path": "__tests__/recurring-outbox-equivalence.test.ts",
+          "sha256": "2ae50a96cf8ecc09d3b8ba4c5aa6b415d513b92a584a90ffacf29931374189ac"
+        }
+      ],
+      "rawStatus": "NO_EXACT_PROVIDER_TIMEOUT_TEST_LOCATED",
+      "gap": "Existing realSQL/PGlite test loses databaseack AFTER provider call resolves, not connection/providerack AFTER simulated acceptance. Not an exact substitute for literal provideraccepts+timeout.",
+      "minimum": "One bounded focal using the existing realSQL/PGlite/outboxdispatcher fixture: providerdouble recordsacceptance then throws timeout; preserve pending/uncertain outcome, reopenDB/retry and compare exact financialsnapshot/oneeffect/oneoutbox; physicalnotice may repeat. No realprovider/credential, no exactlyonceclaim. Parent authorization required before any new execution.",
+      "recommendation": "ONE_EXACT_PROVIDER_DOUBLE_FOCAL"
+    },
+    {
+      "case_id": "CP1-34",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-1-eight-cases/verification.json",
+          "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251"
+        }
+      ],
+      "actualAssertionsPassed": 29,
+      "rawStatus": "PARTIAL",
+      "gap": "Only actualbrowserNaNinput behavior was pending, which CSVdoesnot require.",
+      "minimum": "No rerun needed: realAPI.01from1\u2192.99 plus fourfreshfixtures0/-1/.001/NaNstring all400/noeconomicrow/fullledgerandaccountunchanged. JSON numericNaN doesnot exist; actual Number(NaNstring) rejection is explicitly scoped, not null substitution/browserclaim.",
+      "recommendation": "EXISTING_LITERAL_COMPLETE_PENDING_REVIEW"
+    }
+  ]
+}

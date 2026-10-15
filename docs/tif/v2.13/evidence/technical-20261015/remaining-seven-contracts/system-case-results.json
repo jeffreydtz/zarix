@@ -1,0 +1,182 @@
+{
+  "results": [
+    {
+      "case_id": "CP1-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "remaining-seven-contracts/cp1-05-api.json",
+        "remaining-seven-contracts/manifest.json"
+      ],
+      "assertion_names": [
+        "Normal own account API201",
+        "Original fixture balance10000",
+        "Normal own expense API201",
+        "Expense1500 leaves8500",
+        "Normal API amount edit200",
+        "Edited amount changes one economic impact",
+        "Opening adjustment row is unchanged",
+        "Owner remains exact"
+      ],
+      "scope": "Actual ordinaryAuth normal API edit on CI6closure84df/aIW; sameID/oneeconomicrow8000;13originaltables/source/buildstable, ownsessionclosed. Prior amount-onlySQL8500 remains separate preserved observation."
+    },
+    {
+      "case_id": "CP1-21",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "remaining-seven-contracts/four-existing-composites.json",
+        "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "remaining-seven-contracts/manifest.json"
+      ],
+      "assertion_names": [
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Known existing500 expense imported once",
+        "Exactly one known duplicate-comparison tuple exists",
+        "Same-file local preview200",
+        "Choosing omit creates no new write",
+        "Duplicate omission leaves exact full ledger"
+      ],
+      "scope": "Existing actual API response shows matching criteria, imported0/skipped1/pending0/total1 and exact9500/fullledgerinvariance. CSV evidence is response/SQL, with no browser-specific requirement. No interaction with a browser import review screen claimed; the criteria are present in the actual recorded response."
+    },
+    {
+      "case_id": "CP1-28",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "remaining-seven-contracts/four-existing-composites.json",
+        "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "remaining-seven-contracts/manifest.json"
+      ],
+      "assertion_names": [
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Invalid Bearer401",
+        "Invalid Bearer no financial effect",
+        "Own normal-session recurring fixture201",
+        "Inactive rule skips without movement",
+        "Own normal-session recurring fixture201",
+        "Expired rule deactivates without movement"
+      ],
+      "scope": "Native invalidBearer401, inactive skips and expired ruledeactivation/zeroeffect are recorded. Exact same source control flow emits401 before factory/execute, proving no DB access along this branch. No runtime DB-query counter/instrumentation was recorded or claimed. Source control-flow proof is explicitly composed with native branch outcomes."
+    },
+    {
+      "case_id": "CP1-30",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "remaining-seven-contracts/four-existing-composites.json",
+        "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "remaining-seven-contracts/manifest.json"
+      ],
+      "assertion_names": [
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Own normal-session recurring fixture201",
+        "Negative balance is allowed by the documented rule",
+        "One durable notification intention"
+      ],
+      "scope": "Actual rule with notificationEnabledtrue creates one expense1000, balance-500, marker06Oct and one durable notification intent. Delivery wording is conditional on provider acceptance. No realTelegram acceptance, sent message or specific overdraft warning claimed. Conditional delivery is not promoted to unconditional provider acceptance."
+    },
+    {
+      "case_id": "CP1-31",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "remaining-seven-contracts/four-existing-composites.json",
+        "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "remaining-seven-contracts/manifest.json"
+      ],
+      "assertion_names": [
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Independent own category201",
+        "Independent literal budget201",
+        "Normal API fixture transaction201",
+        "Real budget-status API200",
+        "Exact independent consumed and remaining cents",
+        "Normal API fixture transaction201",
+        "Transfer does not consume or block the budget",
+        "Archive only own new independent fixture204",
+        "Archive only own new independent fixture204",
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Independent own category201",
+        "Independent literal budget201",
+        "Normal API fixture transaction201",
+        "Real budget-status API200",
+        "Exact independent consumed and remaining cents",
+        "Normal API fixture transaction201",
+        "Transfer does not consume or block the budget",
+        "Archive only own new independent fixture204",
+        "Archive only own new independent fixture204",
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Own normal-session fixture account201",
+        "Initial native balance",
+        "Independent own category201",
+        "Independent literal budget201",
+        "Normal API fixture transaction201",
+        "Real budget-status API200",
+        "Exact independent consumed and remaining cents",
+        "Normal API fixture transaction201",
+        "Transfer does not consume or block the budget",
+        "Archive only own new independent fixture204",
+        "Archive only own new independent fixture204"
+      ],
+      "scope": "Three independent native budgets and accepted transfer500 provide spent/remaining exactcents and transferexclusion. Six actual React renderToStaticMarkup BudgetCard tests in CI6 cover matching amount10000/spent9999.99,10000,10000.01/remaining.01,0,-.01 and labels/semantic state. Native API/SQL836 and real component focal render84 are different immutable executions composed explicitly. No single servedNext/browser flow or CSS/interaction acceptance claimed."
+    },
+    {
+      "case_id": "CP4-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "investment-contracts/executed/cp4-01-partial.json",
+        "remaining-seven-contracts/investment-display-summary.json",
+        "remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json",
+        "remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-01.html",
+        "remaining-seven-contracts/manifest.json"
+      ],
+      "assertion_names": [
+        "AAPL",
+        "5 unidades",
+        "Compra: USD 185.00",
+        "Precio: USD 190.50",
+        "USD 952.50",
+        "+USD 27.50",
+        "(+2.97%)",
+        "Precio ingresado",
+        "Manual"
+      ],
+      "scope": "Explicit composition: historical836 nativeAPI/SQLfinancialfixture and fixedtimestampwhereapplicable plus new84 actualReactInvestmentsList/ConfirmProvider focalrender, sameunchangedcomponentbytes, matchingmanualpriceprovenance. No liveprovider/Nextrequest/browser/animation/hydrationclaim. Preserved first focal had differentAAPLprovenance and is not used for original completion."
+    },
+    {
+      "case_id": "CP4-06",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "investment-contracts/executed/cp4-06-partial.json",
+        "remaining-seven-contracts/investment-display-summary.json",
+        "remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json",
+        "remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-06.html",
+        "remaining-seven-contracts/manifest.json"
+      ],
+      "assertion_names": [
+        "FOOFIX",
+        "2 unidades",
+        "Compra: USD 50.00",
+        "Precio: USD 55.00",
+        "USD 110.00",
+        "+USD 10.00",
+        "Precio ingresado",
+        "Manual"
+      ],
+      "scope": "Explicit composition: historical836 nativeAPI/SQLfinancialfixture and fixedtimestampwhereapplicable plus new84 actualReactInvestmentsList/ConfirmProvider focalrender, sameunchangedcomponentbytes, matchingmanualpriceprovenance. No liveprovider/Nextrequest/browser/animation/hydrationclaim. Preserved first focal had differentAAPLprovenance and is not used for original completion."
+    }
+  ]
+}

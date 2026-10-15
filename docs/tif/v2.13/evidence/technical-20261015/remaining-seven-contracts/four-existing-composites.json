@@ -1,0 +1,202 @@
+{
+  "at": "2026-10-15T05:35:15.073291+00:00",
+  "scope": "Four parent-authorized exact original-contract semantic composites. Historical rawPARTIAL reports remain byte-identical; no matrix edit or new runtime for these four. Independent review still required.",
+  "results": [
+    {
+      "case_id": "CP1-21",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "type": "EXPLICIT_ORIGINAL_CONTRACT_COMPOSITE",
+      "originalRawStatusPreserved": "PARTIAL",
+      "nativeReport": {
+        "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+        "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+        "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+        "assertion_names": [
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Known existing500 expense imported once",
+          "Exactly one known duplicate-comparison tuple exists",
+          "Same-file local preview200",
+          "Choosing omit creates no new write",
+          "Duplicate omission leaves exact full ledger"
+        ]
+      },
+      "runtimeScope": "Only original recorded native API/SQL effects; no new runtime executed for this composite.",
+      "independentReview": "PENDING",
+      "literalCompletion": "Existing actual API response shows matching criteria, imported0/skipped1/pending0/total1 and exact9500/fullledgerinvariance. CSV evidence is response/SQL, with no browser-specific requirement.",
+      "responseCriteriaObserved": {
+        "name": "Duplicate criteria available in actual response",
+        "skipTitles": [
+          "Movimiento omitido \u2014 coincidencia exacta"
+        ],
+        "skipReasons": [
+          "Elegiste omitir coincidencias por fecha y hora, tipo, monto, moneda, cuentas, equivalentes, categor\u00eda, descripci\u00f3n y notas."
+        ]
+      },
+      "scopeLimitation": "No interaction with a browser import review screen claimed; the criteria are present in the actual recorded response."
+    },
+    {
+      "case_id": "CP1-28",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "type": "EXPLICIT_ORIGINAL_CONTRACT_COMPOSITE",
+      "originalRawStatusPreserved": "PARTIAL",
+      "nativeReport": {
+        "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+        "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+        "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+        "assertion_names": [
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Invalid Bearer401",
+          "Invalid Bearer no financial effect",
+          "Own normal-session recurring fixture201",
+          "Inactive rule skips without movement",
+          "Own normal-session recurring fixture201",
+          "Expired rule deactivates without movement"
+        ]
+      },
+      "runtimeScope": "Only original recorded native API/SQL effects; no new runtime executed for this composite.",
+      "independentReview": "PENDING",
+      "literalCompletion": "Native invalidBearer401, inactive skips and expired ruledeactivation/zeroeffect are recorded. Exact same source control flow emits401 before factory/execute, proving no DB access along this branch.",
+      "sourceControlFlow": {
+        "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "guardLine": 26,
+        "return401Line": 27,
+        "serviceFactoryLine": 30,
+        "routeCreatesJobWithoutDBConstructor": true,
+        "sources": [
+          {
+            "path": "app/api/cron/recurring/route.ts",
+            "sha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a",
+            "identicalAcrossNative836AndCI684": true
+          },
+          {
+            "path": "lib/cron/cron-job.ts",
+            "sha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9",
+            "identicalAcrossNative836AndCI684": true
+          },
+          {
+            "path": "lib/cron/recurring-job.ts",
+            "sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72",
+            "identicalAcrossNative836AndCI684": true
+          }
+        ]
+      },
+      "scopeLimitation": "No runtime DB-query counter/instrumentation was recorded or claimed. Source control-flow proof is explicitly composed with native branch outcomes."
+    },
+    {
+      "case_id": "CP1-30",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "type": "EXPLICIT_ORIGINAL_CONTRACT_COMPOSITE",
+      "originalRawStatusPreserved": "PARTIAL",
+      "nativeReport": {
+        "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+        "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+        "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+        "assertion_names": [
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Own normal-session recurring fixture201",
+          "Negative balance is allowed by the documented rule",
+          "One durable notification intention"
+        ]
+      },
+      "runtimeScope": "Only original recorded native API/SQL effects; no new runtime executed for this composite.",
+      "independentReview": "PENDING",
+      "literalCompletion": "Actual rule with notificationEnabledtrue creates one expense1000, balance-500, marker06Oct and one durable notification intent. Delivery wording is conditional on provider acceptance.",
+      "providerCondition": {
+        "authorizedBotCredentialPresent": false,
+        "chatLinked": false,
+        "deliveryAttempted": false,
+        "providerAcceptanceClaimed": false,
+        "separateRealTelegramIntegration": "BLOCKED_MISSING_AUTHORIZED_CREDENTIAL"
+      },
+      "scopeLimitation": "No realTelegram acceptance, sent message or specific overdraft warning claimed. Conditional delivery is not promoted to unconditional provider acceptance."
+    },
+    {
+      "case_id": "CP1-31",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "type": "EXPLICIT_ORIGINAL_CONTRACT_COMPOSITE",
+      "originalRawStatusPreserved": "PARTIAL",
+      "nativeReport": {
+        "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+        "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+        "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+        "assertion_names": [
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Independent own category201",
+          "Independent literal budget201",
+          "Normal API fixture transaction201",
+          "Real budget-status API200",
+          "Exact independent consumed and remaining cents",
+          "Normal API fixture transaction201",
+          "Transfer does not consume or block the budget",
+          "Archive only own new independent fixture204",
+          "Archive only own new independent fixture204",
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Independent own category201",
+          "Independent literal budget201",
+          "Normal API fixture transaction201",
+          "Real budget-status API200",
+          "Exact independent consumed and remaining cents",
+          "Normal API fixture transaction201",
+          "Transfer does not consume or block the budget",
+          "Archive only own new independent fixture204",
+          "Archive only own new independent fixture204",
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Own normal-session fixture account201",
+          "Initial native balance",
+          "Independent own category201",
+          "Independent literal budget201",
+          "Normal API fixture transaction201",
+          "Real budget-status API200",
+          "Exact independent consumed and remaining cents",
+          "Normal API fixture transaction201",
+          "Transfer does not consume or block the budget",
+          "Archive only own new independent fixture204",
+          "Archive only own new independent fixture204"
+        ]
+      },
+      "runtimeScope": "Only original recorded native API/SQL effects; no new runtime executed for this composite.",
+      "independentReview": "PENDING",
+      "literalCompletion": "Three independent native budgets and accepted transfer500 provide spent/remaining exactcents and transferexclusion. Six actual React renderToStaticMarkup BudgetCard tests in CI6 cover matching amount10000/spent9999.99,10000,10000.01/remaining.01,0,-.01 and labels/semantic state.",
+      "focalRender": {
+        "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "coreVitestReport": "core-closure/final-vitest.json",
+        "coreVitestSha256": "32f376cc3687dc3b737ccc4cc823fe5eaf9b951b123100338ab7abaab50651f0",
+        "component": {
+          "path": "components/budgets/BudgetCard.tsx",
+          "sha256": "b4a66c24408997fdc90656b02d16ca574090302b0288aaebb3cbdae4a2b21a74"
+        },
+        "testSource": {
+          "path": "__tests__/budget-card-boundaries.test.ts",
+          "sha256": "98f86db24dfe1b75bbaf8126ba783ad9acc2efd2dc5df6c01d305f60e69ff5b9"
+        },
+        "passedTestNames": [
+          "BudgetCard monetary boundaries keeps the ARS10000 boundary available with a rounded SQL percent of100",
+          "BudgetCard monetary boundaries keeps the ARS10000 boundary limit with a rounded SQL percent of100",
+          "BudgetCard monetary boundaries keeps the ARS10000 boundary exceeded with a rounded SQL percent of100",
+          "BudgetCard monetary boundaries falls back to amount minus spent when remaining is undefined",
+          "BudgetCard monetary boundaries falls back to amount minus spent when remaining is NaN",
+          "BudgetCard monetary boundaries preserves a finite authoritative remaining amount when rollover is enabled"
+        ]
+      },
+      "scopeLimitation": "Native API/SQL836 and real component focal render84 are different immutable executions composed explicitly. No single servedNext/browser flow or CSS/interaction acceptance claimed."
+    }
+  ]
+}
