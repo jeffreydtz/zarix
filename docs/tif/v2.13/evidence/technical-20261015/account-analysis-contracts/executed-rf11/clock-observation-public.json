@@ -1,0 +1,14 @@
+{
+  "sourceFileSha256": "ce9af30f4e005a9a10c7c4039b6f16576b9ac064ee408f0b463637eeaf8754e5",
+  "scope": "Actual installation observation; same file hash verified unchanged before/after each case, not a new runtime clock query fabricated at each step.",
+  "status": "INSTALLED_IN_SELECTED_NEXT_PROCESS",
+  "nextPid": 1822,
+  "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+  "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "fixedTime": "2026-10-06T12:00:00.000Z",
+  "observedApplicationTime": "2026-10-06T12:00:00.000Z",
+  "nativeClockAtInstall": "2026-10-15T04:32:04.315Z",
+  "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc",
+  "sourceManifestSha256": "837127b25fdb1cb2a0f8ae03a09fd65b73bdb239026427b6ad38b882380905e8",
+  "sourceStable": true
+}

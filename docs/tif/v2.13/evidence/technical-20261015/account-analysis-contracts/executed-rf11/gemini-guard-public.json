@@ -1,0 +1,22 @@
+{
+  "sourceFileSha256": "0468871b63c0374ecfb8d6f0ed5f212e8a127288bc5bf94e1afc21950ac6df14",
+  "scope": "Guarded local no-credential canary only; no external Google outage/request and no calculation acceptance from the preload. Actual CP316 records journal before/after plus successful normal projection request.",
+  "status": "PREPARED_GUARDED_UNAVAILABLE",
+  "mode": "configured-unavailable",
+  "nextPid": 1822,
+  "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+  "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "sourceStable": true,
+  "instrumentationSha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0",
+  "guardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+  "noGeminiEnvironmentCredential": true,
+  "canary": {
+    "origin": "https://generativelanguage.googleapis.com",
+    "credentialsOrHeadersProvided": false,
+    "rejectedByInstalledLoopbackGuard": true,
+    "nativeDispatchPreventedByReviewedGuard": true,
+    "auditAppendSha256": "ee7d6efb07c61b81d0034712da724f27373201f3e69bbbeccc088dc97cde001f"
+  },
+  "journalInitialEntries": 1,
+  "calculationExecuted": false
+}

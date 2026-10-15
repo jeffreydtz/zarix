@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import { createServerClient } from '@supabase/ssr';
 import { isolatedNativeTargets, isolatedPgEnvironment, isolatedApiFetch } from '../../../../../../scripts/lib/test-isolated-native-target.mjs';
 import { contracts } from './scenarios.mjs';
+import { bindIntermediateClock } from './profile-binding.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = fileURLToPath(new URL('../../../../../../', import.meta.url));
@@ -17,12 +18,12 @@ export const digest = value => createHash('sha256').update(value).digest('hex');
 export const lit = value => `'${String(value).replaceAll("'", "''")}'`;
 class Blocked extends Error {}
 const report = { status: 'PREPARED', startedAt: new Date().toISOString(), scope: 'One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD.', results: [], requests: [], fixtures: [], executionCount: 0 };
-let ctx, selected, output, protectedRows, sourceManifest;
+let ctx, selected, output, protectedRows, sourceManifest, runtimeBinding;
 const protectedTables = ['users', 'accounts', 'transactions', 'investments', 'investment_sales', 'categories', 'budgets', 'recurring_rules', 'shared_groups', 'shared_group_members', 'shared_expenses', 'shared_expense_splits'];
 async function save() { if (output) await fs.writeFile(path.join(output, 'verification.json'), JSON.stringify(report, null, 2) + '\n', { mode: 0o600 }); }
 const block = reason => { throw new Blocked(reason); };
 async function manifest() {
-  const files = ['docs/tif/v2.13/casos_prueba.csv', ...['run.mjs','scenarios.mjs','plan.json'].map(name => path.relative(root,path.join(here,name))), 'scripts/lib/test-isolated-native-target.mjs', 'app/api/accounts/route.ts', 'app/api/accounts/[id]/route.ts', 'app/api/accounts/[id]/adjust-secondary-balance/route.ts', 'app/api/transactions/route.ts', 'app/api/transactions/[id]/route.ts', 'app/api/import/transactions/route.ts', 'app/api/export/transactions/route.ts', 'app/api/investments/portfolio/route.ts', 'app/api/ai/anomalies/route.ts', 'app/api/ai/projections/route.ts', 'app/(authenticated)/dashboard/page.tsx', 'lib/services/accounts.ts', 'lib/services/cotizaciones.ts', 'lib/services/transactions.ts', 'lib/financial-anomalies.ts', 'lib/financial-projections.ts','supabase/schema.sql','supabase/migrations/20261009034943_enforce_plan_allowances.sql','supabase/migrations/20261015000402_atomic_account_balance_recompute.sql'];
+  const files = ['docs/tif/v2.13/casos_prueba.csv','docs/tif/v2.13/evidence/technical-20261015/acceptance-final/profiles.json','docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs','docs/tif/v2.13/evidence/technical-20261015/acceptance-final/gemini-unavailable-preload.mjs', ...['run.mjs','scenarios.mjs','profile-binding.mjs','plan.json'].map(name => path.relative(root,path.join(here,name))), 'scripts/lib/test-isolated-native-target.mjs', 'app/api/accounts/route.ts', 'app/api/accounts/[id]/route.ts', 'app/api/accounts/[id]/adjust-secondary-balance/route.ts', 'app/api/transactions/route.ts', 'app/api/transactions/[id]/route.ts', 'app/api/import/transactions/route.ts', 'app/api/export/transactions/route.ts', 'app/api/investments/portfolio/route.ts', 'app/api/ai/anomalies/route.ts', 'app/api/ai/projections/route.ts', 'app/(authenticated)/dashboard/page.tsx', 'lib/services/accounts.ts', 'lib/services/cotizaciones.ts', 'lib/services/transactions.ts', 'lib/financial-anomalies.ts', 'lib/financial-projections.ts','supabase/schema.sql','supabase/migrations/20261009034943_enforce_plan_allowances.sql','supabase/migrations/20261015000402_atomic_account_balance_recompute.sql'];
   return Promise.all(files.map(async file => ({ path: file, sha256: digest(await fs.readFile(path.join(root,file))) })));
 }
 
@@ -39,6 +40,7 @@ async function initialize() {
   assert.ok(contract, 'Case is outside the prepared23contracts');
   report.case = { case_id: selected, status: 'BLOCKED', complete_original_contract: false, assertions: [], original_contract: contract.original_contract };
   report.results = [report.case];
+  const profileAt=process.argv.indexOf('--profile'),profileName=profileAt<0?'legacy-existing':process.argv[profileAt+1];assert.ok(['legacy-existing','intermediate-core-reliability-clock-retry'].includes(profileName));const clockProfile=profileName==='intermediate-core-reliability-clock-retry';if(clockProfile)assert.ok(['CP3-13','CP3-14','CP3-15','CP3-16'].includes(selected));report.runtimeProfile=profileName;
   const apiOnly=process.argv.includes('--api-only');
   const ownerAt=process.argv.indexOf('--owner');const physicalOwner=ownerAt<0?'A':process.argv[ownerAt+1];assert.ok(['A','B'].includes(physicalOwner),'--owner must be A or B');
   report.executionMode=apiOnly?'api-sql-only':'ui-required';report.logicalOwner=physicalOwner;report.pendingScopes=[];
@@ -48,8 +50,8 @@ async function initialize() {
   await fs.mkdir(output,{recursive:false,mode:0o700});
   await save();
   if (selected === 'CP3-02') block('CP3-02 is explicitly reserved for the parent TTL fix and its exact controlled-clock verification.');
-  const configFile = path.resolve(process.env.ZARIX_ACCOUNT_ANALYSIS_CONFIG || path.join(runtime,'e2e.env'));
-  const loginFile = path.resolve(process.env.ZARIX_ACCOUNT_ANALYSIS_LOGINS || path.join(runtime,'e2e-logins.json'));
+  const configFile = path.resolve(process.env.ZARIX_ACCOUNT_ANALYSIS_CONFIG || path.join(runtime,clockProfile?'account-analysis-proof.env':'e2e.env'));
+  const loginFile = path.resolve(process.env.ZARIX_ACCOUNT_ANALYSIS_LOGINS || path.join(runtime,clockProfile?'proof-logins.json':'e2e-logins.json'));
   for (const f of [configFile,loginFile]) {
     assert.ok(f.startsWith(runtime + '/'),'Use only pre-existing private local fixture files');
     assert.equal((await fs.stat(f)).mode & 0o077,0,'Private fixture must be0600');
@@ -65,7 +67,7 @@ async function initialize() {
   databaseUrl.username = 'supabase_admin';
   const pgEnv = isolatedPgEnvironment(databaseUrl), psql = path.join(config.ZARIX_PG_BIN,'psql');
   function sql(statement) {
-    const child = spawnSync(psql,['-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-c',statement],{env:pgEnv,encoding:'utf8',maxBuffer:8*1024*1024});
+    const child = spawnSync(psql,['-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-c',statement],{env:{...pgEnv,PGOPTIONS:'-c statement_timeout=17000 -c lock_timeout=3000'},encoding:'utf8',timeout:22000,maxBuffer:8*1024*1024});
     assert.equal(child.status,0,'Native SQL failed; raw SQL diagnostics withheld'); return child.stdout.trim();
   }
   const rows = statement => JSON.parse(sql(`SELECT COALESCE(jsonb_agg(to_jsonb(t)),'[]'::jsonb) FROM (${statement})t`));
@@ -84,7 +86,7 @@ async function initialize() {
     users.push({id:credential.id,client,jar,credential});
   }
   if(physicalOwner==='B')users.reverse();
-  const stateFile = path.resolve(process.env.ZARIX_ACCOUNT_ANALYSIS_APP_STATE || path.join(runtime,apiUrl.port==='59321'?'import-target-app-state.json':'e2e-app-state.json'));
+  const stateFile = path.resolve(process.env.ZARIX_ACCOUNT_ANALYSIS_APP_STATE || path.join(runtime,clockProfile?'contract-clock-retry-app-state.json':apiUrl.port==='59321'?'import-target-app-state.json':'e2e-app-state.json'));
   assert.ok(stateFile.startsWith(runtime+'/'));
   const appState = JSON.parse(await fs.readFile(stateFile,'utf8'));
   assert.equal(appState.appOrigin,appUrl.origin);assert.equal(appState.apiOrigin,apiUrl.origin);
@@ -100,6 +102,7 @@ async function initialize() {
     const cwd=spawnSync('/usr/sbin/lsof',['-a','-p',String(appState.nextPid),'-d','cwd','-Fn'],{encoding:'utf8'});assert.equal(cwd.status,0);assert.equal(await fs.realpath(cwd.stdout.split('\n').find(x=>x.startsWith('n')).slice(1)),await fs.realpath(proof.copyRoot));
     report.buildBinding={...report.buildBinding,revision:proof.revision,proofSha256:digest(await fs.readFile(proofFile)),buildIdSha256:digest(buildIdBytes),physicalSourcesVerified:true,ownedListenerAndCwdVerified:true};
   }
+  if(clockProfile){runtimeBinding=await bindIntermediateClock({root,runtime,profileName,selected,appState,stateFile,appUrl,apiUrl,config,sourceManifest,digest,sql});report.workingSourceManifest=sourceManifest;report.sourceManifest=runtimeBinding.servedSources;report.unbuiltCurrentDeltas=runtimeBinding.currentDeltas;report.buildBinding=runtimeBinding.binding;report.clockProof=runtimeBinding.clockProof;}
   report.versions = {node:process.version,postgres:sql('SHOW server_version')};
   report.users=users.map((u,index)=>({id:u.id,logicalRole:index?'other-owner':'selected-owner',physicalLabel:index?(physicalOwner==='A'?'B':'A'):physicalOwner,normalAuth:true}));
   const own = {accounts:[],positions:[],categories:[]};
@@ -107,7 +110,7 @@ async function initialize() {
     const item = {name,actual,expected,status:'RUNNING'};report.case.assertions.push(item);
     try{assert.deepEqual(actual,expected);item.status='PASS';}catch(e){item.status='FAIL';throw e;}
   }
-  function near(name,actual,expected,epsilon=1e-8){check(name,Number.isFinite(Number(actual))&&Math.abs(Number(actual)-expected)<=epsilon,true);}
+  function near(name,actual,expected,epsilon=1e-8){const item={name,actual:Number.isFinite(Number(actual))&&Math.abs(Number(actual)-expected)<=epsilon,expected:true,numericActual:actual,numericExpected:expected,tolerance:epsilon,status:'RUNNING'};report.case.assertions.push(item);try{assert.equal(item.actual,true);item.status='PASS';}catch(e){item.status='FAIL';throw e;}}
   async function request(method,endpoint,payload,{user=users[0],key=randomUUID(),raw=false}={}) {
     assert.ok(endpoint.startsWith('/api/')&&!endpoint.includes('://'));
     const url=new URL(endpoint,appUrl);assert.equal(url.origin,appUrl.origin);
@@ -150,7 +153,7 @@ async function initialize() {
     check('Fixture manual position API201',r.status,201);own.positions.push({id:r.body.id,user:users[0]});return r.body;
   }
   async function clock(fixedTime) {
-    const file=process.env.ZARIX_ACCOUNT_ANALYSIS_CLOCK_PROOF;if(!file)block('Exact original server clock requires an independently recorded isolated-process proof; no global clock override is applied by this runner.');
+    const file=process.env.ZARIX_ACCOUNT_ANALYSIS_CLOCK_PROOF||runtimeBinding?.clockFile;if(!file)block('Exact original server clock requires an independently recorded isolated-process proof; no global clock override is applied by this runner.');
     assert.ok(path.resolve(file).startsWith(runtime+'/'));
     const proof=JSON.parse(await fs.readFile(file,'utf8'));
     assert.equal(proof.fixedTime,fixedTime);assert.equal(proof.buildId,appState.buildId);assert.equal(proof.nextPid,appState.nextPid);assert.equal(proof.sourceStable,true);
@@ -164,7 +167,7 @@ async function initialize() {
     missingUi();return null;
   }
   async function hero(ars,usd){const p=await ui();if(!p)return null;await p.goto(new URL('/dashboard',appUrl).href);const section=p.locator('section').filter({has:p.getByRole('heading',{name:'Patrimonio total',exact:true})});await section.waitFor();for(const [i,v]of[[0,ars],[1,usd]])await section.locator('data').nth(i).evaluate((n,e)=>new Promise((resolve,reject)=>{const start=performance.now();function step(){const value=Number(n.getAttribute('value'));if(Number.isFinite(value)&&Math.abs(value-e)<1e-6)return resolve();if(performance.now()-start>20000)return reject(new Error('Wealth value mismatch'));requestAnimationFrame(step);}step();}),v);check('Actual dashboard wealth ARS/USD',[Number(await section.locator('data').nth(0).getAttribute('value')),Number(await section.locator('data').nth(1).getAttribute('value'))],[ars,usd]);return section;}
-  ctx={run,users,a:users[0],b:users[1],own,sql,rows,check,near,request,account,tx,category,position,slots,empty,rate,clock,ui,hero,block,lit,digest,report,output,activeCount,appUrl,apiUrl,apiOnly,missingUi,async close(){for(const u of users)await u.client.auth.signOut({scope:'local'});}};
+  ctx={run,users,geminiProofFile:runtimeBinding?.geminiFile,a:users[0],b:users[1],own,sql,rows,check,near,request,account,tx,category,position,slots,empty,rate,clock,ui,hero,block,lit,digest,report,output,activeCount,appUrl,apiUrl,apiOnly,missingUi,async close(){for(const u of users)await u.client.auth.signOut({scope:'local'});}};
   protectedRows=protectedTables.map(table=>{const old=rows(`SELECT id FROM public.${table} ORDER BY id`).map(r=>r.id);const ids=old.length?old.map(lit).join(','):'NULL';return {table,ids:old,count:old.length,sha:sql(`SELECT md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY t.id)::text,'[]')) FROM public.${table} t WHERE t.id IN(${ids})`)};});
   await save();return ctx;
 }
@@ -175,7 +178,7 @@ try {
   const test=contracts[selected];if(!test)block('Exact execution adapter is unavailable for this phase; use the supplied literal UI/precondition recipe, not a neighboring API assertion.');
   await test(context);report.case.status=report.pendingScopes.length?(report.case.assertions.length?'PARTIAL':'BLOCKED'):'PASS';report.case.complete_original_contract=report.case.status==='PASS';report.case.apiSqlScope={status:report.case.assertions.length?'PASS':'NOT_EXECUTED',assertions:report.case.assertions.length};
 } catch(error) {
-  if(report.case){report.case.status=error instanceof Blocked?(report.case.assertions.some(x=>x.status==='PASS')?'PARTIAL':'BLOCKED'):'FAIL';if(error instanceof Blocked&&report.case.assertions.some(x=>x.status==='PASS'))report.case.apiSqlScope={status:'PARTIAL',passedAssertions:report.case.assertions.filter(x=>x.status==='PASS').length};report.case.blocker=error instanceof Blocked?error.message:undefined;report.case.failure=error instanceof Blocked?undefined:{type:error.name,location:(String(error.stack).match(/(?:run|scenarios)\.mjs:\d+:\d+/)||[])[0]||'initialization',context:'Named assertion or technical prerequisite failed; raw error and secrets withheld'};}
+  if(report.case){report.case.status=error instanceof Blocked?(report.case.assertions.some(x=>x.status==='PASS')?'PARTIAL':'BLOCKED'):'FAIL';if(error instanceof Blocked&&report.case.assertions.some(x=>x.status==='PASS'))report.case.apiSqlScope={status:'PARTIAL',passedAssertions:report.case.assertions.filter(x=>x.status==='PASS').length};report.case.blocker=error instanceof Blocked?error.message:undefined;report.case.failure=error instanceof Blocked?undefined:{type:error.name,location:(String(error.stack).match(/(?:run|scenarios|profile-binding)\.mjs:\d+:\d+/)||[])[0]||'initialization',context:'Named assertion or technical prerequisite failed; raw error and secrets withheld'};}
   else report.precondition={status:'BLOCKED',reason:'Required explicit window/case/private local configuration not present; no runtime execution intended'};
 } finally {
   if(ctx){
@@ -185,6 +188,7 @@ try {
     try{if(protectedRows)report.originalIntegrity=protectedRows.map(before=>{const ids=before.ids.length?before.ids.map(lit).join(','):'NULL';const after=ctx.rows(`SELECT count(*)::int AS count,md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY t.id)::text,'[]')) AS hash FROM public.${before.table} t WHERE t.id IN(${ids})`)[0];return {table:before.table,rows:before.count,beforeMd5:before.sha,afterMd5:after.hash,unchanged:after.count===before.count&&after.hash===before.sha};});
     }catch{report.originalIntegrityUnavailable=true;}
     try{report.sourceStable=sourceManifest?(await manifest()).every((s,i)=>s.path===sourceManifest[i].path&&s.sha256===sourceManifest[i].sha256):false;}catch{report.sourceStable=false;}
+    if(runtimeBinding){try{report.servedBuildStable=await runtimeBinding.verifyStable();if(!report.servedBuildStable)report.sourceStable=false;}catch{report.servedBuildStable=false;report.sourceStable=false;}}
     try{await ctx.close();}catch{report.cleanupFailure=true;}
     if(report.cleanupFailure||report.originalIntegrityUnavailable||report.originalIntegrity?.some(x=>!x.unchanged)||!report.sourceStable){report.case.status='FAIL';report.case.complete_original_contract=false;}
   }
