@@ -606,15 +606,15 @@
   },
   "updated_at": "2026-10-15T04:39:38.155511+00:00",
   "current_reconciliation": {
-    "recorded_at": "2026-10-15T05:20:41.010206+00:00",
+    "recorded_at": "2026-10-15T06:04:42.663544+00:00",
     "source_matrix": "../case-traceability.csv",
-    "source_matrix_sha256": "1715a7bafe4550748bb425023338c786d81ee7bcff9164fb0b12bd56b9fb1313",
+    "source_matrix_sha256": "b41b74c0c10e20dfae2bdb0a086771bb083d411af2a8772dd24dffb894d40a4e",
     "scope": "Original disjoint103-case triage snapshot remains unchanged. This is only metadata reconciliation against currently reviewed complete contracts; no new execution or claim that all locally actionable original scopes are complete.",
     "initially_triaged_cases": 103,
     "current_status_counts": {
-      "BLOCKED": 57,
-      "PASS": 43,
-      "FAIL": 3
+      "BLOCKED": 47,
+      "PASS": 55,
+      "FAIL": 1
     },
     "cases": [
       {
@@ -647,10 +647,10 @@
       },
       {
         "case_id": "CP1-05",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/cp1-05-api.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Normal own account API201 | Original fixture balance10000 | Normal own expense API201 | Expense1500 leaves8500 | Normal API amount edit200 | Edited amount changes one economic impact | Opening adjustment row is unchanged | Owner remains exact",
+        "blocker": ""
       },
       {
         "case_id": "CP1-06",
@@ -759,10 +759,10 @@
       },
       {
         "case_id": "CP1-21",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Known existing500 expense imported once | Exactly one known duplicate-comparison tuple exists | Same-file local preview200 | Choosing omit creates no new write | Duplicate omission leaves exact full ledger",
+        "blocker": ""
       },
       {
         "case_id": "CP1-22",
@@ -773,10 +773,10 @@
       },
       {
         "case_id": "CP1-23",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-4-cp1-23-premium/verification.json; remaining-cu001/independent-recurring-amount-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Visible categories200 | Own literal category201 | Create own literal rule201 | Rule suspend has own state and inclusive end | Rule reactivate has own state and inclusive end | Rule edit has own state and inclusive end | Saving/suspending/reactivating/editing never creates a movement",
+        "blocker": ""
       },
       {
         "case_id": "CP1-24",
@@ -801,17 +801,17 @@
       },
       {
         "case_id": "CP1-27",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "notification-timeout-contract/verification.json; notification-timeout-contract/execution.json; notification-timeout-contract/vitest-result.json; notification-timeout-contract/manifest.json; notification-timeout-contract/independent-review.json",
+        "assertions": "one committed expense debits account 10000 to9000 | one occurrence row | occurrence amount1000 | recurring marker advances inclusively to6Oct | one durable financial receipt | receipt owns exact occurrence request | one durable notification intention | outbox refers to committed movement | outbox key exact recurring occurrence | first provider ACK timeout counted as unconfirmed delivery | provider accepted before timeout | timeout does not change financial rows | timeout leaves durable undelivered intention | provider raw timeout is replaced with safe uncertainty text | failed lease released | first lease attempt recorded | retry is scheduled after current wall time | financial request survives DB close/reopen | replay after reopen preserves full financial rows | pending outbox survives DB close/reopen | retry confirms same durable notification | full financial snapshot identical after second provider acceptance | same unique outbox row remains | same outbox ID retained | second attempt recorded durably | delivered timestamp confirmed | safe error cleared after confirmed acknowledgement | no more claimable event after acknowledgement | double observed two possible physical acceptances | same message on both provider acceptances | no hidden additional provider call",
+        "blocker": ""
       },
       {
         "case_id": "CP1-28",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Invalid Bearer401 | Invalid Bearer no financial effect | Own normal-session recurring fixture201 | Inactive rule skips without movement | Own normal-session recurring fixture201 | Expired rule deactivates without movement",
+        "blocker": ""
       },
       {
         "case_id": "CP1-29",
@@ -822,17 +822,17 @@
       },
       {
         "case_id": "CP1-30",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Negative balance is allowed by the documented rule | One durable notification intention",
+        "blocker": ""
       },
       {
         "case_id": "CP1-31",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Independent own category201 | Independent literal budget201 | Normal API fixture transaction201 | Real budget-status API200 | Exact independent consumed and remaining cents | Normal API fixture transaction201 | Transfer does not consume or block the budget | Archive only own new independent fixture204 | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Independent own category201 | Independent literal budget201 | Normal API fixture transaction201 | Real budget-status API200 | Exact independent consumed and remaining cents | Normal API fixture transaction201 | Transfer does not consume or block the budget | Archive only own new independent fixture204 | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Independent own category201 | Independent literal budget201 | Normal API fixture transaction201 | Real budget-status API200 | Exact independent consumed and remaining cents | Normal API fixture transaction201 | Transfer does not consume or block the budget | Archive only own new independent fixture204 | Archive only own new independent fixture204",
+        "blocker": ""
       },
       {
         "case_id": "CP1-32",
@@ -850,10 +850,10 @@
       },
       {
         "case_id": "CP1-34",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-recurring-amount-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Normal API fixture transaction201 | One cent accepted with exact0.99 balance | Accepted cent fixture archived before independent rejection fixtures | Own normal-session fixture account201 | Initial native balance | zero rejected400 | zero no balance/full-ledger change including initial adjustment | zero no economic movement created | zero own fixture archived204 | Own normal-session fixture account201 | Initial native balance | negative rejected400 | negative no balance/full-ledger change including initial adjustment | negative no economic movement created | negative own fixture archived204 | Own normal-session fixture account201 | Initial native balance | subcent rejected400 | subcent no balance/full-ledger change including initial adjustment | subcent no economic movement created | subcent own fixture archived204 | Own normal-session fixture account201 | Initial native balance | numeric-conversion-NaN rejected400 | numeric-conversion-NaN no balance/full-ledger change including initial adjustment | numeric-conversion-NaN no economic movement created | numeric-conversion-NaN own fixture archived204",
+        "blocker": ""
       },
       {
         "case_id": "CP1-35",
@@ -893,7 +893,7 @@
       {
         "case_id": "CP2-05",
         "status": "PASS",
-        "evidence": "account-analysis-contracts/executed-final/cp2-05-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "evidence": "account-analysis-contracts/executed-closure/cp2-05.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
         "assertions": "Fixture account API201 | Own secondary-debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | ExplicitUSD10payment200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value",
         "blocker": ""
       },
@@ -1033,21 +1033,21 @@
       {
         "case_id": "CP3-04",
         "status": "PASS",
-        "evidence": "account-analysis-contracts/executed-final/cp3-04-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-        "assertions": "Fixture account API201 | Fixture account API201 | Converted own account API200 | No foreign account owner in result | OriginalARS120000 | OriginalUSD100 | Own API converted wealthUSD | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-04.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Converted own account API200 | No foreign account owner in result | OriginalARS120000 | OriginalUSD100 | Own API converted wealthUSD | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value",
         "blocker": ""
       },
       {
         "case_id": "CP3-05",
         "status": "PASS",
-        "evidence": "account-analysis-contracts/executed-final/cp3-05-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-        "assertions": "Fixture account API201 | Fixture account API201 | Fixture manual position API201 | Actual portfolio API200 | Position6x110 is660USD | Position purchase cost600 | Exactly own expected active position | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | Actual SSR liquidUSD | Actual SSR investmentsUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision | Cash account full row remains untouched by portfolio valuation | Broker cash remains0",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-05.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture manual position API201 | Actual portfolio API200 | Position6x110 is660USD | Position purchase cost600 | Exactly own expected active position | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | Actual SSR liquidUSD | Actual SSR investmentsUSD | SSR secondary data numeric value | Cash account full row remains untouched by portfolio valuation | Broker cash remains0",
         "blocker": ""
       },
       {
         "case_id": "CP3-06",
-        "status": "FAIL",
-        "evidence": "account-analysis-contracts/executed-final/cp3-06-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-06.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
         "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Own secondary-debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | ExactUSD10debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision | Cashoriginal balances preserved",
         "blocker": ""
       },
@@ -1061,7 +1061,7 @@
       {
         "case_id": "CP3-08",
         "status": "PASS",
-        "evidence": "account-analysis-contracts/executed-final/cp3-08-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-08.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
         "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Normal JWT query is owner only | Owner category/period independent sum | Actual analysis SSR200 | Actual server custom inclusive period | Actual server expense category aggregate excludes transfer, U2 and September | Actual server income aggregate | Actual server rendered period totals",
         "blocker": ""
       },
@@ -1130,9 +1130,9 @@
       },
       {
         "case_id": "CP3-18",
-        "status": "FAIL",
-        "evidence": "account-analysis-contracts/executed-final/cp3-18.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-        "assertions": "Fixture account API201 | Fixture account API201 | Normal RLS own legacy-currency setup has no error | Normal RLS sets only the own zero-balance fixture currency | Normal RLS consistent legacy opening adjustment accepted | Legacy unknown balance is10 | Legacy row has one consistent opening amount | Unknown currency retains original balances | Read does not mutate either account | Read preserves legacy ledger | Missing FX safely returns unavailable instead of fabricated total | Literal known subtotal with explicit ZZZ exclusion is implemented",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-18.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Normal RLS own legacy-currency setup has no error | Normal RLS sets only the own zero-balance fixture currency | Normal RLS consistent legacy opening adjustment accepted | Legacy unknown balance is10 | Legacy row has one consistent opening amount | Unknown currency retains original balances | Read does not mutate either account | Read preserves legacy ledger | Known account converts to120000ARS | Unknown account keeps currency/balance and explicit exclusion | Unknown FX is not fabricated as0or1 | Retained snapshot equals the prior complete CI5 row before any partial GET | Partial dashboard SSR200 | Partial valuation preserves every existing snapshot and creates none | Known ARS subtotal is120000 | Known USD subtotal uses actual1200rate | Server explicitly reports partial valuation | Server excludes only the own unknown10ZZZ account | Actual SSR partial notice explains ZZZ exclusion | Known account remains present",
         "blocker": ""
       },
       {
@@ -1144,10 +1144,10 @@
       },
       {
         "case_id": "CP4-01",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-01-partial.json; remaining-seven-contracts/investment-display-summary.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-01.html; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "AAPL | 5 unidades | Compra: USD 185.00 | Precio: USD 190.50 | USD 952.50 | +USD 27.50 | (+2.97%) | Precio ingresado | Manual",
+        "blocker": ""
       },
       {
         "case_id": "CP4-02",
@@ -1179,10 +1179,10 @@
       },
       {
         "case_id": "CP4-06",
-        "status": "BLOCKED",
-        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json",
-        "assertions": "",
-        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-06-partial.json; remaining-seven-contracts/investment-display-summary.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-06.html; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "FOOFIX | 2 unidades | Compra: USD 50.00 | Precio: USD 55.00 | USD 110.00 | +USD 10.00 | Precio ingresado | Manual",
+        "blocker": ""
       },
       {
         "case_id": "CP4-07",

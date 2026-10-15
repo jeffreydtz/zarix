@@ -1,0 +1,54 @@
+{
+  "status": "EXECUTED_SOURCES_PRESERVED",
+  "files": [
+    {
+      "path": "nominal-read-helpers.py",
+      "sha256": "dfb096fe7ae6d2c1d8ac7a92b530e50613005f3d87bde2267a303855727b14e5"
+    },
+    {
+      "path": "prepare-two-databases.py",
+      "sha256": "6eef3c749825b4b9c152e8256b6c83611fb9ef19a970d54210b8ae6fe50cd49f"
+    },
+    {
+      "path": "resume-two-databases-explicit-copy.py",
+      "sha256": "17128a8e40d06922b73c1d5322316d1476e62e5d17831dca29512961c1934dc3"
+    },
+    {
+      "path": "resume-two-databases-known-empty-schemas.py",
+      "sha256": "35760ea1bf51270e8457c3bca59bffca5ef4204165986f6e7490aedee44aad5f"
+    },
+    {
+      "path": "resume-two-databases-role-stable.py",
+      "sha256": "6c841d2500fbc62b7d4714e80833b3430ac3bd213c40a5e6c73f6726f489ee0a"
+    },
+    {
+      "path": "resume-two-databases.py",
+      "sha256": "07302a9f3b83eae296776a8f07c9c8ebf6aad464bad3ce5c7938f3d06cbb5630"
+    },
+    {
+      "path": "run-nominal.py",
+      "sha256": "abf4a6e4914ef6aaba2c24e897439aa5e66b12e0b08bec5667c15fd5dd5329f7"
+    },
+    {
+      "path": "native-executed-sources/cnf12-original-readonly-checkpoint.py",
+      "sha256": "4c31ab12d9a4c24368236c108267093ff6d358d65be8d20eabf3f1dbc40b9eb8"
+    },
+    {
+      "path": "native-executed-sources/cnf12-readonly-drift-diagnosis.py",
+      "sha256": "9e3b73f14a95f40bf43c6d637c9a968583e26ce78ecca7c46795b40732da190e"
+    },
+    {
+      "path": "native-executed-sources/ec952cec38d711a10f2c64dd932c2823c3b2eaff93597dfc91a1e129bff535bb.py",
+      "sha256": "ec952cec38d711a10f2c64dd932c2823c3b2eaff93597dfc91a1e129bff535bb"
+    },
+    {
+      "path": "native-executed-sources/original-readonly-final-checkpoint.py",
+      "sha256": "7e5b0898d642981d7f71f90402dc440169562acf9241a2fdbe2eb7d6536e4d98",
+      "bytes": 6117,
+      "scope": "Exact read-only final checkpoint source; no AuthHTTP/original writes."
+    }
+  ],
+  "retentionControllerMayEvolveLater": true,
+  "executionHelperRevision": "ec952cec38d711a10f2c64dd932c2823c3b2eaff93597dfc91a1e129bff535bb",
+  "secretsIncluded": false
+}

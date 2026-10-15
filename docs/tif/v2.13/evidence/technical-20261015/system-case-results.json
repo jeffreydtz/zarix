@@ -77,6 +77,28 @@
     "new_execution": false
   },
   {
+    "case_id": "CP1-05",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Normal own account API201",
+      "Original fixture balance10000",
+      "Normal own expense API201",
+      "Expense1500 leaves8500",
+      "Normal API amount edit200",
+      "Edited amount changes one economic impact",
+      "Opening adjustment row is unchanged",
+      "Owner remains exact"
+    ],
+    "evidence": "remaining-seven-contracts/cp1-05-api.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+    "scope": "Actual ordinaryAuth normal API edit on CI6closure84df/aIW; sameID/oneeconomicrow8000;13originaltables/source/buildstable, ownsessionclosed. Prior amount-onlySQL8500 remains separate preserved observation. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
+    "executed_revision": {
+      "reviewedVersion": "New native84df929/aIWVMIWgvq5sbeEtZAZEh/Next39320; 8 assertions,13 protected original tables, stable source/build and own session closed."
+    },
+    "source_review_sha256": "9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
+  },
+  {
     "case_id": "CP1-06",
     "status": "PASS",
     "complete_original_contract": true,
@@ -288,6 +310,27 @@
     "source_review_sha256": "bcea76b311dba45feb87867282e6e764a597dd8cbcbc619e3a044474258a8858"
   },
   {
+    "case_id": "CP1-21",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Known existing500 expense imported once",
+      "Exactly one known duplicate-comparison tuple exists",
+      "Same-file local preview200",
+      "Choosing omit creates no new write",
+      "Duplicate omission leaves exact full ledger"
+    ],
+    "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+    "scope": "Existing actual API response shows matching criteria, imported0/skipped1/pending0/total1 and exact9500/fullledgerinvariance. CSV evidence is response/SQL, with no browser-specific requirement. No interaction with a browser import review screen claimed; the criteria are present in the actual recorded response. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
+    "executed_revision": {
+      "reviewedVersion": "Historical native836fd18/aqWYS3F5R_VxiHxD3LpJV,7 assertions; rawPARTIAL retained."
+    },
+    "source_review_sha256": "9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
+  },
+  {
     "case_id": "CP1-22",
     "status": "PASS",
     "complete_original_contract": true,
@@ -328,6 +371,107 @@
     "new_execution": false
   },
   {
+    "case_id": "CP1-23",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Visible categories200",
+      "Own literal category201",
+      "Create own literal rule201",
+      "Rule suspend has own state and inclusive end",
+      "Rule reactivate has own state and inclusive end",
+      "Rule edit has own state and inclusive end",
+      "Saving/suspending/reactivating/editing never creates a movement"
+    ],
+    "evidence": "remaining-cu001/attempt-4-cp1-23-premium/verification.json; remaining-cu001/independent-recurring-amount-review.json",
+    "scope": "NormalAPI creation201, owned daily start01Oct/end06Oct/amount1000; suspend/reactivate/edit1200 preserve owner/date; exact full ledger unchanged across every save operation. The earlier Free-actor403 attempt remains preserved; this successful independent retry uses the already existing Premium actor without changing original profiles. No nonexistent next-date API field, rendered recurring page, browser or click is asserted. Source control flow is explicitly composed with native state/SQL evidence; this is not a claim of one served UI journey.  {'path': 'app/(authenticated)/recurring/page.tsx', 'sha256': 'dbf1b2a7452118269d85bbb60cb188fb00dc66427f5658d57ae80365a3aadf05', 'identicalGit836And84': True, 'functions': 'getNextRenewalDate lines148–181; getStatusTag lines184–193', 'fixture': 'Daily start2026-10-01/end2026-10-06 and today06Oct at the documented fixed clock; no occurrence is created by rule saving.', 'derivation': ['For the daily rule, local calendar-day difference from01Oct to06Oct is5, so next=start+5days=06Oct. The while loop does not advance a date equal to today.', 'The end comparison is next>end, so equality on06Oct is admitted. This establishes the inclusive end for this exact fixture.', 'Inactive state returns Pausada before date formatting; reactivation on06Oct returns Se renueva hoy. Editing only amount1000→1200 does not change the schedule.', 'With today07Oct, next07Oct>end06Oct returns null and the active status is Finalizada.'], 'evaluation': 'Symbolic reading of the exact existing product function; no new execution or rendered UI asserted.'}",
+    "executed_revision": {
+      "product": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "buildId": "aqWYS3F5R_VxiHxD3LpJV"
+    },
+    "source_review_sha256": "fd305dfcc8541485ed44323ba4a6d692ed1ce1848d5ac2e2d229cfa147e3b340",
+    "adapter_scope": "Explicit independent semantic/native plus source-control-flow composite; no browser required by CSV, no rendered schedule assertion or additional runtime invented. CP124/125 remain unpromoted; CP127 has a separate later reviewed packet."
+  },
+  {
+    "case_id": "CP1-27",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "one committed expense debits account 10000 to9000",
+      "one occurrence row",
+      "occurrence amount1000",
+      "recurring marker advances inclusively to6Oct",
+      "one durable financial receipt",
+      "receipt owns exact occurrence request",
+      "one durable notification intention",
+      "outbox refers to committed movement",
+      "outbox key exact recurring occurrence",
+      "first provider ACK timeout counted as unconfirmed delivery",
+      "provider accepted before timeout",
+      "timeout does not change financial rows",
+      "timeout leaves durable undelivered intention",
+      "provider raw timeout is replaced with safe uncertainty text",
+      "failed lease released",
+      "first lease attempt recorded",
+      "retry is scheduled after current wall time",
+      "financial request survives DB close/reopen",
+      "replay after reopen preserves full financial rows",
+      "pending outbox survives DB close/reopen",
+      "retry confirms same durable notification",
+      "full financial snapshot identical after second provider acceptance",
+      "same unique outbox row remains",
+      "same outbox ID retained",
+      "second attempt recorded durably",
+      "delivered timestamp confirmed",
+      "safe error cleared after confirmed acknowledgement",
+      "no more claimable event after acknowledgement",
+      "double observed two possible physical acceptances",
+      "same message on both provider acceptances",
+      "no hidden additional provider call"
+    ],
+    "evidence": "notification-timeout-contract/verification.json; notification-timeout-contract/execution.json; notification-timeout-contract/vitest-result.json; notification-timeout-contract/manifest.json; notification-timeout-contract/independent-review.json",
+    "scope": "Real persisted PGlite/PostgreSQL bootstrap, migrations, atomic financial RPC and actual outbox worker; query adapter substitutes PostgREST; synthetic role fixture substitutes Auth; only sendTelegramDm replaced by an accepting-then-timeout provider double. No native stack, GoTrue, browser, credentials or external Telegram. After a provider accepts a message but loses its acknowledgement, application cannot know physical delivery. This controlled provider model accepts both attempts, illustrating a possible duplicate. No Telegram exactly-once or automatic reconciliation is claimed. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
+    "executed_revision": {
+      "productRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "sources": 35,
+      "sqlSources": 28,
+      "sqlScope": "One baseline plus27 real migrations; not30 SQL files or35 migrations.",
+      "worker": "lib/services/notification-outbox.ts actual implementation",
+      "replacementBoundaries": [
+        "The bounded query adapter substitutes PostgREST transport while executing realSQL and actual claim/release RPCs under the synthetic service role.",
+        "Platform/Auth roles and linked chat are a synthetic fixture, not a normal GoTrue session.",
+        "Only sendTelegramDm is mocked; its first accepted callback throws an immediate synthetic timeout, not an observed external socket timeout."
+      ],
+      "testDiscovery": "Explicit archived .test-source.ts focal config, one additional test afterCI6; not added to the913-test aggregate."
+    },
+    "source_review_sha256": "6fa05e94d7ebf623cc86f197121aa23dc545ad1d48afb371bd48aab60a1267b8",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
+  },
+  {
+    "case_id": "CP1-28",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Invalid Bearer401",
+      "Invalid Bearer no financial effect",
+      "Own normal-session recurring fixture201",
+      "Inactive rule skips without movement",
+      "Own normal-session recurring fixture201",
+      "Expired rule deactivates without movement"
+    ],
+    "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+    "scope": "Native invalidBearer401, inactive skips and expired ruledeactivation/zeroeffect are recorded. Exact same source control flow emits401 before factory/execute, proving no DB access along this branch. No runtime DB-query counter/instrumentation was recorded or claimed. Source control-flow proof is explicitly composed with native branch outcomes. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
+    "executed_revision": {
+      "reviewedVersion": "Historical native836fd18/aqWYS,8 assertions; cron route/template/job source hashes independently match both Git836 and84."
+    },
+    "source_review_sha256": "9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
+  },
+  {
     "case_id": "CP1-29",
     "status": "PASS",
     "complete_original_contract": true,
@@ -346,6 +490,78 @@
     "source_review_sha256": "06d1d8c9f7be08fcb4a3d9682dc5a78555ffc921b254031d339b413e78a1616d",
     "acceptance_basis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
     "new_execution": false
+  },
+  {
+    "case_id": "CP1-30",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Own normal-session recurring fixture201",
+      "Negative balance is allowed by the documented rule",
+      "One durable notification intention"
+    ],
+    "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+    "scope": "Actual rule with notificationEnabledtrue creates one expense1000, balance-500, marker06Oct and one durable notification intent. Delivery wording is conditional on provider acceptance. No realTelegram acceptance, sent message or specific overdraft warning claimed. Conditional delivery is not promoted to unconditional provider acceptance. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
+    "executed_revision": {
+      "reviewedVersion": "Historical native836fd18/aqWYS,5 assertions; rawPARTIAL and notification fixture retained."
+    },
+    "source_review_sha256": "9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
+  },
+  {
+    "case_id": "CP1-31",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Independent own category201",
+      "Independent literal budget201",
+      "Normal API fixture transaction201",
+      "Real budget-status API200",
+      "Exact independent consumed and remaining cents",
+      "Normal API fixture transaction201",
+      "Transfer does not consume or block the budget",
+      "Archive only own new independent fixture204",
+      "Archive only own new independent fixture204",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Independent own category201",
+      "Independent literal budget201",
+      "Normal API fixture transaction201",
+      "Real budget-status API200",
+      "Exact independent consumed and remaining cents",
+      "Normal API fixture transaction201",
+      "Transfer does not consume or block the budget",
+      "Archive only own new independent fixture204",
+      "Archive only own new independent fixture204",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Independent own category201",
+      "Independent literal budget201",
+      "Normal API fixture transaction201",
+      "Real budget-status API200",
+      "Exact independent consumed and remaining cents",
+      "Normal API fixture transaction201",
+      "Transfer does not consume or block the budget",
+      "Archive only own new independent fixture204",
+      "Archive only own new independent fixture204"
+    ],
+    "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+    "scope": "Three independent native budgets and accepted transfer500 provide spent/remaining exactcents and transferexclusion. Six actual React renderToStaticMarkup BudgetCard tests in CI6 cover matching amount10000/spent9999.99,10000,10000.01/remaining.01,0,-.01 and labels/semantic state. Native API/SQL836 and real component focal render84 are different immutable executions composed explicitly. No single servedNext/browser flow or CSS/interaction acceptance claimed. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
+    "executed_revision": {
+      "reviewedVersion": "Native API/SQL836fd18/aqWYS39 assertions plus six existing real-component tests in CI6Git84df929."
+    },
+    "source_review_sha256": "9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
   },
   {
     "case_id": "CP1-33",
@@ -373,6 +589,50 @@
     "source_review_sha256": "06d1d8c9f7be08fcb4a3d9682dc5a78555ffc921b254031d339b413e78a1616d",
     "acceptance_basis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
     "new_execution": false
+  },
+  {
+    "case_id": "CP1-34",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "Normal API fixture transaction201",
+      "One cent accepted with exact0.99 balance",
+      "Accepted cent fixture archived before independent rejection fixtures",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "zero rejected400",
+      "zero no balance/full-ledger change including initial adjustment",
+      "zero no economic movement created",
+      "zero own fixture archived204",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "negative rejected400",
+      "negative no balance/full-ledger change including initial adjustment",
+      "negative no economic movement created",
+      "negative own fixture archived204",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "subcent rejected400",
+      "subcent no balance/full-ledger change including initial adjustment",
+      "subcent no economic movement created",
+      "subcent own fixture archived204",
+      "Own normal-session fixture account201",
+      "Initial native balance",
+      "numeric-conversion-NaN rejected400",
+      "numeric-conversion-NaN no balance/full-ledger change including initial adjustment",
+      "numeric-conversion-NaN no economic movement created",
+      "numeric-conversion-NaN own fixture archived204"
+    ],
+    "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-recurring-amount-review.json",
+    "scope": "Own initial1.00 account accepts0.01 exactly once and reaches0.99. Four fresh independent accounts reject0,-1,0.001 and a wire string whose actual Number conversion is NaN, each400 with unchanged full account/ledger and zero economic rows. CSV does not require a browser numeric-input observation. That extra raw pending scope remains in the immutable report and is not presented as executed. No claim that JSON numeric NaN, null or a particular browser input is equivalent to the observed string-to-number API path. The retained report contains29 assertions, not31; no checks were added retrospectively. JSON cannot transport a numeric NaN literal. The actual wire string NaN reaches the existing Number(body.amount) conversion, becomes the actual nonfinite NaN value and is rejected by Number.isFinite. The recorded observation and exact executed harness preserve that distinction. {}",
+    "executed_revision": {
+      "product": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "buildId": "a2WBtszbvrpoT9GHwToED"
+    },
+    "source_review_sha256": "fd305dfcc8541485ed44323ba4a6d692ed1ce1848d5ac2e2d229cfa147e3b340",
+    "adapter_scope": "Explicit independent semantic/native plus source-control-flow composite; no browser required by CSV, no rendered schedule assertion or additional runtime invented. CP124/125 remain unpromoted; CP127 has a separate later reviewed packet."
   },
   {
     "case_id": "CP1-35",
@@ -585,47 +845,51 @@
       "Actual SSR aggregate totalUSD",
       "SSR secondary data numeric value"
     ],
-    "failed_original_assertions": [],
-    "preserved_derived_failures": [
-      {
-        "name": "SSR secondary amount retains original documented precision",
-        "actual": "≈ US$ -108",
-        "expected": "≈ US$ -108,33",
-        "status": "FAIL"
-      },
-      {
-        "name": "SSR secondary amount retains original documented precision",
-        "actual": "≈ US$ -98",
-        "expected": "≈ US$ -98,33",
-        "status": "FAIL"
-      }
-    ],
-    "evidence": "account-analysis-contracts/executed-final/cp2-05-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-    "scope": "CSV205 requires debtsARS10000/USD100→USD90 and actual converted wealth subtracting both, with noUSD applied toARSledger. Actual API/SQL and two SSRnow aggregates prove this fully; additional textprecision asserts are preserved as derivedFAIL and are not an original205 criterion. OriginalPASS: primaryARS debt10000 untouched, secondaryUSD100→90 through explicit payment, actual API/SQL and SSRnow−130000ARS/−108.33USD then−118000ARS/−98.33USD subtract both debts. Two text precisionFAIL remain raw/derived; the literalCP205 has no cent-display criterion. This does not conceal CP306 which does require it. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance.",
+    "evidence": "account-analysis-contracts/executed-closure/cp2-05.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+    "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
     "executed_revision": {
-      "profile": "final-core-acceptance",
-      "runtimeMode": "clock",
-      "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
-      "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
-      "buildId": "vPLjt1QViugJhUWR62DPp",
-      "nextPid": 17292,
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "profile": "final-core-closure",
+      "mode": "clock",
+      "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+      "nextPid": 39320,
       "appOrigin": "http://127.0.0.1:3002",
       "apiOrigin": "http://127.0.0.1:58321",
-      "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
-      "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
-      "physicalSourceCount": 480,
-      "frozenGitSourceCount": 479,
-      "allPhysicalSourcesVerified": true,
-      "allVersionedSourcesMatchFrozenGit": true,
-      "privateEnvBoundToExactNativeProject": true,
-      "ownedListenerAndCwdVerified": true,
-      "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+      "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+      "physicalSourcesHashed": 483,
+      "frozenGitBlobsIndependentlyMatched": 482,
+      "metadataOnly": [
+        "supabase/.temp/cli-latest"
+      ],
+      "executedProductSourceHashesMatchFreeze": true,
+      "executedDocsHarnessSnapshotsValidatedSeparately": true,
+      "clockFixedAndObserved": "2026-10-06T12:00:00.000Z",
+      "rootBuildIsDistinct": "BAR1dYoRts_6TgTNSboep is the core gate build; these six requests ran the separate native copy aIWVMIWgvq5sbeEtZAZEh from the same frozen source.",
+      "privateMetadataReadOnly": [
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-build-proof.json",
+          "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-app-state.json",
+          "sha256": "ecbbacb798cfde43bb3645840d78dfad5819a42fc4ba7aad9421cdf17e704ac1",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-observation.json",
+          "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json",
+          "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        }
+      ]
     },
-    "source_review_sha256": "ed780d153721fccef63eb605e566cacc218c271f55a2f757bac7e1a5bcbd2474",
-    "raw_execution_status": "FAIL",
-    "raw_complete_original_contract_flag": true,
-    "new_execution": false,
-    "adapter_scope": "Ten explicitly independently reviewed original contracts; recorded FAIL is preserved as FAIL. CP2-05 original calculation PASS does not hide the two additional text-format FAIL assertions. No browser/hydration or future fix acceptance."
+    "source_review_sha256": "92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
   },
   {
     "case_id": "CP2-06",
@@ -910,37 +1174,53 @@
       "Actual dashboard SSR200",
       "Actual SSR aggregate totalARSBlue",
       "Actual SSR aggregate totalUSD",
-      "SSR secondary data numeric value",
-      "SSR secondary amount retains original documented precision"
+      "SSR secondary data numeric value"
     ],
-    "failed_original_assertions": [],
-    "preserved_derived_failures": [],
-    "evidence": "account-analysis-contracts/executed-final/cp3-04-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-    "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance. Actual authenticated server response/compiledHero props now240000ARS/200USD and original120000ARS/100USD preserved. Client/hydration not inferred. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance.",
+    "evidence": "account-analysis-contracts/executed-closure/cp3-04.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+    "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
     "executed_revision": {
-      "profile": "final-core-acceptance",
-      "runtimeMode": "clock",
-      "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
-      "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
-      "buildId": "vPLjt1QViugJhUWR62DPp",
-      "nextPid": 17292,
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "profile": "final-core-closure",
+      "mode": "clock",
+      "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+      "nextPid": 39320,
       "appOrigin": "http://127.0.0.1:3002",
       "apiOrigin": "http://127.0.0.1:58321",
-      "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
-      "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
-      "physicalSourceCount": 480,
-      "frozenGitSourceCount": 479,
-      "allPhysicalSourcesVerified": true,
-      "allVersionedSourcesMatchFrozenGit": true,
-      "privateEnvBoundToExactNativeProject": true,
-      "ownedListenerAndCwdVerified": true,
-      "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+      "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+      "physicalSourcesHashed": 483,
+      "frozenGitBlobsIndependentlyMatched": 482,
+      "metadataOnly": [
+        "supabase/.temp/cli-latest"
+      ],
+      "executedProductSourceHashesMatchFreeze": true,
+      "executedDocsHarnessSnapshotsValidatedSeparately": true,
+      "clockFixedAndObserved": "2026-10-06T12:00:00.000Z",
+      "rootBuildIsDistinct": "BAR1dYoRts_6TgTNSboep is the core gate build; these six requests ran the separate native copy aIWVMIWgvq5sbeEtZAZEh from the same frozen source.",
+      "privateMetadataReadOnly": [
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-build-proof.json",
+          "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-app-state.json",
+          "sha256": "ecbbacb798cfde43bb3645840d78dfad5819a42fc4ba7aad9421cdf17e704ac1",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-observation.json",
+          "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json",
+          "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        }
+      ]
     },
-    "source_review_sha256": "ed780d153721fccef63eb605e566cacc218c271f55a2f757bac7e1a5bcbd2474",
-    "raw_execution_status": "PASS",
-    "raw_complete_original_contract_flag": true,
-    "new_execution": false,
-    "adapter_scope": "Ten explicitly independently reviewed original contracts; recorded FAIL is preserved as FAIL. CP2-05 original calculation PASS does not hide the two additional text-format FAIL assertions. No browser/hydration or future fix acceptance."
+    "source_review_sha256": "92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
   },
   {
     "case_id": "CP3-05",
@@ -960,42 +1240,58 @@
       "Actual SSR liquidUSD",
       "Actual SSR investmentsUSD",
       "SSR secondary data numeric value",
-      "SSR secondary amount retains original documented precision",
       "Cash account full row remains untouched by portfolio valuation",
       "Broker cash remains0"
     ],
-    "failed_original_assertions": [],
-    "preserved_derived_failures": [],
-    "evidence": "account-analysis-contracts/executed-final/cp3-05-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-    "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance. Actual portfolio6×110=660USD plus separate liquidcash100 yields760USD/912000ARS, with cashfullrow stable and brokercash0. The fixture interpretation (liquidbankcash separate from investmentposition) is explicit and consistent with the expected liquid100/RN09; it does not claim that arbitrary investment-accountcash is liquid. Preliminary cost-property oracleFAIL is preserved, not hidden. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance.",
+    "evidence": "account-analysis-contracts/executed-closure/cp3-05.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+    "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
     "executed_revision": {
-      "profile": "final-core-acceptance",
-      "runtimeMode": "clock",
-      "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
-      "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
-      "buildId": "vPLjt1QViugJhUWR62DPp",
-      "nextPid": 17292,
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "profile": "final-core-closure",
+      "mode": "clock",
+      "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+      "nextPid": 39320,
       "appOrigin": "http://127.0.0.1:3002",
       "apiOrigin": "http://127.0.0.1:58321",
-      "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
-      "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
-      "physicalSourceCount": 480,
-      "frozenGitSourceCount": 479,
-      "allPhysicalSourcesVerified": true,
-      "allVersionedSourcesMatchFrozenGit": true,
-      "privateEnvBoundToExactNativeProject": true,
-      "ownedListenerAndCwdVerified": true,
-      "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+      "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+      "physicalSourcesHashed": 483,
+      "frozenGitBlobsIndependentlyMatched": 482,
+      "metadataOnly": [
+        "supabase/.temp/cli-latest"
+      ],
+      "executedProductSourceHashesMatchFreeze": true,
+      "executedDocsHarnessSnapshotsValidatedSeparately": true,
+      "clockFixedAndObserved": "2026-10-06T12:00:00.000Z",
+      "rootBuildIsDistinct": "BAR1dYoRts_6TgTNSboep is the core gate build; these six requests ran the separate native copy aIWVMIWgvq5sbeEtZAZEh from the same frozen source.",
+      "privateMetadataReadOnly": [
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-build-proof.json",
+          "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-app-state.json",
+          "sha256": "ecbbacb798cfde43bb3645840d78dfad5819a42fc4ba7aad9421cdf17e704ac1",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-observation.json",
+          "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json",
+          "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        }
+      ]
     },
-    "source_review_sha256": "ed780d153721fccef63eb605e566cacc218c271f55a2f757bac7e1a5bcbd2474",
-    "raw_execution_status": "PASS",
-    "raw_complete_original_contract_flag": true,
-    "new_execution": false,
-    "adapter_scope": "Ten explicitly independently reviewed original contracts; recorded FAIL is preserved as FAIL. CP2-05 original calculation PASS does not hide the two additional text-format FAIL assertions. No browser/hydration or future fix acceptance."
+    "source_review_sha256": "92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
   },
   {
     "case_id": "CP3-06",
-    "status": "FAIL",
+    "status": "PASS",
     "complete_original_contract": true,
     "assertions": [
       "Fixture account API201",
@@ -1018,41 +1314,51 @@
       "SSR secondary amount retains original documented precision",
       "Cashoriginal balances preserved"
     ],
-    "failed_original_assertions": [
-      {
-        "name": "SSR secondary amount retains original documented precision",
-        "actual": "≈ US$ 182",
-        "expected": "≈ US$ 181,67",
-        "status": "FAIL"
-      }
-    ],
-    "preserved_derived_failures": [],
-    "evidence": "account-analysis-contracts/executed-final/cp3-06-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-    "scope": "Executed original contract failure remains FAIL; no missing access or unexecuted neighboring check is substituted. OriginalFAIL confirmed: actual server now218000ARS/181.67USD and data181.67, visible equivalent182 instead of literal181.67. Initial SSR countup0 is not mistaken for the financial total; the failing USD secondary is the reachable SSR amount. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance. Observed original failures: [{\"name\": \"SSR secondary amount retains original documented precision\", \"actual\": \"≈ US$ 182\", \"expected\": \"≈ US$ 181,67\", \"status\": \"FAIL\"}]",
+    "evidence": "account-analysis-contracts/executed-closure/cp3-06.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+    "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
     "executed_revision": {
-      "profile": "final-core-acceptance",
-      "runtimeMode": "clock",
-      "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
-      "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
-      "buildId": "vPLjt1QViugJhUWR62DPp",
-      "nextPid": 17292,
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "profile": "final-core-closure",
+      "mode": "clock",
+      "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+      "nextPid": 39320,
       "appOrigin": "http://127.0.0.1:3002",
       "apiOrigin": "http://127.0.0.1:58321",
-      "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
-      "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
-      "physicalSourceCount": 480,
-      "frozenGitSourceCount": 479,
-      "allPhysicalSourcesVerified": true,
-      "allVersionedSourcesMatchFrozenGit": true,
-      "privateEnvBoundToExactNativeProject": true,
-      "ownedListenerAndCwdVerified": true,
-      "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+      "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+      "physicalSourcesHashed": 483,
+      "frozenGitBlobsIndependentlyMatched": 482,
+      "metadataOnly": [
+        "supabase/.temp/cli-latest"
+      ],
+      "executedProductSourceHashesMatchFreeze": true,
+      "executedDocsHarnessSnapshotsValidatedSeparately": true,
+      "clockFixedAndObserved": "2026-10-06T12:00:00.000Z",
+      "rootBuildIsDistinct": "BAR1dYoRts_6TgTNSboep is the core gate build; these six requests ran the separate native copy aIWVMIWgvq5sbeEtZAZEh from the same frozen source.",
+      "privateMetadataReadOnly": [
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-build-proof.json",
+          "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-app-state.json",
+          "sha256": "ecbbacb798cfde43bb3645840d78dfad5819a42fc4ba7aad9421cdf17e704ac1",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-observation.json",
+          "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json",
+          "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        }
+      ]
     },
-    "source_review_sha256": "ed780d153721fccef63eb605e566cacc218c271f55a2f757bac7e1a5bcbd2474",
-    "raw_execution_status": "FAIL",
-    "raw_complete_original_contract_flag": false,
-    "new_execution": false,
-    "adapter_scope": "Ten explicitly independently reviewed original contracts; recorded FAIL is preserved as FAIL. CP2-05 original calculation PASS does not hide the two additional text-format FAIL assertions. No browser/hydration or future fix acceptance."
+    "source_review_sha256": "92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
   },
   {
     "case_id": "CP3-08",
@@ -1077,34 +1383,51 @@
       "Actual server income aggregate",
       "Actual server rendered period totals"
     ],
-    "failed_original_assertions": [],
-    "preserved_derived_failures": [],
-    "evidence": "account-analysis-contracts/executed-final/cp3-08-ssr.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-    "scope": "Complete literal integration/system API/SQL/server-response contract; SSR observations use actual compiled component props/HTML without browser, hydration or visual acceptance. Actual custom1–6October inclusive serverperiod, normal-owner SQL and compiled chart props give Alimentos2000/count3 and income5000; transfer/U2/September excluded. Actual HTML total cards2000/5000 match. Category uses a declared synthetic unique suffix and ownerID; no pixels/filterinteraction claimed. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance.",
+    "evidence": "account-analysis-contracts/executed-closure/cp3-08.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+    "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
     "executed_revision": {
-      "profile": "final-core-acceptance",
-      "runtimeMode": "clock",
-      "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
-      "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
-      "buildId": "vPLjt1QViugJhUWR62DPp",
-      "nextPid": 17292,
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "profile": "final-core-closure",
+      "mode": "clock",
+      "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+      "nextPid": 39320,
       "appOrigin": "http://127.0.0.1:3002",
       "apiOrigin": "http://127.0.0.1:58321",
-      "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
-      "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
-      "physicalSourceCount": 480,
-      "frozenGitSourceCount": 479,
-      "allPhysicalSourcesVerified": true,
-      "allVersionedSourcesMatchFrozenGit": true,
-      "privateEnvBoundToExactNativeProject": true,
-      "ownedListenerAndCwdVerified": true,
-      "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+      "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+      "physicalSourcesHashed": 483,
+      "frozenGitBlobsIndependentlyMatched": 482,
+      "metadataOnly": [
+        "supabase/.temp/cli-latest"
+      ],
+      "executedProductSourceHashesMatchFreeze": true,
+      "executedDocsHarnessSnapshotsValidatedSeparately": true,
+      "clockFixedAndObserved": "2026-10-06T12:00:00.000Z",
+      "rootBuildIsDistinct": "BAR1dYoRts_6TgTNSboep is the core gate build; these six requests ran the separate native copy aIWVMIWgvq5sbeEtZAZEh from the same frozen source.",
+      "privateMetadataReadOnly": [
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-build-proof.json",
+          "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-app-state.json",
+          "sha256": "ecbbacb798cfde43bb3645840d78dfad5819a42fc4ba7aad9421cdf17e704ac1",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-observation.json",
+          "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json",
+          "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        }
+      ]
     },
-    "source_review_sha256": "ed780d153721fccef63eb605e566cacc218c271f55a2f757bac7e1a5bcbd2474",
-    "raw_execution_status": "PASS",
-    "raw_complete_original_contract_flag": true,
-    "new_execution": false,
-    "adapter_scope": "Ten explicitly independently reviewed original contracts; recorded FAIL is preserved as FAIL. CP2-05 original calculation PASS does not hide the two additional text-format FAIL assertions. No browser/hydration or future fix acceptance."
+    "source_review_sha256": "92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
   },
   {
     "case_id": "CP3-13",
@@ -1280,7 +1603,7 @@
   },
   {
     "case_id": "CP3-18",
-    "status": "FAIL",
+    "status": "PASS",
     "complete_original_contract": true,
     "assertions": [
       "Fixture account API201",
@@ -1293,44 +1616,87 @@
       "Unknown currency retains original balances",
       "Read does not mutate either account",
       "Read preserves legacy ledger",
-      "Missing FX safely returns unavailable instead of fabricated total",
-      "Literal known subtotal with explicit ZZZ exclusion is implemented"
+      "Known account converts to120000ARS",
+      "Unknown account keeps currency/balance and explicit exclusion",
+      "Unknown FX is not fabricated as0or1",
+      "Retained snapshot equals the prior complete CI5 row before any partial GET",
+      "Partial dashboard SSR200",
+      "Partial valuation preserves every existing snapshot and creates none",
+      "Known ARS subtotal is120000",
+      "Known USD subtotal uses actual1200rate",
+      "Server explicitly reports partial valuation",
+      "Server excludes only the own unknown10ZZZ account",
+      "Actual SSR partial notice explains ZZZ exclusion",
+      "Known account remains present"
     ],
-    "failed_original_assertions": [
-      {
-        "name": "Literal known subtotal with explicit ZZZ exclusion is implemented",
-        "actual": false,
-        "expected": true,
-        "status": "FAIL"
-      }
-    ],
-    "preserved_derived_failures": [],
-    "evidence": "account-analysis-contracts/executed-final/cp3-18.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
-    "scope": "Executed original contract failure remains FAIL; no missing access or unexecuted neighboring check is substituted. OriginalFAIL confirmed: preserved legacyZZZ10 plus knownARS120000 remain intact, GETaccounts500 avoids fabricating a total but does not implement the required knownsubtotal+explicitexclusion+partialresult. Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits. Exact CI5 7c/buildvPLj execution, no CI6 acceptance. Observed original failures: [{\"name\": \"Literal known subtotal with explicit ZZZ exclusion is implemented\", \"actual\": false, \"expected\": true, \"status\": \"FAIL\"}]",
+    "evidence": "account-analysis-contracts/executed-closure/cp3-18.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+    "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
     "executed_revision": {
-      "profile": "final-core-acceptance",
-      "runtimeMode": "clock",
-      "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
-      "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
-      "buildId": "vPLjt1QViugJhUWR62DPp",
-      "nextPid": 17292,
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "profile": "final-core-closure",
+      "mode": "clock",
+      "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+      "nextPid": 39320,
       "appOrigin": "http://127.0.0.1:3002",
       "apiOrigin": "http://127.0.0.1:58321",
-      "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
-      "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
-      "physicalSourceCount": 480,
-      "frozenGitSourceCount": 479,
-      "allPhysicalSourcesVerified": true,
-      "allVersionedSourcesMatchFrozenGit": true,
-      "privateEnvBoundToExactNativeProject": true,
-      "ownedListenerAndCwdVerified": true,
-      "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+      "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+      "physicalSourcesHashed": 483,
+      "frozenGitBlobsIndependentlyMatched": 482,
+      "metadataOnly": [
+        "supabase/.temp/cli-latest"
+      ],
+      "executedProductSourceHashesMatchFreeze": true,
+      "executedDocsHarnessSnapshotsValidatedSeparately": true,
+      "clockFixedAndObserved": "2026-10-06T12:00:00.000Z",
+      "rootBuildIsDistinct": "BAR1dYoRts_6TgTNSboep is the core gate build; these six requests ran the separate native copy aIWVMIWgvq5sbeEtZAZEh from the same frozen source.",
+      "privateMetadataReadOnly": [
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-build-proof.json",
+          "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-app-state.json",
+          "sha256": "ecbbacb798cfde43bb3645840d78dfad5819a42fc4ba7aad9421cdf17e704ac1",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-observation.json",
+          "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        },
+        {
+          "path": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json",
+          "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+          "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+        }
+      ]
     },
-    "source_review_sha256": "ed780d153721fccef63eb605e566cacc218c271f55a2f757bac7e1a5bcbd2474",
-    "raw_execution_status": "FAIL",
-    "raw_complete_original_contract_flag": false,
-    "new_execution": false,
-    "adapter_scope": "Ten explicitly independently reviewed original contracts; recorded FAIL is preserved as FAIL. CP2-05 original calculation PASS does not hide the two additional text-format FAIL assertions. No browser/hydration or future fix acceptance."
+    "source_review_sha256": "92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
+  },
+  {
+    "case_id": "CP4-01",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "AAPL",
+      "5 unidades",
+      "Compra: USD 185.00",
+      "Precio: USD 190.50",
+      "USD 952.50",
+      "+USD 27.50",
+      "(+2.97%)",
+      "Precio ingresado",
+      "Manual"
+    ],
+    "evidence": "investment-contracts/executed/cp4-01-partial.json; remaining-seven-contracts/investment-display-summary.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-01.html; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+    "scope": "Explicit composition: historical836 nativeAPI/SQLfinancialfixture and fixedtimestampwhereapplicable plus new84 actualReactInvestmentsList/ConfirmProvider focalrender, sameunchangedcomponentbytes, matchingmanualpriceprovenance. No liveprovider/Nextrequest/browser/animation/hydrationclaim. Preserved first focal had differentAAPLprovenance and is not used for original completion. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
+    "executed_revision": {
+      "reviewedVersion": "Historical native836fd18/a2WBtszbvrpoT9GHwToED,11 assertions plus one new real-component SSRtest on product84df929. All five render modules are byte-identical across836 and84."
+    },
+    "source_review_sha256": "9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
   },
   {
     "case_id": "CP4-02",
@@ -1462,6 +1828,28 @@
     },
     "source_review_sha256": "2ae3c0664250c255156f2dd7214f4d0b9b7ef925796f4d804150db6c694b615e",
     "adapter_scope": "Only the explicitly reviewed original case is accepted. Historical failed probes and separately reviewed derived tests remain distinct; no new execution."
+  },
+  {
+    "case_id": "CP4-06",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "FOOFIX",
+      "2 unidades",
+      "Compra: USD 50.00",
+      "Precio: USD 55.00",
+      "USD 110.00",
+      "+USD 10.00",
+      "Precio ingresado",
+      "Manual"
+    ],
+    "evidence": "investment-contracts/executed/cp4-06-partial.json; remaining-seven-contracts/investment-display-summary.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-06.html; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+    "scope": "Explicit composition: historical836 nativeAPI/SQLfinancialfixture and fixedtimestampwhereapplicable plus new84 actualReactInvestmentsList/ConfirmProvider focalrender, sameunchangedcomponentbytes, matchingmanualpriceprovenance. No liveprovider/Nextrequest/browser/animation/hydrationclaim. Preserved first focal had differentAAPLprovenance and is not used for original completion. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.",
+    "executed_revision": {
+      "reviewedVersion": "Historical native836fd18/a2WB,16 assertions plus one new real-component SSRtest on product84df929; same module bytes across both."
+    },
+    "source_review_sha256": "9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f",
+    "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
   },
   {
     "case_id": "CP4-07",

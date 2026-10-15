@@ -1,0 +1,89 @@
+{
+  "status": "READY_SCOPED_NEW_EMPTY_REPLICA",
+  "preparedAt": "2026-10-15T05:59:35.613Z",
+  "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+  "postgresOrigin": "127.0.0.1:55322",
+  "appOrigin": "http://127.0.0.1:3004",
+  "apiOrigin": "http://127.0.0.1:60321",
+  "restOrigin": "http://127.0.0.1:60323",
+  "authOrigin": "http://127.0.0.1:60327",
+  "smtpOrigin": "127.0.0.1:60325",
+  "quoteOrigin": "http://127.0.0.1:57914",
+  "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "buildId": "Yi9bH3FttO71PxvY-EwCH",
+  "nextPid": 57813,
+  "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+  "newDatabaseFromTemplate0": true,
+  "sameTwoClonedIdentities": true,
+  "sameSigningMaterial": true,
+  "newExternalCredentials": false,
+  "initialRowCounts": {
+    "budgets": 0,
+    "accounts": 0,
+    "categories": 0,
+    "investments": 0,
+    "transactions": 0,
+    "shared_groups": 0,
+    "exchange_rates": 0,
+    "recurring_rules": 0,
+    "shared_expenses": 0,
+    "investment_sales": 0,
+    "market_data_cache": 0,
+    "net_worth_snapshots": 0,
+    "shared_group_members": 0,
+    "shared_expense_splits": 0
+  },
+  "initialProviderRequests": 0,
+  "originalAuthHttpRequests": 0,
+  "normalAuthAndRls": "PASS_SCOPED_READINESS",
+  "children": [
+    {
+      "name": "smtp",
+      "pid": 57372,
+      "port": 60325,
+      "exactOwnLoopbackListener": true
+    },
+    {
+      "name": "postgrest",
+      "pid": 57381,
+      "port": 60323,
+      "exactOwnLoopbackListener": true
+    },
+    {
+      "name": "auth",
+      "pid": 57390,
+      "port": 60327,
+      "exactOwnLoopbackListener": true
+    },
+    {
+      "name": "gateway",
+      "pid": 57398,
+      "port": 60321,
+      "exactOwnLoopbackListener": true
+    },
+    {
+      "name": "quote",
+      "pid": 57404,
+      "port": 57914,
+      "exactOwnLoopbackListener": true
+    }
+  ],
+  "sourceAndBinaryHashes": {
+    "authConfigSha256": "a7b4370c98c36b7fa097233f98c97aba11661514c95b6a571cd8a9571a8e3d16",
+    "authBinarySha256": "2814745719ac5830d28152874dfe23d2bd703c1c985569115d9568d6b9345115",
+    "restConfigSha256": "d833647fc0b5dfa62b1397b24fedc33f7fbbad9d6fdf67dd36e7ab48546e06cd",
+    "restBinarySha256": "5ad4c1b59bfa74dcd9ed37038c18f7ce1b091990e1930fc367b6d77a56463af9",
+    "gatewaySourceSha256": "1b16e757389ca5ba696c45731b870a975b559f98fc28bc2fe8fc6b7a3082558e",
+    "gatewayConfigSha256": "db92508bdd9410df6f9003615ff4ac2f47eba3f678ce2fdccc3796c1057e748a",
+    "smtpConfigSha256": "9e7b723996cd862ef6687b455e3197babb132c620dbc20266b8deffa20d3b61b",
+    "smtpScriptSha256": "0c1d72411a5204e9f7483b0c494364a920ba0ce25775ac9c749a775afae20342",
+    "quoteSourceSha256": "6c10679ed7cbcb31439ec6f77ef7faab15ec503df92d26ca5867f0d37aeca5f6",
+    "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+    "buildProofSha256": "41aec3bdac210c4c7695274fd81104c6cee4f8a02ca6ac1408a497e367f206c8",
+    "appStateSha256": "c15d85a7c74019daa8e7f37f718d4fa4b6cfd5672dac66000f5cf363b865749a",
+    "authReadinessSha256": "1e848dfdc955a43476465a94f8b15488eb064cee05d32595851d400ae2a7f952"
+  },
+  "scope": "New UUID database and isolated cached Auth/REST/SMTP only; same two identities/signing material. SMTP is a local transport double; GoTrue API is real local. No original-service reconfiguration, financial fixture, provider request, full restore or CNF12 acceptance.",
+  "privateTargetsFileSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+  "originalPreservationProof": "../cnf12-nominal/original-preservation-final.json"
+}

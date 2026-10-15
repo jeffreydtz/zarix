@@ -2,7 +2,7 @@
 
 La entrega es parcial y revisable. El alcance conserva exactamente CU001 movimientos, CU002 cuentas/datos personales, CU003 análisis financiero y CU004 inversiones. El PR sigue sin fusionar ni desplegar. Se usaron datos sintéticos y entornos locales; los resultados de una fase se atribuyen a sus fuentes y build concretos.
 
-La última matriz reconciliada contiene **213 PASS, tres FAIL y 57 BLOCKED**, sobre los 273 casos originales. El paquete posterior de cuentas/análisis ya tiene revisión independiente e integración: registra ocho contratos PASS y dos FAIL observados, CP3-06 y CP3-18. Estos fallos se conservan durante su corrección; CI6 ya cerró sus gates; su copia ya está lista; las seis lecturas SSR de aceptación esperan su ventana independiente. Una prueba parcial, un arreglo implementado o una preparación de entorno no aprueban un contrato original completo.
+La última matriz reconciliada contiene **225 PASS, un FAIL y 47 BLOCKED**, sobre los 273 casos originales. Las seis lecturas SSR posteriores de CI6 pasaron con revisión independiente (103 aserciones): CP3-06 y CP3-18 quedan PASS con evidencia nueva, conservando sus FAIL de CI5. Otros paquetes revisados cierran siete contratos compuestos, CP1-23/34 y CP1-27; cada uno mantiene su revisión y alcance. Una prueba parcial, un arreglo implementado o una preparación de entorno no aprueban un contrato original completo.
 
 ## Revisiones y comandos
 
@@ -41,7 +41,7 @@ La copia CI5 independiente conserva el build `vPLjt1QViugJhUWR62DPp`, 480 fuente
 
 El perfil intermedio CI4 conserva un intento HTTP 500 causado por el shim de Date del arnés. Next copia descriptores propios; la corrección declaró `parse` y `UTC` propios, se probó contra la extensión real de Next y relanzó el mismo build. [Intento original y retry](../acceptance-final/README.md) permanecen separados. Los 21 modelos/extensión y 11 fixtures no se agregan a Vitest global.
 
-La [copia CI6 de cierre](../closure-final-preparation/clock-executed/README.md) usa 483 fuentes del freeze `84df929`, build `aIWVMIWgvq5sbeEtZAZEh` y Next 39320. Repite los controles reales Auth/API 200 y la comprobación de 135 assets sin service-role/CRON, con los mismos límites de reloj/guard. Esta preparación no sustituye las seis lecturas SSR pendientes ni reescribe los dos FAIL CI5.
+La [copia CI6 de cierre](../closure-final-preparation/clock-executed/README.md) usa 483 fuentes del freeze `84df929`, build `aIWVMIWgvq5sbeEtZAZEh` y Next 39320. Repite los controles reales Auth/API 200 y la comprobación de 135 assets sin service-role/CRON, con los mismos límites de reloj/guard. Las [seis lecturas SSR](../account-analysis-contracts/independent-closure-review.json) pasaron 103 aserciones con fuentes/build estables y trece tablas originales protegidas. Los FAIL CI5 se conservan como fase anterior; no se atribuye su corrección a aquel build.
 
 ## Recuperación y permisos
 
@@ -55,7 +55,7 @@ El sign-out global invalidó refresh, pero el JWT de acceso anterior respondió 
 
 [casos_prueba.csv](../../../casos_prueba.csv) conserva sus 273 filas y SHA256 `887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d`. Distribución: CU001 184, CU002 25, CU003 30 y CU004 34. Los 168 PASS/105 BLOCKED del 09/10 son históricos.
 
-La [matriz derivada](../case-traceability.csv), elegida con `--core-dir core-closure`, registra **213 PASS, tres FAIL y 57 BLOCKED**. [case-status-delta.json](case-status-delta.json) identifica 48 cambios desde el 09/10 y 225 estados sin cambio. [system-case-results.json](../system-case-results.json) y el [adaptador](reconcile-reviewed-contracts.py) conservan aserciones, evidencia, revisiones y revisiones independientes exactas. El flag `complete_original_contract` significa cobertura ejecutada; no convierte un FAIL en aceptación PASS.
+La [matriz derivada](../case-traceability.csv), elegida con `--core-dir core-closure`, registra **225 PASS, un FAIL y 47 BLOCKED**. [case-status-delta.json](case-status-delta.json) identifica 58 cambios desde el 09/10 y 215 estados sin cambio. [system-case-results.json](../system-case-results.json) y el [adaptador](reconcile-reviewed-contracts.py) conservan aserciones, evidencia, revisiones y revisiones independientes exactas. El flag `complete_original_contract` significa cobertura ejecutada; no convierte un FAIL en aceptación PASS.
 
 Uno de los tres FAIL literales actuales es **CP2-09**: se ejecutaron los diez negativos, nueve PASS y uno FAIL. GoTrue rechazó contraseña incorrecta con HTTP 400 `invalid_credentials`, mientras el contrato pide 401/403; no emitió usuario/token. Anti-enumeración, JWT alterado/vencido, recovery expirado/reusado, controles normales API 200 y ZARIX API 401 por sesión realmente vencida/revocada pasaron. No se remapea el proveedor para fabricar PASS. [Revisión y raw](../fresh-proof/auth-negative-contract/independent-review.json) conservan el resultado y doce tablas financieras intactas.
 
@@ -86,3 +86,7 @@ python3 docs/tif/v2.13/evidence/technical-20261015/consolidated/build-draft.py
 ```
 
 La retención privada final de seis stacks y su parada oficial están [preparadas, no ejecutadas](../environment/native-retention-six-plan.md), en fases separadas y después de todos los escritores/escáneres. El destino autorizado será un directorio hermano `zarix-private-final-<UTC>` fuera de Git, 0700/0600; los datos originales en `/tmp` se conservan. Seis dumps y TOC/checksums no serían por sí solos una nueva prueba de restauración. No se publica ningún secreto, dump íntegro, cookie o perfil personal.
+
+La [prueba nominal CNF-12](../cnf12-nominal/README.md) restauró una DB nueva de veinte movimientos desde un dump real de 550220 bytes en 0,469 s; el gasto posterior1500 quedó sólo en la fuente (21 filas). Conserva 20 aserciones anteriores al fallo del parser del arnés y un resume de 19 PASS, sin sumar39 casos únicos. Dos checkpoints preservaron las64 tablas originales, catálogo/roles, Storage y bindings. El archivo sintético de34 bytes se copió y comparó; esta fase no usó HTTPAuth/Storage. Las fronteras23h/3h30/24h/4h/+1s son modelos con timestamps de fixture, no observación temporal real. CNF-12 integral sigue BLOCKED por plan real contratado, cuatro lecturas UI nominales y RTO observado3h30.
+
+La [réplica vacía](../empty-account-runtime/executed/readiness.json) quedó READY con el mismo código CI6,483 fuentes y build `Yi9bH3FttO71PxvY-EwCH`; usa una DB UUID adicional, dos identidades/claves existentes y Auth/REST/SMTP/gateway locales propios. Dos sesiones normales y aislamiento owner/foreign/anon pasaron;14 tablas seguían vacías y el proveedor sintético tenía cero peticiones antes de liberar los tres contratos. Preparación y readiness no aprueban esos contratos todavía.

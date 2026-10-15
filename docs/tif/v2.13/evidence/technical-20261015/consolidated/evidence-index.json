@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T05:20:41.145972+00:00",
+  "generated_at_utc": "2026-10-15T06:04:06.885408+00:00",
   "draft": true,
   "original_cases": {
     "path": "../../../casos_prueba.csv",
@@ -393,8 +393,8 @@
       "bytes": 5749
     },
     "system-case-results.json": {
-      "sha256": "e916b3ffe13f4a648891d81299ab3e412152fc5fc74a86591fe67e7bd3c68afd",
-      "bytes": 107772
+      "sha256": "68d7ab35c3429aaeb871c9d6c61397235c6763eae34dd28183d53309bcfffc3e",
+      "bytes": 135441
     },
     "security-matrix/review-reconciliation-before-http-fix.json": {
       "sha256": "032d73b3535150fe3d279dedbd0170d30eba5ed5e791c1ea0361b6d973f2e53f",
@@ -549,13 +549,13 @@
       "bytes": 367
     },
     "traceability-summary.json": {
-      "sha256": "22e6bc634ca4bb9ea3071600370bbe45469f176bb032cd43a6e44d98d03ebfac",
+      "sha256": "62de5578c219ed72b27f3bca3736d22ca1945a535d95edccb6b2ef958c99a7a8",
       "bytes": 407
     }
   },
-  "technical_rows": 342,
+  "technical_rows": 352,
   "original_derived_summary": {
-    "generated_at": "2026-10-15T05:20:09.805500+00:00",
+    "generated_at": "2026-10-15T06:04:06.750601+00:00",
     "core_directory": "core-closure",
     "original_cases": 273,
     "use_cases": [
@@ -565,9 +565,9 @@
       "CU004"
     ],
     "counts": {
-      "PASS": 213,
-      "FAIL": 3,
-      "BLOCKED": 57
+      "PASS": 225,
+      "FAIL": 1,
+      "BLOCKED": 47
     },
     "rule": "PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence."
   },

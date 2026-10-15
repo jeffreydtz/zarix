@@ -302,5 +302,47 @@ if (BASE/ci5_accounts_review_path).exists():
           'raw_execution_status':report['status'],'raw_complete_original_contract_flag':row['complete_original_contract'],'new_execution':False,
           'adapter_scope':'Ten explicitly independently reviewed original contracts; recorded FAIL is preserved as FAIL. CP2-05 original calculation PASS does not hide the two additional text-format FAIL assertions. No browser/hydration or future fix acceptance.'}
 
+# Explicit CI6 closure and reviewed composites. Their historical phases remain intact.
+closure_reviewed_packets=[
+ ('account-analysis-contracts/independent-closure-review.json','92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826','account-analysis-contracts/executed-closure/system-case-results.json',{'CP2-05','CP3-04','CP3-05','CP3-06','CP3-08','CP3-18'}),
+ ('remaining-seven-contracts/independent-review.json','9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f','remaining-seven-contracts/system-case-results.json',{'CP1-05','CP1-21','CP1-28','CP1-30','CP1-31','CP4-01','CP4-06'}),
+ ('notification-timeout-contract/independent-review.json','6fa05e94d7ebf623cc86f197121aa23dc545ad1d48afb371bd48aab60a1267b8','notification-timeout-contract/system-case-results.json',{'CP1-27'}),
+]
+for review_path,expected,packet_path,ids in closure_reviewed_packets:
+    review=checked_json(review_path,expected)
+    assert not review['findings']
+    for artifact in review['artifacts']:
+        path=ROOT/artifact['path']
+        if not path.exists():path=BASE/artifact['path']
+        assert hashlib.sha256(path.read_bytes()).hexdigest()==artifact['sha256']
+    if 'manifest'in review:
+        entry=review['manifest'];assert hashlib.sha256((ROOT/entry['path']).read_bytes()).hexdigest()==entry['sha256']
+    accepted={row['id']:row for row in review['originalCases']}
+    assert set(accepted)==ids and all(row['status']=='PASS'and row['complete_original_contract']for row in accepted.values())
+    packet=checked_json(packet_path)['results'];assert {r['case_id']for r in packet}==ids
+    for row in packet:
+        assert row['status']=='PASS'and row['complete_original_contract']and row['assertion_names']and row['scope']
+        assert all((BASE/path).is_file()for path in row['evidence'])
+        merged[row['case_id']]={'case_id':row['case_id'],'status':'PASS','complete_original_contract':True,
+          'assertions':row['assertion_names'],'evidence':'; '.join(row['evidence'])+'; '+review_path,
+          'scope':row['scope']+' Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim.',
+          'executed_revision':review.get('sourceBinding',{'reviewedVersion':accepted[row['case_id']].get('version','Explicit composite; see pinned review')}),
+          'source_review_sha256':expected,'adapter_scope':'Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build.'}
+
+recurring_review_path='remaining-cu001/independent-recurring-amount-review.json'
+if (BASE/recurring_review_path).exists():
+    expected='fd305dfcc8541485ed44323ba4a6d692ed1ce1848d5ac2e2d229cfa147e3b340'
+    review=checked_json(recurring_review_path,expected);assert not review['findings']
+    for artifact in review['artifacts']:
+        path=ROOT/artifact['path'];assert hashlib.sha256(path.read_bytes()).hexdigest()==artifact['sha256']
+    accepted=[r for r in review['originalCases']if r['status']=='PASS'];assert {r['id']for r in accepted}=={'CP1-23','CP1-34'}
+    for row in accepted:
+        assert row['complete_original_contract'];entry=row['runtimeEvidence'];path=ROOT/entry['path'];assert hashlib.sha256(path.read_bytes()).hexdigest()==entry['sha256']
+        report=json.loads(path.read_text());case=next(r for r in report['results']if r.get('case_id',r.get('id'))==row['id'])
+        assert len(case['assertions'])==entry['passedAssertions']and all(a['status']=='PASS'for a in case['assertions'])
+        merged[row['id']]={'case_id':row['id'],'status':'PASS','complete_original_contract':True,'assertions':[a['name']for a in case['assertions']],
+          'evidence':str(path.relative_to(BASE))+'; '+recurring_review_path,'scope':row['provedRuntime']+' '+ ' '.join(row['limits'])+' '+row.get('nanTransport','')+' '+str(row.get('nextOccurrenceSourceProof',{})),
+          'executed_revision':{'product':entry['revision'],'buildId':entry['buildId']},'source_review_sha256':expected,'adapter_scope':'Explicit independent semantic/native plus source-control-flow composite; no browser required by CSV, no rendered schedule assertion or additional runtime invented. CP124/125 remain unpromoted; CP127 has a separate later reviewed packet.'}
+
 target.write_text(json.dumps([merged[key] for key in sorted(merged)], indent=2, ensure_ascii=False) + '\n')
 print(json.dumps({'historical_reviewed_contracts': sorted(item['case_id'] for item in reviewed), 'reviewed_contracts': sorted(merged), 'total_reviewed_entries': len(merged), 'negative_contract_failures': [key for key in merged if merged[key]['status']=='FAIL'], 'source_review_sha256': source_hash, 'new_execution': False}))

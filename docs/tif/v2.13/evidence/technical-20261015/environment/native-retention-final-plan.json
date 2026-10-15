@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "status": "PREPARED_NOT_EXECUTED",
+  "preparedAt": "2026-10-15T03:57:54.460513+00:00",
+  "scope": "Final extension preserving original ec952 lifecycle controller. Six default databases plus three named additional databases; CI5/CI6/empty app sources only; no operational call by preparation.",
+  "repositoryRoot": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+  "runtimeRoot": "/tmp/zarix-runtime-20261015",
+  "supabaseHome": "/tmp/zarix-runtime-20261015/home",
+  "cliPath": "/tmp/zarix-runtime-20261015/bin/supabase",
+  "cliVersion": "2.120.0",
+  "postgresBin": "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgres/17.11.0.004-r1/darwin-arm64/bin",
+  "retentionParent": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task",
+  "retentionDirectoryPattern": "zarix-private-final-YYYYMMDDTHHMMSSZ",
+  "retentionDirectoryMode": "0700",
+  "retainedRegularFileMode": "0600",
+  "controller": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+  "defaultAction": "NO_ACTION",
+  "phases": [
+    "retain",
+    "stop"
+  ],
+  "confirmations": {
+    "retain": {
+      "ZARIX_SIX_NATIVE_RETAIN_CONFIRM": "retain-six-task-owned-stacks",
+      "ZARIX_SIX_NATIVE_WRITERS_RELEASED": "all-six-fixtures-quiesced"
+    },
+    "stop": {
+      "ZARIX_SIX_NATIVE_STOP_CONFIRM": "stop-six-after-complete-retention",
+      "ZARIX_SIX_NATIVE_WRITERS_RELEASED": "all-six-fixtures-quiesced",
+      "ZARIX_SIX_NATIVE_ROOT_RELEASED": "root-released-six-fixtures"
+    }
+  },
+  "stacks": [
+    {
+      "name": "source",
+      "stackId": "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+      "workdir": "/tmp/zarix-runtime-20261015/source",
+      "expectedPostgresPort": 54322,
+      "expectedPublicApiPort": 54321,
+      "databaseInstanceId": "65bf18da-d6aa-4295-aee6-a758246e54ea",
+      "statePath": "/tmp/zarix-runtime-20261015/home/stacks/76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9/state.json",
+      "dataDirectory": "/tmp/zarix-runtime-20261015/home/stacks/76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9/data/65bf18da-d6aa-4295-aee6-a758246e54ea/data",
+      "storageFilePath": "/private/tmp/zarix-runtime-20261015/source/supabase/.temp/stack-uploads/76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+      "configPath": "/tmp/zarix-runtime-20261015/source/supabase/config.toml",
+      "stopArgv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/source",
+        "--stack-id",
+        "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+        "--output-format",
+        "json"
+      ],
+      "expectedPostgresInternalPort": 5432
+    },
+    {
+      "name": "restore",
+      "stackId": "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+      "workdir": "/tmp/zarix-runtime-20261015/restore",
+      "expectedPostgresPort": 55322,
+      "expectedPublicApiPort": 55321,
+      "databaseInstanceId": "fb5ba2d6-84aa-4d4e-8107-4b44a8d4a079",
+      "statePath": "/tmp/zarix-runtime-20261015/home/stacks/eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5/state.json",
+      "dataDirectory": "/tmp/zarix-runtime-20261015/home/stacks/eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5/data/fb5ba2d6-84aa-4d4e-8107-4b44a8d4a079/data",
+      "storageFilePath": "/private/tmp/zarix-runtime-20261015/restore/supabase/.temp/stack-uploads/eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+      "configPath": "/tmp/zarix-runtime-20261015/restore/supabase/config.toml",
+      "stopArgv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/restore",
+        "--stack-id",
+        "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+        "--output-format",
+        "json"
+      ],
+      "expectedPostgresInternalPort": 5432
+    },
+    {
+      "name": "load",
+      "stackId": "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+      "workdir": "/tmp/zarix-runtime-20261015/load",
+      "expectedPostgresPort": 56322,
+      "expectedPublicApiPort": 56321,
+      "databaseInstanceId": "84e137bf-f188-4df5-9e3b-4a174920a64e",
+      "statePath": "/tmp/zarix-runtime-20261015/home/stacks/a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8/state.json",
+      "dataDirectory": "/tmp/zarix-runtime-20261015/home/stacks/a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8/data/84e137bf-f188-4df5-9e3b-4a174920a64e/data",
+      "storageFilePath": "/private/tmp/zarix-runtime-20261015/load/supabase/.temp/stack-uploads/a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+      "configPath": "/tmp/zarix-runtime-20261015/load/supabase/config.toml",
+      "stopArgv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/load",
+        "--stack-id",
+        "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+        "--output-format",
+        "json"
+      ],
+      "expectedPostgresInternalPort": 5432
+    },
+    {
+      "name": "e2e",
+      "stackId": "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+      "workdir": "/tmp/zarix-runtime-20261015/e2e",
+      "expectedPostgresPort": 57322,
+      "expectedPublicApiPort": 57321,
+      "databaseInstanceId": "381bb253-405b-44dc-b192-f2c54c3ddc18",
+      "statePath": "/tmp/zarix-runtime-20261015/home/stacks/c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d/state.json",
+      "dataDirectory": "/tmp/zarix-runtime-20261015/home/stacks/c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d/data/381bb253-405b-44dc-b192-f2c54c3ddc18/data",
+      "storageFilePath": "/private/tmp/zarix-runtime-20261015/e2e/supabase/.temp/stack-uploads/c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+      "configPath": "/tmp/zarix-runtime-20261015/e2e/supabase/config.toml",
+      "stopArgv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/e2e",
+        "--stack-id",
+        "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+        "--output-format",
+        "json"
+      ],
+      "expectedPostgresInternalPort": 5432
+    },
+    {
+      "name": "proof",
+      "stackId": "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+      "workdir": "/tmp/zarix-runtime-20261015/proof",
+      "expectedPostgresPort": 58322,
+      "expectedPublicApiPort": 58321,
+      "databaseInstanceId": "4ecc06ec-a5f0-4086-a18e-721fe9731718",
+      "statePath": "/tmp/zarix-runtime-20261015/home/stacks/c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09/state.json",
+      "dataDirectory": "/tmp/zarix-runtime-20261015/home/stacks/c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09/data/4ecc06ec-a5f0-4086-a18e-721fe9731718/data",
+      "storageFilePath": "/private/tmp/zarix-runtime-20261015/proof/supabase/.temp/stack-uploads/c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+      "configPath": "/tmp/zarix-runtime-20261015/proof/supabase/config.toml",
+      "stopArgv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/proof",
+        "--stack-id",
+        "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+        "--output-format",
+        "json"
+      ],
+      "expectedPostgresInternalPort": 5432
+    },
+    {
+      "name": "import-target",
+      "stackId": "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+      "workdir": "/tmp/zarix-runtime-20261015/import-target",
+      "expectedPostgresPort": 59322,
+      "expectedPublicApiPort": 59321,
+      "databaseInstanceId": "e95c16fb-17b2-4f94-9554-bd55dc3dd76b",
+      "statePath": "/tmp/zarix-runtime-20261015/home/stacks/464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44/state.json",
+      "dataDirectory": "/tmp/zarix-runtime-20261015/home/stacks/464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44/data/e95c16fb-17b2-4f94-9554-bd55dc3dd76b/data",
+      "storageFilePath": "/private/tmp/zarix-runtime-20261015/import-target/supabase/.temp/stack-uploads/464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+      "configPath": "/tmp/zarix-runtime-20261015/import-target/supabase/config.toml",
+      "stopArgv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/import-target",
+        "--stack-id",
+        "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+        "--output-format",
+        "json"
+      ],
+      "expectedPostgresInternalPort": 5432
+    }
+  ],
+  "sourceMetadata": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/native-stop-plan.json",
+      "sha256": "d1550bf13338cc200eb2193685a896ea1cd26fceaaedb5383a5bb99eea3ae987"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/preparation.json",
+      "sha256": "c9c282a60a55718ee673cc9f8aedb05dd8140859a980b74938e24ec65a11d2b2"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-target/preparation.json",
+      "sha256": "53825f5ed6f0f4b3611025d67041956706221cbb88eee59d8b96e4fbf3077727"
+    }
+  ],
+  "retentionRequirements": [
+    "Exact six IDs/projectRoot/API+SQL frontend ports/database-instance/data/<dbid>/data/PG_VERSION/owner+postmaster PIDs and owned listeners; native PostgreSQL internal port5432 is distinct from SQL frontend (inet_server_port NULL via Unix socket, or5432).",
+    "Six read-only pg_dump-Fc archives; pg_restore --list plus decode-to-/dev/null without a restore connection. Private globals/roles SQL retained too.",
+    "All top-level runtime files; six project configurations; private stack state/owner definitions; nested Auth/recovery/private files and other cookies/session/login/env files; exact owned Storage bytes.",
+    "Read-only fingerprints public tables/Auth.users/Auth.identities/Storage.objects stable before/after retention and before stop. Auth audit/session cleanup tables are not falsely declared immutable.",
+    "Storage source-before/source-after/private-copy hashes equal; reject links/special files and any PG raw-data copying.",
+    "Complete private checkpoint and every retained file digest, bound to controller/plan hashes; all six dumps must PASS before any stop.",
+    "Unreadable directory enumeration fails closed; all retained file/directory entries fsynced before the complete private checkpoint. Process start probes use TZ=Etc/UTC and locale C.",
+    "Two exact isolated application copies CI5+CI6: own core revision, manifest/source bytes, private env digest and BUILD_ID checked before/after retention and before stop; archive only declared sources and build ID metadata, without node_modules or .next binaries.",
+    "Three additional UUID databases in RESTORE55322: full custom schema/data/Auth/Storage dumps,64table/catalog read-only hashes stable,TOC+payloaddecode; no new restore acceptance. CNF12 private binary backups and SMTP/Auth artifacts retained in complete private directories."
+  ],
+  "stopRequirements": [
+    "Separate invocation and explicit root release after all writers/browsers/harnesses have stopped.",
+    "Revalidate all six before the first stop: exact process/listener ownership, logical fingerprints, configs/env/auth fixtures, retained file digests and Storage.",
+    "Only each exact official CLI argv; never --all/reset/destroy/manual kill/pg_ctl or data removal.",
+    "Verify old owned processes/listeners gone and state/identity/config/credentials/PG data dirs/PG_VERSION/Storage remain. Graceful stop may alter WAL/pg_control.",
+    "Record failures and continue independent eligible stacks without force; partial failure needs review."
+  ],
+  "artifactSelection": {
+    "allTopLevelRuntimeRegularFiles": true,
+    "completeNestedDirectories": "Names containing private/auth/session or starting proof-/import-target-/final-proof-/closure-proof-, excluding caches/binaries/app builds.; also empty-proof- prefix.",
+    "otherNestedSensitiveNames": [
+      "cookie",
+      "session",
+      "login",
+      "recovery",
+      ".env"
+    ],
+    "projectTrees": "Six exact project trees excluding all supabase/.temp/stack-uploads; each owned Storage filePath retained separately.",
+    "stateAndOwner": "Exact home/stacks/stackId/state.json and owner.json plus each database native-root pgsodium_root.key, privately; never active PG raw data.",
+    "excluded": [
+      "home/cache",
+      "bin",
+      "node_modules",
+      ".git",
+      ".next",
+      "downloads",
+      "__pycache__",
+      "active PG raw data"
+    ]
+  },
+  "limitations": [
+    "TOC/decompression/checksums prove retention checks only, not a successful restore or complete machine recovery.",
+    "Retention contains local credentials/password hashes/globals/roles/session and recovery cookies; outside Git, directories0700/files0600, no raw stdout.",
+    "No vendor binaries/build trees copied as a complete offline-recovery claim.",
+    "Existing native internal REST wildcard limitation remains; no firewall/global permissions added.",
+    "After losing /tmp, the retained application sources require reinstalling dependencies and recompiling; no complete application binary or machine image is claimed."
+  ],
+  "mutationsPerformed": false,
+  "secretsIncluded": false,
+  "applicationCopies": [
+    {
+      "name": "ci5",
+      "prefix": "final-proof",
+      "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+      "coreDirectory": "core-acceptance",
+      "runtimeProfile": "final-core-acceptance"
+    },
+    {
+      "name": "ci6",
+      "prefix": "closure-proof",
+      "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+      "coreDirectory": "core-closure",
+      "runtimeProfile": "final-core-closure"
+    },
+    {
+      "name": "empty",
+      "prefix": "empty-proof",
+      "copyRoot": "/tmp/zarix-app-empty-account-20261015",
+      "coreDirectory": "core-closure",
+      "runtimeProfile": "empty-core-closure"
+    }
+  ],
+  "additionalDatabases": [
+    {
+      "name": "cnf12-source",
+      "databaseName": "cnf12_source_836ea2b13ba649fa891be962c8f803dc",
+      "stack": "restore",
+      "postgresPort": 55322
+    },
+    {
+      "name": "cnf12-target",
+      "databaseName": "cnf12_target_3000a0d2ff074380ac90df368a87a33b",
+      "stack": "restore",
+      "postgresPort": 55322
+    },
+    {
+      "name": "empty",
+      "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+      "stack": "restore",
+      "postgresPort": 55322
+    }
+  ]
+}

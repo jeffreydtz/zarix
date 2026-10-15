@@ -1,0 +1,33 @@
+{
+  "status": "PREPARED_GUARDED_UNAVAILABLE",
+  "mode": "configured-unavailable",
+  "nextPid": 57813,
+  "buildId": "Yi9bH3FttO71PxvY-EwCH",
+  "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "sourceStable": true,
+  "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+  "command": [
+    "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+    "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/next/dist/bin/next",
+    "start",
+    "-H",
+    "127.0.0.1",
+    "-p",
+    "3004"
+  ],
+  "instrumentationSha256": "cb3249b9c717c0a693ed411adf766cdefefe7e96dfab70061490b5e4a66f05c5",
+  "guardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+  "noGeminiEnvironmentCredential": true,
+  "canary": {
+    "origin": "https://generativelanguage.googleapis.com",
+    "credentialsOrHeadersProvided": false,
+    "rejectedByInstalledLoopbackGuard": true,
+    "nativeDispatchPreventedByReviewedGuard": true,
+    "auditAppendSha256": "ee7d6efb07c61b81d0034712da724f27373201f3e69bbbeccc088dc97cde001f"
+  },
+  "journalFile": "/tmp/zarix-runtime-20261015/empty-proof-clock-gemini-attempts.jsonl",
+  "journalInitialEntries": 1,
+  "calculationExecuted": false,
+  "acceptanceRequired": "A later bounded successful normal GET /api/ai/projections must compare this same process journal before/after and prove zero additional Gemini-host attempts. Per-user stored credential absence must be checked separately in its private SQL fixture; no environment-only acceptance.",
+  "scope": "Local test denial of Gemini global fetch only; no real Google outage/network call or universal TCP/firewall claim. This preload does not itself accept CP3-16. Other clients and sockets are outside its instrumentation."
+}

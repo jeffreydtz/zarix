@@ -1,0 +1,13 @@
+# Retención y cierre final preparados
+
+Estado: PREPARADO, NO EJECUTADO. El controlador histórico `preserve-six-native-stacks.py` permanece byte idéntico a ec952cec…; su snapshot ejecutado está en `cnf12-nominal/native-executed-sources/`. La extensión nueva es `preserve-six-native-stacks-final.py`, con plan cerrado `native-retention-final-plan.json`.
+
+La extensión exige cerrar primero nueve procesos HTTP propios con `stop-owned-final-http-services.py`: dos Next, tres proveedores sintéticos, gateway, GoTrue, PostgREST y SMTP. Valida PID/start/UID/cwd/listener y fuentes/build/env antes de enviar SIGTERM sólo a esos procesos. No controla PostgreSQL, stacks ni Arc. Una ventana final expresa del padre sigue siendo necesaria.
+
+Después conserva seis dumps de las DB postgres de los stacks y tres dumps adicionales (CNF12source, CNF12target y emptyUUID), completos en formatoFc, con Auth/esquema/datos/Storage metadata. Compara64 tablas y catálogo por DB adicional, TOC y decodificación del payload; no ejecuta otro restore. Globals usan el rol supabase_admin ya existente, sin roles/grants nuevos. Los dos árboles binarios nominales y todo `cnf12-private`, `empty-account-private`, `auth-reset-private` y directorios `auth-valid-recovery-*` se retienen recursivamente; la selección incluye cualquier nombre con auth/private/session y fuentes/fonts `empty-proof-*`.
+
+El destino autorizado es un hermano privado `zarix-private-final-<UTC>` dentro del workspace de la tarea y fuera de Git, directorios0700/archivos0600. Se archivan las fuentes declaradas de las copias CI5, CI6 y empty, sus manifests/env/proofs y BUILD_ID. No se copian node_modules, .next ni el árbol PG activo. Tras perder/tmp habrá que reinstalar dependencias y recompilar; no se afirma imagen binaria íntegra del entorno.
+
+El checkpoint completo liga todos los archivos y hashes antes del cierre Native. La fase stop revalida el checkpoint, datos/permisos/config/Storage y las tres DB adicionales; usa únicamente seis comandos oficiales CLI2.120 `stack stop --workdir <proyectoexacto> --stack-id <idexacto> --output-format json`. No usa reset/destroy/DROP/--all/pg_ctl, ni borra data. Un fallo conserva el estado y necesita revisión, sin señales más fuertes automáticas. El stop puede cambiar WAL/pg_control y no se afirma igualdad byte a byte de esos archivos.
+
+Todas las pruebas, scanners y checkpoints de runtime deben terminar antes de retener. Después sólo se publican informes saneados y se ejecutan los stops oficiales autorizados. Los checks de retención por sí solos no prueban restauración ni plan de respaldo contratado.

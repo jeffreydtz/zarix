@@ -1,0 +1,24 @@
+{
+  "status": "INSTALLED_IN_SELECTED_NEXT_PROCESS",
+  "nextPid": 57813,
+  "copyRoot": "/private/tmp/zarix-app-empty-account-20261015",
+  "fixedTime": "2026-10-06T12:00:00.000Z",
+  "observedApplicationTime": "2026-10-06T12:00:00.000Z",
+  "nativeClockAtInstall": "2026-10-15T05:59:23.226Z",
+  "buildId": "Yi9bH3FttO71PxvY-EwCH",
+  "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "sourceStable": true,
+  "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+  "command": [
+    "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+    "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/next/dist/bin/next",
+    "start",
+    "-H",
+    "127.0.0.1",
+    "-p",
+    "3004"
+  ],
+  "preloadSha256": "088b01c487cd00937b81da94edc1689f81e014887c5eafd820692bcc5a457f31",
+  "scope": "Only this Node process Date()/Date.now()/new Date() without arguments are frozen. Dates with arguments, parse/UTC, native timers and performance remain normal. No OS clock, GoTrue process, browser or runner clock is changed. SSR SDK time shares this process; ordinary clients must refresh with real time before requests. This installation is not an Auth-expiration acceptance assertion.",
+  "realAuthControlRequired": true
+}
