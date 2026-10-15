@@ -1394,6 +1394,17 @@ export async function POST(request: NextRequest) {
     for (const [index, tx] of combined.transactions.entries()) {
       const identity = rowIdentity('transaction', index, tx);
       if (replayRow(identity)) continue;
+      // Match CSV validation without removing entries or changing the durable
+      // identities of later rows. An immutable invalid amount cannot commit.
+      if (!Number.isFinite(tx.amount) || tx.amount <= 0) {
+        pushSkip({
+          title: 'Fila omitida — monto inválido',
+          reason: 'El monto debe ser numérico y mayor a 0.',
+          suggestion: 'Corregí el monto de esta fila en el archivo y reintentá.',
+          context: formatTxContext(tx),
+        });
+        continue;
+      }
       const rawAccountName = (tx.account || '').trim();
       const hasAccountInFile = rawAccountName.length > 0;
       let account = hasAccountInFile ? accountMap.get(normalizeImportMatchKey(rawAccountName)) : undefined;

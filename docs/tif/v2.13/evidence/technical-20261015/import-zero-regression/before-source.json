@@ -1,0 +1,7 @@
+{
+  "recordedAt": "2026-10-15T04:40:03.920809+00:00",
+  "stage": "before-patch",
+  "sourceSha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444",
+  "testSha256": "fc49944b5a15b7c0ac01cf1e9465844f1b0b171647795ffb89d679f986b022a6",
+  "scope": "Two real route regressions with mocked Auth/RPC; RPC double enforces the existing amount-positive database constraint. Actual CP1-20 HTTP503 and persisted2valid/0invalid receipt evidence are preserved separately."
+}

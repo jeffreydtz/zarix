@@ -295,3 +295,51 @@ describe('import transfer precision', () => {
     expect(result.imported).toBe(1); expect(mocks.rows[0].destination_amount_in_account_currency).toBe(1.23);
   });
 });
+
+describe('partial JSON imports with an invalid amount', () => {
+  it.each(['array', 'backup'] as const)('rejects the zero row in %s JSON and keeps durable row identities', async (format) => {
+    // Match the existing database amount constraint; its error must not turn
+    // immutable file validation into an indefinitely pending operation.
+    const persist = mocks.rpc.getMockImplementation()!;
+    mocks.rpc.mockImplementation(async (name: string, args: any) => {
+      if (name === 'create_import_transaction_once' && args.p_transaction.amount === 0) {
+        return { data: null, error: { message: 'amount must be positive' } };
+      }
+      return persist(name, args);
+    });
+    const transactions = [
+      { ...expense('Valid before zero'), amount: 500 },
+      { ...expense('Invalid zero'), amount: 0 },
+      { ...expense('Valid after zero'), type: 'income', amount: 700 },
+    ];
+    const content = JSON.stringify(format === 'array' ? transactions : {
+      data: {
+        accounts: [{ id: 'backup-account', name: 'Caja "ARS"', currency: 'ARS' }],
+        transactions: transactions.map(({ date, account: _account, ...row }) => ({
+          ...row, account_id: 'backup-account', transaction_date: date,
+        })),
+      },
+    });
+
+    const first = await request(content);
+    expect(first.status).toBe(200);
+    expect(await first.json()).toMatchObject({
+      success: true, status: 'completed', imported: 2, skipped: 1, pending: 0, total: 3,
+      skippedDetails: [expect.objectContaining({ title: 'Fila omitida — monto inválido' })],
+    });
+    expect(mocks.rows.map(row => row.amount)).toEqual([500, 700]);
+    const receipts = [...mocks.receipts.values()].map(row => row.request_id).sort();
+    expect(receipts).toEqual([
+      'import:11111111-1111-4111-8111-111111111111:transaction:0',
+      'import:11111111-1111-4111-8111-111111111111:transaction:2',
+    ]);
+    expect(mocks.fx).not.toHaveBeenCalled();
+
+    const retry = await request(content);
+    expect(retry.status).toBe(200);
+    expect(await retry.json()).toMatchObject({ imported: 2, skipped: 1, pending: 0, total: 3 });
+    expect(mocks.rows).toHaveLength(2);
+    expect([...mocks.receipts.values()].map(row => row.request_id).sort()).toEqual(receipts);
+    expect(mocks.rpc.mock.calls.filter(([name]) => name === 'create_import_transaction_once')).toHaveLength(2);
+  });
+});
