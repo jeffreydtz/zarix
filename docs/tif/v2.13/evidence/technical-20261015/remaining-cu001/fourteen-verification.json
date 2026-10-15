@@ -1,7 +1,7 @@
 {
-  "recordedAt": "2026-10-15T04:40:11.455309+00:00",
-  "status": "FAIL",
-  "scope": "Composite of14 CU001 API/nativeSQL cases on immutable intermediate836 clock build. Only CP1-23 selects a separately authorized existing-PremiumB fixture retry; the Free-A403 remains historical. CP1-20 backend503 remains FAIL. No CI5 or fullUI acceptance.",
+  "recordedAt": "2026-10-15T04:47:53.573670+00:00",
+  "status": "PARTIAL",
+  "scope": "Composite of14 CU001 cases with explicitly separate executed revisions: immutable836 intermediate clock plus a targeted final7c3e872/core-acceptance CP1-20 retry. Only CP1-23 selects the authorized existing-PremiumB fixture retry; Free-A403 remains historical. CP1-19 is closed by an explicit accepted semantic review. CP1-20 historical503 remains rawFAIL but the final fresh fixture passes. No fullUI acceptance or claim all14 ran on the final build.",
   "phases": [
     {
       "path": "attempt-3-fourteen-clock/verification.json",
@@ -19,6 +19,16 @@
       "status": "PARTIAL",
       "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
       "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "sourceStable": true,
+      "servedCopyStable": true,
+      "originalIntegrityAllUnchanged": true
+    },
+    {
+      "path": "attempt-5-final-cp1-20-and-replay/verification.json",
+      "sha256": "d181458bca14c0a3d72811b4f28acff4cda3c70dbaf1bab81d050da94080c9d9",
+      "status": "PASS",
+      "runtimeRevision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+      "runtimeBuildId": "vPLjt1QViugJhUWR62DPp",
       "sourceStable": true,
       "servedCopyStable": true,
       "originalIntegrityAllUnchanged": true
@@ -56,11 +66,11 @@
     },
     {
       "id": "CP1-20",
-      "status": "FAIL",
-      "complete_original_contract": false,
-      "phase": "attempt-3-fourteen-clock",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "phase": "attempt-5-final-cp1-20-and-replay",
       "pendingScopes": [],
-      "assertions": 3
+      "assertions": 6
     },
     {
       "id": "CP1-21",
@@ -186,21 +196,20 @@
     }
   ],
   "counts": {
-    "PASS": 6,
+    "PASS": 7,
     "PARTIAL": 7,
-    "FAIL": 1,
+    "FAIL": 0,
     "BLOCKED": 0
   },
   "acceptedAssertions": {
-    "PASS": 145,
-    "FAIL": 1
+    "PASS": 149,
+    "FAIL": 0
   },
   "historicalFailuresPreserved": [
-    "CP1-23 Free-A403 fixture precondition; retry uses already-PremiumB without plan change"
+    "CP1-23 Free-A403 fixture precondition; retry uses already-PremiumB without plan change",
+    "CP1-20 JSON zero-amount503 on836; final7c3e872 fresh fixture200 and same-original-batch replay PASS, with raw prior report unchanged."
   ],
-  "stillFailing": [
-    "CP1-20 JSON zero amount returned503 where normal partial import200 was expected"
-  ],
+  "stillFailing": [],
   "postRunReadonlyEffects": "attempt-3-fourteen-clock/cp1-20-post-run-readonly.json",
   "allExecutedProcessesClosed": true,
   "browserExecuted": false,
@@ -210,5 +219,20 @@
     "PARTIAL": 8,
     "FAIL": 1,
     "BLOCKED": 0
-  }
+  },
+  "beforeFinalRetryCounts": {
+    "PASS": 6,
+    "PARTIAL": 7,
+    "FAIL": 1,
+    "BLOCKED": 0
+  },
+  "acceptedDerivedResults": [
+    {
+      "id": "DERIVED-CP1-20-ARCHIVED-BATCH-REPLAY",
+      "status": "PASS",
+      "assertions": 9,
+      "complete_original_contract": false,
+      "phase": "attempt-5-final-cp1-20-and-replay"
+    }
+  ]
 }

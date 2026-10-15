@@ -111,4 +111,14 @@ node docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mj
   --profile final-core-acceptance --cases CP1-20 --replay-original-cp120
 ```
 
-La sintaxis de los tres módulos fue comprobada; el perfil final todavía no fue ejecutado. Los862 tests de CI4 u otros gates del producto no se atribuyen a estos bytes de harness posteriores.
+La sintaxis de los tres módulos fue comprobada antes del checkpoint; la ejecución final posterior se conserva separada a continuación. Los862 tests de CI4 u otros gates del producto no se atribuyen a estos bytes de harness posteriores.
+
+## Resultado final dirigido de CP1-20
+
+[attempt-5-final-cp1-20-and-replay/verification.json](attempt-5-final-cp1-20-and-replay/verification.json) aprobó en revisión **7c3e872/core-acceptance**, build `vPLjt1QViugJhUWR62DPp`: CP1-20 nuevo PASS con6 aserciones y el reintento derivado del lote original PASS con9 aserciones. Los480 archivos de la copia servida coinciden con Git/core y siguieron estables; las12 tablas originales mantuvieron sus huellas y no hubo fallas de cleanup. Los tres módulos de harness ejecutados están preservados con hashes en executed-harness.
+
+El fixture JSON nuevo produjo HTTP200, dos movimientos500/700, saldo10200, imported2/skipped1/pending0/total3 y exactamente un detalle de monto inválido. El adaptador semántico aprobado verifica rechazo inválido1 y otras omisiones0 sin inventar propiedades del API.
+
+El mismo lote anterior, con idéntico archivo, dueño y batchId, devolvió dos confirmaciones y un rechazo inválido sin pendientes. Su cuenta quedó archivada, y los snapshots completos de cuenta, ledger, recibos y lote conservaron SHA256 `0f137fc5ea080fb80c267744e0fbc10b27b251740d311df921a8a51f889de39c`: **0 efectos financieros y0 recibos nuevos**. Las dos confirmaciones de la respuesta son reconocimientos de escrituras previas; no son dos nuevas altas. El derivado no se cuenta como aceptación de otro CP.
+
+La selección final de los14 queda en **7 PASS y7 PARTIAL**, con149 aserciones PASS y0 FAIL seleccionadas, más9 PASS del derivado. Los FAIL históricos permanecen íntegros. Las7 parcialidades conservan sus límites UI, proveedor, observación preDB o rama histórica23505; el conjunto no se declara íntegramente ejecutado en la revisión final ni como CU001 completo. No se modificó la matriz de aceptación.
