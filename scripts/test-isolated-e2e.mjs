@@ -223,6 +223,7 @@ try {
     await pageA.getByRole('button', { name: 'Agregar posición', exact: true }).click();
     const form = pageA.locator('form');
     await form.getByLabel('Cuenta', { exact: true }).selectOption(investmentAccount);
+    await form.getByLabel('Ticker guardado', { exact: true }).fill('FOOFIX');
     await form.getByLabel('Nombre', { exact: true }).fill(`Posición sintética ${run}`);
     await form.getByLabel('Cantidad', { exact: true }).fill('10');
     await form.getByLabel('Precio compra', { exact: true }).fill('100');
