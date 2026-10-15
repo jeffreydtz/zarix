@@ -73,10 +73,11 @@ try{
     if(cu==='CU003'){
      await page.getByRole('heading',{name:'Análisis financiero',exact:true}).waitFor();await page.keyboard.press('Tab');
      await capture(`${cu}-${viewport.width}x${viewport.height}-zoom${zoom*100}-before-scroll`);
-     const scrollState=()=>page.evaluate(()=>({document:document.scrollingElement.scrollTop,main:document.querySelector('main')?.scrollTop||0}));
-     const before=await scrollState();await page.getByRole('heading',{name:'Análisis rápido',exact:true}).scrollIntoViewIfNeeded();const after=await scrollState();
-     cell.scroll={before,after,target:'Análisis rápido',moved:before.document!==after.document||before.main!==after.main};assert.ok(cell.scroll.moved,'Actual document or main scroll must move to the lower analysis section');
-     cell.actions.push('analysis loaded; keyboard Tab; actual document/main scroll to lower analysis section; viewport before/after retained');
+     const target=page.getByRole('heading',{name:'Análisis rápido',exact:true});
+     const scrollState=()=>target.evaluate(node=>{const ancestors=[];let index=0;for(let current=node.parentElement;current;current=current.parentElement,index++){const style=getComputedStyle(current);if(/auto|scroll/.test(style.overflowY)&&current.scrollHeight>current.clientHeight)ancestors.push({index,tag:current.tagName,scrollTop:current.scrollTop,clientHeight:current.clientHeight,scrollHeight:current.scrollHeight});}return {document:document.scrollingElement.scrollTop,ancestors};});
+     const before=await scrollState();await target.scrollIntoViewIfNeeded();const after=await scrollState();
+     cell.scroll={before,after,target:'Análisis rápido',moved:before.document!==after.document||after.ancestors.some(item=>{const previous=before.ancestors.find(previous=>previous.index===item.index&&previous.tag===item.tag);return previous&&item.scrollTop!==previous.scrollTop;})};assert.ok(cell.scroll.moved,'Actual document or scrollable ancestor must move to the lower analysis section');
+     cell.actions.push('analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained');
     }
     if(cu==='CU004'){await page.getByRole('button',{name:'Simular escenario',exact:true}).click();const form=page.locator('#investment-simulation-form');await form.getByLabel('Variación del precio (%)',{exact:true}).fill('10');await form.getByRole('button',{name:'Simular',exact:true}).click();await page.getByTestId('investment-simulation-result').waitFor();cell.actions.push('actual pure simulation10%; keyboard focus; no financial write');cell.control=await probeControl(form.getByRole('button',{name:'Simular',exact:true}));}
     cell.metrics=await page.evaluate(()=>({innerWidth,outerWidth,devicePixelRatio,visualViewportWidth:visualViewport.width,visualViewportScale:visualViewport.scale,scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,focusedTag:document.activeElement.tagName}));
