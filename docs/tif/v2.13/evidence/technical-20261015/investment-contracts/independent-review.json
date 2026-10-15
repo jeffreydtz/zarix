@@ -1,0 +1,183 @@
+{
+  "reviewedAt": "2026-10-15T04:07:33.357187+00:00",
+  "status": "PASS_WITH_EXPLICIT_PENDING_SCOPES",
+  "scope": "Independent read-only review of eight completed original CU004 reports, the ninth pending original and separately labeled local downgrade/concurrency probes. No new SQL/HTTP/Auth/browser/process actions. No whole-CU or original-case promotion from derived tests.",
+  "originalCases": [
+    {
+      "id": "CP4-01",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": 11,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-01-partial.json",
+      "reportSha256": "e93c2031277f225c9699ed7eccf94d564aa95ab337e0b50186ee1397c8ebbf29",
+      "review": "Exact q5/cost925/value952.50/PnL27.50/percent27.5÷925×100 pass at API/SQL; rounded display2.97% has not been observed in UI."
+    },
+    {
+      "id": "CP4-02",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 22,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-02-pass.json",
+      "reportSha256": "b5a101a171944cb8e952cc0688ed5d5ce95f34668ee93d23629236dae7890491",
+      "review": "Exact sale4 of10 at120 leaves6/cost600; realized80/unrealized60/value660; durable creation receipt and separate sale history preserved, cash ledger unchanged."
+    },
+    {
+      "id": "CP4-04",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 8,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-04-pass.json",
+      "reportSha256": "fa6d04a47b5b12b45ea378fcb8121c8856ac77d1dac18d507c2a45621a6e420d",
+      "review": "Exact attempted7 from6 is rejected400/409 without full position/sales/receipts/cash changes."
+    },
+    {
+      "id": "CP4-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 21,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-05-pass.json",
+      "reportSha256": "c27f39d3be9bd961632a3ee6667e5b6d91f2b5f69fb9a50de05b0d3e9baaea08",
+      "review": "Both real temporary fault points roll back position and durable creation receipt; same command retries once to10/cost1000 and durable replay leaves one receipt/position. Original operation order is reconciled explicitly to the implemented position-then-receipt transaction."
+    },
+    {
+      "id": "CP4-06",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": 16,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-06-partial.json",
+      "reportSha256": "921f2e7f404b8c063883820f861c2b825d61952be5ce56aa9dc5a144ee1a99ac",
+      "review": "Manual FOOFIX2×50/current55 gives100/110/10 with fixed timestamp in normal JWT/API/DB; actual UI Manual/entered-price labels and visible timestamp are not accepted."
+    },
+    {
+      "id": "CP4-07",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "assertions": 0,
+      "review": "No completed runtime report at this review. Offline-provider binding/phase control still being prepared; a provider200 precondition is not an executed product failure."
+    },
+    {
+      "id": "CP4-10",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 14,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-10-pass.json",
+      "reportSha256": "3a053462c67922414c9785f5e91d772f6a567b4328e2dc1cf23b8b38a2eb2b92",
+      "review": "Foreign and inactive owned account purchases return404; normal owner portfolio200 excludes U2 position, ordinary JWT SELECT returns[], and all foreign fixture columns/cash/sales are unchanged. This does not prove INSERT grants/RLS for a backend service request."
+    },
+    {
+      "id": "CP4-11",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 24,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-11-pass.json",
+      "reportSha256": "2e26d469b65d73e9c3561d24ba6e4d2a113c7ddef8579a807305244f416e0181",
+      "review": "Original lot6×100 and new lot4×200 remain distinct; totalquantity10/cost1400/current1500/unrealized100/realized80; original unit100 is retained."
+    },
+    {
+      "id": "CP4-12",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 14,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-12-pass.json",
+      "reportSha256": "3ae981f8ee75e374ca71d60f1d3b06cbe8775ad9c8dbb276f692a87553c8f500",
+      "review": "External reconciled cash0 stays0 with unchanged cash ledger, position1000, independent own account balances plus portfolio1000USD."
+    }
+  ],
+  "summary": {
+    "originalsReviewed": 9,
+    "completeOriginalPass": 6,
+    "partialUi": 2,
+    "blockedNoRuntime": 1,
+    "originalFailAttributedToProduct": 0
+  },
+  "checks": {
+    "reportAndExecutedSourceSnapshotHashesVerified": true,
+    "servedResponsibleFilesPerReport": 32,
+    "servedResponsibleFilesMatchImmutableGit": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "allHttpRequestsFinished": true,
+    "normalAuth": "SDK password sign-in/getUser uses existing anon-key client and ordinary cookies; user IDs bound to native preparation. Bootstrap SQL is an independent oracle and authorized fixture mechanism, not the ordinary API identity.",
+    "roleMapping": "Existing sourceB Premium is logicalU1 and sourceA Free logicalU2; no plan change for original CU004 cases.",
+    "preservation": "All columns, including is_active/updated_at, of every preexisting row in exactly twelve named tables are hashed before/after. Cleanup archives only this run’s new owner-checked positions/accounts; no originals archived or rewritten for preconditions.",
+    "scopeLimit": "Twelve public tables are not all Auth/Storage/receipt/outbox tables. CP4-10 does not independently establish all grants, anon or guest RPC access. Its JWT SELECT error/status were not separately captured; [] plus existing foreign SQL row and authenticated portfolio200 are the observed evidence."
+  },
+  "derivedDowngrade": {
+    "status": "PASS",
+    "complete_original_contract": false,
+    "assertions": 60,
+    "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/derived-plan-downgrade-pass.json",
+    "reportSha256": "fe23e50ea95a3a9aaf804a6b567dacb27f0eddc1629307bb7c0d6c1a866f454e",
+    "target": "sixth synthetic API59321/PG59322/Next3003; no billing provider",
+    "acceptedScope": "Local B administrative fixture expires Premium, actual ordinary Auth reports Free/limit3; over-cap and disabled movements reject403, explicit3-account selection succeeds, selected movement succeeds, prior history and JSON exports stay identical including disabled account, investment read remains. Four new accounts/history/position intentionally remain for review.",
+    "intendedOriginalDelta": "Only usersB status/current_period_end/grace_period_end/updated_at differ; all other public B profile fields, all other original rows and Auth.users A/B columns are preserved. No universal byte-identical twelve-table claim.",
+    "limits": "No MercadoPago event/payment/webhook acceptance, no UI acceptance, no new original CSV case. Single-blue synthetic FX plus actual portfolio200 is observed, not a full offline four-market provider/freshness acceptance."
+  },
+  "historicalAttempts": {
+    "cp4_05_catalog": {
+      "classification": "HARNESS_SQL_CATALOG_FAIL_NOT_PRODUCT",
+      "sqlState": "42725",
+      "artifact": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-05/attempt-1-catalog-harness.json",
+      "sha256": "16ba8446494730ad27187fef296ed67a16309d318d5dfa488e611043780bf467",
+      "regression": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-05/catalog-query-regression.json",
+      "regressionSha256": "0abf9216d98ce8b5ac2a14597cf3f7dacb0f6f5cc9bf3c43bf08640b1c69ffb4",
+      "scope": "A new fixture account had been created and safely archived; the catalog query failed before any fault trigger or investment POST. The old report remains FAIL; the later21assertion pass is a separate run."
+    },
+    "downgrade": "Earlier missing-FX BLOCKED and SQL fixture setup failure remain historical; no financial replay is inferred from them."
+  },
+  "derivedConcurrency": {
+    "status": "FAIL",
+    "complete_original_contract": false,
+    "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/derived-inv-concurrency-fail.json",
+    "reportSha256": "2315fc1c62f3fe88bdfe8b82e7411dc4739f93c32c12c04ac5af6d1f2d096886",
+    "acceptedPartial": "Two distinct-command connections and two same-command connections were observed blocked behind an owned native gate and passed their narrow oracles.",
+    "remaining": "The10-PG overlap oracle failed; eight201 and two500 were observed and no10-way PASS/restart/lost-response acceptance is inferred. Attribution awaits diagnosis; do not silently classify a measured failure as BLOCKED."
+  },
+  "executionBinding": {
+    "servedRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "proofBuildId": "a2WBtszbvrpoT9GHwToED",
+    "downgradeBuildId": "-zDTe86_KX6NVCcsRaWOj",
+    "unbuiltDeltas": "Each report separately discloses current checkout formatter528/export-route changes; these tests exercised frozen836, not those new sources."
+  },
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-01-partial.json",
+      "sha256": "e93c2031277f225c9699ed7eccf94d564aa95ab337e0b50186ee1397c8ebbf29"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/derived-inv-concurrency-fail.json",
+      "sha256": "2315fc1c62f3fe88bdfe8b82e7411dc4739f93c32c12c04ac5af6d1f2d096886"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-02-pass.json",
+      "sha256": "b5a101a171944cb8e952cc0688ed5d5ce95f34668ee93d23629236dae7890491"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-11-pass.json",
+      "sha256": "2e26d469b65d73e9c3561d24ba6e4d2a113c7ddef8579a807305244f416e0181"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-12-pass.json",
+      "sha256": "3ae981f8ee75e374ca71d60f1d3b06cbe8775ad9c8dbb276f692a87553c8f500"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-10-pass.json",
+      "sha256": "3a053462c67922414c9785f5e91d772f6a567b4328e2dc1cf23b8b38a2eb2b92"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/derived-plan-downgrade-pass.json",
+      "sha256": "fe23e50ea95a3a9aaf804a6b567dacb27f0eddc1629307bb7c0d6c1a866f454e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-05-pass.json",
+      "sha256": "c27f39d3be9bd961632a3ee6667e5b6d91f2b5f69fb9a50de05b0d3e9baaea08"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-06-partial.json",
+      "sha256": "921f2e7f404b8c063883820f861c2b825d61952be5ce56aa9dc5a144ee1a99ac"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-04-pass.json",
+      "sha256": "fa6d04a47b5b12b45ea378fcb8121c8856ac77d1dac18d507c2a45621a6e420d"
+    }
+  ],
+  "findings": []
+}
