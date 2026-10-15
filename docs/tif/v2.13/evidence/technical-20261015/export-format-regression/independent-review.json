@@ -1,0 +1,16 @@
+{
+  "reviewedAt": "2026-10-15T03:51:00Z",
+  "reviewer": "independent dependency_audit agent",
+  "verdict": "No material findings in the narrow export metadata and UTC date patch",
+  "files": [
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+    },
+    {
+      "path": "__tests__/transaction-export-format.test.ts",
+      "sha256": "e00401abcc86a6e4e9cc0dd26e21a23927937efd26749536b7d831a314453177"
+    }
+  ],
+  "scope": "Static diff and before/after JSON review; no independent test rerun, no compiled endpoint retry. Existing CSV15-column and JSON-array formats retained; no new validation or endpoint."
+}
