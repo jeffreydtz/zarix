@@ -44,10 +44,20 @@ Los PID y tiempos deben ser observados, los PID deben diferir y `stoppedAt` debe
 ZARIX_OFFLINE_PHASE=resume node scripts/test-isolated-offline-durability.mjs
 ```
 
+Si un fallo del arnés interrumpe sólo CU002 después de completar los gastos, conservar el reporte original y reparar el selector demostrado. La fase `identity` vuelve a ejecutar exclusivamente el cambio de identidad, sin repetir los cuatro movimientos ni reiniciar Next. Exige el mismo build y la misma lista de hashes de aplicación del estado original; registra por separado los hashes anterior/actual del propio arnés. Cierra la sesión normal del perfil, ingresa como A por UI, crea un señuelo de categoría con sufijo nuevo y prueba A→B/offline. No atribuir los checks del arnés reparado al gate core anterior.
+
+```sh
+ZARIX_OFFLINE_PHASE=identity node scripts/test-isolated-offline-durability.mjs
+```
+
 ## Evidencia y límites
 
 Cada fase guarda JSON con revisión, hashes de fuentes, build, versiones, fechas, PID de Chrome y salida confirmada del proceso, eventos de requests con sólo método/ruta/status, aserciones SQL y capturas después de login. No almacena HAR, trazas crudas, cookies, passwords, JWT, headers de autorización ni tokens del invitado. Los IDs lógicos de idempotencia y las huellas de payload/respuesta financiera sintética sí se registran como evidencia de deduplicación. El estado privado para reanudación sigue siendo 0600 y no se publica.
 
+Usar carpetas de salida y estado nuevos al comenzar otra corrida; no sobrescribir reportes de fallos ni volver a cargar los gastos confirmados para corregir un selector. `Nuevo` se selecciona dentro del hero de Movimientos, pues la navegación también tiene un botón con ese nombre. El sandbox de este executor puede devolver `EPERM` para sockets locales: registrar ese bloqueo de transporte antes de usar el permiso autorizado, sin clasificarlo como rechazo de Auth de la aplicación.
+
 `WAITING_SERVER_RESTART` es un estado intermedio, no PASS del reintento completo. `PARTIAL` sólo afirma que los recorridos acotados del runner aprobaron; no aprueba todos los CP ni CU001/CU002 completos. Las dos intenciones nuevas son secuenciales y separadas del reintento; la contención de sesiones PostgreSQL independientes pertenece al ensayo nativo. La prueba de B conserva snapshots privados A sin adoptarlos ni borrarlos; prueba aislamiento en UI/cache de la aplicación, no aislamiento físico frente a alguien que inspeccione archivos del navegador.
 
 Los dos procesos Chrome y el reinicio de Next se demuestran separadamente. No hay afirmación de reinicio de PostgreSQL, máquina, caída eléctrica ni disponibilidad mensual. Toda falla conserva los datos sintéticos escritos y el reporte parcial, y exige revisar la causa antes de repetir; nunca hace reset automático.
+
+El perfil temporal sólo sirve mientras exista para continuar las fases. La corrida real 20261015-02 lo eliminó, después de comprobar la salida del PID y tras finalizar la fase de identidad; conserva estado privado, reportes, hashes, capturas y datos SQL. Ese checkpoint no ofrece el archivo IndexedDB bruto ni una copia íntegra del perfil para auditoría posterior. El estado privado incluye el item pendiente seleccionado para pérdida de respuesta, no un respaldo completo de IndexedDB.

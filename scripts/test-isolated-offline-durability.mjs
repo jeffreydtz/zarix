@@ -49,7 +49,7 @@ async function save() {
 const unwrap = result => { if (result.error) throw new Error('Ordinary isolated Auth verification failed'); return result.data; };
 const delay = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 try {
-  assert.ok(['prepare', 'resume'].includes(mode), 'Unknown phase');
+  assert.ok(['prepare', 'resume', 'identity'].includes(mode), 'Unknown phase');
   const { apiUrl, databaseUrl } = isolatedNativeTargets();
   assert.equal(process.env.ZARIX_API_TARGET_PURPOSE, 'isolated-api-e2e-replica');
   assert.equal(`${apiUrl.port}:${databaseUrl.port}`, '57321:57322', 'Source, restore and load replicas are refused');
@@ -75,6 +75,7 @@ try {
   const rows = query => JSON.parse(sql(`SELECT COALESCE(jsonb_agg(to_jsonb(t)), '[]'::jsonb) FROM (${query}) t`));
   const balance = id => Number(sql(`SELECT balance FROM accounts WHERE id=${literal(id)}`));
   const users = fixture.users;
+  stage = 'ordinary existing isolated Auth preflight';
   for (const user of users) {
     assert.match(user.email, /^zarix-e2e-.+@example\.invalid$/i);
     const auth = createClient(apiUrl.href, process.env.ZARIX_LOCAL_ANON_KEY, {
@@ -110,7 +111,14 @@ try {
     assert.equal((await fs.stat(stateFile)).mode & 0o077, 0);
     state = JSON.parse(await fs.readFile(stateFile, 'utf8'));
     assert.equal(state.purpose, 'isolated-offline-durability'); assert.deepEqual(state.target, report.target);
-    assert.deepEqual(state.users, report.identities.users); assert.deepEqual(state.sourceManifest, report.sourceManifest);
+    assert.deepEqual(state.users, report.identities.users);
+    if (mode === 'identity') {
+      const appSources = sources => sources.filter(source => source.path !== 'scripts/test-isolated-offline-durability.mjs');
+      assert.deepEqual(appSources(state.sourceManifest), appSources(report.sourceManifest));
+      report.harnessContinuation = { originalSourceSha256: state.sourceManifest.find(source => source.path === 'scripts/test-isolated-offline-durability.mjs').sha256,
+        currentSourceSha256: report.sourceManifest.find(source => source.path === 'scripts/test-isolated-offline-durability.mjs').sha256,
+        applicationManifestUnchanged: true, scope: 'Identity-only retry after a diagnosed ambiguous harness selector; original financial effects are preserved and not repeated.' };
+    } else assert.deepEqual(state.sourceManifest, report.sourceManifest);
     assert.equal(state.buildId, report.buildId);
     assert.ok(await fs.realpath(state.profile).then(real => /^\/(?:private\/)?(?:tmp|var\/folders\/[^/]+\/[^/]+\/T)\/zarix-offline-chrome-/.test(real)));
     assert.equal((await fs.stat(state.profile)).mode & 0o077, 0);
@@ -212,9 +220,11 @@ try {
     await execute(result.checks); result.status = 'PASS'; await save(); return result;
   }
   const modal = targetPage => targetPage.locator('div.bg-card').filter({ has: targetPage.getByRole('heading', { name: 'Nuevo movimiento', exact: true }) }).last();
+  const newMovement = targetPage => targetPage.locator('header.page-hero').filter({ has: targetPage.getByRole('heading', { name: 'Movimientos', exact: true }) })
+    .getByRole('button', { name: 'Nuevo', exact: true });
   async function openMovement(targetPage = page, accountId = state.accountA) {
     await targetPage.goto(new URL('/expenses', appUrl).href);
-    await targetPage.getByRole('button', { name: 'Nuevo', exact: true }).click();
+    await newMovement(targetPage).click();
     const panel = modal(targetPage); await panel.getByPlaceholder('0', { exact: true }).waitFor();
     await panel.locator('select').filter({ has: targetPage.locator(`option[value="${accountId}"]`) }).selectOption(accountId);
     return panel;
@@ -319,6 +329,16 @@ try {
       stateFile, pendingRequestId: item.id, transactionId: evidence.transactionId, expectedBalance: evidence.expectedBalance,
       profilePolicy: 'Owned temporary 0700 persistent Chrome profile retained privately, never copied into evidence.' };
   } else {
+    if (mode === 'identity') {
+      stage = 'normal UI identity-only reauthentication';
+      await page.goto(new URL('/settings', appUrl).href);
+      if (new URL(page.url()).pathname !== '/login') {
+        await page.getByRole('button', { name: 'Cerrar sesión', exact: true }).click();
+        await page.waitForURL('**/login', { timeout: 45_000 });
+      }
+      await login(page, a);
+    }
+    if (mode === 'resume') {
     await test('CU001', 'post-commit response loss survives actual Chrome and separately documented Next restart', async checks => {
       const result = await recoverSelected(state.lost.item, state.lost.expectedBalance);
       assert.equal(result.transactionId, state.lost.expectedTransactionId); assert.equal(result.responseSha256, state.lost.expectedResponseSha256);
@@ -346,8 +366,9 @@ try {
         scope: 'Two separately initiated identical UI commands, sequential to distinguish creation from retries; multi-session contention is a separate native check.' });
       await screenshot('independent-equal-intents');
     });
+    }
     await test('CU002', 'normal logout/signin A to B in the same persistent profile exposes no A references or form fields', async checks => {
-      const categoryName = `Categoría privada A ${state.run}`, draft = `Borrador privado A ${state.run}`;
+      const categoryName = `Categoría privada A ${state.run}${mode === 'identity' ? ` ${randomUUID().slice(0, 8)}` : ''}`, draft = `Borrador privado A ${state.run}`;
       const panelA = await openMovement();
       await panelA.getByRole('button', { name: 'Todas las categorías…', exact: true }).click();
       await panelA.getByRole('button', { name: 'Nueva categoría…', exact: true }).click();
@@ -384,7 +405,7 @@ try {
       assert.ok(!cacheB.accounts.includes(state.accountA)); assert.ok(!cacheB.categories.includes(category.id));
       const ttlAge = Date.now() - warmedAt; assert.ok(ttlAge < 120000, 'Identity switch must exercise a still-fresh prior category snapshot');
       await context.setOffline(true); await panelB.getByRole('button', { name: 'Cerrar', exact: true }).click();
-      await page.getByRole('button', { name: 'Nuevo', exact: true }).click();
+      await newMovement(page).click();
       const offlineB = modal(page); await offlineB.getByPlaceholder('0', { exact: true }).waitFor();
       await offlineB.getByRole('button', { name: 'Todas las categorías…', exact: true }).click();
       const offlineText = await offlineB.innerText(); assert.ok(!offlineText.includes(categoryName) && !offlineText.includes(draft));
@@ -397,7 +418,9 @@ try {
       await screenshot('owner-B-offline-isolation'); await context.setOffline(false);
     });
     await closeChrome(); report.status = 'PARTIAL';
-    report.partialMeaning = 'All scoped browser durability/identity assertions passed. Does not approve a complete CU, all original CP cases, providers, contention or monthly availability.';
+    report.partialMeaning = mode === 'identity'
+      ? 'Scoped CU002 identity-only retry passed; financial results remain in the unchanged original phase reports. Does not approve a complete CU or all original CP cases.'
+      : 'All scoped browser durability/identity assertions passed. Does not approve a complete CU, all original CP cases, providers, contention or monthly availability.';
     state.completedAt = new Date().toISOString(); await savePrivateState();
   }
   report.sourceStable = JSON.stringify(await manifest()) === JSON.stringify(report.sourceManifest);

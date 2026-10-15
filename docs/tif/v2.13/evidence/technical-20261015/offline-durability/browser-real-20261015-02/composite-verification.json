@@ -1,0 +1,204 @@
+{
+  "recordedAt": "2026-10-15T01:43:11.313Z",
+  "status": "PARTIAL",
+  "scopedOutcome": "4/4 targeted browser checks PASS within CU001/CU002; no complete CU or original CP acceptance inferred.",
+  "target": {
+    "appOrigin": "http://127.0.0.1:3000",
+    "apiOrigin": "http://127.0.0.1:57321",
+    "databasePort": "57322",
+    "purpose": "isolated-api-e2e-replica"
+  },
+  "buildId": "kxdFHyjeNiKh0b2feujgO",
+  "originalRevision": "0169860016125480c19f1284890e2b578f3236af",
+  "identityRevision": "5e3688b4d4d7bcca51f8a342612a5fd33b378337",
+  "matrix": [
+    {
+      "cu": "CU001",
+      "check": "offline submit → IndexedDB pending → actual Chrome close/reopen → explicitly selected retry",
+      "status": "PASS",
+      "evidence": "prepare-verification.json",
+      "caseIndex": 0,
+      "financialRows": 1,
+      "durableReceipts": 1,
+      "balance": 9988.89
+    },
+    {
+      "cu": "CU001",
+      "check": "real HTTP201 commit → response abort → actual Chrome and Next restart → same ID/receipt/response hash",
+      "status": "PASS",
+      "evidence": "resume-verification.json",
+      "caseIndex": 0,
+      "financialRows": 1,
+      "durableReceipts": 1,
+      "balance": 9966.67
+    },
+    {
+      "cu": "CU001",
+      "check": "two new separately initiated equal UI payloads → different keys/IDs and two effects",
+      "status": "PASS",
+      "evidence": "resume-verification.json",
+      "caseIndex": 1,
+      "financialRows": 2,
+      "durableReceipts": 2,
+      "balance": 9900.01,
+      "scope": "Sequential new intentions; no new claim of simultaneous browser contention."
+    },
+    {
+      "cu": "CU002",
+      "check": "normal A logout and B signin in same profile → cleared form and own references online/offline",
+      "status": "PASS",
+      "evidence": "identity-verification.json",
+      "caseIndex": 0,
+      "scope": "Identity-only selector repair, identical application manifest/build; old fresh snapshot exercised at 3924 ms."
+    }
+  ],
+  "sourceContinuity": {
+    "prepareSourceStable": true,
+    "identitySourceStable": true,
+    "originalSourceSha256": "01ff75697b986d44b22e4e212ba57a566ae3867034f7a8ee0652bcac90f569d2",
+    "currentSourceSha256": "6d3e0ce73e0a8cd60c28e52710170c27929f8cd8b0b7b1d052a26afbbc7856b9",
+    "applicationManifestUnchanged": true,
+    "scope": "Core819 gates belong to the original frozen application; the later harness-only selector/phase change has its own node check/lint/5 target-purpose guards and real identity execution.",
+    "currentHarnessSha256": "6d3e0ce73e0a8cd60c28e52710170c27929f8cd8b0b7b1d052a26afbbc7856b9",
+    "resumeInitialManifestEqualsPrepare": true,
+    "resumeEndManifestGuardReached": false,
+    "resumeEndGuardNote": "The original phase exited on the diagnosed selector before its final source-stability guard. Its initial manifest equals prepare; identity subsequently validated the original application manifest/build exactly. The original failure is retained."
+  },
+  "historicalFailures": [
+    {
+      "report": "../browser-real-20261015-01/prepare-verification.json",
+      "originalStatus": "FAIL",
+      "classification": "BLOCKED executor transport before Chrome: default-sandbox localhost health GETs to ports3000/57321 returned EPERM; ordinary SDK Auth failed with AuthRetryableFetchError status0. Approved socket permission allowed the subsequent actual run. No product Auth rejection inferred."
+    },
+    {
+      "report": "resume-verification.json",
+      "originalStatus": "FAIL",
+      "caseIndex": 2,
+      "classification": "Diagnosed harness strict selector: after hydration nav and page hero both expose Nuevo; scoped hero selector repaired and only CU002 rerun. Original two CU001 PASS and original failed report are retained."
+    }
+  ],
+  "serverRestart": {
+    "purpose": "isolated-offline-server-restart",
+    "appOrigin": "http://127.0.0.1:3000",
+    "before": {
+      "pid": 94395,
+      "buildId": "kxdFHyjeNiKh0b2feujgO",
+      "stoppedAt": "2026-10-15T01:32:20.337984Z",
+      "stopConfirmed": true
+    },
+    "after": {
+      "pid": 96909,
+      "buildId": "kxdFHyjeNiKh0b2feujgO",
+      "startedAt": "2026-10-15T01:32:20.339907Z",
+      "startConfirmed": true
+    },
+    "proofSha256": "9af44ba5b34bba19a9a651393ae5081cd3906a75b916013cf1264f6f104fd04a",
+    "scope": "Actual root-owned Next process restart; no PostgreSQL or machine restart claim."
+  },
+  "browserEvents": [
+    {
+      "at": "2026-10-15T01:31:36.653Z",
+      "event": "persistent-Chrome-launched",
+      "browserIndex": 1,
+      "pid": 96141
+    },
+    {
+      "at": "2026-10-15T01:31:40.916Z",
+      "event": "owned-Chrome-exited",
+      "pid": 96141,
+      "browserIndex": 1
+    },
+    {
+      "at": "2026-10-15T01:31:41.332Z",
+      "event": "persistent-Chrome-launched",
+      "browserIndex": 2,
+      "pid": 96411
+    },
+    {
+      "at": "2026-10-15T01:31:44.110Z",
+      "event": "owned-Chrome-exited",
+      "pid": 96411,
+      "browserIndex": 2
+    },
+    {
+      "at": "2026-10-15T01:32:46.403Z",
+      "event": "persistent-Chrome-launched",
+      "browserIndex": 1,
+      "pid": 97158
+    },
+    {
+      "at": "2026-10-15T01:32:54.264Z",
+      "event": "owned-context-closed-on-exit"
+    },
+    {
+      "at": "2026-10-15T01:37:05.125Z",
+      "event": "persistent-Chrome-launched",
+      "browserIndex": 1,
+      "pid": 99822
+    },
+    {
+      "at": "2026-10-15T01:37:12.585Z",
+      "event": "owned-Chrome-exited",
+      "pid": 99822,
+      "browserIndex": 1
+    }
+  ],
+  "financialInvariant": {
+    "financial_rows": 4,
+    "account_balance": 9900.01,
+    "durable_receipts": 4,
+    "scope": "The same four UI-created logical commands remain; no financial replay was repeated by identity-only recovery."
+  },
+  "authAndCleanup": {
+    "evidence": "post-run-auth-and-cleanup.json",
+    "normalExistingUsers": 2,
+    "temporarySDKLogoutScope": "local",
+    "profileRawRemoved": true,
+    "personalProfileAndReusableFixturePreserved": true,
+    "privateStatePermissions": "0600",
+    "scope": "Private state preserves the selected original lost-response item/id/payload and phase metadata; it is not a full IndexedDB dump. Raw cookie/IndexedDB/cache files were deleted with this owned temporary profile after its PID exited. No raw profile retention is offered."
+  },
+  "screenshots": [
+    {
+      "path": "prepare-offline-pending.png",
+      "sha256": "305c5c7e8b797ae7048a312a646b1224106c8ebf52cd0f3255fa5fc9a6a55e63"
+    },
+    {
+      "path": "prepare-offline-recovered.png",
+      "sha256": "e25553291b38d8477b5d15a1bc87952a8c7a0d676267040dbea85bbe1555344d"
+    },
+    {
+      "path": "prepare-response-lost-pending.png",
+      "sha256": "896ed2f6fb72d3f6cd5e0ab85a52788a157b6779c8dd65137f49aec6d64aab26"
+    },
+    {
+      "path": "resume-response-lost-recovered.png",
+      "sha256": "c16fdb1a5071708e9d82042a4a628cead9aa1b205c7ff43bdfb2335f43ff23eb"
+    },
+    {
+      "path": "resume-independent-equal-intents.png",
+      "sha256": "04576ca27fdffda50f66a30abb516ce99ebbc286cd028ef44405b10f1e2d22ca"
+    },
+    {
+      "path": "identity-owner-B-offline-isolation.png",
+      "sha256": "967629302de721791b6931897756768ebf78625829831b31fd2439280d92dd6f"
+    }
+  ],
+  "privacyReview": {
+    "firstSix": "../../review/offline-capture-privacy-review-global2.json",
+    "seventh": {
+      "path": "identity-owner-B-offline-isolation.png",
+      "sha256": "967629302de721791b6931897756768ebf78625829831b31fd2439280d92dd6f",
+      "reviewer": "dependency_audit",
+      "result": "Direct pixel inspection: offline form, amount0/empty description, common category menu and synthetic B data only; no visible secrets/session/capabilities/personal data. Does not inspect image metadata or rerun the case."
+    }
+  },
+  "limits": [
+    "Exactly the existing CU001/CU002 scope; no fifth CU.",
+    "No full-machine, power-loss or original-browser-profile recovery claim.",
+    "The separate root PostgreSQL/full-stack restart proof is not inferred from the browser/Next restart here.",
+    "Declared configurable quote doubles were available for this journey; global server egress was not measured or guaranteed, and other server widgets include real public integrations. No real-provider acceptance claim.",
+    "Outbox/native contention/complete CU003-CU004 gates belong to separate evidence.",
+    "CNF-02 monthly availability still requires real observation over the full period."
+  ]
+}

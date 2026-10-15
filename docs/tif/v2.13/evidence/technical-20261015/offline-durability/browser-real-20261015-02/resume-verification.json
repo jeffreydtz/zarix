@@ -1,0 +1,444 @@
+{
+  "startedAt": "2026-10-15T01:32:44.923Z",
+  "phase": "resume",
+  "status": "FAIL",
+  "scope": "CU001 scoped offline/response-loss/explicit-intent journey and related CU002 ordinary same-profile identity isolation. Partial acceptance; no fifth CU, provider or monthly availability claim.",
+  "cases": [
+    {
+      "cu": "CU001",
+      "name": "post-commit response loss survives actual Chrome and separately documented Next restart",
+      "status": "PASS",
+      "checks": [
+        {
+          "requestId": "d9c2d0c0-588a-44c5-9ceb-52986ee87a58",
+          "transactionId": "5902f179-1363-4245-9e88-e059d7dc2dc6",
+          "financialRows": 1,
+          "durableReceipts": 1,
+          "amount": 22.22,
+          "expectedBalance": 9966.67,
+          "observedBalance": 9966.67,
+          "requestHash": "12d8c953d0d6a07c53807a5e0db7555854d207454b1b5d5aab291996a51f5edd",
+          "responseSha256": "c81af9587c69fbb69dfefa2f2d2a7663b83062226e3be946ac02e2529e2add9b",
+          "selectedStoredId": true,
+          "serverRestartProof": "9af44ba5b34bba19a9a651393ae5081cd3906a75b916013cf1264f6f104fd04a",
+          "browserRestart": true,
+          "nextRestart": true,
+          "PostgreSQLRestart": false
+        }
+      ]
+    },
+    {
+      "cu": "CU001",
+      "name": "two independent new UI intents with identical payload create two different IDs and two effects",
+      "status": "PASS",
+      "checks": [
+        {
+          "independentIntents": [
+            {
+              "requestId": "87083770-e75e-4980-9a56-741dc5b953a4",
+              "transactionId": "d1ed3061-e52f-4ace-bd5b-d51cc618eb5d",
+              "payloadSha256": "0e7f0ddfbc22c38952ef8fc1976a7e5fbab96e2735009376c48a9972eb3265ac"
+            },
+            {
+              "requestId": "e8f03984-b992-4dc7-842f-08f64bbabe66",
+              "transactionId": "c7f95d82-a683-4d4b-ab1c-51e15ed2ec19",
+              "payloadSha256": "0e7f0ddfbc22c38952ef8fc1976a7e5fbab96e2735009376c48a9972eb3265ac"
+            }
+          ],
+          "financialRows": 2,
+          "durableReceipts": 2,
+          "expectedBalance": 9900.01,
+          "observedBalance": 9900.01,
+          "scope": "Two separately initiated identical UI commands, sequential to distinguish creation from retries; multi-session contention is a separate native check."
+        }
+      ]
+    },
+    {
+      "cu": "CU002",
+      "name": "normal logout/signin A to B in the same persistent profile exposes no A references or form fields",
+      "status": "FAIL",
+      "checks": []
+    }
+  ],
+  "browserEvents": [
+    {
+      "at": "2026-10-15T01:32:46.403Z",
+      "event": "persistent-Chrome-launched",
+      "browserIndex": 1,
+      "pid": 97158
+    },
+    {
+      "at": "2026-10-15T01:32:54.264Z",
+      "event": "owned-context-closed-on-exit"
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-15T01:32:47.057Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:32:48.528Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:48.528Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:48.536Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:48.536Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:48.653Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:32:49.146Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:49.147Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:49.150Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:49.150Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:49.255Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:32:50.327Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:50.327Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:50.331Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:50.331Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:50.465Z",
+      "method": "POST",
+      "path": "/api/categories",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:32:50.510Z",
+      "method": "GET",
+      "path": "/api/categories",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:50.511Z",
+      "method": "GET",
+      "path": "/api/categories",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:51.021Z",
+      "method": "GET",
+      "path": "/api/billing/subscription-link",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:51.022Z",
+      "method": "GET",
+      "path": "/api/billing/subscription-link",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:51.063Z",
+      "method": "GET",
+      "path": "/api/user/subscription",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:51.064Z",
+      "method": "GET",
+      "path": "/api/user/subscription",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:51.064Z",
+      "method": "GET",
+      "path": "/api/user/notification-preferences",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:51.065Z",
+      "method": "GET",
+      "path": "/api/user/notification-preferences",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:52.517Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:52.521Z",
+      "method": "GET",
+      "path": "/api/categories",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:52.521Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:52.527Z",
+      "method": "GET",
+      "path": "/api/categories",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:52.528Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:52.528Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:52.529Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:52.530Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:32:53.965Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "resume-response-lost-recovered.png",
+      "sha256": "c16fdb1a5071708e9d82042a4a628cead9aa1b205c7ff43bdfb2335f43ff23eb"
+    },
+    {
+      "path": "resume-independent-equal-intents.png",
+      "sha256": "04576ca27fdffda50f66a30abb516ce99ebbc286cd028ef44405b10f1e2d22ca"
+    }
+  ],
+  "blockedRoutes": [],
+  "injections": [],
+  "environment": {
+    "node": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "browser": {
+      "product": "Installed Google Chrome",
+      "version": "146.0.7680.165",
+      "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "persistentProfilePermissions": "0700",
+      "playwright": "existing isolated 1.64.0 installation",
+      "serviceWorkers": "real production worker allowed",
+      "headless": true
+    }
+  },
+  "target": {
+    "appOrigin": "http://127.0.0.1:3000",
+    "apiOrigin": "http://127.0.0.1:57321",
+    "databasePort": "57322",
+    "purpose": "isolated-api-e2e-replica"
+  },
+  "identities": {
+    "users": [
+      "86ac638c-2710-4993-9622-f2e5671ad034",
+      "84fcbd70-cd40-48cd-8427-3b2f2d4073c6"
+    ],
+    "ordinaryAuth": true,
+    "reused": true,
+    "guestReusedWithoutNewIdentity": true,
+    "credentials": "Existing private 0600 fixture; no sessions, passwords or capability tokens copied into evidence."
+  },
+  "sourceManifest": [
+    {
+      "path": "scripts/test-isolated-offline-durability.mjs",
+      "sha256": "01ff75697b986d44b22e4e212ba57a566ae3867034f7a8ee0652bcac90f569d2"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/login/page.tsx",
+      "sha256": "1e091e02173a5a58ce2b6259dc667a37a599a6e4705ba1c74907e21a5319e287"
+    },
+    {
+      "path": "components/settings/LogoutButton.tsx",
+      "sha256": "ad28f46ec5eaf3fe4ad482223fa1514cbfc26078bbbd28c4baddce7e4763760f"
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "sha256": "23411cce4fa26a723ade5ef9e5abf7c78ce37b6f98705cfb35ef0117f419294b"
+    },
+    {
+      "path": "components/expenses/InlineQuickCreate.tsx",
+      "sha256": "c9cd499b693fb3714e7cb855b44570da90b13e96350b9c3ee5704236df2a13bf"
+    },
+    {
+      "path": "components/offline/QueueReview.tsx",
+      "sha256": "94268e4c1a361cbd2fd46660865dc127fc4478f3232a9e512c702fef4c559fc3"
+    },
+    {
+      "path": "components/OfflineReferenceWarmup.tsx",
+      "sha256": "5d3e118d1b7ac4be5493c3f761ac0fb61bdeb2444bf71da7dc9054bbb6b8b3fc"
+    },
+    {
+      "path": "lib/offline-reference-cache.ts",
+      "sha256": "b81df9b2083c904ae20bae46b8424499d35fa407c9120b167f370d1bade374a6"
+    },
+    {
+      "path": "lib/offline-transaction-store.ts",
+      "sha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b"
+    },
+    {
+      "path": "lib/offline-queue-sync.ts",
+      "sha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d"
+    },
+    {
+      "path": "lib/hooks/useFinancialOperation.ts",
+      "sha256": "85d2156743a9c611b55c4a99d0113e133b7542e01ae164ab2570ca69b7495733"
+    },
+    {
+      "path": "lib/hooks/useOfflineQueue.ts",
+      "sha256": "19f9803ce466afde4df59aec3ae9adbda569b1d0cb291d86e832796d8e04a1a1"
+    },
+    {
+      "path": "lib/hooks/useServiceWorker.ts",
+      "sha256": "77bb6b9485c26fe9d5b7699e0611add9b25b96b5a56ee23a6876416bef6e6d96"
+    },
+    {
+      "path": "public/sw.js",
+      "sha256": "b5c363e2e1af1a3d8341787db380f5c8d1602969c200454f4a6162413885c5bc"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/categories/route.ts",
+      "sha256": "8e54159c4573379e82d42b06a6f6a862953082a8e200e69c55eb2751565e4dbc"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/transaction-idempotency.ts",
+      "sha256": "7335b7e1d226aa1b20ba49c0c251afe9669222f1ef19d3ae3bc9c35a80045fa9"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "revision": "339378307271eb45fd9f49a3eadbdbc81c7dc89d",
+  "buildId": "kxdFHyjeNiKh0b2feujgO",
+  "serverRestart": {
+    "purpose": "isolated-offline-server-restart",
+    "appOrigin": "http://127.0.0.1:3000",
+    "before": {
+      "pid": 94395,
+      "buildId": "kxdFHyjeNiKh0b2feujgO",
+      "stoppedAt": "2026-10-15T01:32:20.337984Z",
+      "stopConfirmed": true
+    },
+    "after": {
+      "pid": 96909,
+      "buildId": "kxdFHyjeNiKh0b2feujgO",
+      "startedAt": "2026-10-15T01:32:20.339907Z",
+      "startConfirmed": true
+    },
+    "proofSha256": "9af44ba5b34bba19a9a651393ae5081cd3906a75b916013cf1264f6f104fd04a",
+    "scope": "Actual root-owned Next process restart; no PostgreSQL or machine restart claim."
+  },
+  "finishedAt": "2026-10-15T01:32:54.264Z",
+  "failure": {
+    "type": "Error",
+    "code": null,
+    "context": "normal logout/signin A to B in the same persistent profile exposes no A references or form fields"
+  },
+  "failureLocation": "217",
+  "reason": "Guard, browser action or independent SQL assertion failed. Raw exception, headers and bodies are omitted to protect credentials."
+}
