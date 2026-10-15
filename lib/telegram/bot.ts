@@ -565,15 +565,15 @@ Si no es un ticket/factura o no podés extraer información:
       `. Le pregunté al usuario si lo registro; si confirma, registrá este gasto con estos datos.`;
     try {
       await appendBotTurn(user.id, ctx.chat.id, '[Foto de un ticket de compra]', memoryTurn);
-    } catch (error) {
-      console.error('[telegram] receipt proposal persistence failed', error);
+    } catch {
+      console.error('[telegram] receipt proposal persistence failed');
       return ctx.reply('No pude guardar los datos del ticket para confirmarlos. Todavía no registré el gasto. Mandame de nuevo la foto o escribime los datos completos.');
     }
 
     return ctx.reply(confirmMessage, { parse_mode: 'Markdown' });
 
   } catch (error) {
-    console.error('Photo processing error:', error);
+    console.error('Photo processing error:');
     if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
     if (error instanceof GeminiMissingKeyError) {
       return ctx.reply(GEMINI_SETUP_MSG);
@@ -657,14 +657,14 @@ bot.on(message('voice'), async (ctx) => {
       return ctx.reply(result.assistant_message);
     } finally {
       if (rawResponse) {
-        await appendBotTurn(user.id, ctx.chat.id, transcribed, rawResponse).catch(async (err) => {
-          console.error('[telegram] appendBotTurn failed', err);
+        await appendBotTurn(user.id, ctx.chat.id, transcribed, rawResponse).catch(async () => {
+          console.error('[telegram] appendBotTurn failed');
           await ctx.reply('No pude guardar el contexto de esta conversación. Para el próximo mensaje, escribime los datos completos.').catch(() => {});
         });
       }
     }
   } catch (error) {
-    console.error('Voice processing error:', error);
+    console.error('Voice processing error:');
     if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
     if (error instanceof GeminiMissingKeyError) {
       return ctx.reply(GEMINI_SETUP_MSG);
@@ -747,14 +747,14 @@ bot.on(message('text'), async (ctx) => {
       return ctx.reply(result.assistant_message);
     } finally {
       if (rawResponse) {
-        await appendBotTurn(user.id, ctx.chat.id, userMessage, rawResponse).catch(async (err) => {
-          console.error('[telegram] appendBotTurn failed', err);
+        await appendBotTurn(user.id, ctx.chat.id, userMessage, rawResponse).catch(async () => {
+          console.error('[telegram] appendBotTurn failed');
           await ctx.reply('No pude guardar el contexto de esta conversación. Para el próximo mensaje, escribime los datos completos.').catch(() => {});
         });
       }
     }
   } catch (error: any) {
-    console.error('Bot error:', error);
+    console.error('Bot error:');
 
     if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
     if (error instanceof GeminiMissingKeyError) {
@@ -774,8 +774,8 @@ bot.on(message('text'), async (ctx) => {
 });
 
   // Red de captura global: cualquier error no manejado en un handler cae acá.
-  bot.catch(async (err, ctx) => {
-    console.error('Telegram handler error:', err);
+  bot.catch(async (_err, ctx) => {
+    console.error('Telegram handler error:');
     try {
       await ctx.reply('Uy, algo falló de mi lado. Probá de nuevo en un toque.');
     } catch {

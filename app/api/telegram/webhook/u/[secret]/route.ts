@@ -48,8 +48,8 @@ export async function POST(req: NextRequest, props: { params: Promise<{ secret: 
       userId: row.id,
       chatId: row.telegram_chat_id ?? null,
     });
-  } catch (error) {
-    console.error('Custom Telegram webhook error:', error);
+  } catch {
+    console.error('Custom Telegram webhook error:');
   }
 
   return NextResponse.json({ ok: true });
