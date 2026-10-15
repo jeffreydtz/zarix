@@ -1,0 +1,605 @@
+{
+  "runAt": "2026-10-15T00:40:27.624Z",
+  "status": "PASS",
+  "target": "loopback disposable Supabase",
+  "results": [
+    {
+      "name": "two real ordinary Auth registrations and verified sign-ins",
+      "status": "PASS",
+      "evidence": {
+        "normalRoles": 2,
+        "ids": [
+          "172273ed-7c48-427d-a55b-742069a4d9de",
+          "0ed8880e-3f8c-41e3-a009-ce03e342994b"
+        ],
+        "credentials": "ephemeral synthetic values; excluded from logs and evidence"
+      }
+    },
+    {
+      "name": "cryptographically altered and malformed access tokens fail Auth and PostgREST",
+      "status": "PASS",
+      "evidence": {
+        "alteredSignatureAndMalformedToken": [
+          401,
+          401
+        ],
+        "tokenValues": "not recorded"
+      }
+    },
+    {
+      "name": "native catalog enforces RLS, invoker views and unprivileged ordinary roles",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary PostgREST account CRUD and tenant isolation",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary profile grants protect credentials and paid status",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary financial writes run actual triggers and reject another tenant account",
+      "status": "PASS"
+    },
+    {
+      "name": "normal-session NaN transaction is rejected without poisoning balance",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary transfer edits and deletion preserve distinct authoritative monetary amounts",
+      "status": "PASS"
+    },
+    {
+      "name": "real anon/normal sessions cannot invoke backend-only RPCs",
+      "status": "PASS"
+    },
+    {
+      "name": "guest capability is bounded by group through backend RPC",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid, rotated and inactive guest capabilities cannot write or replay a receipt",
+      "status": "PASS",
+      "evidence": {
+        "invalid": 2,
+        "rotated": 2,
+        "inactive": 1,
+        "scope": "Group capability revocation, including durable replay; member IDs are declared identities."
+      }
+    },
+    {
+      "name": "manipulated tenant, payer and split identifiers leave financial data unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "native shared split failure rolls back expense amount and prior distribution",
+      "status": "PASS"
+    },
+    {
+      "name": "native sale insert failure rolls back its preceding quantity decrement",
+      "status": "PASS"
+    },
+    {
+      "name": "two independent PostgreSQL sessions cannot oversell",
+      "status": "PASS",
+      "evidence": {
+        "independentSessions": 2,
+        "observedLockWait": true,
+        "committed": 1,
+        "rejected": 1,
+        "remaining": 4,
+        "scope": "pg_stat_activity and pg_blocking_pids observed the second independent session waiting before the first committed."
+      }
+    },
+    {
+      "name": "two independent PostgreSQL retries have one financial effect and one durable response",
+      "status": "PASS",
+      "evidence": {
+        "independentSessions": 2,
+        "observedLockWait": true,
+        "responses": 2,
+        "financialEffects": 1,
+        "scope": "Second independent session was observed blocked, then returned the first durable response after commit."
+      }
+    },
+    {
+      "name": "representative synthetic records populate all application tables for native recovery",
+      "status": "PASS",
+      "evidence": {
+        "applicationTables": 27,
+        "rowCounts": {
+          "public.account_creation_requests": 1,
+          "public.accounts": 3,
+          "public.bot_sessions": 1,
+          "public.budget_alerts": 1,
+          "public.budgets": 1,
+          "public.categories": 26,
+          "public.exchange_rates": 1,
+          "public.import_batches": 1,
+          "public.investment_create_requests": 1,
+          "public.investment_sale_requests": 1,
+          "public.investment_sales": 2,
+          "public.investments": 2,
+          "public.market_data_cache": 1,
+          "public.net_worth_snapshots": 1,
+          "public.notification_outbox": 1,
+          "public.plan_usage_cycles": 1,
+          "public.plan_usage_requests": 1,
+          "public.portfolio_performance_snapshots": 1,
+          "public.recurring_rules": 1,
+          "public.shared_expense_requests": 1,
+          "public.shared_expense_splits": 2,
+          "public.shared_expenses": 1,
+          "public.shared_group_members": 3,
+          "public.shared_groups": 2,
+          "public.transaction_requests": 2,
+          "public.transactions": 3,
+          "public.users": 2
+        }
+      }
+    },
+    {
+      "name": "global Auth sign-out revokes refresh and records remaining access-token lifetime",
+      "status": "PASS",
+      "evidence": {
+        "refreshTokenRevoked": true,
+        "previousAccessTokenHttpStatus": 200,
+        "accessTokenExpiresAt": "2026-10-15T01:40:29.000Z",
+        "scope": "Supabase sign-out revokes refresh tokens. Stateless access JWT can remain valid until expiry; immediate access revocation is not an application guarantee."
+      }
+    },
+    {
+      "name": "private Storage synthetic object is accessible only to its ordinary owner",
+      "status": "PASS",
+      "evidence": {
+        "objects": 1,
+        "bytes": 34,
+        "sha256": "dc9d3fda345877c072f06e2a8ab51ca11fc3d859fa14665ecef840206d1528b2",
+        "scope": "Private synthetic recovery fixture; ZARIX does not currently define application Storage buckets."
+      }
+    },
+    {
+      "name": "native pg_dump restores database schema data Auth and grants to a separate empty database",
+      "status": "PASS",
+      "evidence": {
+        "targetDatabase": "zarix_restore_ed420fd2",
+        "verifiedTables": 64,
+        "sha256": "d4e45b59b72841890ee7a738ed09f05a3372567ac6bddc982fbef20e76f290b0",
+        "scope": "Fresh database in isolated source cluster; SQL/Auth/Storage metadata restored. Binary objects are backed up separately and require the independent-stack check below."
+      }
+    },
+    {
+      "name": "independent Supabase stack restores Auth login private Storage balances RPC and durable outbox",
+      "status": "PASS",
+      "evidence": {
+        "data": true,
+        "schema": true,
+        "authLogin": true,
+        "storageBinary": true,
+        "rls": true,
+        "grants": true,
+        "backendRpcDenials": 6,
+        "balances": true,
+        "rpc": true,
+        "durableReplay": true,
+        "outbox": true,
+        "roles": "equivalent pre-provisioned platform roles, password hashes never reported",
+        "storageObjects": 1
+      }
+    },
+    {
+      "name": "SQL source files remained unchanged throughout native verification",
+      "status": "PASS"
+    }
+  ],
+  "harnessSha256": "877b2b7a29c16752bd726f3d75303a49c5175fef7c4d66e5d0a50ea84c8de71f",
+  "sourceRevision": "1872f2209aca4c3d9506394c07d4e6ec5cd6f18a",
+  "mode": "complete",
+  "engine": "PostgreSQL 17.11 on aarch64-apple-darwin25.3.0, compiled by clang version 21.1.7, 64-bit",
+  "pgTools": {
+    "psql": "psql (PostgreSQL) 17.11",
+    "pgDump": "pg_dump (PostgreSQL) 17.11",
+    "pgRestore": "pg_restore (PostgreSQL) 17.11"
+  },
+  "manifest": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "recovery": {
+    "targetDatabase": "zarix_restore_ed420fd2",
+    "format": "native pg_dump custom archive",
+    "bytes": 560313,
+    "sha256": "d4e45b59b72841890ee7a738ed09f05a3372567ac6bddc982fbef20e76f290b0",
+    "catalogSha256": "9f886bb7c11773022b4beddd7b8234132aa5c3f24abdbbc5a562c8d365ec6463",
+    "tables": {
+      "auth.audit_log_entries": {
+        "count": 10,
+        "sha256": "e09c27bc6e178389b348b2e9cc29300cdcaaafdc1a036b5f8335a351c4fb2771"
+      },
+      "auth.custom_oauth_providers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.flow_state": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.identities": {
+        "count": 2,
+        "sha256": "cb7815c785809b3110f1f57b90e1da13909a9e9edf08b2071166b120f7312ab9"
+      },
+      "auth.instances": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.mfa_amr_claims": {
+        "count": 2,
+        "sha256": "3b9c2629371654761ec3adcacb00d2aa974a603e01eca675cdd74229164028e5"
+      },
+      "auth.mfa_challenges": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.mfa_factors": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.mfa_recovery_code_sets": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.mfa_recovery_codes": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.oauth_authorizations": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.oauth_client_states": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.oauth_clients": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.oauth_consents": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.one_time_tokens": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.refresh_tokens": {
+        "count": 2,
+        "sha256": "eab5a5e9b10d731a9a022d2a0c6cb7fb8036c05e30eccb1db708d510a70a46b1"
+      },
+      "auth.saml_providers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.saml_relay_states": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.schema_migrations": {
+        "count": 82,
+        "sha256": "8cdf22f03f7379ee9ddce1b77ca630cd50ddcae9dd3c3cddb70af6e703df0104"
+      },
+      "auth.scim_tokens": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.scim_users": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.sessions": {
+        "count": 2,
+        "sha256": "e3f02863307bbff602aeaf074f4cb319110f999fd0a0b1250756e1783dd27fff"
+      },
+      "auth.sso_domains": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.sso_providers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.users": {
+        "count": 2,
+        "sha256": "615e0a0595cc939d4208c9368361ecd347efa06fcd58122fa354af194dd47bf4"
+      },
+      "auth.webauthn_challenges": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.webauthn_credentials": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "public.account_creation_requests": {
+        "count": 1,
+        "sha256": "75038e3bd69198ed25ba43c9b10c0ebae4bc726be8f86deb6648e21c2dc9d8f9"
+      },
+      "public.accounts": {
+        "count": 3,
+        "sha256": "5e83ec445dbb4900b8a34ccf8f6c717fb372d083322abdac206ff1884294668c"
+      },
+      "public.bot_sessions": {
+        "count": 1,
+        "sha256": "c7889f86295f624926a93eb0d39e4643eed4cae0e2e6aa2928e5064a8e62d42e"
+      },
+      "public.budget_alerts": {
+        "count": 1,
+        "sha256": "10a06b9a9af8954c2ca3acbb8cbf745ea633a1f2615d3252a868eb76b0dd8bd0"
+      },
+      "public.budgets": {
+        "count": 1,
+        "sha256": "b9b6afcda70aea3f059f5c180bf389b3759693e4df4a97f82a6e0aa919a86aa0"
+      },
+      "public.categories": {
+        "count": 26,
+        "sha256": "752dc2b9e57c727da02496aeb20e875b41f0e31b042f71f29dae4516c33d09ae"
+      },
+      "public.exchange_rates": {
+        "count": 1,
+        "sha256": "578743415a7fc0f9d935689e6a07e2e2dab1d5c960e8ed8025ee046375f5bb6f"
+      },
+      "public.import_batches": {
+        "count": 1,
+        "sha256": "3256d1ae30fa923b40a45edf013c1895b61ca59765385d465dba996618a6b43b"
+      },
+      "public.investment_create_requests": {
+        "count": 1,
+        "sha256": "15908b52260281820dc6e041804d3c3080a513a62be4e6c1710cbfc605145e27"
+      },
+      "public.investment_sale_requests": {
+        "count": 1,
+        "sha256": "a2e08db8a2a26449a6408e6569f4b4311a64ab232f5e1d19a9410fa11ad2121b"
+      },
+      "public.investment_sales": {
+        "count": 2,
+        "sha256": "d563ef06268ba75875d3db7c59efd15004fe8510b53d0189dcaf0a2614c2e68d"
+      },
+      "public.investments": {
+        "count": 2,
+        "sha256": "0ea4607f0f3d7cb9cc8cd5aee2c265328e6217d8c1cf59a626d17f4981235aa4"
+      },
+      "public.market_data_cache": {
+        "count": 1,
+        "sha256": "2fe5cc4dee4e0282f2bf0675c3dfd83a242de9e5fbe55ee5f80f7a75b3cda35c"
+      },
+      "public.net_worth_snapshots": {
+        "count": 1,
+        "sha256": "244c54a4abc2e1d91b560f33cad7d39fe08c9dbdf32f6fc242bbb3858dd04456"
+      },
+      "public.notification_outbox": {
+        "count": 1,
+        "sha256": "4bceb82e35ad0c42a110e12226a53587ec0e7fccabb5f94590e560463eb6acd7"
+      },
+      "public.plan_usage_cycles": {
+        "count": 1,
+        "sha256": "08ab86d668fb751b27cbf2731a9e63426a62ee256ef761ab16e6190a6b927be0"
+      },
+      "public.plan_usage_requests": {
+        "count": 1,
+        "sha256": "9b1869d6863375a5f7dd4408aa4a5c586838bc35ac9396c9a9681619b93178bb"
+      },
+      "public.portfolio_performance_snapshots": {
+        "count": 1,
+        "sha256": "42bf7df9677221aa96205ca37835b70f1e0a0d29f29cd72dc8f5cc6118dd3bb1"
+      },
+      "public.recurring_rules": {
+        "count": 1,
+        "sha256": "5cfba72d16be9e069494d9038ddb97c85daae887aca7b479400c20281e3dd81e"
+      },
+      "public.shared_expense_requests": {
+        "count": 1,
+        "sha256": "782d78f9a36ad031818f6e099f8168d2922fb7d418aa0d9fe0d1ff18597255c4"
+      },
+      "public.shared_expense_splits": {
+        "count": 2,
+        "sha256": "f8d6b4d878e0259d2ccf9d5a82362149c5387e268d3f727b51613a06f4251245"
+      },
+      "public.shared_expenses": {
+        "count": 1,
+        "sha256": "2b2c2e0eb216db457885306cb69a58c74c3195c8323e36aa7c424ef2acb97253"
+      },
+      "public.shared_group_members": {
+        "count": 3,
+        "sha256": "1eb6b3eef9b5970211f69aa2996ebf4c8e49f2f0e55580f7634035d23c675845"
+      },
+      "public.shared_groups": {
+        "count": 2,
+        "sha256": "d92436c93db665dee8dbdecfe8768fcf9b3ee64d28be7982a185769342c95540"
+      },
+      "public.transaction_requests": {
+        "count": 2,
+        "sha256": "19e84f71848480fb1e155d7ac6937c6553a8c39a277c73be91082562d3832776"
+      },
+      "public.transactions": {
+        "count": 3,
+        "sha256": "87961a6efc9c5e188cb8d3d5107992840aa8a82eec992997539129d1ab075619"
+      },
+      "public.users": {
+        "count": 2,
+        "sha256": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d"
+      },
+      "storage.buckets": {
+        "count": 1,
+        "sha256": "a506a40da440927d3c58d080829ec36ace719961cdd68757d0f8e27dbe5ddf54"
+      },
+      "storage.buckets_analytics": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.buckets_vectors": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.iceberg_namespaces": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.iceberg_tables": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.migrations": {
+        "count": 74,
+        "sha256": "bace8da559b546d2535f4d66fce088e9c39dc6f9efb376739f25129541664eaf"
+      },
+      "storage.objects": {
+        "count": 1,
+        "sha256": "d5a22f675b25ab3932a31653eb3f31920dbb858cc3d6995694b8de7db3049cd0"
+      },
+      "storage.s3_multipart_uploads": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.s3_multipart_uploads_parts": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.vector_indexes": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    "storageObject": {
+      "bytes": 34,
+      "sha256": "dc9d3fda345877c072f06e2a8ab51ca11fc3d859fa14665ecef840206d1528b2"
+    },
+    "independentStack": {
+      "data": true,
+      "schema": true,
+      "authLogin": true,
+      "storageBinary": true,
+      "rls": true,
+      "grants": true,
+      "backendRpcDenials": 6,
+      "balances": true,
+      "rpc": true,
+      "durableReplay": true,
+      "outbox": true,
+      "roles": "equivalent pre-provisioned platform roles, password hashes never reported",
+      "storageObjects": 1
+    }
+  },
+  "syntheticBrowserCredentials": "Retained only in the explicitly requested private temporary file; values excluded from logs and evidence.",
+  "passed": 22
+}
