@@ -74,7 +74,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
 
     return NextResponse.json(result, { status: 201, headers: { 'Idempotency-Key': requestId } });
   } catch (error: unknown) {
-    console.error('investments sell error:', error);
+    console.error('investments sell error:');
     return errorResponse(error);
   }
 }
@@ -94,7 +94,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
     const sales = await investmentsService.listSales(user.id, params.id);
     return NextResponse.json({ sales });
   } catch (error: unknown) {
-    console.error('investments sales list error:', error);
+    console.error('investments sales list error:');
     return errorResponse(error);
   }
 }
