@@ -1,0 +1,58 @@
+{
+  "status": "NO_MATERIAL_STATIC_FINDINGS",
+  "reviewedAt": "2026-10-15T05:04:58.410946+00:00",
+  "reviewer": "/root/native_runtime/restore_fetch_guard",
+  "scope": "Files only. No imports/tests/runtime/DB/API/process probes or stop by reviewer; current CI5 private records retain hashes.",
+  "findings": [],
+  "reviewedPreparationManifestSha256": "66350bad0cd6a6070d37250df759b2d3aa1ea8ab5ebf2ce80c89d28730ff8d3e",
+  "manifestBoundary": "Hash refers to preparation manifest before adding this review metadata.",
+  "sources": [
+    {
+      "path": "README.md",
+      "sha256": "f129a79b41e3ebc3a751e958d3ff144aeeb5ed5c0f9bbc5c720ebde8e3b8e35e"
+    },
+    {
+      "path": "build-app.py",
+      "sha256": "dc8f9605ec5823626c78705397bc5803d1f530518fed4c04eef1f3b600984b1c"
+    },
+    {
+      "path": "clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "clock-quote-fixture.mjs",
+      "sha256": "4b5f1a0df734fb66c89063541d98800724129e0056169c1ceca56a3d3f93b471"
+    },
+    {
+      "path": "gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "profiles.json",
+      "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8"
+    },
+    {
+      "path": "run-core-closure.py",
+      "sha256": "8e590751d879bafbc1fabdea848d8ef79e59f6b8974b09c8946cbf07a626d22e"
+    },
+    {
+      "path": "runtime-profile.mjs",
+      "sha256": "3d88a2b33b39c9274a7cca71226501ab8b0ea41f26606553b15f6267e56a6cdc"
+    },
+    {
+      "path": "test-clock-model.mjs",
+      "sha256": "4f0107da4cfd95a2829361d21643f8d93df5c279f784031291f62804015d544a"
+    },
+    {
+      "path": "test-clock-quote-fixture.mjs",
+      "sha256": "c41525d3c9e3284bb1572e2d4409429ae81db725b76d962df08c98173d377a4e"
+    }
+  ],
+  "conclusions": [
+    "Closed final-core-closure profile, core-closure and future exact revision; new closure-proof copy/env/build/state/proof names.",
+    "Imports use new directory; existing provider57912 is validated/reused, no new provider spawn.",
+    "Wrapper matches private prepared copy; normal wall-clock gates omit clock/Gemini preloads.",
+    "CI6npmci/build replace root/node_modules and root/.next; isolated CI5 copy and metadata remain separate."
+  ],
+  "executedRuntimeActions": 0
+}

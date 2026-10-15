@@ -1,0 +1,11 @@
+# CI6/copia de cierre — preparación, no ejecutada
+
+PREPARED_NOT_EXECUTED. Se conserva completamente acceptance-final/ y sus perfiles/runtime/buildsCI5; este directorio nuevo tiene sólo perfil cerrado final-core-closure. Core-closure y revisión40hex futura deben coincidir; no hay revisión inventada. No se instaló/compiló/inició/detuvo ningún proceso ni se consultóDB.
+
+Copia nueva /tmp/zarix-app-closure-final-20261015, backend existente58321 y puertoNext3002 sólo después de parar el NextCI5 propio17292 en ventana liberada. Nuevos artifacts privados closure-proof-app.env/build-proof.json/fonts/BUILD y closure-proof-clock-app-state.json/clock-observation.json/Gemini closure-proof-clock-*; normal futuro closure-proof-app-state.json. Root/node_modules/17gates requieren cerrar consumidores propios antes de npmci; nunca sobrescribirCI5niresets.
+
+Wrapper privado preparado /tmp/zarix-runtime-20261015/run-core-closure.py: ZARIX_CI6_WINDOW_CONFIRM=parent-released-core-closure y --revision exacta futura. Mismos17comandos, Node22/heap2048/pool2, reloj real, fuentesInter7copiadas existentes, guardglobalfetch y backend58321. Resultado core-closure nuevo; conserva fallos y scanservice/cron aparte. Copia posterior usa build-app.py --profile final-core-closure y --revision igual al core cerrado, bajo confirmación de ventana existente. No ejecutar hasta freeze/gates/release del padre.
+
+Clock sóloNext6Oct12Z, Auth/OS/runner reales, JWT60s normal refresh antes de cada request. Reutiliza sólo el proveedor sintético57912 actual si PID/cwd/sourcehash/listener coinciden; el clon clock-quote-fixture tiene mismos bytes, no debe arrancarse mientras el servidor previo exista. GuardGeminicanary y alertaTelegramvacía conservan controles ya probados, pero no aprueban contratos por sí mismos. La retención seis-stacks y el cierreArc continúan pendientes por sus propios owners; no se ejecutan desde este preparador.
+
+Al ejecutar los17gates, npmci ybuild sí reemplazarán root/node_modules y root/.next. La conservaciónCI5 se refiere a su copia aislada /tmp/zarix-app-acceptance-final-20261015 y a sus artefactos/env/estados/core-acceptance; no se afirma conservar el directorio root.next después de otra compilación global.
