@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { errorResponse } from '@/lib/api-handler';
+import { ApiError, errorResponse } from '@/lib/api-handler';
 
 export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -34,6 +34,8 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
       .select()
       .single();
 
+    // Primary-key + owner filters can match at most one row.
+    if (error?.code === 'PGRST116') throw new ApiError('Regla recurrente no encontrada', 404);
     if (error) throw error;
     return NextResponse.json(data);
   } catch (error: any) {

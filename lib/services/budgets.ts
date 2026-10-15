@@ -1,4 +1,5 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { ApiError } from '@/lib/api-handler';
 import type { Budget, BudgetStatus } from '@/types/database';
 import { enqueueNotification } from '@/lib/services/notification-outbox';
 
@@ -132,6 +133,8 @@ class BudgetsService {
       .select()
       .single();
 
+    // Primary-key + owner filters can match at most one row.
+    if (error?.code === 'PGRST116') throw new ApiError('Presupuesto no encontrado', 404);
     if (error) throw error;
     return data;
   }

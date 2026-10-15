@@ -509,6 +509,8 @@ class TransactionsService {
       .eq('user_id', userId)
       .single();
 
+    // Primary-key + owner filters can match at most one row.
+    if (error?.code === 'PGRST116') throw new ApiError('Movimiento no encontrado', 404);
     if (error) throw error;
     return data as TransactionWithCategory;
   }

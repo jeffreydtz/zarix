@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClientSync } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService, computeTransferAmounts } from '@/lib/services/transactions';
-import { errorResponse } from '@/lib/api-handler';
+import { ApiError, errorResponse } from '@/lib/api-handler';
 
 export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -20,10 +20,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ id: strin
     return NextResponse.json(transaction);
   } catch (error: any) {
     console.error('Transaction GET error:', error);
-    return NextResponse.json(
-      { error: 'Movimiento no encontrado' },
-      { status: 404 }
-    );
+    return errorResponse(error);
   }
 }
 
@@ -75,7 +72,8 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       .eq('user_id', user.id)
       .single();
 
-    if (existingErr || !existing) {
+    if (existingErr && existingErr.code !== 'PGRST116') throw existingErr;
+    if (existingErr?.code === 'PGRST116' || !existing) {
       return NextResponse.json({ error: 'Movimiento no encontrado' }, { status: 404 });
     }
 
@@ -100,7 +98,8 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       .eq('user_id', user.id)
       .single();
 
-    if (accErr || !accRow || accRow.is_active === false) {
+    if (accErr && accErr.code !== 'PGRST116') throw accErr;
+    if (accErr?.code === 'PGRST116' || !accRow || accRow.is_active === false) {
       return NextResponse.json({ error: 'Cuenta no encontrada' }, { status: 400 });
     }
 
@@ -134,7 +133,8 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       }
       const { data: destination, error: destinationError } = await serviceClient
         .from('accounts').select('currency, is_active').eq('id',destinationId).eq('user_id',user.id).single();
-      if (destinationError || !destination || destination.is_active === false) {
+      if (destinationError && destinationError.code !== 'PGRST116') throw destinationError;
+      if (destinationError?.code === 'PGRST116' || !destination || destination.is_active === false) {
         return NextResponse.json({ error:'Cuenta destino no encontrada o archivada.' },{ status:400 });
       }
       const transfer = await computeTransferAmounts(amount,cur,accRow.currency,destination.currency,
@@ -165,6 +165,8 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       .select()
       .single();
 
+    // Primary-key + owner filters can match at most one row.
+    if (error?.code === 'PGRST116') throw new ApiError('Movimiento no encontrado', 404);
     if (error) throw error;
 
     return NextResponse.json(data);

@@ -214,10 +214,10 @@ async function assertOwnedInvestmentAccount(
     .maybeSingle();
   if (error) throw error;
   if (!data || !data.is_active) {
-    throw new Error('Cuenta no encontrada');
+    throw new ApiError('Cuenta no encontrada', 404);
   }
   if (data.type !== 'investment') {
-    throw new Error('La cuenta tiene que ser de tipo inversión');
+    throw new ApiError('La cuenta tiene que ser de tipo inversión');
   }
 }
 
@@ -632,6 +632,8 @@ class InvestmentsService {
       .select()
       .single();
 
+    // Primary-key + owner filters can match at most one row.
+    if (error?.code === 'PGRST116') throw new ApiError('Inversión no encontrada', 404);
     if (error) throw error;
     return data;
   }
