@@ -40,6 +40,26 @@ beforeEach(() => {
 afterEach(() => { vi.useRealTimers(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 describe('dollar quote freshness and cache boundaries', () => {
+  it.each([299, 300, 301])('refreshes at the documented 300 second TTL boundary (%ss)', async age => {
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    const initial = await cotizacionesService.getDolarQuotes();
+    vi.setSystemTime(new Date(Date.parse('2026-10-09T12:00:00Z') + age * 1000));
+    vi.mocked(fetch).mockResolvedValue(json(live()));
+    const next = await cotizacionesService.getDolarQuotes();
+    expect(fetch).toHaveBeenCalledTimes(age < 300 ? 1 : 2);
+    expect(next.blue.timestamp.getTime()).toBe(age < 300 ? initial.blue.timestamp.getTime() : Date.now());
+  });
+
+  it('retains persisted value, original timestamp and fallback label when refresh fails exactly at TTL', async () => {
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    await cotizacionesService.getDolarQuotes();
+    vi.setSystemTime(new Date('2026-10-09T12:05:00Z'));
+    vi.mocked(fetch).mockRejectedValue(new Error('synthetic provider outage'));
+    const next = await cotizacionesService.getDolarQuotes();
+    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(next.blue).toMatchObject({ sell: 1200, provider: null, origin: 'persisted', timestamp: new Date('2026-10-09T12:00:00Z') });
+  });
+
   it('uses fresh persisted quotes for the dashboard without contacting providers', async () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
     expect((await cotizacionesService.getDolarQuotes({ preferCache: true })).blue).toMatchObject({ buy: 1150, sell: 1200 });

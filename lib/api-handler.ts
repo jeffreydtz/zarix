@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { User as AuthUser } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { isRejectedSessionError } from '@/lib/auth/session-error';
 
 // ─────────────────────────────────────────────────────────────────
 // Utilidades compartidas para route handlers.
@@ -30,15 +31,22 @@ export interface AuthedContext {
 }
 
 /**
- * Resuelve el usuario autenticado o lanza ApiError(401). Reemplaza el bloque
+ * Resuelve el usuario autenticado o lanza ApiError(401/503). Reemplaza el bloque
  * `const { data: { user } } = await supabase.auth.getUser(); if (!user) 401`.
  */
 export async function requireUser(): Promise<AuthedContext> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  let result;
+  try {
+    result = await supabase.auth.getUser();
+  } catch {
+    throw new ApiError('No pudimos verificar tu sesión. Volvé a intentar en unos minutos.', 503);
+  }
+  const { data: { user }, error } = result;
+  if (error && !isRejectedSessionError(error)) {
+    throw new ApiError('No pudimos verificar tu sesión. Volvé a intentar en unos minutos.', 503);
+  }
+  if (error || !user) {
     throw new ApiError('Unauthorized', 401);
   }
   return { supabase, user };

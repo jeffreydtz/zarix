@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getCachedUser } from '@/lib/auth/session';
 import { accountsService } from '@/lib/services/accounts';
@@ -7,7 +7,6 @@ import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { investmentsService } from '@/lib/services/investments';
 import {
-  computeNetWorth,
   getNetWorthHistory,
   recordNetWorthSnapshot,
 } from '@/lib/services/net-worth';
@@ -67,31 +66,20 @@ export default async function DashboardPage() {
       upcoming,
       budgets,
     ] = await Promise.all([
-      accountsService.list(user.id).catch(() => []),
-      transactionsService.list(user.id, { limit: 5 }).catch(() => []),
+      accountsService.list(user.id),
+      transactionsService.list(user.id, { limit: 5 }),
       investmentsService
-        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true })
-        .catch(() => null),
-      cotizacionesService.getAllQuotes().catch(() => ({
-        dolar: {
-          blue: { type: 'blue' as const, buy: 0, sell: 0, timestamp: new Date() },
-          oficial: { type: 'oficial' as const, buy: 0, sell: 0, timestamp: new Date() },
-          mep: { type: 'mep' as const, buy: 0, sell: 0, timestamp: new Date() },
-          ccl: { type: 'ccl' as const, buy: 0, sell: 0, timestamp: new Date() },
-        },
-        crypto: {
-          btc: { symbol: 'BTC', priceUSD: 0, priceARS: 0, change24h: 0, timestamp: new Date() },
-          eth: { symbol: 'ETH', priceUSD: 0, priceARS: 0, change24h: 0, timestamp: new Date() },
-          usdt: { symbol: 'USDT', priceUSD: 1, priceARS: 0, change24h: 0, timestamp: new Date() },
-        },
-        timestamp: new Date().toISOString(),
-      })),
-      getNetWorthHistory(user.id).catch(() => []),
+        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }),
+      cotizacionesService.getAllQuotes().catch(error => {
+        unstable_rethrow(error);
+        return null;
+      }),
+      getNetWorthHistory(user.id),
       getInflacionSeries().catch(() => []),
       getMarketSparklines().catch(() => ({ blue: [], btc: [], eth: [] })),
-      getMonthFlow(user.id).catch(() => null),
-      getUpcoming(user.id).catch(() => []),
-      getTopBudgets(user.id).catch(() => []),
+      getMonthFlow(user.id),
+      getUpcoming(user.id),
+      getTopBudgets(user.id),
     ]);
 
     // Snapshot del día best-effort (idempotente con el cron por unique user+día):
@@ -158,7 +146,11 @@ export default async function DashboardPage() {
           {/* Bento desktop: 12 columnas; mobile: columna única en orden de jerarquía */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <MotionSection delay={0.04} intensity="normal" className="lg:col-span-12">
-              <MarketStrip quotes={quotes} sparklines={sparklines} topHoldings={topHoldings} />
+              {quotes ? (
+                <MarketStrip quotes={quotes} sparklines={sparklines} topHoldings={topHoldings} />
+              ) : (
+                <p role="status" className="card p-4 text-muted-foreground">Cotizaciones no disponibles. Volvé a intentar en unos minutos.</p>
+              )}
             </MotionSection>
 
             <MotionSection delay={0.08} intensity="normal" className="lg:col-span-4">
@@ -173,11 +165,13 @@ export default async function DashboardPage() {
               <UpcomingRail items={upcoming} />
             </MotionSection>
 
-            <MotionSection delay={0.16} intensity="subtle" className="lg:col-span-12">
-              <Suspense fallback={<div className="card h-80 animate-pulse-subtle bg-surface-soft" />}>
-                <DashboardSpendingAnalyzerSection quotes={quotes} />
-              </Suspense>
-            </MotionSection>
+            {quotes ? (
+              <MotionSection delay={0.16} intensity="subtle" className="lg:col-span-12">
+                <Suspense fallback={<div className="card h-80 animate-pulse-subtle bg-surface-soft" />}>
+                  <DashboardSpendingAnalyzerSection quotes={quotes} />
+                </Suspense>
+              </MotionSection>
+            ) : null}
 
             <DashboardMore>
               <MotionSection delay={0.2} intensity="subtle" className="lg:col-span-6">
@@ -201,7 +195,16 @@ export default async function DashboardPage() {
       </>
     );
   } catch (error) {
-    console.error('Dashboard error:', error);
-    redirect('/login');
+    unstable_rethrow(error);
+    console.error('[dashboard] Financial data unavailable');
+    return (
+      <PageScaffold>
+        <section role="alert" className="card p-6 space-y-3">
+          <h1 className="text-xl font-semibold">No pudimos cargar tus datos financieros</h1>
+          <p>Volvé a intentar en unos minutos para consultar tu resumen completo.</p>
+          <a href="/dashboard" className="btn-primary inline-flex">Reintentar</a>
+        </section>
+      </PageScaffold>
+    );
   }
 }

@@ -1,0 +1,86 @@
+{
+  "at": "2026-10-15T03:07:06.812Z",
+  "reviewer": "e2e",
+  "mode": "Read-only source/test/artifact review. Did not run the test suite, browser, API, DB or provider.",
+  "status": "NO_ADDITIONAL_MATERIAL_FINDING_WITHIN_REVIEWED_SCOPE",
+  "sources": [
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336"
+    },
+    {
+      "path": "lib/auth/session.ts",
+      "sha256": "f595e6a1b7ce1018b599cb1b9c2c148443b95c0599b8137a7932e682083ba6be"
+    },
+    {
+      "path": "lib/auth/session-error.ts",
+      "sha256": "68c836070ca5c1f290feeebe158c2e167bfd835a106f4b765605fcc7a88c5563"
+    },
+    {
+      "path": "lib/api-handler.ts",
+      "sha256": "d70d5a360f1b7d772028bba0a39f22418415e58d4b4e65064103839d977ebc6d"
+    },
+    {
+      "path": "middleware.ts",
+      "sha256": "31d4d84a0a304bf9ce8d734f8288f0467dccf3fd9a6d7eddbff37c17b397ced3"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8"
+    },
+    {
+      "path": "__tests__/dashboard-read-failures.test.ts",
+      "sha256": "886ceb96393c7ebd1901b3976554873e89ae3291f3cfb6b9a82d6cc8dc9140fa"
+    },
+    {
+      "path": "__tests__/auth-session-failures.test.ts",
+      "sha256": "06a442d556b690abaa928902aaee8e10d23e5030f70a6794cf0fa011021abd44"
+    },
+    {
+      "path": "__tests__/auth-upstream-failures.test.ts",
+      "sha256": "2415ce26e840e0e259b1b54a4931a546e55c633d3412a832fcf6ad0bfdcdc646"
+    },
+    {
+      "path": "__tests__/billing-nonbilling-quote-freshness.test.ts",
+      "sha256": "b58acc12f05e6e66197ce32606059f0952f5a6b6137aa581cd616ede4c96bb6e"
+    },
+    {
+      "path": "__tests__/blue-fx-metadata.test.ts",
+      "sha256": "f7aad4b7a5a27b140dd76a531c9f2a8c0d1e843337cff400bac8107d585c23e3"
+    }
+  ],
+  "findingsResolved": [
+    {
+      "issue": "AuthApiError408,404 and unknown400 were treated as rejected credentials.",
+      "resolution": "Only absent sessions and rejected credential statuses/codes now map to login/401;408,404,unknown400,429 and504 remain temporary failures without invoking financial handlers."
+    },
+    {
+      "issue": "Middleware503 discarded rotated cookies already written by the SDK.",
+      "resolution": "The503 response copies all SDK response cookies with options. The regression simulates rotation followed by504; the local SDK getUser/loadSession/TOKEN_REFRESHED flow supports that trigger."
+    }
+  ],
+  "observations": [
+    "Mandatory dashboard financial reads propagate to an alert/retry state without partial net worth or a snapshot. Framework redirects are rethrown before the error UI.",
+    "Unavailable market quotes use an explicit status and do not fabricate zero quote objects.",
+    "Tests cover cache boundaries299/300/301 seconds and failed refresh at300, retaining the persisted source timestamp and label.",
+    "Unavailable or invalid EUR conversion rejects the financial read. Tests cover primary/secondary EUR and a valid1.1 FX leg. Stablecoin fallback1 already existed in buildUsdRates/getRateToUsd and is preserved; this does not accept a real market integration."
+  ],
+  "testArtifactRead": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/read-failure-regressions/after-account-fx.json",
+    "sha256": "403bca3bc92171e2c31163823082593ed74c19ad92ac88ae8e284867a6bf753a",
+    "success": true,
+    "totalTests": 70,
+    "passed": 70,
+    "failed": 0,
+    "scope": "Result read from the saved artifact; not independently rerun."
+  },
+  "limits": [
+    "Inner net-worth/budget fallback changes are handled separately by the SQL agent and are not accepted by this review.",
+    "This review does not resolve local20-session load timeouts or assert backend capacity/performance.",
+    "This review does not claim executed SSR/Auth503 integration fault injection after rebuilding."
+  ]
+}

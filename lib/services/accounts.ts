@@ -164,9 +164,11 @@ class AccountsService {
       dynamicCurrencies.map(async (currency) => {
         try {
           const rate = await cotizacionesService.getExchangeRate(currency, 'USD');
+          if (!Number.isFinite(rate) || rate <= 0) throw new Error('Invalid exchange rate');
           return [currency, rate] as const;
         } catch {
-          return [currency, 0] as const;
+          if (STABLECOIN_USD.has(currency)) return [currency, 1] as const;
+          throw new Error(`Cotización ${currency}/USD no disponible`);
         }
       })
     );

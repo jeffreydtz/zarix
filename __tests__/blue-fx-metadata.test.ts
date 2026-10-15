@@ -91,6 +91,29 @@ afterEach(() => {
 });
 
 describe('blue FX reference helper', () => {
+  it.each([false, true])('does not value a missing EUR conversion as zero (secondary=%s)', async secondary => {
+    mocks.accounts = [{ id: 'EUR-fixture', user_id: 'U1', type: secondary ? 'credit_card' : 'bank',
+      currency: secondary ? 'ARS' : 'EUR', balance: secondary ? -10000 : 100,
+      is_multicurrency: secondary, secondary_currency: secondary ? 'EUR' : null,
+      include_in_total: true, include_in_liquid: true }];
+    mocks.rpc.mockResolvedValue({ data: [{ account_id: 'EUR-fixture', primary_balance: -10000, secondary_balance: -100 }], error: null });
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    vi.spyOn(cotizacionesService, 'getExchangeRate').mockRejectedValue(new Error('synthetic EUR provider outage'));
+    const { accountsService } = await import('@/lib/services/accounts');
+    await expect(accountsService.list('U1')).rejects.toThrow('Cotización EUR/USD no disponible');
+  });
+
+  it('still values a valid EUR balance with its actual positive FX leg', async () => {
+    mocks.accounts = [{ id: 'EUR-fixture', user_id: 'U1', type: 'bank', currency: 'EUR', balance: 100,
+      is_multicurrency: false, secondary_currency: null, include_in_total: true, include_in_liquid: true }];
+    const { cotizacionesService } = await import('@/lib/services/cotizaciones');
+    vi.spyOn(cotizacionesService, 'getExchangeRate').mockResolvedValue(1.1);
+    const { accountsService } = await import('@/lib/services/accounts');
+    const result = await accountsService.list('U1');
+    expect(result[0].balance_usd).toBeCloseTo(110, 8);
+    expect(result[0].balance_ars_blue).toBeCloseTo(143000, 8);
+  });
+
   it('preserves the source observation and labels the exact sell side', async () => {
     const { blueFxReference } = await import('@/lib/blue-fx-reference');
     expect(blueFxReference({

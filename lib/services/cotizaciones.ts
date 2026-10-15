@@ -283,7 +283,7 @@ class CotizacionesService {
     if (!cached) return null;
 
     const now = Date.now();
-    if (now - cached.timestamp > CACHE_TTL) {
+    if (now - cached.timestamp >= CACHE_TTL) {
       delete cache[key];
       return null;
     }
