@@ -13,7 +13,9 @@ reconciled_path=out/'durability/reconciled-contracts.json'
 reconciled={r['case_id']:r for r in json.loads(reconciled_path.read_text())} if reconciled_path.exists() else {}
 system_path=out/'system-case-results.json'
 system={r['case_id']:r for r in json.loads(system_path.read_text())} if system_path.exists() else {}
-native_executed=(out/'native/native-verification.json').exists()
+native_evidence=next((name for name in ['native-full/native-verification.json','native/native-verification.json'] if (out/name).exists()),None)
+native_executed=native_evidence is not None
+environment_evidence='environment/runtime-manifest.json' if (out/'environment/runtime-manifest.json').exists() else 'environment-and-blockers.json'
 rows=list(csv.DictReader((root/'docs/tif/v2.13/casos_prueba.csv').open(encoding='utf-8-sig')))
 result=[]
 oq=['removes only acknowledged items, in order']+[f'retains the queue on HTTP {status} and stops the batch' for status in [400,401,403,408,409,422,429,500,503]]+['retains an unconfirmed item after a connection failure','reports local storage failure after acknowledgment and stops before the next item']
@@ -50,7 +52,7 @@ for row in rows:
   else:blocker='Local socket creation denied (EPERM), including reviewed escalation: genuine Supabase Auth/PostgREST and authenticated browser path unavailable. Related unit/SQL checks do not complete this case.'
   if 'IA' in row['entrada'] or 'OCR' in row['entrada'] or 'Telegram' in row['entrada'] or id in ['CP2-13','CP2-14','CP2-15','CP2-17','CP2-18','CP3-09']:
    blocker+=' Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately.'
-  evidence='environment-and-blockers.json; core/final-vitest.json; native/native-verification.json' if native_executed else 'environment-and-blockers.json; final-vitest.json; database-verification.json'
+  evidence=f'{environment_evidence}; core/final-vitest.json; {native_evidence}' if native_executed else f'{environment_evidence}; final-vitest.json; database-verification.json'
   if id in system:
    executed=system[id]
    assert executed.get('complete_original_contract') is True, f'{id}: a partial check cannot promote a complete original case'

@@ -87,6 +87,47 @@ class TraceabilityStatusRegression(unittest.TestCase):
         })
         self.assertEqual(sum(self.summary["counts"].values()), len(original))
 
+    def test_native_layouts_reference_existing_evidence_without_promoting_complete_cases(self):
+        for native_directory in ["native-full", "native"]:
+            with self.subTest(native_directory=native_directory):
+                fixture = Path(self.temp.name) / native_directory
+                core = fixture / "core"
+                core.mkdir(parents=True)
+                (core / "final-vitest.json").write_text(json.dumps({"testResults": []}))
+                for name in ["balance-sql.json", "shared-sql.json", "database-verification.json"]:
+                    (core / name).write_text(json.dumps({"results": []}))
+                native = fixture / native_directory
+                native.mkdir()
+                (native / "native-verification.json").write_text(json.dumps({
+                    "status": "PASS", "scope": "Synthetic layout fixture only; no original acceptance"
+                }))
+                environment = fixture / "environment"
+                environment.mkdir()
+                (environment / "runtime-manifest.json").write_text(json.dumps({
+                    "scope": "Synthetic local runtime layout fixture only"
+                }))
+                completed = subprocess.run(
+                    [sys.executable, str(ROOT / "scripts/build-technical-traceability.py"),
+                     "--evidence-dir", str(fixture)],
+                    cwd=ROOT, capture_output=True, text=True,
+                )
+                self.assertEqual(completed.returncode, 0, completed.stderr)
+                with (fixture / "case-traceability.csv").open() as stream:
+                    rows = list(csv.DictReader(stream))
+                by_id = {row["case_id"]: row for row in rows}
+                self.assertTrue(all(row["status"] == "BLOCKED" for row in rows))
+                for case_id in ["CP1-01", "CP2-01", "CP3-01", "CP4-01", "CNF-12"]:
+                    row = by_id[case_id]
+                    self.assertNotIn("EPERM", row["blocker"])
+                    self.assertNotIn("socket creation denied", row["blocker"])
+                    self.assertIn(f"{native_directory}/native-verification.json", row["evidence"])
+                    self.assertIn("environment/runtime-manifest.json", row["evidence"])
+                    self.assertNotIn("environment-and-blockers.json", row["evidence"])
+                    for reference in row["evidence"].split("; "):
+                        self.assertTrue((fixture / reference).is_file(), reference)
+                self.assertIn("original timed snapshot fixture", by_id["CNF-12"]["blocker"])
+                self.assertIn("post-restore browser journey", by_id["CNF-12"]["blocker"])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
