@@ -526,7 +526,7 @@ class TransactionsService {
   }
 
   /**
-   * Recalcula el saldo de la cuenta aplicando la misma lógica que el trigger (suma ordenada de movimientos).
+   * Recalcula el saldo bajo el mismo bloqueo de cuenta que usa el trigger.
    * Útil si hubo inconsistencias (p. ej. borrar un ajuste antes de que el trigger lo revierta).
    */
   async recomputeAccountBalanceFromLedger(
@@ -535,69 +535,15 @@ class TransactionsService {
   ): Promise<{ before: number; after: number }> {
     const supabase = createServiceClientSync();
 
-    const { data: account, error: accErr } = await supabase
-      .from('accounts')
-      .select('*')
-      .eq('id', accountId)
-      .eq('user_id', userId)
-      .single();
-
-    if (accErr || !account) {
-      throw new Error('Cuenta no encontrada');
+    const { data, error } = await supabase.rpc('recompute_account_balance', {
+      p_user_id: userId,
+      p_account_id: accountId,
+    });
+    if (error) throw error;
+    if (!data || typeof data.before !== 'number' || typeof data.after !== 'number') {
+      throw new Error('Respuesta inválida al recalcular el saldo');
     }
-
-    const txs = await readAllPages<Transaction>((from, to) => supabase
-      .from('transactions')
-      .select('*')
-      .eq('user_id', userId)
-      .or(`account_id.eq.${accountId},destination_account_id.eq.${accountId}`)
-      .order('transaction_date', { ascending: true })
-      .order('id', { ascending: true })
-      .range(from, to));
-
-    let balance = 0;
-    for (const tx of txs || []) {
-      const aid = tx.account_id;
-      const destId = tx.destination_account_id;
-      const t = tx.type;
-
-      if (aid === accountId) {
-        const isSecondaryAdjustmentOnMulticurrencyCard =
-          t === 'adjustment' &&
-          account.type === 'credit_card' &&
-          Boolean(account.is_multicurrency) &&
-          Boolean(account.secondary_currency) &&
-          String(tx.currency || '').trim().toUpperCase() ===
-            String(account.secondary_currency || '').trim().toUpperCase();
-
-        if (t === 'expense') {
-          balance -= Number(tx.amount_in_account_currency);
-        } else if (t === 'income') {
-          balance += Number(tx.amount_in_account_currency);
-        } else if (t === 'adjustment') {
-          if (isSecondaryAdjustmentOnMulticurrencyCard) continue;
-          balance += Number(tx.amount_in_account_currency);
-        } else if (t === 'transfer') {
-          balance -= Number(tx.amount_in_account_currency);
-        }
-      }
-      if (destId === accountId && t === 'transfer') {
-        const amt = Number(tx.amount);
-        const rate = Number(tx.exchange_rate ?? 1);
-        balance += tx.destination_amount_in_account_currency != null
-          ? Number(tx.destination_amount_in_account_currency) : amt * rate;
-      }
-    }
-
-    const before = Number(account.balance);
-    const { error: updErr } = await supabase
-      .from('accounts')
-      .update({ balance, updated_at: new Date().toISOString() })
-      .eq('id', accountId)
-      .eq('user_id', userId);
-
-    if (updErr) throw updErr;
-    return { before, after: balance };
+    return { before: data.before, after: data.after };
   }
 
   /**

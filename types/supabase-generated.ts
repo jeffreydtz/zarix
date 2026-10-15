@@ -790,6 +790,9 @@ isOneToOne: false
 "plan_account_limit":
 { Args: { "p_user_id": string }; Returns: number
                            },
+"recompute_account_balance":
+{ Args: { "p_account_id": string,"p_user_id": string }; Returns: Json
+                           },
 "release_notification_outbox":
 { Args: { "p_claims": Json }; Returns: undefined
                            },

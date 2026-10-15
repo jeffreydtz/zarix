@@ -1,0 +1,288 @@
+{
+  "createdAt": "2026-10-15T00:31:50.184Z",
+  "baseRevision": "84c57440d08d7f6966f5795c0e11dc4108715cfd",
+  "revisionMeaning": "Focal runs used the exact uncommitted source hashes below on this base. The following commit packages those sources; historical reports retain their own revision and SQL hashes.",
+  "platform": {
+    "node": "v22.17.0",
+    "os": "darwin",
+    "arch": "arm64"
+  },
+  "canonicalBalance": "SUM of source impacts and each destination credit rounded to numeric scale 8. Includes opening ledger adjustments; no automatic historical revaluation.",
+  "sqlSources": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "__tests__/financial-summary-pagination.test.ts",
+      "sha256": "fc85480dce28c1b575be3cbf3188aab484c757c75a087fad2f2f73dc9c8958f6"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "dea7480bfeb55af15c252e0810df78bf22826c6c7c48e7ce425860e041b4ec8b"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    },
+    {
+      "path": "package.json",
+      "sha256": "847259b8435bf13a49ce114795fcd71fc7a7f81322b341c067682447de87772a"
+    },
+    {
+      "path": "scripts/generate-isolated-database-types.mjs",
+      "sha256": "3fa3219a25b633406d6d53d81c1e899e7e4a9552b4f317aeed47214258cd4cd0"
+    },
+    {
+      "path": "scripts/lib/test-isolated-database.mjs",
+      "sha256": "395514d590d118c4b7b40a6ceca974db36fc2684a68447c857600be40e22da9b"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "scripts/run-technical-verification.mjs",
+      "sha256": "57f0a2935ee1e9dd4586d2256415e5b6b8d55b4b18a4b3cca213cf1752b51244"
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute-advisors.mjs",
+      "sha256": "ab0b4d5547db6c9948da0b1d0fd2dbbd2ee0c78ae849c2a103b6cc73bc583853"
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute-native.mjs",
+      "sha256": "63bd3a22f9de9528b3fee1ab87a45842cb3a0aa6e60b260c08d4945f14704792"
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute.mjs",
+      "sha256": "bb0723fd45ad9e2ac5795af32b444ebc55a29cc86d8047ee3f01172fae6f3ade"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "types/database.ts",
+      "sha256": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982"
+    },
+    {
+      "path": "types/supabase-generated.ts",
+      "sha256": "81928fe0332c9e6ae14230e978cc607cea5a6f694080e726700c1d0e3a81e679"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-advisors-attempt1.json",
+      "sha256": "0cb42420cdac6533747f14b9ac449f5b5edff64681615ec5cf2566e181690436"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-advisors-before-canonical-normalization.json",
+      "sha256": "1494fd0889a4a1a5ab4353c73d5bb802ad174c7ef6e16339e3003553a167622d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-advisors.json",
+      "sha256": "481e31614cbd44798fb0a3ccfb3ce8e43b80d79c018389ada6562642078677f0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-native-attempt1.json",
+      "sha256": "c0b4350e2f53e140a2eabc04cf75fb7d2b73793b7510c653ffbecb60748eb71c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-native-attempt2.json",
+      "sha256": "6b8d67b9cae60b2a4d9ef4f90c92cbd5a49b41af7096b84b9bd0649f7c3f1119"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-native-before-canonical-normalization.json",
+      "sha256": "43fb52486199da3ee49a600d1f71f58ef0ee65a3663febd1d8fa20f7093a5fd9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-native.json",
+      "sha256": "d03b9a61cb622b01dcfb7a17115bf6acbb7498a8a832dfd90f8d7f5d8681eac9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-pglite-before-canonical-normalization.json",
+      "sha256": "7fa63f972c21796063f72201b389c3e85b934abeffc59c6b83ae9747f32fb6c5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-pglite.json",
+      "sha256": "b62f589d2b706da63d35bc16230b19225033812f9b7bbe3a9e98d1f0e1a66b38"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-types.json",
+      "sha256": "edac55758f7b53c7deb83698690e41f4e262bcb0de1f3b047cd6d0eb4dc5631c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-vitest-before-canonical-normalization.json",
+      "sha256": "2c65893fefc790838bc3f4b44d6b89b5062c54cb382fd71048e0b3dd64f1413c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/account-recompute-vitest.json",
+      "sha256": "dec7eaa404fae76068201f6773288c58e9a07891fcb60ca55a4d09290c3e6760"
+    }
+  ],
+  "checks": {
+    "pglite": {
+      "passed": 18,
+      "total": 18,
+      "legacyDefectProofSeparate": true
+    },
+    "native": {
+      "passed": 7,
+      "total": 7,
+      "postgres": "17.11",
+      "independentConnections": true,
+      "sourceStable": true
+    },
+    "vitest": {
+      "passed": 11,
+      "total": 11,
+      "includesThreeRpcContracts": true
+    },
+    "types": {
+      "tables": 27,
+      "functions": 30,
+      "status": "PASS"
+    },
+    "advisors": {
+      "newRpcFindings": 0,
+      "otherINFO": 61,
+      "otherWARN": 31,
+      "ERROR": 0
+    },
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "testDB": "PASS"
+  },
+  "remaining": {
+    "CNF02": "BLOCKED: actual monthly observation required",
+    "fullUIRecoveryLoadProviders": "Separate reports; no acceptance inferred from this focal suite"
+  },
+  "documents": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-recompute/README.md",
+      "sha256": "f1254c6da09bd65110050c51c0a94b411d176f2809489cd7870870759147aa2c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documented-gaps/README.md",
+      "sha256": "e851993aec6b8cebc151a2d8c666f98ef96a69569192c150b0a2f887c8cec551"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261013/documented-gaps/README.md",
+      "sha256": "9303598e55580a36f6f222b4a0e6cea5d710ff0c242d31b98ba027c8e558c961"
+    }
+  ]
+}

@@ -44,8 +44,8 @@ npm run lint
 
 Las 55 pruebas se solapan con las corridas históricas; no se suman como 55 casos únicos nuevos al agregado final. La cobertura no se midió en este comando. `vitest.config.ts` incorpora los módulos de paginación/analytics/month-flow y el helper de simulación a la instrumentación seleccionada; la medición global debe declarar su nuevo alcance.
 
-## Límite material que sigue pendiente
+## Límite de esta corrida y corrección posterior
 
-**La reconstrucción de saldo en cliente todavía es una implementación transitoria vulnerable a concurrencia.** Paginar el ledger no crea un snapshot y su UPDATE posterior puede pisar un ingreso concurrente. Los tres casos seriales de este archivo y sus resultados históricos no aprueban esa garantía. El responsable asignó al agente SQL su reemplazo por un RPC bajo lock de cuenta con agregado en PostgreSQL y pruebas de intercalación; ese cambio y su ejecución no forman parte de esta evidencia. No ejecutar la reconstrucción real a partir de estas pruebas seriales.
+**Las 55 pruebas de esta fase incluyeron una reconstrucción transitoria en cliente vulnerable a concurrencia.** Paginar el ledger no creó un snapshot y su UPDATE posterior podía pisar un ingreso concurrente. Los tres casos seriales y estos resultados históricos no aprobaron esa garantía. La [corrección posterior de conciliación atómica](../account-recompute/README.md) reemplazó ese método por una RPC bajo bloqueo de cuenta y documenta 18 comprobaciones SQL y 7 grupos nativos con conexiones independientes, además del ajuste estrecho de precisión. Sus fuentes/hashes y resultados pertenecen a esa evidencia separada; no se reasignan a estas 55 pruebas.
 
 La paginación analítica por rangos tampoco se declara snapshot transaccional bajo mutaciones concurrentes. La aceptación API/carga con 5000 movimientos y contraste SQL completo sigue perteneciendo a su reporte aislado. CP3-19 original permanece BLOCKED por la contradicción MEP/RN08; las comprobaciones derivadas blue no lo convierten en PASS. Ningún resultado de este directorio acredita CNF-02 mensual, proveedores reales, cifrado/HTTPS, restauración integral o compatibilidad de navegadores.

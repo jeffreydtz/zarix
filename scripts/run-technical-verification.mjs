@@ -39,6 +39,7 @@ const commands=[
  ['balance-sql','node',['scripts/test-balance-trigger.mjs']],['shared-sql','node',['scripts/test-shared-expenses-sql.mjs']],
  ['plan-sql','node',['scripts/test-plan-limits.mjs']],['durable-sql','node',['scripts/test-durable-financial-operations.mjs']],
  ['import-sql','node',['scripts/test-durable-import.mjs']],
+ ['account-recompute-sql','node',['scripts/test-atomic-account-recompute.mjs']],
  ['full-schema-sql','node',['scripts/test-isolated-database.mjs',`--output-dir=${databaseEvidence}`]],
  ['performance','node',['scripts/test-isolated-performance.mjs']],
 ];
@@ -51,7 +52,7 @@ for(const [name,command,args] of commands){
  await stdout.close();await stderr.close();
  records.push({name,command:[command,...args],startedAt,finishedAt:new Date().toISOString(),durationMs:Date.now()-start,exitCode,status:exitCode===0?'PASS':'FAIL'});
  console.log(`${name}: ${exitCode===0?'PASS':'FAIL'} (${exitCode})`);
- if(['balance-sql','shared-sql','plan-sql','durable-sql','import-sql','dependency-audit'].includes(name))await fs.copyFile(path.join(output,`${name}.log`),path.join(output,`${name}.json`));
+ if(['balance-sql','shared-sql','plan-sql','durable-sql','import-sql','account-recompute-sql','dependency-audit'].includes(name))await fs.copyFile(path.join(output,`${name}.log`),path.join(output,`${name}.json`));
 }
 for(const [from,to] of [['coverage/coverage-summary.json','coverage-summary.json'],[path.join(databaseEvidence,'database-verification.json'),'database-verification.json']]){
  try{await fs.copyFile(path.isAbsolute(from)?from:path.join(root,from),path.join(output,to));}catch(error){records.push({name:`copy:${to}`,status:'FAIL',error:error.message});}

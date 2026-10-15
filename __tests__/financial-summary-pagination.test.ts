@@ -4,9 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   rows: [] as Record<string, any>[], rules: [] as Record<string, any>[],
   queries: [] as Record<string, any>[], writes: [] as Record<string, any>[],
-  failPage: null as null | ((query: Record<string, any>) => boolean), active: vi.fn(),
+  failPage: null as null | ((query: Record<string, any>) => boolean), active: vi.fn(), rpc: vi.fn(),
 }));
-vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => ({ from: query }) }));
+vi.mock('@/lib/supabase/server', () => ({ createServiceClientSync: () => ({ from: query, rpc: mocks.rpc }) }));
 vi.mock('@/lib/services/accounts', () => ({ accountsService: { getActiveAccountIds: mocks.active }, normalizeDebtBalanceForStorage: vi.fn() }));
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: { getExchangeRate: vi.fn().mockResolvedValue(1300) } }));
 import { transactionsService } from '@/lib/services/transactions';
@@ -99,27 +99,16 @@ describe('financial aggregate reads beyond PostgREST max_rows', () => {
     expect(result.daysLeft).toBe(17);
     expect(result.projectedSpendARS).toBeCloseTo(3010 + 3010 / 14 * 17 + 3015, 8);
   });
-  it('reconstruction completes the ledger before issuing the mocked account update', async () => {
-    mocks.rows = [{ ...expenseRows(1)[0], id: 'initial', type: 'income', amount: 10000, amount_in_account_currency: 10000,
-      transaction_date: '2026-10-01T00:00:00.000Z' }, ...expenseRows(1505)];
+  it('delegates reconstruction to the atomic owner-scoped RPC without separate ledger reads or writes', async () => {
+    mocks.rpc.mockResolvedValue({ data: { before: 123, after: 6990 }, error: null });
     expect(await transactionsService.recomputeAccountBalanceFromLedger('U1', accountId)).toEqual({ before: 123, after: 6990 });
-    expect(mocks.writes).toEqual([expect.objectContaining({ balance: 6990 })]);
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('recompute_account_balance', { p_user_id: 'U1', p_account_id: accountId });
+    expect(mocks.queries).toEqual([]); expect(mocks.writes).toEqual([]);
   });
-  it('reconstruction preserves the authoritative destination amount and owner/account scope across pages', async () => {
-    mocks.rows = [{ ...expenseRows(1)[0], id: 'initial', type: 'income', amount: 10000, amount_in_account_currency: 10000,
-      transaction_date: '2026-10-01T00:00:00.000Z' }, ...expenseRows(1505)];
-    mocks.rows.push({ ...mocks.rows[0], id: 'foreign', user_id: 'U2', amount_in_account_currency: 99999 },
-      { ...mocks.rows[0], id: 'unrelated', account_id: destinationId, amount_in_account_currency: 99999 },
-      { ...mocks.rows[0], id: 'incoming', account_id: destinationId, destination_account_id: accountId, type: 'transfer',
-        transaction_date: '2026-10-15T12:00:00.000Z', amount: 888, exchange_rate: 0.004,
-        amount_in_account_currency: 888, destination_amount_in_account_currency: 7.33 });
-    const result = await transactionsService.recomputeAccountBalanceFromLedger('U1', accountId);
-    expect(result.after).toBeCloseTo(6997.33, 8);
-    expect(mocks.writes).toHaveLength(1);
-    const pages = mocks.queries.filter(query => query.table === 'transactions');
-    expect(pages).toHaveLength(2);
-    expect(pages[1].filters).toEqual(pages[0].filters);
-    expect(pages[1].orders).toEqual([['transaction_date', true], ['id', true]]);
+  it('rejects an invalid reconstruction reply without making a fallback balance replacement', async () => {
+    mocks.rpc.mockResolvedValue({ data: { before: 123 }, error: null });
+    await expect(transactionsService.recomputeAccountBalanceFromLedger('U1', accountId)).rejects.toThrow('Respuesta inválida al recalcular el saldo');
+    expect(mocks.queries).toEqual([]); expect(mocks.writes).toEqual([]);
   });
   it('handles an exact 5000-row dataset and an empty final page without duplicates', async () => {
     mocks.rows = expenseRows(5000).reverse();
@@ -134,12 +123,11 @@ describe('financial aggregate reads beyond PostgREST max_rows', () => {
     await expect(transactionsService.getMonthSummary('U1', new Date('2026-10-14T12:00:00.000Z')))
       .rejects.toMatchObject({ message: 'synthetic page failure' });
   });
-  it('never updates an account after an intermediate reconstruction page fails', async () => {
-    mocks.rows = expenseRows(1505);
-    mocks.failPage = state => state.table === 'transactions' && state.from === 1000;
+  it('propagates a failed atomic reconstruction without retrying or making a separate account update', async () => {
+    mocks.rpc.mockResolvedValue({ data: null, error: { code: '42501', message: 'Cuenta no encontrada' } });
     await expect(transactionsService.recomputeAccountBalanceFromLedger('U1', accountId))
-      .rejects.toMatchObject({ message: 'synthetic page failure' });
-    expect(mocks.writes).toEqual([]);
+      .rejects.toMatchObject({ code: '42501', message: 'Cuenta no encontrada' });
+    expect(mocks.rpc).toHaveBeenCalledTimes(1); expect(mocks.queries).toEqual([]); expect(mocks.writes).toEqual([]);
   });
   it.each(['mtd', 'trailing', 'rules'])('rejects an intermediate %s month-flow page without partial projections', async section => {
     mocks.rows = expenseRows(1505);

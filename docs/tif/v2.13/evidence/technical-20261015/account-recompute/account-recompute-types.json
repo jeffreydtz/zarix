@@ -1,0 +1,1 @@
+{"status":"PASS","mode":"check","source":"loopback public schema via official Supabase CLI","tables":27,"functions":30,"sha256":"81928fe0332c9e6ae14230e978cc607cea5a6f694080e726700c1d0e3a81e679","file":"types/supabase-generated.ts"}
