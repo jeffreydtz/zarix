@@ -51,7 +51,7 @@ export default function AccountBreakdownChart({ data }: Props) {
           <BarChart 
             data={data} 
             layout="vertical"
-            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+            margin={{ top: 0, right: 0, left: 8, bottom: 0 }}
           >
             <XAxis
               type="number"
