@@ -1,0 +1,13 @@
+{
+  "purpose": "isolated-public-quote-profile",
+  "profile": "fallback-real",
+  "providers": {
+    "criptoya": "http://127.0.0.1:57910/fallback-primary",
+    "dolarapi": "https://dolarapi.com/v1",
+    "coingecko": "https://api.coingecko.com/api/v3"
+  },
+  "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+  "nextPid": 36287,
+  "maxRateAgeSeconds": 86400,
+  "marketTimeoutMs": 8000
+}

@@ -1,0 +1,530 @@
+{
+  "startedAt": "2026-10-15T03:01:55.952Z",
+  "status": "PARTIAL",
+  "run": "68124cc7-d83e-4212-be36-d17d9506ece8",
+  "scope": "Five exact original integration contracts. Normal password Auth -> SSR cookies -> actual Next HTTP APIs -> independent native PostgreSQL. No browser/UI-suite, provider-acceptance or new-identity claim; no product edits. Existing pricing paths may consult configured providers/doubles or database cache.",
+  "results": [
+    {
+      "id": "CP1-36",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "CP1-36 original API assertion passed on this exact expense ID",
+          "actual": "PASS",
+          "expected": "PASS",
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 owned archived group remains inactive",
+          "actual": {
+            "owner": "86ac638c-2710-4993-9622-f2e5671ad034",
+            "active": false
+          },
+          "expected": {
+            "owner": "86ac638c-2710-4993-9622-f2e5671ad034",
+            "active": false
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 original group currency is ARS",
+          "actual": "ARS",
+          "expected": "ARS",
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 exact original group has three members",
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 original expense is exactly 100 ARS",
+          "actual": 100,
+          "expected": 100,
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 exactly three distinct same-group split members",
+          "actual": [
+            "0970a307-bb4b-4745-b104-557c41665f0e",
+            "0e8a9bf9-c29b-4414-9eeb-5b08f7e4d4f2",
+            "42f602bc-38db-49ed-a4d2-a93422fa4c8f"
+          ],
+          "expected": [
+            "0970a307-bb4b-4745-b104-557c41665f0e",
+            "0e8a9bf9-c29b-4414-9eeb-5b08f7e4d4f2",
+            "42f602bc-38db-49ed-a4d2-a93422fa4c8f"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 split amounts are 33.34 33.33 33.33",
+          "actual": [
+            33.34,
+            33.33,
+            33.33
+          ],
+          "expected": [
+            33.34,
+            33.33,
+            33.33
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 exact expense split sum equals its 100 amount",
+          "actual": 100,
+          "expected": 100,
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 payer belongs to exact original group",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 original 100 expense net total is exact numeric zero",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 every existing expense in the same group independently reconciles and has same-group members",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "CP1-36 same original group net total is independently exact numeric zero",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        }
+      ],
+      "startedAt": "2026-10-15T03:01:58.902Z",
+      "evidence": {
+        "expenseId": "4d1e5748-bd1d-42e0-b2de-f822af79f27f",
+        "groupId": "9eff18e4-b6c6-42ae-bb23-a2b2d7a0a9e6",
+        "groupArchivedAndUnmodified": true,
+        "originalApiEvidence": {
+          "path": "../e2e/api/api-verification.json",
+          "sha256": "e33f155a43215110660507bb4f79072a95e8f2c3f4510b9644e362557664f35a",
+          "expenseId": "4d1e5748-bd1d-42e0-b2de-f822af79f27f"
+        },
+        "splitAmounts": [
+          "33.34",
+          "33.33",
+          "33.33"
+        ],
+        "numericSplitSum": "100.00",
+        "exactExpenseMemberNets": [
+          {
+            "net": "-33.34",
+            "owed": "33.34",
+            "paid": "0",
+            "member_id": "0970a307-bb4b-4745-b104-557c41665f0e"
+          },
+          {
+            "net": "66.67",
+            "owed": "33.33",
+            "paid": "100.00",
+            "member_id": "0e8a9bf9-c29b-4414-9eeb-5b08f7e4d4f2"
+          },
+          {
+            "net": "-33.33",
+            "owed": "33.33",
+            "paid": "0",
+            "member_id": "42f602bc-38db-49ed-a4d2-a93422fa4c8f"
+          }
+        ],
+        "exactExpenseNetSum": "0.00",
+        "originalGroupMemberNets": [
+          {
+            "net": "-33.34",
+            "member_id": "0970a307-bb4b-4745-b104-557c41665f0e"
+          },
+          {
+            "net": "66.67",
+            "member_id": "0e8a9bf9-c29b-4414-9eeb-5b08f7e4d4f2"
+          },
+          {
+            "net": "-33.33",
+            "member_id": "42f602bc-38db-49ed-a4d2-a93422fa4c8f"
+          }
+        ],
+        "originalGroupNetSum": "0.00",
+        "otherGroupExpensesKeptSeparate": 0,
+        "mutations": 0
+      },
+      "endedAt": "2026-10-15T03:01:59.727Z"
+    },
+    {
+      "id": "CP1-06",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "assertions": [],
+      "reason": "Fewer than three active account slots available; modifying original plan/accounts or bypassing movement limits is not authorized"
+    },
+    {
+      "id": "CP1-10",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "assertions": [],
+      "reason": "Fewer than three active account slots available; modifying original plan/accounts or bypassing movement limits is not authorized"
+    },
+    {
+      "id": "CP1-13",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "assertions": [],
+      "reason": "Fewer than three active account slots available; modifying original plan/accounts or bypassing movement limits is not authorized"
+    },
+    {
+      "id": "CP4-03",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "assertions": [],
+      "reason": "Fewer than three active account slots available; modifying original plan/accounts or bypassing movement limits is not authorized"
+    }
+  ],
+  "requests": [],
+  "fixtureAccounts": [],
+  "blockers": [
+    "Fewer than three active account slots available; modifying original plan/accounts or bypassing movement limits is not authorized"
+  ],
+  "buildBinding": {
+    "appOrigin": "http://127.0.0.1:3000",
+    "apiOrigin": "http://127.0.0.1:57321",
+    "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+    "nextPid": 36787,
+    "loginStatus": 200,
+    "servedCodeRevision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+    "coreVerificationPath": "docs/tif/v2.13/evidence/technical-20261015/core-responsive/verification.json",
+    "coreVerificationSha256": "87cfbb9a22048b6a226e5c0f8f72707f45e35cf099b27869c0a0903d7eec2920",
+    "coreSourceManifestSha256": "9e08a8ac3216e7a525ea3c4c006a9bf07616a41dc6d42b6da221142ddad0f204",
+    "servedRelevantSources": [
+      {
+        "path": "scripts/lib/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "currentCheckoutSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "app/api/accounts/route.ts",
+        "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+        "currentCheckoutSha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "app/api/transactions/route.ts",
+        "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+        "currentCheckoutSha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "app/api/transactions/[id]/route.ts",
+        "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+        "currentCheckoutSha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "app/api/transactions/summary/route.ts",
+        "sha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d",
+        "currentCheckoutSha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "app/api/investments/route.ts",
+        "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264",
+        "currentCheckoutSha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "app/api/investments/[id]/sell/route.ts",
+        "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+        "currentCheckoutSha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "lib/services/transactions.ts",
+        "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+        "currentCheckoutSha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "lib/services/investments.ts",
+        "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+        "currentCheckoutSha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "lib/services/cotizaciones.ts",
+        "sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece",
+        "currentCheckoutSha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21",
+        "sameAsCheckout": false
+      },
+      {
+        "path": "supabase/schema.sql",
+        "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+        "currentCheckoutSha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+        "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+        "currentCheckoutSha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+        "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296",
+        "currentCheckoutSha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+        "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1",
+        "currentCheckoutSha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+        "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+        "currentCheckoutSha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+        "sameAsCheckout": true
+      },
+      {
+        "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+        "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca",
+        "currentCheckoutSha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca",
+        "sameAsCheckout": true
+      }
+    ],
+    "currentCheckoutDifferences": [
+      {
+        "path": "app/(authenticated)/dashboard/page.tsx",
+        "servedGitSha256": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea",
+        "currentCheckoutSha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336",
+        "executedByThisBuild": false
+      },
+      {
+        "path": "components/analysis/AccountBreakdownChart.tsx",
+        "servedGitSha256": "798a47680181c7d8460ff5897a30a71324430cb7f0e2459476907ed3e58e6269",
+        "currentCheckoutSha256": "d0c9e48262dcf967f77b005f7b2a7b72b68d0d4741110b3f43761cabbbd481bc",
+        "executedByThisBuild": false
+      },
+      {
+        "path": "lib/api-handler.ts",
+        "servedGitSha256": "a44bd8a18078edd9569197e18e4025ea68bcfcf7d9f322498f75336fa0537159",
+        "currentCheckoutSha256": "7821e3093c036415cb211f771fc1b0f56fbb71b35690fb75b65d557927d2172c",
+        "executedByThisBuild": false
+      },
+      {
+        "path": "lib/auth/session.ts",
+        "servedGitSha256": "33672e7523c1a1d03a6f1c74c074ebb2eab6c80101249e0f395d55586883abd2",
+        "currentCheckoutSha256": "f595e6a1b7ce1018b599cb1b9c2c148443b95c0599b8137a7932e682083ba6be",
+        "executedByThisBuild": false
+      },
+      {
+        "path": "lib/services/cotizaciones.ts",
+        "servedGitSha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece",
+        "currentCheckoutSha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21",
+        "executedByThisBuild": false
+      },
+      {
+        "path": "middleware.ts",
+        "servedGitSha256": "a9bd52cc5494645c987b968e425a31946d25e8030f118e06c41911e6e19e032d",
+        "currentCheckoutSha256": "aeae3832b509f4c9330606465304fcd662840648143f0afabc7bafe4595dfced",
+        "executedByThisBuild": false
+      }
+    ],
+    "scope": "Next serves the existing CI3 build. Current checkout/harness manifests are recorded separately; later TTL/auth/dashboard/chart changes are unbuilt and are not tested by these focal requests."
+  },
+  "revision": "d54108d95393ba1c8a8d8459dd96d449351698f5",
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/focal-contracts/run.mjs",
+      "sha256": "cb692286b5243681dbd5f3b097f61c6e82600f6ae4fd58868dfdf59dec477afd"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/transactions/summary/route.ts",
+      "sha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    }
+  ],
+  "sourceManifestRole": "Current checkout and harness before/after only; served build source hashes are in buildBinding.servedRelevantSources. An unbuilt checkout hash is not execution evidence for that change.",
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "liveTriggerSha256": "824cee45b3cabcf87ea0184d8fa1cd5ef33d14950a5bf050e8b2c0eab7774f06",
+  "plan": {
+    "id": "86ac638c-2710-4993-9622-f2e5671ad034",
+    "cap": 20,
+    "status": "ACTIVE",
+    "grace_period_end": null,
+    "current_period_end": "2026-11-14T01:21:44.38576+00:00",
+    "active_movement_accounts": 20
+  },
+  "counts": {
+    "PASS": 1,
+    "FAIL": 0,
+    "BLOCKED": 4
+  },
+  "protectedScope": "All preexisting row columns in exactly twelve declared public tables, not all25/27 tables",
+  "protectedOriginalRows": [
+    {
+      "table": "users",
+      "count": 2,
+      "beforeMd5": "40cb887d01bbfdc577b96c2c4d5e5ca8",
+      "afterMd5": "40cb887d01bbfdc577b96c2c4d5e5ca8",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "count": 35,
+      "beforeMd5": "dcd043907eedca39f01b465eefbeaf28",
+      "afterMd5": "dcd043907eedca39f01b465eefbeaf28",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "count": 66,
+      "beforeMd5": "1a46f501fb0f685bad2fa9f3a676dabf",
+      "afterMd5": "1a46f501fb0f685bad2fa9f3a676dabf",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "count": 5,
+      "beforeMd5": "ab8cade2b72b65e9bb976f82b9a41a33",
+      "afterMd5": "ab8cade2b72b65e9bb976f82b9a41a33",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "count": 2,
+      "beforeMd5": "52763b94b71e01c96643b2af18ed6203",
+      "afterMd5": "52763b94b71e01c96643b2af18ed6203",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "count": 2,
+      "beforeMd5": "cdf5ee5c666b29afe31f3d3412af7d36",
+      "afterMd5": "cdf5ee5c666b29afe31f3d3412af7d36",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "count": 4,
+      "beforeMd5": "0282913cd2daf3bb37fb04816c7a9103",
+      "afterMd5": "0282913cd2daf3bb37fb04816c7a9103",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "count": 1,
+      "beforeMd5": "ed2ff51420075454c554dc3bceac94c1",
+      "afterMd5": "ed2ff51420075454c554dc3bceac94c1",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "count": 3,
+      "beforeMd5": "4e4185a32b312ab5c53cdca01ccee79b",
+      "afterMd5": "4e4185a32b312ab5c53cdca01ccee79b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "count": 31,
+      "beforeMd5": "57cae58874cd5cdac57e137f3351164c",
+      "afterMd5": "57cae58874cd5cdac57e137f3351164c",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "count": 2,
+      "beforeMd5": "87f3343810ed0aacf008d8f80512f10d",
+      "afterMd5": "87f3343810ed0aacf008d8f80512f10d",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "count": 3,
+      "beforeMd5": "f36e2b45d853de7143ce69dc906be8a0",
+      "afterMd5": "f36e2b45d853de7143ce69dc906be8a0",
+      "unchanged": true
+    }
+  ],
+  "protectedOriginalRowsVerified": true,
+  "sourceStable": true,
+  "endedAt": "2026-10-15T03:02:00.804Z"
+}

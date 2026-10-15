@@ -1,0 +1,94 @@
+{
+  "reviewedAt": "2026-10-15T02:53:35.298Z",
+  "status": "PASS",
+  "method": "Independent read-only artifact/code review; no Auth, SQL, network, browser or provider rerun",
+  "scope": "Exactly two public-quotes profiles and their archived reports/profile/state/counter/supervisor plus current quoted source hashes",
+  "profiles": [
+    {
+      "profile": "real",
+      "httpStatus": 200,
+      "normalAuthVerified": true,
+      "recordedListenerPid": 35669,
+      "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+      "provider": "criptoya",
+      "newMatchingFxRows": 8,
+      "canonical25Exact": true,
+      "oldFxPreserved": true,
+      "marketCacheExact": true,
+      "sourceAndMetadataHashesMatch": true,
+      "localFailureDoubleRequests": 0
+    },
+    {
+      "profile": "fallback-real",
+      "httpStatus": 200,
+      "normalAuthVerified": true,
+      "recordedListenerPid": 36287,
+      "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+      "provider": "dolarapi",
+      "newMatchingFxRows": 8,
+      "canonical25Exact": true,
+      "oldFxPreserved": true,
+      "marketCacheExact": true,
+      "sourceAndMetadataHashesMatch": true,
+      "localFailureDoubleRequests": 1
+    }
+  ],
+  "profilesSequentialWithExactCanonicalAndAuxiliaryContinuity": true,
+  "claims": {
+    "ordinaryApiToNormalizedProviderDataAndEightNewDurableRates": true,
+    "primaryFailure503IsExplicitLocalDouble": true,
+    "cryptoProviderMetadataAvailable": false,
+    "freshExternalSocketPerQuoteProved": false,
+    "nextDataCacheMayPersist": true
+  },
+  "limits": [
+    "PID/listener ownership is attested by the executed supervisor start record; this review does not query a live process",
+    "Crypto origin/provider is absent from this API, so CoinGecko is a configured binding and may use Next Data Cache",
+    "Not an acceptance of stock/EUR providers, sustained availability, production, or every external integration"
+  ],
+  "secretLiteralReview": {
+    "filesScanned": 15,
+    "patterns": [
+      "JWT",
+      "GoogleAPIKey",
+      "CredentialURL",
+      "LiveProviderToken"
+    ],
+    "matches": 0,
+    "scope": "Static new-artifact/code review; not an exhaustive arbitrary-secret detector; no credential values read or published"
+  },
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/public-quotes/real/public-quotes.json",
+      "sha256": "db1386fa614cc0c936bc5352a15d3e0b03f2e9571a14eb211c90d4615a8168d1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/public-quotes/real/e2e-app-state.json",
+      "sha256": "f20f48effcb343ab547566269cb7cbf2ca2cbf12dcbd242dac082f71ceef661a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/public-quotes/real/runtime-profile.json",
+      "sha256": "1b28aae7bbcd1dd868ba2c7f43508f3f2e8eb4f4492b2a0e9185cc5844cfe58c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/public-quotes/real/e2e-fault-count.json",
+      "sha256": "6b7c163c26fc6832a4db30059b61a15e2c1c1164fa33e164c327358238654223"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/public-quotes/fallback-real/public-quotes.json",
+      "sha256": "0c55f57e9b36c77531ce624570b7af65aff56143db00c3852ef8f705b2bce326"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/public-quotes/fallback-real/e2e-app-state.json",
+      "sha256": "240bea81c0ff074f8ff9eacf54a02e878995ffd461cd19e197e85d5d3bf85868"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/public-quotes/fallback-real/runtime-profile.json",
+      "sha256": "f9b5a413cbb5182f079ce2dec6dda47ce9ff7a6647b69b19b59355c4ca42c8bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/public-quotes/fallback-real/e2e-fault-count.json",
+      "sha256": "7f30030f5d3d6677f57d846d0043dd85cc0e085bc7d99efe5faadcaf3c259c7b"
+    }
+  ]
+}
