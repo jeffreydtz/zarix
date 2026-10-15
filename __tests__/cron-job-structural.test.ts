@@ -111,7 +111,7 @@ describe('CU-006 CronJob.run', () => {
     expect(res.status).toBe(500);
     const body = await res.json();
     expect(body).toEqual({ error: 'Internal error' });
-    expect(alertAdmin).toHaveBeenCalledWith('Cron "error-job" FALLÓ: boom');
+    expect(alertAdmin).toHaveBeenCalledWith('Cron "error-job" FALLÓ. Revisar el registro correlacionado.');
   });
 });
 

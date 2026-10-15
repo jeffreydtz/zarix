@@ -188,11 +188,18 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await transactionsService.delete(params.id, user.id);
+    // Preserve the verified session actor in the database deletion audit.
+    const { error } = await supabase
+      .from('transactions')
+      .delete()
+      .eq('id', params.id)
+      .eq('user_id', user.id);
+    if (error) throw error;
     // 204 No Content must not include a body — use NextResponse directly
     return new NextResponse(null, { status: 204 });
   } catch (error: any) {
-    console.error('Transaction DELETE error:', error);
+    // Database details can contain the private deleted-row audit snapshot.
+    console.error('Transaction DELETE error');
     return errorResponse(error);
   }
 }

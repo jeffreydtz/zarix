@@ -146,3 +146,35 @@ describe('billing webhook provider/tenant failures with isolated doubles', () =>
     } finally { vi.useRealTimers(); }
   });
 });
+
+describe('CNF-13 payment correlation with explicit provider/database doubles', () => {
+  it.each(['success', 'rejection', 'provider-failure'] as const)('records %s without provider contents', async mode => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const index = { success: '07', rejection: '08', 'provider-failure': '09' }[mode];
+    const owner = '00000000-0000-4000-8000-000000000013';
+    mocks.lookup.mockResolvedValue({ data: { id: owner } });
+    mocks.getPreapproval.mockResolvedValue({ id: resourceId, external_reference: owner, status: 'cancelled' });
+    if (mode === 'provider-failure') mocks.getPreapproval.mockRejectedValue(new Error('SECRETO_CNF13 SUELDO_PRIVADO_CNF13 IMAGEN_CNF13'));
+    const req = request('POST', `data.id=${resourceId}`, { data: { id: resourceId },
+      token: 'SECRETO_CNF13', description: 'SUELDO_PRIVADO_CNF13', image: 'IMAGEN_CNF13' });
+    req.headers.set('x-correlation-id', `corr-cnf13-${index}`);
+    if (mode === 'rejection') req.headers.set('x-signature', 'ts=123,v1=forged');
+    try {
+      const response = await POST(req);
+      expect(response.status).toBe(mode === 'success' ? 200 : mode === 'rejection' ? 401 : 500);
+      expect(response.headers.get('x-correlation-id')).toBe(`corr-cnf13-${index}`);
+      const rows = info.mock.calls.map(([raw]) => JSON.parse(raw));
+      expect(rows.at(-1)).toMatchObject({ channel: 'payment',
+        outcome: mode === 'success' ? 'success' : mode === 'rejection' ? 'rejected' : 'error' });
+      if (mode === 'success') expect(rows).toContainEqual(expect.objectContaining({
+        component: 'database', action: 'persist', referenceType: 'user', referenceId: owner,
+      }));
+      if (mode === 'provider-failure') expect(rows.filter(row => row.outcome === 'error')
+        .every(row => row.failureClass === 'provider')).toBe(true);
+      if (mode !== 'success') expect(mocks.update).not.toHaveBeenCalled();
+      const logs = JSON.stringify([...info.mock.calls, ...error.mock.calls]);
+      for (const marker of ['SECRETO_CNF13', 'SUELDO_PRIVADO_CNF13', 'IMAGEN_CNF13']) expect(logs).not.toContain(marker);
+    } finally { info.mockRestore(); error.mockRestore(); }
+  });
+});

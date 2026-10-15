@@ -6,6 +6,7 @@ import { normalizeCurrency } from '@/lib/transaction-exchange';
 import { accountsService, normalizeDebtBalanceForStorage } from './accounts';
 import { cotizacionesService } from './cotizaciones';
 import { readAllPages } from '@/lib/supabase-paginated-read';
+import { observe, observedStep } from '@/lib/observability/correlation';
 import type { Transaction, Account } from '@/types/database';
 
 /**
@@ -57,6 +58,14 @@ export interface ToArsConverter {
   excludedCurrencies: string[];
 }
 
+async function observedExchangeRate(from: string, to: string, unavailable: string): Promise<number> {
+  return observedStep({ component: 'provider', action: 'lookup', failureClass: 'provider' }, async () => {
+    const rate = await cotizacionesService.getExchangeRate(from, to);
+    if (!Number.isFinite(rate) || rate <= 0) throw new Error(unavailable);
+    return rate;
+  });
+}
+
 /**
  * Conversor a ARS por movimiento (monto original × cotización actual). Sumar
  * amount_in_account_currency mezcla ARS, USD, EUR, etc. en un total sin sentido
@@ -78,8 +87,7 @@ export async function buildToArsConverter(
       continue;
     }
     try {
-      const rate = await cotizacionesService.getExchangeRate(c, 'ARS');
-      if (!Number.isFinite(rate) || rate <= 0) throw new Error('Cotización inválida');
+      const rate = await observedExchangeRate(c, 'ARS', 'Cotización inválida');
       rateToArs.set(c, rate);
     } catch {
       excludedCurrencies.push(c);
@@ -108,10 +116,8 @@ async function computeAmountInAccountCurrencyForAccount(
   if (c === a) {
     return { amountInAccountCurrency: amount, exchangeRate: 1 };
   }
-  const exchangeRate = await cotizacionesService.getExchangeRate(currency, accountCurrency);
-  if (!Number.isFinite(exchangeRate) || exchangeRate <= 0) {
-    throw new Error('No hay una cotización válida para convertir el movimiento.');
-  }
+  const exchangeRate = await observedExchangeRate(currency, accountCurrency,
+    'No hay una cotización válida para convertir el movimiento.');
   return { amountInAccountCurrency: amount * exchangeRate, exchangeRate };
 }
 
@@ -138,8 +144,8 @@ export async function computeTransferAmounts(
   let exchangeRate = 1;
   let amountInSource = amount;
   if (source !== destination) {
-    const rate = override ?? await cotizacionesService.getExchangeRate(inputCurrency,
-      inputCurrency === source ? destination : source);
+    const rate = override ?? await observedExchangeRate(inputCurrency,
+      inputCurrency === source ? destination : source, 'No hay una cotización válida para la transferencia.');
     if (!Number.isFinite(rate) || rate <= 0) throw new Error('No hay una cotización válida para la transferencia.');
     if (inputCurrency === source) exchangeRate = rate;
     else amountInSource = amount * rate;
@@ -195,6 +201,8 @@ export interface TransactionWithCategory extends Transaction {
 
 class TransactionsService {
   async create(input: CreateTransactionInput): Promise<Transaction> {
+    return observedStep({ component: 'service', action: 'execute', failureClass: 'consistency',
+      referenceType: 'transaction' }, async () => {
     // Normalizamos la moneda a mayúsculas antes de cualquier insert: el CHECK
     // `currency = upper(currency)` (migración data_integrity) lo exige, y evita
     // los mismatches por comparación de strings aguas abajo.
@@ -235,10 +243,14 @@ class TransactionsService {
       if (error) throw error;
       if (prior) {
         if (prior.request_hash !== requestHash) throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+        observe({ component: 'database', action: 'replay', outcome: 'success',
+          referenceType: 'transaction', referenceId: (prior.response as Transaction).id });
         return prior.response as Transaction;
       }
     }
     const persist = async (row: Record<string, unknown>, installments = 1): Promise<Transaction> => {
+      return observedStep({ component: 'database', action: 'persist', failureClass: 'consistency',
+        referenceType: 'transaction' }, async () => {
       if (input.requestId) {
         const { data, error } = await supabase.rpc('create_transaction_once', {
           p_user_id: input.userId, p_request_id: input.requestId, p_request_hash: requestHash,
@@ -251,6 +263,7 @@ class TransactionsService {
       const { data, error } = await supabase.from('transactions').insert(row).select().single();
       if (error) throw error;
       return data;
+      }, result => result.id);
     };
 
     const account = await supabase
@@ -390,6 +403,7 @@ class TransactionsService {
         is_recurring: input.isRecurring === true,
         recurring_rule_id: input.recurringRuleId || null,
       });
+    }, result => result.id);
   }
 
   async list(

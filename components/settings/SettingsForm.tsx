@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { effectivePlan } from '@/lib/plans/rules';
 import type { User } from '@/types/database';
 import { useRouter } from 'next/navigation';
+import { presentationPreferencesSchema, type PresentationCurrency } from '@/lib/presentation-preferences';
 
 interface SettingsFormProps {
   user: User;
@@ -33,6 +34,11 @@ export default function SettingsForm({
   const [linkCode, setLinkCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [baseCurrency, setBaseCurrency] = useState<PresentationCurrency>(user.default_currency === 'USD' ? 'USD' : 'ARS');
+  const [netWorthVisible, setNetWorthVisible] = useState(user.net_worth_widget_visible ?? true);
+  const [preferencesLoading, setPreferencesLoading] = useState(false);
+  const [preferencesMessage, setPreferencesMessage] = useState('');
+  const preferencesInFlight = useRef(false);
 
   const [geminiKey, setGeminiKey] = useState('');
   const [integLoading, setIntegLoading] = useState(false);
@@ -174,6 +180,32 @@ export default function SettingsForm({
     } finally {
       billingInFlight.current = false;
       setBillingLoading(false);
+    }
+  };
+
+  const savePreferences = async () => {
+    if (preferencesInFlight.current) return;
+    preferencesInFlight.current = true;
+    setPreferencesLoading(true);
+    setPreferencesMessage('');
+    try {
+      const response = await fetch('/api/user/preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Preferences-Owner': user.id },
+        body: JSON.stringify({ default_currency: baseCurrency, net_worth_widget_visible: netWorthVisible }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || 'No se pudieron guardar las preferencias.');
+      const saved = presentationPreferencesSchema.parse(data);
+      setBaseCurrency(saved.default_currency);
+      setNetWorthVisible(saved.net_worth_widget_visible);
+      setPreferencesMessage('Preferencias guardadas.');
+      router.refresh();
+    } catch (error) {
+      setPreferencesMessage(error instanceof Error ? error.message : 'No se pudieron guardar las preferencias.');
+    } finally {
+      preferencesInFlight.current = false;
+      setPreferencesLoading(false);
     }
   };
 
@@ -769,15 +801,28 @@ export default function SettingsForm({
         <h2 className="text-xl font-semibold mb-4">Preferencias</h2>
         <div className="space-y-3">
           <div>
-            <label className="text-sm text-muted-foreground mb-2 block">Moneda por defecto</label>
+            <label htmlFor="base-currency" className="text-sm text-muted-foreground mb-2 block">Moneda base del patrimonio</label>
             <select
-              defaultValue={user.default_currency}
+              id="base-currency"
+              value={baseCurrency}
+              disabled={preferencesLoading}
+              onChange={event => setBaseCurrency(event.target.value as PresentationCurrency)}
               className="w-full px-4 py-2 rounded-lg border border-border bg-secondary"
             >
               <option value="ARS">ARS (Peso Argentino)</option>
               <option value="USD">USD (Dólar)</option>
             </select>
           </div>
+          <label className="flex items-center justify-between gap-3 text-sm">
+            Mostrar panel Patrimonio
+            <input type="checkbox" checked={netWorthVisible} disabled={preferencesLoading}
+              onChange={event => setNetWorthVisible(event.target.checked)} className="w-6 h-6 accent-primary" />
+          </label>
+          <p className="text-xs text-muted-foreground">Cambia la presentación, sin modificar los saldos ni sus monedas originales.</p>
+          <button type="button" onClick={savePreferences} disabled={preferencesLoading} className="btn-primary">
+            {preferencesLoading ? 'Guardando…' : 'Guardar preferencias'}
+          </button>
+          {preferencesMessage && <p role="status" className="text-sm">{preferencesMessage}</p>}
         </div>
       </div>
     </div>

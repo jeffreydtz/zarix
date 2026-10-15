@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   quotes: vi.fn(), dolar: vi.fn(), history: vi.fn(), snapshot: vi.fn(),
   inflacion: vi.fn(), sparklines: vi.fn(), monthFlow: vi.fn(), upcoming: vi.fn(), budgets: vi.fn(),
   totals: vi.fn(),
+  preferences: vi.fn(),
 }));
 
 vi.mock('@/lib/auth/session', () => ({ getCachedUser: mocks.user }));
@@ -15,13 +16,14 @@ vi.mock('@/lib/services/transactions', () => ({ transactionsService: { list: moc
 vi.mock('@/lib/services/investments', () => ({ investmentsService: { getPortfolioSummary: mocks.portfolio } }));
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: { getAllQuotes: mocks.quotes, getDolarQuotes: mocks.dolar } }));
 vi.mock('@/lib/services/net-worth', () => ({ getNetWorthHistory: mocks.history, recordNetWorthSnapshot: mocks.snapshot }));
+vi.mock('@/lib/services/presentation-preferences', () => ({ getPresentationPreferences: mocks.preferences }));
 vi.mock('@/lib/services/inflacion', () => ({ getInflacionSeries: mocks.inflacion }));
 vi.mock('@/lib/services/market-history', () => ({ getMarketSparklines: mocks.sparklines }));
 vi.mock('@/lib/services/month-flow', () => ({ getMonthFlow: mocks.monthFlow }));
 vi.mock('@/lib/services/upcoming', () => ({ getUpcoming: mocks.upcoming }));
 vi.mock('@/lib/services/budget-summary', () => ({ getTopBudgets: mocks.budgets }));
 vi.mock('next/dynamic', () => ({ default: () => () => null }));
-vi.mock('@/components/dashboard/NetWorthHero', () => ({ default: ({ now }: { now: unknown }) => createElement('div', { 'data-testid': 'net-worth' }, JSON.stringify(now)) }));
+vi.mock('@/components/dashboard/NetWorthHero', () => ({ default: ({ now, baseCurrency }: { now: unknown; baseCurrency: unknown }) => createElement('div', { 'data-testid': 'net-worth', 'data-base-currency': baseCurrency }, JSON.stringify(now)) }));
 vi.mock('@/components/dashboard/MarketStrip', () => ({ default: ({ quotes }: { quotes: unknown }) => createElement('div', { 'data-testid': 'quotes' }, JSON.stringify(quotes)) }));
 vi.mock('@/components/dashboard/MonthFlowCard', () => ({ default: () => null }));
 vi.mock('@/components/dashboard/UpcomingRail', () => ({ default: () => null }));
@@ -37,6 +39,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.user.mockResolvedValue({ id: 'synthetic-user' });
+  mocks.preferences.mockResolvedValue({ default_currency: 'ARS', net_worth_widget_visible: true });
   mocks.accounts.mockResolvedValue([{ id: 'synthetic-account' }]);
   mocks.transactions.mockResolvedValue([]);
   mocks.portfolio.mockResolvedValue({ totalCurrentValue: 20, totalCurrentValueArsBlue: 24000, blueArsPerUsd: 1200, investments: [] });
@@ -54,6 +57,21 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('dashboard read failures preserve financial truth', () => {
+  it('CP3-17: uses the current owner saved base and never writes financial history on render', async () => {
+    mocks.preferences.mockResolvedValue({ default_currency: 'USD', net_worth_widget_visible: true });
+    const html = renderToStaticMarkup(await DashboardPage());
+    expect(html).toContain('data-base-currency="USD"');
+    expect(mocks.preferences).toHaveBeenCalledExactlyOnceWith('synthetic-user');
+    expect(mocks.snapshot).not.toHaveBeenCalled();
+  });
+  it('CP3-17: hides both patrimoine widgets without hiding accounts, markets or rewriting history', async () => {
+    mocks.preferences.mockResolvedValue({ default_currency: 'USD', net_worth_widget_visible: false });
+    const html = renderToStaticMarkup(await DashboardPage());
+    expect(html).not.toContain('data-testid="net-worth"');
+    expect(html).not.toContain('networth-sentinel');
+    expect(html).toContain('data-testid="quotes"');
+    expect(mocks.snapshot).not.toHaveBeenCalled();
+  });
   it('propagates explicit known-subtotal exclusions and never records a partial current point', async () => {
     mocks.portfolio.mockResolvedValue({ totalCurrentValue: 0, totalCurrentValueArsBlue: 0, investments: [] });
     mocks.totals.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
@@ -66,7 +84,7 @@ describe('dashboard read failures preserve financial truth', () => {
     expect(mocks.accounts).toHaveBeenCalledWith('synthetic-user', { allowPartialValuation: true });
     expect(mocks.snapshot).not.toHaveBeenCalled();
   });
-  it.each(['accounts', 'transactions', 'portfolio', 'history', 'monthFlow', 'upcoming', 'budgets'] as const)(
+  it.each(['accounts', 'transactions', 'portfolio', 'history', 'monthFlow', 'upcoming', 'budgets', 'preferences'] as const)(
     'shows unavailable and retry instead of partial financial values when %s fails', async source => {
       mocks[source].mockRejectedValueOnce(new Error('synthetic database timeout'));
       const html = renderToStaticMarkup(await DashboardPage());
@@ -82,7 +100,7 @@ describe('dashboard read failures preserve financial truth', () => {
     const html = renderToStaticMarkup(await DashboardPage());
     expect(html).toContain('&quot;totalUSD&quot;:120');
     expect(html).toContain('&quot;totalARSBlue&quot;:144000');
-    expect(mocks.snapshot).toHaveBeenCalledWith('synthetic-user');
+    expect(mocks.snapshot).not.toHaveBeenCalled();
   });
 
   it('labels unavailable market quotes without fabricating current zero rates', async () => {

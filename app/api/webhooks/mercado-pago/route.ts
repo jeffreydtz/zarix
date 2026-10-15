@@ -5,6 +5,7 @@ import { mercadoPagoService } from '@/lib/services/mercado-pago-service';
 import { subscriptionsService } from '@/lib/services/subscriptions';
 import { mapAuthorizedPayment } from '@/lib/billing/subscription-events';
 import { timingSafeStringEqual } from '@/lib/secure-compare';
+import { observedRequest, observedStep } from '@/lib/observability/correlation';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -95,21 +96,26 @@ function notificationType(req: NextRequest, payload?: unknown): string | null {
 }
 
 async function processWebhook(resourceId: string, type: string): Promise<void> {
+  return observedStep({ component: 'service', action: 'execute', failureClass: 'consistency' }, async () => {
   if (!['subscription_preapproval', 'preapproval', 'subscription_authorized_payment'].includes(type)) return;
   let invoice = type === 'subscription_authorized_payment'
-    ? await mercadoPagoService.getAuthorizedPayment(resourceId) : null;
+    ? await observedStep({ component: 'provider', action: 'lookup', failureClass: 'provider' },
+      () => mercadoPagoService.getAuthorizedPayment(resourceId)) : null;
   if (invoice && String(invoice.id) !== resourceId) throw new Error('Mercado Pago invoice resource mismatch');
   const preapprovalId = invoice ? invoice.preapproval_id : resourceId;
   if (!preapprovalId) throw new Error('Mercado Pago invoice has no subscription');
   // Checkout persists this association before exposing a payment link. Never let
   // external_reference attach an unrelated or retired agreement to a user.
   const supabase = createServiceClientSync();
-  const { data: owner, error } = await supabase
+  const owner = await observedStep({ component: 'database', action: 'lookup', failureClass: 'consistency' }, async () => {
+  const { data, error } = await supabase
     .from('users')
     .select('id')
     .eq('mp_preapproval_id', preapprovalId)
     .maybeSingle();
   if (error) throw error;
+  return data;
+  });
   if (!owner) return;
 
   // Read the snapshot BEFORE fetching provider state. A concurrent checkout or
@@ -117,12 +123,14 @@ async function processWebhook(resourceId: string, type: string): Promise<void> {
   const currentState = await subscriptionsService.getUserState(owner.id);
   if (!currentState || currentState.mp_preapproval_id !== preapprovalId) return;
   if (invoice) {
-    invoice = await mercadoPagoService.getAuthorizedPayment(resourceId);
+    invoice = await observedStep({ component: 'provider', action: 'lookup', failureClass: 'provider' },
+      () => mercadoPagoService.getAuthorizedPayment(resourceId));
     if (String(invoice.id) !== resourceId || invoice.preapproval_id !== preapprovalId) {
       throw new Error('Mercado Pago invoice association changed');
     }
   }
-  const preapproval = await mercadoPagoService.getPreapproval(preapprovalId);
+  const preapproval = await observedStep({ component: 'provider', action: 'lookup', failureClass: 'provider' },
+    () => mercadoPagoService.getPreapproval(preapprovalId));
   if (preapproval.id !== preapprovalId || preapproval.external_reference !== owner.id ||
       (invoice && invoice.external_reference !== owner.id)) {
     throw new Error('Mercado Pago subscription association mismatch');
@@ -134,17 +142,20 @@ async function processWebhook(resourceId: string, type: string): Promise<void> {
       (nextState.currentPeriodEnd === undefined || nextState.currentPeriodEnd === currentState.current_period_end) &&
       (nextState.gracePeriodEnd === undefined || nextState.gracePeriodEnd === currentState.grace_period_end)) return;
 
-  await subscriptionsService.updateUserState({
+  await observedStep({ component: 'database', action: 'persist', failureClass: 'consistency',
+    referenceType: 'user' }, () => subscriptionsService.updateUserState({
     userId: owner.id,
     status: nextState.status,
     currentPeriodEnd: nextState.currentPeriodEnd,
     gracePeriodEnd: nextState.gracePeriodEnd,
     mpPreapprovalId: preapproval.id,
     expectedState: currentState,
+  }), () => owner.id);
   });
 }
 
 export async function POST(req: NextRequest) {
+  return observedRequest(req, 'payment', 'payment.webhook', async () => {
   const signedId = signedResourceId(req);
   if (!signedId || !verifyMercadoPagoSignature(req, signedId)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
@@ -158,13 +169,14 @@ export async function POST(req: NextRequest) {
   try {
     await processWebhook(signedId, type);
   } catch (error) {
-    console.error('Mercado Pago webhook processing error:', error);
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
   return NextResponse.json({ ok: true });
+  });
 }
 
 export async function GET(req: NextRequest) {
+  return observedRequest(req, 'payment', 'payment.webhook', async () => {
   // MP también notifica por GET; debe validar firma igual que POST. Sin esto, un
   // GET sin firma podía forzar transiciones de suscripción de cualquier usuario.
   const signedId = signedResourceId(req);
@@ -176,8 +188,8 @@ export async function GET(req: NextRequest) {
   try {
     await processWebhook(signedId, type);
   } catch (error) {
-    console.error('Mercado Pago webhook processing error:', error);
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
   return NextResponse.json({ ok: true });
+  });
 }

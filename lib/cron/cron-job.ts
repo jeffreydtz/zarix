@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { verifyCronBearer } from '@/lib/cron-auth';
 import { alertAdmin } from '@/lib/observability/alert';
+import { observe, observedRequest, observedStep } from '@/lib/observability/correlation';
 
 export type ServiceClient = ReturnType<typeof createServiceClientSync>;
 
@@ -22,6 +23,7 @@ export abstract class CronJob {
 
   /** Template method: NO redefinir en subclases. */
   async run(request: NextRequest): Promise<NextResponse> {
+    return observedRequest(request, 'cron', 'cron.run', async () => {
     const authHeader = request.headers.get('authorization');
     if (!verifyCronBearer(authHeader, process.env.CRON_SECRET)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -30,7 +32,8 @@ export abstract class CronJob {
     const supabase = createServiceClientSync();
 
     try {
-      const payload = await this.execute(supabase);
+      const payload = await observedStep({ component: 'service', action: 'execute',
+        failureClass: 'consistency' }, () => this.execute(supabase));
       // Alerta cuando un job iterativo terminó con ítems fallidos (no lanza,
       // pero no debe pasar inadvertido — p. ej. actualización de precios).
       const errorCount = Number((payload as { errors?: number }).errors ?? 0);
@@ -41,12 +44,12 @@ export abstract class CronJob {
       }
       return NextResponse.json({ success: true, job: this.name, ...payload });
     } catch (e) {
-      console.error(`[cron:${this.name}] error:`, e);
       await alertAdmin(
-        `Cron "${this.name}" FALLÓ: ${e instanceof Error ? e.message : String(e)}`
+        `Cron "${this.name}" FALLÓ. Revisar el registro correlacionado.`
       );
       return NextResponse.json({ error: 'Internal error' }, { status: 500 });
     }
+    });
   }
 
   /** Operación primitiva: el trabajo propio del job. */
@@ -64,7 +67,6 @@ export abstract class IterativeCronJob<TItem> extends CronJob {
     try {
       items = await this.fetchItems(supabase);
     } catch (e) {
-      console.error(`[cron:${this.name}] fetch error:`, e);
       throw e;
     }
 
@@ -83,7 +85,7 @@ export abstract class IterativeCronJob<TItem> extends CronJob {
         const done = await this.processItem(supabase, item);
         if (done !== false) processed++;
       } catch (e) {
-        console.error(`[cron:${this.name}] item error:`, e);
+        observe({ component: 'service', action: 'execute', outcome: 'error', failureClass: 'consistency' });
         errors++;
       }
     }

@@ -11,6 +11,7 @@ import { usePrivacy, PRIVACY_MASK } from '@/lib/hooks/use-privacy';
 import { deflatorToToday, type InflacionMes } from '@/lib/services/inflacion';
 import type { NetWorthNow, NetWorthPoint } from '@/lib/services/net-worth';
 import BlueFxReferenceDetails from '@/components/ui/BlueFxReferenceDetails';
+import type { PresentationCurrency } from '@/lib/presentation-preferences';
 
 type ViewMode = 'ars' | 'usd' | 'real';
 type TimeframeId = '1m' | '3m' | '1y' | 'max';
@@ -20,9 +21,8 @@ interface NetWorthHeroProps {
   now: NetWorthNow;
   history: NetWorthPoint[];
   inflacion: InflacionMes[];
+  baseCurrency?: PresentationCurrency;
 }
-
-const VIEW_STORAGE_KEY = 'zarix.networth.view';
 
 const VIEWS: { id: ViewMode; label: string }[] = [
   { id: 'ars', label: 'ARS' },
@@ -36,17 +36,6 @@ const TIMEFRAMES: { id: TimeframeId; label: string; days: number | null }[] = [
   { id: '1y', label: '1A', days: 365 },
   { id: 'max', label: 'Max', days: null },
 ];
-
-function readStoredView(): ViewMode {
-  if (typeof window === 'undefined') return 'ars';
-  try {
-    const v = window.localStorage.getItem(VIEW_STORAGE_KEY);
-    if (v === 'ars' || v === 'usd' || v === 'real') return v;
-  } catch {
-    /* ignore */
-  }
-  return 'ars';
-}
 
 function currencyForView(view: ViewMode): Currency {
   return view === 'usd' ? 'USD' : 'ARS';
@@ -118,26 +107,21 @@ function EyeOffIcon({ className }: { className?: string }) {
  * con timeframes. Único gran número animado (count-up al montar); el resto
  * de la UI es estática para no competir por atención.
  */
-export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroProps) {
+export default function NetWorthHero({ now, history, inflacion, baseCurrency = 'ARS' }: NetWorthHeroProps) {
   const { hidden, toggle } = usePrivacy();
   const gradientId = useId();
 
-  const [view, setView] = useState<ViewMode>('ars');
+  const [view, setView] = useState<ViewMode>(baseCurrency === 'USD' ? 'usd' : 'ars');
   const [timeframe, setTimeframe] = useState<TimeframeId>('3m');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setView(readStoredView());
+    setView(baseCurrency === 'USD' ? 'usd' : 'ars');
     setMounted(true);
-  }, []);
+  }, [baseCurrency]);
 
   function selectView(next: ViewMode) {
     setView(next);
-    try {
-      window.localStorage.setItem(VIEW_STORAGE_KEY, next);
-    } catch {
-      /* ignore quota errors */
-    }
   }
 
   // Valor de HOY: viene de `now` (en vivo), no del historial. En la vista

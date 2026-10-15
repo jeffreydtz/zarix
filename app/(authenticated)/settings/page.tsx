@@ -52,6 +52,7 @@ export default async function SettingsPage() {
 
         {user && (
           <SettingsForm
+            key={user.id}
             user={user}
             geminiConfigured={!!secretsState?.gemini_api_key}
             telegramCustomMode={!!secretsState?.telegram_bot_token}

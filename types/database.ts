@@ -44,6 +44,8 @@ export interface User {
   current_period_end: string | null;
   grace_period_end: string | null;
   default_currency: string;
+  /** Omitted only by older projections; the persisted default is true. */
+  net_worth_widget_visible?: boolean;
   timezone: string;
   notification_time: string;
   daily_summary_enabled: boolean;

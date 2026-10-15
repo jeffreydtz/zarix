@@ -62,8 +62,9 @@ export function errorResponse(error: unknown): NextResponse {
   }
   const plan = planError(error);
   if (plan) return NextResponse.json({ error: plan.message }, { status: plan.status });
-  // Error no controlado: log completo del lado server, genérico al cliente.
-  console.error('[api] unhandled error:', error);
+  // DB/provider errors can embed row values or credentials. Correlated handlers
+  // emit fixed failure classes; legacy callers still get a content-free signal.
+  console.error('[api] unhandled error');
   return NextResponse.json(
     { error: 'Ocurrió un error procesando la solicitud.' },
     { status: 500 }

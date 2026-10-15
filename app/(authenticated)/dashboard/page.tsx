@@ -6,10 +6,8 @@ import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { investmentsService } from '@/lib/services/investments';
-import {
-  getNetWorthHistory,
-  recordNetWorthSnapshot,
-} from '@/lib/services/net-worth';
+import { getNetWorthHistory } from '@/lib/services/net-worth';
+import { getPresentationPreferences } from '@/lib/services/presentation-preferences';
 import { getInflacionSeries } from '@/lib/services/inflacion';
 import { getMarketSparklines } from '@/lib/services/market-history';
 import { getMonthFlow } from '@/lib/services/month-flow';
@@ -65,6 +63,7 @@ export default async function DashboardPage() {
       monthFlow,
       upcoming,
       budgets,
+      preferences,
     ] = await Promise.all([
       accountsService.list(user.id, { allowPartialValuation: true }),
       transactionsService.list(user.id, { limit: 5 }),
@@ -80,6 +79,7 @@ export default async function DashboardPage() {
       getMonthFlow(user.id),
       getUpcoming(user.id),
       getTopBudgets(user.id),
+      getPresentationPreferences(user.id),
     ]);
 
     // Patrimonio HOY: misma composición que computeNetWorth pero reutilizando
@@ -114,8 +114,8 @@ export default async function DashboardPage() {
       ],
     };
 
-    // A partial current subtotal must never overwrite a complete historical point.
-    if (!balances.valuation) void recordNetWorthSnapshot(user.id);
+    // Reading or changing presentation preferences never rewrites history.
+    // The existing scheduled snapshot writer owns the persisted daily series.
 
     // Top 2 posiciones por valor para el strip de mercado
     const topHoldings = (portfolio?.investments ?? [])
@@ -131,17 +131,19 @@ export default async function DashboardPage() {
 
     return (
       <>
-        {!balances.valuation && <StickyNetWorthBar
+        {preferences.net_worth_widget_visible && !balances.valuation && <StickyNetWorthBar
+          key={user.id}
           totalARSBlue={netWorthNow.totalARSBlue}
           totalUSD={netWorthNow.totalUSD}
           sentinelId="networth-sentinel"
+          baseCurrency={preferences.default_currency}
         />}
         <PageScaffold
           hero={(
-            <>
-              <NetWorthHero now={netWorthNow} history={netWorthHistory} inflacion={inflacion} />
+            preferences.net_worth_widget_visible ? <>
+              <NetWorthHero key={user.id} now={netWorthNow} history={netWorthHistory} inflacion={inflacion} baseCurrency={preferences.default_currency} />
               <div id="networth-sentinel" aria-hidden="true" />
-            </>
+            </> : null
           )}
         >
           {/* Bento desktop: 12 columnas; mobile: columna única en orden de jerarquía */}

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createServiceClientSync } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { transactionsService } from '@/lib/services/transactions';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { errorResponse } from '@/lib/api-handler';
+import { observedRequest } from '@/lib/observability/correlation';
 
 export async function GET(req: NextRequest) {
   try {
@@ -47,6 +48,7 @@ export async function GET(req: NextRequest) {
 
 
 export async function POST(req: NextRequest) {
+  return observedRequest(req, 'manual', 'transaction.create', async () => {
   try {
     const supabase = await createClient();
     const {
@@ -125,9 +127,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(transaction, { status: 201, headers: { 'Idempotency-Key': requestId } });
   } catch (error: any) {
-    console.error('Transactions POST error:', error);
     return errorResponse(error);
   }
+  });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -151,9 +153,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const serviceClient = createServiceClientSync();
-
-    const { count, error } = await serviceClient
+    const { count, error } = await supabase
       .from('transactions')
       .delete({ count: 'exact' })
       .eq('user_id', user.id);
@@ -165,7 +165,7 @@ export async function DELETE(req: NextRequest) {
       deleted: count ?? 0,
     });
   } catch (error: any) {
-    console.error('Transactions DELETE ALL error:', error);
+    console.error('Transactions DELETE ALL error');
     return errorResponse(error);
   }
 }
