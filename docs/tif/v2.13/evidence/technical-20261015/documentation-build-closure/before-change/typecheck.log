@@ -1,0 +1,19 @@
+
+> zarix@0.1.0 typecheck
+> tsc --noEmit
+
+docs/tif/v2.13/evidence/technical-20261015/empty-followup-contracts/executed/sources/worker-delivery.test-source.ts(7,29): error TS2307: Cannot find module '../../../../../../scripts/lib/test-isolated-native-target.mjs' or its corresponding type declarations.
+docs/tif/v2.13/evidence/technical-20261015/empty-followup-contracts/preparation-attempt-2-raw-body-capture/worker-delivery.test-source.ts(7,29): error TS2307: Cannot find module '../../../../../../scripts/lib/test-isolated-native-target.mjs' or its corresponding type declarations.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(114,49): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(115,51): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(127,58): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(128,73): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(129,35): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(130,42): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(131,72): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(138,137): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(145,37): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(145,53): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(146,45): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(147,43): error TS2571: Object is of type 'unknown'.
+docs/tif/v2.13/evidence/technical-20261015/notification-timeout-contract/provider-timeout.test-source.ts(148,64): error TS2571: Object is of type 'unknown'.
