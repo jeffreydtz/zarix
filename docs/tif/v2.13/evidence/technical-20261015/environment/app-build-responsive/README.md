@@ -1,0 +1,9 @@
+# Builds posteriores al arreglo responsive
+
+Revisión de producto `bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81`, verificada en [core-responsive](../../core-responsive/README.md) con fuentes limpias y estables. E2E57321 tiene BUILD_ID `QcXclgO6C0_ktQ5ac8YWh` y proceso Next13977, health200 y listener3000 propio comprobados en [estado capturado](e2e-app-state.json). El [cierre previo](owned-app-stop-responsive-before-core.json) conserva únicamente el cierre del supervisor/Next de la fase anterior, sin tocar datos ni runtime nativo. La prueba de reinicio duradero pertenece a [la fase anterior](../app-build-final/README.md); no se sustituye por este arranque.
+
+LOAD56321 usa una copia física nueva `/tmp/zarix-app-load-20261015-responsive`, BUILD_ID `vezpBno1qh0_ef6W9-W56`: [467 fuentes congeladas](frozen-load-source-manifest-responsive.json), [compilación nueva y timestamps](load-build-proof-responsive.json). Las tres fases previas se preservan. Los wrappers ejecutados están en esta carpeta y leen archivos privados0600; no se publica ninguna clave.
+
+La [búsqueda de las claves privadas locales](browser-build-secret-check.json) inspeccionó los assets estáticos de ambos builds, sin coincidencias exactas. No es una afirmación universal de ausencia de secretos. El supervisor ahora admite únicamente tres nombres de archivo privados dentro del runtime para la prueba posterior de cotizaciones, y cuenta sus respuestas503 locales. Este código de prueba no cambia reglas del producto ni crea credenciales.
+
+El arreglo del producto reduce únicamente el padding de los cuatro links de escritorio entre md y lg. La corrección posterior del harness para observar ancestros realmente desplazables se identifica por su hash/revisión en la nueva evidencia visual; no recibe automáticamente los gates de esta revisión. Los límites de proveedores públicos incidentales de `/api/market-data`, listener REST interno wildcard, LAN no probada y HTTP local se mantienen.

@@ -1,0 +1,751 @@
+{
+  "startedAt": "2026-10-15T01:56:30.915Z",
+  "finishedAt": "2026-10-15T01:56:32.289Z",
+  "kind": "isolated SQL microbenchmark",
+  "scope": "One PGlite connection, normal PostgreSQL role; no HTTP, browser, network shaping, parallel sessions or provider calls. Does not establish CNF-01 dashboard SLO or monthly availability.",
+  "environment": {
+    "node": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M2 Pro",
+    "postgres": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit"
+  },
+  "fixture": {
+    "accounts": 10,
+    "transactions": 5000,
+    "positions": 100
+  },
+  "sourceManifest": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "coldMs": 5.006582999999864,
+  "warmup": 5,
+  "observations": [
+    {
+      "index": 1,
+      "durationMs": 2.6077499999998963,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 2,
+      "durationMs": 2.6966249999998126,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 3,
+      "durationMs": 2.6742910000000393,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 4,
+      "durationMs": 2.7159169999999904,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 5,
+      "durationMs": 2.6938749999999345,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 6,
+      "durationMs": 2.91800000000012,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 7,
+      "durationMs": 2.705500000000029,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 8,
+      "durationMs": 2.6855419999999413,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 9,
+      "durationMs": 2.5723749999999654,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 10,
+      "durationMs": 3.152958000000126,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 11,
+      "durationMs": 3.1257499999999254,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 12,
+      "durationMs": 2.915917000000036,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 13,
+      "durationMs": 2.625500000000102,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 14,
+      "durationMs": 2.594707999999855,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 15,
+      "durationMs": 2.6034159999999247,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 16,
+      "durationMs": 2.5693750000000364,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 17,
+      "durationMs": 2.5470419999999194,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 18,
+      "durationMs": 2.5319999999999254,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 19,
+      "durationMs": 2.5726669999999103,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 20,
+      "durationMs": 2.572958000000199,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 21,
+      "durationMs": 2.5487500000001546,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 22,
+      "durationMs": 2.5399999999999636,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 23,
+      "durationMs": 2.5532089999999243,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 24,
+      "durationMs": 2.56512500000008,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 25,
+      "durationMs": 3.517541000000165,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 26,
+      "durationMs": 3.3984580000001188,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 27,
+      "durationMs": 2.828875000000153,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 28,
+      "durationMs": 2.5690420000000813,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 29,
+      "durationMs": 2.575459000000137,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 30,
+      "durationMs": 2.663416999999754,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 31,
+      "durationMs": 2.7519579999998314,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 32,
+      "durationMs": 2.7340840000001663,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 33,
+      "durationMs": 2.7352089999999407,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 34,
+      "durationMs": 2.7206249999999272,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 35,
+      "durationMs": 2.5484580000002097,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 36,
+      "durationMs": 2.5783329999999296,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 37,
+      "durationMs": 2.5815840000000208,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 38,
+      "durationMs": 2.5734580000003007,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 39,
+      "durationMs": 2.6928750000001855,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 40,
+      "durationMs": 3.3626249999997526,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 41,
+      "durationMs": 3.3331660000003467,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 42,
+      "durationMs": 2.801165999999739,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 43,
+      "durationMs": 2.6666660000000775,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 44,
+      "durationMs": 2.6730830000001333,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 45,
+      "durationMs": 2.5395410000000993,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 46,
+      "durationMs": 2.5460830000001806,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 47,
+      "durationMs": 2.619916000000103,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 48,
+      "durationMs": 2.9616249999999127,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 49,
+      "durationMs": 2.704666999999972,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 50,
+      "durationMs": 2.602542000000085,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 51,
+      "durationMs": 2.619833000000199,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 52,
+      "durationMs": 2.570459000000028,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 53,
+      "durationMs": 2.6092499999999745,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 54,
+      "durationMs": 2.5958330000003116,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 55,
+      "durationMs": 2.9290829999999914,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 56,
+      "durationMs": 3.098541999999725,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 57,
+      "durationMs": 2.682832999999846,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 58,
+      "durationMs": 2.590791999999965,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 59,
+      "durationMs": 2.5697079999999914,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 60,
+      "durationMs": 2.5177080000003116,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 61,
+      "durationMs": 2.5538339999998243,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 62,
+      "durationMs": 2.5627079999999296,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 63,
+      "durationMs": 2.585207999999966,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 64,
+      "durationMs": 2.6633749999996326,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 65,
+      "durationMs": 2.731667000000016,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 66,
+      "durationMs": 2.6986249999999927,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 67,
+      "durationMs": 2.694915999999921,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 68,
+      "durationMs": 2.6331249999998363,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 69,
+      "durationMs": 2.523417000000336,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 70,
+      "durationMs": 2.5755420000000413,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 71,
+      "durationMs": 3.497208000000228,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 72,
+      "durationMs": 3.4104580000002898,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 73,
+      "durationMs": 2.9019170000001395,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 74,
+      "durationMs": 2.9169160000001284,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 75,
+      "durationMs": 3.6427920000000995,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 76,
+      "durationMs": 3.492040999999972,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 77,
+      "durationMs": 2.758458999999675,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 78,
+      "durationMs": 3.0679159999999683,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 79,
+      "durationMs": 3.03125,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 80,
+      "durationMs": 2.760041999999885,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 81,
+      "durationMs": 2.86391599999979,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 82,
+      "durationMs": 2.9190419999999904,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 83,
+      "durationMs": 2.7767079999998714,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 84,
+      "durationMs": 3.3177089999999225,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 85,
+      "durationMs": 2.8157499999997526,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 86,
+      "durationMs": 2.995625000000018,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 87,
+      "durationMs": 2.6333340000001044,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 88,
+      "durationMs": 2.553457999999864,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 89,
+      "durationMs": 2.5221670000000813,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 90,
+      "durationMs": 2.5319580000000315,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 91,
+      "durationMs": 2.8292499999997744,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 92,
+      "durationMs": 2.649709000000257,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 93,
+      "durationMs": 2.5475000000001273,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 94,
+      "durationMs": 2.610041000000365,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 95,
+      "durationMs": 2.513915999999881,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 96,
+      "durationMs": 2.5354999999999563,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 97,
+      "durationMs": 2.5855420000002596,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 98,
+      "durationMs": 2.737333999999919,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 99,
+      "durationMs": 2.745542000000114,
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "index": 100,
+      "durationMs": 2.5633750000001783,
+      "status": "PASS",
+      "error": null
+    }
+  ],
+  "summary": {
+    "count": 100,
+    "failures": 0,
+    "p50Ms": 2.663416999999754,
+    "p95Ms": 3.3984580000001188,
+    "maxMs": 3.6427920000000995,
+    "percentileMethod": "Nearest rank, including failed observations in durations"
+  },
+  "blocked": [
+    "20 simultaneous authenticated browser sessions",
+    "100 UI navigations at 20Mbps/50ms",
+    "real-provider outage profile",
+    "responsive browser matrix",
+    "monthly availability observation"
+  ]
+}
