@@ -63,6 +63,8 @@ export function normalizeDebtBalanceForStorage(
 
 /** Stablecoins tratadas como ~1 USD si la API devolvió 0 o no hay tasa. */
 const STABLECOIN_USD = new Set(['USDT', 'USDC', 'DAI', 'BUSD']);
+// Preserve the fiat, crypto and legacy stablecoin currencies already valued here.
+const ACCOUNT_CURRENCIES = new Set(['ARS', 'USD', 'EUR', 'BTC', 'ETH', ...STABLECOIN_USD]);
 
 export interface CreateAccountInput {
   userId: string;
@@ -187,6 +189,10 @@ class AccountsService {
   async create(input: CreateAccountInput): Promise<Account> {
     const supabase = createServiceClientSync();
 
+    if (typeof input.name !== 'string' || !input.name.trim()) {
+      throw new ApiError('El nombre de la cuenta es obligatorio.');
+    }
+
     // Moneda normalizada a mayúsculas (CHECK accounts_currency_upper).
     input = {
       ...input,
@@ -195,6 +201,19 @@ class AccountsService {
         ? input.secondaryCurrency.trim().toUpperCase()
         : input.secondaryCurrency,
     };
+
+    if (!ACCOUNT_CURRENCIES.has(input.currency)) {
+      throw new ApiError('La moneda de la cuenta no está soportada.');
+    }
+    // Match the existing SQL day/digit constraints before optional values become null.
+    for (const day of [input.closingDay, input.dueDay]) {
+      if (day != null && (!Number.isInteger(Number(day)) || Number(day) < 1 || Number(day) > 31)) {
+        throw new ApiError('El día de cierre o vencimiento debe estar entre 1 y 31.');
+      }
+    }
+    if (input.last4Digits && String(input.last4Digits).length !== 4) {
+      throw new ApiError('Los últimos dígitos de la tarjeta deben tener cuatro caracteres.');
+    }
 
     const initial = Number(input.initialBalance ?? 0);
     const balanceStored = normalizeDebtBalanceForStorage(

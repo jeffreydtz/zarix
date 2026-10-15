@@ -35,4 +35,30 @@ describe('atomic account service', () => {
     await accountsService.create({ ...input, requestId: 'other-key', currency: 'ARS' });
     expect(mocks.rpc.mock.calls[1][1].p_request_hash).toBe(fingerprint);
   });
+  it.each([
+    ['empty name', { name: '' }],
+    ['whitespace name', { name: ' \t ' }],
+    ['unknown currency', { currency: 'ZZZ' }],
+    ['nonfinite balance', { initialBalance: 'NaN' }],
+    ['zero closing day', { type: 'credit_card', closingDay: 0 }],
+    ['out of range due day', { type: 'credit_card', dueDay: 32 }],
+    ['incomplete card digits', { type: 'credit_card', last4Digits: '123' }],
+  ])('rejects %s before the atomic account operation', async (_name, invalid) => {
+    await expect(accountsService.create({ ...input, ...invalid } as any)).rejects.toMatchObject({ status: 400 });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.from).not.toHaveBeenCalled();
+  });
+  it.each(['ARS', 'USD', 'EUR', 'BTC', 'ETH', 'USDT', 'USDC', 'DAI', 'BUSD'])
+    ('preserves the already supported %s account currency', async currency => {
+      await accountsService.create({ ...input, currency: ` ${currency.toLowerCase()} ` });
+      expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('create_account_with_opening_balance', expect.objectContaining({
+        p_account: expect.objectContaining({ currency }),
+      }));
+    });
+  it('preserves valid card boundaries and the existing name fingerprint', async () => {
+    await accountsService.create({ ...input, name: ' Fixture ', type: 'credit_card', closingDay: 1, dueDay: 31, last4Digits: '0123' });
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('create_account_with_opening_balance', expect.objectContaining({
+      p_account: expect.objectContaining({ name: ' Fixture ', closing_day: 1, due_day: 31, last_4_digits: '0123' }),
+    }));
+  });
 });
