@@ -1,0 +1,1183 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-15T04:53:34.283547+00:00",
+  "reviewer": "/root/sql_security/cron_contracts",
+  "status": "TEN_HISTORICAL_ORIGINAL_CONTRACTS_SUPPORTED_ONE_BY_EXPLICIT_COMPOSITE_DECISION",
+  "scope": "Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot.",
+  "counts": {
+    "casesReviewed": 10,
+    "historicalContractsSupported": 10,
+    "compositeEvidencePendingRootDecision": 0,
+    "runtimeExecutedByReviewer": 0,
+    "apiRequestsByReviewer": 0,
+    "databaseCallsByReviewer": 0,
+    "csvChanges": 0,
+    "historicalContractsSupportedByCompositeDecision": 1
+  },
+  "versionBoundaries": {
+    "currentFrozenCI5Revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "all10ReviewedRuntimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "claimAll10ExecutedOnCI5": false,
+    "historicalAggregateFailuresPreserved": {
+      "attempt-1": "CP1-33 obsolete harness4xx-only assumption; exact original CSV has no status-code requirement. RawFAIL retained.",
+      "attempt-3": "Other cases includingCP1-20 fail; only selected10 cases reviewed here, no aggregatePASS claim."
+    }
+  },
+  "snapshotRecovery": {
+    "sourceGitCommit": "687b3e2bddc8d1470d4ea54eb318d0aba739fcc5",
+    "sourceGitPath": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-basic.mjs",
+    "snapshotPath": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+    "sha256": "7a7da5eeedab6f5e0096758f80d84b7b607154842fae52219c220305744f1620",
+    "matchesAttempt1Manifest": true,
+    "rawReportUnchanged": true,
+    "note": "Recovered byte-for-byte via git show; recovery is not a new execution. Currentrun-basic SHA c13e7013 is exact attempt2 runner. Diff changes case selection, report wording/count and CP1-33 HTTP-code assumption; selected first4 case bodies unchanged."
+  },
+  "bindings": {
+    "basic": {
+      "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "buildId": "a2WBtszbvrpoT9GHwToED",
+      "nextPid": 52579,
+      "appOrigin": "http://127.0.0.1:3002",
+      "apiOrigin": "http://127.0.0.1:58321",
+      "copyRoot": "/tmp/zarix-app-account-analysis-20261015",
+      "copiedSources": 477,
+      "allCopiedSourcesMatchGitOrDeclaredCliMetadata": true,
+      "ownedListenerAndCwdConfirmed": true,
+      "privateEnvBoundToNative": true,
+      "coreVerificationSha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
+      "buildProofSha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201"
+    },
+    "retry33": {
+      "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "buildId": "a2WBtszbvrpoT9GHwToED",
+      "nextPid": 52579,
+      "appOrigin": "http://127.0.0.1:3002",
+      "apiOrigin": "http://127.0.0.1:58321",
+      "copyRoot": "/tmp/zarix-app-account-analysis-20261015",
+      "copiedSources": 477,
+      "allCopiedSourcesMatchGitOrDeclaredCliMetadata": true,
+      "ownedListenerAndCwdConfirmed": true,
+      "privateEnvBoundToNative": true,
+      "coreVerificationSha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
+      "buildProofSha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201"
+    },
+    "fourteen": {
+      "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "nextPid": 1822,
+      "appOrigin": "http://127.0.0.1:3002",
+      "apiOrigin": "http://127.0.0.1:58321",
+      "copyRoot": "/tmp/zarix-app-contract-clock-20261015",
+      "runtimeProfile": "intermediate-core-reliability-clock-retry",
+      "buildProfile": "intermediate-core-reliability-clock",
+      "stateFile": "contract-clock-retry-app-state.json",
+      "clockObservationFile": "contract-clock-retry-observation.json",
+      "copiedSources": 477,
+      "allCopiedSourcesMatchGitOrDeclaredCliMetadata": true,
+      "ownedListenerAndCwdConfirmed": true,
+      "privateEnvBoundToNative": true,
+      "coreVerificationSha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
+      "buildProofSha256": "2fd7d419dd3fb4f724da3bb707eb0455a0aa976e91f494793f1b739a56ea51d8"
+    },
+    "independentStaticChecks": {
+      "both477EntryBuildProofsMatchFrozen836Git": true,
+      "basicAndRetryAll36ProductManifestEntriesMatchFrozen836Git": true,
+      "fourteenProductManifestEntriesCompared": 49,
+      "fourteenCurrentCheckoutManifestDifference": [
+        "lib/services/accounts.ts"
+      ],
+      "differenceDisposition": "Current checkout manifest entry differs from served836; currentCheckoutDifferences explicitly marks it executedByThisBuild:false. Public buildproof477source hashes all match836. Current lib/services/accounts.ts is not substituted for served source.",
+      "historicalPidsListenersAndPrivateEnv": "Recorded by executed harness, not rechecked by reviewer. No private environment or credentials opened.",
+      "clockProof": {
+        "path": "contract-clock-retry-observation.json",
+        "sha256": "ce9af30f4e005a9a10c7c4039b6f16576b9ac064ee408f0b463637eeaf8754e5",
+        "fixedTime": "2026-10-06T12:00:00.000Z",
+        "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+      }
+    }
+  },
+  "caseReviews": [
+    {
+      "id": "CP1-02",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "rawJsonPointer": "/results/1",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "assertionsPassed": 10,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "U1 A=10000 ARS",
+        "entrada": "ingreso=500 ARS, categoría Sueldo, fecha=2026-10-06",
+        "resultado_esperado": "un registro; saldo=10500; flujo ingreso +500",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "Fresh10000ARS account; single income500 persisted with Sueldo,2026-10-06 and owner; balance10500; independent October summary delta income500/expense0/net500. Opening adjustment is preserved and excluded only from economic movement count.",
+      "sourceReferences": [
+        "attempt-1-eight-cases/executed-harness/run-basic.mjs:169-174"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-03",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "rawJsonPointer": "/results/2",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "assertionsPassed": 9,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "U1 A=10000, B=2000 ARS",
+        "entrada": "transferir 1500 A→B",
+        "resultado_esperado": "un movimiento lógico con dos impactos; A=8500 B=3500; total=12000; ingresos/gastos no aumentan",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "Fresh10000/2000ARS accounts; one logical1500 transfer with canonical debit/credit1500, balances8500/3500,total12000; October summary income,expenses,net remain unchanged.",
+      "sourceReferences": [
+        "attempt-1-eight-cases/executed-harness/run-basic.mjs:175-179"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-09",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "rawJsonPointer": "/results/4",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "assertionsPassed": 5,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "Fixture fresco: A inicial10000; ingreso500→A10500",
+        "entrada": "DELETE movimiento ingreso",
+        "resultado_esperado": "A=10000; no efecto adicional",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "Fresh10000 account and500 income reaches10500; target-ID-and-owner directSQL DELETE leaves10000 and zero economic rows. This directly exercises SQL reversal rather than API recomputation.",
+      "sourceReferences": [
+        "attempt-1-eight-cases/executed-harness/run-basic.mjs:189-193"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-11",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "rawJsonPointer": "/results/5",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "assertionsPassed": 7,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "Fixture fresco: A=10000 B=2000; transferencia1500→8500/3500",
+        "entrada": "DELETE transferencia",
+        "resultado_esperado": "A=10000 B=2000; reversión exacta de ambos impactos",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "Fresh10000/2000 accounts and1500 transfer reach8500/3500; target-ID-and-owner directSQL DELETE restores10000/2000 with zero economic rows.",
+      "sourceReferences": [
+        "attempt-1-eight-cases/executed-harness/run-basic.mjs:194-199"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-33",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-2-cp1-33/verification.json",
+      "rawJsonPointer": "/results/0",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "assertionsPassed": 11,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "U1 A inactiva; otro fixture cuentaU2",
+        "entrada": "gasto1500 en inactiva / cuentaU2",
+        "resultado_esperado": "no movimiento ni saldo; error estado/acceso; no revela saldo ajeno",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "Selected retry independently exercises1500 expense against own inactive account and another owner account. Both return500,error-only shape, with complete account/full-ledger digest unchanged. CSV specifies state/access error but no HTTP status; initial4xx-only harness failure is retained.500 is observed behavior, not declared a desirable/general HTTP contract.",
+      "sourceReferences": [
+        "run-basic.mjs:205-214"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-04",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "rawJsonPointer": "/results/0",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "assertionsPassed": 10,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "U1 A=10000, B=2000 ARS",
+        "entrada": "fallo inyectado al segundo impacto/COMMIT de transferencia1500",
+        "resultado_esperado": "rollback total: A=10000 B=2000, cero movimiento confirmado; retry con misma clave una vez deja8500/3500",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "Target destination account BEFORE UPDATE fault is reached once inside real transfer INSERT after source debit step. Native SQL proves10000/2000,zero economic rows and no receipt after failure. Removing only owned fault and retrying identical key commits one row/receipt and8500/3500. This exercises second-impact rollback, not COMMIT/network failure.",
+      "sourceReferences": [
+        "attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs:40-53",
+        "836fd18:supabase/migrations/20261015000402_atomic_account_balance_recompute.sql:131-143"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-12",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "rawJsonPointer": "/results/1",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "assertionsPassed": 6,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "Tarjeta bimoneda ledgerARS=-10000, ledgerUSD=-100; representación adaptar al esquema",
+        "entrada": "ajuste saldoUSD +10 firmado con identificador de moneda",
+        "resultado_esperado": "USD=-90; ARS=-10000; no modificación del saldo primario por ajuste secundario; una auditoría",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "CSV explicitly permits adapting bimonetary representation. Existing adjust-secondary-balance API initializesUSD-100 then targets-90; observed signedUSD adjustment+10 is exactly one new audit row; independent RPC reportsARS-10000/USD-90 and physical primary remains-10000. Absolute target API is a documented representation adapter, not a new delta input field.",
+      "sourceReferences": [
+        "attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs:55-64",
+        "836fd18:lib/services/accounts.ts:494-547"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-22",
+      "reviewDecision": "PASS_COMPOSITE_HISTORICAL_API_SQL_AND_SOURCE",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "rawJsonPointer": "/results/5",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "assertionsPassed": 24,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "U1 A=10000; cuentaB perteneceU2",
+        "entrada": "fila sin monto; fila cuentaB; archivo truncado en corridas independientes",
+        "resultado_esperado": "rechaza sin impactos inválidos ni exposiciónU2; archivo irresoluble no inicia lote",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "Three independent fresh fixtures: CSV missing amount400; foreign-name CSV preview excludes foreign account/balances and import200 confirms imported0; truncatedJSON400. Full account/ledger snapshots remain unchanged; no transaction_requests receipt for each invalid import. Preserved truncated bytes plus frozen836 JSON.parse early400 return precede begin_import_batch structurally. Raw native assertion does not query import_batches; Root explicitly accepted the composed exactinput+runtime400+frozencontrolflow evidence for the no-batch clause. No direct native observation of import_batches is claimed.",
+      "sourceReferences": [
+        "attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs:24-33,90-97",
+        "836fd18:app/api/import/transactions/route.ts:900-909,1147-1153"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-29",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "rawJsonPointer": "/results/10",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "assertionsPassed": 4,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "Cuenta A=500; regla gasto1000; no existe atributo allowOverdraft",
+        "entrada": "ejecución fecha válida",
+        "resultado_esperado": "Movimiento1000; saldo-500; marca éxito actual. No se espera rechazo por saldo insuficiente.",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "reviewRationale": "Existing synthetic PremiumB with fresh account500 and expense1000 rule under actual fixed application clock2026-10-06T12:00Z; actual cron200,one occurrence,balance-500,last_executed_date2026-10-06. No allowOverdraft field or insufficient-balance rejection is invented.",
+      "sourceReferences": [
+        "attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs:135-139",
+        "attempt-3-fourteen-clock/executed-harness/run-remaining.mjs:193-221,249-250"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    },
+    {
+      "id": "CP1-35",
+      "reviewDecision": "PASS_HISTORICAL_ORIGINAL_API_SQL",
+      "rawRecordedStatus": "PASS",
+      "rawCompleteOriginalContract": true,
+      "rawReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "rawJsonPointer": "/results/13",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "assertionsPassed": 13,
+      "assertionsFailed": 0,
+      "literal": {
+        "precondiciones": "Reloj fijo; primer lote0; segundo lote3 reglas: activa válida,inactiva,activa con falloSQL",
+        "entrada": "ejecutar cron en fixtures independientes",
+        "resultado_esperado": "Lote vacío: total0/processed0/errors0. Lote de tres: processed1/errors1, regla archivada omitida. El resumen actual no expone contador skipped; la omisión se reconstruye de total y resultados.",
+        "evidencia_requerida": "Logs resumen y estados persistidos; ajustar nomenclatura de campos al código real"
+      },
+      "reviewRationale": "Actual fixed-clock empty cron returns total0/processed0/errors0. Independent three-rule mixed fixture has one success,one inactive,one injectedSQL failure; summary total2/processed1/errors1 because only active rules are fetched. SQL counts/balances prove good1/9000,inactive0/10000,bad0/10000. No skipped field is invented; omission is reconciled against the three-rule fixture. Owned fault catalog returns to exact prior hash/count.",
+      "sourceReferences": [
+        "attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs:154-161",
+        "attempt-3-fourteen-clock/executed-harness/run-remaining.mjs:224-244"
+      ],
+      "claimFinalCI5Runtime": false,
+      "reviewCompleteOriginalContract": true
+    }
+  ],
+  "preservation": [
+    {
+      "report": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "tables": [
+        {
+          "table": "users",
+          "rows": 2,
+          "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+          "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+          "unchanged": true
+        },
+        {
+          "table": "accounts",
+          "rows": 9,
+          "beforeMd5": "e92c023da2df17831a82b3b7b4643910",
+          "afterMd5": "e92c023da2df17831a82b3b7b4643910",
+          "unchanged": true
+        },
+        {
+          "table": "transactions",
+          "rows": 11,
+          "beforeMd5": "0b210bd81a2ec6af02a73acbbab28686",
+          "afterMd5": "0b210bd81a2ec6af02a73acbbab28686",
+          "unchanged": true
+        },
+        {
+          "table": "investments",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "investment_sales",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "categories",
+          "rows": 27,
+          "beforeMd5": "e43b3d0333696c312f6e10bee1ffa043",
+          "afterMd5": "e43b3d0333696c312f6e10bee1ffa043",
+          "unchanged": true
+        },
+        {
+          "table": "budgets",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "recurring_rules",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_groups",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_group_members",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_expenses",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_expense_splits",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        }
+      ],
+      "exact12TableSet": true,
+      "allReportedRowsAndHashesUnchanged": true,
+      "sourceStable": true,
+      "servedCopyStable": null,
+      "cleanupFailureFlags": false
+    },
+    {
+      "report": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-2-cp1-33/verification.json",
+      "tables": [
+        {
+          "table": "users",
+          "rows": 2,
+          "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+          "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+          "unchanged": true
+        },
+        {
+          "table": "accounts",
+          "rows": 24,
+          "beforeMd5": "09ed19fc6e987d1bde9166d507d05ab4",
+          "afterMd5": "09ed19fc6e987d1bde9166d507d05ab4",
+          "unchanged": true
+        },
+        {
+          "table": "transactions",
+          "rows": 31,
+          "beforeMd5": "fae84c56c8044414375187e1cdd0ee7f",
+          "afterMd5": "fae84c56c8044414375187e1cdd0ee7f",
+          "unchanged": true
+        },
+        {
+          "table": "investments",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "investment_sales",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "categories",
+          "rows": 29,
+          "beforeMd5": "0081d31f5bf9f83807d261220eabdd36",
+          "afterMd5": "0081d31f5bf9f83807d261220eabdd36",
+          "unchanged": true
+        },
+        {
+          "table": "budgets",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "recurring_rules",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_groups",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_group_members",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_expenses",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_expense_splits",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        }
+      ],
+      "exact12TableSet": true,
+      "allReportedRowsAndHashesUnchanged": true,
+      "sourceStable": true,
+      "servedCopyStable": null,
+      "cleanupFailureFlags": false
+    },
+    {
+      "report": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "tables": [
+        {
+          "table": "users",
+          "rows": 2,
+          "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+          "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+          "unchanged": true
+        },
+        {
+          "table": "accounts",
+          "rows": 47,
+          "beforeMd5": "8336459224654872e3bd8474aab89170",
+          "afterMd5": "8336459224654872e3bd8474aab89170",
+          "unchanged": true
+        },
+        {
+          "table": "transactions",
+          "rows": 43,
+          "beforeMd5": "4d9f4d88fcc7ea6d9ef4f8d5a2b8da77",
+          "afterMd5": "4d9f4d88fcc7ea6d9ef4f8d5a2b8da77",
+          "unchanged": true
+        },
+        {
+          "table": "investments",
+          "rows": 19,
+          "beforeMd5": "09167c8a67ba0766607832e91b8a587c",
+          "afterMd5": "09167c8a67ba0766607832e91b8a587c",
+          "unchanged": true
+        },
+        {
+          "table": "investment_sales",
+          "rows": 8,
+          "beforeMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+          "afterMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+          "unchanged": true
+        },
+        {
+          "table": "categories",
+          "rows": 29,
+          "beforeMd5": "0081d31f5bf9f83807d261220eabdd36",
+          "afterMd5": "0081d31f5bf9f83807d261220eabdd36",
+          "unchanged": true
+        },
+        {
+          "table": "budgets",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "recurring_rules",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_groups",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_group_members",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_expenses",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        },
+        {
+          "table": "shared_expense_splits",
+          "rows": 0,
+          "beforeMd5": "d751713988987e9331980363e24189ce",
+          "afterMd5": "d751713988987e9331980363e24189ce",
+          "unchanged": true
+        }
+      ],
+      "exact12TableSet": true,
+      "allReportedRowsAndHashesUnchanged": true,
+      "sourceStable": true,
+      "servedCopyStable": true,
+      "cleanupFailureFlags": false
+    }
+  ],
+  "cleanup": {
+    "ownedAccountCount": 19,
+    "accounts": [
+      {
+        "caseId": "CP1-02",
+        "accountId": "325735e7-4d02-4ac8-9e96-fa68a31892b5",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-03",
+        "accountId": "74454e43-3d60-4a03-82eb-150c8eb5fe65",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-03",
+        "accountId": "f79412e5-7964-4f58-9d11-b4fd8699ee1e",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-09",
+        "accountId": "3e1932b5-0679-4a68-be5e-d89b422410bd",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-11",
+        "accountId": "ea242d27-a46b-42b1-8267-15ef088d9c57",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-11",
+        "accountId": "85fdae28-a60b-47a4-925f-f8a42cf82fca",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-33",
+        "accountId": "7e1299f2-dfa5-4cd4-9719-7bf3e811726f",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204,
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-33",
+        "accountId": "cc9d7926-0185-43e3-bd73-14a4f1f7e7a8",
+        "reportedOwner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-04",
+        "accountId": "685d4bf0-eb98-4662-862b-877a95bafe8c",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-04",
+        "accountId": "b87cd3b3-e8c7-450f-a5c2-a15c94e70e10",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-12",
+        "accountId": "4b24c057-bd16-4795-998c-57f1047acfa7",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-22",
+        "accountId": "5f643f69-bcf1-4c73-83c8-bc8d4527d009",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204,
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-22",
+        "accountId": "bb013536-f9a9-4979-9ead-bed4aabf7ef9",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204,
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-22",
+        "accountId": "e68de2ee-3123-4085-8978-5e554bed1a18",
+        "reportedOwner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "archiveResponses": [
+          204,
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-22",
+        "accountId": "1e485846-536d-40dc-bc78-9873a755f1fa",
+        "reportedOwner": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-29",
+        "accountId": "01092373-de47-4316-9da3-5ca1673f77cc",
+        "reportedOwner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-35",
+        "accountId": "08030456-982d-4dbd-85bd-e48e7ab4f102",
+        "reportedOwner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-35",
+        "accountId": "a77196b2-de4d-4351-beee-0e5cfb91ee92",
+        "reportedOwner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      },
+      {
+        "caseId": "CP1-35",
+        "accountId": "6fc9112c-ff18-497a-aeeb-8bc4e6105604",
+        "reportedOwner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "archiveResponses": [
+          204
+        ],
+        "allArchiveResponses204": true
+      }
+    ],
+    "allArchiveResponses204": true,
+    "faultCatalogs": [
+      {
+        "caseId": "CP1-04",
+        "objectPrefix": "zarix_test_41855ad70bed4504b9e3673c428bc39d_0",
+        "installAcknowledged": true,
+        "cleanupAcknowledged": true,
+        "ownObjectsAfter": [],
+        "catalogBeforeSha256": "211665794897bb030e86039049749bbc396ea7a68393f9fd5b299621ba02e23a",
+        "catalogAfterSha256": "211665794897bb030e86039049749bbc396ea7a68393f9fd5b299621ba02e23a",
+        "catalogBeforeCount": 80,
+        "catalogAfterCount": 80
+      },
+      {
+        "caseId": "CP1-35",
+        "objectPrefix": "zarix_test_41855ad70bed4504b9e3673c428bc39d_14",
+        "installAcknowledged": true,
+        "cleanupAcknowledged": true,
+        "ownObjectsAfter": [],
+        "catalogBeforeSha256": "211665794897bb030e86039049749bbc396ea7a68393f9fd5b299621ba02e23a",
+        "catalogAfterSha256": "211665794897bb030e86039049749bbc396ea7a68393f9fd5b299621ba02e23a",
+        "catalogBeforeCount": 80,
+        "catalogAfterCount": 80
+      }
+    ],
+    "faultCatalogsRestored": true,
+    "scope": "Financial rows/openingadjustments are retained; only own account archives and requiredSQL DELETE movements occur.12original snapshot checks concern rows present before each phase. The reviewer did not query the live database."
+  },
+  "remainingDecision": {
+    "caseId": "CP1-22",
+    "rootDecisionRequiredBeforePromotion": false,
+    "observed": "MalformedJSON returns400; immutable account/ledger snapshots; no transaction_requests row.",
+    "structuralEvidence": "Frozen served836 JSON.parse failure returns400 at900-909 before begin_import_batch at1147-1153. Preserved malformedinput hash is bound to this run.",
+    "nativeOracleLimit": "No explicit SELECT from import_batches is present. transaction_requests is a rowreceipt ledger, not the batch ledger. Root accepted preserved exact malformed input+actual400+frozen JSON.parse early return before begin_import_batch as composed evidence that this file did not initiate a batch. A directly observed native no-batch record is not claimed.",
+    "status": "ROOT_ACCEPTED_COMPOSITE_ORIGINAL_CONTRACT",
+    "decisionAuthority": "Explicit root acceptance relayed by parent /root/sql_security in this review session; no raw report or CSV modification authorized or performed.",
+    "directNativeImportBatchesObservation": false
+  },
+  "reviewedFiles": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-2-cp1-33/verification.json",
+      "sha256": "3c6318797409a8df8bc070e5b32115d47554d5def4fcfac44dc5f1759dad596f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "sha256": "7a7da5eeedab6f5e0096758f80d84b7b607154842fae52219c220305744f1620"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-basic.mjs",
+      "sha256": "c13e7013a9770491eec6ec9d9143f3e83296ca09cd87d87bc4a7f09799d2b4b1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/executed-harness/run-remaining.mjs",
+      "sha256": "705836c65727ee65b146f060f83db6e4798545c969afcf402b3d5d4fe7d5c323"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs",
+      "sha256": "c580f3956237c0ad29f5aa06665a784a99c6420680e6f76f76a70a43eaadcdfb"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-reliability/verification.json",
+      "sha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/verification.json",
+      "sha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/build-proof.json",
+      "sha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/app-state.json",
+      "sha256": "fef29e6f4bd7a1afc0d8f646a449d3b8c74eea61699e840937aaad5f128a7402"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/intermediate-clock-executed/contract-clock-build-proof.json",
+      "sha256": "2fd7d419dd3fb4f724da3bb707eb0455a0aa976e91f494793f1b739a56ea51d8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/intermediate-clock-executed/contract-clock-retry-app-state.json",
+      "sha256": "7dda799a0536446d354216b1b1378c6529b4140cfcf47ffde56af667fcdb65b3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/intermediate-clock-executed/contract-clock-retry-observation.json",
+      "sha256": "ce9af30f4e005a9a10c7c4039b6f16576b9ac064ee408f0b463637eeaf8754e5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-22-f1b8bd71-ce10-4f87-a2ce-f2b775222833.json",
+      "sha256": "bb6bf0f291dd04ada85ff21901da2a5735f4c7050660cc4cc6a9171ce93039e7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-22-5715912a-f5a0-4652-a146-392eb83c422b.csv",
+      "sha256": "fc91216c09083071c6f8c9bde2024bc21a0fc2cd52f7055f949a2a3e238e202b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-22-c7403d98-511f-42b8-8d8f-400151992141.csv",
+      "sha256": "f9d6a0a0d546855b8214dec499c6119788fdea737836129b57b8963a608b745e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-22-64d58c6c-57a2-4dfa-ab01-9f664e2d0f14.csv",
+      "sha256": "fc91216c09083071c6f8c9bde2024bc21a0fc2cd52f7055f949a2a3e238e202b"
+    }
+  ],
+  "originalCases": [
+    {
+      "id": "CP1-02",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+          "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251",
+          "jsonPointer": "/results/1"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-03",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+          "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251",
+          "jsonPointer": "/results/2"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-09",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+          "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251",
+          "jsonPointer": "/results/4"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-11",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+          "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251",
+          "jsonPointer": "/results/5"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-33",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "a2WBtszbvrpoT9GHwToED",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-2-cp1-33/verification.json",
+          "sha256": "3c6318797409a8df8bc070e5b32115d47554d5def4fcfac44dc5f1759dad596f",
+          "jsonPointer": "/results/0"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-04",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+          "jsonPointer": "/results/0"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-12",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+          "jsonPointer": "/results/1"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-22",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+          "jsonPointer": "/results/5"
+        }
+      ],
+      "acceptanceBasis": "EXPLICIT_ROOT_ACCEPTED_COMPOSITE_EXACT_INPUT_HTTP400_FROZEN_EARLY_RETURN",
+      "directNativeImportBatchesObservation": false,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-29",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+          "jsonPointer": "/results/10"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    },
+    {
+      "id": "CP1-35",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "evidence": [
+        {
+          "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+          "jsonPointer": "/results/13"
+        }
+      ],
+      "acceptanceBasis": "EXACT_LITERAL_API_SQL_ASSERTIONS",
+      "directNativeImportBatchesObservation": null,
+      "claimFinalCI5Runtime": false
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-2-cp1-33/verification.json",
+      "sha256": "3c6318797409a8df8bc070e5b32115d47554d5def4fcfac44dc5f1759dad596f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "sha256": "7a7da5eeedab6f5e0096758f80d84b7b607154842fae52219c220305744f1620"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-basic.mjs",
+      "sha256": "c13e7013a9770491eec6ec9d9143f3e83296ca09cd87d87bc4a7f09799d2b4b1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/executed-harness/run-remaining.mjs",
+      "sha256": "705836c65727ee65b146f060f83db6e4798545c969afcf402b3d5d4fe7d5c323"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs",
+      "sha256": "c580f3956237c0ad29f5aa06665a784a99c6420680e6f76f76a70a43eaadcdfb"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-reliability/verification.json",
+      "sha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/verification.json",
+      "sha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/build-proof.json",
+      "sha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/app-state.json",
+      "sha256": "fef29e6f4bd7a1afc0d8f646a449d3b8c74eea61699e840937aaad5f128a7402"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/intermediate-clock-executed/contract-clock-build-proof.json",
+      "sha256": "2fd7d419dd3fb4f724da3bb707eb0455a0aa976e91f494793f1b739a56ea51d8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/intermediate-clock-executed/contract-clock-retry-app-state.json",
+      "sha256": "7dda799a0536446d354216b1b1378c6529b4140cfcf47ffde56af667fcdb65b3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/intermediate-clock-executed/contract-clock-retry-observation.json",
+      "sha256": "ce9af30f4e005a9a10c7c4039b6f16576b9ac064ee408f0b463637eeaf8754e5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-22-f1b8bd71-ce10-4f87-a2ce-f2b775222833.json",
+      "sha256": "bb6bf0f291dd04ada85ff21901da2a5735f4c7050660cc4cc6a9171ce93039e7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-22-5715912a-f5a0-4652-a146-392eb83c422b.csv",
+      "sha256": "fc91216c09083071c6f8c9bde2024bc21a0fc2cd52f7055f949a2a3e238e202b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-22-c7403d98-511f-42b8-8d8f-400151992141.csv",
+      "sha256": "f9d6a0a0d546855b8214dec499c6119788fdea737836129b57b8963a608b745e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-22-64d58c6c-57a2-4dfa-ab01-9f664e2d0f14.csv",
+      "sha256": "fc91216c09083071c6f8c9bde2024bc21a0fc2cd52f7055f949a2a3e238e202b"
+    }
+  ]
+}
