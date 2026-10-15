@@ -8,6 +8,6 @@ PostgreSQL cambió de PID **56368 → 2947** y de `pg_postmaster_start_time()` *
 
 Después de capturar esas huellas, `/login` de la app y Auth health respondieron 200. Un login sintético normal y `getUser` devolvieron 200 y coincidieron con el usuario esperado; se cerró sólo la nueva sesión de esa sonda con `scope=local` (204). Esa actividad Auth posterior puede cambiar metadata de sesiones de forma esperada; no se presenta como prueba de cero escrituras Auth globales. No se usó sign-out global.
 
-El replay financiero del recibo API queda en evidencia separada del owner E2E. Este reinicio prueba persistencia y funcionamiento básico tras una parada normal administrada; no simula pérdida del host, corrupción, fallo de energía ni recuperación automática.
+El [replay financiero posterior del recibo API](../e2e/api-replay-after-restart/api-verification.json) dio PASS en evidencia separada del owner E2E: sesión normal, un efecto, saldo198500 y mismo hash de respuesta. Este reinicio prueba persistencia y funcionamiento básico tras una parada normal administrada; no simula pérdida del host, corrupción, fallo de energía ni recuperación automática.
 
 El gateway público sigue loopback, pero REST interno continúa en wildcard. El puerto interno posterior y la comprobación `lsof` figuran en el [JSON saneado completo](e2e-stack-restart.json). No se midió accesibilidad LAN y no se modificaron binarios, caché, state, firewall ni permisos del sistema para cambiar ese binding. No acredita TLS ni aislamiento completo de red.

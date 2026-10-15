@@ -1,0 +1,78 @@
+[
+  {
+    "status": "PASS",
+    "complete_original_contract": true,
+    "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+    "scope": "Independent semantic reconciliation of the complete original simulation case against an already executed Chrome UI -> persisted native SQL fixture. No new execution, provider acceptance, global compatibility claim, or CI3 rerun is attributed.",
+    "command": "node scripts/test-isolated-e2e.mjs (existing local execution; private environment/fixture omitted; not rerun during this review)",
+    "executed_revision": {
+      "repository": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+      "product": "b456c4220ee524406670f65837fcd4fd6c4b8275",
+      "build_id": "zJ3D7exVtqZ7JLNFuTSZ1",
+      "harness_sha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+      "started_at": "2026-10-15T01:21:28.749Z",
+      "finished_at": "2026-10-15T01:22:29.196Z"
+    },
+    "evidence_sha256": {
+      "e2e/ui/e2e-verification.json": "e9446026f1a03938896a837025ea7fd0d76d1ac45173aad9243924190dc65e79",
+      "e2e/ui/build-binding.json": "324dc87edef1b1f68b632e649a8940e73d5bd6142158954f8d15a1cda05e0fe4",
+      "scripts/test-isolated-e2e.mjs": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+      "original_contract_csv": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    "reviewed_at": "2026-10-15T02:28:47.353215+00:00",
+    "review_method": "Read original CSV, exact existing executed CU004 check, matching current/executed harness bytes, and served-build binding; match every required simulation outcome. Do not infer neighboring purchases/sales or adopt the top-level PARTIAL run as full-CU acceptance.",
+    "case_id": "CP4-08",
+    "assertions": [
+      "CU004 investments: UI manual purchase and sale, excessive quantity has no effect / persisted remaining quantity = 6 and manual current unit price = 110 USD",
+      "UI simulation +10%: simulation-hypothetical-value = USD 726,00; simulation-current-value = USD 660,00",
+      "Cerrar simulación followed by identical SHA256 of accounts + transactions + investments + investment_sales"
+    ],
+    "semantic_attestation": "The original q6 at current110, hypothetical726/current660, cancel/close and unchanged financial SQL hash are all asserted in the existing successful UI case. The simulator issues no trading request and the four financial tables remain byte-equivalent by canonical JSON hash.",
+    "original_contract": {
+      "precondiciones": "U1 q6 actual110USD; estadoSQLhashantes",
+      "entrada": "simular+10%; cancelar/cerrar",
+      "resultado_esperado": "hipotético726USD,real660; SQLhashfinanzasidéntico; no transacciónrealdetrading",
+      "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+    },
+    "source_review_sha256": "b81544f3d718d35f69ccf1c51e5ce5cf1e554d7d427f5bf24aa85fb930d4dd20",
+    "adapter_scope": "Metadata/path adaptation only; existing historical UI execution and independent complete-contract attestation retained. No rerun or current-CI3 attribution."
+  },
+  {
+    "status": "PASS",
+    "complete_original_contract": true,
+    "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+    "scope": "Independent semantic reconciliation of the complete original simulation case against an already executed Chrome UI -> persisted native SQL fixture. No new execution, provider acceptance, global compatibility claim, or CI3 rerun is attributed.",
+    "command": "node scripts/test-isolated-e2e.mjs (existing local execution; private environment/fixture omitted; not rerun during this review)",
+    "executed_revision": {
+      "repository": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+      "product": "b456c4220ee524406670f65837fcd4fd6c4b8275",
+      "build_id": "zJ3D7exVtqZ7JLNFuTSZ1",
+      "harness_sha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+      "started_at": "2026-10-15T01:21:28.749Z",
+      "finished_at": "2026-10-15T01:22:29.196Z"
+    },
+    "evidence_sha256": {
+      "e2e/ui/e2e-verification.json": "e9446026f1a03938896a837025ea7fd0d76d1ac45173aad9243924190dc65e79",
+      "e2e/ui/build-binding.json": "324dc87edef1b1f68b632e649a8940e73d5bd6142158954f8d15a1cda05e0fe4",
+      "scripts/test-isolated-e2e.mjs": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+      "original_contract_csv": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    "reviewed_at": "2026-10-15T02:28:47.353215+00:00",
+    "review_method": "Read original CSV, exact existing executed CU004 check, matching current/executed harness bytes, and served-build binding; match every required simulation outcome. Do not infer neighboring purchases/sales or adopt the top-level PARTIAL run as full-CU acceptance.",
+    "case_id": "CP4-09",
+    "assertions": [
+      "UI simulation -100%: simulation-hypothetical-value = USD 0,00",
+      "Separate -100.01 and NaN submissions: role alert visible and investment-simulation-result count = 0",
+      "Original current value = USD 660,00 and identical final four-table financial SQL SHA256 after all submissions and closing"
+    ],
+    "semantic_attestation": "The original q6 at current110, -100% boundary0, independent invalid submissions -100.01 and NaN, actual660 and no persisted mutation are all asserted. Each invalid input is submitted separately; the result is removed, and the final canonical hash covers every persisted financial table involved. No simulated result is presented as executed trading.",
+    "original_contract": {
+      "precondiciones": "U1 q6 actual110USD",
+      "entrada": "simular-100%, -100.01%,NaN enindependientes",
+      "resultado_esperado": "-100%valorhipotético0; menorque-100 oNaNrechaza; real660sinmutación",
+      "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+    },
+    "source_review_sha256": "b81544f3d718d35f69ccf1c51e5ce5cf1e554d7d427f5bf24aa85fb930d4dd20",
+    "adapter_scope": "Metadata/path adaptation only; existing historical UI execution and independent complete-contract attestation retained. No rerun or current-CI3 attribution."
+  }
+]

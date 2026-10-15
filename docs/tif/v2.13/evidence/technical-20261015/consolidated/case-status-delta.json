@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T01:30:51.739340+00:00",
+  "generated_at_utc": "2026-10-15T02:41:31.644044+00:00",
   "original_case_count": 273,
   "historical": {
     "path": "../../technical-20261009/case-traceability.csv",
@@ -22,24 +22,42 @@
   },
   "current": {
     "path": "../case-traceability.csv",
-    "core_directory": "core-final",
-    "source_revision": "0169860016125480c19f1284890e2b578f3236af",
-    "sha256": "740f1d040112e35c868d2474a17bbb5205ad8fe522de6b69e45eb616adafd77e",
+    "core_directory": "core-responsive",
+    "source_revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+    "sha256": "44d5d5c2e372dbe0a36107ae66fa727792f1823f6de6b5ccf48ae42b664f4c3a",
     "counts": {
-      "PASS": 170,
+      "PASS": 172,
       "FAIL": 0,
-      "BLOCKED": 103
+      "BLOCKED": 101
     },
-    "artifact_line_endings": "LF normalized for Git; CSV semantics and273statuses unchanged"
+    "artifact_line_endings": "LF normalized for Git;273rows with statuses derived by exact contracts"
   },
   "changed_statuses": [
+    {
+      "case_id": "CP4-08",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CU004 investments: UI manual purchase and sale, excessive quantity has no effect / persisted remaining quantity = 6 and manual current unit price = 110 USD | UI simulation +10%: simulation-hypothetical-value = USD 726,00; simulation-current-value = USD 660,00 | Cerrar simulación followed by identical SHA256 of accounts + transactions + investments + investment_sales",
+      "contract_revision": "Original case contract",
+      "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+      "scope": "Independent semantic reconciliation of the complete original simulation case against an already executed Chrome UI -> persisted native SQL fixture. No new execution, provider acceptance, global compatibility claim, or CI3 rerun is attributed."
+    },
+    {
+      "case_id": "CP4-09",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "UI simulation -100%: simulation-hypothetical-value = USD 0,00 | Separate -100.01 and NaN submissions: role alert visible and investment-simulation-result count = 0 | Original current value = USD 660,00 and identical final four-table financial SQL SHA256 after all submissions and closing",
+      "contract_revision": "Original case contract",
+      "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+      "scope": "Independent semantic reconciliation of the complete original simulation case against an already executed Chrome UI -> persisted native SQL fixture. No new execution, provider acceptance, global compatibility claim, or CI3 rerun is attributed."
+    },
     {
       "case_id": "RTV-034",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
       "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery",
       "contract_revision": "Explicit reconciliation: marks after creation and sends one notice to the winner -> historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery. Original inline mechanism was replaced, not silently reexecuted.",
-      "evidence": "core-final/final-vitest.json; durability/reconciled-contracts.json",
+      "evidence": "core-responsive/final-vitest.json; durability/reconciled-contracts.json",
       "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
     },
     {
@@ -48,10 +66,36 @@
       "current_status": "PASS",
       "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart",
       "contract_revision": "Explicit reconciliation: does not undo a confirmed movement when Telegram is unavailable -> historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart. Original inline mechanism was replaced, not silently reexecuted.",
-      "evidence": "core-final/final-vitest.json; durability/reconciled-contracts.json",
+      "evidence": "core-responsive/final-vitest.json; durability/reconciled-contracts.json",
       "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
     }
   ],
-  "unchanged_statuses": 271,
-  "rule": "Only the two exact outbox equivalences changed from the originalhistorical matrix;819current tests reexecuted their exact names. Partial native/UI/provider scopes promote no complete originalcase."
+  "unchanged_statuses": 269,
+  "rule": "Four exact changes from historical168: two explicitly reconciled outbox regressions reexecuted by current819, plus two complete original simulation contracts independently attested from historical b456 UI/build. No new CI3 browser rerun or neighboring contract acceptance is inferred.",
+  "phase2_prior": {
+    "path": "../case-traceability.csv",
+    "core_directory": "core-final",
+    "source_revision": "0169860016125480c19f1284890e2b578f3236af",
+    "sha256": "740f1d040112e35c868d2474a17bbb5205ad8fe522de6b69e45eb616adafd77e",
+    "counts": {
+      "PASS": 170,
+      "FAIL": 0,
+      "BLOCKED": 103
+    },
+    "artifact_line_endings": "LF normalized for Git; CSV semantics and273statuses unchanged",
+    "preserved_commit": "7ea70d1"
+  },
+  "phase3_prior": {
+    "path": "../case-traceability.csv",
+    "core_directory": "core-responsive",
+    "source_revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+    "sha256": "0cfa0a07f337699a96474f29716a496b9953383d0f8f800a3d88ddac79ddcedd",
+    "counts": {
+      "PASS": 170,
+      "FAIL": 0,
+      "BLOCKED": 103
+    },
+    "artifact_line_endings": "LF normalized for Git; CSV semantics and273statuses unchanged",
+    "preserved_scope": "Before independent CP4-08/09 historical UI reconciliation; no source or test rerun"
+  }
 }

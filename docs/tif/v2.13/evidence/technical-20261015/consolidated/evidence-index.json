@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T01:52:33.687412+00:00",
+  "generated_at_utc": "2026-10-15T02:45:02.792397+00:00",
   "draft": true,
   "original_cases": {
     "path": "../../../casos_prueba.csv",
@@ -63,6 +63,10 @@
     "core-final/verification.json": {
       "sha256": "f1a988ed546133f328701efc1851615f3e703c1530cf11bfe33e0f2e458664da",
       "bytes": 72351
+    },
+    "core-responsive/verification.json": {
+      "sha256": "87cfbb9a22048b6a226e5c0f8f72707f45e35cf099b27869c0a0903d7eec2920",
+      "bytes": 72356
     },
     "core/final-vitest.json": {
       "sha256": "c8af13220a9f22f571161271d98ee82be98fe24770d932fe2f8a26a6a19752dd",
@@ -144,6 +148,46 @@
       "sha256": "3262e9ddd550d2ec493c13dd06290b551b8cac10cb741494a6d00116250550b6",
       "bytes": 41976
     },
+    "core-responsive/final-vitest.json": {
+      "sha256": "8e299f66d8c86b03f7276f61b6715d7cca853fe3fd19aa817571fffdc6976680",
+      "bytes": 1065190
+    },
+    "core-responsive/coverage-summary.json": {
+      "sha256": "e9ae2af51146bf3495588cbf7009b4d4d40e6fdba9d6d467d240908ec6e12371",
+      "bytes": 12625
+    },
+    "core-responsive/dependency-audit.json": {
+      "sha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf",
+      "bytes": 3985
+    },
+    "core-responsive/balance-sql.json": {
+      "sha256": "2f20f639c21c31d3dcbe902963d7a2d05955e9935e046221e0b5aaa34cd66224",
+      "bytes": 7358
+    },
+    "core-responsive/shared-sql.json": {
+      "sha256": "64cff6875e33008c40b6eea7637ba0d516bb3e6ee15aa04e445dd674ec228652",
+      "bytes": 1570
+    },
+    "core-responsive/plan-sql.json": {
+      "sha256": "d3340ba93cc00957e91614249261279490e90f3b169ef51d1c277ba069952a6a",
+      "bytes": 2123
+    },
+    "core-responsive/durable-sql.json": {
+      "sha256": "68715328ca39864fdbb7aa248aa24a29163fa9c3081fd7920f939d682a9e6790",
+      "bytes": 8413
+    },
+    "core-responsive/import-sql.json": {
+      "sha256": "b7f5dbe2fcaa7d8834c26669be3c7dc69598b2c1d4ba6b0520f14bf24c39c650",
+      "bytes": 1313
+    },
+    "core-responsive/account-recompute-sql.json": {
+      "sha256": "64735dfd5d8c623f13ffc26c38ac25076f754ae7df700e770980bdba7c6397b8",
+      "bytes": 14532
+    },
+    "core-responsive/database-verification.json": {
+      "sha256": "c4e55d951aa88670378ebda4c33f01b50766fe6ef6b50d4000ef95e062b0ed77",
+      "bytes": 41976
+    },
     "dependencies/metadata.json": {
       "sha256": "46302540e73d8d67726a0c0e8907e68af966c7f51e3680061e2c08827177c1fd",
       "bytes": 3777
@@ -152,9 +196,17 @@
       "sha256": "87e4cd5705191d10e13716f540011c1cdb27632ddf8e6840cdfc0cd6af07de0b",
       "bytes": 20847
     },
+    "review/source-manifest-global2.json": {
+      "sha256": "989f6cac3ddf23480818462688eba784f86f35570353dc50c1f0a63633e2f3c9",
+      "bytes": 20226
+    },
     "e2e/api/api-verification.json": {
       "sha256": "e33f155a43215110660507bb4f79072a95e8f2c3f4510b9644e362557664f35a",
       "bytes": 19332
+    },
+    "e2e/api-replay-after-restart/api-verification.json": {
+      "sha256": "22aab24e3562154b52fb119b6377df20d102cfe7b8048b5f7197a4a0ccd59c5f",
+      "bytes": 2640
     },
     "e2e/ui/e2e-verification.json": {
       "sha256": "e9446026f1a03938896a837025ea7fd0d76d1ac45173aad9243924190dc65e79",
@@ -204,6 +256,14 @@
       "sha256": "324dc87edef1b1f68b632e649a8940e73d5bd6142158954f8d15a1cda05e0fe4",
       "bytes": 1041
     },
+    "review/verified-system-case-results.json": {
+      "sha256": "b81544f3d718d35f69ccf1c51e5ce5cf1e554d7d427f5bf24aa85fb930d4dd20",
+      "bytes": 5749
+    },
+    "system-case-results.json": {
+      "sha256": "841f887a350b6c048fab46f4e47d176d981685a89c45e8dc8ba55ad2a793897b",
+      "bytes": 6417
+    },
     "security-matrix/review-reconciliation-before-http-fix.json": {
       "sha256": "032d73b3535150fe3d279dedbd0170d30eba5ed5e791c1ea0361b6d973f2e53f",
       "bytes": 23018
@@ -232,15 +292,47 @@
       "sha256": "15ca8a038a94607aa256a1ea7eb439f2db9fc2a00bab77168b968c34f134dba9",
       "bytes": 35022
     },
+    "e2e/capture-calibration/calibration.json": {
+      "sha256": "ace84afa8f2ee04ed00e91b409f9ad25243a88f99eb1ae0e428a42d7b87d1a6c",
+      "bytes": 1598
+    },
+    "e2e/visual/visual-verification.json": {
+      "sha256": "c9e354f50826b8236e8aa5e44100af9baedbd74dc18d1308b1aae1c34bc8ecfc",
+      "bytes": 49233
+    },
+    "load/browser-attempt-1-interrupted/interruption.json": {
+      "sha256": "4a458ae5094e4818f03c933b5d6794e1864ef00c48207ba1bdadb2eb14976b79",
+      "bytes": 1451
+    },
+    "load/browser-attempt-1-interrupted/cleanup.json": {
+      "sha256": "0675353deced766a1600e8577bb11e2490fbee0ecd58d48a3e1de687fa10c06b",
+      "bytes": 831
+    },
+    "environment/load-native-log-aggregate.json": {
+      "sha256": "1352da1ced814b273262ff92372a76196fef8a2ab6e327a72871040b883dec01",
+      "bytes": 1968
+    },
+    "review/visual-responsive-20-review.json": {
+      "sha256": "d4318d0de4ad73f78f86afb9716954d49384993fda0553d2a7a5fe0dccebe218",
+      "bytes": 15219
+    },
+    "review/visual-responsive-cu001-cu003-review.json": {
+      "sha256": "a12889ddb95a792e3ad580edd3783192b578d2e5b5f828364e7bc01267705e59",
+      "bytes": 19357
+    },
+    "load/browser-attempt-1-interrupted/browser-load.json": {
+      "sha256": "0e8c8752f1caf5aab2e30df227ce39306deba0eb8dc4b78dda6d2414c9364354",
+      "bytes": 171413
+    },
     "traceability-summary.json": {
-      "sha256": "0a1b0b7881380758a214a1bdbf03d38219f72d84ec6a7e7a55d6f854d25d1c1a",
-      "bytes": 406
+      "sha256": "dd3608cdd997177b6d44fccec1b56b76439ace66d111500660290df93e5dc8d6",
+      "bytes": 411
     }
   },
-  "technical_rows": 154,
+  "technical_rows": 210,
   "original_derived_summary": {
-    "generated_at": "2026-10-15T01:30:51.704369+00:00",
-    "core_directory": "core-final",
+    "generated_at": "2026-10-15T02:40:40.092380+00:00",
+    "core_directory": "core-responsive",
     "original_cases": 273,
     "use_cases": [
       "CU001",
@@ -249,9 +341,9 @@
       "CU004"
     ],
     "counts": {
-      "PASS": 170,
+      "PASS": 172,
       "FAIL": 0,
-      "BLOCKED": 103
+      "BLOCKED": 101
     },
     "rule": "PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence."
   },

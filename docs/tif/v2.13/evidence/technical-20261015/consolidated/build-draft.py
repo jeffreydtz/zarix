@@ -46,13 +46,14 @@ for item in quotes['checks']:
     add('PUBLIC-QUOTE-'+item['provider'].upper(),item['status'],'GET públicoHTTP'+str(item['httpStatus']),item['scope'],'../public-quote-providers.json',item['provider']+' JSON/schema/hash observado')
 core=read('core/verification.json')
 core_final=read('core-final/verification.json')
-for prefix in ['core','core-final']:
+core_responsive=read('core-responsive/verification.json')
+for prefix in ['core','core-final','core-responsive']:
     for name in ['final-vitest','coverage-summary','dependency-audit','balance-sql','shared-sql',
                  'plan-sql','durable-sql','import-sql','account-recompute-sql','database-verification']:
         read(prefix+'/'+name+'.json')
-for rel in ['dependencies/metadata.json','review/source-manifest-final.json']:
+for rel in ['dependencies/metadata.json','review/source-manifest-final.json','review/source-manifest-global2.json']:
     read(rel)
-for label, report, prefix in [('PHASE1',core,'core'),('FINAL',core_final,'core-final')]:
+for label, report, prefix in [('PHASE1',core,'core'),('PHASE2',core_final,'core-final'),('PHASE3',core_responsive,'core-responsive')]:
     if report:
         for command in report['commands']:
             scope=report['buildEnvironment'] if command['name']=='build' else 'Comando global de fase identificada; no sustituye aceptación UI/proveedor'
@@ -60,8 +61,12 @@ for label, report, prefix in [('PHASE1',core,'core'),('FINAL',core_final,'core-f
             add('CORE-'+label+'-'+command['name'].upper(),command['status'],'exitCode='+str(command.get('exitCode')),scope,'../'+prefix+'/verification.json',' '.join(command.get('command',[])),report.get('codeRevision',''),blocker='' if command['status']=='PASS' else 'Ver comando/log de esta fase')
 if not core_final:
     add('GLOBAL2-FINAL','BLOCKED','Corrida final posterior al fix HTTP pendiente','npmci/typecheck/lint/coverage/testdb/build/audit sobre nuevo freeze exacto',blocker='Preservar core/ anterior; esperar core-final/ y seleccionar --core-dir core-final')
+if not core_responsive:
+    add('GLOBAL3-RESPONSIVE','BLOCKED','CI3 posterior al ajuste responsive pendiente',
+        'Preservar GLOBAL1/GLOBAL2; no atribuir sus tests al ajuste posterior',blocker='Esperar core-responsive/ completo')
 for key,pattern,scope in [
  ('API-FOUR-CU','e2e/api/api-verification.json','API→DB con sesiones normales; no UI ni contrato CP integral'),
+ ('API-REPLAY-AFTER-RESTART','e2e/api-replay-after-restart/api-verification.json','Recibo anterior repetido tras reinicios separados Next y stackE2E/PG; normalAuth y un efecto/hash/saldo conservados; no browser'),
  ('CHROME-FOUR-CU','e2e/ui/e2e-verification.json','CU001movimientos/CU002cuentas/CU003análisis/CU004inversiones; cobertura parcial declarada'),
  ('SAFARI-READ','e2e/**/browser-read-verification.json','Safari real lectura parcial; no suiteCP integral ni matriz4navegadores')]:
     candidates=list(BASE.glob(pattern))
@@ -106,6 +111,16 @@ for file in sorted(BASE.glob('e2e/ui-*/e2e-verification.json')):
         'Fase/harness previo separado. La causa debe leerse en el informe y README E2E, sin borrar observaciones',
         '../'+rel,revision=item.get('revision',''))
 binding=read('e2e/ui/build-binding.json')
+reviewed_system=read('review/verified-system-case-results.json')
+accepted_system=read('system-case-results.json')
+if accepted_system:
+    for item in accepted_system:
+        assert item.get('complete_original_contract') is True and item.get('assertions')
+        add('ORIGINAL-'+item['case_id'],item['status'],'Contrato original completo reconciliado con evidencia ejecutada',
+            item['scope'],'../system-case-results.json; ../review/verified-system-case-results.json',
+            ' | '.join(item['assertions']),json.dumps(item.get('executed_revision',{}),ensure_ascii=False),
+            cu={'CP1':'CU001','CP2':'CU002','CP3':'CU003','CP4':'CU004'}.get(item['case_id'].split('-')[0],'CU001–CU004'))
+        rows[-1]['original_contract_promotion']='EXPLICIT: complete_original_contract=true and independent semantic review; see exact historical run binding'
 security=read('security-matrix/review-reconciliation-before-http-fix.json')
 if security:
     add('SECURITY-MATRIX-BEFORE-HTTP-FIX',security['status'],json.dumps(security['counts']),
@@ -163,13 +178,49 @@ for file in sorted(BASE.glob('e2e/visual-attempt-*/visual-verification.json')):
         add(key+'-'+suffix,cell['status'],'Celda Chrome acotada ejecutada',
             json.dumps({'actions':cell.get('actions',[]),'metrics':cell.get('metrics',{})},ensure_ascii=False),
             '../'+rel,revision=visual.get('revision',''),cu=cell['cu'])
+calibration=read('e2e/capture-calibration/calibration.json')
+if calibration:
+    add('VISUAL-BITMAP-CALIBRATION','BLOCKED','16 bitmap200 anteriores limitados; DOM/viewport medidos por separado',
+        'El recorte de fullPage a200% pertenece al compositor de capturas; no se usa para negar o aprobar geometría DOM. Retest de captura corregida pendiente',
+        '../e2e/capture-calibration/calibration.json',blocker='Ver alcance/calibración y futuras capturas finales')
+visual_final=read('e2e/visual/visual-verification.json')
+if visual_final:
+    cells=visual_final.get('cells',[])
+    summary={status:sum(cell.get('status')==status for cell in cells) for status in ('PASS','FAIL','BLOCKED')}
+    status=visual_final['status']
+    if status=='PARTIAL':
+        status='PASS' if len(cells)==32 and summary['PASS']==32 and visual_final.get('sourceStable') is True and visual_final.get('financeIntegrity',{}).get('status')=='PASS' else 'BLOCKED'
+    add('VISUAL-AFTER-RESPONSIVE',status,'Resultado general '+visual_final['status']+'; '+json.dumps(summary),visual_final['scope'],
+        '../e2e/visual/visual-verification.json',revision=visual_final.get('revision',''))
+    for cell in cells:
+        vp=cell['viewport'];suffix=cell['cu']+'-'+str(vp['width'])+'X'+str(vp['height'])+'-ZOOM'+str(cell['zoomPercent'])
+        add('VISUAL-AFTER-'+suffix,cell['status'],'Celda Chrome acotada después del ajuste responsive',
+            json.dumps({'actions':cell.get('actions',[]),'metrics':cell.get('metrics',{})},ensure_ascii=False),
+            '../e2e/visual/visual-verification.json',revision=visual_final.get('revision',''),cu=cell['cu'])
+else:
+    add('VISUAL-AFTER-RESPONSIVE','BLOCKED','32celdas/40capturas finales pendientes',
+        'Esperar build CI3 y corrección de captura separada; no heredar28PASS4FAIL anteriores',blocker='Sin informe visual posterior actual')
 loads=list(BASE.glob('load/**/browser-load.json'))
+for rel in ['load/browser-attempt-1-interrupted/interruption.json','load/browser-attempt-1-interrupted/cleanup.json',
+            'environment/load-native-log-aggregate.json','review/visual-responsive-20-review.json',
+            'review/visual-responsive-cu001-cu003-review.json']:
+    read(rel)
 if loads:
     for file in loads:
         rel=str(file.relative_to(BASE)); item=read(rel)
         for name,profile in item['profiles'].items():
-            status=profile.get('status','BLOCKED'); status=status if status in ['PASS','FAIL','BLOCKED'] else 'BLOCKED'
-            add('LOAD-'+name.upper(),status,json.dumps(profile.get('summary',{}),ensure_ascii=False),'Perfil local; denominadores separados/Chrome20contextos/CDP20Mbps50ms por target','../'+rel,revision=item.get('revision',''),blocker=profile.get('reason',''))
+            observations=profile.get('observations',[])
+            observed={value:sum(entry.get('status')==value for entry in observations) for value in ['PASS','FAIL','BLOCKED']}
+            status=profile.get('status','BLOCKED')
+            if observed['FAIL']:status='FAIL'
+            elif status not in ['PASS','FAIL','BLOCKED']:status='BLOCKED'
+            add('LOAD-'+name.upper(),status,json.dumps({'rawStatus':profile.get('status'),'observations':len(observations),'counts':observed,'summary':profile.get('summary',{})},ensure_ascii=False),
+                'Perfil local; denominadores separados/Chrome20contextos/CDP20Mbps50ms por target. RUNNING crudo conservado; cualquier FAIL observado permanece FAIL incluso si se interrumpió el resto',
+                '../'+rel,revision=item.get('revision',''),blocker=profile.get('reason',''))
+            planned=profile.get('scheduledObservations',0)
+            if planned and len(observations)<planned:
+                add('LOAD-'+name.upper()+'-UNOBSERVED','BLOCKED',str(planned-len(observations))+' observaciones programadas no ejecutadas',
+                    'Interrupción del perfil separada de las observaciones FAIL ya conservadas','../'+rel,blocker='Sin datos; no imputar PASS ni FAIL a las observaciones ausentes')
 else:
     for name in ['WARM','COLD','OUTAGE']: add('LOAD-'+name,'BLOCKED','Perfil final pendiente','100observaciones/20contextos/CDP20Mbps50ms por target; freshNode solamente en cold; proveedoresdobles en outage',blocker='No informe final de perfil')
 for key,cu,scope,blocker in [
@@ -184,7 +235,7 @@ for key,cu,scope,blocker in [
  ('CNF-09','CU001–CU004','Chrome/Firefox/Safari/Edge reales versionados, actual/anterior','Matriz crítica completa no ejecutada; permisos/términos Firefox/Edge pendientes; WebKit no es Safari'),
  ('CNF-10','CU001–CU004','Credenciales en todos los canales originales, sin efectos no autorizados','Auth/grants y guards parciales tienen evidencia separada; faltan todos los canales/proveedores y fixture original exacto'),
  ('CNF-11','CU001–CU004','Idempotencia/rollback/concurrencia manual/bot/importación/cron/venta/pago originales','Recibos/locks/rollback nativos y dobles tienen evidencia separada; no todos los canales originales incluidos pago/proveedor real'),
- ('CNF-12-ORIGINAL','CU001–CU004','Snapshot nominal/RPO23h/RTO3h30 y UI posterior original','Recuperación64tablas/Auth/Storage probada aparte; no fixture temporizado/browser original exacto'),
+ ('CNF-12-ORIGINAL','CU001–CU004','Fixture2cuentas/20movimientos/3lotes/1regla/1grupo; snapshot y gasto1500 posterior; RPO23h/RTO3h30/fronteras24h/4h/+1s y lectura4CU restaurados','Recuperación64tablas/Auth/Storage probada aparte. Fixture/timing/fronteras/UI exactos todavía no ejecutados; pasos locales permitidos no requieren TLS ni credenciales externas. Backup del plan realmente contratado tampoco está acreditado por el mecanismo manual local'),
  ('CNF-13','CU001–CU004','Correlación request→servicio→efecto/rechazo y ausencia de marcadores secretos originales','Scan heurístico no prueba fixture completo de correlación, errores de proveedores y ausencia de los marcadores de datos privados originales'),
  ('CP3-19-ORIGINAL','CU003','MEP seleccionable original','ContradiceRN08blue.sell; evidencia derivada blue no aprueba fixtureMEP'),
  ('PROVIDER-GEMINI','CU001;CU003','OCR y IA reales','GEMINI_API_KEY ausente; dobles no validan proveedor/cuota real. CP3-09 requiere proveedor'),
