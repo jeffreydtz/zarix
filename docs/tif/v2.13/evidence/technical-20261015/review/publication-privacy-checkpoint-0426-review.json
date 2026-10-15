@@ -1,0 +1,74 @@
+{
+  "reviewedAt": "2026-10-15T04:28:25.694302+00:00",
+  "status": "SCOPED_FALSE_POSITIVES_CONFIRMED",
+  "scope": "Independent file/scanner/source review for the next publication checkpoint. No SQL/API/browser/Auth/process actions, no full repository rescan and no CI5 acceptance claim. No suspected values, matching excerpts or hashes of values are recorded.",
+  "heuristicScan": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/review/evidence-secret-scan-checkpoint-0426.json",
+    "sha256": "300e5df53addf7d3d2c03baef531f781ae1c728368363d25d251f807027021b0",
+    "scannedAt": "2026-10-15T04:26:11.600Z",
+    "scanner": "docs/tif/v2.13/evidence/technical-20261015/review/scan-evidence-checkpoint-0426.mjs",
+    "scannerSha256": "93d8990ad9699b2447b6972042f46a180ffe68ab0c8800530898b09832c59f5a",
+    "textFiles": 908,
+    "binaryFilesNotInspected": 128,
+    "candidateCountRetained": 2,
+    "reviewedOccurrences": [
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/arc-launch-permission-preflight.json",
+        "sha256": "4dcd19833618cbe9d84f1ee2574fe82cc886041712a1830dd8a673574dae9b84",
+        "field": "$.authorization",
+        "classification": "Human task/permission authorization metadata, not an Authorization request header or credential value.",
+        "scope": "Only this exact field occurrence at these pinned file bytes. No field-name or document-wide whitelist."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/environment/e2e-stack-restart.json",
+        "sha256": "8b2267a6d94e77e1ef8d7409924b37f4093fb50005fc8e3d9430e8092969c99b",
+        "field": "$.authorization",
+        "classification": "Human task/permission authorization metadata, not an Authorization request header or credential value.",
+        "scope": "Only this exact field occurrence at these pinned file bytes. No field-name or document-wide whitelist."
+      }
+    ],
+    "review": "Both exact $.authorization strings are natural-language authorization metadata in the documented human-controlled browser/restart task contexts. They are not HTTP headers, JWTs, provider keys or the known private fixture credentials. No values are reproduced."
+  },
+  "exactPrivateScan": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-scan-0426.json",
+    "sha256": "a5af9a83f68f5b96fa80cd586951c9a5f10846e013464099e942eda411346ddc",
+    "checkedAt": "2026-10-15T04:26:12.013Z",
+    "privateValuesCompared": 27,
+    "files": 1885,
+    "rawStatusRetained": "FAIL",
+    "rawFindingCountRetained": 1,
+    "scannerSnapshot": "docs/tif/v2.13/evidence/technical-20261015/review/check-publication-reviewed-0426.mjs",
+    "scannerSnapshotSha256": "d88eefb2b775650ca8f1b6cb58615bda7667806591b24abd6e573b51db82c14d",
+    "reviewedPath": "scripts/lib/test-isolated-native-target.mjs",
+    "reviewedFileSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+    "byteIdenticalImmutableRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "candidateClassification": "The one match is the already documented statically quoted default loopback PostgreSQL URL, not a generated random credential. Its exact existing test-stack value coincides with this preexisting fallback literal.",
+    "independentCheck": {
+      "candidateOnly": true,
+      "privateValuesLoaded": 27,
+      "matchingPrivateValuesInCandidate": 1,
+      "allMatchingOrigins": [
+        {
+          "file": "runtime.env",
+          "field": "ZARIX_LOCAL_DATABASE_URL"
+        },
+        {
+          "file": "source.env",
+          "field": "ZARIX_LOCAL_DATABASE_URL"
+        }
+      ],
+      "matchingStaticSourceLiteral": true,
+      "loopbackTargetOnly": true,
+      "sameWholeHelperBytesAsCI4": true,
+      "noRandomTokenPasswordCookieRecoveryMatchObservedInCandidate": true
+    },
+    "scope": "This attests only the known occurrence at the pinned helper bytes. It is not a blanket whitelist for URLs, passwords, that filename or future content."
+  },
+  "limitations": [
+    "Raw heuristic candidates and exact-scan FAIL remain preserved; no zero-candidate or universal-no-secrets claim.",
+    "The heuristic scan did not inspect128binary files or rendered image/pixel contents. Exact byte matching of known values does not prove that PNGs/screenshots are free of rendered secrets.",
+    "The explicit27existing values and file set are the stated scan scope; external files, ignored assets and unknown/new secrets are not universally covered.",
+    "This checkpoint is publication hygiene, not acceptance of CI5, providers, transport or production."
+  ],
+  "findingsRequiringRedaction": []
+}

@@ -1,0 +1,93 @@
+{
+  "reviewedAt": "2026-10-15T04:31:03.079667+00:00",
+  "status": "PASS_FOR_DERIVED_RESTART_REPLAY",
+  "scope": "Independent read-only artifact/source review; no SQL/API/Auth/browser/process action or financial replay by reviewer.",
+  "derivedProbe": {
+    "id": "DERIVED-INV-RESTART-RESUME",
+    "status": "PASS",
+    "complete_original_contract": false,
+    "assertionsTotal": 40,
+    "sourcePinAssertions": 32,
+    "financialReplayAssertions": 5,
+    "processAndPriorReportAssertions": 3,
+    "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-restart/verification.json",
+    "reportSha256": "657e6d3c2acad471850593aa0a34e623934ec0ba8911dfe81f2658811a0322e4",
+    "acceptedScope": "One ordinary-Auth replay of the original sale command after actual PostgreSQL+Next restart returns201, originalsaleID andquantity5. Complete position/sales/cash-account/ledger/receipt snapshot remains unchanged; one durable receipt and no new financial fixture.",
+    "preparedArtifact": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/restart-replay.json",
+      "sha256": "4cc0453c40f442a91080efb0300d94d2c7ee282ca1d12ca19c0ab04f5af6c01b"
+    },
+    "priorReport": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/verification.json",
+      "sha256": "9ae8047a29465d8068d36ae360ed79b97e6dfe9b23302f81000f93e8cd928031"
+    },
+    "protectedPublicTables": 12,
+    "allOriginalRowsUnchanged": true,
+    "sourceStable": true,
+    "cleanupFailure": false
+  },
+  "realRestart": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/environment/proof-stack-restart.json",
+    "sha256": "2bf6bd06bb94085ee80ec5a9ea886aa7399b9469cfe6572130ba37cc6b007105",
+    "officialSingleStackCommandExitCode": 0,
+    "oldPostgresPid": 48287,
+    "newPostgresPid": 98670,
+    "postgresStartTimeChanged": true,
+    "oldNextPid": 52579,
+    "newNextPid": 99286,
+    "sameBuildId": "a2WBtszbvrpoT9GHwToED",
+    "sameRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "comparisonsRecomputed": 11,
+    "allPass": true,
+    "tableFingerprints": {
+      "count": 64,
+      "schemas": {
+        "auth": 27,
+        "public": 27,
+        "storage": 10
+      },
+      "algorithm": "Per-table count and md5 of ordered canonical PostgreSQL JSONB row text; not a claim of one transaction snapshot.",
+      "authUsers": 2,
+      "storageObjects": 0
+    },
+    "preserved": "Schema dump digest, instanceIDs, local config/env/login/credential-container digests and five other stack state-file digests match. Three exact capture/restart/start source hashes verified.",
+    "publicMetadataMapping": {
+      "beforeAfterMatchPrivateAfterExplicitGuardRename": {
+        "before": true,
+        "after": true,
+        "comparisons": true,
+        "newNext": true
+      },
+      "guardLabelRename": {
+        "datadirMatchesE2eInstance": "datadirMatchesProofInstance",
+        "authUserIdsExactlyMatchPrivateE2eLogins": "authUserIdsExactlyMatchPrivateProofLogins"
+      },
+      "scope": "Public report adapts only two legacy E2e guard labels to Proof; values and all other fields are identical. It is not a byte-identical copy of private before/after JSON. Capture source actually targets58321/58322/proof."
+    },
+    "scopeLimits": "Storage is empty in this fifth-stack restart; no binary-object preservation claim here. Full SOURCE/RESTORE backup/restore proof remains separate. Private full dump was readable but not restored by this restart."
+  },
+  "checks": {
+    "executedSourceSnapshotsVerified": 6,
+    "servedResponsibleFilesMatchImmutableGit836": 32,
+    "exactlyOneCompletedFinancialHTTP201": true,
+    "bodyLossSaleIdMatchesReplay": true,
+    "all40ActualExpectedEqual": true
+  },
+  "supersession": "Separately executed evidence closes the pending restart follow-up in independent-cp4-07-concurrent-http-review.json. That historical review remains unchanged. Old ten-PG FAIL18PASS/1FAIL remains failed.",
+  "limitations": [
+    "Derived proof, not a new CSVcase, browser offline queue, CNFload/SLO, production/provider or CI5 acceptance.",
+    "The64-table comparison applies to the explicit before/after restart capture window; subsequent normal Auth traffic can update session tables. Replay separately protects12public financial tables."
+  ],
+  "reviewerBlocked": false,
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-restart/manifest.json",
+      "sha256": "cc0e1679eb2a5e02a7b73383fe1cc2e320a141aeb3184b816e960981c574af53"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/proof-stack-restart.json",
+      "sha256": "2bf6bd06bb94085ee80ec5a9ea886aa7399b9469cfe6572130ba37cc6b007105"
+    }
+  ],
+  "findings": []
+}
