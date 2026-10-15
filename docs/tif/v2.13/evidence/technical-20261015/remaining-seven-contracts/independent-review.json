@@ -1,0 +1,349 @@
+{
+  "status": "PASS_INDEPENDENT_COMPOSITE_REVIEW_SCOPED",
+  "reviewedAt": "2026-10-15T05:42:58.600966+00:00",
+  "reviewer": "sql_security; independent of the seven-case harness, execution and component-test owners",
+  "method": "File-only independent comparison of literal CSV, all28 package file hashes, six historical external hashes, executed source snapshots, frozen Git source bytes, actual recorded assertion values, corrected component test/config and HTML. No tests/imports/builds, DB/API/Auth requests or matrix edits performed.",
+  "manifest": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/manifest.json",
+    "sha256": "f34cc2cd36df7d30464b16f634c3c646f3a8e773694b38b5beeb49d7e2902ca6"
+  },
+  "totals": {
+    "originalCases": 7,
+    "pass": 7,
+    "fail": 0,
+    "newNativeApiAssertions": 8,
+    "existingNativeCompositeAssertions": 59,
+    "existingInvestmentNativeAssertions": 27,
+    "newComponentTests": 2,
+    "budgetComponentTestsAlreadyInCi6": 6,
+    "uniqueGlobalTestTotalNotRecomputed": true
+  },
+  "originalCases": [
+    {
+      "id": "CP1-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "originalContract": {
+        "precondiciones": "Fixture fresco: A inicial10000; gasto1500 persistido→A8500",
+        "entrada": "UPDATE monto1500→2000",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "A=8000; una fila movimiento; no doble débito",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "completion": "Actual ordinary Auth/API expense edit: initial10000, expense1500→8500, public PATCHamount2000→8000; same economic UUID and one economic row. The client supplies the existing account_id/currency fields and does not supply amount_in_account_currency. SQL before/after and opening-adjustment equality are retained.",
+      "version": "New native84df929/aIWVMIWgvq5sbeEtZAZEh/Next39320; 8 assertions,13 protected original tables, stable source/build and own session closed.",
+      "preservedLimit": "Old amount-only SQL update with canonical1500 and balance8500 is a different preserved input, not overwritten or counted as successful public-API edit.",
+      "evidence": [
+        "remaining-seven-contracts/cp1-05-api.json",
+        "remaining-seven-contracts/manifest.json"
+      ]
+    },
+    {
+      "id": "CP1-21",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "originalContract": {
+        "precondiciones": "U1 A=10000; gasto500 ya existe→9500; huella conocida",
+        "entrada": "importar mismo gasto y elegir omitir",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "cero altas nuevas; omitidas1; A=9500; muestra criterios de coincidencia",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "completion": "Actual native response omits the known same economic tuple: imported0/skipped1/pending0/total1, balance9500 and exact full ledger unchanged. Matching criteria are actually present in skipReasons, not inferred solely from source.",
+      "version": "Historical native836fd18/aqWYS3F5R_VxiHxD3LpJV,7 assertions; rawPARTIAL retained.",
+      "preservedLimit": "CSV asks response/SQL and displayed matching criteria, without specifying a browser. The actual response carries the criteria; no browser import-review screen or click is asserted.",
+      "evidence": [
+        "remaining-seven-contracts/four-existing-composites.json",
+        "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "remaining-seven-contracts/manifest.json"
+      ]
+    },
+    {
+      "id": "CP1-28",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "originalContract": {
+        "precondiciones": "U1 A=10000; tres fixtures independientes",
+        "entrada": "Bearer incorrecto; regla inactiva; regla fin10-05 y hoy10-06",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "401sin accesoDB paraBearer incorrecto; inactiva no ejecuta; vencida se desactiva sin nuevo movimiento",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "completion": "Invalid Bearer returns401; independent inactive rule creates no movement; expired end10-05 rule deactivates on10-06 without new movement. Exact source control flow returns401 before client factory and execute; imports/constructor do not dispatch DB work.",
+      "version": "Historical native836fd18/aqWYS,8 assertions; cron route/template/job source hashes independently match both Git836 and84.",
+      "preservedLimit": "No dynamic DB-query counter was recorded. The before-DB obligation is a named source-control-flow proof composed with actual native401 and immutable ledger, not invented runtime instrumentation.",
+      "evidence": [
+        "remaining-seven-contracts/four-existing-composites.json",
+        "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "remaining-seven-contracts/manifest.json"
+      ]
+    },
+    {
+      "id": "CP1-30",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "originalContract": {
+        "precondiciones": "Cuenta A=500; regla gasto1000; notificación habilitada",
+        "entrada": "ejecución fecha válida",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Movimiento1000; saldo-500; fecha exitosa actual; aviso si el proveedor lo acepta. No afirmar advertencia específica de descubierto que el producto no tenga.",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "completion": "Actual notification-enabled rule creates one expense1000, balance-500, successful marker06Oct and one durable notification intent. These are all unconditional obligations in the literal fixture.",
+      "version": "Historical native836fd18/aqWYS,5 assertions; rawPARTIAL and notification fixture retained.",
+      "preservedLimit": "The CSV says aviso si el proveedor lo acepta. No linked chat or authorized bot existed, no delivery was attempted, and provider acceptance never occurred. This conditional acceptance does not establish Telegram delivery or a specific overdraft warning; the separate real-provider integration remains BLOCKED.",
+      "evidence": [
+        "remaining-seven-contracts/four-existing-composites.json",
+        "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "remaining-seven-contracts/manifest.json"
+      ]
+    },
+    {
+      "id": "CP1-31",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "originalContract": {
+        "precondiciones": "PresupuestoAlimentosARS10000 octubre2026; independientes por fila",
+        "entrada": "consumido9999.99,10000,10000.01; agrega transferenciaAlimentos500",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "restante0.01/0/-0.01; estado disponible/límite/superado; transfer no consume; informe no bloquea movimientos",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "completion": "Three independent native budgets amount10000 with spent9999.99/10000/10000.01 have remaining0.01/0/-0.01; actual transfer500 is accepted and excluded in each. Real BudgetCard React SSR tests exercise the same numbers with rounded percent100 and show available/limit/exceeded semantics and cents without NaN.",
+      "version": "Native API/SQL836fd18/aqWYS39 assertions plus six existing real-component tests in CI6Git84df929.",
+      "preservedLimit": "Two immutable phases are composed explicitly. These six tests are already part of CI6 total913; they are not new unique global tests. No single served Next/browser sequence, hydration or pixels are implied.",
+      "evidence": [
+        "remaining-seven-contracts/four-existing-composites.json",
+        "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "remaining-seven-contracts/manifest.json"
+      ]
+    },
+    {
+      "id": "CP4-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "originalContract": {
+        "precondiciones": "U1Premium cuentaInversiónpropia; preciofixture190.50USD",
+        "entrada": "registrarAAPL5×185USD sincomisiones",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "q5,costo925,valor952.50,P&L27.50,porcentaje2.972972…; display2.97%",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      },
+      "completion": "Native API/SQL records q5,cost925,value952.50,PnL27.50 and27.5/925×100. Matching manual190.50 fixture in actual InvestmentsList+ConfirmProvider SSR displays +2.97%,952.50,27.50 and entered/manual provenance.",
+      "version": "Historical native836fd18/a2WBtszbvrpoT9GHwToED,11 assertions plus one new real-component SSRtest on product84df929. All five render modules are byte-identical across836 and84.",
+      "preservedLimit": "Only corrected attempt2 is accepted. Attempt1 used AAPLlive provenance inconsistent with the native manualfixture, remains retained with its two passed render tests, and is explicitly rejected for composition. No external market request is established.",
+      "evidence": [
+        "investment-contracts/executed/cp4-01-partial.json",
+        "remaining-seven-contracts/investment-display-summary.json",
+        "remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json",
+        "remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-01.html",
+        "remaining-seven-contracts/manifest.json"
+      ]
+    },
+    {
+      "id": "CP4-06",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "originalContract": {
+        "precondiciones": "U1Premium; tickerFOOFIXnoenproveedor",
+        "entrada": "alta manualq2×50USD actual55 fechafija",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "q2,costo100,valor110,P&L10; etiqueta manual/timestamp, no falsapropiedadmercado",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      },
+      "completion": "Native manual FOOFIX q2,cost100,value110,PnL10, source=manual and timestamp06Oct12Z are asserted in actual SQL/API. Real InvestmentsList+ConfirmProvider SSR displays Manual/Precio ingresado and forbids Cotización de mercado.",
+      "version": "Historical native836fd18/a2WB,16 assertions plus one new real-component SSRtest on product84df929; same module bytes across both.",
+      "preservedLimit": "The fixed timestamp is an actual API/DB observation, not a rendered Manual-card date. The literal CSV does not require that date to appear in a browser. No live quote, browser, hydration or action interaction is claimed.",
+      "evidence": [
+        "investment-contracts/executed/cp4-06-partial.json",
+        "remaining-seven-contracts/investment-display-summary.json",
+        "remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json",
+        "remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-06.html",
+        "remaining-seven-contracts/manifest.json"
+      ]
+    }
+  ],
+  "sourceAndPreservationChecks": {
+    "all28ListedFilesMatch": true,
+    "all6ExternalEvidenceHashesMatch": true,
+    "literalCsvSha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+    "allFiveRenderModuleBytesMatchGit84And836": true,
+    "correctedFocalExit0AndTwoAssertionsPassed": true,
+    "actualRetainedHtmlTextAndForbiddenProvenanceIndependentlyChecked": true,
+    "componentTestContainsNoMocks": true,
+    "explicitConfigSelectsOnlyArchivedTestSource": true,
+    "noMainProductOrTestDiscoveryChanges": true,
+    "cp105EightAssertionValuesIndependentlyCompared": true,
+    "cp105Original13TablesAndOwnSessionCleanup": true,
+    "fourHistoricalCase59AssertionValuesIndependentlyCompared": true,
+    "cronGuardSourcePinIndependentlyComparedAcross836And84": true,
+    "sixBudgetTestNamesStatusesAndFrozenSourcePinsChecked": true,
+    "nativeInvestmentExecutedSourceSnapshotsAndOriginalContractsInspected": true,
+    "amountOnlySql8500ObservationPreserved": true,
+    "firstAaplLiveRenderProvenanceRejectedAndRetained": true,
+    "rawPartialReportsRemainUnchanged": true
+  },
+  "limits": [
+    "A case-completion review of explicitly composed original contracts is not a new single end-to-end/browser acceptance or a universal integration PASS.",
+    "No actual Telegram acceptance, authorized bot/chat, real investment provider, browser or hydrated screen is inferred.",
+    "New component tests are additional focal evidence after CI6 and are not included in or added to the913-test aggregate.",
+    "CP4-06 timestamp belongs to API/DB evidence; the actual Manual card does not render that date.",
+    "No claim that the earlier rawPARTIAL/FAIL statuses were wrong or rewritten: their missing overstrict browser/provider scopes remain visible in immutable reports."
+  ],
+  "findings": [],
+  "remainingBlockersForTheseSevenLiteralOriginalContracts": [],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/manifest.json",
+      "sha256": "f34cc2cd36df7d30464b16f634c3c646f3a8e773694b38b5beeb49d7e2902ca6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/README.md",
+      "sha256": "9f4395097f22408b23f7ebb65f8b76946a8b36b4b527db3abe7fcf1208ee4483"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/build-existing-composites.py",
+      "sha256": "9ebf70d5a53dce4234ffa211ea706b8ed3801a2aa0a4a000417dfd92b6e16c21"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/cp1-05-api.json",
+      "sha256": "59e2fb50fe0aa92b8f865e73e1a58a46d91d05348bf78392e4c10c6a6d4b4981"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/executed-account-edit/profile-binding.mjs",
+      "sha256": "67154c8d605a70fc1d75e745e2a8449862a61107cad60cf6c4ce40f71a79dc2f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/executed-account-edit/run-account-edit.mjs",
+      "sha256": "50793efc024d6d693af88d22e90ce6ca13dbd4fdb25b887543cb01a2bc7d2dd5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/four-existing-composites.json",
+      "sha256": "ff5697df881c7e7d8521faf6b25d5b70be9eb0c20348876a863f312c41972da4"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display-cp4-01.html",
+      "sha256": "ecead64093f4d2201f6e0e6a19e688ec136b043dd904a839b90e921b95632236"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display-cp4-06.html",
+      "sha256": "4b69ce68e09681b56d3a246074b280c238ee7242b2f16530b9eb79adcfebc09a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display-execution.json",
+      "sha256": "ecd0fc8e1e8f24715dce29884517e6d3a4be3e7cea1f4cd32ec72d1b2baf7289"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display-result.json",
+      "sha256": "14a5ce5aa5ac7d7fd8510491cd886f687ea6a1e598e1ccca224a9cfecf167c0a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display-summary.json",
+      "sha256": "c2be73dbd369b5cf91ee815c15e0e1a3764f9ede29b2fad64103128fcbb7c26a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display.stdout.log",
+      "sha256": "43a8191a65a07147251f26fc9cbbdd3ccee611294e876bc26c7a6a7ce1e88023"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display.test-source.ts",
+      "sha256": "59246318ed950be316d20cb730a6e0f84c401e252dc5aeb6131c632f1f18c78c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/investment-display.vitest.config.mjs",
+      "sha256": "04571699b16ced1f3fafe73ab0e45a882a84e4635294b871ae0133bf2e55fb15"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-01.html",
+      "sha256": "856903db88c92b7df76861988dc18678fb6e68bbf65955904ee5e24e62216ea1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-06.html",
+      "sha256": "4b69ce68e09681b56d3a246074b280c238ee7242b2f16530b9eb79adcfebc09a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-execution.json",
+      "sha256": "278d73843f9a0f136c08fd8c9e44b44b69aaaed27dbf1aa509b836f34b0ac7c3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json",
+      "sha256": "a7c326b60991c3f5dbb24cde5dc38a1d730184c8bc420fadfa5a85d76064c8c4"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display.stdout.log",
+      "sha256": "68652f7cba0037f323306549906c400300fc5334ec2d106084d5865c7d83a87e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display.test-source.ts",
+      "sha256": "6616a348f905d5c10c8740c94fce005c4656fb10b5a1170de5d7477479544dc6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display.vitest.config.mjs",
+      "sha256": "910523c4e044c1477334dc564d4fe0a53ff83361c07b6d2438990bf9439c3664"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-oracle-correction.json",
+      "sha256": "e5740252dc91e1c84f51c32be788e8b59b5a63feee82f922dce7bb1ebe0cd611"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-summary.json",
+      "sha256": "8d1e967fa9c2aba6bb7a26761025f53645282df566fc94878be4850df06722ac"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/profile-binding.mjs",
+      "sha256": "67154c8d605a70fc1d75e745e2a8449862a61107cad60cf6c4ce40f71a79dc2f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/run-account-edit.mjs",
+      "sha256": "50793efc024d6d693af88d22e90ce6ca13dbd4fdb25b887543cb01a2bc7d2dd5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/system-case-results.json",
+      "sha256": "c52f91c12c6bb80e3f34a3dcc637905e15ce4fc0f53923459597181da8a0da41"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-01-partial.json",
+      "sha256": "e93c2031277f225c9699ed7eccf94d564aa95ab337e0b50186ee1397c8ebbf29"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-06-partial.json",
+      "sha256": "921f2e7f404b8c063883820f861c2b825d61952be5ce56aa9dc5a144ee1a99ac"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/final-vitest.json",
+      "sha256": "32f376cc3687dc3b737ccc4cc823fe5eaf9b951b123100338ab7abaab50651f0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/verification.json",
+      "sha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-attempt-1-different-provenance/manifest.json",
+      "sha256": "2102a080497b9a02d12c7a07f26a055ff939a9f196c7e2b22b9fdf1f04189e59"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/manifest.json",
+      "sha256": "dc6d13ae2bd3121f00be3ad9917a48c42f20aabd61db38c83e0e1cbf2d3c36a1"
+    }
+  ]
+}
