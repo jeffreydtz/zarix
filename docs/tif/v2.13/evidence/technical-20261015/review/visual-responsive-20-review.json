@@ -1,0 +1,309 @@
+{
+  "reviewedAt": "2026-10-15T02:11:35.012014+00:00",
+  "reviewer": "dependency_audit",
+  "method": "Direct view_image manual inspection of all20listed actual PNGs; IHDR physical dimensions and recorded screenshot SHA independently checked after viewing. No browser rerun or binary metadata scan.",
+  "sourceDirectory": "/tmp/zarix-runtime-20261015/visual-evidence-responsive",
+  "sourceReportSha256": "c9e354f50826b8236e8aa5e44100af9baedbd74dc18d1308b1aae1c34bc8ecfc",
+  "sourceReportRevision": "3308625d5ff88484b99a0e910e4dbb09ae778efd",
+  "servedProductRevisionAsReportedByRootE2E": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+  "runner": {
+    "commit": "3308625",
+    "sha256": "45f70570ff9ee680713bf498798fc91359ffdc967500c71f749a1e9b1534685c"
+  },
+  "sourceReportResult": {
+    "status": "PARTIAL",
+    "cells": 32,
+    "scopedPass": 32,
+    "screenshots": 40,
+    "sourceStable": true,
+    "financeIntegrity": {
+      "beforeSha256": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+      "afterSha256": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+      "status": "PASS"
+    }
+  },
+  "files": [
+    {
+      "path": "CU002-320x568-zoom100.png",
+      "sha256": "6a1504a841f5330f829fb4892d4a52b1205be9bdf2122d4900669bde710bf346",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "cu": "CU002",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Form is scrolled to the Create Account action; upper fields are outside the visible form region. No complete-account-creation assertion is inferred from a screenshot of an unsaved form."
+      ]
+    },
+    {
+      "path": "CU002-320x568-zoom200.png",
+      "sha256": "86132b54c0b9f54a07e493ed75d9aa7fc4291b438f60bfa7886ec49099773eed",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "cu": "CU002",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Form is scrolled to the Create Account action; upper fields are outside the visible form region. No complete-account-creation assertion is inferred from a screenshot of an unsaved form."
+      ]
+    },
+    {
+      "path": "CU002-375x812-zoom100.png",
+      "sha256": "7674ccd37b1690c9c375e799aa141154f75bc1ec39534498f16799c9ec9b8070",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "cu": "CU002",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Form is scrolled to the Create Account action; upper fields are outside the visible form region. No complete-account-creation assertion is inferred from a screenshot of an unsaved form."
+      ]
+    },
+    {
+      "path": "CU002-375x812-zoom200.png",
+      "sha256": "cc4871bbb521e06dd795dda203c3ed1756f37cba98bc04ba9b5f65f009ab9fff",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "cu": "CU002",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Form is scrolled to the Create Account action; upper fields are outside the visible form region. No complete-account-creation assertion is inferred from a screenshot of an unsaved form."
+      ]
+    },
+    {
+      "path": "CU002-768x1024-zoom100.png",
+      "sha256": "a4ef14290bd8069854d9f8e28ec5cfee8bd69d855094804f16b3c54d50c318e2",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "cu": "CU002",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Form is scrolled to the Create Account action; upper fields are outside the visible form region. No complete-account-creation assertion is inferred from a screenshot of an unsaved form."
+      ]
+    },
+    {
+      "path": "CU002-768x1024-zoom200.png",
+      "sha256": "602ba6365dadf9d66ed958e7b4f386697cc842f6f38e827f2887f87e7150ec70",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "cu": "CU002",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Form is scrolled to the Create Account action; upper fields are outside the visible form region. No complete-account-creation assertion is inferred from a screenshot of an unsaved form."
+      ]
+    },
+    {
+      "path": "CU002-1440x900-zoom100.png",
+      "sha256": "f7c0f4321b161a6e3d24c8a905c287b512ff4410ae8e4026f3a0f5579ca817d1",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "cu": "CU002",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Form is scrolled to the Create Account action; upper fields are outside the visible form region. No complete-account-creation assertion is inferred from a screenshot of an unsaved form."
+      ]
+    },
+    {
+      "path": "CU002-1440x900-zoom200.png",
+      "sha256": "f49a3a5ec3c8ee10214bce4b0058ad9a6abe02045975ecd7d671c68d7f140871",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "cu": "CU002",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Form is scrolled to the Create Account action; upper fields are outside the visible form region. No complete-account-creation assertion is inferred from a screenshot of an unsaved form."
+      ]
+    },
+    {
+      "path": "CU004-320x568-zoom100.png",
+      "sha256": "add9b6b194ec5b552f32aa522574698a5c7ff09d0a89457e09562da140a345ce",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "cu": "CU004",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Viewport is positioned at the simulation action; some result content may require further vertical scrolling, especially at320/375px200percent. Does not prove completed buy/sell per viewport or a real provider integration."
+      ]
+    },
+    {
+      "path": "CU004-320x568-zoom200.png",
+      "sha256": "1d812fa38c5d3e652250be48da0be7e73f64ce7c32f3b74efdb06f7adca3aa9a",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "cu": "CU004",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Viewport is positioned at the simulation action; some result content may require further vertical scrolling, especially at320/375px200percent. Does not prove completed buy/sell per viewport or a real provider integration."
+      ]
+    },
+    {
+      "path": "CU004-375x812-zoom100.png",
+      "sha256": "676665f7256353e5dbfdea3083a6a49c3498fa886b79c997058a8a368e3e043a",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "cu": "CU004",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Viewport is positioned at the simulation action; some result content may require further vertical scrolling, especially at320/375px200percent. Does not prove completed buy/sell per viewport or a real provider integration."
+      ]
+    },
+    {
+      "path": "CU004-375x812-zoom200.png",
+      "sha256": "dcf7d02d15e83c480fa8d8f03c2a277ed54cdd70a5ee6182d4fd8e87f78a8915",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "cu": "CU004",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Viewport is positioned at the simulation action; some result content may require further vertical scrolling, especially at320/375px200percent. Does not prove completed buy/sell per viewport or a real provider integration."
+      ]
+    },
+    {
+      "path": "CU004-768x1024-zoom100.png",
+      "sha256": "02102b57588bf7e7b0e61f236d830b28a4aab33d9bab606ed9f09d5a148a705c",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "cu": "CU004",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Viewport is positioned at the simulation action; some result content may require further vertical scrolling, especially at320/375px200percent. Does not prove completed buy/sell per viewport or a real provider integration."
+      ]
+    },
+    {
+      "path": "CU004-768x1024-zoom200.png",
+      "sha256": "201f85d29bb2e1d884b7c121fc379bf6acf78d8096fa8a9e9dc1bafe207d1eb4",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "cu": "CU004",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Viewport is positioned at the simulation action; some result content may require further vertical scrolling, especially at320/375px200percent. Does not prove completed buy/sell per viewport or a real provider integration."
+      ]
+    },
+    {
+      "path": "CU004-1440x900-zoom100.png",
+      "sha256": "a8269fed5066d0504eb88d165dd8c0d3f8fe699803d7cb628a5e238df075e233",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "cu": "CU004",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Viewport is positioned at the simulation action; some result content may require further vertical scrolling, especially at320/375px200percent. Does not prove completed buy/sell per viewport or a real provider integration."
+      ]
+    },
+    {
+      "path": "CU004-1440x900-zoom200.png",
+      "sha256": "f02c97fb5185eefc181af62f7c32ebf661091f3ce6b131ff7f6f2ca506de3d5c",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "cu": "CU004",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "Viewport is positioned at the simulation action; some result content may require further vertical scrolling, especially at320/375px200percent. Does not prove completed buy/sell per viewport or a real provider integration."
+      ]
+    },
+    {
+      "path": "CU003-320x568-zoom100-before-scroll.png",
+      "sha256": "9fc9938737b0cf6a3259f9da8ea6d0f244a5f272b3f5e74300a6c916b3bf058d",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "cu": "CU003",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "This is the assigned mobile before-scroll viewport only; lower charts/sections are outside it. After-scroll snapshots and their movement oracle are reviewed separately by E2E."
+      ]
+    },
+    {
+      "path": "CU003-320x568-zoom200-before-scroll.png",
+      "sha256": "b215d02af14556ba8e4b1d666e899ce741c771ab076b187baf859bbf8bb120e2",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "cu": "CU003",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "This is the assigned mobile before-scroll viewport only; lower charts/sections are outside it. After-scroll snapshots and their movement oracle are reviewed separately by E2E."
+      ]
+    },
+    {
+      "path": "CU003-375x812-zoom100-before-scroll.png",
+      "sha256": "b5b2ed6b8a6a88e10e85ef1356c8582421e0ba60aca6615dcd0a00c3668ce521",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "cu": "CU003",
+      "zoomPercent": 100,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "This is the assigned mobile before-scroll viewport only; lower charts/sections are outside it. After-scroll snapshots and their movement oracle are reviewed separately by E2E."
+      ]
+    },
+    {
+      "path": "CU003-375x812-zoom200-before-scroll.png",
+      "sha256": "3be38b33dbb670953f252fdfe6c21f9bd473b09d8ffbf17b97409a01410d364c",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "cu": "CU003",
+      "zoomPercent": 200,
+      "manualVisiblePrivacy": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data. Synthetic financial fixtures and normal UI only.",
+      "visibleLimits": [
+        "This is the assigned mobile before-scroll viewport only; lower charts/sections are outside it. After-scroll snapshots and their movement oracle are reviewed separately by E2E."
+      ]
+    }
+  ],
+  "scope": "Exactly16CU002/CU004 screenshots plus4mobile CU003before-scroll screenshots. Other20images belong to E2E reviewer. All20native viewport dimensions match configured physical size at100/200percent; earlier fullPage200crop is not repeated. Privacy review does not approve whole CNF or all visual content; some offscreen content and unsaved-form limits remain explicit. Root CI3 819tests are bound tobb2e8a6; this later helper and visual run retain their own phase.",
+  "changesFromFailedVisualAttempt": "Original768px100percent horizontal-overflow FAILs remain preserved. In this later report each of the four768px100percent cells has scrollWidth=clientWidth768; captures corroborate navigation fits within viewport."
+}

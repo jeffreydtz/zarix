@@ -1,0 +1,113 @@
+{
+  "reviewedAt": "2026-10-15T01:50:42.083387+00:00",
+  "reviewer": "/root/e2e/visual_overflow",
+  "method": "Direct visual inspection through view_image(detail=original) of all eight unchanged CU001 PNGs; independent local SHA256 comparison with final visual-verification.json. No browser, test, database or product-source operations.",
+  "scope": "CU001 screenshots from visual attempt1 only",
+  "status": "LIMITED_EVIDENCE_REVIEW",
+  "reportPath": "/tmp/zarix-runtime-20261015/visual-evidence/visual-verification.json",
+  "reportSha256": "15ca8a038a94607aa256a1ea7eb439f2db9fc2a00bab77168b968c34f134dba9",
+  "recordedAttemptStatus": "FAIL",
+  "recordedAttemptCellCounts": {
+    "PASS": 28,
+    "FAIL": 4,
+    "BLOCKED": 0
+  },
+  "recordedSourceStable": true,
+  "captures": [
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU001-320x568-zoom100.png",
+      "sha256": "5aea80ded4cd98dfd367d35ed5572a00a1d6940cee21030dfa5d37ea0111a3bc",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 320,
+      "bitmapHeight": 568,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial labels and records are synthetic test fixtures. Pixel-only review.",
+      "observation": "Lower scrolled portion of unsaved expense form; account/date/description and complete Guardar button visible. Heading and upper fields outside captured form scroll position.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU001-320x568-zoom200.png",
+      "sha256": "22b1d0f5d92880747798457855ceda2ec6b9ba64c0d034fd259d8eb91d54dda5",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 160,
+      "bitmapHeight": 284,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial labels and records are synthetic test fixtures. Pixel-only review.",
+      "observation": "Obvious crop of enlarged form: only partial account/date/description visible; no complete action control. Bitmap160x284 cannot establish complete viewport appearance.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU001-375x812-zoom100.png",
+      "sha256": "3a12841b5bb89f9098ecf0104651f0dc5a73dfa3b1296abafb7144313487d3d7",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 375,
+      "bitmapHeight": 812,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial labels and records are synthetic test fixtures. Pixel-only review.",
+      "observation": "Amount1250ARS, synthetic categories, account/date/description and complete Guardar visible; upper form/title outside scroll position.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU001-375x812-zoom200.png",
+      "sha256": "a8fd278428b6066e7f19e0a8aa931fb6b5f56bdfc9e4691635f14ff127e31f3e",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 188,
+      "bitmapHeight": 406,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial labels and records are synthetic test fixtures. Pixel-only review.",
+      "observation": "Obvious crop of enlarged category/account/date area; text and controls cut at right and bottom. Bitmap188x406 cannot establish complete viewport appearance.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU001-768x1024-zoom100-failure.png",
+      "sha256": "bbc3c69ed4b1d71d6beb1644086e293ee5165613c14649b7cba4e754b667bd82",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 781,
+      "bitmapHeight": 4678,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial labels and records are synthetic test fixtures. Pixel-only review.",
+      "observation": "Failure capture preserves full expense form with Guardar visible and document width781 for requested768. Full-page bitmap extends far below viewport with faded/blank background; no readiness claim for this failure state.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU001-768x1024-zoom200.png",
+      "sha256": "740dbffbd6fad2cf9e3e98f1f4d14f526364552cdbcc4bab21843b2ca19c5405",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 384,
+      "bitmapHeight": 512,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial labels and records are synthetic test fixtures. Pixel-only review.",
+      "observation": "Obvious crop of enlarged category/account area, with right/bottom control content cut. Bitmap384x512 cannot establish complete viewport appearance.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU001-1440x900-zoom100.png",
+      "sha256": "9d4a8bd17ea3f60736308d32755ffacdf23652b87f3fdbf9db77754f74222893",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 1440,
+      "bitmapHeight": 4498,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial labels and records are synthetic test fixtures. Pixel-only review.",
+      "observation": "Desktop full-page bitmap preserves expense modal; Guardar is partially clipped by modal lower boundary, though reported DOM center hit-test passed. Background beyond viewport becomes faded/blank; full-page capture is not a continuous fixed-modal viewport.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU001-1440x900-zoom200.png",
+      "sha256": "2ee9d3b5870191fa0475c28d970ef995feca2e3b5337e75de0ed00768ae3d29a",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 720,
+      "bitmapHeight": 450,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial labels and records are synthetic test fixtures. Pixel-only review.",
+      "observation": "Obvious crop of enlarged header and form category/account/date area; right/bottom form content cut and Guardar absent. Bitmap720x450 cannot establish complete viewport appearance.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    }
+  ],
+  "limitations": [
+    "All four200% bitmaps visibly crop the enlarged viewport; DOM zoom/control measurements remain separate from visual acceptance.",
+    "100%320/375 captures represent lower modal scroll positions rather than the whole form at once.",
+    "100%1440 capture visibly cuts part of Guardar at the lower modal edge despite a passing DOM center-reachability assertion.",
+    "Full-page captures with fixed overlays contain faded or blank background below the actual viewport; they do not prove a complete visible-page state.",
+    "No original PASS/FAIL result was promoted or overwritten, and no full CU001 or visual-compatibility acceptance is claimed."
+  ]
+}

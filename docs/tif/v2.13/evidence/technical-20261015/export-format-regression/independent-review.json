@@ -1,5 +1,4 @@
 {
-  "reviewedAt": "2026-10-15T03:51:00Z",
   "reviewer": "independent dependency_audit agent",
   "verdict": "No material findings in the narrow export metadata and UTC date patch",
   "files": [
@@ -12,5 +11,7 @@
       "sha256": "e00401abcc86a6e4e9cc0dd26e21a23927937efd26749536b7d831a314453177"
     }
   ],
-  "scope": "Static diff and before/after JSON review; no independent test rerun, no compiled endpoint retry. Existing CSV15-column and JSON-array formats retained; no new validation or endpoint."
+  "scope": "Static diff and before/after JSON review; no independent test rerun, no compiled endpoint retry. Existing CSV15-column and JSON-array formats retained; no new validation or endpoint.",
+  "recordedAt": "2026-10-15T03:58:30.293102+00:00",
+  "reviewTimeSource": "The independent review arrived in a collaborator message without a source timestamp. recordedAt is when this record was updated, not an asserted review execution time."
 }

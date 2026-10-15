@@ -1,0 +1,58 @@
+{
+  "reviewedAt": "2026-10-15T02:11:35.012014+00:00",
+  "reviewer": "dependency_audit",
+  "method": "Direct view_image of all6listed actual PNG files; IHDR/hash independently checked",
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/capture-calibration/zoom100-viewport.png",
+      "sha256": "e0e7d731584119011a787086b34a04b48b44388e00a307388e42efde04ea0644",
+      "png": {
+        "width": 320,
+        "height": 568
+      }
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/capture-calibration/zoom100-full-page.png",
+      "sha256": "e0e7d731584119011a787086b34a04b48b44388e00a307388e42efde04ea0644",
+      "png": {
+        "width": 320,
+        "height": 568
+      }
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/capture-calibration/zoom200-viewport.png",
+      "sha256": "9e8f92ccae418c56f396e55a9315139df581c4f5e9b23207c34da982794acaea",
+      "png": {
+        "width": 320,
+        "height": 568
+      }
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/capture-calibration/zoom200-full-page.png",
+      "sha256": "794c2cabce605657a8d2b1d3db07b94c1620ab78b00bda226a153b72399ae5da",
+      "png": {
+        "width": 160,
+        "height": 284
+      }
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/capture-calibration/modal/viewport.png",
+      "sha256": "7d17c4b83b6fb16bc971fb4e5d52b4a0c8fe343d94f370c8638448ae36ab3f5a",
+      "png": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/capture-calibration/modal/full-page.png",
+      "sha256": "3dd0ecf5de4ce265d69321adf8b4efd62e159a6f4050a7152b281f8b0292d176",
+      "png": {
+        "width": 1440,
+        "height": 4498
+      }
+    }
+  ],
+  "privacy": "No visible secrets or personal data:4harmless local border fixtures and2unsaved synthetic movement form screenshots",
+  "finding": "The200percent native viewport preserves both borders at320x568 while fullPage crops to160x284. The100percent modal native viewport shows Guardar inside1440x900; fullPage reproduces the compositor clipping. No app/modal modification was inferred from these artifacts.",
+  "scope": "Static image/JSON/script review only; no Node/browser/DB/test executed. These6calibrationimages are separate from the20main responsive screenshots."
+}

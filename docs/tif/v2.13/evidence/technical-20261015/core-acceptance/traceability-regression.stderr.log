@@ -1,0 +1,10 @@
+test_explicit_core_final_selects_its_assertions_and_existing_report_paths (__main__.TraceabilityStatusRegression.test_explicit_core_final_selects_its_assertions_and_existing_report_paths) ... ok
+test_mixed_statuses_preserve_failure_then_blocked_precedence (__main__.TraceabilityStatusRegression.test_mixed_statuses_preserve_failure_then_blocked_precedence) ... ok
+test_native_layouts_reference_existing_evidence_without_promoting_complete_cases (__main__.TraceabilityStatusRegression.test_native_layouts_reference_existing_evidence_without_promoting_complete_cases) ... ok
+test_system_pass_fail_and_blocked_keep_their_distinct_results (__main__.TraceabilityStatusRegression.test_system_pass_fail_and_blocked_keep_their_distinct_results) ... ok
+test_unmatched_cases_remain_blocked_and_summary_counts_match_matrix (__main__.TraceabilityStatusRegression.test_unmatched_cases_remain_blocked_and_summary_counts_match_matrix) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.209s
+
+OK
