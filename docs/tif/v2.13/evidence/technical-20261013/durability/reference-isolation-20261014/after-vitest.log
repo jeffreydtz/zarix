@@ -1,0 +1,14 @@
+
+ RUN  v5.0.3 /Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix
+
+ ✓ __tests__/investment-create-durable-store.test.ts (2 tests) 22ms
+ ✓ __tests__/offline-durable-store.test.ts (15 tests) 35ms
+ ✓ __tests__/financial-intent-hooks.test.ts (8 tests) 28ms
+ ✓ __tests__/offline-reference-cache-isolation.test.ts (12 tests) 184ms
+
+ Test Files  4 passed (4)
+      Tests  37 passed (37)
+   Start at  21:05:37
+   Duration  315ms (tests 45%, transform 38%, import 14%, worker 3%)
+
+JSON report written to /Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261013/durability/reference-isolation-20261014/after-vitest.json

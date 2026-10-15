@@ -2,20 +2,61 @@
  * Snapshots for cuenta / categoría selects when the SW has no cache hit
  * (ej. nunca se abrió el modal online) o la red falla.
  */
+import { createClient } from '@/lib/supabase/client';
 
 const KEYS = {
-  accounts: 'zarix-offline-snapshot-accounts-v1',
-  categories: 'zarix-offline-snapshot-categories-v1',
+  accounts: 'zarix-offline-snapshot-accounts-v2',
+  categories: 'zarix-offline-snapshot-categories-v2',
 } as const;
 
 const META_KEYS = {
-  accounts: 'zarix-offline-snapshot-accounts-meta-v1',
-  categories: 'zarix-offline-snapshot-categories-meta-v1',
+  accounts: 'zarix-offline-snapshot-accounts-meta-v2',
+  categories: 'zarix-offline-snapshot-categories-meta-v2',
 } as const;
 
 const inFlight = new Map<string, Promise<unknown[] | null>>();
+let currentOwner: string | null | undefined;
+let sessionEpoch = 0;
+let observingAuth = false;
+export const REFERENCE_OWNER_CHANGED = 'zarix-reference-owner-changed';
 
-type SnapshotMeta = { updatedAt: number };
+type SnapshotMeta = { updatedAt: number; ownerId: string };
+
+function observeOwner(ownerId: string | null): void {
+  if (currentOwner === ownerId) return;
+  const initialized = currentOwner !== undefined;
+  currentOwner = ownerId;
+  sessionEpoch++;
+  inFlight.clear();
+  if (initialized && typeof window !== 'undefined') window.dispatchEvent(new Event(REFERENCE_OWNER_CHANGED));
+}
+
+/** Browser identity scopes local references; the API still verifies Auth/RLS.
+ * Unknown/failed/anonymous sessions must never adopt an old private snapshot. */
+export async function getOfflineReferenceOwner(): Promise<string | null> {
+  if (typeof window === 'undefined') return null;
+  try {
+    const client = createClient();
+    if (!observingAuth) {
+      client.auth.onAuthStateChange((_event, session) => observeOwner(session?.user.id ?? null));
+      observingAuth = true;
+    }
+    const before = sessionEpoch;
+    const { data, error } = await client.auth.getSession();
+    if (error) { observeOwner(null); return null; }
+    const ownerId = data.session?.user.id ?? null;
+    if (before !== sessionEpoch && currentOwner !== ownerId) return null;
+    observeOwner(ownerId);
+    return ownerId;
+  } catch {
+    observeOwner(null);
+    return null;
+  }
+}
+
+function ownedKey(key: string, ownerId?: string | null): string | null {
+  return ownerId && ownerId === currentOwner ? `${key}:${encodeURIComponent(ownerId)}` : null;
+}
 
 function readArray<T>(key: string): T[] {
   if (typeof window === 'undefined') return [];
@@ -60,12 +101,14 @@ function writeMeta(key: string, meta: SnapshotMeta): void {
   }
 }
 
-export function getOfflineCachedAccounts<T>(): T[] {
-  return readArray<T>(KEYS.accounts);
+export function getOfflineCachedAccounts<T>(ownerId?: string | null): T[] {
+  const key = ownedKey(KEYS.accounts, ownerId);
+  return key ? readArray<T>(key) : [];
 }
 
-export function getOfflineCachedCategories<T>(): T[] {
-  return readArray<T>(KEYS.categories);
+export function getOfflineCachedCategories<T>(ownerId?: string | null): T[] {
+  const key = ownedKey(KEYS.categories, ownerId);
+  return key ? readArray<T>(key) : [];
 }
 
 /**
@@ -73,19 +116,23 @@ export function getOfflineCachedCategories<T>(): T[] {
  * - Online: siempre (incluye lista vacía legítima).
  * - Offline: solo si hay filas (p. ej. cache del SW), nunca [] que borraría el último snapshot.
  */
-export function maybePersistAccountsSnapshot<T>(rows: T[] | null, online: boolean): void {
-  if (rows === null) return;
+export function maybePersistAccountsSnapshot<T>(rows: T[] | null, online: boolean, ownerId?: string | null): void {
+  const key = ownedKey(KEYS.accounts, ownerId);
+  const metaKey = ownedKey(META_KEYS.accounts, ownerId);
+  if (rows === null || !key || !metaKey || !ownerId) return;
   if (online || rows.length > 0) {
-    writeArray(KEYS.accounts, rows);
-    writeMeta(META_KEYS.accounts, { updatedAt: Date.now() });
+    writeArray(key, rows);
+    writeMeta(metaKey, { updatedAt: Date.now(), ownerId });
   }
 }
 
-export function maybePersistCategoriesSnapshot<T>(rows: T[] | null, online: boolean): void {
-  if (rows === null) return;
+export function maybePersistCategoriesSnapshot<T>(rows: T[] | null, online: boolean, ownerId?: string | null): void {
+  const key = ownedKey(KEYS.categories, ownerId);
+  const metaKey = ownedKey(META_KEYS.categories, ownerId);
+  if (rows === null || !key || !metaKey || !ownerId) return;
   if (online || rows.length > 0) {
-    writeArray(KEYS.categories, rows);
-    writeMeta(META_KEYS.categories, { updatedAt: Date.now() });
+    writeArray(key, rows);
+    writeMeta(metaKey, { updatedAt: Date.now(), ownerId });
   }
 }
 
@@ -113,8 +160,8 @@ export async function fetchJsonArray<T>(url: string): Promise<T[] | null> {
   }
 }
 
-function isFresh(meta: SnapshotMeta | null, ttlMs: number): boolean {
-  if (!meta) return false;
+function isFresh(meta: SnapshotMeta | null, ttlMs: number, ownerId: string): boolean {
+  if (!meta || meta.ownerId !== ownerId) return false;
   return Date.now() - meta.updatedAt <= ttlMs;
 }
 
@@ -123,29 +170,33 @@ function isFresh(meta: SnapshotMeta | null, ttlMs: number): boolean {
  */
 export async function fetchReferenceList<T>(
   url: string,
-  options?: { ttlMs?: number; force?: boolean }
+  options?: { ttlMs?: number; force?: boolean; ownerId?: string }
 ): Promise<T[] | null> {
+  const ownerId = await getOfflineReferenceOwner();
+  if (!ownerId || (options?.ownerId && options.ownerId !== ownerId)) return null;
+  const epoch = sessionEpoch;
   const ttlMs = options?.ttlMs ?? 2 * 60 * 1000;
   const force = Boolean(options?.force);
   const isAccounts = url.startsWith('/api/accounts');
-  const cached = isAccounts ? getOfflineCachedAccounts<T>() : getOfflineCachedCategories<T>();
-  const meta = readMeta(isAccounts ? META_KEYS.accounts : META_KEYS.categories);
+  const cached = isAccounts ? getOfflineCachedAccounts<T>(ownerId) : getOfflineCachedCategories<T>(ownerId);
+  const meta = readMeta(ownedKey(isAccounts ? META_KEYS.accounts : META_KEYS.categories, ownerId)!);
 
-  if (!force && cached.length > 0 && isFresh(meta, ttlMs)) {
+  if (!force && cached.length > 0 && isFresh(meta, ttlMs, ownerId)) {
     return cached;
   }
 
-  const key = `${url}::${force ? 'force' : 'normal'}`;
+  const key = `${ownerId}::${epoch}::${url}::${force ? 'force' : 'normal'}`;
   const current = inFlight.get(key) as Promise<T[] | null> | undefined;
   if (current) return current;
 
   const request = fetchJsonArray<T>(url)
-    .then((rows) => {
+    .then(async (rows) => {
+      if (await getOfflineReferenceOwner() !== ownerId || epoch !== sessionEpoch) return null;
       const online = typeof navigator !== 'undefined' && navigator.onLine;
       if (isAccounts) {
-        maybePersistAccountsSnapshot(rows, online);
+        maybePersistAccountsSnapshot(rows, online, ownerId);
       } else {
-        maybePersistCategoriesSnapshot(rows, online);
+        maybePersistCategoriesSnapshot(rows, online, ownerId);
       }
       return rows;
     })

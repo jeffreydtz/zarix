@@ -1,0 +1,18 @@
+[
+  {
+    "path": "lib/offline-reference-cache.ts",
+    "sha256": "61d9c4d56c686d9aae17cd5b4270c247347d25f53de511bbe675711e8eebce3b"
+  },
+  {
+    "path": "components/OfflineReferenceWarmup.tsx",
+    "sha256": "9a8d1ab3597f8076b609b491d833af98a6d2dbd96e034bcc6a631c61180ef9fd"
+  },
+  {
+    "path": "components/add-transaction/AddTransactionProvider.tsx",
+    "sha256": "38a2ebb25151c366faf6b51191dcb17248c768ff3c123f2568bb8242fbef581e"
+  },
+  {
+    "path": "__tests__/offline-reference-cache-isolation.test.ts",
+    "sha256": "83a205b97bd443358f0f8d1a04abbdfbe402ef53cc95cb6ad5b4ed56f8f5f7fd"
+  }
+]

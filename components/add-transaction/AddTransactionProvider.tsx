@@ -26,9 +26,9 @@ import {
   fetchReferenceList,
   getOfflineCachedAccounts,
   getOfflineCachedCategories,
-  maybePersistAccountsSnapshot,
-  maybePersistCategoriesSnapshot,
+  getOfflineReferenceOwner,
   pickReferenceList,
+  REFERENCE_OWNER_CHANGED,
 } from '@/lib/offline-reference-cache';
 import MiniAmountCalculatorButton from '@/components/ui/MiniAmountCalculatorButton';
 import InternalAiChat from '@/components/dashboard/InternalAiChat';
@@ -135,22 +135,34 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isOpen) return;
     setTransactionDateYmd(todayLocalYmd());
-    setDataLoading(true);
-    const cachedAccs = getOfflineCachedAccounts<Account>();
-    const cachedCats = getOfflineCachedCategories<Category>();
-    const online = typeof navigator !== 'undefined' && navigator.onLine;
-    Promise.all([
-      fetchReferenceList<Account>('/api/accounts?lite=1', { force: true }),
-      fetchReferenceList<Category>('/api/categories', { ttlMs: 2 * 60 * 1000 }),
-      fetch('/api/transactions?limit=80', { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : []))
-        .catch(() => []),
-    ]).then(([accsRaw, catsRaw, txs]) => {
-      maybePersistAccountsSnapshot(accsRaw, online);
-      maybePersistCategoriesSnapshot(catsRaw, online);
-      const accs = pickReferenceList(accsRaw, cachedAccs);
-      setAccounts(accs);
-      setCategories(pickReferenceList(catsRaw, cachedCats));
+    let cancelled = false;
+    let loadVersion = 0;
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    const clearReferences = () => {
+      setAccounts([]);
+      setCategories([]);
+      setCategoryUsage({});
+      setAccountId('');
+      setCategoryId('');
+      setDestinationAccountId('');
+    };
+    const load = async () => {
+      const version = ++loadVersion;
+      setDataLoading(true);
+      const ownerId = await getOfflineReferenceOwner();
+      if (cancelled || version !== loadVersion) return;
+      if (!ownerId) { setDataLoading(false); return; }
+      const [accsRaw, catsRaw, txs] = await Promise.all([
+        fetchReferenceList<Account>('/api/accounts?lite=1', { force: true, ownerId }),
+        fetchReferenceList<Category>('/api/categories', { ttlMs: 2 * 60 * 1000, ownerId }),
+        fetch('/api/transactions?limit=80', { cache: 'no-store' })
+          .then((r) => (r.ok ? r.json() : []))
+          .catch(() => []),
+      ]);
+      const currentOwner = await getOfflineReferenceOwner();
+      if (cancelled || version !== loadVersion || currentOwner !== ownerId) return;
+      setAccounts(pickReferenceList(accsRaw, getOfflineCachedAccounts<Account>(ownerId)));
+      setCategories(pickReferenceList(catsRaw, getOfflineCachedCategories<Category>(ownerId)));
       const counts: Record<string, number> = {};
       if (Array.isArray(txs)) {
         for (const tx of txs) {
@@ -161,8 +173,24 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
       }
       setCategoryUsage(counts);
       setDataLoading(false);
-    });
-  }, [isOpen]);
+    };
+    const ownerChanged = () => {
+      loadVersion++;
+      clearReferences();
+      resetForm();
+      if (refreshTimer) clearTimeout(refreshTimer);
+      // Leave the auth lock before reading the replacement session.
+      refreshTimer = setTimeout(() => { if (!cancelled) void load(); }, 0);
+    };
+    clearReferences();
+    window.addEventListener(REFERENCE_OWNER_CHANGED, ownerChanged);
+    void load();
+    return () => {
+      cancelled = true;
+      if (refreshTimer) clearTimeout(refreshTimer);
+      window.removeEventListener(REFERENCE_OWNER_CHANGED, ownerChanged);
+    };
+  }, [isOpen, resetForm]);
 
   useEffect(() => {
     if (!isOpen || accounts.length === 0) return;
