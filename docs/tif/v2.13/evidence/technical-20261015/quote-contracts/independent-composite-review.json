@@ -1,0 +1,213 @@
+{
+  "reviewedAt": "2026-10-15T04:37:18.059100+00:00",
+  "status": "PASS_COMPOSITE_SCOPED",
+  "scope": "Read-only review of exact original CP3-01/02 CSV contracts, executed service/DB evidence and later captured-quote SSR. No API/SQL/Auth/browser/process/test execution by reviewer. The CSV does not require a browser for these two cases; no browser or single compiled Next build acceptance is inferred.",
+  "originalCases": [
+    {
+      "id": "CP3-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 9,
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/mapping.json",
+        "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/verification.json"
+      ],
+      "acceptedScope": "Actual service at mocked06Oct12Z keeps official1000/blue1300/MEP1250/CCL1280ARS perUSD, BTC60000/ETH2500/USDT1USD and source timestamps; eight real auxiliaryFX rows match source/unit/rate/time. Crypto provenance is fixture HTTP binding, not an invented provider field."
+    },
+    {
+      "id": "CP3-02",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 41,
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/hit299.json",
+        "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/refresh300.json",
+        "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/refresh301.json",
+        "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/failure300.json",
+        "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/ssr-followup-after-fix.json"
+      ],
+      "acceptedScope": "Independent processes establish299hit/300refresh/301refresh and300failure with retained1200/T0. Same actual captured fallback quote passes through real helper and corrected component: savedquote/unknownoriginalprovider/dateTimeT0/visible16:00UTC.",
+      "assertionBreakdown": "36executed service assertions plus5corrected captured-response SSR assertions; not41originalcases."
+    }
+  ],
+  "serviceEvidence": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "sourceFilesVerifiedAgainstImmutableGit": 6,
+    "sourceStable": true,
+    "executedHarnessFilesVerified": 3,
+    "processClock": "Only each Node worker Date changes; OS/timers/database not clock-modified. No Next3002 request; its app metadata is context only.",
+    "scenarioT0AndResults": [
+      {
+        "scenario": "mapping",
+        "t0": "2026-10-06T12:00:00.000Z",
+        "offsetSeconds": null,
+        "originalWorkerStatus": "PASS",
+        "serviceAssertionsPass": 9,
+        "newFxRows": 8,
+        "report": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/mapping.json",
+        "sha256": "c735d10ce62a04fcf4eb464b1990c551cfd16f8de065a258eeca2e54ebf44d26"
+      },
+      {
+        "scenario": "hit299",
+        "t0": "2026-10-06T13:00:00.000Z",
+        "offsetSeconds": 299,
+        "originalWorkerStatus": "PASS",
+        "serviceAssertionsPass": 9,
+        "newFxRows": 8,
+        "report": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/hit299.json",
+        "sha256": "140615e555cd9f76d77aff474cd5da13882af9523e7b50ecb11e40c78f42435d"
+      },
+      {
+        "scenario": "refresh300",
+        "t0": "2026-10-06T14:00:00.000Z",
+        "offsetSeconds": 300,
+        "originalWorkerStatus": "PASS",
+        "serviceAssertionsPass": 9,
+        "newFxRows": 16,
+        "report": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/refresh300.json",
+        "sha256": "52e54aaa211d7f67fa890a90565604e1a86918e96ba239b4fcb4a4c3b8a60108"
+      },
+      {
+        "scenario": "refresh301",
+        "t0": "2026-10-06T15:00:00.000Z",
+        "offsetSeconds": 301,
+        "originalWorkerStatus": "PASS",
+        "serviceAssertionsPass": 9,
+        "newFxRows": 16,
+        "report": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/refresh301.json",
+        "sha256": "710f0124967100da6aab04c4832713f7492e4d4542958f9229bdf59782337e8f"
+      },
+      {
+        "scenario": "failure300",
+        "t0": "2026-10-06T16:00:00.000Z",
+        "offsetSeconds": 300,
+        "originalWorkerStatus": "FAIL",
+        "serviceAssertionsPass": 9,
+        "newFxRows": 8,
+        "report": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/failure300.json",
+        "sha256": "6b1dd029f6c71d5cb29723076118a05b095f7757aadc8f7995e0a809f68981dd"
+      }
+    ],
+    "ttlSeconds": 300,
+    "freshnessPolicy": "age<300; at300 and301 request refresh. Failure at300 retains durable1200/T0 and persisted provenance. MAX_AGE86400 is separate from memoryTTL.",
+    "providerMode": "Own loopback57911 HTTP doubles; no actualexternalprovider claim."
+  },
+  "presentationEvidence": {
+    "revision": "528116753d2f13c4d705b7e2a3ed0d4808e1d9a9",
+    "sourceFilesVerifiedAgainstImmutableGit": 2,
+    "componentChange": "Only hour12:false in existing UTC formatter; BlueFx helper hash unchanged.",
+    "capturedArtifact": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/failure300.json",
+      "sha256": "6b1dd029f6c71d5cb29723076118a05b095f7757aadc8f7995e0a809f68981dd"
+    },
+    "sameSerializedActualReturnedQuote": true,
+    "originalT0": "2026-10-06T16:00:00.000Z",
+    "dateTimeEqualsT0": true,
+    "visibleUtcHour": "16:00:00",
+    "savedQuoteLabel": true,
+    "unknownOriginalProviderPreserved": true,
+    "httpSqlOrNewFxInSsrFollowup": 0,
+    "scope": "Actual React SSR with exact captured JSON from original DB fallback. Separate committed presentation revision; not a new provider sample or service rerun."
+  },
+  "preservation": {
+    "canonicalPublicTables": 25,
+    "allCanonicalCountsAndHashesEqual": true,
+    "marketDataCacheUnchanged": true,
+    "baselineFxRows": 0,
+    "newFxRows": 56,
+    "finalFxRows": 56,
+    "rowsByScenario": [
+      8,
+      8,
+      16,
+      16,
+      8
+    ],
+    "all56PerIdHashesRetainedInFinal": true,
+    "eachScenarioPreservesPreviousFx": true,
+    "scope": "Canonical PostgreSQL JSONB text hashed before NUMERIC parsing; Auth outside canonical25. These are observed run snapshots, not a new read of the DB."
+  },
+  "historicalFailures": {
+    "wholeFiveWorkerRun": "FAIL retained: last worker had9passed service/fallback assertions, then ReferenceError in classicJSX SSR; no all-workers-PASS claim.",
+    "incorrectEarlySynthesis": "reconciled-contracts-before-visible-time-review.json remains the superseded earlyPASS, not accepted as final evidence.",
+    "visibleTimeReview": "reconciled-contracts.json remainsFAIL because oldSSR showed04:00 for16:00Z despite correct dateTime.",
+    "formatterUnit": "Before1FAIL/after1PASS retained separately; final SSR5PASS uses the same captured response after528fix."
+  },
+  "revisionBoundary": "Service836 and presentation528 are explicitly separate. This does not assert that old PROOF Next836 contained528, that one compiled Next executed both, or that finalCI5/currentcompiledUI was verified here.",
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/postfix-contracts.json",
+      "sha256": "040364bf35a5b8fe1ca88bb351f32c63b9e76989a03763e492ab2aec1d2aaabd"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/verification.json",
+      "sha256": "7463e8281a23f47f6af9b07127a0fdd32225d1788b5ca6f04a1f9354526434b4"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/mapping.json",
+      "sha256": "c735d10ce62a04fcf4eb464b1990c551cfd16f8de065a258eeca2e54ebf44d26"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/hit299.json",
+      "sha256": "140615e555cd9f76d77aff474cd5da13882af9523e7b50ecb11e40c78f42435d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/refresh300.json",
+      "sha256": "52e54aaa211d7f67fa890a90565604e1a86918e96ba239b4fcb4a4c3b8a60108"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/refresh301.json",
+      "sha256": "710f0124967100da6aab04c4832713f7492e4d4542958f9229bdf59782337e8f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/failure300.json",
+      "sha256": "6b1dd029f6c71d5cb29723076118a05b095f7757aadc8f7995e0a809f68981dd"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/executed-run.mjs",
+      "sha256": "638f4047a33c19f02a5e00206d2a79e25bdc933f6a3b6001c191af21c4da0bf0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/executed-worker.mjs",
+      "sha256": "3f54d3d83d87715c901e5e01d942a285ea8b54d2451a1a0a122d46f7cf00b65b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/executed-clock-guard.mjs",
+      "sha256": "8debca2d9eadd21147042995ff5a37067257198874df0a65070d028b424159e1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/tsx.config.json",
+      "sha256": "5e8e5f1470936888f2e6da7f2e2e46cefc662072aa005cee194a6682e45516d5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/ssr-followup.json",
+      "sha256": "0d11625d474311aa696e645e61938d22575121f7164498799750e46887b9042b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/reconciled-contracts-before-visible-time-review.json",
+      "sha256": "ba61506288f3e4f0fc81ed6a8831b5475d5f025c4c5270085022cfecafe4d121"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/reconciled-contracts.json",
+      "sha256": "1f6ff5071eacfad92e609b20aedcd46ede4b754e26ffd3f27b9409fe7098cdef"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/before-visible-time-fix.json",
+      "sha256": "85ee8866f7e8fb4ccfd92f787294ccbb89393f17361f6f88aea715f731ff8080"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/after-visible-time-fix.json",
+      "sha256": "8ec91337201dd89bbaad352d9ad01432a60ec179a4fd86d7bcdfed71fe7a1784"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/ssr-followup-after-fix.json",
+      "sha256": "0eb22989a521e3ae2a4643f8b57f570f9f1e18145dcea68289d7635fe12a8a9d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/ssr-after-fix.mjs",
+      "sha256": "346d7f427b70b4646d2c6ec54d1a294afb0d7519cedd703a65b533992ce1ed61"
+    }
+  ],
+  "findings": [],
+  "blockers": []
+}
