@@ -1,0 +1,28 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Simulación<br/>(B)
+ participant A as Acceso (C)
+ participant C as Simulacion<br/>(C)
+ participant Q as Cotizaciones<br/>(C)
+ participant E as Posición/Cotización<br/>(E)
+ U->>B: variación porcentual
+ B->>A: identidad y Premium
+ B->>C: proyectar(contexto,<br/>variación)
+ alt Entrada no finita o<br/>permiso ausente
+  C-->>B: error, sin escritura
+ else Válida
+  C->>E: leer copia de<br/>posiciones propias
+  C->>Q: resolver referencia
+  Q-->>C: actual / respaldo /<br/>ausente
+  alt Precio ausente
+   C-->>B: componente no<br/>simulable
+  else Precio existente
+   C->>C: precioHipotético=<br/>precio*(1+variación/100)
+   C->>C: factor=100 bonos,1 resto
+   C->>C: valorHipotético=<br/>cantidad*precioHipotético/factor
+   C-->>B: real vs hipotético,<br/>fuente, fecha y<br/>supuesto
+  end
+ end
+ B-->>U: comparación sin cambio<br/>financiero
+ Note over C: Sin escritura:<br/>posición ni saldo

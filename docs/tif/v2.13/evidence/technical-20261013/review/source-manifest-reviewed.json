@@ -1,0 +1,237 @@
+{
+  "reviewedAt": "2026-10-14T01:08:01.187Z",
+  "baseRevision": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df",
+  "headRevision": "316b393577fe15ffac81cf5595459a191337aeaf",
+  "workingTreeClean": false,
+  "sources": [
+    {
+      "path": "__tests__/account-create-handler-outcomes.test.ts",
+      "sha256": "44b055387a94ac0b99eb52f53566ffba24af2bc8dc5f9c4ffb35709c60cea8d3"
+    },
+    {
+      "path": "__tests__/blue-fx-metadata-components.test.ts",
+      "sha256": "9b7135c3f9ef3b3704e02a67105e0e117fd8116605b89d2604546e163a0bcef5"
+    },
+    {
+      "path": "__tests__/blue-fx-metadata.test.ts",
+      "sha256": "9cd92e57cc0f2bb782cb2e211a33edbf9c1e666ccedbf40c9e1abaa7f890e9b2"
+    },
+    {
+      "path": "__tests__/investment-create-durable-store.test.ts",
+      "sha256": "dc7b189ed862199ad01f3948d1260cb22cbc0fa7978d5ee35f4a8221b99eb77e"
+    },
+    {
+      "path": "__tests__/investment-simulation-component.test.ts",
+      "sha256": "ef9748d355267f555362e3b408a43b0d1b0d1b55e972aa872a3e007fe5f60f79"
+    },
+    {
+      "path": "__tests__/investment-simulation.test.ts",
+      "sha256": "12fb6e4746d7f71647ad5951e50e5f64d0a20654594e8db4bea77c1a45a4fa37"
+    },
+    {
+      "path": "__tests__/isolated-native-target.test.ts",
+      "sha256": "20f4ff25db70cd96afa6bd2e700aca8e423c94aacdbc5dbc5a792c2f3f230f7e"
+    },
+    {
+      "path": "__tests__/offline-durable-store.test.ts",
+      "sha256": "ae4bb86c6a1d1f54be0a56b7ef91618b16e397070a03a7b2a8c048beb4fba20a"
+    },
+    {
+      "path": "__tests__/recurring-outbox-equivalence.test.ts",
+      "sha256": "2ae50a96cf8ecc09d3b8ba4c5aa6b415d513b92a584a90ffacf29931374189ac"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea"
+    },
+    {
+      "path": "app/(authenticated)/investments/page.tsx",
+      "sha256": "e61aca78a8fcc06c877ff77c6cd388b6bb9038350323876f63b78d6c3107170f"
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "sha256": "5d8be446cf8be00277f42bc79cb04a3893ca03754d2c01ca8b4f5663415b8fd5"
+    },
+    {
+      "path": "components/accounts/AccountBalanceEquivalents.tsx",
+      "sha256": "f7540e2e5a121431c69af9e0f4796bbc88c5aa2b36ae088bac15f2e3548956d8"
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "sha256": "38a2ebb25151c366faf6b51191dcb17248c768ff3c123f2568bb8242fbef581e"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb"
+    },
+    {
+      "path": "components/investments/AddInvestmentPanel.tsx",
+      "sha256": "c38904e65f5efc72aee998b89637cb04942a99ae21a88cc07aa91cca470aea89"
+    },
+    {
+      "path": "components/investments/InvestmentSimulationPanel.tsx",
+      "sha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb"
+    },
+    {
+      "path": "components/investments/InvestmentsWorkspace.tsx",
+      "sha256": "a2c1721c3d60378a1507626b9cb210c5637f03d50dd1f1d9171f8b56f50c770d"
+    },
+    {
+      "path": "components/investments/SellPositionDialog.tsx",
+      "sha256": "2eb8dd1c28248e9eaa54b6178c2aed51bbf58a961e73ff050e74c1a080b596fc"
+    },
+    {
+      "path": "components/offline/QueueReview.tsx",
+      "sha256": "94268e4c1a361cbd2fd46660865dc127fc4478f3232a9e512c702fef4c559fc3"
+    },
+    {
+      "path": "components/shared/SharedGroupView.tsx",
+      "sha256": "8f8964b158bab87797515afffa86eaf1764bee6a30dc1761f4cd077344bf7fdc"
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "sha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207"
+    },
+    {
+      "path": "docs/testing/isolated-browser-load.md",
+      "sha256": "e9a495df716adb41755539239eda9670ec31c97d006416af77c27f397ed0e0ff"
+    },
+    {
+      "path": "docs/testing/isolated-e2e.md",
+      "sha256": "cfe6fa83d2b4139a21a65eb7d2639f42c07a665df6d4d1c1633b55fe5fba9b48"
+    },
+    {
+      "path": "lib/account-create-request.ts",
+      "sha256": "20e2824d536ebbd4687c7d87a647cab7e4cf12868e8bca0f3d97af23be6a8e5c"
+    },
+    {
+      "path": "lib/blue-fx-reference.ts",
+      "sha256": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c"
+    },
+    {
+      "path": "lib/hooks/useFinancialOperation.ts",
+      "sha256": "85d2156743a9c611b55c4a99d0113e133b7542e01ae164ab2570ca69b7495733"
+    },
+    {
+      "path": "lib/hooks/useOfflineQueue.ts",
+      "sha256": "19f9803ce466afde4df59aec3ae9adbda569b1d0cb291d86e832796d8e04a1a1"
+    },
+    {
+      "path": "lib/investment-simulation.ts",
+      "sha256": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea"
+    },
+    {
+      "path": "lib/offline-queue-sync.ts",
+      "sha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d"
+    },
+    {
+      "path": "lib/offline-transaction-store.ts",
+      "sha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "5c6fe1303a9e1c918c7f034c6f64a56e0f19c4219b3f693cf2726fb5eda2287f"
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "6ec3915b5fe655a912133275700cc77a6750a31e732ac94092b162da1d8a54cb"
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "sha256": "09caabac5758f32281e72733a3ad1acbef90e5588c9a551942f36f4fb8429587"
+    },
+    {
+      "path": "scripts/build-technical-traceability.py",
+      "sha256": "501abf4caf6ed870f418fd0e04202d2a778ead805905384db64c8547169ba486"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "285ec00189f09d04ea99e20f3a986dcea9a4482cce55e165c672b230ef9d8060"
+    },
+    {
+      "path": "scripts/run-technical-verification.mjs",
+      "sha256": "70ee6849f4654b928e066064f9fe18bf046de5cdedc9851de4e7d5ae812ef4a3"
+    },
+    {
+      "path": "scripts/test-isolated-api.mjs",
+      "sha256": "4720c9576517834e2a82d60c64396ad1bde6bf3e1404f461f11f7c0827bdc612"
+    },
+    {
+      "path": "scripts/test-isolated-browser-load.mjs",
+      "sha256": "4e62b2430c1b81cb816c70279cfd09bb673d436f6aa4c176d5941e85c43ac84b"
+    },
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "sha256": "56068267071bdd37e590124bac66f9d4e6a9db38708047f5682d3e088a422391"
+    },
+    {
+      "path": "scripts/test-isolated-native-supabase.mjs",
+      "sha256": "957a81d62048342a55d19912867163c5a682fef29e07d339834f9f8d63a239ab"
+    },
+    {
+      "path": "scripts/test-technical-traceability.py",
+      "sha256": "cbe4ebf51d065821b37739bb16616883677a753e23117ea0f9ffe1eefed4bc1f"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "04d0d49eb194f2a7c6515e5d3877fd40642d56ddb7a86d2641c29b9f7a199417"
+    }
+  ],
+  "sourceManifestSha256": "faa9b854fd0da301bc3be2038e74d9ec512b26fb9993f80787f774a0a8922547",
+  "sourceChangesSinceInitialReview": [
+    {
+      "path": "lib/offline-transaction-store.ts",
+      "beforeSha256": "af8a73c5638558ec3136a4b1faefefcf2a5fbe78f63872fa76f084f32786d0e8",
+      "afterSha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b"
+    },
+    {
+      "path": "lib/hooks/useFinancialOperation.ts",
+      "beforeSha256": "010a89db79af06ed0338c66ade49faab00c974a72fc17bbb9ab547a263539db8",
+      "afterSha256": "85d2156743a9c611b55c4a99d0113e133b7542e01ae164ab2570ca69b7495733"
+    },
+    {
+      "path": "lib/account-create-request.ts",
+      "beforeSha256": "eae121acef448559fe36b75afa03d4441e4811dfa50834d873a0593f486a0560",
+      "afterSha256": "20e2824d536ebbd4687c7d87a647cab7e4cf12868e8bca0f3d97af23be6a8e5c"
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "beforeSha256": "5203895a09471e307d183f3726c9fc4d4ac36884726e3c6b92a846d68b6e819b",
+      "afterSha256": "38a2ebb25151c366faf6b51191dcb17248c768ff3c123f2568bb8242fbef581e"
+    },
+    {
+      "path": "scripts/test-isolated-native-supabase.mjs",
+      "beforeSha256": "6cc4a7be2c0d03f9653b11e582fe401c88b58764d9c21c1b4b1eb1315dd9a49f",
+      "afterSha256": "957a81d62048342a55d19912867163c5a682fef29e07d339834f9f8d63a239ab"
+    },
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "beforeSha256": "dbfdcfb7f0461bfb3194e4df2c80f831ed40fa829d853ec4c02ac7961e587f8a",
+      "afterSha256": "56068267071bdd37e590124bac66f9d4e6a9db38708047f5682d3e088a422391"
+    },
+    {
+      "path": "scripts/build-technical-traceability.py",
+      "beforeSha256": "d0118f6f964c0cb9bc2bfe14340569684cbcc799fb2a95a353bc8e31a2e353c1",
+      "afterSha256": "501abf4caf6ed870f418fd0e04202d2a778ead805905384db64c8547169ba486"
+    },
+    {
+      "path": "__tests__/offline-durable-store.test.ts",
+      "beforeSha256": "5d905534b9340cbd6b41b474f882ef9a1f8f5ca9367110d78ed29159034c392e",
+      "afterSha256": "ae4bb86c6a1d1f54be0a56b7ef91618b16e397070a03a7b2a8c048beb4fba20a"
+    },
+    {
+      "path": "docs/testing/isolated-e2e.md",
+      "beforeSha256": "e55ee7453c984c58b0b8e855e3e0dd4ae758ce17e01af4bd48c896829af3efb6",
+      "afterSha256": "cfe6fa83d2b4139a21a65eb7d2639f42c07a665df6d4d1c1633b55fe5fba9b48"
+    }
+  ],
+  "scope": "Exact hashes of captured review context and focused proof dependencies; source inspection prioritized changed critical paths, not every unchanged line. Root is still consolidating sources/final execution; this is the reviewed working tree, not a claim of a final clean commit."
+}

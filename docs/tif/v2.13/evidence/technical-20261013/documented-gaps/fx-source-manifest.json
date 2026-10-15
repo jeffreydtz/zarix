@@ -1,0 +1,51 @@
+{
+  "basedOnGitRevision": "f3218f97efc4f1a84c8f41a3491952d55c283d60",
+  "sourceState": "worktree; metadata changes pending root consolidation",
+  "capturedAtUTC": "2026-10-13T22:42:37.096359+00:00",
+  "vitestStartedAtUTC": "2026-10-13T22:41:03.429000+00:00",
+  "runtime": {
+    "node": "22.17.0",
+    "vitest": "5.0.3",
+    "platform": "macOS",
+    "runner": "node"
+  },
+  "results": {
+    "vitest": {
+      "exitCode": 0,
+      "passed": 143,
+      "total": 143,
+      "failed": 0,
+      "scope": "8 named test files; explicit HTTP/DB/hook doubles and SSR"
+    },
+    "lint": {
+      "exitCode": 0,
+      "log": "fx-metadata-lint.log"
+    },
+    "typecheck": {
+      "exitCode": 0,
+      "log": "fx-metadata-typecheck.log"
+    }
+  },
+  "files": {
+    "lib/blue-fx-reference.ts": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c",
+    "lib/services/cotizaciones.ts": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece",
+    "lib/services/accounts.ts": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496",
+    "lib/services/investments.ts": "5c6fe1303a9e1c918c7f034c6f64a56e0f19c4219b3f693cf2726fb5eda2287f",
+    "lib/services/net-worth.ts": "6ec3915b5fe655a912133275700cc77a6750a31e732ac94092b162da1d8a54cb",
+    "app/(authenticated)/dashboard/page.tsx": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea",
+    "components/ui/BlueFxReferenceDetails.tsx": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+    "components/accounts/AccountBalanceEquivalents.tsx": "f7540e2e5a121431c69af9e0f4796bbc88c5aa2b36ae088bac15f2e3548956d8",
+    "components/dashboard/NetWorthHero.tsx": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb",
+    "components/investments/InvestmentSimulationPanel.tsx": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb",
+    "lib/investment-simulation.ts": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea",
+    "vitest.config.ts": "04d0d49eb194f2a7c6515e5d3877fd40642d56ddb7a86d2641c29b9f7a199417",
+    "__tests__/blue-fx-metadata.test.ts": "9cd92e57cc0f2bb782cb2e211a33edbf9c1e666ccedbf40c9e1abaa7f890e9b2",
+    "__tests__/blue-fx-metadata-components.test.ts": "9b7135c3f9ef3b3704e02a67105e0e117fd8116605b89d2604546e163a0bcef5",
+    "__tests__/billing-nonbilling-quote-freshness.test.ts": "34b9c4be0a0d6442ed571e25acad2f434f9bcb43af1b6288be8f7e84c46f1768",
+    "__tests__/financial-services-regression.test.ts": "468775ba15ce70be22ba0c166edb84daa24d1f0dabd36947743f6212de56c8ea",
+    "__tests__/technical-financial-contracts.test.ts": "c016168b53dce67968329751d27931a23b57e2e15f0d3b0e3fc0e1f300473f49",
+    "__tests__/investment-retry-boundaries.test.ts": "bc3f8b742b399bac790d5dcf5afa0bccbc03d374b914099d6f665532afd1c95f",
+    "__tests__/investment-simulation.test.ts": "12fb6e4746d7f71647ad5951e50e5f64d0a20654594e8db4bea77c1a45a4fa37",
+    "__tests__/investment-simulation-component.test.ts": "ef9748d355267f555362e3b408a43b0d1b0d1b55e972aa872a3e007fe5f60f79"
+  }
+}

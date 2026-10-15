@@ -1,0 +1,223 @@
+{
+  "readOnly": true,
+  "credentials": "No authorization header or credential is used.",
+  "sources": [
+    {
+      "name": "braces-latest",
+      "url": "https://registry.npmjs.org/braces/latest",
+      "startedAt": "2026-10-15T08:19:51.059300+00:00",
+      "finishedAt": "2026-10-15T08:19:51.468367+00:00",
+      "command": [
+        "curl",
+        "--silent",
+        "--show-error",
+        "--fail",
+        "--location",
+        "--connect-timeout",
+        "15",
+        "--max-time",
+        "45",
+        "--output",
+        "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/braces-latest.json",
+        "--write-out",
+        "%{http_code}",
+        "https://registry.npmjs.org/braces/latest"
+      ],
+      "exitCode": 0,
+      "httpStatus": "200",
+      "stderr": "",
+      "sha256": "8fd4c1db771542ab5456bb4806408fea9cdb5bf77f6cb9d5d563a3bd0ebb0b13",
+      "version": "3.0.3",
+      "dependencies": {
+        "fill-range": "^7.1.1"
+      }
+    },
+    {
+      "name": "micromatch-latest",
+      "url": "https://registry.npmjs.org/micromatch/latest",
+      "startedAt": "2026-10-15T08:19:51.468454+00:00",
+      "finishedAt": "2026-10-15T08:19:51.836075+00:00",
+      "command": [
+        "curl",
+        "--silent",
+        "--show-error",
+        "--fail",
+        "--location",
+        "--connect-timeout",
+        "15",
+        "--max-time",
+        "45",
+        "--output",
+        "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/micromatch-latest.json",
+        "--write-out",
+        "%{http_code}",
+        "https://registry.npmjs.org/micromatch/latest"
+      ],
+      "exitCode": 0,
+      "httpStatus": "200",
+      "stderr": "",
+      "sha256": "a65635515e4deb07ace263a33105cf4a10056affd438d48818b5368e27b05906",
+      "version": "4.0.8",
+      "dependencies": {
+        "braces": "^3.0.3",
+        "picomatch": "^2.3.1"
+      }
+    },
+    {
+      "name": "fast-glob-latest",
+      "url": "https://registry.npmjs.org/fast-glob/latest",
+      "startedAt": "2026-10-15T08:19:51.836150+00:00",
+      "finishedAt": "2026-10-15T08:19:52.100405+00:00",
+      "command": [
+        "curl",
+        "--silent",
+        "--show-error",
+        "--fail",
+        "--location",
+        "--connect-timeout",
+        "15",
+        "--max-time",
+        "45",
+        "--output",
+        "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/fast-glob-latest.json",
+        "--write-out",
+        "%{http_code}",
+        "https://registry.npmjs.org/fast-glob/latest"
+      ],
+      "exitCode": 0,
+      "httpStatus": "200",
+      "stderr": "",
+      "sha256": "a336b6b77121af80e04a369080634b32e6bf269a08c1d5f0a09a6c1457011f7a",
+      "version": "3.3.3",
+      "dependencies": {
+        "merge2": "^1.3.0",
+        "micromatch": "^4.0.8",
+        "glob-parent": "^5.1.2",
+        "@nodelib/fs.stat": "^2.0.2",
+        "@nodelib/fs.walk": "^1.2.3"
+      }
+    },
+    {
+      "name": "tailwind-3",
+      "url": "https://registry.npmjs.org/tailwindcss/3.4.19",
+      "startedAt": "2026-10-15T08:19:52.100473+00:00",
+      "finishedAt": "2026-10-15T08:19:52.398906+00:00",
+      "command": [
+        "curl",
+        "--silent",
+        "--show-error",
+        "--fail",
+        "--location",
+        "--connect-timeout",
+        "15",
+        "--max-time",
+        "45",
+        "--output",
+        "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/tailwind-3.json",
+        "--write-out",
+        "%{http_code}",
+        "https://registry.npmjs.org/tailwindcss/3.4.19"
+      ],
+      "exitCode": 0,
+      "httpStatus": "200",
+      "stderr": "",
+      "sha256": "80fafa132f0b60c00c4b43978ce3464cedadfccad993354af7cf5a86ea603777",
+      "version": "3.4.19",
+      "dependencies": {
+        "arg": "^5.0.2",
+        "dlv": "^1.1.3",
+        "jiti": "^1.21.7",
+        "is-glob": "^4.0.3",
+        "postcss": "^8.4.47",
+        "resolve": "^1.22.8",
+        "sucrase": "^3.35.0",
+        "chokidar": "^3.6.0",
+        "fast-glob": "^3.3.2",
+        "lilconfig": "^3.1.3",
+        "didyoumean": "^1.2.2",
+        "micromatch": "^4.0.8",
+        "picocolors": "^1.1.1",
+        "postcss-js": "^4.0.1",
+        "glob-parent": "^6.0.2",
+        "object-hash": "^3.0.0",
+        "normalize-path": "^3.0.0",
+        "postcss-import": "^15.1.0",
+        "postcss-nested": "^6.2.0",
+        "@alloc/quick-lru": "^5.2.0",
+        "postcss-load-config": "^4.0.2 || ^5.0 || ^6.0",
+        "postcss-selector-parser": "^6.1.2"
+      }
+    },
+    {
+      "name": "next-eslint-15",
+      "url": "https://registry.npmjs.org/@next%2feslint-plugin-next/15.5.28",
+      "startedAt": "2026-10-15T08:19:52.398980+00:00",
+      "finishedAt": "2026-10-15T08:19:52.713016+00:00",
+      "command": [
+        "curl",
+        "--silent",
+        "--show-error",
+        "--fail",
+        "--location",
+        "--connect-timeout",
+        "15",
+        "--max-time",
+        "45",
+        "--output",
+        "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/next-eslint-15.json",
+        "--write-out",
+        "%{http_code}",
+        "https://registry.npmjs.org/@next%2feslint-plugin-next/15.5.28"
+      ],
+      "exitCode": 0,
+      "httpStatus": "200",
+      "stderr": "",
+      "sha256": "a5ffa1c2ea097e9974568922be0eec905d949f5ee5b0c4cc1e6475b5dd570af6",
+      "version": "15.5.28",
+      "dependencies": {
+        "fast-glob": "3.3.1"
+      }
+    },
+    {
+      "name": "github-advisory",
+      "url": "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "startedAt": "2026-10-15T08:19:52.713083+00:00",
+      "finishedAt": "2026-10-15T08:19:53.264953+00:00",
+      "command": [
+        "curl",
+        "--silent",
+        "--show-error",
+        "--fail",
+        "--location",
+        "--connect-timeout",
+        "15",
+        "--max-time",
+        "45",
+        "--output",
+        "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/github-advisory.json",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm"
+      ],
+      "exitCode": 0,
+      "httpStatus": "200",
+      "stderr": "",
+      "sha256": "27a2ee7ec058cb9e53d6fe6d82bf7c5e982174fa61e958a19acdf6defc75c9da",
+      "version": null,
+      "dependencies": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "braces"
+          },
+          "vulnerable_version_range": "<= 3.0.3",
+          "first_patched_version": null,
+          "vulnerable_functions": []
+        }
+      ],
+      "updatedAt": "2026-10-02T22:36:34Z"
+    }
+  ],
+  "scope": "Primary publication metadata only. The required npm gates independently query the installed lock. No package, lock or node_modules mutation."
+}

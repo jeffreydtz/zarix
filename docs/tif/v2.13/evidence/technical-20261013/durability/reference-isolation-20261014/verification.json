@@ -1,0 +1,127 @@
+{
+  "base_revision": "d4524d8a79fabd5e44112345897a6350dc4d0805",
+  "node_version": "v22.17.0",
+  "working_tree_changes": true,
+  "sources_stable_during_execution": true,
+  "source_manifest": [
+    {
+      "path": "lib/offline-reference-cache.ts",
+      "sha256": "b81df9b2083c904ae20bae46b8424499d35fa407c9120b167f370d1bade374a6"
+    },
+    {
+      "path": "components/OfflineReferenceWarmup.tsx",
+      "sha256": "5d3e118d1b7ac4be5493c3f761ac0fb61bdeb2444bf71da7dc9054bbb6b8b3fc"
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "sha256": "23411cce4fa26a723ade5ef9e5abf7c78ce37b6f98705cfb35ef0117f419294b"
+    },
+    {
+      "path": "__tests__/offline-reference-cache-isolation.test.ts",
+      "sha256": "45f92706935899b6d44df0d8a11669f68bd215dd265aff85a60f3f17e315c517"
+    },
+    {
+      "path": "__tests__/financial-intent-hooks.test.ts",
+      "sha256": "a3ad6279687ed0f62f2fca21c0284e170adcd76bdeb03cd25345cabf36c58f33"
+    },
+    {
+      "path": "__tests__/offline-durable-store.test.ts",
+      "sha256": "ae4bb86c6a1d1f54be0a56b7ef91618b16e397070a03a7b2a8c048beb4fba20a"
+    },
+    {
+      "path": "__tests__/investment-create-durable-store.test.ts",
+      "sha256": "dc7b189ed862199ad01f3948d1260cb22cbc0fa7978d5ee35f4a8221b99eb77e"
+    },
+    {
+      "path": "lib/supabase/client.ts",
+      "sha256": "dbf42580931fb4016d4b9b96adc853531e0cfdb74dc2348e2679a8ebfd50d7ad"
+    },
+    {
+      "path": "lib/offline-transaction-store.ts",
+      "sha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b"
+    },
+    {
+      "path": "lib/offline-queue-sync.ts",
+      "sha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d"
+    },
+    {
+      "path": "lib/hooks/useFinancialOperation.ts",
+      "sha256": "85d2156743a9c611b55c4a99d0113e133b7542e01ae164ab2570ca69b7495733"
+    },
+    {
+      "path": "lib/hooks/useOfflineQueue.ts",
+      "sha256": "19f9803ce466afde4df59aec3ae9adbda569b1d0cb291d86e832796d8e04a1a1"
+    },
+    {
+      "path": "lib/account-create-request.ts",
+      "sha256": "20e2824d536ebbd4687c7d87a647cab7e4cf12868e8bca0f3d97af23be6a8e5c"
+    },
+    {
+      "path": "components/offline/QueueReview.tsx",
+      "sha256": "94268e4c1a361cbd2fd46660865dc127fc4478f3232a9e512c702fef4c559fc3"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "ed2bc19510589ae5c0940b5e4504c6c0413ba285ae35a3d4ad9db5f5d3a8eb51"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "checks": [
+    {
+      "name": "after-vitest",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "__tests__/offline-reference-cache-isolation.test.ts",
+        "__tests__/financial-intent-hooks.test.ts",
+        "__tests__/offline-durable-store.test.ts",
+        "__tests__/investment-create-durable-store.test.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261013/durability/reference-isolation-20261014/after-vitest.json"
+      ],
+      "started_at": "2026-10-15T00:05:37.023227+00:00",
+      "completed_at": "2026-10-15T00:05:37.907130+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "started_at": "2026-10-15T00:05:37.907712+00:00",
+      "completed_at": "2026-10-15T00:05:39.630909+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "lint",
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "lib/offline-reference-cache.ts",
+        "components/OfflineReferenceWarmup.tsx",
+        "components/add-transaction/AddTransactionProvider.tsx",
+        "__tests__/offline-reference-cache-isolation.test.ts"
+      ],
+      "started_at": "2026-10-15T00:05:39.631474+00:00",
+      "completed_at": "2026-10-15T00:05:40.533045+00:00",
+      "exit_code": 0
+    }
+  ],
+  "test_files": 4,
+  "passed_assertions": 37,
+  "failed_assertions": 0,
+  "reference_isolation_assertions": 12,
+  "scope": "Actual reference-cache/store/hooks code with synthetic browser storage, auth/session, lifecycle and HTTP doubles. No live database, provider or real-browser acceptance. P1 intent regression subset is included, not all 76 historical focal assertions.",
+  "before_evidence": "before-vitest.json (three regressions fail on original ownerless snapshots/inFlight); before-manifest.json preserves the original source hashes."
+}

@@ -1,0 +1,170 @@
+{
+  "scope": "Executed local preservation and official stops; no reset/DROP/destroy, new financial fixture or external provider action. Confirmation strings are operational guard values, not credentials.",
+  "retention": {
+    "argv": [
+      "python3",
+      "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "retain",
+      "--retention-root",
+      "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix-private-final-20261015T070553Z"
+    ],
+    "environment": {
+      "ZARIX_SIX_NATIVE_RETAIN_CONFIRM": "retain-six-task-owned-stacks",
+      "ZARIX_SIX_NATIVE_WRITERS_RELEASED": "all-six-fixtures-quiesced",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "exitCode": 0,
+    "status": "RETAIN_PASS"
+  },
+  "stop": {
+    "argv": [
+      "python3",
+      "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "stop",
+      "--retention-root",
+      "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix-private-final-20261015T070553Z"
+    ],
+    "environment": {
+      "ZARIX_SIX_NATIVE_STOP_CONFIRM": "stop-six-after-complete-retention",
+      "ZARIX_SIX_NATIVE_WRITERS_RELEASED": "all-six-fixtures-quiesced",
+      "ZARIX_SIX_NATIVE_ROOT_RELEASED": "root-released-six-fixtures",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "exitCode": 0,
+    "status": "STOP_PASS"
+  },
+  "officialCliStops": [
+    {
+      "name": "source",
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/source",
+        "--stack-id",
+        "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+        "--output-format",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "restore",
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/restore",
+        "--stack-id",
+        "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+        "--output-format",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "load",
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/load",
+        "--stack-id",
+        "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+        "--output-format",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "e2e",
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/e2e",
+        "--stack-id",
+        "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+        "--output-format",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "proof",
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/proof",
+        "--stack-id",
+        "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+        "--output-format",
+        "json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "import-target",
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/import-target",
+        "--stack-id",
+        "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+        "--output-format",
+        "json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "archiveCommands": {
+    "defaultDatabase": [
+      "pg_dump",
+      "-Fc",
+      "--file",
+      "<private stack archive>"
+    ],
+    "additionalUuidDatabase": [
+      "pg_dump",
+      "-Fc",
+      "--file",
+      "<private UUID archive>"
+    ],
+    "globals": [
+      "pg_dumpall",
+      "--globals-only",
+      "--file",
+      "<private globals archive>"
+    ],
+    "validation": [
+      [
+        "pg_restore",
+        "--list",
+        "<private archive>"
+      ],
+      [
+        "pg_restore",
+        "--file=/dev/null",
+        "<private archive>"
+      ]
+    ],
+    "privateConnectionEnvironmentNames": [
+      "PGHOST",
+      "PGPORT",
+      "PGDATABASE",
+      "PGUSER",
+      "PGPASSWORD"
+    ],
+    "existingGlobalsRole": "supabase_admin",
+    "noRestorePerformed": true
+  },
+  "sensitiveRuntimeEnvironmentValuesPublished": false
+}

@@ -1,0 +1,37 @@
+{
+  "status": "FAIL",
+  "checkedAt": "2026-10-15T04:30:09.902Z",
+  "nextPid": 448,
+  "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+  "normalAuthControls": [
+    {
+      "label": "A",
+      "status": "FAIL",
+      "step": "zarixRead",
+      "jwtLifetimeSeconds": 60,
+      "apiReadHttpStatus": 500,
+      "contentType": "text/html; charset=utf-8",
+      "redirected": false,
+      "finalOriginPath": "http://127.0.0.1:3002/api/user/notification-preferences",
+      "locationOriginPath": null,
+      "responseBytes": 2140,
+      "errorType": "SyntaxError",
+      "onlyOwnTemporarySessionClosed": true
+    },
+    {
+      "label": "B",
+      "status": "FAIL",
+      "step": "zarixRead",
+      "jwtLifetimeSeconds": 60,
+      "apiReadHttpStatus": 500,
+      "contentType": "text/html; charset=utf-8",
+      "redirected": false,
+      "finalOriginPath": "http://127.0.0.1:3002/api/user/notification-preferences",
+      "locationOriginPath": null,
+      "responseBytes": 2140,
+      "errorType": "SyntaxError",
+      "onlyOwnTemporarySessionClosed": true
+    }
+  ],
+  "scope": "Two new ordinary local Auth sessions, read-only ZARIX notification-preferences endpoint and own local signOut; no finance/quotes request, original session logout, OS or GoTrue clock change. Actual Auth60s contrasts with fixed Next process6Oct12Z."
+}

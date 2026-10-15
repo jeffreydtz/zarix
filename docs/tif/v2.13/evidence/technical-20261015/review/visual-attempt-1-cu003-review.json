@@ -1,0 +1,114 @@
+{
+  "reviewedAt": "2026-10-15T01:52:15.833837+00:00",
+  "reviewer": "/root/e2e/visual_overflow",
+  "method": "Direct visual inspection through view_image(detail=original) of all eight unchanged CU003 PNGs; independent local SHA256 comparison with final visual-verification.json. No browser, test, database or product-source operations.",
+  "scope": "CU003 screenshots from visual attempt1 only; no numerical correctness or full compatibility acceptance inferred",
+  "status": "LIMITED_EVIDENCE_REVIEW",
+  "reportPath": "/tmp/zarix-runtime-20261015/visual-evidence/visual-verification.json",
+  "reportSha256": "15ca8a038a94607aa256a1ea7eb439f2db9fc2a00bab77168b968c34f134dba9",
+  "recordedAttemptStatus": "FAIL",
+  "recordedAttemptCellCounts": {
+    "PASS": 28,
+    "FAIL": 4,
+    "BLOCKED": 0
+  },
+  "recordedSourceStable": true,
+  "captures": [
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU003-320x568-zoom100.png",
+      "sha256": "1e44f791340ad2f665465ed20166a2eda7d72515d3321fc31c901e0fd272e154",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 320,
+      "bitmapHeight": 568,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial data and labels are synthetic test fixtures. Pixel-only review.",
+      "observation": "Header, analysis heading, selected October2026 period, partial horizontal period-control strip and Gastos8400 visible. Lower KPIs/charts and analysis remainder absent from bitmap; mobile internal-scroll coverage is not established by window.scrollTo.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU003-320x568-zoom200.png",
+      "sha256": "992d6668a893f01d8a7510745dcb6bb150847755d74c56a148aafc4febdf68bc",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 160,
+      "bitmapHeight": 284,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial data and labels are synthetic test fixtures. Pixel-only review.",
+      "observation": "Obvious crop of enlarged logo/header and tiny beginning of hero; most content absent and text cut at right/bottom. Bitmap160x284 cannot establish complete viewport appearance.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU003-375x812-zoom100.png",
+      "sha256": "37f09284a6fd36a7b0dcfb35d630389a32424618c395702b92d167c06bf4adc5",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 375,
+      "bitmapHeight": 812,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial data and labels are synthetic test fixtures. Pixel-only review.",
+      "observation": "Analysis heading, period controls, Gastos8400, Ingresos0 and Balance-8400 visible. Promedio mensual card is partially obscured by bottom navigation; charts and remainder absent. This is a partial visible content state, not complete mobile-page coverage.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU003-375x812-zoom200.png",
+      "sha256": "a439c75b265a3fb1f40a86b6be2ce0057f068cf207f2860e437a2ebd466bb064",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 188,
+      "bitmapHeight": 406,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial data and labels are synthetic test fixtures. Pixel-only review.",
+      "observation": "Obvious crop of enlarged logo/header and beginning of analysis title; text cut at right/bottom. Bitmap188x406 cannot establish complete viewport appearance.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU003-768x1024-zoom100-failure.png",
+      "sha256": "4ec4703e2eee15241b4d59d55ce4d4776424f69674fd5ff7297d0383587e56d8",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 781,
+      "bitmapHeight": 3371,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial data and labels are synthetic test fixtures. Pixel-only review.",
+      "observation": "Failure-state bitmap shows desktop header/hero and faint period/KPIs, with large blank background below; charts absent. Bitmap781 wide records original global overflow at requested768. No capture-readiness or chart acceptance claim.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU003-768x1024-zoom200.png",
+      "sha256": "11d7151da32c05e1e5b6db636be47e6e7b8f9ede1623578f84e2f216de5f1882",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 384,
+      "bitmapHeight": 512,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial data and labels are synthetic test fixtures. Pixel-only review.",
+      "observation": "Obvious crop of enlarged logo/header and hero text, cut at right; KPIs/charts absent. Bitmap384x512 cannot establish complete viewport appearance.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU003-1440x900-zoom100.png",
+      "sha256": "5d41012bdc10fd97999d9addca8c6bb51065f85ffb6300e5303a70920871cff6",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 1440,
+      "bitmapHeight": 3072,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial data and labels are synthetic test fixtures. Pixel-only review.",
+      "observation": "Full-page desktop bitmap shows analysis heading, period controls, KPIs8400/0/-8400/1667 and chart/list sections with synthetic records. Account-chart multiline axis labels visibly overlap. Category graphic appears as a small fan of radial segments rather than a completed ring; possible animation state cannot be resolved from this static image. Neither observation is classified as a product defect here; chart animation readiness and label legibility are not accepted.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    },
+    {
+      "path": "/tmp/zarix-runtime-20261015/visual-evidence/CU003-1440x900-zoom200.png",
+      "sha256": "82e497097010296e73bdadbe421bff41cfdfe026629d7c9fdf7d1401e3378fe1",
+      "manifestSha256Matches": true,
+      "pixelsVisuallyInspected": true,
+      "bitmapWidth": 720,
+      "bitmapHeight": 450,
+      "privacy": "No visible password, session cookie, authorization token, login secret or secret URL; visible financial data and labels are synthetic test fixtures. Pixel-only review.",
+      "observation": "Obvious crop of enlarged logo/header and hero; subtitle cut at right and no period/KPIs/charts visible. Bitmap720x450 cannot establish complete viewport appearance.",
+      "visualAcceptance": "NOT_ESTABLISHED"
+    }
+  ],
+  "limitations": [
+    "All four200% bitmaps visibly crop the enlarged viewport; DOM zoom metrics remain separate from visual acceptance.",
+    "Mobile100% captures do not include charts or the remainder of the internally scrollable page; document/window scrolling alone does not establish that coverage.",
+    "375x812100% shows Promedio mensual only partly above the bottom navigation.",
+    "768x1024100% is a preserved failure state with global overflow and no readiness claim.",
+    "Desktop100% includes overlapping account-axis labels and an apparently partial category graphic; static pixels and semantic heading/geometry readiness do not prove chart animation completion or classify the cause.",
+    "No original PASS/FAIL result was promoted or overwritten, and no full CU003 or visual-compatibility acceptance is claimed."
+  ]
+}

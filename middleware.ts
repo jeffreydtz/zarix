@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextRequest, NextResponse } from 'next/server';
 import type { CookieOptions } from '@supabase/ssr';
+import type { User } from '@supabase/supabase-js';
+import { isRejectedSessionError } from '@/lib/auth/session-error';
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
@@ -45,9 +47,15 @@ export async function middleware(req: NextRequest) {
   );
 
   // Refresh session if expired
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: User | null = null;
+  let authError: unknown;
+  try {
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+    authError = result.error;
+  } catch (error) {
+    authError = error;
+  }
 
   const isPublicPath =
     pathname === '/' ||
@@ -63,7 +71,16 @@ export async function middleware(req: NextRequest) {
     // /shared (exacto, listado del dueño) sigue requiriendo sesión.
     pathname.startsWith('/shared/');
 
-  if (!user && !isPublicPath) {
+  if (!isPublicPath && authError && !isRejectedSessionError(authError)) {
+    const unavailable = new NextResponse('No pudimos verificar tu sesión. Volvé a intentar en unos minutos.', {
+      status: 503,
+      headers: { 'Cache-Control': 'no-store', 'Retry-After': '30', 'Content-Type': 'text/plain; charset=utf-8' },
+    });
+    supabaseResponse.cookies.getAll().forEach(cookie => unavailable.cookies.set(cookie));
+    return unavailable;
+  }
+
+  if ((!user || authError) && !isPublicPath) {
     const url = req.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);

@@ -10,6 +10,8 @@ import { axisProps } from '@/lib/chart-theme';
 import { usePrivacy, PRIVACY_MASK } from '@/lib/hooks/use-privacy';
 import { deflatorToToday, type InflacionMes } from '@/lib/services/inflacion';
 import type { NetWorthNow, NetWorthPoint } from '@/lib/services/net-worth';
+import BlueFxReferenceDetails from '@/components/ui/BlueFxReferenceDetails';
+import type { PresentationCurrency } from '@/lib/presentation-preferences';
 
 type ViewMode = 'ars' | 'usd' | 'real';
 type TimeframeId = '1m' | '3m' | '1y' | 'max';
@@ -19,9 +21,8 @@ interface NetWorthHeroProps {
   now: NetWorthNow;
   history: NetWorthPoint[];
   inflacion: InflacionMes[];
+  baseCurrency?: PresentationCurrency;
 }
-
-const VIEW_STORAGE_KEY = 'zarix.networth.view';
 
 const VIEWS: { id: ViewMode; label: string }[] = [
   { id: 'ars', label: 'ARS' },
@@ -35,17 +36,6 @@ const TIMEFRAMES: { id: TimeframeId; label: string; days: number | null }[] = [
   { id: '1y', label: '1A', days: 365 },
   { id: 'max', label: 'Max', days: null },
 ];
-
-function readStoredView(): ViewMode {
-  if (typeof window === 'undefined') return 'ars';
-  try {
-    const v = window.localStorage.getItem(VIEW_STORAGE_KEY);
-    if (v === 'ars' || v === 'usd' || v === 'real') return v;
-  } catch {
-    /* ignore */
-  }
-  return 'ars';
-}
 
 function currencyForView(view: ViewMode): Currency {
   return view === 'usd' ? 'USD' : 'ARS';
@@ -80,9 +70,14 @@ function formatCompactValue(value: number, currency: Currency): string {
   return `${symbol}${formatted}${suffix}`;
 }
 
+function moneyDecimals(value: number, currency: Currency): number {
+  return currency === 'USD' && !Number.isInteger(value) ? 2 : 0;
+}
+
 function formatMoney(value: number, currency: Currency): string {
   const symbol = currency === 'USD' ? 'US$' : '$';
-  return `${symbol} ${value.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
+  const decimals = moneyDecimals(value, currency);
+  return `${symbol} ${value.toLocaleString('es-AR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
 }
 
 function EyeIcon({ className }: { className?: string }) {
@@ -112,31 +107,27 @@ function EyeOffIcon({ className }: { className?: string }) {
  * con timeframes. Único gran número animado (count-up al montar); el resto
  * de la UI es estática para no competir por atención.
  */
-export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroProps) {
+export default function NetWorthHero({ now, history, inflacion, baseCurrency = 'ARS' }: NetWorthHeroProps) {
   const { hidden, toggle } = usePrivacy();
   const gradientId = useId();
 
-  const [view, setView] = useState<ViewMode>('ars');
+  const [view, setView] = useState<ViewMode>(baseCurrency === 'USD' ? 'usd' : 'ars');
   const [timeframe, setTimeframe] = useState<TimeframeId>('3m');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setView(readStoredView());
+    setView(baseCurrency === 'USD' ? 'usd' : 'ars');
     setMounted(true);
-  }, []);
+  }, [baseCurrency]);
 
   function selectView(next: ViewMode) {
     setView(next);
-    try {
-      window.localStorage.setItem(VIEW_STORAGE_KEY, next);
-    } catch {
-      /* ignore quota errors */
-    }
   }
 
   // Valor de HOY: viene de `now` (en vivo), no del historial. En la vista
   // "reales" el valor de hoy es igual al nominal (deflator de hoy = 1).
   const heroValue = view === 'usd' ? now.totalUSD : now.totalARSBlue;
+  const partial = now.valuation?.status === 'partial';
   const currency = currencyForView(view);
 
   // --- Count-up: SOLO en el montaje, una única vez. ---
@@ -186,12 +177,12 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
   }, [history, todayISO]);
 
   const delta = useMemo(() => {
-    if (!priorPoint) return null;
+    if (!priorPoint || partial) return null;
     const prev = pointViewValue(priorPoint, view);
     const diff = heroValue - prev;
     const pct = prev !== 0 ? (diff / prev) * 100 : null;
     return { diff, pct };
-  }, [priorPoint, view, heroValue, pointViewValue]);
+  }, [priorPoint, view, heroValue, pointViewValue, partial]);
 
   // --- Serie del gráfico ancla, re-expresada por vista ---
   const seriesByView = useMemo(
@@ -263,18 +254,39 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
       </div>
 
       <div>
+        {now.valuation && <div role="status" className="text-sm text-warning mb-3">
+          <p>Total parcial: subtotal de los componentes con valoración disponible.</p>
+          <ul>{now.valuation.excludedAccounts.map(account => (
+            <li key={account.accountId}>
+              {account.name}: {hidden ? PRIVACY_MASK : account.balance.toLocaleString('es-AR')} {account.currency}
+              {account.secondaryCurrency && account.secondaryBalance !== undefined
+                ? `; ${hidden ? PRIVACY_MASK : account.secondaryBalance.toLocaleString('es-AR')} ${account.secondaryCurrency}` : ''}.
+              {' '}Excluida: sin cotización compatible para {account.currencies.join(', ')}.
+            </li>
+          ))}</ul>
+        </div>}
         <Amount
           value={displayValue}
           currency={currency}
-          decimals={0}
+          decimals={moneyDecimals(heroValue, currency)}
           className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl"
         />
 
         <p className="mt-1.5 text-sm text-muted-foreground">
-          {view === 'ars' && <Amount value={now.totalUSD} currency="USD" prefix="≈ " />}
+          {view === 'ars' && <Amount value={now.totalUSD} currency="USD" decimals={moneyDecimals(now.totalUSD, 'USD')} prefix="≈ " />}
           {view === 'usd' && <Amount value={now.totalARSBlue} currency="ARS" prefix="≈ " />}
           {view === 'real' && 'en pesos de hoy'}
         </p>
+
+        <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+          {now.blueReferences?.length ? now.blueReferences.map(({ component, reference }, index) => (
+            <BlueFxReferenceDetails key={`${component}-${index}`} reference={reference}
+              label={component === 'accounts' ? 'Cuentas · tramo USD/ARS' : 'Posiciones · tramo USD/ARS'} />
+          )) : <BlueFxReferenceDetails />}
+          {now.blueReferences && now.blueReferences.length > 1 ? (
+            <p>Cada componente conserva su referencia. Los cruces de otras monedas no están incluidos; el historial no conserva la fuente ni la fecha de la cotización.</p>
+          ) : null}
+        </div>
 
         {delta && (
           <p
@@ -283,7 +295,7 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
             }`}
           >
             <span aria-hidden="true">{delta.diff >= 0 ? '▲' : '▼'}</span>
-            <Amount value={Math.abs(delta.diff)} currency={currency} className="font-medium" />
+            <Amount value={Math.abs(delta.diff)} currency={currency} decimals={moneyDecimals(delta.diff, currency)} className="font-medium" />
             {delta.pct != null && (
               <span className="font-normal text-muted-foreground">
                 ({delta.pct >= 0 ? '+' : ''}

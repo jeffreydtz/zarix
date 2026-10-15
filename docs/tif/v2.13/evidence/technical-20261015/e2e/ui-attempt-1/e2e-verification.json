@@ -1,0 +1,323 @@
+{
+  "startedAt": "2026-10-15T01:00:15.686Z",
+  "status": "FAIL",
+  "scope": "Exactly CU001-CU004; ordinary password login; actual UI writes and separate PostgreSQL assertions. Each check has its own scope; partial coverage never approves a complete CU or original CP automatically.",
+  "environment": {
+    "node": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "browser": {
+      "product": "Installed Google Chrome",
+      "version": "146.0.7680.165",
+      "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "playwright": "external isolated installation",
+      "headless": true
+    }
+  },
+  "cases": [
+    {
+      "cu": "CU002",
+      "name": "accounts/personal data: UI creation, ordinary API tenant boundaries and Free allowance",
+      "status": "FAIL",
+      "checks": [],
+      "coverage": "partial; does not close all original CP cases",
+      "failure": "Error",
+      "reason": "Assertion or browser action failed; no raw exception copied because it may contain session data",
+      "failureLocation": "141",
+      "lastObservedRequest": {
+        "at": "2026-10-15T01:00:24.628Z",
+        "method": "POST",
+        "path": "/api/accounts",
+        "status": 201
+      }
+    },
+    {
+      "cu": "CU001",
+      "name": "movements: UI expense, edit/delete balance reversal and ten durable API retries",
+      "status": "FAIL",
+      "checks": [],
+      "coverage": "partial; does not close all original CP cases",
+      "failure": "Error",
+      "reason": "Assertion or browser action failed; no raw exception copied because it may contain session data",
+      "failureLocation": "179",
+      "lastObservedRequest": {
+        "at": "2026-10-15T01:00:28.203Z",
+        "method": "GET",
+        "path": "/api/accounts",
+        "status": 200
+      }
+    },
+    {
+      "cu": "CU003",
+      "name": "financial analysis: visible totals agree with owner-only SQL period",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "CP3-08",
+          "scope": "controlled ARS period, actual visible total + complete owner SQL and new category subtotal; pre-existing synthetic rows retained; excludes Gemini and mixed FX fixtures",
+          "newCategorySubtotal": 2000,
+          "expectedExpense": 2000,
+          "observedExpense": "$2.000"
+        }
+      ],
+      "coverage": "partial; does not close all original CP cases"
+    },
+    {
+      "cu": "CU004",
+      "name": "investments: UI manual purchase and sale, excessive quantity has no effect",
+      "status": "BLOCKED",
+      "checks": [],
+      "coverage": "partial; does not close all original CP cases",
+      "failure": "Error",
+      "reason": "CU002 synthetic investment account fixture unavailable",
+      "failureLocation": "220",
+      "lastObservedRequest": {
+        "at": "2026-10-15T01:00:29.147Z",
+        "method": "GET",
+        "path": "/api/ai/projections",
+        "status": 200
+      }
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-15T01:00:20.166Z",
+      "method": "GET",
+      "path": "/api/user/onboarding",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:20.196Z",
+      "method": "GET",
+      "path": "/api/categories",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:20.237Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:20.369Z",
+      "method": "GET",
+      "path": "/api/cotizaciones",
+      "status": 500
+    },
+    {
+      "at": "2026-10-15T01:00:20.370Z",
+      "method": "GET",
+      "path": "/api/ai/anomalies",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:20.370Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:20.409Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:21.518Z",
+      "method": "GET",
+      "path": "/api/user/onboarding",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:21.704Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:21.742Z",
+      "method": "GET",
+      "path": "/api/categories",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:22.093Z",
+      "method": "GET",
+      "path": "/api/ai/anomalies",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:22.093Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:22.093Z",
+      "method": "GET",
+      "path": "/api/cotizaciones",
+      "status": 500
+    },
+    {
+      "at": "2026-10-15T01:00:22.136Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:23.389Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:00:24.628Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:00:27.584Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:00:28.195Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:28.203Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:00:29.147Z",
+      "method": "GET",
+      "path": "/api/ai/projections",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "CU002-failed.png",
+      "sha256": "0f3a025942fb5144336774c1d32f6bd5b52b5334ddd22fe475aeafc5cf5534af"
+    },
+    {
+      "path": "CU001-failed.png",
+      "sha256": "c3aa7f0757c2d7576ca7a391ba2e44cc2ada4f484d0bd5b6d932254488d6e019"
+    },
+    {
+      "path": "CU003-analysis.png",
+      "sha256": "fdccb5e8bf9d410e3c336d0a584672c42e3ec69523d7f59406631d380442362a"
+    },
+    {
+      "path": "CU004-failed.png",
+      "sha256": "b0daef8551e4428c9d158ea8c5edd42800d2dc7d97e2f8e601d125ee7725af23"
+    }
+  ],
+  "blockers": [
+    {
+      "ids": [
+        "CNF-05",
+        "CNF-06",
+        "CNF-07",
+        "CNF-08"
+      ],
+      "reason": "Four viewport/200% zoom and keyboard/task flows require their own executed visual matrix; four desktop screenshots do not establish compatibility."
+    },
+    {
+      "id": "CNF-09",
+      "reason": "This harness runs installed Google Chrome only. Firefox, real Safari and Edge require distinct execution; WebKit is never labeled Safari."
+    },
+    {
+      "ids": [
+        "CNF-01",
+        "CNF-02",
+        "CNF-03",
+        "CNF-04",
+        "CNF-12",
+        "CNF-13"
+      ],
+      "reason": "Canonical 20-session/100-navigation network-shaped load, month observation, HTTPS, instance encryption, complete recovery and observability are separate acceptance evidence."
+    },
+    {
+      "ids": [
+        "CP1-14",
+        "CP1-15",
+        "CP1-16",
+        "CP1-17",
+        "CP1-18",
+        "CP2-13",
+        "CP2-14",
+        "CP2-17",
+        "CP2-18",
+        "CP3-09",
+        "CP3-10"
+      ],
+      "reason": "Real controlled Gemini/OCR, Telegram and Mercado Pago sandbox provider prerequisites are outside this local UI harness; provider doubles cannot close them."
+    }
+  ],
+  "fixture": {
+    "users": [
+      "86ac638c-2710-4993-9622-f2e5671ad034",
+      "84fcbd70-cd40-48cd-8427-3b2f2d4073c6"
+    ],
+    "syntheticOnly": true,
+    "credentials": "private test fixture file, never copied into evidence",
+    "providerMode": "pre-existing local fixture/cache only; no real-provider acceptance claimed"
+  },
+  "sourceManifest": [
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "sha256": "c6d375c83be1088f025eb3eb215eb12368f65668115118ca22e80d1e885ad13a"
+    },
+    {
+      "path": "app/login/page.tsx",
+      "sha256": "1e091e02173a5a58ce2b6259dc667a37a599a6e4705ba1c74907e21a5319e287"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    },
+    {
+      "path": "app/(authenticated)/analysis/page.tsx",
+      "sha256": "4e8385c1beca38ca72dc1bffc8a17d579ef9aaa6c9af8f567097588e5182e06d"
+    },
+    {
+      "path": "components/investments/InvestmentSimulationPanel.tsx",
+      "sha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb"
+    },
+    {
+      "path": "lib/investment-simulation.ts",
+      "sha256": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "revision": "ad52b5f8b8de3740d3ed6612dc38836c227273f8",
+  "finishedAt": "2026-10-15T01:00:30.026Z",
+  "sourceStable": true
+}

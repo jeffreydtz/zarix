@@ -1,0 +1,427 @@
+{
+  "runAt": "2026-10-14T01:00:57.241Z",
+  "status": "FAIL",
+  "target": "loopback disposable Supabase",
+  "results": [
+    {
+      "name": "native pg_dump restores database schema data Auth and grants to a separate empty database",
+      "status": "PASS",
+      "evidence": {
+        "targetDatabase": "zarix_restore_5cb7a3c0",
+        "verifiedTables": 64,
+        "sha256": "39690db4f3553bc603a1076ef38ebf875e8f8da0041fb71eb150e2b733a618ed",
+        "scope": "Fresh database in isolated source cluster; SQL/Auth/Storage metadata restored. Binary objects are backed up separately and require the independent-stack check below."
+      }
+    },
+    {
+      "name": "independent Supabase stack restores Auth login private Storage balances RPC and durable outbox",
+      "status": "FAIL",
+      "error": {
+        "type": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "context": "independent Supabase stack restores Auth login private Storage balances RPC and durable outbox"
+      }
+    }
+  ],
+  "harnessSha256": "e8451ac248d7be5ac290c631c0e842fb056fb3dc2c4273aebaf7982d9d85b451",
+  "sourceRevision": "316b393577fe15ffac81cf5595459a191337aeaf",
+  "mode": "recovery-only",
+  "engine": "PostgreSQL 17.11 on aarch64-apple-darwin25.3.0, compiled by clang version 21.1.7, 64-bit",
+  "pgTools": {
+    "psql": "psql (PostgreSQL) 17.11",
+    "pgDump": "pg_dump (PostgreSQL) 17.11",
+    "pgRestore": "pg_restore (PostgreSQL) 17.11"
+  },
+  "manifest": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    }
+  ],
+  "checkpoint": {
+    "sha256": "f08340877e0cfa81a49ed2eaccfd5c62b9347b05143f62293138505182151954",
+    "runAt": "2026-10-13T22:41:54.353Z",
+    "harnessSha256": "6cc4a7be2c0d03f9653b11e582fe401c88b58764d9c21c1b4b1eb1315dd9a49f",
+    "previousPassed": 19,
+    "scope": "Earlier checks remain evidence of their original run; they are not counted as executed again here."
+  },
+  "recovery": {
+    "targetDatabase": "zarix_restore_5cb7a3c0",
+    "format": "native pg_dump custom archive",
+    "bytes": 557732,
+    "sha256": "39690db4f3553bc603a1076ef38ebf875e8f8da0041fb71eb150e2b733a618ed",
+    "catalogSha256": "0597e65044e1b583bd6ab2ed52bd61c23fbe5bb05dcca7c5b4ff5b8a4263e49b",
+    "tables": {
+      "auth.audit_log_entries": {
+        "count": 12,
+        "sha256": "c8990457e638ab438d7fb6a7ac08d6b605797cd18aefca54af38a1b1a5747db1"
+      },
+      "auth.custom_oauth_providers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.flow_state": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.identities": {
+        "count": 2,
+        "sha256": "8b18958fdf07d470c885052d3b314f598bef0ba7839bb704becd45c69238a3dd"
+      },
+      "auth.instances": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.mfa_amr_claims": {
+        "count": 4,
+        "sha256": "5b2571203389426259cb6c462dffc84b2f60c254a6c4f141011efa898e48362a"
+      },
+      "auth.mfa_challenges": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.mfa_factors": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.mfa_recovery_code_sets": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.mfa_recovery_codes": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.oauth_authorizations": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.oauth_client_states": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.oauth_clients": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.oauth_consents": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.one_time_tokens": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.refresh_tokens": {
+        "count": 4,
+        "sha256": "48241b9bd2760c78b2bc993b35f3af0d4a7274bee55aabfa31755b9b758c4680"
+      },
+      "auth.saml_providers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.saml_relay_states": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.schema_migrations": {
+        "count": 82,
+        "sha256": "8cdf22f03f7379ee9ddce1b77ca630cd50ddcae9dd3c3cddb70af6e703df0104"
+      },
+      "auth.scim_tokens": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.scim_users": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.sessions": {
+        "count": 4,
+        "sha256": "229987812fe2a06ed3a399ba2769031596e1e052c4739e634ebdb80a4d04a3be"
+      },
+      "auth.sso_domains": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.sso_providers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.users": {
+        "count": 2,
+        "sha256": "4aeae87e158cf24b12e7ed24e472fe29e766dd2ec77468574d3eb727e1244d4a"
+      },
+      "auth.webauthn_challenges": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "auth.webauthn_credentials": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "public.account_creation_requests": {
+        "count": 1,
+        "sha256": "deb0012b799157c1c2e6527284edfff1451c600a68ace078cb2c4e714294b96f"
+      },
+      "public.accounts": {
+        "count": 3,
+        "sha256": "3732588b99844b4fb7b96ff0897e56d72b4a503aad8474548a0a6b9bee3e7fa6"
+      },
+      "public.bot_sessions": {
+        "count": 1,
+        "sha256": "172671659c20c35bd520393ac8ace84dcb7690919bfb1addc7f2acc3677310a7"
+      },
+      "public.budget_alerts": {
+        "count": 1,
+        "sha256": "0d58e113050ef203350b408386c3bb87450b394e71315ae0710bfd3a03301e82"
+      },
+      "public.budgets": {
+        "count": 1,
+        "sha256": "fa356011877a8f639e138397934903db46803f99805c0f1e12470150484b01c4"
+      },
+      "public.categories": {
+        "count": 26,
+        "sha256": "ec71878ad486c4a17bbd574e5a5796483e059fc15548f33e2858e00cdb17cc78"
+      },
+      "public.exchange_rates": {
+        "count": 1,
+        "sha256": "31ac9ea91d36aab19db46723416996e825ed27424f20fe0c5301c3a9305e3074"
+      },
+      "public.import_batches": {
+        "count": 1,
+        "sha256": "f0c0d842124937e24a8c6b738743c4893b705e1537db4ba79727b0e4283b4d47"
+      },
+      "public.investment_create_requests": {
+        "count": 1,
+        "sha256": "ca2d4cbcfc739abafe2640b0ada159638f767c4f762744114a0ef11b8dea850f"
+      },
+      "public.investment_sale_requests": {
+        "count": 1,
+        "sha256": "6b52a6ea7fe42e1b3eafa379be086e8d16b94f8ddb33af1655231db769acc565"
+      },
+      "public.investment_sales": {
+        "count": 2,
+        "sha256": "04af980461a77a95d0fd68db58d374f7d3ae98021170f435cf8169d609caf6b8"
+      },
+      "public.investments": {
+        "count": 2,
+        "sha256": "47d2d42e8cc04cb166084be969871215b792805ac0db1467d3451f481ccc4036"
+      },
+      "public.market_data_cache": {
+        "count": 1,
+        "sha256": "d0eb9b8ff481f62cd1b9028ef98e060c923713001de4a033dda6385b31dd65b1"
+      },
+      "public.net_worth_snapshots": {
+        "count": 1,
+        "sha256": "f7a7e9d12635d2a2337e7b6018defca097eb5bd7d75a56f87fa6f1d2d909b5f9"
+      },
+      "public.notification_outbox": {
+        "count": 1,
+        "sha256": "045f2d7a01ba787f20ea95bdc6c101a26f10954cf86fe9e2a2ecb283d68c5fbc"
+      },
+      "public.plan_usage_cycles": {
+        "count": 1,
+        "sha256": "931eb78c6204153974fb91a07c69814452755d2e4e93d95c04417a3014ca12b3"
+      },
+      "public.plan_usage_requests": {
+        "count": 1,
+        "sha256": "3e7093033f7acc17a39b9c030c2713c1d31d486372d1cd933c8ad6a6ae55bcc5"
+      },
+      "public.portfolio_performance_snapshots": {
+        "count": 1,
+        "sha256": "5a12d7001bd1faa4a90ce80ebcb7eef2d439a934ad2cecfce6965845434b85e9"
+      },
+      "public.recurring_rules": {
+        "count": 1,
+        "sha256": "1176cacaec838b127523d98deeaba4afb012237b5f9589bf214b4459949a66f8"
+      },
+      "public.shared_expense_requests": {
+        "count": 1,
+        "sha256": "78a8ad378b475bf351c345df71330a96595dbd31683dc9a1e897995114393453"
+      },
+      "public.shared_expense_splits": {
+        "count": 2,
+        "sha256": "5416c5353bdf466d0027c08acb1d9483fbc47d616a822fffdeb990d534e9d0dc"
+      },
+      "public.shared_expenses": {
+        "count": 1,
+        "sha256": "5fa682394af7a3939202655e3167ee928b4b3836527c606a317906c05d2badc7"
+      },
+      "public.shared_group_members": {
+        "count": 3,
+        "sha256": "5a48485407bb651c6a58eb77ed4da9000371eaa0c8369506c5783ad56eb22a5f"
+      },
+      "public.shared_groups": {
+        "count": 2,
+        "sha256": "27184369f8614469b13842ed08b2800d8d2c10e8b7bc2997476c0e0323f3e70c"
+      },
+      "public.transaction_requests": {
+        "count": 2,
+        "sha256": "d9eea7fa831a01307af107f8f9745a0cffa22058c460535725a2648a5fa513d0"
+      },
+      "public.transactions": {
+        "count": 3,
+        "sha256": "58e16c6b82b375400b714ede5d8d421c3a1076bff6ff9733628f6258e0eb6f1c"
+      },
+      "public.users": {
+        "count": 2,
+        "sha256": "4335ddaa092ebec803bfb6197307843700b62cef0bba9bacbb338b59ce94817e"
+      },
+      "storage.buckets": {
+        "count": 1,
+        "sha256": "f0d61f3cbc6e5f7adfde7ad2dbb54a253f2fc5fb8b9380699ef39db562b55760"
+      },
+      "storage.buckets_analytics": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.buckets_vectors": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.iceberg_namespaces": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.iceberg_tables": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.migrations": {
+        "count": 74,
+        "sha256": "92c4f984b90c026e5bdeb93b28f8ed5c6fa287b03d1d09ad84e0cec95958a135"
+      },
+      "storage.objects": {
+        "count": 1,
+        "sha256": "b5551553640d25931b471dc8907781a004766c2ad19eb704b36d9296f135950a"
+      },
+      "storage.s3_multipart_uploads": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.s3_multipart_uploads_parts": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "storage.vector_indexes": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    "storageObject": {
+      "bytes": 34,
+      "sha256": "ead5d8e8862d854bdf4e800659414b918efcafb7f698e9b9a7a27499edf779b9"
+    }
+  },
+  "error": {
+    "type": "NativeVerificationFailure",
+    "context": "See the failure group; raw diagnostic excluded from versioned evidence"
+  },
+  "originalReportSha256": "ecadcac7c9949ff5219cd551ee19d002dbdb522b29240950d324404261c500b2",
+  "diagnosticHandling": "Raw diagnostics stay in a private temporary directory; this version contains no raw error text."
+}

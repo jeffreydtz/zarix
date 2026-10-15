@@ -1,0 +1,576 @@
+{
+  "status": "FAIL",
+  "startedAt": "2026-10-15T04:09:33.580Z",
+  "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD.",
+  "results": [
+    {
+      "case_id": "CP2-02",
+      "status": "FAIL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Invalid variant1 rejected without incomplete account (CSV does not mandate4xx)",
+          "actual": false,
+          "expected": true,
+          "status": "FAIL"
+        },
+        {
+          "name": "Invalid variant2 rejected without incomplete account (CSV does not mandate4xx)",
+          "actual": false,
+          "expected": true,
+          "status": "FAIL"
+        },
+        {
+          "name": "Invalid variant3 rejected without incomplete account (CSV does not mandate4xx)",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Invalid variant4 rejected without incomplete account (CSV does not mandate4xx)",
+          "actual": false,
+          "expected": true,
+          "status": "FAIL"
+        },
+        {
+          "name": "Invalid variant5 rejected without incomplete account (CSV does not mandate4xx)",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Invalid variant6 rejected without incomplete account (CSV does not mandate4xx)",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "All documented invalid variants rejected",
+          "actual": [
+            1,
+            2,
+            4
+          ],
+          "expected": [],
+          "status": "FAIL"
+        }
+      ],
+      "original_contract": {
+        "precondiciones": "U1 autenticado",
+        "entrada": "nombre vacío; moneda desconocida; saldoNaN; campos tarjeta inválidos por variante",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "cada entrada inválida rechazada; sin cuenta incompleta",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "startedAt": "2026-10-15T04:09:36.076Z",
+      "failure": {
+        "type": "AssertionError",
+        "location": "run.mjs:108:16",
+        "context": "Named assertion or technical prerequisite failed; raw error and secrets withheld"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP2-02",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "1d12e3c6-ad39-4c52-8c7e-9e767ffb8252",
+      "startedAt": "2026-10-15T04:09:36.225Z",
+      "status": 201,
+      "responseSha256": "0f6f76bd4641edbcce46e5422435e8ebbaed414c027772efeec57a0e7ca12e82",
+      "endedAt": "2026-10-15T04:09:36.288Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "DELETE",
+      "path": "/api/accounts/986b3950-1660-4f81-bbb7-1a90e71b253c",
+      "requestId": "1d249e93-a816-46b5-aedc-0362dd012fba",
+      "startedAt": "2026-10-15T04:09:36.435Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:09:36.474Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "be5f5379-f25c-497d-9bfc-e14a4148d3d7",
+      "startedAt": "2026-10-15T04:09:36.550Z",
+      "status": 201,
+      "responseSha256": "425207f00b5ad01c6a0b5a58b5e06a5e15c4719d38d230fbadb4a51a364f4326",
+      "endedAt": "2026-10-15T04:09:36.589Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "DELETE",
+      "path": "/api/accounts/b6e20a9e-2fa0-4da5-89b6-d4f1be3fbee0",
+      "requestId": "f0d83cfd-90c2-4246-b2a9-e17567de0398",
+      "startedAt": "2026-10-15T04:09:36.740Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:09:36.775Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "9c2e3bff-0f82-441d-a386-c9585f18c8dd",
+      "startedAt": "2026-10-15T04:09:36.850Z",
+      "status": 400,
+      "responseSha256": "5b48f661b89543a0ad4d586cb4494fbe30e197b435847e14d97f99bb14b6bc77",
+      "endedAt": "2026-10-15T04:09:36.888Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "91031b39-b9f5-46b2-bc0f-87520b1d25fd",
+      "startedAt": "2026-10-15T04:09:37.035Z",
+      "status": 201,
+      "responseSha256": "6876b071cd460607e4b993b4b0a07c09d3d6bbbaab98d274f74d3216cba03620",
+      "endedAt": "2026-10-15T04:09:37.073Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "DELETE",
+      "path": "/api/accounts/03a8023a-fdf0-4885-92ba-02651d9ddc1f",
+      "requestId": "3d14899c-7b88-4dc4-a412-992bd29a9445",
+      "startedAt": "2026-10-15T04:09:37.220Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:09:37.256Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "7e12074b-b15e-44af-8936-7ec734f2c198",
+      "startedAt": "2026-10-15T04:09:37.333Z",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5",
+      "endedAt": "2026-10-15T04:09:37.372Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "2b0b6ada-3b52-4fb1-bd8a-1fe28eadd54e",
+      "startedAt": "2026-10-15T04:09:37.519Z",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5",
+      "endedAt": "2026-10-15T04:09:37.557Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "DELETE",
+      "path": "/api/accounts/986b3950-1660-4f81-bbb7-1a90e71b253c",
+      "requestId": "c1fcf531-bc5b-45e8-b3c9-87b258d65130",
+      "startedAt": "2026-10-15T04:09:37.707Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:09:37.743Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "DELETE",
+      "path": "/api/accounts/b6e20a9e-2fa0-4da5-89b6-d4f1be3fbee0",
+      "requestId": "86271854-63e1-4148-a200-630929b97d7a",
+      "startedAt": "2026-10-15T04:09:37.819Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:09:37.854Z"
+    },
+    {
+      "caseId": "CP2-02",
+      "method": "DELETE",
+      "path": "/api/accounts/03a8023a-fdf0-4885-92ba-02651d9ddc1f",
+      "requestId": "02735bc3-b182-4789-b0e7-da8547cdb1f0",
+      "startedAt": "2026-10-15T04:09:37.930Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:09:37.965Z"
+    }
+  ],
+  "fixtures": [],
+  "executionCount": 1,
+  "case": {
+    "case_id": "CP2-02",
+    "status": "FAIL",
+    "complete_original_contract": false,
+    "assertions": [
+      {
+        "name": "Invalid variant1 rejected without incomplete account (CSV does not mandate4xx)",
+        "actual": false,
+        "expected": true,
+        "status": "FAIL"
+      },
+      {
+        "name": "Invalid variant2 rejected without incomplete account (CSV does not mandate4xx)",
+        "actual": false,
+        "expected": true,
+        "status": "FAIL"
+      },
+      {
+        "name": "Invalid variant3 rejected without incomplete account (CSV does not mandate4xx)",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Invalid variant4 rejected without incomplete account (CSV does not mandate4xx)",
+        "actual": false,
+        "expected": true,
+        "status": "FAIL"
+      },
+      {
+        "name": "Invalid variant5 rejected without incomplete account (CSV does not mandate4xx)",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Invalid variant6 rejected without incomplete account (CSV does not mandate4xx)",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "All documented invalid variants rejected",
+        "actual": [
+          1,
+          2,
+          4
+        ],
+        "expected": [],
+        "status": "FAIL"
+      }
+    ],
+    "original_contract": {
+      "precondiciones": "U1 autenticado",
+      "entrada": "nombre vacío; moneda desconocida; saldoNaN; campos tarjeta inválidos por variante",
+      "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+      "resultado_esperado": "cada entrada inválida rechazada; sin cuenta incompleta",
+      "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+    },
+    "startedAt": "2026-10-15T04:09:36.076Z",
+    "failure": {
+      "type": "AssertionError",
+      "location": "run.mjs:108:16",
+      "context": "Named assertion or technical prerequisite failed; raw error and secrets withheld"
+    }
+  },
+  "executionMode": "api-sql-only",
+  "logicalOwner": "A",
+  "pendingScopes": [],
+  "run": "dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+  "nativePreparation": {
+    "sha256": "cce5dd1d50cbfafcb4de3ff11da8d3fae640433064f644c8f63d724be5cc703b",
+    "projectId": "d9c6a4f6-9881-4790-adce-f052ccf391ca",
+    "apiOrigin": "http://127.0.0.1:59321",
+    "normalAuthIdsBound": true
+  },
+  "buildBinding": {
+    "appOrigin": "http://127.0.0.1:3003",
+    "apiOrigin": "http://127.0.0.1:59321",
+    "buildId": "-zDTe86_KX6NVCcsRaWOj",
+    "nextPid": 56597,
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "proofSha256": "edf1664050e20c16b1dd1804b75c511449f561c968c3aded0b26e8b6b9d1a757",
+    "buildIdSha256": "2e4d4aa1c4c80376600443b3c5b976079ffaf45b0095f195b3443b5901e19176",
+    "physicalSourcesVerified": true,
+    "ownedListenerAndCwdVerified": true
+  },
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "1e5419ece070770eca7122def481d74e8a9b5489e85ad6aad10e48fcd1032acc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "a8b54c437f4d255253f78e91aea0e7b8cdfa6b69dfa2c9796ac8309f2a516734"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "frozenGitSourcesVerified": 476,
+  "unrelatedCurrentDeltas": [
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "servedSha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "currentSha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "servedMatchesFrozenGit": true
+    },
+    {
+      "path": "components/budgets/BudgetCard.tsx",
+      "servedSha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b",
+      "currentSha256": "b4a66c24408997fdc90656b02d16ca574090302b0288aaebb3cbdae4a2b21a74",
+      "servedMatchesFrozenGit": true
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "servedSha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+      "currentSha256": "674fe1139550b084a8e9afbce04bb9fea42e7de060f582512219586ef3d6c2bd",
+      "servedMatchesFrozenGit": true
+    }
+  ],
+  "currentSourceBindingScope": "Only responsible accounts API/service/schema/migrations must match current; all477physical copied sources and frozen Git are independently verified, unbuilt export/UI deltas disclosed",
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "users": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "logicalRole": "selected-owner",
+      "physicalLabel": "A",
+      "normalAuth": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "logicalRole": "other-owner",
+      "physicalLabel": "B",
+      "normalAuth": true
+    }
+  ],
+  "invalidAccountVariants": [
+    {
+      "index": 1,
+      "payload": {
+        "name": "",
+        "type": "bank",
+        "currency": "ARS"
+      },
+      "status": 201,
+      "createdRows": 1
+    },
+    {
+      "index": 2,
+      "payload": {
+        "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+        "type": "bank",
+        "currency": "ZZZ"
+      },
+      "status": 201,
+      "createdRows": 1
+    },
+    {
+      "index": 3,
+      "payload": {
+        "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+        "type": "bank",
+        "currency": "ARS",
+        "initialBalance": "NaN"
+      },
+      "status": 400,
+      "createdRows": 0
+    },
+    {
+      "index": 4,
+      "payload": {
+        "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+        "type": "credit_card",
+        "currency": "ARS",
+        "closingDay": 0
+      },
+      "status": 201,
+      "createdRows": 1
+    },
+    {
+      "index": 5,
+      "payload": {
+        "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+        "type": "credit_card",
+        "currency": "ARS",
+        "dueDay": 32
+      },
+      "status": 500,
+      "createdRows": 0
+    },
+    {
+      "index": 6,
+      "payload": {
+        "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+        "type": "credit_card",
+        "currency": "ARS",
+        "last4Digits": "123"
+      },
+      "status": 500,
+      "createdRows": 0
+    }
+  ],
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "10f1098f77ce29248f4cdf57b496eccf",
+      "afterMd5": "10f1098f77ce29248f4cdf57b496eccf",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 6,
+      "beforeMd5": "680d1e68ae43aff178d1545f01f21bc1",
+      "afterMd5": "680d1e68ae43aff178d1545f01f21bc1",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 8,
+      "beforeMd5": "191336899c8df6b59ffd7087aa372db4",
+      "afterMd5": "191336899c8df6b59ffd7087aa372db4",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 1,
+      "beforeMd5": "b514488bda4668a6cc000f3ba03dcb69",
+      "afterMd5": "b514488bda4668a6cc000f3ba03dcb69",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 26,
+      "beforeMd5": "e0242fec3efb4da15305522bacf73cd9",
+      "afterMd5": "e0242fec3efb4da15305522bacf73cd9",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T04:09:39.002Z"
+}

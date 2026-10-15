@@ -1,0 +1,108 @@
+{
+  "results": [
+    {
+      "case_id": "CP3-13",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-rf11/cp3-13.json",
+        "account-analysis-contracts/executed-rf11/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "1999/1000noalert",
+        "Removeonlynew1999fixture204",
+        "Independentsecondfixturestartsfromidenticalhistory",
+        "Independentsecondfixtureidenticalbalance",
+        "Fixture transaction API201",
+        "IndependentvariantusesdistinctmovementID",
+        "At2000exactalert"
+      ],
+      "scope": "Literal RF11 integration/system API/SQL contract with normal Auth; fixed6Oct local clock. No UI/Gemini-provider acceptance inferred."
+    },
+    {
+      "case_id": "CP3-14",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-rf11/cp3-14.json",
+        "account-analysis-contracts/executed-rf11/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Fixture transaction API201",
+        "Newcategory5000noalert",
+        "Removeonlynew5000variant204",
+        "Independentvariantrestoresemptyfixture",
+        "Independentvariantbalance0",
+        "Fixture transaction API201",
+        "Newcategory5000.01alert",
+        "Removeonlynew5000.01variant204",
+        "Thirdindependentfixtureisempty",
+        "Noeligiblemovementsmeansnoanomaly",
+        "NoeligiblecompletedmonthmeanshasDatafalse"
+      ],
+      "scope": "Literal RF11 integration/system API/SQL contract with normal Auth; fixed6Oct local clock. No UI/Gemini-provider acceptance inferred."
+    },
+    {
+      "case_id": "CP3-15",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-rf11/cp3-15.json",
+        "account-analysis-contracts/executed-rf11/manifest.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Set own new cash base through existing adjustment200",
+        "Projection cash fixture exactly50000",
+        "Projection endpoint200",
+        "Exact observed-three-month arithmetic"
+      ],
+      "scope": "Literal RF11 integration/system API/SQL contract with normal Auth; fixed6Oct local clock. No UI/Gemini-provider acceptance inferred."
+    },
+    {
+      "case_id": "CP3-16",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "account-analysis-contracts/executed-rf11/cp3-16.json",
+        "account-analysis-contracts/executed-rf11/manifest.json"
+      ],
+      "assertion_names": [
+        "Selected synthetic user has no stored Gemini credential",
+        "Fixture account API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Set own new cash base through existing adjustment200",
+        "Projection cash fixture exactly50000",
+        "Fixture account API201",
+        "Fixture account API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Fixture transaction API201",
+        "Maintain exact own cash base50000",
+        "Destination transfercash normalized through explicit adjustment",
+        "Projection endpoint200",
+        "Exact observed-three-month arithmetic",
+        "Projection succeeds without any additional Gemini-host fetch attempt"
+      ],
+      "scope": "Literal RF11 integration/system API/SQL contract with normal Auth; fixed6Oct local clock. No UI/Gemini-provider acceptance inferred."
+    }
+  ]
+}

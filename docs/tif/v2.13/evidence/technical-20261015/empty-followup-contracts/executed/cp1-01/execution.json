@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-10-15T06:13:21.104024+00:00",
+  "finishedAt": "2026-10-15T06:13:30.145975+00:00",
+  "command": [
+    "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+    "docs/tif/v2.13/evidence/technical-20261015/empty-followup-contracts/run.mjs",
+    "--case",
+    "CP1-01"
+  ],
+  "explicitGates": {
+    "ZARIX_EMPTY_FOLLOWUP_WINDOW": "parent-released-after-three-cases",
+    "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+    "ZARIX_EMPTY_PRIOR_REPORT": "/tmp/zarix-runtime-20261015/empty-account-contracts-57d4f74e-3dcb-487c-821d-569363972055/verification.json"
+  },
+  "exitCode": 0,
+  "scope": "Parent-released CP101 only; synthetic new UUID database, normalAuth/API/SSR. No automatic retry."
+}

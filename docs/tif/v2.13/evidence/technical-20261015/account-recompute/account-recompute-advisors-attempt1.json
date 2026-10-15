@@ -1,0 +1,12 @@
+{
+  "startedAt": "2026-10-15T00:11:32.816Z",
+  "scope": "Read-only official CLI security/performance advisors for E2E localhost:57322. Existing schema findings are reported separately from the new repair RPC.",
+  "command": "supabase db advisors --db-url \"$ZARIX_LOCAL_DATABASE_URL\" --type all --level info --fail-on none --output json",
+  "status": "BLOCKED",
+  "failure": {
+    "type": "Error",
+    "code": null,
+    "context": "local official CLI advisors"
+  },
+  "finishedAt": "2026-10-15T00:11:33.757Z"
+}

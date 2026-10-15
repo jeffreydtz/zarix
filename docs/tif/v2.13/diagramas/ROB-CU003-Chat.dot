@@ -1,0 +1,30 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU003: A02/A03: consulta autorizada"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+t [shape=plaintext,fontcolor="#243b53",label="Telegram"];
+bi [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP08 Asistente"];
+bt [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP03 Telegram"];
+au [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+ch [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nConsulta IA"];
+bg [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nAdaptador IA"];
+g [shape=plaintext,fontcolor="#243b53",label="Gemini"];
+re [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nResumen"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+u -> bi [label="A02"];
+t -> bt [label="A03"];
+bi -> au [label="Premium"];
+bt -> au [label="vínculo y\nPremium"];
+re -> em [label="hechos propios"];
+bi -> ch [dir=both,label="A02 pregunta\n↔\ncifra / aclarar\n/ indisponible"];
+bt -> ch [dir=both,label="A03 pregunta\n↔\nmismo contrato\nen canal"];
+ch -> bg [dir=both,label="intención\npermitida /\nredacción\n↔\nrespuesta\nnormalizada"];
+bg -> g [dir=both,label="contrato mínimo\n↔\nintención /\nerror"];
+
+
+ch -> re [label="cifra\ndeterminista\nautorizada"];
+
+
+}

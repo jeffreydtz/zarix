@@ -1,0 +1,16 @@
+{
+  "status": "PASS_PREPARED_ONLY",
+  "checks": {
+    "preparedWrapperAST": true,
+    "outputAbsent": true,
+    "wrapper0600": true,
+    "fontMockHash": true,
+    "font7Count": true,
+    "font7Hashes": true,
+    "guardHash": true,
+    "oldCI4WrapperPreserved": true,
+    "newAuditTraceAbsent": true
+  },
+  "executedCommands": 0,
+  "requiresFinalRevisionArgument": true
+}

@@ -1,0 +1,138 @@
+{
+  "evidenceCollectedAt": "2026-10-13T21:45:45.443Z",
+  "revision": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df",
+  "runtime": {
+    "node": "v22.17.0",
+    "npm": "11.4.2",
+    "os": "darwin",
+    "arch": "arm64"
+  },
+  "registry": "https://registry.npmjs.org/",
+  "scope": "Fresh lockfile and installed dependency metadata audit in isolated ZARIX checkout; no production access or dependency installation by this review.",
+  "packageHashes": {
+    "package.json": "11d77bdca6d4e395fb24d019d658499d3ad9e9a27ea03eeb6fdbc9f0a4966648",
+    "package-lock.json": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+  },
+  "inspectedSourceHashes": {
+    "tailwind.config.ts": "39c6f56330958f90fffedada86d2541b9f8ab6b04c09bea11bd7a69c7ed3d255",
+    "postcss.config.js": "fa650b380adfabb151a0b352f7135e107e6352345f899060f1c5c231228f94bf",
+    ".eslintrc.json": "1589a15e55fbebc6519c95d91d8f0a090618f20dc78e479858b9c27552484961",
+    ".github/workflows/ci.yml": "04a5801f2ae4b08472f15a9edfc2889c98eb15e2b910bb7122904ac7512e17d8"
+  },
+  "commands": [
+    {
+      "command": "npm audit --json",
+      "stdout": "audit-before.json",
+      "stderr": "audit-before.stderr.log",
+      "exitCode": 1
+    },
+    {
+      "command": "npm audit --omit=dev --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "audit-production.json",
+      "stderr": "audit-production.stderr.log",
+      "exitCode": 0
+    },
+    {
+      "command": "npm view braces dist-tags versions --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "registry-braces.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm view micromatch@latest version dependencies --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "registry-micromatch.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm view fast-glob@latest version dependencies --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "registry-fast-glob.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm view tailwindcss@3.4.19 version dependencies --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "registry-tailwindcss-3.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm view tailwindcss@latest version dependencies --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "registry-tailwindcss-latest.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm view @next/eslint-plugin-next@latest version dependencies --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "registry-next-eslint-latest.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm view tailwindcss versions --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "registry-tailwindcss-all-versions.json",
+      "transform": "Stable major 3 versions also filtered into registry-tailwindcss-3-versions.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm ls braces micromatch fast-glob chokidar tailwindcss eslint-config-next @next/eslint-plugin-next --all --json",
+      "stdout": "installed-tree.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm ls --omit=dev braces micromatch fast-glob chokidar tailwindcss eslint-config-next @next/eslint-plugin-next --all --json",
+      "stdout": "production-tree.json",
+      "exitCode": 1,
+      "meaning": "Empty matching dependency tree, not an installation error"
+    },
+    {
+      "command": "npm audit fix --dry-run --ignore-scripts --json --cache /tmp/zarix-dependency-audit-20261013-cache",
+      "stdout": "remediation-dry-run.stdout.log",
+      "stderr": "remediation-dry-run.stderr.log",
+      "parsedJson": "remediation-dry-run.json",
+      "exitCode": 1
+    },
+    {
+      "command": "rg -n 'braces|micromatch|fast-glob|chokidar|tailwindcss|eslint-plugin-next|child_process|exec\\(|spawn\\(' app lib components middleware.ts types tailwind.config.ts postcss.config.js .eslintrc.json .github/workflows/ci.yml",
+      "stdout": "source-reference-scan.log",
+      "exitCode": 0
+    }
+  ],
+  "fullAudit": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "dependencies": {
+      "prod": 310,
+      "dev": 410,
+      "optional": 117,
+      "peer": 32,
+      "peerOptional": 0,
+      "total": 756
+    }
+  },
+  "productionAudit": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "dependencies": {
+      "prod": 310,
+      "dev": 410,
+      "optional": 117,
+      "peer": 32,
+      "peerOptional": 0,
+      "total": 756
+    }
+  },
+  "outcome": {
+    "completeAudit": "FAIL",
+    "productionFilteredAudit": "PASS",
+    "compatibleRemediation": "BLOCKED",
+    "dependenciesChanged": false,
+    "reason": "Fresh official advisory reports no patched braces version; npm registry latest remains 3.0.3, compatible dry run changes zero versions and leaves seven high findings."
+  }
+}

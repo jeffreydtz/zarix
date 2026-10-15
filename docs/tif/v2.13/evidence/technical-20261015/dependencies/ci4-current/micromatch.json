@@ -1,0 +1,27 @@
+{
+  "requestedAt": "2026-10-15T03:28:35.167552+00:00",
+  "source": "https://registry.npmjs.org/micromatch",
+  "httpStatus": 200,
+  "transport": "system curl; TLS verification enabled",
+  "result": {
+    "name": "micromatch",
+    "dist-tags": {
+      "latest": "4.0.8"
+    },
+    "versionCount": 69,
+    "relevantVersions": {
+      "4.0.8": {
+        "version": "4.0.8",
+        "dependencies": {
+          "braces": "^3.0.3",
+          "picomatch": "^2.3.1"
+        },
+        "engines": {
+          "node": ">=8.6"
+        },
+        "deprecated": null,
+        "publishedAt": "2024-08-23T16:31:18.748Z"
+      }
+    }
+  }
+}

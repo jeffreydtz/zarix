@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-10-15T04:39:10.292Z",
+  "scope": "Post-run SELECT only on this own CP1-20 fixture and its exact import batch, after parent released RF11. No API call, Auth session, original row update or replay. Account was archived by test cleanup.",
+  "parentReportSha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+  "apiOrigin": "http://127.0.0.1:58321",
+  "pgPort": 58322,
+  "observed": {
+    "ledger": [
+      {
+        "id": "08880996-964e-456c-b1c2-561877918a06",
+        "date": "2026-10-06T12:00:00+00:00",
+        "type": "expense",
+        "amount": 500,
+        "currency": "ARS",
+        "canonicalAmount": 500
+      },
+      {
+        "id": "f7f364ac-dd7f-4b5f-a608-03beeaebec41",
+        "date": "2026-10-06T12:00:00+00:00",
+        "type": "income",
+        "amount": 700,
+        "currency": "ARS",
+        "canonicalAmount": 700
+      },
+      {
+        "id": "81501dd6-d6d1-4dba-99ff-9e4e554e45c1",
+        "date": "2026-10-15T04:35:01.904439+00:00",
+        "type": "adjustment",
+        "amount": 10000,
+        "currency": "ARS",
+        "canonicalAmount": 10000
+      }
+    ],
+    "account": {
+      "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "balance": 10200,
+      "isActive": false
+    },
+    "receipts": [
+      {
+        "requestId": "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:0",
+        "requestHash": "70f9a0b72c84ceef08c423de799cb8b99624b1c8a7f0dbfc199b2475f2de38d2",
+        "transactionId": "08880996-964e-456c-b1c2-561877918a06"
+      },
+      {
+        "requestId": "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:1",
+        "requestHash": "bea5161a909767b87a641a9dbbf032e4f4371827951cb0607a193ce822ad7dac",
+        "transactionId": "f7f364ac-dd7f-4b5f-a608-03beeaebec41"
+      }
+    ]
+  },
+  "economicRows": 2,
+  "receiptCount": 2,
+  "zeroRowHasReceipt": false,
+  "responsePendingCounter": "NOT_CAPTURED_DO_NOT_INFER",
+  "observedHttpStatus": 503
+}

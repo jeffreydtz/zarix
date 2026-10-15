@@ -1,0 +1,59 @@
+{
+  "schema": "zarix.investment-sell-log-privacy.v1",
+  "createdAt": "2026-10-15T08:27:05.084578+00:00",
+  "baselineRevision": "b055ac83107175c29418b8d8ed664d0e6395651a",
+  "status": "PASS_LOCAL_FOCAL",
+  "reports": {
+    "before.json": {
+      "sha256": "9428b045e5f8ed615a0997caf69d0446b66da01ecfbf0d04fdb6ad6c7620f3f1",
+      "total": 2,
+      "passed": 0,
+      "failed": 2,
+      "success": false
+    },
+    "before-with-read.json": {
+      "sha256": "a3ae8fe3015df70311ad07b138cd2ca8691f57ed592fdfc5b2684c7c366b7bce",
+      "total": 3,
+      "passed": 0,
+      "failed": 3,
+      "success": false
+    },
+    "after.json": {
+      "sha256": "544992863e5895bd755909a58f0b4b331b2e92468069b650fe757ace0f8570bf",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "success": true
+    }
+  },
+  "uniqueFinalTests": 3,
+  "change": "Only the two console.error calls in the existing investment sale resource omit their raw error argument; errorResponse(error), Auth, parameters, response status/body and service calls are unchanged.",
+  "testedBranches": [
+    "Known ApiError oversell400 preserves its fixed public message, while non-enumerable stack/cause/request carry synthetic secret/text canaries.",
+    "Unknown sale Error500 preserves its generic response, while message/stack/cause/request carry synthetic canaries.",
+    "Unknown sales-list read Error500 preserves its generic response and invokes only listSales(owner,position), never sell."
+  ],
+  "capture": "formatWithOptions({showHidden:true,depth:8}, ...call) over captured error/warn/info/log arguments; canaries are asserted absent. Includes non-enumerable Error properties unlike JSON.stringify(Error).",
+  "checks": [
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "exitCode": 0,
+      "toolSessionId": 76637
+    },
+    {
+      "command": "node node_modules/next/dist/bin/next lint --file 'app/api/investments/[id]/sell/route.ts' --file __tests__/investment-sell-log-privacy.test.ts",
+      "exitCode": 0,
+      "toolSessionId": 77434,
+      "result": "No ESLint warnings or errors"
+    }
+  ],
+  "limits": [
+    "Actual route functions and errorResponse are used; Auth and investmentsService boundaries are explicit doubles. No database transaction, rollback, real GoTrue session, transport or provider is exercised.",
+    "Normal owner/service dispatch is checked once; fetch is prohibited and unused. Zero actual DB/provider effects follow from no such runtime being used, not from an observed PostgreSQL rollback.",
+    "No historical Native730 console is reclassified as robustly inspected; this is a later source delta and separate local test.",
+    "No browser, UI acceptance, collector/access-log inspection or matrix promotion.",
+    "The initial POST-only2FAIL is preserved; the matching before/after3-test phase contains3FAIL then3PASS. They are not five unique tests."
+  ],
+  "actualAuthDatabaseProviderBrowserCalls": 0,
+  "matrixPromoted": false
+}

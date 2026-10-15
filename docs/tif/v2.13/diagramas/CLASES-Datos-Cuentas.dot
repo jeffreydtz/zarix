@@ -1,0 +1,7 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="DTO: cuenta y saldos"; labelloc=t; fontsize=22;
+Account [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Account</B></TD></TR><TR><TD ALIGN="LEFT">+id: string</TD></TR><TR><TD ALIGN="LEFT">+user_id: string</TD></TR><TR><TD ALIGN="LEFT">+name: string</TD></TR><TR><TD ALIGN="LEFT">+type: AccountType</TD></TR><TR><TD ALIGN="LEFT">+currency: string</TD></TR><TR><TD ALIGN="LEFT">+balance: number</TD></TR><TR><TD ALIGN="LEFT">+is_debt: boolean</TD></TR><TR><TD ALIGN="LEFT">+include_in_total: boolean</TD></TR><TR><TD ALIGN="LEFT">+include_in_liquid: boolean</TD></TR><TR><TD ALIGN="LEFT">+is_multicurrency: boolean</TD></TR><TR><TD ALIGN="LEFT">+secondary_currency: string</TD></TR><TR><TD ALIGN="LEFT">+is_active: boolean</TD></TR></TABLE>>];
+}

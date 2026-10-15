@@ -1,0 +1,3351 @@
+{
+  "startedAt": "2026-10-15T02:32:13.180Z",
+  "scope": "Diagnostic only:20normalUIauthenticatedcontexts, staticloopbackHTML versus canonicaldashboard. NoSLOacceptance; nofinancialwrites. ExistingUSDrounding omitted by priororacle is diagnosed separately.",
+  "phases": [
+    {
+      "mode": "static-route-only",
+      "startedAt": "2026-10-15T02:32:42.433Z",
+      "host": {
+        "loadAverage": [
+          28.6611328125,
+          50.78955078125,
+          56.38134765625
+        ],
+        "freeMemoryBytes": 78610432
+      },
+      "observations": [
+        {
+          "context": 1,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 949.1907090000022,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 2,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 967.8836249999986,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 3,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 971.539208000002,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 4,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 979.1840000000011,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 5,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1011.2469579999997,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 6,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [
+            {
+              "path": "/accounts",
+              "error": "net::ERR_ABORTED"
+            }
+          ],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1024.0452079999995,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 7,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1037.0481670000008,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 8,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1068.2682920000007,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 9,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [
+            {
+              "path": "/investments",
+              "error": "net::ERR_ABORTED"
+            }
+          ],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1070.8332919999993,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 10,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [
+            {
+              "path": "/expenses",
+              "error": "net::ERR_ABORTED"
+            }
+          ],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1078.3308339999967,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 11,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1081.8149580000027,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 12,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [
+            {
+              "path": "/expenses",
+              "error": "net::ERR_ABORTED"
+            }
+          ],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1089.9181659999995,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 13,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1089.2977920000012,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 14,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1109.9164999999994,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 15,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1112.5224159999998,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 16,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [
+            {
+              "path": "/investments",
+              "error": "net::ERR_ABORTED"
+            }
+          ],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1133.6102079999982,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 17,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1143.9933749999982,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 18,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1148.818374999999,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 19,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1149.211625,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 20,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1160.1497080000008,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        }
+      ]
+    },
+    {
+      "mode": "static-route-cdp",
+      "startedAt": "2026-10-15T02:32:43.701Z",
+      "host": {
+        "loadAverage": [
+          28.6611328125,
+          50.78955078125,
+          56.38134765625
+        ],
+        "freeMemoryBytes": 84328448
+      },
+      "observations": [
+        {
+          "context": 1,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1139.2227910000001,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 2,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1061.091375,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 3,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1140.2849160000005,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 4,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1037.5552500000013,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 5,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1134.937708999998,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 6,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1141.1558750000004,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 7,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1140.6500419999975,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 8,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1138.1530409999978,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 9,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1133.8388749999976,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 10,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1132.2243750000016,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 11,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1143.732250000001,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 12,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1139.0180839999994,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 13,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1143.869208,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 14,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1141.054500000002,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 15,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1134.982583000001,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 16,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1132.9975410000006,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 17,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1043.56725,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 18,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1144.4341249999998,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 19,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1125.1143749999974,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 20,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/control",
+              "status": 200,
+              "type": "document"
+            }
+          ],
+          "requestsFailed": [],
+          "httpStatus": 200,
+          "goto": "PASS",
+          "gotoDurationMs": 1142.1780409999992,
+          "dom": {
+            "path": "/control",
+            "readyState": "complete",
+            "heading": [
+              "Static synthetic control"
+            ],
+            "data": [],
+            "skeletons": 0,
+            "ownAccountLinks": 0
+          }
+        }
+      ]
+    },
+    {
+      "mode": "dashboard-route-cdp",
+      "startedAt": "2026-10-15T02:32:44.872Z",
+      "host": {
+        "loadAverage": [
+          27.88720703125,
+          50.26171875,
+          56.162109375
+        ],
+        "freeMemoryBytes": 179879936
+      },
+      "observations": [
+        {
+          "context": 1,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 30612.020333000004,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 2,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 30961.743541,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 3,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 30962.576042,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 4,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31010.946834,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 5,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3362-e85a83a5cc0c01e5.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31011.250874999998,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 6,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31036.981334,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 7,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31087.47125,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 8,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31093.721834,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 9,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31093.868875000004,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 10,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3362-e85a83a5cc0c01e5.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31094.182665999997,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 11,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31094.388291999996,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 12,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31098.583208000004,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 13,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31364.506625,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 14,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31460.641374999996,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 15,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31460.705250000003,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 16,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31460.725250000003,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 17,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31460.743375000002,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 18,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31460.746458999998,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 19,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31460.753833000002,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        },
+        {
+          "context": 20,
+          "phase": "finished",
+          "responses": [
+            {
+              "path": "/dashboard",
+              "status": 200,
+              "type": "document"
+            },
+            {
+              "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+              "status": 200,
+              "type": "font"
+            },
+            {
+              "path": "/logo-formats/logo.svg",
+              "status": 200,
+              "type": "image"
+            },
+            {
+              "path": "/_next/static/css/8e43fe9ff4af3686.css",
+              "status": 200,
+              "type": "stylesheet"
+            },
+            {
+              "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+              "status": 200,
+              "type": "script"
+            },
+            {
+              "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+              "status": 200,
+              "type": "script"
+            }
+          ],
+          "requestsFailed": [],
+          "goto": "TimeoutError",
+          "gotoDurationMs": 31460.764708,
+          "dom": {
+            "path": "/dashboard",
+            "readyState": "loading",
+            "heading": [],
+            "data": [],
+            "skeletons": 2,
+            "ownAccountLinks": 0
+          }
+        }
+      ]
+    }
+  ],
+  "process": {
+    "at": "2026-10-15T02:32:13.226Z",
+    "type": "owned-process-ready",
+    "processIndex": 1,
+    "profileMode": "normal",
+    "pid": 30228,
+    "listenerOwnedByPid": true,
+    "portPreviouslyFree": true,
+    "startupMs": 578.410083,
+    "readiness": "/api/health only; dashboard not visited by controller"
+  },
+  "authentication": {
+    "normalUIcontexts": 20,
+    "users": 2
+  },
+  "postRender": [
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [],
+      "data": [],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "201337.32",
+          "text": "≈ US$ 201.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "200670.66",
+          "text": "≈ US$ 200.671"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "201337.32",
+          "text": "≈ US$ 201.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "222670.66",
+          "text": "≈ US$ 222.671"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "201337.32",
+          "text": "≈ US$ 201.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [],
+      "data": [],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "223337.32",
+          "text": "≈ US$ 223.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "200670.66",
+          "text": "≈ US$ 200.671"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "223337.32",
+          "text": "≈ US$ 223.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "200670.66",
+          "text": "≈ US$ 200.671"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "201337.32",
+          "text": "≈ US$ 201.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy",
+        "Próximos vencimientos",
+        "Tus Cuentas",
+        "Ultimos Movimientos"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "200670.66",
+          "text": "≈ US$ 200.671"
+        }
+      ],
+      "skeletons": 3,
+      "ownAccountLinks": 10
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "201337.32",
+          "text": "≈ US$ 201.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "200670.66",
+          "text": "≈ US$ 200.671"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "201337.32",
+          "text": "≈ US$ 201.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "222670.66",
+          "text": "≈ US$ 222.671"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "201337.32",
+          "text": "≈ US$ 201.337"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "222670.66",
+          "text": "≈ US$ 222.671"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    },
+    {
+      "path": "/dashboard",
+      "readyState": "loading",
+      "heading": [
+        "Patrimonio total",
+        "Mercado hoy"
+      ],
+      "data": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "0",
+          "text": "≈ US$ 0"
+        }
+      ],
+      "skeletons": 2,
+      "ownAccountLinks": 0
+    }
+  ],
+  "status": "DIAGNOSTIC_COMPLETE",
+  "finishedAt": "2026-10-15T02:34:58.166Z"
+}

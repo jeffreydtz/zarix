@@ -9,6 +9,13 @@ export type ImpactOptions = {
   fx?: FxHints;
 };
 
+/** Los nuevos movimientos conservan el crédito; el fallback es sólo histórico. */
+export function transferDestinationAmount(tx: TransactionWithCategory): number {
+  return tx.destination_amount_in_account_currency != null
+    ? Number(tx.destination_amount_in_account_currency)
+    : Number(tx.amount) * Number(tx.exchange_rate ?? 1);
+}
+
 /**
  * Impacto de un movimiento sobre el saldo de una cuenta, en la **moneda de esa cuenta**.
  * Gastos/ingresos: usa la misma lógica que al crear movimientos y transferencias (`amount * cotización`);
@@ -37,7 +44,7 @@ export function impactInAccountCurrency(
     }
   }
   if (tx.type === 'transfer' && tx.destination_account_id === accountId) {
-    return Math.abs(amt * er);
+    return Math.abs(transferDestinationAmount(tx));
   }
   return 0;
 }
@@ -71,7 +78,7 @@ export function aggregateOriginalByCurrency(
         .trim()
         .toUpperCase();
       if (!out[cur]) out[cur] = 0;
-      out[cur] += Math.abs(amt(tx) * er(tx));
+      out[cur] += Math.abs(transferDestinationAmount(tx));
     }
   }
   return out;

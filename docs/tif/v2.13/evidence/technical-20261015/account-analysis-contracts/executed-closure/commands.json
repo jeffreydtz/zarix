@@ -1,0 +1,140 @@
+{
+  "commands": [
+    {
+      "case_id": "CP2-05",
+      "run": "6f10488f-8b7d-46b4-86fa-d2bd1056e934",
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP2-05",
+        "--profile",
+        "final-core-closure",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "environment": {
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ACCOUNT_ANALYSIS_SSR_OWNERSHIP_SOURCE": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json"
+      },
+      "node": "v22.17.0",
+      "reportSha256": "e01d6ebbb1832b2906e697baa3d1d98b48ea2410fb41506c09f313391bdf9cbe"
+    },
+    {
+      "case_id": "CP3-04",
+      "run": "605e2761-6516-4f78-8bcd-3635fecfef91",
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-04",
+        "--profile",
+        "final-core-closure",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "environment": {
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ACCOUNT_ANALYSIS_SSR_OWNERSHIP_SOURCE": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json"
+      },
+      "node": "v22.17.0",
+      "reportSha256": "49868d8804ca930a031233e37ec50c68f5c672328be7af252dc227537819553f"
+    },
+    {
+      "case_id": "CP3-05",
+      "run": "e1c70d76-cb67-4dc8-b30a-c954a7f8b6bd",
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-05",
+        "--profile",
+        "final-core-closure",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "environment": {
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ACCOUNT_ANALYSIS_SSR_OWNERSHIP_SOURCE": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json"
+      },
+      "node": "v22.17.0",
+      "reportSha256": "d7dece8081f63917ed97441e9bfea5d3141b59a31691acde5528585b258b7d80"
+    },
+    {
+      "case_id": "CP3-06",
+      "run": "e58ff072-b6b3-43d4-874c-71616532625d",
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-06",
+        "--profile",
+        "final-core-closure",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "environment": {
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ACCOUNT_ANALYSIS_SSR_OWNERSHIP_SOURCE": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json"
+      },
+      "node": "v22.17.0",
+      "reportSha256": "7f3fcd77c4dc153b97a0b6de17a5a2fd3d94f53e2a0c867991e7197c146ac100"
+    },
+    {
+      "case_id": "CP3-08",
+      "run": "5d9c728d-cd0c-47d8-9d85-46f0ede2a586",
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-08",
+        "--profile",
+        "final-core-closure",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-analysis"
+      ],
+      "environment": {
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance"
+      },
+      "node": "v22.17.0",
+      "reportSha256": "7d64622fa9509900e9c932ed46a3f66fc87624bfac4aa8980246f9f81357ad92"
+    },
+    {
+      "case_id": "CP3-18",
+      "run": "1228d254-f2ed-49bb-9d2e-aa7ad2d2ad3e",
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-18",
+        "--profile",
+        "final-core-closure",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-partial"
+      ],
+      "environment": {
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance"
+      },
+      "node": "v22.17.0",
+      "reportSha256": "2aea1d830bb475de0810eed706036cd3f00c58e65ce7cfe062d1605fd251426d"
+    }
+  ]
+}

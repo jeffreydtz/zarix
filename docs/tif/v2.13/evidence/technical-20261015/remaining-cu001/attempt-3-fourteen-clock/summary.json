@@ -1,0 +1,50 @@
+{
+  "status": "FAIL",
+  "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+  "caseCounts": {
+    "PASS": 5,
+    "PARTIAL": 7,
+    "FAIL": 2,
+    "BLOCKED": 0
+  },
+  "assertionCounts": {
+    "PASS": 139,
+    "FAIL": 2
+  },
+  "originalIntegrityAllUnchanged": true,
+  "sourceStable": true,
+  "servedCopyStable": true,
+  "cleanupFailures": 0,
+  "faultCatalogParity": [
+    {
+      "case": "CP1-04",
+      "objects": "zarix_test_41855ad70bed4504b9e3673c428bc39d_0",
+      "installAttempted": true,
+      "installAcknowledged": true,
+      "cleanupAcknowledged": true,
+      "ownObjectsAfter": [],
+      "catalogHashesMatch": true
+    },
+    {
+      "case": "CP1-25",
+      "objects": "zarix_test_41855ad70bed4504b9e3673c428bc39d_3",
+      "installAttempted": true,
+      "installAcknowledged": true,
+      "cleanupAcknowledged": true,
+      "ownObjectsAfter": [],
+      "catalogHashesMatch": true
+    },
+    {
+      "case": "CP1-35",
+      "objects": "zarix_test_41855ad70bed4504b9e3673c428bc39d_14",
+      "installAttempted": true,
+      "installAcknowledged": true,
+      "cleanupAcknowledged": true,
+      "ownObjectsAfter": [],
+      "catalogHashesMatch": true
+    }
+  ],
+  "missingCounterValuesNeverInferred": true,
+  "browserExecuted": false
+}

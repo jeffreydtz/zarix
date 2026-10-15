@@ -1,0 +1,101 @@
+{
+  "createdAt": "2026-10-15T00:51:31.302961+00:00",
+  "status": "PREPARED_NOT_BROWSER_EXECUTED",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 11715,
+      "sha256": "aaf3d413b59ad7c0fcbda923640d236bccbc7a0b673fcb1c7c1d161bf28a19af"
+    },
+    {
+      "path": "cnf09-preflight-matrix.csv",
+      "bytes": 21202,
+      "sha256": "979c093f94f9dcfb2abf597d5ee8daa6566c503b08cd0a200ad7f041af72903e"
+    },
+    {
+      "path": "edge-driver-head.txt",
+      "bytes": 696,
+      "sha256": "127dc581a7e2482f5170ac382a7562ab538663b031e906b60c0f1a2ef81415bc"
+    },
+    {
+      "path": "firefox-versions.json",
+      "bytes": 625,
+      "sha256": "ef57afc0582b513a5236de5e955ce044588160fa3bbad86159cdbb4353f7488e"
+    },
+    {
+      "path": "mozilla-selected-checksums.txt",
+      "bytes": 201,
+      "sha256": "095d2ee61801e138c8935f7b3f617cea0996e8def3c73196a8d233d57c5fb1c8"
+    },
+    {
+      "path": "official-software-metadata.json",
+      "bytes": 4978,
+      "sha256": "ad93904853f7f4b444ca83e46727fdc512b6e35ffdb78ec1fef9cdfb3807538b"
+    },
+    {
+      "path": "preflight-metadata-only.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "preflight-metadata-only.stdout.log",
+      "bytes": 1123,
+      "sha256": "b57f7f280060f036950ce22278c6d6b8c540f8dbc005765c7109eb756cd2136c"
+    },
+    {
+      "path": "preflight-syntax.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "preflight-syntax.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "preflight.json",
+      "bytes": 2320,
+      "sha256": "b435727a844ed0d300a9f1899626ee3308aec14e90a6c802299e28e082a5ed6c"
+    },
+    {
+      "path": "preflight.mjs",
+      "bytes": 3619,
+      "sha256": "639c027f7ae194b8449538d6de628b2d7a278227033b5c14a932e11a6f5f5460"
+    },
+    {
+      "path": "prepared-runner-checks.json",
+      "bytes": 1284,
+      "sha256": "37e88ad81eaf63eb64392d5717ebeaf8dcf4adac2596f3d1160dfc4218767545"
+    },
+    {
+      "path": "run-browser-read.mjs",
+      "bytes": 28616,
+      "sha256": "dd11d5e0f3de5de118c312cdb75f50aff5e5b07066b5062b9b7a8eeaebb3df1b"
+    },
+    {
+      "path": "runner-syntax.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runner-syntax.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "unauthorized-window-guard.json",
+      "bytes": 1256,
+      "sha256": "7ed1ca1a2947a081c708363eac89c2c53035592f759568ffdcd7d66b70f1c576"
+    },
+    {
+      "path": "unauthorized-window-guard.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "unauthorized-window-guard.stdout.log",
+      "bytes": 452,
+      "sha256": "a229a1687b5ebc6ad26780dd9eda25d4a1dc1192c433dd9775443c38788a1230"
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "case_id": "CP3-07",
+  "status": "PASS",
+  "complete_original_contract": true,
+  "method": "Composition explicitly authorized by coordinator:15 actual empty native/API/SSR observations plus real frozen empty-component SSR and Dashboard wiring",
+  "originalPhaseStatus": "FAIL",
+  "originalPhaseFailurePreserved": {
+    "type": "AssertionError",
+    "location": "ssr-contracts.mjs:46:10",
+    "context": "Named contract assertion failed; private diagnostics withheld"
+  },
+  "baseReport": "../attempt-2/verification.json",
+  "baseReportSha256": "6c07f7acfd23f1832b650288edbe8cb745a79e87956074d8f2e2244d9e5514a8",
+  "actualEmptyAssertions": [
+    {
+      "name": "CP3-07 literal absence includes archived accounts and all own history/positions",
+      "actual": {
+        "accounts": 0,
+        "transactions": 0,
+        "investments": 0
+      },
+      "expected": {
+        "accounts": 0,
+        "transactions": 0,
+        "investments": 0
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "CP3-07 no prior synthetic history is presented as existing history",
+      "actual": 0,
+      "expected": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "Actual normal-authenticated dashboard SSR status",
+      "actual": 200,
+      "expected": 200,
+      "status": "PASS"
+    },
+    {
+      "name": "Actual server aggregate total ARS",
+      "numericActual": 0,
+      "numericExpected": 0,
+      "tolerance": 1e-8,
+      "status": "PASS"
+    },
+    {
+      "name": "Known valid fixture never becomes partial",
+      "status": "PASS"
+    },
+    {
+      "name": "No safe-error alert on this valid-FX empty/account dashboard",
+      "actual": false,
+      "expected": false,
+      "status": "PASS"
+    },
+    {
+      "name": "Actual own SSR snapshot completion observed before any fixture cleanup",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "Own snapshot liquid_usd",
+      "numericActual": 0,
+      "numericExpected": 0,
+      "tolerance": 1e-8,
+      "status": "PASS"
+    },
+    {
+      "name": "Own snapshot investments_usd",
+      "numericActual": 0,
+      "numericExpected": 0,
+      "tolerance": 1e-8,
+      "status": "PASS"
+    },
+    {
+      "name": "Own snapshot total_usd",
+      "numericActual": 0,
+      "numericExpected": 0,
+      "tolerance": 1e-8,
+      "status": "PASS"
+    },
+    {
+      "name": "Own snapshot total_ars_blue",
+      "numericActual": 0,
+      "numericExpected": 0,
+      "tolerance": 1e-8,
+      "status": "PASS"
+    },
+    {
+      "name": "CP3-07 liquid zero",
+      "numericActual": 0,
+      "numericExpected": 0,
+      "tolerance": 1e-8,
+      "status": "PASS"
+    },
+    {
+      "name": "CP3-07 portfolio zero",
+      "numericActual": 0,
+      "numericExpected": 0,
+      "tolerance": 1e-8,
+      "status": "PASS"
+    },
+    {
+      "name": "CP3-07 total USD zero",
+      "numericActual": 0,
+      "numericExpected": 0,
+      "tolerance": 1e-8,
+      "status": "PASS"
+    },
+    {
+      "name": "CP3-07 actual server returned no invented historic points",
+      "actual": [],
+      "expected": [],
+      "status": "PASS"
+    }
+  ],
+  "ssrResult": "ssr-results.json",
+  "ssrTests": 3,
+  "realComponentSsrTests": 2,
+  "provenanceTests": 1,
+  "sourceRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "buildId": "Yi9bH3FttO71PxvY-EwCH",
+  "actualPhaseSourceStable": true,
+  "actualPhaseOriginalRowsUnchanged": true,
+  "actualPhaseOwnSessionsClosed": true,
+  "componentSources": [
+    {
+      "path": "components/dashboard/AccountCards.tsx",
+      "sha256": "1db7fa58c2d880e560197b1791ecf2569c2ea4d5610b047c3cd53637a6d3efad"
+    },
+    {
+      "path": "components/dashboard/RecentTransactions.tsx",
+      "sha256": "f8c496b836e91d1cd9dee662083f3f93c49ffdc69216bc63f377b26366ab1882"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "c5f7dc9c57ac269b6016779db679d78406ec68c67187ac40bf40cb2ed92417c8"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "empty-components.spec.tsx",
+      "sha256": "49817c2c13ccf7767eaa486b1318755329f70e834b7ef564b5c8f2a9404e8389"
+    },
+    {
+      "path": "vitest.config.mts",
+      "sha256": "4e12016d479b5274b00c0765d3ec31f2eec9e0ed1fcfe7db50947c28f9b8680f"
+    },
+    {
+      "path": "ssr-results.json",
+      "sha256": "be5f92b0e97d8e3974ac46ff4a5b8fd9e4f0661a3487af5c3abdaaa872f806f6"
+    },
+    {
+      "path": "account-cards-empty.html",
+      "sha256": "04e100e1aec205cacbdd485a29b1f3b63173adb60e465da07d6a80d93d95e895"
+    },
+    {
+      "path": "recent-transactions-empty.html",
+      "sha256": "d88694dcc2a3a7fb9e94b9e8d5b0fa9627eb9159eaae2d05c09b6b690a3834dd"
+    }
+  ],
+  "limitations": [
+    "Full HTTP HTML/Flight was not retained; no claim of offline reprocessing that raw response.",
+    "Actual empty data/zero aggregate/history/error/snapshot observations are retained from the original native request; CTA content is supplemental real component SSR.",
+    "No browser, hydration, animation, viewport or Telegram delivery assertion.",
+    "No API/DB/identity/fixture change in this composition.",
+    "Planned extra projections API probe was not executed and is not used to establish the literal CSV contract."
+  ]
+}

@@ -1,0 +1,378 @@
+[
+  {
+    "file": "lib/services/transactions.ts",
+    "owner": "TransactionsService",
+    "name": "create",
+    "visibility": "pública",
+    "signature": "create(input: CreateTransactionInput): Promise<Transaction>",
+    "returnType": "Promise<Transaction>"
+  },
+  {
+    "file": "lib/services/transactions.ts",
+    "owner": "TransactionsService",
+    "name": "list",
+    "visibility": "pública",
+    "signature": "list(userId: string, options: { accountId?: string; involveAccountId?: string; categoryId?: string; type?: string; startDate?: string; endDate?: string; search?: string; minAmount?: number; maxAmount?: number; limit?: number; offset?: number; orderByCreated?: boolean; } = {}): Promise<TransactionWithCategory[]>",
+    "returnType": "Promise<TransactionWithCategory[]>"
+  },
+  {
+    "file": "lib/services/transactions.ts",
+    "owner": "TransactionsService",
+    "name": "getById",
+    "visibility": "pública",
+    "signature": "getById(id: string, userId: string): Promise<TransactionWithCategory>",
+    "returnType": "Promise<TransactionWithCategory>"
+  },
+  {
+    "file": "lib/services/transactions.ts",
+    "owner": "TransactionsService",
+    "name": "delete",
+    "visibility": "pública",
+    "signature": "delete(id: string, userId: string): Promise<void>",
+    "returnType": "Promise<void>"
+  },
+  {
+    "file": "lib/services/transactions.ts",
+    "owner": "TransactionsService",
+    "name": "getMonthSummary",
+    "visibility": "pública",
+    "signature": "getMonthSummary(userId: string, month: Date)",
+    "returnType": "retorno inferido por TypeScript, sin anotación explícita"
+  },
+  {
+    "file": "lib/services/accounts.ts",
+    "owner": "AccountsService",
+    "name": "create",
+    "visibility": "pública",
+    "signature": "create(input: CreateAccountInput): Promise<Account>",
+    "returnType": "Promise<Account>"
+  },
+  {
+    "file": "lib/services/accounts.ts",
+    "owner": "AccountsService",
+    "name": "list",
+    "visibility": "pública",
+    "signature": "list(userId: string, options?: { includeInvestments?: boolean }): Promise<AccountWithBalance[]>",
+    "returnType": "Promise<AccountWithBalance[]>"
+  },
+  {
+    "file": "lib/services/accounts.ts",
+    "owner": "AccountsService",
+    "name": "getActiveAccountIds",
+    "visibility": "pública",
+    "signature": "getActiveAccountIds(userId: string): Promise<string[]>",
+    "returnType": "Promise<string[]>"
+  },
+  {
+    "file": "lib/services/accounts.ts",
+    "owner": "AccountsService",
+    "name": "getMulticurrencyBreakdown",
+    "visibility": "pública",
+    "signature": "getMulticurrencyBreakdown(userId: string, accountId: string): Promise<{ primary: number; secondary: number; secondaryCurrency: string }>",
+    "returnType": "Promise<{ primary: number; secondary: number; secondaryCurrency: string }>"
+  },
+  {
+    "file": "lib/services/accounts.ts",
+    "owner": "AccountsService",
+    "name": "getById",
+    "visibility": "pública",
+    "signature": "getById(id: string, userId: string, options?: { includeInactive?: boolean }): Promise<Account | null>",
+    "returnType": "Promise<Account | null>"
+  },
+  {
+    "file": "lib/services/accounts.ts",
+    "owner": "AccountsService",
+    "name": "getTotalBalanceWithInvestments",
+    "visibility": "pública",
+    "signature": "getTotalBalanceWithInvestments(userId: string)",
+    "returnType": "retorno inferido por TypeScript, sin anotación explícita"
+  },
+  {
+    "file": "lib/services/investments.ts",
+    "owner": "InvestmentsService",
+    "name": "create",
+    "visibility": "pública",
+    "signature": "create(input: CreateInvestmentInput): Promise<Investment>",
+    "returnType": "Promise<Investment>"
+  },
+  {
+    "file": "lib/services/investments.ts",
+    "owner": "InvestmentsService",
+    "name": "list",
+    "visibility": "pública",
+    "signature": "list(userId: string, options?: { forceRefreshQuotes?: boolean }): Promise<InvestmentWithPnL[]>",
+    "returnType": "Promise<InvestmentWithPnL[]>"
+  },
+  {
+    "file": "lib/services/investments.ts",
+    "owner": "InvestmentsService",
+    "name": "sell",
+    "visibility": "pública",
+    "signature": "sell(input: SellPositionInput): Promise<SellPositionResult>",
+    "returnType": "Promise<SellPositionResult>"
+  },
+  {
+    "file": "lib/services/investments.ts",
+    "owner": "InvestmentsService",
+    "name": "listSales",
+    "visibility": "pública",
+    "signature": "listSales(userId: string, investmentId?: string): Promise<InvestmentSale[]>",
+    "returnType": "Promise<InvestmentSale[]>"
+  },
+  {
+    "file": "lib/services/investments.ts",
+    "owner": "InvestmentsService",
+    "name": "getPortfolioSummary",
+    "visibility": "pública",
+    "signature": "getPortfolioSummary(userId: string, options?: { forceRefreshQuotes?: boolean; skipDailySnapshot?: boolean; skipQuoteRefresh?: boolean }): Promise<PortfolioSummaryPayload>",
+    "returnType": "Promise<PortfolioSummaryPayload>"
+  },
+  {
+    "file": "lib/services/recurring.ts",
+    "owner": "RecurringService",
+    "name": "listActive",
+    "visibility": "pública",
+    "signature": "listActive(userId: string): Promise<RecurringRuleWithRelations[]>",
+    "returnType": "Promise<RecurringRuleWithRelations[]>"
+  },
+  {
+    "file": "lib/services/recurring.ts",
+    "owner": "RecurringService",
+    "name": "create",
+    "visibility": "pública",
+    "signature": "create(input: CreateRecurringInput): Promise<RecurringRule>",
+    "returnType": "Promise<RecurringRule>"
+  },
+  {
+    "file": "lib/services/budgets.ts",
+    "owner": "BudgetsService",
+    "name": "create",
+    "visibility": "pública",
+    "signature": "create(input: CreateBudgetInput): Promise<Budget>",
+    "returnType": "Promise<Budget>"
+  },
+  {
+    "file": "lib/services/budgets.ts",
+    "owner": "BudgetsService",
+    "name": "list",
+    "visibility": "pública",
+    "signature": "list(userId: string, month?: string): Promise<Budget[]>",
+    "returnType": "Promise<Budget[]>"
+  },
+  {
+    "file": "lib/services/budgets.ts",
+    "owner": "BudgetsService",
+    "name": "getStatus",
+    "visibility": "pública",
+    "signature": "getStatus(userId: string, month: Date): Promise<BudgetStatus[]>",
+    "returnType": "Promise<BudgetStatus[]>"
+  },
+  {
+    "file": "lib/services/budgets.ts",
+    "owner": "BudgetsService",
+    "name": "checkAndSendAlerts",
+    "visibility": "pública",
+    "signature": "checkAndSendAlerts(userId: string, categoryId: string | null, month: string): Promise<void>",
+    "returnType": "Promise<void>"
+  },
+  {
+    "file": "lib/services/sharedExpenses.ts",
+    "owner": "SharedExpensesService",
+    "name": "createGroup",
+    "visibility": "pública",
+    "signature": "createGroup(input: CreateSharedGroupInput): Promise<SharedGroup>",
+    "returnType": "Promise<SharedGroup>"
+  },
+  {
+    "file": "lib/services/sharedExpenses.ts",
+    "owner": "SharedExpensesService",
+    "name": "getGroupByToken",
+    "visibility": "pública",
+    "signature": "getGroupByToken(token: string): Promise<SharedGroupDetail | null>",
+    "returnType": "Promise<SharedGroupDetail | null>"
+  },
+  {
+    "file": "lib/services/sharedExpenses.ts",
+    "owner": "SharedExpensesService",
+    "name": "addExpenseByToken",
+    "visibility": "pública",
+    "signature": "addExpenseByToken(token: string, input: { actorMemberId: string; paidByMemberId: string; description: string; amount: number; expenseDate?: string; splitMemberIds?: string[]; }): Promise<SharedExpense | null>",
+    "returnType": "Promise<SharedExpense | null>"
+  },
+  {
+    "file": "lib/services/sharedExpenses.ts",
+    "owner": "SharedExpensesService",
+    "name": "updateExpenseByToken",
+    "visibility": "pública",
+    "signature": "updateExpenseByToken(token: string, expenseId: string, input: { actorMemberId: string; paidByMemberId: string; description: string; amount: number; expenseDate?: string; splitMemberIds?: string[]; }): Promise<SharedExpense | null>",
+    "returnType": "Promise<SharedExpense | null>"
+  },
+  {
+    "file": "lib/services/sharedExpenses.ts",
+    "owner": "SharedExpensesService",
+    "name": "deleteExpenseByToken",
+    "visibility": "pública",
+    "signature": "deleteExpenseByToken(token: string, expenseId: string, actorMemberId: string): Promise<boolean>",
+    "returnType": "Promise<boolean>"
+  },
+  {
+    "file": "lib/services/cotizaciones.ts",
+    "owner": "DolarRateProvider",
+    "name": "fetch",
+    "visibility": "pública",
+    "signature": "fetch(): Promise<Record<string, DolarQuote>>",
+    "returnType": "Promise<Record<string, DolarQuote>>"
+  },
+  {
+    "file": "lib/services/cotizaciones.ts",
+    "owner": "CriptoYaProvider",
+    "name": "fetch",
+    "visibility": "pública",
+    "signature": "fetch(): Promise<Record<string, DolarQuote>>",
+    "returnType": "Promise<Record<string, DolarQuote>>"
+  },
+  {
+    "file": "lib/services/cotizaciones.ts",
+    "owner": "DolarApiProvider",
+    "name": "fetch",
+    "visibility": "pública",
+    "signature": "fetch(): Promise<Record<string, DolarQuote>>",
+    "returnType": "Promise<Record<string, DolarQuote>>"
+  },
+  {
+    "file": "lib/services/cotizaciones.ts",
+    "owner": "DbCacheProvider",
+    "name": "fetch",
+    "visibility": "pública",
+    "signature": "fetch(): Promise<Record<string, DolarQuote>>",
+    "returnType": "Promise<Record<string, DolarQuote>>"
+  },
+  {
+    "file": "lib/services/cotizaciones.ts",
+    "owner": "CotizacionesService",
+    "name": "getDolarQuotes",
+    "visibility": "pública",
+    "signature": "getDolarQuotes(opts?: { preferCache?: boolean }): Promise<Record<string, DolarQuote>>",
+    "returnType": "Promise<Record<string, DolarQuote>>"
+  },
+  {
+    "file": "lib/services/cotizaciones.ts",
+    "owner": "CotizacionesService",
+    "name": "getCryptoQuote",
+    "visibility": "pública",
+    "signature": "getCryptoQuote(symbol: string): Promise<CryptoQuote>",
+    "returnType": "Promise<CryptoQuote>"
+  },
+  {
+    "file": "lib/services/cotizaciones.ts",
+    "owner": "CotizacionesService",
+    "name": "getExchangeRate",
+    "visibility": "pública",
+    "signature": "getExchangeRate(from: string, to: string = 'ARS'): Promise<number>",
+    "returnType": "Promise<number>"
+  },
+  {
+    "file": "lib/financial-anomalies.ts",
+    "owner": "función pura",
+    "name": "calculateFinancialAnomalies",
+    "visibility": "pública",
+    "signature": "calculateFinancialAnomalies(transactions: AnomalyTransaction[], now: Date = new Date()): FinancialAnomaly[]",
+    "returnType": "FinancialAnomaly[]"
+  },
+  {
+    "file": "lib/financial-projections.ts",
+    "owner": "función pura",
+    "name": "calculateFinancialProjection",
+    "visibility": "pública",
+    "signature": "calculateFinancialProjection(transactions: ProjectionTransaction[], currentARS: number, now: Date = new Date())",
+    "returnType": "retorno inferido por TypeScript, sin anotación explícita"
+  },
+  {
+    "file": "lib/cron/cron-job.ts",
+    "owner": "CronJob",
+    "name": "run",
+    "visibility": "pública",
+    "signature": "run(request: NextRequest): Promise<NextResponse>",
+    "returnType": "Promise<NextResponse>"
+  },
+  {
+    "file": "lib/cron/cron-job.ts",
+    "owner": "CronJob",
+    "name": "execute",
+    "visibility": "protegida",
+    "signature": "execute(supabase: ServiceClient): Promise<Record<string, unknown>>",
+    "returnType": "Promise<Record<string, unknown>>"
+  },
+  {
+    "file": "lib/cron/cron-job.ts",
+    "owner": "IterativeCronJob",
+    "name": "execute",
+    "visibility": "protegida",
+    "signature": "execute(supabase: ServiceClient): Promise<Record<string, unknown>>",
+    "returnType": "Promise<Record<string, unknown>>"
+  },
+  {
+    "file": "lib/cron/cron-job.ts",
+    "owner": "IterativeCronJob",
+    "name": "fetchItems",
+    "visibility": "protegida",
+    "signature": "fetchItems(supabase: ServiceClient): Promise<TItem[]>",
+    "returnType": "Promise<TItem[]>"
+  },
+  {
+    "file": "lib/cron/cron-job.ts",
+    "owner": "IterativeCronJob",
+    "name": "processItem",
+    "visibility": "protegida",
+    "signature": "processItem(supabase: ServiceClient, item: TItem): Promise<boolean | void>",
+    "returnType": "Promise<boolean | void>"
+  },
+  {
+    "file": "lib/cron/cron-job.ts",
+    "owner": "IterativeCronJob",
+    "name": "shouldProcess",
+    "visibility": "protegida",
+    "signature": "shouldProcess(_item: TItem): boolean | Promise<boolean>",
+    "returnType": "boolean | Promise<boolean>"
+  },
+  {
+    "file": "lib/cron/cron-job.ts",
+    "owner": "IterativeCronJob",
+    "name": "beforeAll",
+    "visibility": "protegida",
+    "signature": "beforeAll(_supabase: ServiceClient, _items: TItem[]): Promise<void>",
+    "returnType": "Promise<void>"
+  },
+  {
+    "file": "lib/cron/cron-job.ts",
+    "owner": "IterativeCronJob",
+    "name": "afterAll",
+    "visibility": "protegida",
+    "signature": "afterAll(_supabase: ServiceClient, _items: TItem[]): Promise<void>",
+    "returnType": "Promise<void>"
+  },
+  {
+    "file": "lib/cron/recurring-job.ts",
+    "owner": "RecurringRulesJob",
+    "name": "fetchItems",
+    "visibility": "protegida",
+    "signature": "fetchItems(supabase: ServiceClient): Promise<any[]>",
+    "returnType": "Promise<any[]>"
+  },
+  {
+    "file": "lib/cron/recurring-job.ts",
+    "owner": "RecurringRulesJob",
+    "name": "shouldProcess",
+    "visibility": "protegida",
+    "signature": "shouldProcess(rule: any): boolean",
+    "returnType": "boolean"
+  },
+  {
+    "file": "lib/cron/recurring-job.ts",
+    "owner": "RecurringRulesJob",
+    "name": "processItem",
+    "visibility": "protegida",
+    "signature": "processItem(supabase: ServiceClient, rule: any): Promise<boolean | void>",
+    "returnType": "Promise<boolean | void>"
+  }
+]

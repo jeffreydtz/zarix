@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-15T01:24:01.144Z",
+  "productBuildRevision": "b456c4220ee524406670f65837fcd4fd6c4b8275",
+  "repositoryRevisionAtRun": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+  "scope": "Product build pre-exists later evidence/harness-only commits. This successful UI run does not attest forthcoming foreign-update mappings or their rebuilt artifact.",
+  "appOrigin": "http://127.0.0.1:3000",
+  "apiOrigin": "http://127.0.0.1:57321",
+  "buildId": "zJ3D7exVtqZ7JLNFuTSZ1",
+  "nextPid": 78214,
+  "supervisorOwnedBy": "parent",
+  "sourceStable": true,
+  "providerMode": "Financial fiat/crypto quote service uses configured local HTTP503 endpoints and persisted synthetic FX/manual FOOFIX references. The separate Markets widget may fetch real public CoinGecko/Yahoo/Stooq using hardcoded endpoints or their local cache. These incidental reads do not establish formal provider acceptance.",
+  "harnessSha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+  "providerProvenance": "provider-provenance.json"
+}

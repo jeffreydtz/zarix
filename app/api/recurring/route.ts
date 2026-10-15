@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabase
       .from('recurring_rules')
-      .select('*, category:categories(name, icon), account:accounts(name, currency)')
+      .select('*, category:categories(name, icon), account:accounts!recurring_rules_account_id_fkey(name, currency)')
       .eq('user_id', user.id)
       .order('is_active', { ascending: false })
       .order('created_at', { ascending: false });

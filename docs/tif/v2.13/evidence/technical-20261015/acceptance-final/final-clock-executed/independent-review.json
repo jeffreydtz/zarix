@@ -1,0 +1,51 @@
+{
+  "status": "NO_MATERIAL_STATIC_FINDINGS",
+  "reviewedAt": "2026-10-15T04:49:59.639919+00:00",
+  "reviewer": "/root/native_runtime/restore_fetch_guard",
+  "scope": "Independent file/immutableGit review only. No imports/tests/processprobes/SQL/HTTP/build/stop; stored Auth observations reviewed, not repeated. Core dependency-auditFAIL retained.",
+  "findings": [],
+  "observed": {
+    "physicalSources": 480,
+    "coreSources": 455,
+    "publicSources": 25,
+    "gitBlobs": 479,
+    "ignoredMetadataEntries": 1,
+    "gitRevision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "buildId": "vPLjt1QViugJhUWR62DPp",
+    "recordedNextPid": 17292,
+    "sourceManifestSha256": "cc31fad1e5cc8a2c2e6396479ca1d0a3619fb078429bf10526ab2e7be41106bc",
+    "privateEnvSha256": "7c0aa2740d032d36c64b1fda4b80170ddbf602e1dc136e7d6a17745b540fc99f",
+    "browserAssets": 135,
+    "serviceExactMatches": 0,
+    "cronExactMatches": 0,
+    "storedAuthApiControlsPass": 2,
+    "clockScope": "Nextprocessonly6Oct12Z;GoTrue/OS/runnerreal",
+    "guardScope": "Globalfetchloopbackonly;canarylinkagebyorderedjournalanddenialappendhash,notuniversalTCPfirewall"
+  },
+  "artifacts": [
+    {
+      "path": "final-proof-build-proof.json",
+      "sha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976"
+    },
+    {
+      "path": "final-proof-browser-assets-manifest.json",
+      "sha256": "949ca2b6c8323ab6c74a13e70bee00a1b29f0e3f274785d524e4e347308fa7e9"
+    },
+    {
+      "path": "final-proof-clock-app-state.json",
+      "sha256": "d7bde38eea6cf42a09e7f4ac4392a7b085e987608407875b53b44d1f279bbb2b"
+    },
+    {
+      "path": "final-proof-clock-observation.json",
+      "sha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118"
+    },
+    {
+      "path": "final-proof-clock-gemini-unavailable.json",
+      "sha256": "b342350c3534c099e85a259be94a65c8a54235e007c13a3af648a8e2b1af2ae1"
+    },
+    {
+      "path": "final-proof-clock-auth-ready.json",
+      "sha256": "9f03835bf42f87b6dcc28d83c0fc3a658babba925ffe85b030c277ad0c688b31"
+    }
+  ]
+}

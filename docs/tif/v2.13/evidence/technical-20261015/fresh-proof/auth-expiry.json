@@ -1,0 +1,85 @@
+{
+  "status": "PASS_SCOPED_AUTH_EXPIRY",
+  "startedAt": "2026-10-15T03:24:17.062Z",
+  "scope": "Same ordinary Auth JWT and private SSR cookies from prior run; no new temporary token/session minted. PostgREST documented30s skew is accounted for. Other two ordinary control sessions refresh legitimately. This is not browser/app CP2-21 acceptance.",
+  "checks": [
+    {
+      "name": "ordinary temporary access JWT initially valid; own refresh locally revoked without global signout",
+      "status": "PASS",
+      "iat": 1792034451,
+      "exp": 1792034511,
+      "lifetimeSeconds": 60,
+      "before": {
+        "httpStatus": 200,
+        "errorCode": null
+      },
+      "refreshRejectedHttp": 400,
+      "refreshErrorCode": "refresh_token_not_found",
+      "authAfterLocalSignoutBeforeExpiry": {
+        "httpStatus": 403,
+        "errorCode": "session_not_found"
+      },
+      "restBeforeExpiry": {
+        "httpStatus": 200,
+        "errorCode": null
+      },
+      "revocationMethod": "Direct ordinary Auth logout scope=local with the exact original access JWT; no SDK getSession/refresh of temporary C before revocation",
+      "tokensPublished": false
+    },
+    {
+      "name": "same original ordinary JWT rejected beyond actual exp plus documented skew",
+      "status": "PASS",
+      "auth": {
+        "httpStatus": 403,
+        "errorCode": "bad_jwt"
+      },
+      "rest": {
+        "httpStatus": 401,
+        "errorCode": "PGRST303"
+      },
+      "observedAt": "2026-10-15T03:24:17.093Z",
+      "secondsPastExp": 146.09299993515015,
+      "clockOverride": false
+    },
+    {
+      "name": "same two normal controls survive local C revocation and legitimately refresh",
+      "status": "PASS",
+      "controls": [
+        {
+          "identity": "A",
+          "ordinaryRefreshValid": true,
+          "normalGetUser": true
+        },
+        {
+          "identity": "B",
+          "ordinaryRefreshValid": true,
+          "normalGetUser": true
+        }
+      ]
+    }
+  ],
+  "priorAttempt": {
+    "status": "FAIL",
+    "failedAssumption": "REST401 required at exp+2s, inside documented30s tolerance; observed200 retained",
+    "evidence": "auth-expiry-attempt-2/verification.json"
+  },
+  "jwt": {
+    "iat": 1792034451,
+    "exp": 1792034511,
+    "lifetimeSeconds": 60
+  },
+  "vendor": {
+    "postgrest": "16.4",
+    "clockSkewSeconds": 30,
+    "primarySource": "https://raw.githubusercontent.com/PostgREST/postgrest/v16.4/docs/references/auth.rst"
+  },
+  "privateFixtures": {
+    "expiredCookies": "/tmp/zarix-runtime-20261015/proof-auth-expiry-private-attempt-2/expired-session-cookies.json",
+    "normalCookies": "/tmp/zarix-runtime-20261015/proof-auth-expiry-resume/normal-session-cookies.json",
+    "mode": "0600",
+    "cookieProvenance": "Actual SupabaseSSR cookie adapter after ordinary password login/refresh; no browser capture or hand-signed JWT",
+    "controlSessionsPreserved": 2,
+    "globalSignOut": false
+  },
+  "finishedAt": "2026-10-15T03:24:17.503Z"
+}

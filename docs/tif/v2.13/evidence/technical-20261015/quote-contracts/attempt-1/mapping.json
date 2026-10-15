@@ -1,0 +1,289 @@
+{
+  "scenario": "mapping",
+  "status": "PASS",
+  "t0": "2026-10-06T12:00:00.000Z",
+  "counters": {
+    "primary": 1,
+    "secondary": 0,
+    "crypto": {
+      "bitcoin": 1,
+      "ethereum": 1,
+      "tether": 1
+    }
+  },
+  "served": [
+    {
+      "path": "/dolar",
+      "status": 200,
+      "bodySha256": "694f4a39d23119f21e25d17fe127eeda26b50578bf8096a8e0811f2b23fb54f0",
+      "sourceTimestamp": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "path": "/simple/price",
+      "status": 200,
+      "bodySha256": "0a1ff81d3a822796d88e5b958f7780bd745349e0c0d9a1bba2cbebd553335eef",
+      "sourceTimestamp": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "path": "/simple/price",
+      "status": 200,
+      "bodySha256": "2bbd16815db5e86763d0400497b072fc7e3f1c30dbb9fc04381306ab885e0956",
+      "sourceTimestamp": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "path": "/simple/price",
+      "status": 200,
+      "bodySha256": "065f74fc71a7436d95b01c60896cbf9f538b07249fbf1fa6772dc6e854cada1c",
+      "sourceTimestamp": "2026-10-06T12:00:00.000Z"
+    }
+  ],
+  "assertions": [
+    {
+      "name": "CP3-01 blue value/source/time",
+      "status": "PASS",
+      "actual": {
+        "type": "blue",
+        "buy": 1300,
+        "sell": 1300,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "type": "blue",
+        "buy": 1300,
+        "sell": 1300,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "CP3-01 oficial value/source/time",
+      "status": "PASS",
+      "actual": {
+        "type": "oficial",
+        "buy": 1000,
+        "sell": 1000,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "type": "oficial",
+        "buy": 1000,
+        "sell": 1000,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "CP3-01 mep value/source/time",
+      "status": "PASS",
+      "actual": {
+        "type": "mep",
+        "buy": 1250,
+        "sell": 1250,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "type": "mep",
+        "buy": 1250,
+        "sell": 1250,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "CP3-01 ccl value/source/time",
+      "status": "PASS",
+      "actual": {
+        "type": "ccl",
+        "buy": 1280,
+        "sell": 1280,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "type": "ccl",
+        "buy": 1280,
+        "sell": 1280,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "CP3-01 BTC USD/source time",
+      "status": "PASS",
+      "actual": {
+        "symbol": "BTC",
+        "priceUSD": 60000,
+        "priceARS": 78000000,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      },
+      "expected": {
+        "symbol": "BTC",
+        "priceUSD": 60000,
+        "priceARS": 78000000,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      }
+    },
+    {
+      "name": "CP3-01 ETH USD/source time",
+      "status": "PASS",
+      "actual": {
+        "symbol": "ETH",
+        "priceUSD": 2500,
+        "priceARS": 3250000,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      },
+      "expected": {
+        "symbol": "ETH",
+        "priceUSD": 2500,
+        "priceARS": 3250000,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      }
+    },
+    {
+      "name": "CP3-01 USDT USD/source time",
+      "status": "PASS",
+      "actual": {
+        "symbol": "USDT",
+        "priceUSD": 1,
+        "priceARS": 1300,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      },
+      "expected": {
+        "symbol": "USDT",
+        "priceUSD": 1,
+        "priceARS": 1300,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      }
+    },
+    {
+      "name": "CP3-01 aggregate timestamp",
+      "status": "PASS",
+      "actual": "2026-10-06T12:00:00.000Z",
+      "expected": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "name": "CP3-01 actual HTTP double requests",
+      "status": "PASS",
+      "actual": {
+        "primary": 1,
+        "secondary": 0,
+        "crypto": {
+          "bitcoin": 1,
+          "ethereum": 1,
+          "tether": 1
+        }
+      },
+      "expected": {
+        "primary": 1,
+        "secondary": 0,
+        "crypto": {
+          "bitcoin": 1,
+          "ethereum": 1,
+          "tether": 1
+        }
+      }
+    }
+  ],
+  "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+  "normalizedQuotes": {
+    "dolar": {
+      "blue": {
+        "type": "blue",
+        "buy": 1300,
+        "sell": 1300,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "oficial": {
+        "type": "oficial",
+        "buy": 1000,
+        "sell": 1000,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "mep": {
+        "type": "mep",
+        "buy": 1250,
+        "sell": 1250,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "ccl": {
+        "type": "ccl",
+        "buy": 1280,
+        "sell": 1280,
+        "timestamp": "2026-10-06T12:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    "crypto": {
+      "btc": {
+        "symbol": "BTC",
+        "priceUSD": 60000,
+        "priceARS": 78000000,
+        "change24h": 0,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      },
+      "eth": {
+        "symbol": "ETH",
+        "priceUSD": 2500,
+        "priceARS": 3250000,
+        "change24h": 0,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      },
+      "usdt": {
+        "symbol": "USDT",
+        "priceUSD": 1,
+        "priceARS": 1300,
+        "change24h": 0,
+        "timestamp": "2026-10-06T12:00:00.000Z"
+      }
+    },
+    "timestamp": "2026-10-06T12:00:00.000Z"
+  },
+  "expectedNewFxRows": 8,
+  "sourceScope": "Dollar provider metadata is returned by the service. Crypto source is established by actual fixture HTTP request/response binding; no crypto provider field is invented.",
+  "transportRequests": [
+    {
+      "origin": "http://127.0.0.1:57911",
+      "path": "/dolar",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:57911",
+      "path": "/simple/price",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:57911",
+      "path": "/simple/price",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:57911",
+      "path": "/simple/price",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:58321",
+      "path": "/rest/v1/exchange_rates",
+      "method": "POST"
+    }
+  ],
+  "fakeClockScope": "Date only in this worker; OS clock, timers and database clock unchanged"
+}

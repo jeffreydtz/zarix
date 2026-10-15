@@ -1,0 +1,173 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T08:18:43.710Z",
+  "checks": [
+    {
+      "name": "No existing Auth sessions before supplement",
+      "passed": true
+    },
+    {
+      "name": "A normal Auth login",
+      "passed": true
+    },
+    {
+      "name": "A verified actual owner",
+      "passed": true
+    },
+    {
+      "name": "A own preference HTTP save",
+      "passed": true
+    },
+    {
+      "name": "A own saved values",
+      "passed": true
+    },
+    {
+      "name": "A actual Dashboard HTTP200",
+      "passed": true
+    },
+    {
+      "name": "A Dashboard did not fall back to the safe financial error page",
+      "passed": true
+    },
+    {
+      "name": "A own Hero visibility",
+      "passed": true
+    },
+    {
+      "name": "A own Sticky visibility",
+      "passed": true
+    },
+    {
+      "name": "A actual HTML Hero visibility",
+      "passed": true
+    },
+    {
+      "name": "A actual HTML sentinel visibility",
+      "passed": true
+    },
+    {
+      "name": "B normal Auth login",
+      "passed": true
+    },
+    {
+      "name": "B verified actual owner",
+      "passed": true
+    },
+    {
+      "name": "B own preference HTTP save",
+      "passed": true
+    },
+    {
+      "name": "B own saved values",
+      "passed": true
+    },
+    {
+      "name": "B actual Dashboard HTTP200",
+      "passed": true
+    },
+    {
+      "name": "B Dashboard did not fall back to the safe financial error page",
+      "passed": true
+    },
+    {
+      "name": "B own Hero visibility",
+      "passed": true
+    },
+    {
+      "name": "B own Sticky visibility",
+      "passed": true
+    },
+    {
+      "name": "B actual HTML Hero visibility",
+      "passed": true
+    },
+    {
+      "name": "B actual HTML sentinel visibility",
+      "passed": true
+    },
+    {
+      "name": "B actual Hero base ARS",
+      "passed": true
+    },
+    {
+      "name": "B own owner-key",
+      "passed": true
+    },
+    {
+      "name": "B own total excludes A200USD",
+      "passed": true
+    },
+    {
+      "name": "Presentation-only supplement preserves seven financial/history inventories",
+      "passed": true
+    },
+    {
+      "name": "Frozen Next730 source copy unchanged",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "actor": "A",
+      "status": 200,
+      "responseSha256": "aa996d392148e51d0617e6b4740eaba88ccdc5dadeadd9f83378bdf35d1d4012",
+      "baseCurrency": "USD",
+      "visible": false,
+      "hero": {
+        "component": "components/dashboard/NetWorthHero.tsx",
+        "moduleId": 48648,
+        "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0"
+      },
+      "sticky": {
+        "component": "components/dashboard/StickyNetWorthBar.tsx",
+        "moduleId": 7616,
+        "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0"
+      }
+    },
+    {
+      "actor": "B",
+      "status": 200,
+      "responseSha256": "6a2ba0461ba58375b4deca49cafbeb0a71d91991e3b9b7bfbcc7621fc271c673",
+      "baseCurrency": "ARS",
+      "visible": true,
+      "hero": {
+        "component": "components/dashboard/NetWorthHero.tsx",
+        "moduleId": 48648,
+        "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0"
+      },
+      "sticky": {
+        "component": "components/dashboard/StickyNetWorthBar.tsx",
+        "moduleId": 7616,
+        "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0"
+      },
+      "actualHeroBaseCurrency": "ARS",
+      "actualTotalUSD": 0
+    }
+  ],
+  "scope": "CP3-17 supplement to SSR38: actual Next730 cookie API saves and Dashboard SSR for both owners. No browser, hydration or integration-provider claim.",
+  "binding": {
+    "revision": "730767b1723502b495d371e69c44df31eb230b56",
+    "buildId": "GrFyU52-vQBoa29ojnwTI",
+    "sourceManifestSha256": "e1e3d2c6cef6f6f1389f36ed263b897b6a700faa6bcc5db41fd38bbe69157433"
+  },
+  "sourceStable": true,
+  "cleanup": {
+    "sdkLocalLogouts": [
+      {
+        "actor": "A",
+        "errorIsNull": true
+      },
+      {
+        "actor": "B",
+        "errorIsNull": true
+      }
+    ],
+    "tokensCookiesOnlyInMemory": true,
+    "authSessionsRemaining": 0,
+    "authRefreshTokensRemaining": 0
+  },
+  "finishedAt": "2026-10-15T08:18:45.819Z",
+  "passed": 26,
+  "total": 26
+}

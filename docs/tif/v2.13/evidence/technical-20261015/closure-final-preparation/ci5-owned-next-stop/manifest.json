@@ -1,0 +1,22 @@
+{
+  "status": "PASS_OWNED_NEXT_STOP",
+  "sourcePrivateCheckpointSha256": "01e0390ca96e20133275fbac7921cf0fb8e6df7a8d65181f5289f076209a3b31",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "e26ec4d4d7381ebd2f53112068ddc595b4c947f2259cc88064ab350c48be7756",
+      "bytes": 987
+    },
+    {
+      "path": "stop-owned-next.py",
+      "sha256": "1e0a4487bf0c46d7076ae79cfb037fe4fd2160eea34baacee41ab3e4ce35e48e",
+      "bytes": 4599
+    },
+    {
+      "path": "verification.json",
+      "sha256": "01e0390ca96e20133275fbac7921cf0fb8e6df7a8d65181f5289f076209a3b31",
+      "bytes": 594
+    }
+  ],
+  "scope": "One owned CI5 Next only; no Native, provider or personal process stop; no CI6 runtime acceptance."
+}

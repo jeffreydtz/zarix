@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-15T03:23:33.901594+00:00",
+  "status": "PASS",
+  "appOrigin": "http://127.0.0.1:3002",
+  "apiOrigin": "http://127.0.0.1:58321",
+  "nextPid": 52579,
+  "buildId": "a2WBtszbvrpoT9GHwToED",
+  "privateStatePurpose": "account-analysis-proof",
+  "ownedListenerVerified": true,
+  "loginHttpStatus": 200,
+  "browserLaunched": false,
+  "scope": "Read-only own-process and unauthenticated local login readiness before any optional Arc permission request."
+}

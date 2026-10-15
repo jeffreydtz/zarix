@@ -14,11 +14,17 @@ function pad2(n: number): string {
 
 export function isCivilYmd(value: string | undefined | null): value is string {
   if (!value) return false;
-  const m = value.trim().match(CIVIL_YMD);
+  const m = value.match(CIVIL_YMD);
   if (!m) return false;
+  const y = Number(m[1]);
   const mo = Number(m[2]);
   const d = Number(m[3]);
-  return mo >= 1 && mo <= 12 && d >= 1 && d <= 31;
+  if (y < 1 || mo < 1 || mo > 12 || d < 1 || d > 31) return false;
+  // Date.UTC silently normalizes February 31 and interprets years 0–99 as
+  // 1900–1999. Set the full year explicitly and compare the civil components.
+  const date = new Date(0);
+  date.setUTCFullYear(y, mo - 1, d);
+  return date.getUTCFullYear() === y && date.getUTCMonth() === mo - 1 && date.getUTCDate() === d;
 }
 
 /** Día civil del `Date` en la zona local del runtime (navegador o server). */
@@ -124,17 +130,16 @@ export function monthKeysInclusive(startYmd: string, endYmd: string): string[] {
 
 /** `YYYY-MM-DD` (input date) → ISO al mediodía UTC de ese día civil. */
 export function calendarDateToUtcNoonIso(ymd: string): string {
-  const m = ymd.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) {
-    return calendarDateToUtcNoonIso(todayLocalYmd());
-  }
+  const civil = ymd.trim();
+  if (!isCivilYmd(civil)) throw new RangeError('Fecha calendario inválida');
+  const m = civil.match(CIVIL_YMD)!;
   const y = Number(m[1]);
   const mo = Number(m[2]);
   const d = Number(m[3]);
-  if (mo < 1 || mo > 12 || d < 1 || d > 31) {
-    return calendarDateToUtcNoonIso(todayLocalYmd());
-  }
-  return new Date(Date.UTC(y, mo - 1, d, 12, 0, 0, 0)).toISOString();
+  const date = new Date(0);
+  date.setUTCFullYear(y, mo - 1, d);
+  date.setUTCHours(12, 0, 0, 0);
+  return date.toISOString();
 }
 
 /** ISO guardado → valor para `<input type="date">` según calendario local del usuario. */
@@ -154,8 +159,11 @@ export function parseBotTransactionDateInput(raw: unknown): string | undefined {
   if (!s) return undefined;
 
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-    return calendarDateToUtcNoonIso(s);
+    return isCivilYmd(s) ? calendarDateToUtcNoonIso(s) : undefined;
   }
+
+  const civilPrefix = s.match(/^(\d{4}-\d{2}-\d{2})[T\s]/);
+  if (civilPrefix && !isCivilYmd(civilPrefix[1])) return undefined;
 
   const d = new Date(s);
   if (!Number.isNaN(d.getTime())) {

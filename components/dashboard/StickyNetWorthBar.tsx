@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Amount from '@/components/ui/Amount';
+import type { PresentationCurrency } from '@/lib/presentation-preferences';
 
 interface StickyNetWorthBarProps {
   totalARSBlue: number;
   totalUSD: number;
   /** id del sentinel colocado al final del hero; la barra aparece cuando sale de vista. */
   sentinelId: string;
+  baseCurrency?: PresentationCurrency;
 }
 
 /**
@@ -19,6 +21,7 @@ export default function StickyNetWorthBar({
   totalARSBlue,
   totalUSD,
   sentinelId,
+  baseCurrency = 'ARS',
 }: StickyNetWorthBarProps) {
   const [visible, setVisible] = useState(false);
 
@@ -42,10 +45,12 @@ export default function StickyNetWorthBar({
           Patrimonio
         </span>
         <div className="flex items-baseline gap-3">
-          <Amount value={totalARSBlue} currency="ARS" className="text-sm font-semibold" />
+          <Amount value={baseCurrency === 'USD' ? totalUSD : totalARSBlue} currency={baseCurrency}
+            decimals={baseCurrency === 'USD' && !Number.isInteger(totalUSD) ? 2 : 0} className="text-sm font-semibold" />
           <Amount
-            value={totalUSD}
-            currency="USD"
+            value={baseCurrency === 'USD' ? totalARSBlue : totalUSD}
+            currency={baseCurrency === 'USD' ? 'ARS' : 'USD'}
+            decimals={baseCurrency === 'ARS' && !Number.isInteger(totalUSD) ? 2 : 0}
             prefix="≈ "
             className="text-xs text-muted-foreground"
           />

@@ -18,16 +18,18 @@ interface RawBillingPlan {
   reason?: unknown;
 }
 
-function normalizePlan(raw: RawBillingPlan): BillingPlan | null {
+function normalizePlan(value: unknown): BillingPlan | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const raw = value as RawBillingPlan;
   const id = typeof raw.id === 'string' ? raw.id.trim() : '';
   const name = typeof raw.name === 'string' ? raw.name.trim() : '';
   const description = typeof raw.description === 'string' ? raw.description.trim() : '';
-  const amount = Number(raw.amount);
+  const amount = typeof raw.amount === 'number' || typeof raw.amount === 'string' ? Number(raw.amount) : NaN;
   const currency = typeof raw.currency === 'string' ? raw.currency.trim().toUpperCase() : '';
   const interval = raw.interval === 'yearly' ? 'yearly' : raw.interval === 'monthly' ? 'monthly' : null;
   const reason = typeof raw.reason === 'string' ? raw.reason.trim() : '';
 
-  if (!id || !name || !description || !Number.isFinite(amount) || amount <= 0 || !currency || !interval) {
+  if (!id || !name || !description || !Number.isFinite(amount) || amount <= 0 || !/^[A-Z]{3}$/.test(currency) || !interval) {
     return null;
   }
 
@@ -42,17 +44,19 @@ function normalizePlan(raw: RawBillingPlan): BillingPlan | null {
   };
 }
 
-function fallbackPlan(): BillingPlan {
-  const amount = Number(process.env.MP_SUBSCRIPTION_AMOUNT ?? 0);
-  const safeAmount = Number.isFinite(amount) && amount > 0 ? amount : 9.99;
-  const currency = (process.env.MP_SUBSCRIPTION_CURRENCY || 'ARS').toUpperCase();
+function fallbackPlan(): BillingPlan | null {
+  const amount = Number(process.env.MP_SUBSCRIPTION_AMOUNT);
+  // A missing or invalid price must never become an accidental live checkout.
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+  const currency = (process.env.MP_SUBSCRIPTION_CURRENCY || 'ARS').trim().toUpperCase();
+  if (!/^[A-Z]{3}$/.test(currency)) return null;
   const reason = process.env.MP_SUBSCRIPTION_REASON || 'Zarix SaaS';
 
   return {
     id: 'zarix-monthly',
     name: 'Zarix Mensual',
     description: 'Acceso al orquestador IA, integraciones y soporte base.',
-    amount: safeAmount,
+    amount,
     currency,
     interval: 'monthly',
     reason,
@@ -62,26 +66,27 @@ function fallbackPlan(): BillingPlan {
 export function getBillingPlans(): BillingPlan[] {
   const fromJson = process.env.MP_SUBSCRIPTION_PLANS_JSON;
   if (!fromJson) {
-    return [fallbackPlan()];
+    const plan = fallbackPlan();
+    return plan ? [plan] : [];
   }
 
   try {
     const parsed = JSON.parse(fromJson) as unknown;
     if (!Array.isArray(parsed)) {
-      return [fallbackPlan()];
+      return [];
     }
 
     const plans = parsed
-      .map((entry) => normalizePlan(entry as RawBillingPlan))
+      .map(normalizePlan)
       .filter((plan): plan is BillingPlan => Boolean(plan));
 
-    if (plans.length === 0) {
-      return [fallbackPlan()];
+    if (plans.length === 0 || new Set(plans.map(plan => plan.id)).size !== plans.length) {
+      return [];
     }
 
     return plans;
   } catch {
-    return [fallbackPlan()];
+    return [];
   }
 }
 

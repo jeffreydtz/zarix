@@ -1,0 +1,14 @@
+{
+  "model": {
+    "status": "PASS_MODEL_ONLY",
+    "assertions": 21,
+    "scope": "Pure date-model plus actual installed Next15 Date-extension assertions. No Nextserver/OS/Auth clock, network, browser or database operation."
+  },
+  "quoteFixture": {
+    "status": "PASS_MODEL_ONLY",
+    "assertions": 11,
+    "scope": "Pure fixture-body/idempotence checks; import starts no listener. No HTTP, database or provider request executed."
+  },
+  "pythonAst": "PASS",
+  "scope": "21model/NextDateextension and11fixturemodel assertions are not added to862Vitest or accepted original contracts; actual readiness in intermediate-clock-executed/verification.json"
+}

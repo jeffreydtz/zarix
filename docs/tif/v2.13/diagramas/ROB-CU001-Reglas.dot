@@ -1,0 +1,16 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: A05: regla y calendario"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b4 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP04 Regla / Presupuesto"];
+v [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+r [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nRecurrencias"];
+er [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nRegla / Vencimiento"];
+u -> b4 [label="A05 / A07"];
+b4 -> v [label="identidad y plan"];
+b4 -> r [dir=both,label="A05 configurar /\nsuspender\n↔\npróxima fecha /\nhistorial"];
+r -> er [label="marca posterior\n/\ndesactivar\nvencidas"];
+
+}

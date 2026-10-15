@@ -1,0 +1,231 @@
+{
+  "status": "PASS_INDEPENDENT_NOMINAL_SUBSCOPE_REVIEW_ORIGINAL_CNF12_BLOCKED",
+  "reviewedAt": "2026-10-15T05:58:45.176097+00:00",
+  "reviewer": "sql_security; independent of nominal fixture/execution and Native lifecycle/checkpoint owners",
+  "method": "File-only review of original CSV, source/actual report hashes, all retained phase assertion values, full64-table fingerprints and catalogue equations, lifecycle/checkpoint provenance, actual private archive hash and private file inventories. No code imports, tests, DB/API/Auth calls or restore commands executed by reviewer.",
+  "originalCase": {
+    "id": "CNF-12",
+    "status": "BLOCKED",
+    "complete_original_contract": false,
+    "scope": "The additional nominalSQL restoration subscope is demonstrated. The original nonfunctional service contract is not promoted."
+  },
+  "phases": [
+    {
+      "path": "attempt-1-parser-failure/verification.json",
+      "sha256": "3a33400ef11c1cca00bfd57cf6fb1c842d72e61b37f109724822bebe051b365f",
+      "rawStatus": "FAIL",
+      "passedAssertions": 20,
+      "retainedFailure": "JSONDecodeError from the harness parsing PostgreSQL boolean text asJSON after successful restore/RLS checks; not an observed database product failure.",
+      "executedRunnerSha256": "309e06c3629646ab84677e9f0531c9783b1139ddcc8b6cdaa31259ad3752480c"
+    },
+    {
+      "path": "resume-verification.json",
+      "sha256": "d40d0a2b7751dc85c23ffe53007be44bcf29db249be19963ad5f371789bca167",
+      "rawStatus": "PARTIAL_NOMINAL_SQL_RECOVERY_PASS_ORIGINAL_CNF12_BLOCKED",
+      "passedAssertions": 19,
+      "sourceStable": true,
+      "scope": "Continuation only: exact prior report/archive/names/snapshot/source1500delta guards; no new seed,dump,DBrestore or committed economic operation."
+    }
+  ],
+  "counting": "20 initial phase checks and19 continuation checks repeat integrity guard coverage. They are not39 unique original cases or a clean rerun; initialFAIL remainsFAIL.",
+  "observedNominalFixture": {
+    "accounts": 2,
+    "accountSnapshotBalancesARS": [
+      10000,
+      2000
+    ],
+    "economicRowsAtSnapshot": 20,
+    "economicRowsAfterLossInSource": 21,
+    "restoredRows": 20,
+    "originalTransactionsAndIdsPreserved": true,
+    "lostExpenseARS": 1500,
+    "lostExpenseAbsentFromTarget": true,
+    "sourceBalanceAAfterLostExpense": 8500,
+    "manualLots": 3,
+    "costUSD": 300,
+    "valueUSD": 330,
+    "pnlUSD": 30,
+    "inactiveRules": 1,
+    "clonedGroups": 1,
+    "sameExistingAuthUsers": 2,
+    "newAuthUsersRolesCredentials": 0
+  },
+  "integrityAndFunctionChecks": {
+    "tables": 64,
+    "coverage": "All public/auth/storage tables. Dump/restored full-row count+SHA equality, independent data/financial equations, catalogue owner/ACL/RLS/functions/indexes/enums/views/sequences/extensions/schema/defaults/columns/triggers.",
+    "sourceDeltaGuard": "Every source table except accounts/transactions stays snapshot-identical; exact source ledger equals target plus the one recorded expense1500. Full accounts differ only by expected accountA balance/update timestamp.",
+    "rls": "Actual SQL SET LOCAL ROLE authenticated and A/B claim fixtures give owner counts2/20/3/1/1 versus foreign0/0/0/0/0, with anon/authenticated not bypassRLS. These are not normalHTTPAuth sessions.",
+    "restrictedRpcs": "Exactly three named service RPCs exist and authenticated lacks EXECUTE.",
+    "rollbackProbes": [
+      "Transfer100 changed to150 gives9950/2050, thenROLLBACK.",
+      "Transfer100 deleted gives10100/1900, thenROLLBACK.",
+      "Service-role sell1×120 on cost100 persists supplied20USD and quantity0 within the transaction, thenROLLBACK. PnL20 is independently supplied, not claimed calculated by that RPC."
+    ],
+    "afterProbes": "Both complete source/target64-table fingerprints and target catalogue/sequence state equal their pre-probe snapshots."
+  },
+  "backup": {
+    "privateArchiveSha256": "0144c592aa25d1035840313a6ecc38cd9db5d610ebd2bdbcbf4845d83745d52e",
+    "bytes": 550220,
+    "actualArchiveHashIndependentlyChecked": true,
+    "privateFileMode0600Checked": true,
+    "format": "pg_dump custom",
+    "actualDumpSeconds": 0.17297470800258452,
+    "actualPgRestoreSeconds": 0.46897091699793236,
+    "tocSha256": "7533c81d3dae941b9595b81ab3bbd1563d8c4969d866d3ec5afb273e4467f8de"
+  },
+  "timing": {
+    "originalRestore": {
+      "startedAt": "2026-10-15T05:45:04.802468+00:00",
+      "pgRestoreFinishedAt": "2026-10-15T05:45:05.271396+00:00",
+      "pgRestoreSeconds": 0.46897091699793236
+    },
+    "laterValidation": {
+      "initialRestore": {
+        "startedAt": "2026-10-15T05:45:04.802468+00:00",
+        "pgRestoreFinishedAt": "2026-10-15T05:45:05.271396+00:00",
+        "pgRestoreSeconds": 0.46897091699793236
+      },
+      "initialParserFailureAt": "2026-10-15T05:45:10.664179+00:00",
+      "resumeStartedAt": "2026-10-15T05:53:56.068944+00:00",
+      "resumeFinishedAt": "2026-10-15T05:54:16.640096+00:00",
+      "resumeSeconds": 20.5698644160002,
+      "scope": "First pg_restore timing stays unchanged. Resume is a later validation phase with a human/diagnostic gap; not an uninterrupted service RTO."
+    },
+    "models": [
+      {
+        "label": "nominal",
+        "rpoSeconds": 82800,
+        "rtoSeconds": 12600,
+        "withinBothTargets": true,
+        "expected": true
+      },
+      {
+        "label": "inclusive-limits",
+        "rpoSeconds": 86400,
+        "rtoSeconds": 14400,
+        "withinBothTargets": true,
+        "expected": true
+      },
+      {
+        "label": "rpo-plus1s",
+        "rpoSeconds": 86401,
+        "rtoSeconds": 14400,
+        "withinBothTargets": false,
+        "expected": false
+      },
+      {
+        "label": "rto-plus1s",
+        "rpoSeconds": 86400,
+        "rtoSeconds": 14401,
+        "withinBothTargets": false,
+        "expected": false
+      }
+    ],
+    "independentArithmeticChecked": true,
+    "limit": "The observed0.469s restore and later20.570s validation are separate phases with a diagnostic/review gap. They do not establish an uninterrupted serviceRTO, an aged operationalbackup, observed23hRPO or an observed3h30outage."
+  },
+  "storage": {
+    "sqlMetadataRestored": true,
+    "independentlyComparedPrivateFileInventories": [
+      {
+        "directory": "original-storage-bytes",
+        "inventoryMatchesRetainedEvidence": true,
+        "fileCount": 1,
+        "totalBytes": 34
+      },
+      {
+        "directory": "nominal-binary-restored",
+        "inventoryMatchesRetainedEvidence": true,
+        "fileCount": 1,
+        "totalBytes": 34
+      }
+    ],
+    "objectSha256": "dc9d3fda345877c072f06e2a8ab51ca11fc3d859fa14665ecef840206d1528b2",
+    "scope": "One34-byte backed-up synthetic file copied into a new private restore tree, source unchanged. This is file restoration plus DBmetadata restoration; no StorageHTTP/API/authenticated binary-download acceptance is implied."
+  },
+  "originalPreservation": {
+    "firstCheckpointSha256": "a26ae1ad1e6a69313e707fc6f96ee27333b482f06d080fb7430f2767c4a1a90d",
+    "finalCheckpointSha256": "74c62aa458939626b41e9f52e1121f8583e2deb284d25ac81b98fd75fb02ebda",
+    "finalCheckedAt": "2026-10-15T05:57:06.030974+00:00",
+    "independentFirstVsFinal64TableDictionaryComparisonEqual": true,
+    "firstVsFinalCatalogueRolesAndStorageHashesEqual": true,
+    "nativeStateConfigAndBindingsPreserved": true,
+    "authHttpRequestsMade": 0,
+    "originalTablesWritten": false,
+    "newDatabasesAndPrivateDumpsRetained": true,
+    "noDropReset": true
+  },
+  "unexecutedFutureCorrection": "The only delta from preserved initialrunner309 to future runnerabf4 is to_jsonb around bool_and. That corrected full runner was not executed; the separate executed continuation supplies the remaining checks.",
+  "remainingBlockers": [
+    "Observed backup mechanism and entitlement of the actual contracted deployment plan.",
+    "Observed end-to-end serviceRPO/RTO covering actual outage and validation, rather than modeled business timestamps.",
+    "Four-CU UI/function journey and realAuth/StorageHTTP against these exact nominal extra databases. Existing Native-full/restored-UI evidence uses different fixtures and stays separate."
+  ],
+  "findings": [],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/README.md",
+      "sha256": "c10ced5a4981d5a03bcf2637f2f1b4c65b64d224154305d1a82eb427224be185"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/summary.json",
+      "sha256": "ac275357b1721bfc5e9184918f46facbb680051bbce2d1497496710c5d5573a3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/plan.json",
+      "sha256": "d53e9cf0f175cde42525135e3bd67e7c680eeccc48216db861c5c1dea635254d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/verification.json",
+      "sha256": "3a33400ef11c1cca00bfd57cf6fb1c842d72e61b37f109724822bebe051b365f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/attempt-1-parser-failure/verification.json",
+      "sha256": "3a33400ef11c1cca00bfd57cf6fb1c842d72e61b37f109724822bebe051b365f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/attempt-1-parser-failure/run-nominal.py",
+      "sha256": "309e06c3629646ab84677e9f0531c9783b1139ddcc8b6cdaa31259ad3752480c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/attempt-1-parser-failure/manifest.json",
+      "sha256": "865f0898f9548f2f6eedb0a4d84aa352d2ea235d89f3c6d7e8099bf6a2bbb333"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/parser-correction.json",
+      "sha256": "bb673b8150824db4a89cfa57db90ba44d40cdffb5d96d6bbf0447441370f2bd0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/run-nominal.py",
+      "sha256": "abf4a6e4914ef6aaba2c24e897439aa5e66b12e0b08bec5667c15fd5dd5329f7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/resume-nominal.py",
+      "sha256": "e331056b92d3b19115cd728df925f37770f1d1ec15ff398b1ee83457cedf6c01"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/nominal-read-helpers.py",
+      "sha256": "dfb096fe7ae6d2c1d8ac7a92b530e50613005f3d87bde2267a303855727b14e5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/resume-verification.json",
+      "sha256": "d40d0a2b7751dc85c23ffe53007be44bcf29db249be19963ad5f371789bca167"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/original-preservation.json",
+      "sha256": "a26ae1ad1e6a69313e707fc6f96ee27333b482f06d080fb7430f2767c4a1a90d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/original-preservation-final.json",
+      "sha256": "74c62aa458939626b41e9f52e1121f8583e2deb284d25ac81b98fd75fb02ebda"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/lifecycle-verification.json",
+      "sha256": "f6b04f467ff62e3d58e324293acaf31171730de9ec78eb7e7f9789744695e440"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/native-lifecycle-source-manifest.json",
+      "sha256": "c6fa15784b42573b8b608073d3292f9c58b272bae6849d6690bb00523b7741b0"
+    }
+  ]
+}

@@ -1,17 +1,21 @@
+import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { NextRequest, NextResponse } from 'next/server';
 import { sharedExpensesService, isValidShareToken } from '@/lib/services/sharedExpenses';
 import { errorResponse } from '@/lib/api-handler';
+import { isCivilYmd } from '@/lib/transaction-date';
 
 // Agregar un gasto al grupo (público, validado por token).
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { token: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   try {
     if (!isValidShareToken(params.token)) {
       return NextResponse.json({ error: 'Link inválido' }, { status: 404 });
     }
 
+    const requestId = req.headers.get('Idempotency-Key');
+    if (!validTransactionRequestId(requestId)) {
+      return NextResponse.json({ error: 'Falta un identificador de solicitud válido.' }, { status: 400 });
+    }
     const body = await req.json();
 
     const description =
@@ -37,7 +41,7 @@ export async function POST(
 
     let expenseDate: string | undefined;
     if (body.expenseDate) {
-      if (typeof body.expenseDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(body.expenseDate)) {
+      if (typeof body.expenseDate !== 'string' || !isCivilYmd(body.expenseDate)) {
         return NextResponse.json({ error: 'Fecha inválida' }, { status: 400 });
       }
       expenseDate = body.expenseDate;
@@ -48,6 +52,7 @@ export async function POST(
       : undefined;
 
     const expense = await sharedExpensesService.addExpenseByToken(params.token, {
+      requestId,
       actorMemberId,
       paidByMemberId,
       description,
@@ -59,7 +64,7 @@ export async function POST(
       return NextResponse.json({ error: 'Grupo no encontrado' }, { status: 404 });
     }
 
-    return NextResponse.json(expense, { status: 201 });
+    return NextResponse.json(expense, { status: 201, headers: { 'Idempotency-Key': requestId } });
   } catch (error: any) {
     console.error('Shared expense POST error:', error);
     return errorResponse(error);

@@ -1,5 +1,6 @@
 'use client';
 
+import { useFinancialOperation } from '@/lib/hooks/useFinancialOperation';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
@@ -35,6 +36,7 @@ export default function EditTransactionModal({
 }: EditTransactionModalProps) {
   useBodyScrollLock();
   const confirm = useConfirm();
+  const { submit } = useFinancialOperation(`duplicate:${transaction.id}`);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [duplicateDraftMode, setDuplicateDraftMode] = useState(false);
@@ -92,11 +94,8 @@ export default function EditTransactionModal({
         }
       }
 
-      const response = duplicateDraftMode
-        ? await fetch('/api/transactions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+      if (duplicateDraftMode) {
+        const result = await submit('/api/transactions', {
               type: formData.type,
               accountId: formData.account_id,
               destinationAccountId:
@@ -108,12 +107,16 @@ export default function EditTransactionModal({
               notes: formData.notes || undefined,
               tags: transaction.tags || undefined,
               transactionDate: calendarDateToUtcNoonIso(formData.transaction_date),
-              ...(payload.exchangeRateOverride !== undefined
+              ...(typeof payload.exchangeRateOverride === 'number'
                 ? { exchangeRateOverride: payload.exchangeRateOverride }
                 : {}),
-            }),
-          })
-        : await fetch(`/api/transactions/${transaction.id}`, {
+            });
+        if (!result) return;
+        if (result.state === 'pending') { setError(result.error || 'Duplicado pendiente de confirmación.'); return; }
+        onSave();
+        return;
+      }
+      const response = await fetch(`/api/transactions/${transaction.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),

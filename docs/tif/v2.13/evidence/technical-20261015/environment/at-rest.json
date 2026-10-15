@@ -1,0 +1,47 @@
+{
+  "observedAt": "2026-10-15T00:55:56.768393Z",
+  "status": "PASS_LOCAL_VOLUME_ENCRYPTION_OBSERVED",
+  "requestedPath": "/tmp/zarix-runtime-20261015",
+  "resolvedPath": "/private/tmp/zarix-runtime-20261015",
+  "filesystemMapping": {
+    "command": "df -P /tmp/zarix-runtime-20261015",
+    "device": "/dev/disk3s5",
+    "mountPoint": "/System/Volumes/Data",
+    "matchesDiskutilDataVolume": true
+  },
+  "fileVault": {
+    "command": "fdesetup status",
+    "exitCode": 0,
+    "status": "FileVault is On."
+  },
+  "dataVolume": {
+    "command": "diskutil info -plist /System/Volumes/Data",
+    "exitCode": 0,
+    "DeviceIdentifier": "disk3s5",
+    "DeviceNode": "/dev/disk3s5",
+    "MountPoint": "/System/Volumes/Data",
+    "FilesystemName": "APFS",
+    "FilesystemType": "apfs",
+    "VolumeName": "Data",
+    "APFSContainerReference": "disk3",
+    "FileVault": true,
+    "Encryption": true,
+    "EncryptionThisVolumeProper": true,
+    "Locked": false
+  },
+  "scope": {
+    "host": "Current local Mac only",
+    "artifacts": "Runtime, temporary local PostgreSQL data, private synthetic backup/logins and Storage fixtures under the observed path",
+    "limitation": "Volume encryption protects local data at rest. The volume is mounted/unlocked during this task; this is not per-file archive encryption, remote Supabase encryption verification or a hosted-production guarantee.",
+    "historicalEvidence": "Observation from 14/10 remains separate; no historical result was imported as current"
+  },
+  "access": {
+    "initialSandboxReads": "FileVault/diskutil metadata could not use the macOS DiskManagement framework in the sandbox",
+    "successfulRead": "Authorized read-only unsandboxed commands",
+    "configurationChanged": false,
+    "administratorPasswordRequested": false,
+    "keychainAccessed": false,
+    "persistentPermissionsCreated": false
+  },
+  "sanitization": "No hardware UUID/serial, account identifiers, credentials, keys or raw disk plist copied"
+}

@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-15T03:56:20.748Z",
+  "privateValuesCompared": 27,
+  "files": 1785,
+  "findings": [
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "rule": "exact-existing-private-value"
+    }
+  ],
+  "status": "FAIL",
+  "scope": "Exact-value comparison against existing private local runtime environment credentials and password/token fields in the explicit private fixture files, including expired/reused recovery and expired/normal SSR cookie fixtures. Values, hashes of values and matching excerpts are never published. Includes tracked and non-ignored untracked repository files, not ignored build assets or external files; no claim of universal absence of secrets."
+}

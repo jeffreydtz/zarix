@@ -1,0 +1,16 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: A09: grupo, invitado y reparto"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+i [shape=plaintext,fontcolor="#243b53",label="Invitado con enlace"];
+bs [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP11 Grupo compartido"];
+cs [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nCompartidos"];
+es [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nGrupo / gasto / partes"];
+u -> bs [label="A09 crear grupo"];
+i -> bs [label="A09 enlace de\ncapacidad"];
+bs -> cs [dir=both,label="token /\npertenencias\n↔\nreparto /\nbalance"];
+cs -> es [label="pertenencias,\ngasto y\npartes"];
+
+}

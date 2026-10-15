@@ -162,7 +162,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                             {secondaryCur}
                           </span>
                         </div>
-                        <div className="text-[11px] sm:text-xs font-medium tabular-nums text-muted-foreground">
+                        {!account.valuationIssue && <div className="text-[11px] sm:text-xs font-medium tabular-nums text-muted-foreground">
                           Total (ARS blue):{' '}
                           <span className="font-semibold text-destructive">
                             -$
@@ -174,7 +174,7 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                             })}{' '}
                             ARS
                           </span>
-                        </div>
+                        </div>}
                       </div>
                     ) : (
                       <div
@@ -241,11 +241,11 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
                   </div>
                 </div>
 
-                {(isMulticurrencyCard
+                {(account.valuationIssue || (isMulticurrencyCard
                   ? Math.abs(
                       Number(account.multicurrency_total_ars_blue ?? account.balance_ars_blue ?? 0)
                     ) > 1e-8
-                  : Math.abs(Number(account.balance)) > 1e-8) && (
+                  : Math.abs(Number(account.balance)) > 1e-8)) && (
                   <div className="w-full pl-[4.25rem] sm:pl-[4.5rem] -mt-0.5 border-t border-border pt-2">
                     <AccountBalanceEquivalents account={account} />
                   </div>
@@ -310,6 +310,17 @@ export default function AccountsList({ accounts, aggregates }: AccountsListProps
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             Totales (cotización dólar blue)
           </h3>
+          {aggregates.valuation && <div role="status" className="text-sm text-warning mb-3">
+            <p>Total parcial: sólo se suman las cuentas con valoración disponible.</p>
+            <ul>{aggregates.valuation.excludedAccounts.map(account => (
+              <li key={account.accountId}>
+                {account.name}: {account.balance.toLocaleString('es-AR')} {account.currency}
+                {account.secondaryCurrency && account.secondaryBalance !== undefined
+                  ? `; ${account.secondaryBalance.toLocaleString('es-AR')} ${account.secondaryCurrency}` : ''}.
+                {' '}Excluida: sin cotización compatible para {account.currencies.join(', ')}.
+              </li>
+            ))}</ul>
+          </div>}
           <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
             Solo suman acá las cuentas con <strong>Incluir en totales</strong> (editar cuenta): eso
             las saca del patrimonio del panel pero <strong>no las archiva</strong>; siguen en la

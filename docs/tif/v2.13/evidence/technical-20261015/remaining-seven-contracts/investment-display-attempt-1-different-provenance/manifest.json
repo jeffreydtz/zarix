@@ -1,0 +1,42 @@
+{
+  "status": "PRESERVED_INITIAL_DIFFERENT_PROVENANCE",
+  "files": [
+    {
+      "path": "investment-display-execution.json",
+      "sha256": "ecd0fc8e1e8f24715dce29884517e6d3a4be3e7cea1f4cd32ec72d1b2baf7289"
+    },
+    {
+      "path": "investment-display.vitest.config.mjs",
+      "sha256": "04571699b16ced1f3fafe73ab0e45a882a84e4635294b871ae0133bf2e55fb15"
+    },
+    {
+      "path": "investment-display-result.json",
+      "sha256": "14a5ce5aa5ac7d7fd8510491cd886f687ea6a1e598e1ccca224a9cfecf167c0a"
+    },
+    {
+      "path": "investment-display-cp4-06.html",
+      "sha256": "4b69ce68e09681b56d3a246074b280c238ee7242b2f16530b9eb79adcfebc09a"
+    },
+    {
+      "path": "investment-display-cp4-01.html",
+      "sha256": "ecead64093f4d2201f6e0e6a19e688ec136b043dd904a839b90e921b95632236"
+    },
+    {
+      "path": "investment-display.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "investment-display-summary.json",
+      "sha256": "c2be73dbd369b5cf91ee815c15e0e1a3764f9ede29b2fad64103128fcbb7c26a"
+    },
+    {
+      "path": "investment-display.test-source.ts",
+      "sha256": "59246318ed950be316d20cb730a6e0f84c401e252dc5aeb6131c632f1f18c78c"
+    },
+    {
+      "path": "investment-display.stdout.log",
+      "sha256": "43a8191a65a07147251f26fc9cbbdd3ccee611294e876bc26c7a6a7ce1e88023"
+    }
+  ],
+  "historicalEquivalent": false
+}

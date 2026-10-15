@@ -1,0 +1,1994 @@
+{
+  "startedAt": "2026-10-15T03:36:25.525Z",
+  "status": "FAIL",
+  "scope": "CP3-01 and CP3-02 exact fixtures using the actual CI4 service, own loopback HTTP doubles and actual auxiliary FX persistence. No application edits, Next API request, browser, normal-user/Auth operation, financial write or real-provider acceptance.",
+  "target": {
+    "apiOrigin": "http://127.0.0.1:58321",
+    "postgresPort": "58322",
+    "providerDouble": "http://127.0.0.1:57911"
+  },
+  "scenarios": [
+    {
+      "scenario": "mapping",
+      "status": "PASS",
+      "resultFile": "mapping.json",
+      "exitCode": 0,
+      "worker": {
+        "scenario": "mapping",
+        "status": "PASS",
+        "t0": "2026-10-06T12:00:00.000Z",
+        "counters": {
+          "primary": 1,
+          "secondary": 0,
+          "crypto": {
+            "bitcoin": 1,
+            "ethereum": 1,
+            "tether": 1
+          }
+        },
+        "served": [
+          {
+            "path": "/dolar",
+            "status": 200,
+            "bodySha256": "694f4a39d23119f21e25d17fe127eeda26b50578bf8096a8e0811f2b23fb54f0",
+            "sourceTimestamp": "2026-10-06T12:00:00.000Z"
+          },
+          {
+            "path": "/simple/price",
+            "status": 200,
+            "bodySha256": "0a1ff81d3a822796d88e5b958f7780bd745349e0c0d9a1bba2cbebd553335eef",
+            "sourceTimestamp": "2026-10-06T12:00:00.000Z"
+          },
+          {
+            "path": "/simple/price",
+            "status": 200,
+            "bodySha256": "2bbd16815db5e86763d0400497b072fc7e3f1c30dbb9fc04381306ab885e0956",
+            "sourceTimestamp": "2026-10-06T12:00:00.000Z"
+          },
+          {
+            "path": "/simple/price",
+            "status": 200,
+            "bodySha256": "065f74fc71a7436d95b01c60896cbf9f538b07249fbf1fa6772dc6e854cada1c",
+            "sourceTimestamp": "2026-10-06T12:00:00.000Z"
+          }
+        ],
+        "assertions": [
+          {
+            "name": "CP3-01 blue value/source/time",
+            "status": "PASS",
+            "actual": {
+              "type": "blue",
+              "buy": 1300,
+              "sell": 1300,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "type": "blue",
+              "buy": 1300,
+              "sell": 1300,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "CP3-01 oficial value/source/time",
+            "status": "PASS",
+            "actual": {
+              "type": "oficial",
+              "buy": 1000,
+              "sell": 1000,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "type": "oficial",
+              "buy": 1000,
+              "sell": 1000,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "CP3-01 mep value/source/time",
+            "status": "PASS",
+            "actual": {
+              "type": "mep",
+              "buy": 1250,
+              "sell": 1250,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "type": "mep",
+              "buy": 1250,
+              "sell": 1250,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "CP3-01 ccl value/source/time",
+            "status": "PASS",
+            "actual": {
+              "type": "ccl",
+              "buy": 1280,
+              "sell": 1280,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "type": "ccl",
+              "buy": 1280,
+              "sell": 1280,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "CP3-01 BTC USD/source time",
+            "status": "PASS",
+            "actual": {
+              "symbol": "BTC",
+              "priceUSD": 60000,
+              "priceARS": 78000000,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            },
+            "expected": {
+              "symbol": "BTC",
+              "priceUSD": 60000,
+              "priceARS": 78000000,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            }
+          },
+          {
+            "name": "CP3-01 ETH USD/source time",
+            "status": "PASS",
+            "actual": {
+              "symbol": "ETH",
+              "priceUSD": 2500,
+              "priceARS": 3250000,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            },
+            "expected": {
+              "symbol": "ETH",
+              "priceUSD": 2500,
+              "priceARS": 3250000,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            }
+          },
+          {
+            "name": "CP3-01 USDT USD/source time",
+            "status": "PASS",
+            "actual": {
+              "symbol": "USDT",
+              "priceUSD": 1,
+              "priceARS": 1300,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            },
+            "expected": {
+              "symbol": "USDT",
+              "priceUSD": 1,
+              "priceARS": 1300,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            }
+          },
+          {
+            "name": "CP3-01 aggregate timestamp",
+            "status": "PASS",
+            "actual": "2026-10-06T12:00:00.000Z",
+            "expected": "2026-10-06T12:00:00.000Z"
+          },
+          {
+            "name": "CP3-01 actual HTTP double requests",
+            "status": "PASS",
+            "actual": {
+              "primary": 1,
+              "secondary": 0,
+              "crypto": {
+                "bitcoin": 1,
+                "ethereum": 1,
+                "tether": 1
+              }
+            },
+            "expected": {
+              "primary": 1,
+              "secondary": 0,
+              "crypto": {
+                "bitcoin": 1,
+                "ethereum": 1,
+                "tether": 1
+              }
+            }
+          }
+        ],
+        "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+        "normalizedQuotes": {
+          "dolar": {
+            "blue": {
+              "type": "blue",
+              "buy": 1300,
+              "sell": 1300,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "oficial": {
+              "type": "oficial",
+              "buy": 1000,
+              "sell": 1000,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "mep": {
+              "type": "mep",
+              "buy": 1250,
+              "sell": 1250,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "ccl": {
+              "type": "ccl",
+              "buy": 1280,
+              "sell": 1280,
+              "timestamp": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          "crypto": {
+            "btc": {
+              "symbol": "BTC",
+              "priceUSD": 60000,
+              "priceARS": 78000000,
+              "change24h": 0,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            },
+            "eth": {
+              "symbol": "ETH",
+              "priceUSD": 2500,
+              "priceARS": 3250000,
+              "change24h": 0,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            },
+            "usdt": {
+              "symbol": "USDT",
+              "priceUSD": 1,
+              "priceARS": 1300,
+              "change24h": 0,
+              "timestamp": "2026-10-06T12:00:00.000Z"
+            }
+          },
+          "timestamp": "2026-10-06T12:00:00.000Z"
+        },
+        "expectedNewFxRows": 8,
+        "sourceScope": "Dollar provider metadata is returned by the service. Crypto source is established by actual fixture HTTP request/response binding; no crypto provider field is invented.",
+        "transportRequests": [
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/dolar",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/simple/price",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/simple/price",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/simple/price",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:58321",
+            "path": "/rest/v1/exchange_rates",
+            "method": "POST"
+          }
+        ],
+        "fakeClockScope": "Date only in this worker; OS clock, timers and database clock unchanged"
+      },
+      "persistence": {
+        "newRows": 8,
+        "allOriginalFxPreserved": true,
+        "normalizedRows": [
+          {
+            "source": "ccl",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1280,
+            "timestamp": "2026-10-06T12:00:00+00:00"
+          },
+          {
+            "source": "oficial",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1000,
+            "timestamp": "2026-10-06T12:00:00+00:00"
+          },
+          {
+            "source": "mep_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1250,
+            "timestamp": "2026-10-06T12:00:00+00:00"
+          },
+          {
+            "source": "mep",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1250,
+            "timestamp": "2026-10-06T12:00:00+00:00"
+          },
+          {
+            "source": "oficial_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1000,
+            "timestamp": "2026-10-06T12:00:00+00:00"
+          },
+          {
+            "source": "blue_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T12:00:00+00:00"
+          },
+          {
+            "source": "blue",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T12:00:00+00:00"
+          },
+          {
+            "source": "ccl_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1280,
+            "timestamp": "2026-10-06T12:00:00+00:00"
+          }
+        ],
+        "hashById": {
+          "04b3e9de-d2a7-4821-8a9e-eb9b3cc5e798": "3db8045b26e27f6e58d40e3219e27de233144dee4d14142a30fc2bba3a8ed44f",
+          "0733643d-6066-4945-89a3-79ff23fd184d": "971b6c82e6ce65f5897d755d4b4b1c12bec4b771eb9d5585dbc70d28df3e6005",
+          "7c65c328-3468-4d37-9fcc-d11239446f13": "03ef0199520baa6db97f6dec5734e538749ebfbd9c31303e7a9db2058b13e909",
+          "b7d4dc96-df06-4e7d-bd43-84d7a3ff6533": "f0fbb2d87d6f003dadb9fb87a9194676a8a6dcaf83a602f3547f0a7bf06ac190",
+          "bf0b06d1-4cd0-4f9c-8f3e-472e9e79fa58": "0bb50f2a99e3384c78ed21bccd8caeffa99b1c24945b85dc64e300d764462af5",
+          "cd69f33b-25b1-4720-8811-e7fa0b682aaf": "91e2c2ee267a63c3d12eba319ad9998104da12ac996944b9ba049f1e8b8170ab",
+          "ce846dcf-dbe2-470c-8dbb-18d4279a791b": "62c15b465a5bff9756c33f5ad050503da4dd704118a207ff2693a0f5faf70fd2",
+          "f62f7251-cc27-40b3-9d00-3ba31c2aab3d": "7e7ffbc1e826cb5c015e644e79e9edc3b1e4e2072e8acb6c2d1166bd4789d00c"
+        }
+      },
+      "canonicalUnchanged": true,
+      "marketCacheUnchanged": true
+    },
+    {
+      "scenario": "hit299",
+      "status": "PASS",
+      "resultFile": "hit299.json",
+      "exitCode": 0,
+      "worker": {
+        "scenario": "hit299",
+        "status": "PASS",
+        "t0": "2026-10-06T13:00:00.000Z",
+        "counters": {
+          "primary": 1,
+          "secondary": 0,
+          "crypto": {
+            "bitcoin": 0,
+            "ethereum": 0,
+            "tether": 0
+          }
+        },
+        "served": [
+          {
+            "path": "/dolar",
+            "status": 200,
+            "bodySha256": "f30308923e97f5918907eacde4b0aaaca1a7e93fdc05629cbbe200219af62564",
+            "sourceTimestamp": "2026-10-06T13:00:00.000Z"
+          }
+        ],
+        "assertions": [
+          {
+            "name": "hit299 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "hit299 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "hit299 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "hit299 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "hit299 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "hit299 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "hit299 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "hit299 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T13:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "hit299 provider request counters",
+            "status": "PASS",
+            "actual": {
+              "primary": 1,
+              "secondary": 0
+            },
+            "expected": {
+              "primary": 1,
+              "secondary": 0
+            }
+          }
+        ],
+        "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+        "initialQuote": {
+          "type": "blue",
+          "buy": 1200,
+          "sell": 1200,
+          "timestamp": "2026-10-06T13:00:00.000Z",
+          "provider": "criptoya",
+          "origin": "provider"
+        },
+        "returnedQuote": {
+          "type": "blue",
+          "buy": 1200,
+          "sell": 1200,
+          "timestamp": "2026-10-06T13:00:00.000Z",
+          "provider": "criptoya",
+          "origin": "provider"
+        },
+        "offsetSeconds": 299,
+        "expectedNewFxRows": 8,
+        "transportRequests": [
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/dolar",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:58321",
+            "path": "/rest/v1/exchange_rates",
+            "method": "POST"
+          }
+        ],
+        "fakeClockScope": "Date only in this worker; OS clock, timers and database clock unchanged"
+      },
+      "persistence": {
+        "newRows": 8,
+        "allOriginalFxPreserved": true,
+        "normalizedRows": [
+          {
+            "source": "blue_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T13:00:00+00:00"
+          },
+          {
+            "source": "mep_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T13:00:00+00:00"
+          },
+          {
+            "source": "ccl_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T13:00:00+00:00"
+          },
+          {
+            "source": "mep",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T13:00:00+00:00"
+          },
+          {
+            "source": "oficial_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T13:00:00+00:00"
+          },
+          {
+            "source": "oficial",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T13:00:00+00:00"
+          },
+          {
+            "source": "blue",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T13:00:00+00:00"
+          },
+          {
+            "source": "ccl",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T13:00:00+00:00"
+          }
+        ],
+        "hashById": {
+          "2d030737-7c68-42cd-a729-7871e3aa031e": "fb3a4226cf5a6797424cfb049c6c5b26e41a87d1eb4e7c9eba1e3fa6c3d41fa9",
+          "90ea71ed-424b-42f2-9cb4-6fddfc70fe4f": "6ccd6923c6b4c6d069d1d75aeeddf33762ed2a4dd2ef02eb9f6ffa754b4ff958",
+          "a356256d-720e-4cda-be8d-143b4f31096f": "05d048aad9c08c39df12312e6e83c6ce4c89723b48ba846507be31352546d28c",
+          "b41533f1-b8a3-4b68-92ff-eaf64bf42547": "f5f2f42b8ec9e987b96429050eaec6de192fdd453b47de654ebdb229d65df54b",
+          "d0e04d6c-b19f-4c34-beca-c6ea8096fdd1": "75fc0a15c62a2b640bcc7690b2236ca3e9298cb5acdae8533040513c056f929c",
+          "d3466f00-d1cd-4707-b319-c197d785fe62": "f8a46e8d99ec60cd040c9071291a88987d0ccba8c64c20b09b4e2cbe7fdcf3ba",
+          "ed4517e3-b952-4986-870d-3e8de1cfd563": "d8920898b8ac125d7452cc99276c70b82fb5f81aab0faa61073a54de8fb2b550",
+          "fa820c6a-6c82-4e07-be1f-b4fce2b4d559": "abfa85bab9b4aa8881b828dfa38c0855a36fb83d1f340ec6c61c463a89dc66f4"
+        }
+      },
+      "canonicalUnchanged": true,
+      "marketCacheUnchanged": true
+    },
+    {
+      "scenario": "refresh300",
+      "status": "PASS",
+      "resultFile": "refresh300.json",
+      "exitCode": 0,
+      "worker": {
+        "scenario": "refresh300",
+        "status": "PASS",
+        "t0": "2026-10-06T14:00:00.000Z",
+        "counters": {
+          "primary": 2,
+          "secondary": 0,
+          "crypto": {
+            "bitcoin": 0,
+            "ethereum": 0,
+            "tether": 0
+          }
+        },
+        "served": [
+          {
+            "path": "/dolar",
+            "status": 200,
+            "bodySha256": "0bfbfcabf58aa9bcb81958ef6851750d8efd46af4c52054c160439049ccaaa9e",
+            "sourceTimestamp": "2026-10-06T14:00:00.000Z"
+          },
+          {
+            "path": "/dolar",
+            "status": 200,
+            "bodySha256": "f399ac1a2d94cdea1d23b2bce34afc3d5d6a7c8d5864d7701289d7e6452cfbb8",
+            "sourceTimestamp": "2026-10-06T14:05:00.000Z"
+          }
+        ],
+        "assertions": [
+          {
+            "name": "refresh300 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T14:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T14:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh300 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T14:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T14:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh300 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T14:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T14:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh300 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T14:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T14:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh300 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T14:05:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T14:05:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh300 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T14:05:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T14:05:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh300 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T14:05:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T14:05:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh300 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T14:05:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T14:05:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh300 provider request counters",
+            "status": "PASS",
+            "actual": {
+              "primary": 2,
+              "secondary": 0
+            },
+            "expected": {
+              "primary": 2,
+              "secondary": 0
+            }
+          }
+        ],
+        "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+        "initialQuote": {
+          "type": "blue",
+          "buy": 1200,
+          "sell": 1200,
+          "timestamp": "2026-10-06T14:00:00.000Z",
+          "provider": "criptoya",
+          "origin": "provider"
+        },
+        "returnedQuote": {
+          "type": "blue",
+          "buy": 1300,
+          "sell": 1300,
+          "timestamp": "2026-10-06T14:05:00.000Z",
+          "provider": "criptoya",
+          "origin": "provider"
+        },
+        "offsetSeconds": 300,
+        "expectedNewFxRows": 16,
+        "transportRequests": [
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/dolar",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:58321",
+            "path": "/rest/v1/exchange_rates",
+            "method": "POST"
+          },
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/dolar",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:58321",
+            "path": "/rest/v1/exchange_rates",
+            "method": "POST"
+          }
+        ],
+        "fakeClockScope": "Date only in this worker; OS clock, timers and database clock unchanged"
+      },
+      "persistence": {
+        "newRows": 16,
+        "allOriginalFxPreserved": true,
+        "normalizedRows": [
+          {
+            "source": "ccl_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T14:00:00+00:00"
+          },
+          {
+            "source": "mep",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T14:05:00+00:00"
+          },
+          {
+            "source": "oficial",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T14:05:00+00:00"
+          },
+          {
+            "source": "ccl",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T14:05:00+00:00"
+          },
+          {
+            "source": "mep",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T14:00:00+00:00"
+          },
+          {
+            "source": "mep_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T14:05:00+00:00"
+          },
+          {
+            "source": "blue_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T14:00:00+00:00"
+          },
+          {
+            "source": "oficial",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T14:00:00+00:00"
+          },
+          {
+            "source": "ccl",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T14:00:00+00:00"
+          },
+          {
+            "source": "blue_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T14:05:00+00:00"
+          },
+          {
+            "source": "ccl_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T14:05:00+00:00"
+          },
+          {
+            "source": "oficial_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T14:05:00+00:00"
+          },
+          {
+            "source": "oficial_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T14:00:00+00:00"
+          },
+          {
+            "source": "blue",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T14:00:00+00:00"
+          },
+          {
+            "source": "mep_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T14:00:00+00:00"
+          },
+          {
+            "source": "blue",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T14:05:00+00:00"
+          }
+        ],
+        "hashById": {
+          "0c3f79bc-11f6-4c99-850f-3e19a1ab77f9": "e15ea50b5027ba32f2ce122a44760cf8a91226b23d8df77c347285b30df8795d",
+          "11300a5a-eb95-4d71-9657-a1f3d2ebfdae": "32fdb3e3df0cab8ecdf4c997353b2addcac964de0bd78b987fdbb0ef7b749c87",
+          "196aebe7-9772-43d4-b1e0-770e95d22d20": "a7b682d6fc407adf09d3d7e97744bfabbefdd96d6182a8ddfe54d71abe42c613",
+          "3fb6dfd8-4e73-4264-b50b-cba903c30b26": "ea2cc994c29172d63d2602cb9c24012e1bfe309a7fe3ced194cf1fe389b543d7",
+          "451f17be-a9f1-4acc-b098-44120ee505ee": "d26f1f486c83aeb9c14e02d94236d869e08ac7066f397ee9075329ddb23f7544",
+          "55ecadd5-5aac-4e88-8b91-25a8fef09b7a": "eb4d223201dba4441592553530b7bb50dab8a03c236926fc27c8b9dacad79f23",
+          "67aeea8d-5120-45ea-8646-84dd1e38d161": "1a577ec8cd6fc24891d384b4cee40bddbc8b31de673555ee3ac10c9889a61749",
+          "790a10a3-3d60-425e-a7b9-536d672c984e": "424aa8f138ae0793c890ebf4099bdb7f6a4fc3e761ccdefb1eb4d003db5b06f5",
+          "7f9c5138-b111-49a7-8b1b-ca747dd8f531": "4f063df326216f29917075935b93c4dd5571b617a3e608fe25e4ee4fe5563090",
+          "814c3aed-9e3c-456b-8ae9-600bef28c270": "f0e043c68a298aa58a49f2c36d4c2496d309f33b2fc7f2b6eba99d895e363948",
+          "93422556-8a32-4eaf-be65-6ba4c24c6f38": "d5f667d30c920736ddd639b86cebd9e1de170f856509052eeba71316c3f29081",
+          "9930c1d1-735c-42e9-9491-b1477e47df4c": "6d0c149847b902a89d56f878ea9278b3f32f05264eabdcb2ea0e2e210e66b72a",
+          "9c9742aa-9921-4cf0-aa2e-c51fc82e3dff": "a0cc16e3d460462b29bc7ce277564b7fa2458737d91986b38160c7030930877f",
+          "af1ceb8f-061b-4a80-9379-4809283d7c41": "d1da2f0db51ca53a83f7a732bc6ac1d78f24772e12326ac5bb03e97db5d18bb5",
+          "dfae8a64-d8ea-4f27-90ec-fda5a57d275c": "2c4b914d29a4b5d5027038d1f65773a8915f12e06d0b24f4454c87101efde052",
+          "e73794b6-f0ae-4948-954b-cbf0428ddb72": "e445e2e90f46d166373f3f309162157ad1436596b42f220987b2d815b947b435"
+        }
+      },
+      "canonicalUnchanged": true,
+      "marketCacheUnchanged": true
+    },
+    {
+      "scenario": "refresh301",
+      "status": "PASS",
+      "resultFile": "refresh301.json",
+      "exitCode": 0,
+      "worker": {
+        "scenario": "refresh301",
+        "status": "PASS",
+        "t0": "2026-10-06T15:00:00.000Z",
+        "counters": {
+          "primary": 2,
+          "secondary": 0,
+          "crypto": {
+            "bitcoin": 0,
+            "ethereum": 0,
+            "tether": 0
+          }
+        },
+        "served": [
+          {
+            "path": "/dolar",
+            "status": 200,
+            "bodySha256": "48cf3d3d1ed2a600e9dc44a32f4aaf5fefca87e4466df849808bf5220781c9ab",
+            "sourceTimestamp": "2026-10-06T15:00:00.000Z"
+          },
+          {
+            "path": "/dolar",
+            "status": 200,
+            "bodySha256": "6b5da430d5c3bf970acbc7f1e9e20a8b997f2be1e24d3968cb296ce254353123",
+            "sourceTimestamp": "2026-10-06T15:05:01.000Z"
+          }
+        ],
+        "assertions": [
+          {
+            "name": "refresh301 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T15:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T15:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh301 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T15:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T15:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh301 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T15:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T15:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh301 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T15:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T15:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh301 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T15:05:01.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T15:05:01.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh301 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T15:05:01.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T15:05:01.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh301 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T15:05:01.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T15:05:01.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh301 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T15:05:01.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            },
+            "expected": {
+              "buy": 1300,
+              "sell": 1300,
+              "time": "2026-10-06T15:05:01.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "refresh301 provider request counters",
+            "status": "PASS",
+            "actual": {
+              "primary": 2,
+              "secondary": 0
+            },
+            "expected": {
+              "primary": 2,
+              "secondary": 0
+            }
+          }
+        ],
+        "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+        "initialQuote": {
+          "type": "blue",
+          "buy": 1200,
+          "sell": 1200,
+          "timestamp": "2026-10-06T15:00:00.000Z",
+          "provider": "criptoya",
+          "origin": "provider"
+        },
+        "returnedQuote": {
+          "type": "blue",
+          "buy": 1300,
+          "sell": 1300,
+          "timestamp": "2026-10-06T15:05:01.000Z",
+          "provider": "criptoya",
+          "origin": "provider"
+        },
+        "offsetSeconds": 301,
+        "expectedNewFxRows": 16,
+        "transportRequests": [
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/dolar",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:58321",
+            "path": "/rest/v1/exchange_rates",
+            "method": "POST"
+          },
+          {
+            "origin": "http://127.0.0.1:57911",
+            "path": "/dolar",
+            "method": "GET"
+          },
+          {
+            "origin": "http://127.0.0.1:58321",
+            "path": "/rest/v1/exchange_rates",
+            "method": "POST"
+          }
+        ],
+        "fakeClockScope": "Date only in this worker; OS clock, timers and database clock unchanged"
+      },
+      "persistence": {
+        "newRows": 16,
+        "allOriginalFxPreserved": true,
+        "normalizedRows": [
+          {
+            "source": "ccl_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T15:05:01+00:00"
+          },
+          {
+            "source": "blue",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T15:00:00+00:00"
+          },
+          {
+            "source": "ccl",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T15:00:00+00:00"
+          },
+          {
+            "source": "oficial",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T15:05:01+00:00"
+          },
+          {
+            "source": "mep",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T15:00:00+00:00"
+          },
+          {
+            "source": "mep",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T15:05:01+00:00"
+          },
+          {
+            "source": "blue",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T15:05:01+00:00"
+          },
+          {
+            "source": "oficial",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T15:00:00+00:00"
+          },
+          {
+            "source": "blue_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T15:00:00+00:00"
+          },
+          {
+            "source": "mep_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T15:05:01+00:00"
+          },
+          {
+            "source": "oficial_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T15:00:00+00:00"
+          },
+          {
+            "source": "mep_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T15:00:00+00:00"
+          },
+          {
+            "source": "oficial_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T15:05:01+00:00"
+          },
+          {
+            "source": "blue_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T15:05:01+00:00"
+          },
+          {
+            "source": "ccl",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1300,
+            "timestamp": "2026-10-06T15:05:01+00:00"
+          },
+          {
+            "source": "ccl_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T15:00:00+00:00"
+          }
+        ],
+        "hashById": {
+          "101b5728-593f-4864-89bd-893206fcec12": "d96885eb9ca4b2e6b8778edafd8eae46708877fc1a330daa8598701706403c77",
+          "2b07c6f8-29d3-4ce8-a8d0-026ba0ee4f87": "f9396581267ea2d87c7533ab11f61818f761493efed5a2e46b15aa772d759faf",
+          "35b934b6-43c0-4625-950a-068edc9d39b6": "2b7ba4584526c29e6b840bc425d6c96855935ebe59ef9cb86c5bb9ae5c49fb84",
+          "54c2912a-2b62-411d-a5e0-5c1503d9218c": "fe3ce8ad0d1dde6c11e6ebe44155c9b08fb311203356be483bc005294e17299b",
+          "550b89a3-5bc6-4265-a048-a4338a60ccd6": "f77008a3aa259d7f4347f5766f4e27a6a22d326cea9ee147c876e1539d6bf255",
+          "59de4699-13b5-4cb2-a27d-e0b1edd2ac81": "7928390edb237adf9ba1dc80a2b6cc80cfa1015999efca5f63019a02a3eeaa4a",
+          "77e6d6ff-3b08-427a-a38a-51fe8bbaf68b": "0d97ab0d948b126351827dd78a50406a12647c520e2654b8c9cf9562726e66bb",
+          "8716a7f3-0114-43dc-9ebd-be69bb40cccc": "9c829bfae913625b65c2f21f2f233bcbff16b48e3f668fdfc39b5a7664fb233d",
+          "96c685af-04c0-49d2-9975-a3d0708c966d": "b6e4a8ccc6376aad733d589f895e1035332e70c1a9c06bdbaf9341dbd983c20d",
+          "a48f98f8-f1fc-40db-ae23-e83d4884daac": "be2cc4d7a65988713a188c9acddd1d3f45538ed5e915646ae4c310d9dc8bf9dc",
+          "aa4b5043-f114-4dd3-9b3b-3483504dcd50": "126b7542c98a73cbd2bf54a124bcd983efafbdfdf3737770d5b9254fbf71f89b",
+          "aea1170b-58a7-4bec-849d-768da47734e7": "c85152b3baa66ce9bdd67c46154578d1eea92899f4c91b409d2374de201b4e1d",
+          "d321af43-1372-4327-8a34-d8fe3c5bf34b": "ed265458ba461ad1b3b6a094b69228cab9bd5efbe27c4162ffabf3ba23091d79",
+          "efc47fac-3b34-46c5-9542-0b0ded8c6b0c": "9c89b997fe3f5805a1007a402c88e370882addaedd4543c5f9d8c9a8d58a4154",
+          "fd2bbc38-d19d-4b2c-af82-e9004d4af155": "a57d5d14e1780ed341c51980b81ce0a01738d082673a7ffef1b9e06e48f881c7",
+          "fe728fe5-8911-4f8d-b67a-4cdd3a1c477e": "87828bc7f18c0fdd556c1aa35534e65ffd89dd89554763ef49f5941677e4bea6"
+        }
+      },
+      "canonicalUnchanged": true,
+      "marketCacheUnchanged": true
+    },
+    {
+      "scenario": "failure300",
+      "status": "DISPATCHING",
+      "resultFile": "failure300.json",
+      "exitCode": 1,
+      "worker": {
+        "scenario": "failure300",
+        "status": "FAIL",
+        "t0": "2026-10-06T16:00:00.000Z",
+        "counters": {
+          "primary": 2,
+          "secondary": 1,
+          "crypto": {
+            "bitcoin": 0,
+            "ethereum": 0,
+            "tether": 0
+          }
+        },
+        "served": [
+          {
+            "path": "/dolar",
+            "status": 200,
+            "bodySha256": "5a5bfe619df92ccb7f735e9fb66b679a865699d44d3aab9306ac58f470290a1e",
+            "sourceTimestamp": "2026-10-06T16:00:00.000Z"
+          },
+          {
+            "path": "/dolar",
+            "status": 503,
+            "bodySha256": "28e61b9eddb58b0d0025063ad912aab8a266a1e8f6124bf463dd8146eafbd530",
+            "sourceTimestamp": "2026-10-06T16:05:00.000Z"
+          },
+          {
+            "path": "/dolares",
+            "status": 503,
+            "bodySha256": "28e61b9eddb58b0d0025063ad912aab8a266a1e8f6124bf463dd8146eafbd530",
+            "sourceTimestamp": "2026-10-06T16:05:00.000Z"
+          }
+        ],
+        "assertions": [
+          {
+            "name": "failure300 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "failure300 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "failure300 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "failure300 initial persisted provider sample",
+            "status": "PASS",
+            "actual": {
+              "rate": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "origin": "provider"
+            },
+            "expected": {
+              "rate": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "origin": "provider"
+            }
+          },
+          {
+            "name": "failure300 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "provider": null,
+              "origin": "persisted"
+            },
+            "expected": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "provider": null,
+              "origin": "persisted"
+            }
+          },
+          {
+            "name": "failure300 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "provider": null,
+              "origin": "persisted"
+            },
+            "expected": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "provider": null,
+              "origin": "persisted"
+            }
+          },
+          {
+            "name": "failure300 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "provider": null,
+              "origin": "persisted"
+            },
+            "expected": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "provider": null,
+              "origin": "persisted"
+            }
+          },
+          {
+            "name": "failure300 returned quote",
+            "status": "PASS",
+            "actual": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "provider": null,
+              "origin": "persisted"
+            },
+            "expected": {
+              "buy": 1200,
+              "sell": 1200,
+              "time": "2026-10-06T16:00:00.000Z",
+              "provider": null,
+              "origin": "persisted"
+            }
+          },
+          {
+            "name": "failure300 provider request counters",
+            "status": "PASS",
+            "actual": {
+              "primary": 2,
+              "secondary": 1
+            },
+            "expected": {
+              "primary": 2,
+              "secondary": 1
+            }
+          }
+        ],
+        "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+        "initialQuote": {
+          "type": "blue",
+          "buy": 1200,
+          "sell": 1200,
+          "timestamp": "2026-10-06T16:00:00.000Z",
+          "provider": "criptoya",
+          "origin": "provider"
+        },
+        "returnedQuote": {
+          "type": "blue",
+          "buy": 1200,
+          "sell": 1200,
+          "timestamp": "2026-10-06T16:00:00.000Z",
+          "provider": null,
+          "origin": "persisted"
+        },
+        "offsetSeconds": 300,
+        "expectedNewFxRows": 8,
+        "failure": {
+          "type": "ReferenceError",
+          "code": null,
+          "context": "Quote contract assertion/import/provider/persistence failed; raw details remain private"
+        }
+      },
+      "persistence": {
+        "newRows": 8,
+        "allOriginalFxPreserved": true,
+        "normalizedRows": [
+          {
+            "source": "blue",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T16:00:00+00:00"
+          },
+          {
+            "source": "mep_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T16:00:00+00:00"
+          },
+          {
+            "source": "mep",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T16:00:00+00:00"
+          },
+          {
+            "source": "oficial_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T16:00:00+00:00"
+          },
+          {
+            "source": "ccl_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T16:00:00+00:00"
+          },
+          {
+            "source": "blue_buy",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T16:00:00+00:00"
+          },
+          {
+            "source": "oficial",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T16:00:00+00:00"
+          },
+          {
+            "source": "ccl",
+            "from_currency": "USD",
+            "to_currency": "ARS",
+            "rate": 1200,
+            "timestamp": "2026-10-06T16:00:00+00:00"
+          }
+        ],
+        "hashById": {
+          "3b653d96-d1a7-4d9f-b2cf-1801458f4de8": "cbbbbf2d80aaadfecc7c952485c74984d703fe36c2f5a9476e83831225ae8b09",
+          "480b60e4-8134-4e69-84c7-1cce382954eb": "8d063807fb9a00c41d052f47a18e8bbd53df5877736b4729e6a5323288ffccd5",
+          "9267351d-f924-449d-abb4-ea046b59a160": "06a2b6c54512c06701ea366417b5891dba792ed5392dced65fa0684a62df25b6",
+          "9d0284b3-bec6-43d0-a6fc-11b50f1daead": "bc483e5d5b486ca43975b435df90242616dad021620c3bb9daf116ada396b99a",
+          "a14d5a44-282d-4727-8b5b-c52790174058": "5612008fed0a19f0d53a1f08cd500247ebfcfcd74062973e57edd5b8ea1cf8d9",
+          "b4812772-deb8-4ce3-8f39-8c7ba987890f": "8d4ef98c5ce30ec929b9d88ce2667e6ed8985c1ef45a8c4c878c453849fb80f0",
+          "da6b0049-49af-4786-a34e-959bb44af2f3": "f80828c5493d48fbd7d86e2dd73d4556b92108cf4f28cd6dafad00038838d2fe",
+          "fe7168ae-bc85-4478-8992-45545a28c4f2": "3fd92954b6365347da5989280f88b1996626fe66a330d63b434b724387154fe9"
+        }
+      },
+      "canonicalUnchanged": true,
+      "marketCacheUnchanged": true
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "sha256": "09caabac5758f32281e72733a3ad1acbef90e5588c9a551942f36f4fb8429587"
+    },
+    {
+      "path": "lib/yahoo-finance-headers.ts",
+      "sha256": "70e7ef6a137f7ba5cdf15725c79ebc6a560352f58d02926dc9e1a4e756a34dca"
+    },
+    {
+      "path": "lib/blue-fx-reference.ts",
+      "sha256": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c"
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "sha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "harnessManifest": [
+    {
+      "path": "run.mjs",
+      "sha256": "638f4047a33c19f02a5e00206d2a79e25bdc933f6a3b6001c191af21c4da0bf0"
+    },
+    {
+      "path": "worker.mjs",
+      "sha256": "3f54d3d83d87715c901e5e01d942a285ea8b54d2451a1a0a122d46f7cf00b65b"
+    },
+    {
+      "path": "clock-guard.mjs",
+      "sha256": "8debca2d9eadd21147042995ff5a37067257198874df0a65070d028b424159e1"
+    }
+  ],
+  "codeBinding": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "coreVerificationSha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
+    "appBuildId": "a2WBtszbvrpoT9GHwToED",
+    "appCopyRoot": "/tmp/zarix-app-account-analysis-20261015",
+    "scope": "Real service imports are hash-matched to immutable CI4 Git bytes. APP metadata is contextual only: this phase does not send requests to Next3002 or claim execution of that compiled build."
+  },
+  "before": {
+    "canonical": {
+      "sha256": "f3d83953fb88f7bdd62de72f687b09680a72c3d9a62749ebd9720a271fb51196",
+      "tables": {
+        "users": {
+          "rows": 2,
+          "sha256": "be89efa5f91075dc8f5eb22643fcc4eb73f6d71c265c5b2437ec2ebb9e141efb"
+        },
+        "accounts": {
+          "rows": 2,
+          "sha256": "d1ad67ca513768cfa46a7d4194ca4abc4c5cbbd6fedce2b36dd605972b2dc1b7"
+        },
+        "categories": {
+          "rows": 25,
+          "sha256": "9186e19064fe8ca26e037b0eec3cbae37830994152944974f05522cc636ee4e1"
+        },
+        "transactions": {
+          "rows": 2,
+          "sha256": "30c7c258f05e8bf3be2795da3bb23c80caadb54df075c790fd5dc0167c3b5256"
+        },
+        "recurring_rules": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "budgets": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "investments": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "portfolio_performance_snapshots": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "bot_sessions": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "budget_alerts": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "investment_sales": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_groups": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_group_members": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_expenses": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_expense_splits": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "net_worth_snapshots": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "transaction_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "notification_outbox": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "plan_usage_cycles": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "plan_usage_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "account_creation_requests": {
+          "rows": 2,
+          "sha256": "951aa950913e9bc441bc7f8b9932e06308568e2ebffcfa07171fec2dafb6df52"
+        },
+        "investment_sale_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_expense_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "investment_create_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "import_batches": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    "marketDataCache": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "fx": {
+      "rows": 0,
+      "hashById": {}
+    }
+  },
+  "failure": {
+    "type": "AssertionError",
+    "code": "ERR_ASSERTION",
+    "context": "Quote-contract preparation/import/assertion/persistence failure; private diagnostics excluded"
+  },
+  "after": {
+    "canonical": {
+      "sha256": "f3d83953fb88f7bdd62de72f687b09680a72c3d9a62749ebd9720a271fb51196",
+      "tables": {
+        "users": {
+          "rows": 2,
+          "sha256": "be89efa5f91075dc8f5eb22643fcc4eb73f6d71c265c5b2437ec2ebb9e141efb"
+        },
+        "accounts": {
+          "rows": 2,
+          "sha256": "d1ad67ca513768cfa46a7d4194ca4abc4c5cbbd6fedce2b36dd605972b2dc1b7"
+        },
+        "categories": {
+          "rows": 25,
+          "sha256": "9186e19064fe8ca26e037b0eec3cbae37830994152944974f05522cc636ee4e1"
+        },
+        "transactions": {
+          "rows": 2,
+          "sha256": "30c7c258f05e8bf3be2795da3bb23c80caadb54df075c790fd5dc0167c3b5256"
+        },
+        "recurring_rules": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "budgets": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "investments": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "portfolio_performance_snapshots": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "bot_sessions": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "budget_alerts": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "investment_sales": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_groups": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_group_members": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_expenses": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_expense_splits": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "net_worth_snapshots": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "transaction_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "notification_outbox": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "plan_usage_cycles": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "plan_usage_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "account_creation_requests": {
+          "rows": 2,
+          "sha256": "951aa950913e9bc441bc7f8b9932e06308568e2ebffcfa07171fec2dafb6df52"
+        },
+        "investment_sale_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "shared_expense_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "investment_create_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "import_batches": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    "marketDataCache": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "fx": {
+      "rows": 56,
+      "hashById": {
+        "04b3e9de-d2a7-4821-8a9e-eb9b3cc5e798": "3db8045b26e27f6e58d40e3219e27de233144dee4d14142a30fc2bba3a8ed44f",
+        "0733643d-6066-4945-89a3-79ff23fd184d": "971b6c82e6ce65f5897d755d4b4b1c12bec4b771eb9d5585dbc70d28df3e6005",
+        "0c3f79bc-11f6-4c99-850f-3e19a1ab77f9": "e15ea50b5027ba32f2ce122a44760cf8a91226b23d8df77c347285b30df8795d",
+        "101b5728-593f-4864-89bd-893206fcec12": "d96885eb9ca4b2e6b8778edafd8eae46708877fc1a330daa8598701706403c77",
+        "11300a5a-eb95-4d71-9657-a1f3d2ebfdae": "32fdb3e3df0cab8ecdf4c997353b2addcac964de0bd78b987fdbb0ef7b749c87",
+        "196aebe7-9772-43d4-b1e0-770e95d22d20": "a7b682d6fc407adf09d3d7e97744bfabbefdd96d6182a8ddfe54d71abe42c613",
+        "2b07c6f8-29d3-4ce8-a8d0-026ba0ee4f87": "f9396581267ea2d87c7533ab11f61818f761493efed5a2e46b15aa772d759faf",
+        "2d030737-7c68-42cd-a729-7871e3aa031e": "fb3a4226cf5a6797424cfb049c6c5b26e41a87d1eb4e7c9eba1e3fa6c3d41fa9",
+        "35b934b6-43c0-4625-950a-068edc9d39b6": "2b7ba4584526c29e6b840bc425d6c96855935ebe59ef9cb86c5bb9ae5c49fb84",
+        "3b653d96-d1a7-4d9f-b2cf-1801458f4de8": "cbbbbf2d80aaadfecc7c952485c74984d703fe36c2f5a9476e83831225ae8b09",
+        "3fb6dfd8-4e73-4264-b50b-cba903c30b26": "ea2cc994c29172d63d2602cb9c24012e1bfe309a7fe3ced194cf1fe389b543d7",
+        "451f17be-a9f1-4acc-b098-44120ee505ee": "d26f1f486c83aeb9c14e02d94236d869e08ac7066f397ee9075329ddb23f7544",
+        "480b60e4-8134-4e69-84c7-1cce382954eb": "8d063807fb9a00c41d052f47a18e8bbd53df5877736b4729e6a5323288ffccd5",
+        "54c2912a-2b62-411d-a5e0-5c1503d9218c": "fe3ce8ad0d1dde6c11e6ebe44155c9b08fb311203356be483bc005294e17299b",
+        "550b89a3-5bc6-4265-a048-a4338a60ccd6": "f77008a3aa259d7f4347f5766f4e27a6a22d326cea9ee147c876e1539d6bf255",
+        "55ecadd5-5aac-4e88-8b91-25a8fef09b7a": "eb4d223201dba4441592553530b7bb50dab8a03c236926fc27c8b9dacad79f23",
+        "59de4699-13b5-4cb2-a27d-e0b1edd2ac81": "7928390edb237adf9ba1dc80a2b6cc80cfa1015999efca5f63019a02a3eeaa4a",
+        "67aeea8d-5120-45ea-8646-84dd1e38d161": "1a577ec8cd6fc24891d384b4cee40bddbc8b31de673555ee3ac10c9889a61749",
+        "77e6d6ff-3b08-427a-a38a-51fe8bbaf68b": "0d97ab0d948b126351827dd78a50406a12647c520e2654b8c9cf9562726e66bb",
+        "790a10a3-3d60-425e-a7b9-536d672c984e": "424aa8f138ae0793c890ebf4099bdb7f6a4fc3e761ccdefb1eb4d003db5b06f5",
+        "7c65c328-3468-4d37-9fcc-d11239446f13": "03ef0199520baa6db97f6dec5734e538749ebfbd9c31303e7a9db2058b13e909",
+        "7f9c5138-b111-49a7-8b1b-ca747dd8f531": "4f063df326216f29917075935b93c4dd5571b617a3e608fe25e4ee4fe5563090",
+        "814c3aed-9e3c-456b-8ae9-600bef28c270": "f0e043c68a298aa58a49f2c36d4c2496d309f33b2fc7f2b6eba99d895e363948",
+        "8716a7f3-0114-43dc-9ebd-be69bb40cccc": "9c829bfae913625b65c2f21f2f233bcbff16b48e3f668fdfc39b5a7664fb233d",
+        "90ea71ed-424b-42f2-9cb4-6fddfc70fe4f": "6ccd6923c6b4c6d069d1d75aeeddf33762ed2a4dd2ef02eb9f6ffa754b4ff958",
+        "9267351d-f924-449d-abb4-ea046b59a160": "06a2b6c54512c06701ea366417b5891dba792ed5392dced65fa0684a62df25b6",
+        "93422556-8a32-4eaf-be65-6ba4c24c6f38": "d5f667d30c920736ddd639b86cebd9e1de170f856509052eeba71316c3f29081",
+        "96c685af-04c0-49d2-9975-a3d0708c966d": "b6e4a8ccc6376aad733d589f895e1035332e70c1a9c06bdbaf9341dbd983c20d",
+        "9930c1d1-735c-42e9-9491-b1477e47df4c": "6d0c149847b902a89d56f878ea9278b3f32f05264eabdcb2ea0e2e210e66b72a",
+        "9c9742aa-9921-4cf0-aa2e-c51fc82e3dff": "a0cc16e3d460462b29bc7ce277564b7fa2458737d91986b38160c7030930877f",
+        "9d0284b3-bec6-43d0-a6fc-11b50f1daead": "bc483e5d5b486ca43975b435df90242616dad021620c3bb9daf116ada396b99a",
+        "a14d5a44-282d-4727-8b5b-c52790174058": "5612008fed0a19f0d53a1f08cd500247ebfcfcd74062973e57edd5b8ea1cf8d9",
+        "a356256d-720e-4cda-be8d-143b4f31096f": "05d048aad9c08c39df12312e6e83c6ce4c89723b48ba846507be31352546d28c",
+        "a48f98f8-f1fc-40db-ae23-e83d4884daac": "be2cc4d7a65988713a188c9acddd1d3f45538ed5e915646ae4c310d9dc8bf9dc",
+        "aa4b5043-f114-4dd3-9b3b-3483504dcd50": "126b7542c98a73cbd2bf54a124bcd983efafbdfdf3737770d5b9254fbf71f89b",
+        "aea1170b-58a7-4bec-849d-768da47734e7": "c85152b3baa66ce9bdd67c46154578d1eea92899f4c91b409d2374de201b4e1d",
+        "af1ceb8f-061b-4a80-9379-4809283d7c41": "d1da2f0db51ca53a83f7a732bc6ac1d78f24772e12326ac5bb03e97db5d18bb5",
+        "b41533f1-b8a3-4b68-92ff-eaf64bf42547": "f5f2f42b8ec9e987b96429050eaec6de192fdd453b47de654ebdb229d65df54b",
+        "b4812772-deb8-4ce3-8f39-8c7ba987890f": "8d4ef98c5ce30ec929b9d88ce2667e6ed8985c1ef45a8c4c878c453849fb80f0",
+        "b7d4dc96-df06-4e7d-bd43-84d7a3ff6533": "f0fbb2d87d6f003dadb9fb87a9194676a8a6dcaf83a602f3547f0a7bf06ac190",
+        "bf0b06d1-4cd0-4f9c-8f3e-472e9e79fa58": "0bb50f2a99e3384c78ed21bccd8caeffa99b1c24945b85dc64e300d764462af5",
+        "cd69f33b-25b1-4720-8811-e7fa0b682aaf": "91e2c2ee267a63c3d12eba319ad9998104da12ac996944b9ba049f1e8b8170ab",
+        "ce846dcf-dbe2-470c-8dbb-18d4279a791b": "62c15b465a5bff9756c33f5ad050503da4dd704118a207ff2693a0f5faf70fd2",
+        "d0e04d6c-b19f-4c34-beca-c6ea8096fdd1": "75fc0a15c62a2b640bcc7690b2236ca3e9298cb5acdae8533040513c056f929c",
+        "d321af43-1372-4327-8a34-d8fe3c5bf34b": "ed265458ba461ad1b3b6a094b69228cab9bd5efbe27c4162ffabf3ba23091d79",
+        "d3466f00-d1cd-4707-b319-c197d785fe62": "f8a46e8d99ec60cd040c9071291a88987d0ccba8c64c20b09b4e2cbe7fdcf3ba",
+        "da6b0049-49af-4786-a34e-959bb44af2f3": "f80828c5493d48fbd7d86e2dd73d4556b92108cf4f28cd6dafad00038838d2fe",
+        "dfae8a64-d8ea-4f27-90ec-fda5a57d275c": "2c4b914d29a4b5d5027038d1f65773a8915f12e06d0b24f4454c87101efde052",
+        "e73794b6-f0ae-4948-954b-cbf0428ddb72": "e445e2e90f46d166373f3f309162157ad1436596b42f220987b2d815b947b435",
+        "ed4517e3-b952-4986-870d-3e8de1cfd563": "d8920898b8ac125d7452cc99276c70b82fb5f81aab0faa61073a54de8fb2b550",
+        "efc47fac-3b34-46c5-9542-0b0ded8c6b0c": "9c89b997fe3f5805a1007a402c88e370882addaedd4543c5f9d8c9a8d58a4154",
+        "f62f7251-cc27-40b3-9d00-3ba31c2aab3d": "7e7ffbc1e826cb5c015e644e79e9edc3b1e4e2072e8acb6c2d1166bd4789d00c",
+        "fa820c6a-6c82-4e07-be1f-b4fce2b4d559": "abfa85bab9b4aa8881b828dfa38c0855a36fb83d1f340ec6c61c463a89dc66f4",
+        "fd2bbc38-d19d-4b2c-af82-e9004d4af155": "a57d5d14e1780ed341c51980b81ce0a01738d082673a7ffef1b9e06e48f881c7",
+        "fe7168ae-bc85-4478-8992-45545a28c4f2": "3fd92954b6365347da5989280f88b1996626fe66a330d63b434b724387154fe9",
+        "fe728fe5-8911-4f8d-b67a-4cdd3a1c477e": "87828bc7f18c0fdd556c1aa35534e65ffd89dd89554763ef49f5941677e4bea6"
+      }
+    }
+  },
+  "canonicalUnchanged": true,
+  "marketCacheUnchanged": true,
+  "allPreexistingFxPreserved": true,
+  "newFxRows": 56,
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T03:36:28.029Z"
+}

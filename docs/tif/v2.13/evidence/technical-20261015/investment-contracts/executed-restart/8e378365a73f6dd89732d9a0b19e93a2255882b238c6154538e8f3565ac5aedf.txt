@@ -1,0 +1,143 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "preparedAt": "2026-10-15T03:11:00.622650+00:00",
+  "scope": "Nine original CU004 contracts. ExistingBPremium=logicalU1; AFree=logicalU2. No invented broker cash/purchase endpoint. No runtime execution.",
+  "originalCsvSha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+  "cases": [
+    {
+      "case_id": "CP4-01",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "U1Premium cuentaInversiónpropia; preciofixture190.50USD",
+        "entrada": "registrarAAPL5×185USD sincomisiones",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "q5,costo925,valor952.50,P&L27.50,porcentaje2.972972…; display2.97%",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      }
+    },
+    {
+      "case_id": "CP4-02",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "U1 q10,costo1000USD actual110",
+        "entrada": "venta4×120USD",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "q6,costoremanente600,realizado80,norealizado60,valor660; históricocompra/venta conserva ambas",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      }
+    },
+    {
+      "case_id": "CP4-04",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "U1 q6,costo600USD",
+        "entrada": "vender7×120USD",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "rechazo; sin operación, q6,costo600; saldoefectivono cambia",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      }
+    },
+    {
+      "case_id": "CP4-05",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "U1 sinposiciónactivoX",
+        "entrada": "compra10×100; fallopersistirposicióntrasoperación",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "rollbackambas; q0,ningunaoperación; retrymismaclaveproduceq10,costo1000una vez",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      }
+    },
+    {
+      "case_id": "CP4-06",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "U1Premium; tickerFOOFIXnoenproveedor",
+        "entrada": "alta manualq2×50USD actual55 fechafija",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "q2,costo100,valor110,P&L10; etiqueta manual/timestamp, no falsapropiedadmercado",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      }
+    },
+    {
+      "case_id": "CP4-07",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "U1 q6,costo600; preciocache110confecha",
+        "entrada": "proveedoroffline; luego fixturesinprecio",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Con cache110: valor660/P&L60 y fuente cache. Sin cache: referencia compra100→valor600/P&L0, fuente purchase_reference y fecha=null; no precio live inventado. FX faltante produce error de valoración.",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      }
+    },
+    {
+      "case_id": "CP4-10",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "U1/U2 y cuentasactivas/inactivas",
+        "entrada": "U1usaaccountU2 para compra; cuentaU1inactiva; consultaposiciónU2",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "rechazo/novisibilidad; U2intacto",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      }
+    },
+    {
+      "case_id": "CP4-11",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "U1compra10×100,sale4×120,compra4×200; actual150",
+        "entrada": "recalcularportafolio",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Lote original remanente6×100 más nuevo lote4×200; q agregada10; costo1400; realizado80; valor1500; no realizado100. No se cambia el precio unitario del lote original a140.",
+        "evidencia_requerida": "Operaciones/posición SQL antes/después, fixtureprecio y cálculo independiente."
+      }
+    },
+    {
+      "case_id": "CP4-12",
+      "complete_original_contract": false,
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "original_contract": {
+        "precondiciones": "Cuenta inversión con efectivo externo YA conciliado0USD; no posiciones",
+        "entrada": "Registrar compra externa10×100USD, precio actual100USD",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Posición1000USD; efectivo permanece0; patrimonio1000USD. La compra no debita caja automáticamente; efectivo externo debe mantenerse mediante movimientos/ajustes.",
+        "evidencia_requerida": "Requisito de cajaadoptado, snapshotsledger/operación y cálculo; no cerrar hasta regla elegida"
+      }
+    }
+  ],
+  "derived_probes": [
+    {
+      "case_id": "DERIVED-INV-CONCURRENCY",
+      "original_contract": null,
+      "complete_original_contract": false,
+      "scope": "Separate nativePG row-lock overlap proof: distinct oversales and same-command2/10durable replay. Not another original case or a blanketCNF11PASS."
+    },
+    {
+      "case_id": "DERIVED-INV-RESTART-RESUME",
+      "original_contract": null,
+      "complete_original_contract": false,
+      "scope": "Normal Auth same-key retry after root-performed actual Next+Postgres restart; requires changed process identity and prior synthetic artifact, no runtime restart by this runner."
+    },
+    {
+      "case_id": "DERIVED-PLAN-DOWNGRADE",
+      "original_contract": null,
+      "complete_original_contract": false,
+      "scope": "Sixth fresh59321/59322 cloned B0accounts only: four own new accounts/history under Premium, intended fixture expiry to Free, select3 and overcap no-effects, retained read/export/history/position and preserved all other profile/Auth/A original rows. No MercadoPago claim; final Free is retained, no timestamp restoration/trigger bypass."
+    },
+    {
+      "case_id": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "original_contract": null,
+      "complete_original_contract": false,
+      "scope": "Separate ten actually dispatched HTTP clients before release/first response with >=2 observed native PG sessions, one durable effect/ack, prior500 recovery and real201 response-body loss. Prior ten-PG FAIL retained; no ten-session/load PASS claim."
+    }
+  ],
+  "case_execution_results": []
+}

@@ -1,0 +1,2371 @@
+{
+  "status": "PASS",
+  "phase": "replay",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "cases": [
+    {
+      "id": "bot-expense",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "bot-expense: persisted financial snapshot before new-process replay",
+          "passed": true,
+          "actual": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a",
+          "expected": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a"
+        },
+        {
+          "name": "bot-expense: first new-process text replay reaches durable reservation",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-expense: first new-process text replay returns one response",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-expense: first new-process response matches durable result or reserved fence",
+          "passed": true,
+          "actual": "Movimiento sintético confirmado.",
+          "expected": "Movimiento sintético confirmado."
+        },
+        {
+          "name": "bot-expense: one economic ledger row",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-expense: monetary amount exact",
+          "passed": true,
+          "actual": 1500,
+          "expected": 1500
+        },
+        {
+          "name": "bot-expense: owner matches",
+          "passed": true,
+          "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "expected": "172273ed-7c48-427d-a55b-742069a4d9de"
+        },
+        {
+          "name": "bot-expense: one durable ordinal zero receipt",
+          "passed": true,
+          "actual": [
+            "ai:172273ed-7c48-427d-a55b-742069a4d9de:a28ebe5e17a46a346d5223fa23490d67d65132e765227c88f56b51bb847ab19f:0"
+          ],
+          "expected": [
+            "ai:172273ed-7c48-427d-a55b-742069a4d9de:a28ebe5e17a46a346d5223fa23490d67d65132e765227c88f56b51bb847ab19f:0"
+          ]
+        },
+        {
+          "name": "bot-expense: source balance exact",
+          "passed": true,
+          "actual": 8500,
+          "expected": 8500
+        },
+        {
+          "name": "bot-expense: durable quota state",
+          "passed": true,
+          "actual": "completed",
+          "expected": "completed"
+        },
+        {
+          "name": "bot-expense: durable quota result presence",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-expense: ten contenders ready at common replay barrier",
+          "passed": true,
+          "actual": 10,
+          "expected": 10
+        },
+        {
+          "name": "bot-expense: concurrent replay handlers actually overlap",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-expense: ten concurrent redeliveries returned",
+          "passed": true,
+          "actual": [
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled"
+          ],
+          "expected": [
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled"
+          ]
+        },
+        {
+          "name": "bot-expense: no additional provider or tool work",
+          "passed": true,
+          "actual": {
+            "chat": 0,
+            "tool": 0,
+            "image": 0
+          },
+          "expected": {
+            "chat": 0,
+            "tool": 0,
+            "image": 0
+          }
+        },
+        {
+          "name": "bot-expense: ledger receipt quota account snapshot stable across 2+10 replays",
+          "passed": true,
+          "actual": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a",
+          "expected": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a"
+        },
+        {
+          "name": "bot-expense: all 2+10 text replays reached durable reservation RPC",
+          "passed": true,
+          "actual": 12,
+          "expected": 12
+        },
+        {
+          "name": "bot-expense: each replay produces one delivered bot response",
+          "passed": true,
+          "actual": 12,
+          "expected": 12
+        },
+        {
+          "name": "bot-expense: all replay responses delivered by transport double",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-expense: replay responds with exact durable completed result",
+          "passed": true,
+          "actual": [
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado."
+          ],
+          "expected": [
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado."
+          ]
+        },
+        {
+          "name": "bot-expense: normal A reads one own movement",
+          "passed": true,
+          "actual": [
+            {
+              "id": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+              "amount": 1500,
+              "type": "expense"
+            }
+          ],
+          "expected": [
+            {
+              "id": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+              "amount": 1500,
+              "type": "expense"
+            }
+          ]
+        },
+        {
+          "name": "bot-expense: normal B cannot read A movement",
+          "passed": true,
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "bot-expense: real export handler succeeds with normal A session",
+          "passed": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "bot-expense: exported movement exactly once",
+          "passed": true,
+          "actual": [
+            {
+              "id": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+              "amount": 1500
+            }
+          ],
+          "expected": [
+            {
+              "id": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+              "amount": 1500
+            }
+          ]
+        },
+        {
+          "name": "bot-expense: same archived account ledger receipt quota after new-process replay",
+          "passed": true,
+          "actual": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a",
+          "expected": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a"
+        }
+      ],
+      "details": {
+        "sameEventAndRequestKey": true,
+        "noReseed": true,
+        "archivedFixtureRemainsReadable": true,
+        "finalSnapshotSha256": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a",
+        "reservedAckRecoveryClaimed": false
+      }
+    },
+    {
+      "id": "bot-transfer",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "bot-transfer: persisted financial snapshot before new-process replay",
+          "passed": true,
+          "actual": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e",
+          "expected": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e"
+        },
+        {
+          "name": "bot-transfer: first new-process text replay reaches durable reservation",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-transfer: first new-process text replay returns one response",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-transfer: first new-process response matches durable result or reserved fence",
+          "passed": true,
+          "actual": "Movimiento sintético confirmado.",
+          "expected": "Movimiento sintético confirmado."
+        },
+        {
+          "name": "bot-transfer: one economic ledger row",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-transfer: monetary amount exact",
+          "passed": true,
+          "actual": 1500,
+          "expected": 1500
+        },
+        {
+          "name": "bot-transfer: owner matches",
+          "passed": true,
+          "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "expected": "172273ed-7c48-427d-a55b-742069a4d9de"
+        },
+        {
+          "name": "bot-transfer: one durable ordinal zero receipt",
+          "passed": true,
+          "actual": [
+            "ai:172273ed-7c48-427d-a55b-742069a4d9de:05f6b312a283119130efe07f1d840c31522f775f16fb693786a884c38f3870b8:0"
+          ],
+          "expected": [
+            "ai:172273ed-7c48-427d-a55b-742069a4d9de:05f6b312a283119130efe07f1d840c31522f775f16fb693786a884c38f3870b8:0"
+          ]
+        },
+        {
+          "name": "bot-transfer: source balance exact",
+          "passed": true,
+          "actual": 8500,
+          "expected": 8500
+        },
+        {
+          "name": "bot-transfer: destination balance exact",
+          "passed": true,
+          "actual": 3500,
+          "expected": 3500
+        },
+        {
+          "name": "bot-transfer: transfer total preserved",
+          "passed": true,
+          "actual": 12000,
+          "expected": 12000
+        },
+        {
+          "name": "bot-transfer: destination linked",
+          "passed": true,
+          "actual": "e7634f4b-94ce-4503-a471-22d39f737342",
+          "expected": "e7634f4b-94ce-4503-a471-22d39f737342"
+        },
+        {
+          "name": "bot-transfer: durable quota state",
+          "passed": true,
+          "actual": "completed",
+          "expected": "completed"
+        },
+        {
+          "name": "bot-transfer: durable quota result presence",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-transfer: ten contenders ready at common replay barrier",
+          "passed": true,
+          "actual": 10,
+          "expected": 10
+        },
+        {
+          "name": "bot-transfer: concurrent replay handlers actually overlap",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-transfer: ten concurrent redeliveries returned",
+          "passed": true,
+          "actual": [
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled"
+          ],
+          "expected": [
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled"
+          ]
+        },
+        {
+          "name": "bot-transfer: no additional provider or tool work",
+          "passed": true,
+          "actual": {
+            "chat": 0,
+            "tool": 0,
+            "image": 0
+          },
+          "expected": {
+            "chat": 0,
+            "tool": 0,
+            "image": 0
+          }
+        },
+        {
+          "name": "bot-transfer: ledger receipt quota account snapshot stable across 2+10 replays",
+          "passed": true,
+          "actual": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e",
+          "expected": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e"
+        },
+        {
+          "name": "bot-transfer: all 2+10 text replays reached durable reservation RPC",
+          "passed": true,
+          "actual": 12,
+          "expected": 12
+        },
+        {
+          "name": "bot-transfer: each replay produces one delivered bot response",
+          "passed": true,
+          "actual": 12,
+          "expected": 12
+        },
+        {
+          "name": "bot-transfer: all replay responses delivered by transport double",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-transfer: replay responds with exact durable completed result",
+          "passed": true,
+          "actual": [
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado."
+          ],
+          "expected": [
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado."
+          ]
+        },
+        {
+          "name": "bot-transfer: normal A reads one own movement",
+          "passed": true,
+          "actual": [
+            {
+              "id": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+              "amount": 1500,
+              "type": "transfer"
+            }
+          ],
+          "expected": [
+            {
+              "id": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+              "amount": 1500,
+              "type": "transfer"
+            }
+          ]
+        },
+        {
+          "name": "bot-transfer: normal B cannot read A movement",
+          "passed": true,
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "bot-transfer: real export handler succeeds with normal A session",
+          "passed": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "bot-transfer: exported movement exactly once",
+          "passed": true,
+          "actual": [
+            {
+              "id": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+              "amount": 1500
+            }
+          ],
+          "expected": [
+            {
+              "id": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+              "amount": 1500
+            }
+          ]
+        },
+        {
+          "name": "bot-transfer: same archived account ledger receipt quota after new-process replay",
+          "passed": true,
+          "actual": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e",
+          "expected": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e"
+        }
+      ],
+      "details": {
+        "sameEventAndRequestKey": true,
+        "noReseed": true,
+        "archivedFixtureRemainsReadable": true,
+        "finalSnapshotSha256": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e",
+        "reservedAckRecoveryClaimed": false
+      }
+    },
+    {
+      "id": "bot-photo",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "bot-photo: persisted financial snapshot before new-process replay",
+          "passed": true,
+          "actual": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f",
+          "expected": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f"
+        },
+        {
+          "name": "bot-photo: second-process photo reached durable OCR reservation",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-photo: OCR replay returns analysis notice and proposal",
+          "passed": true,
+          "actual": 2,
+          "expected": 2
+        },
+        {
+          "name": "bot-photo: OCR replay proposal preserves amount and account",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-photo: first new-process text replay reaches durable reservation",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-photo: first new-process text replay returns one response",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-photo: first new-process response matches durable result or reserved fence",
+          "passed": true,
+          "actual": "Movimiento sintético confirmado.",
+          "expected": "Movimiento sintético confirmado."
+        },
+        {
+          "name": "bot-photo: one economic ledger row",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-photo: monetary amount exact",
+          "passed": true,
+          "actual": 1500,
+          "expected": 1500
+        },
+        {
+          "name": "bot-photo: owner matches",
+          "passed": true,
+          "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "expected": "172273ed-7c48-427d-a55b-742069a4d9de"
+        },
+        {
+          "name": "bot-photo: one durable ordinal zero receipt",
+          "passed": true,
+          "actual": [
+            "ai:172273ed-7c48-427d-a55b-742069a4d9de:19f77a9392c7d1cffa28c9cf8059e2558002e71bea1d6b948152b8adb50bd19e:0"
+          ],
+          "expected": [
+            "ai:172273ed-7c48-427d-a55b-742069a4d9de:19f77a9392c7d1cffa28c9cf8059e2558002e71bea1d6b948152b8adb50bd19e:0"
+          ]
+        },
+        {
+          "name": "bot-photo: source balance exact",
+          "passed": true,
+          "actual": 8500,
+          "expected": 8500
+        },
+        {
+          "name": "bot-photo: durable quota state",
+          "passed": true,
+          "actual": "completed",
+          "expected": "completed"
+        },
+        {
+          "name": "bot-photo: durable quota result presence",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-photo: durable OCR quota completed",
+          "passed": true,
+          "actual": "completed",
+          "expected": "completed"
+        },
+        {
+          "name": "bot-photo: ten contenders ready at common replay barrier",
+          "passed": true,
+          "actual": 10,
+          "expected": 10
+        },
+        {
+          "name": "bot-photo: concurrent replay handlers actually overlap",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-photo: ten concurrent redeliveries returned",
+          "passed": true,
+          "actual": [
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled"
+          ],
+          "expected": [
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled"
+          ]
+        },
+        {
+          "name": "bot-photo: no additional provider or tool work",
+          "passed": true,
+          "actual": {
+            "chat": 0,
+            "tool": 0,
+            "image": 0
+          },
+          "expected": {
+            "chat": 0,
+            "tool": 0,
+            "image": 0
+          }
+        },
+        {
+          "name": "bot-photo: ledger receipt quota account snapshot stable across 2+10 replays",
+          "passed": true,
+          "actual": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f",
+          "expected": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f"
+        },
+        {
+          "name": "bot-photo: all 2+10 text replays reached durable reservation RPC",
+          "passed": true,
+          "actual": 12,
+          "expected": 12
+        },
+        {
+          "name": "bot-photo: each replay produces one delivered bot response",
+          "passed": true,
+          "actual": 12,
+          "expected": 12
+        },
+        {
+          "name": "bot-photo: all replay responses delivered by transport double",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-photo: replay responds with exact durable completed result",
+          "passed": true,
+          "actual": [
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado."
+          ],
+          "expected": [
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado.",
+            "Movimiento sintético confirmado."
+          ]
+        },
+        {
+          "name": "bot-photo: normal A reads one own movement",
+          "passed": true,
+          "actual": [
+            {
+              "id": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+              "amount": 1500,
+              "type": "expense"
+            }
+          ],
+          "expected": [
+            {
+              "id": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+              "amount": 1500,
+              "type": "expense"
+            }
+          ]
+        },
+        {
+          "name": "bot-photo: normal B cannot read A movement",
+          "passed": true,
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "bot-photo: real export handler succeeds with normal A session",
+          "passed": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "bot-photo: exported movement exactly once",
+          "passed": true,
+          "actual": [
+            {
+              "id": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+              "amount": 1500
+            }
+          ],
+          "expected": [
+            {
+              "id": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+              "amount": 1500
+            }
+          ]
+        },
+        {
+          "name": "bot-photo: same archived account ledger receipt quota after new-process replay",
+          "passed": true,
+          "actual": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f",
+          "expected": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f"
+        }
+      ],
+      "details": {
+        "sameEventAndRequestKey": true,
+        "noReseed": true,
+        "archivedFixtureRemainsReadable": true,
+        "finalSnapshotSha256": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f",
+        "reservedAckRecoveryClaimed": false
+      }
+    },
+    {
+      "id": "bot-ambiguous",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "bot-ambiguous: persisted financial snapshot before new-process replay",
+          "passed": true,
+          "actual": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069",
+          "expected": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069"
+        },
+        {
+          "name": "bot-ambiguous: first new-process text replay reaches durable reservation",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-ambiguous: first new-process text replay returns one response",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-ambiguous: first new-process response matches durable result or reserved fence",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-ambiguous: one economic ledger row",
+          "passed": true,
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "bot-ambiguous: monetary amount exact",
+          "passed": true,
+          "actual": 1500,
+          "expected": 1500
+        },
+        {
+          "name": "bot-ambiguous: owner matches",
+          "passed": true,
+          "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "expected": "172273ed-7c48-427d-a55b-742069a4d9de"
+        },
+        {
+          "name": "bot-ambiguous: one durable ordinal zero receipt",
+          "passed": true,
+          "actual": [
+            "ai:172273ed-7c48-427d-a55b-742069a4d9de:e9136cb213ee47696fc3e70a7294c7d99392b5841164b0e81319b05550f9ee8d:0"
+          ],
+          "expected": [
+            "ai:172273ed-7c48-427d-a55b-742069a4d9de:e9136cb213ee47696fc3e70a7294c7d99392b5841164b0e81319b05550f9ee8d:0"
+          ]
+        },
+        {
+          "name": "bot-ambiguous: source balance exact",
+          "passed": true,
+          "actual": 8500,
+          "expected": 8500
+        },
+        {
+          "name": "bot-ambiguous: durable quota state",
+          "passed": true,
+          "actual": "reserved",
+          "expected": "reserved"
+        },
+        {
+          "name": "bot-ambiguous: durable quota result presence",
+          "passed": true,
+          "actual": false,
+          "expected": false
+        },
+        {
+          "name": "bot-ambiguous: ten contenders ready at common replay barrier",
+          "passed": true,
+          "actual": 10,
+          "expected": 10
+        },
+        {
+          "name": "bot-ambiguous: concurrent replay handlers actually overlap",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-ambiguous: ten concurrent redeliveries returned",
+          "passed": true,
+          "actual": [
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled"
+          ],
+          "expected": [
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled",
+            "fulfilled"
+          ]
+        },
+        {
+          "name": "bot-ambiguous: no additional provider or tool work",
+          "passed": true,
+          "actual": {
+            "chat": 0,
+            "tool": 0,
+            "image": 0
+          },
+          "expected": {
+            "chat": 0,
+            "tool": 0,
+            "image": 0
+          }
+        },
+        {
+          "name": "bot-ambiguous: ledger receipt quota account snapshot stable across 2+10 replays",
+          "passed": true,
+          "actual": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069",
+          "expected": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069"
+        },
+        {
+          "name": "bot-ambiguous: all 2+10 text replays reached durable reservation RPC",
+          "passed": true,
+          "actual": 12,
+          "expected": 12
+        },
+        {
+          "name": "bot-ambiguous: each replay produces one delivered bot response",
+          "passed": true,
+          "actual": 12,
+          "expected": 12
+        },
+        {
+          "name": "bot-ambiguous: all replay responses delivered by transport double",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-ambiguous: bot indicates pending request on each repeat",
+          "passed": true,
+          "actual": true,
+          "expected": true
+        },
+        {
+          "name": "bot-ambiguous: normal A reads one own movement",
+          "passed": true,
+          "actual": [
+            {
+              "id": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+              "amount": 1500,
+              "type": "expense"
+            }
+          ],
+          "expected": [
+            {
+              "id": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+              "amount": 1500,
+              "type": "expense"
+            }
+          ]
+        },
+        {
+          "name": "bot-ambiguous: normal B cannot read A movement",
+          "passed": true,
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "bot-ambiguous: real export handler succeeds with normal A session",
+          "passed": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "bot-ambiguous: exported movement exactly once",
+          "passed": true,
+          "actual": [
+            {
+              "id": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+              "amount": 1500
+            }
+          ],
+          "expected": [
+            {
+              "id": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+              "amount": 1500
+            }
+          ]
+        },
+        {
+          "name": "bot-ambiguous: same archived account ledger receipt quota after new-process replay",
+          "passed": true,
+          "actual": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069",
+          "expected": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069"
+        }
+      ],
+      "details": {
+        "sameEventAndRequestKey": true,
+        "noReseed": true,
+        "archivedFixtureRemainsReadable": true,
+        "finalSnapshotSha256": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069",
+        "reservedAckRecoveryClaimed": false
+      }
+    }
+  ],
+  "acknowledgementTimeouts": [],
+  "concurrencyWaves": [
+    {
+      "fixtureId": "bot-expense",
+      "postCommitOnly": true,
+      "readyAtRelease": 10,
+      "releasedAtMs": 4112.732584,
+      "peakInFlight": 10,
+      "individual": [
+        {
+          "index": 0,
+          "status": "fulfilled",
+          "startedAtMs": 4112.738084,
+          "finishedAtMs": 4447.818542
+        },
+        {
+          "index": 1,
+          "status": "fulfilled",
+          "startedAtMs": 4112.812542,
+          "finishedAtMs": 4454.891917
+        },
+        {
+          "index": 2,
+          "status": "fulfilled",
+          "startedAtMs": 4112.862125,
+          "finishedAtMs": 4461.750292
+        },
+        {
+          "index": 3,
+          "status": "fulfilled",
+          "startedAtMs": 4112.978125,
+          "finishedAtMs": 4442.900292
+        },
+        {
+          "index": 4,
+          "status": "fulfilled",
+          "startedAtMs": 4113.026,
+          "finishedAtMs": 4465.838
+        },
+        {
+          "index": 5,
+          "status": "fulfilled",
+          "startedAtMs": 4113.077834,
+          "finishedAtMs": 4498.845792
+        },
+        {
+          "index": 6,
+          "status": "fulfilled",
+          "startedAtMs": 4113.120459,
+          "finishedAtMs": 4487.723625
+        },
+        {
+          "index": 7,
+          "status": "fulfilled",
+          "startedAtMs": 4113.225834,
+          "finishedAtMs": 4474.639667
+        },
+        {
+          "index": 8,
+          "status": "fulfilled",
+          "startedAtMs": 4113.272709,
+          "finishedAtMs": 4480.912542
+        },
+        {
+          "index": 9,
+          "status": "fulfilled",
+          "startedAtMs": 4113.311917,
+          "finishedAtMs": 4493.971625
+        }
+      ]
+    },
+    {
+      "fixtureId": "bot-transfer",
+      "postCommitOnly": true,
+      "readyAtRelease": 10,
+      "releasedAtMs": 6836.797167,
+      "peakInFlight": 10,
+      "individual": [
+        {
+          "index": 0,
+          "status": "fulfilled",
+          "startedAtMs": 6836.802084,
+          "finishedAtMs": 7176.195959
+        },
+        {
+          "index": 1,
+          "status": "fulfilled",
+          "startedAtMs": 6836.86525,
+          "finishedAtMs": 7182.977792
+        },
+        {
+          "index": 2,
+          "status": "fulfilled",
+          "startedAtMs": 6836.902292,
+          "finishedAtMs": 7236.702584
+        },
+        {
+          "index": 3,
+          "status": "fulfilled",
+          "startedAtMs": 6836.935125,
+          "finishedAtMs": 7206.64775
+        },
+        {
+          "index": 4,
+          "status": "fulfilled",
+          "startedAtMs": 6836.968417,
+          "finishedAtMs": 7212.366667
+        },
+        {
+          "index": 5,
+          "status": "fulfilled",
+          "startedAtMs": 6836.999625,
+          "finishedAtMs": 7190.150834
+        },
+        {
+          "index": 6,
+          "status": "fulfilled",
+          "startedAtMs": 6837.0305,
+          "finishedAtMs": 7224.50825
+        },
+        {
+          "index": 7,
+          "status": "fulfilled",
+          "startedAtMs": 6837.057459,
+          "finishedAtMs": 7197.953167
+        },
+        {
+          "index": 8,
+          "status": "fulfilled",
+          "startedAtMs": 6837.08525,
+          "finishedAtMs": 7216.561834
+        },
+        {
+          "index": 9,
+          "status": "fulfilled",
+          "startedAtMs": 6837.113584,
+          "finishedAtMs": 7231.751625
+        }
+      ]
+    },
+    {
+      "fixtureId": "bot-photo",
+      "postCommitOnly": true,
+      "readyAtRelease": 10,
+      "releasedAtMs": 9667.761542,
+      "peakInFlight": 10,
+      "individual": [
+        {
+          "index": 0,
+          "status": "fulfilled",
+          "startedAtMs": 9667.765834,
+          "finishedAtMs": 10014.207792
+        },
+        {
+          "index": 1,
+          "status": "fulfilled",
+          "startedAtMs": 9667.81725,
+          "finishedAtMs": 10033.299667
+        },
+        {
+          "index": 2,
+          "status": "fulfilled",
+          "startedAtMs": 9667.847875,
+          "finishedAtMs": 10057.968125
+        },
+        {
+          "index": 3,
+          "status": "fulfilled",
+          "startedAtMs": 9667.875292,
+          "finishedAtMs": 10025.085042
+        },
+        {
+          "index": 4,
+          "status": "fulfilled",
+          "startedAtMs": 9667.901084,
+          "finishedAtMs": 10017.9475
+        },
+        {
+          "index": 5,
+          "status": "fulfilled",
+          "startedAtMs": 9667.926625,
+          "finishedAtMs": 10044.997
+        },
+        {
+          "index": 6,
+          "status": "fulfilled",
+          "startedAtMs": 9667.95175,
+          "finishedAtMs": 10040.154125
+        },
+        {
+          "index": 7,
+          "status": "fulfilled",
+          "startedAtMs": 9667.976375,
+          "finishedAtMs": 10051.067709
+        },
+        {
+          "index": 8,
+          "status": "fulfilled",
+          "startedAtMs": 9668.003334,
+          "finishedAtMs": 10067.757792
+        },
+        {
+          "index": 9,
+          "status": "fulfilled",
+          "startedAtMs": 9668.028084,
+          "finishedAtMs": 10063.863875
+        }
+      ]
+    },
+    {
+      "fixtureId": "bot-ambiguous",
+      "postCommitOnly": true,
+      "readyAtRelease": 10,
+      "releasedAtMs": 12376.077917,
+      "peakInFlight": 10,
+      "individual": [
+        {
+          "index": 0,
+          "status": "fulfilled",
+          "startedAtMs": 12376.08175,
+          "finishedAtMs": 12615.351667
+        },
+        {
+          "index": 1,
+          "status": "fulfilled",
+          "startedAtMs": 12376.129125,
+          "finishedAtMs": 12605.633334
+        },
+        {
+          "index": 2,
+          "status": "fulfilled",
+          "startedAtMs": 12376.157042,
+          "finishedAtMs": 12610.446209
+        },
+        {
+          "index": 3,
+          "status": "fulfilled",
+          "startedAtMs": 12376.181917,
+          "finishedAtMs": 12619.363292
+        },
+        {
+          "index": 4,
+          "status": "fulfilled",
+          "startedAtMs": 12376.204584,
+          "finishedAtMs": 12629.477167
+        },
+        {
+          "index": 5,
+          "status": "fulfilled",
+          "startedAtMs": 12376.226667,
+          "finishedAtMs": 12634.411917
+        },
+        {
+          "index": 6,
+          "status": "fulfilled",
+          "startedAtMs": 12376.248792,
+          "finishedAtMs": 12648.336417
+        },
+        {
+          "index": 7,
+          "status": "fulfilled",
+          "startedAtMs": 12376.27025,
+          "finishedAtMs": 12624.839125
+        },
+        {
+          "index": 8,
+          "status": "fulfilled",
+          "startedAtMs": 12376.291292,
+          "finishedAtMs": 12638.346334
+        },
+        {
+          "index": 9,
+          "status": "fulfilled",
+          "startedAtMs": 12376.312542,
+          "finishedAtMs": 12643.428959
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "Robust non-enumerable Error capture calibrated before Auth/SQL",
+      "passed": true,
+      "actual": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "expected": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "name": "Exact owned database",
+      "passed": true,
+      "actual": "zarix_delta_e4bd026f703549bfa24de940134184b8",
+      "expected": "zarix_delta_e4bd026f703549bfa24de940134184b8"
+    },
+    {
+      "name": "No existing Auth sessions",
+      "passed": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "No existing refresh grants",
+      "passed": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "All non-plan profile columns preserved while preparing fixture",
+      "passed": true,
+      "actual": "73ecd6ced1c814e55a05fa67c50a8a312c05ff9962bdf4cfb7a1028254d6f313",
+      "expected": "73ecd6ced1c814e55a05fa67c50a8a312c05ff9962bdf4cfb7a1028254d6f313"
+    },
+    {
+      "name": "bot-expense: persisted financial snapshot before new-process replay",
+      "passed": true,
+      "actual": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a",
+      "expected": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a"
+    },
+    {
+      "name": "bot-expense: first new-process text replay reaches durable reservation",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-expense: first new-process text replay returns one response",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-expense: first new-process response matches durable result or reserved fence",
+      "passed": true,
+      "actual": "Movimiento sintético confirmado.",
+      "expected": "Movimiento sintético confirmado."
+    },
+    {
+      "name": "bot-expense: one economic ledger row",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-expense: monetary amount exact",
+      "passed": true,
+      "actual": 1500,
+      "expected": 1500
+    },
+    {
+      "name": "bot-expense: owner matches",
+      "passed": true,
+      "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "expected": "172273ed-7c48-427d-a55b-742069a4d9de"
+    },
+    {
+      "name": "bot-expense: one durable ordinal zero receipt",
+      "passed": true,
+      "actual": [
+        "ai:172273ed-7c48-427d-a55b-742069a4d9de:a28ebe5e17a46a346d5223fa23490d67d65132e765227c88f56b51bb847ab19f:0"
+      ],
+      "expected": [
+        "ai:172273ed-7c48-427d-a55b-742069a4d9de:a28ebe5e17a46a346d5223fa23490d67d65132e765227c88f56b51bb847ab19f:0"
+      ]
+    },
+    {
+      "name": "bot-expense: source balance exact",
+      "passed": true,
+      "actual": 8500,
+      "expected": 8500
+    },
+    {
+      "name": "bot-expense: durable quota state",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "bot-expense: durable quota result presence",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-expense: ten contenders ready at common replay barrier",
+      "passed": true,
+      "actual": 10,
+      "expected": 10
+    },
+    {
+      "name": "bot-expense: concurrent replay handlers actually overlap",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-expense: ten concurrent redeliveries returned",
+      "passed": true,
+      "actual": [
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled"
+      ],
+      "expected": [
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled"
+      ]
+    },
+    {
+      "name": "bot-expense: no additional provider or tool work",
+      "passed": true,
+      "actual": {
+        "chat": 0,
+        "tool": 0,
+        "image": 0
+      },
+      "expected": {
+        "chat": 0,
+        "tool": 0,
+        "image": 0
+      }
+    },
+    {
+      "name": "bot-expense: ledger receipt quota account snapshot stable across 2+10 replays",
+      "passed": true,
+      "actual": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a",
+      "expected": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a"
+    },
+    {
+      "name": "bot-expense: all 2+10 text replays reached durable reservation RPC",
+      "passed": true,
+      "actual": 12,
+      "expected": 12
+    },
+    {
+      "name": "bot-expense: each replay produces one delivered bot response",
+      "passed": true,
+      "actual": 12,
+      "expected": 12
+    },
+    {
+      "name": "bot-expense: all replay responses delivered by transport double",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-expense: replay responds with exact durable completed result",
+      "passed": true,
+      "actual": [
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado."
+      ],
+      "expected": [
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado."
+      ]
+    },
+    {
+      "name": "bot-expense: normal A reads one own movement",
+      "passed": true,
+      "actual": [
+        {
+          "id": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+          "amount": 1500,
+          "type": "expense"
+        }
+      ],
+      "expected": [
+        {
+          "id": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+          "amount": 1500,
+          "type": "expense"
+        }
+      ]
+    },
+    {
+      "name": "bot-expense: normal B cannot read A movement",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "bot-expense: real export handler succeeds with normal A session",
+      "passed": true,
+      "actual": 200,
+      "expected": 200
+    },
+    {
+      "name": "bot-expense: exported movement exactly once",
+      "passed": true,
+      "actual": [
+        {
+          "id": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+          "amount": 1500
+        }
+      ],
+      "expected": [
+        {
+          "id": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+          "amount": 1500
+        }
+      ]
+    },
+    {
+      "name": "bot-expense: same archived account ledger receipt quota after new-process replay",
+      "passed": true,
+      "actual": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a",
+      "expected": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a"
+    },
+    {
+      "name": "bot-transfer: persisted financial snapshot before new-process replay",
+      "passed": true,
+      "actual": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e",
+      "expected": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e"
+    },
+    {
+      "name": "bot-transfer: first new-process text replay reaches durable reservation",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-transfer: first new-process text replay returns one response",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-transfer: first new-process response matches durable result or reserved fence",
+      "passed": true,
+      "actual": "Movimiento sintético confirmado.",
+      "expected": "Movimiento sintético confirmado."
+    },
+    {
+      "name": "bot-transfer: one economic ledger row",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-transfer: monetary amount exact",
+      "passed": true,
+      "actual": 1500,
+      "expected": 1500
+    },
+    {
+      "name": "bot-transfer: owner matches",
+      "passed": true,
+      "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "expected": "172273ed-7c48-427d-a55b-742069a4d9de"
+    },
+    {
+      "name": "bot-transfer: one durable ordinal zero receipt",
+      "passed": true,
+      "actual": [
+        "ai:172273ed-7c48-427d-a55b-742069a4d9de:05f6b312a283119130efe07f1d840c31522f775f16fb693786a884c38f3870b8:0"
+      ],
+      "expected": [
+        "ai:172273ed-7c48-427d-a55b-742069a4d9de:05f6b312a283119130efe07f1d840c31522f775f16fb693786a884c38f3870b8:0"
+      ]
+    },
+    {
+      "name": "bot-transfer: source balance exact",
+      "passed": true,
+      "actual": 8500,
+      "expected": 8500
+    },
+    {
+      "name": "bot-transfer: destination balance exact",
+      "passed": true,
+      "actual": 3500,
+      "expected": 3500
+    },
+    {
+      "name": "bot-transfer: transfer total preserved",
+      "passed": true,
+      "actual": 12000,
+      "expected": 12000
+    },
+    {
+      "name": "bot-transfer: destination linked",
+      "passed": true,
+      "actual": "e7634f4b-94ce-4503-a471-22d39f737342",
+      "expected": "e7634f4b-94ce-4503-a471-22d39f737342"
+    },
+    {
+      "name": "bot-transfer: durable quota state",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "bot-transfer: durable quota result presence",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-transfer: ten contenders ready at common replay barrier",
+      "passed": true,
+      "actual": 10,
+      "expected": 10
+    },
+    {
+      "name": "bot-transfer: concurrent replay handlers actually overlap",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-transfer: ten concurrent redeliveries returned",
+      "passed": true,
+      "actual": [
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled"
+      ],
+      "expected": [
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled"
+      ]
+    },
+    {
+      "name": "bot-transfer: no additional provider or tool work",
+      "passed": true,
+      "actual": {
+        "chat": 0,
+        "tool": 0,
+        "image": 0
+      },
+      "expected": {
+        "chat": 0,
+        "tool": 0,
+        "image": 0
+      }
+    },
+    {
+      "name": "bot-transfer: ledger receipt quota account snapshot stable across 2+10 replays",
+      "passed": true,
+      "actual": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e",
+      "expected": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e"
+    },
+    {
+      "name": "bot-transfer: all 2+10 text replays reached durable reservation RPC",
+      "passed": true,
+      "actual": 12,
+      "expected": 12
+    },
+    {
+      "name": "bot-transfer: each replay produces one delivered bot response",
+      "passed": true,
+      "actual": 12,
+      "expected": 12
+    },
+    {
+      "name": "bot-transfer: all replay responses delivered by transport double",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-transfer: replay responds with exact durable completed result",
+      "passed": true,
+      "actual": [
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado."
+      ],
+      "expected": [
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado."
+      ]
+    },
+    {
+      "name": "bot-transfer: normal A reads one own movement",
+      "passed": true,
+      "actual": [
+        {
+          "id": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+          "amount": 1500,
+          "type": "transfer"
+        }
+      ],
+      "expected": [
+        {
+          "id": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+          "amount": 1500,
+          "type": "transfer"
+        }
+      ]
+    },
+    {
+      "name": "bot-transfer: normal B cannot read A movement",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "bot-transfer: real export handler succeeds with normal A session",
+      "passed": true,
+      "actual": 200,
+      "expected": 200
+    },
+    {
+      "name": "bot-transfer: exported movement exactly once",
+      "passed": true,
+      "actual": [
+        {
+          "id": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+          "amount": 1500
+        }
+      ],
+      "expected": [
+        {
+          "id": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+          "amount": 1500
+        }
+      ]
+    },
+    {
+      "name": "bot-transfer: same archived account ledger receipt quota after new-process replay",
+      "passed": true,
+      "actual": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e",
+      "expected": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e"
+    },
+    {
+      "name": "bot-photo: persisted financial snapshot before new-process replay",
+      "passed": true,
+      "actual": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f",
+      "expected": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f"
+    },
+    {
+      "name": "bot-photo: second-process photo reached durable OCR reservation",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-photo: OCR replay returns analysis notice and proposal",
+      "passed": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "name": "bot-photo: OCR replay proposal preserves amount and account",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-photo: first new-process text replay reaches durable reservation",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-photo: first new-process text replay returns one response",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-photo: first new-process response matches durable result or reserved fence",
+      "passed": true,
+      "actual": "Movimiento sintético confirmado.",
+      "expected": "Movimiento sintético confirmado."
+    },
+    {
+      "name": "bot-photo: one economic ledger row",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-photo: monetary amount exact",
+      "passed": true,
+      "actual": 1500,
+      "expected": 1500
+    },
+    {
+      "name": "bot-photo: owner matches",
+      "passed": true,
+      "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "expected": "172273ed-7c48-427d-a55b-742069a4d9de"
+    },
+    {
+      "name": "bot-photo: one durable ordinal zero receipt",
+      "passed": true,
+      "actual": [
+        "ai:172273ed-7c48-427d-a55b-742069a4d9de:19f77a9392c7d1cffa28c9cf8059e2558002e71bea1d6b948152b8adb50bd19e:0"
+      ],
+      "expected": [
+        "ai:172273ed-7c48-427d-a55b-742069a4d9de:19f77a9392c7d1cffa28c9cf8059e2558002e71bea1d6b948152b8adb50bd19e:0"
+      ]
+    },
+    {
+      "name": "bot-photo: source balance exact",
+      "passed": true,
+      "actual": 8500,
+      "expected": 8500
+    },
+    {
+      "name": "bot-photo: durable quota state",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "bot-photo: durable quota result presence",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-photo: durable OCR quota completed",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "bot-photo: ten contenders ready at common replay barrier",
+      "passed": true,
+      "actual": 10,
+      "expected": 10
+    },
+    {
+      "name": "bot-photo: concurrent replay handlers actually overlap",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-photo: ten concurrent redeliveries returned",
+      "passed": true,
+      "actual": [
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled"
+      ],
+      "expected": [
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled"
+      ]
+    },
+    {
+      "name": "bot-photo: no additional provider or tool work",
+      "passed": true,
+      "actual": {
+        "chat": 0,
+        "tool": 0,
+        "image": 0
+      },
+      "expected": {
+        "chat": 0,
+        "tool": 0,
+        "image": 0
+      }
+    },
+    {
+      "name": "bot-photo: ledger receipt quota account snapshot stable across 2+10 replays",
+      "passed": true,
+      "actual": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f",
+      "expected": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f"
+    },
+    {
+      "name": "bot-photo: all 2+10 text replays reached durable reservation RPC",
+      "passed": true,
+      "actual": 12,
+      "expected": 12
+    },
+    {
+      "name": "bot-photo: each replay produces one delivered bot response",
+      "passed": true,
+      "actual": 12,
+      "expected": 12
+    },
+    {
+      "name": "bot-photo: all replay responses delivered by transport double",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-photo: replay responds with exact durable completed result",
+      "passed": true,
+      "actual": [
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado."
+      ],
+      "expected": [
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado.",
+        "Movimiento sintético confirmado."
+      ]
+    },
+    {
+      "name": "bot-photo: normal A reads one own movement",
+      "passed": true,
+      "actual": [
+        {
+          "id": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+          "amount": 1500,
+          "type": "expense"
+        }
+      ],
+      "expected": [
+        {
+          "id": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+          "amount": 1500,
+          "type": "expense"
+        }
+      ]
+    },
+    {
+      "name": "bot-photo: normal B cannot read A movement",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "bot-photo: real export handler succeeds with normal A session",
+      "passed": true,
+      "actual": 200,
+      "expected": 200
+    },
+    {
+      "name": "bot-photo: exported movement exactly once",
+      "passed": true,
+      "actual": [
+        {
+          "id": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+          "amount": 1500
+        }
+      ],
+      "expected": [
+        {
+          "id": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+          "amount": 1500
+        }
+      ]
+    },
+    {
+      "name": "bot-photo: same archived account ledger receipt quota after new-process replay",
+      "passed": true,
+      "actual": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f",
+      "expected": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f"
+    },
+    {
+      "name": "bot-ambiguous: persisted financial snapshot before new-process replay",
+      "passed": true,
+      "actual": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069",
+      "expected": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069"
+    },
+    {
+      "name": "bot-ambiguous: first new-process text replay reaches durable reservation",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-ambiguous: first new-process text replay returns one response",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-ambiguous: first new-process response matches durable result or reserved fence",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-ambiguous: one economic ledger row",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bot-ambiguous: monetary amount exact",
+      "passed": true,
+      "actual": 1500,
+      "expected": 1500
+    },
+    {
+      "name": "bot-ambiguous: owner matches",
+      "passed": true,
+      "actual": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "expected": "172273ed-7c48-427d-a55b-742069a4d9de"
+    },
+    {
+      "name": "bot-ambiguous: one durable ordinal zero receipt",
+      "passed": true,
+      "actual": [
+        "ai:172273ed-7c48-427d-a55b-742069a4d9de:e9136cb213ee47696fc3e70a7294c7d99392b5841164b0e81319b05550f9ee8d:0"
+      ],
+      "expected": [
+        "ai:172273ed-7c48-427d-a55b-742069a4d9de:e9136cb213ee47696fc3e70a7294c7d99392b5841164b0e81319b05550f9ee8d:0"
+      ]
+    },
+    {
+      "name": "bot-ambiguous: source balance exact",
+      "passed": true,
+      "actual": 8500,
+      "expected": 8500
+    },
+    {
+      "name": "bot-ambiguous: durable quota state",
+      "passed": true,
+      "actual": "reserved",
+      "expected": "reserved"
+    },
+    {
+      "name": "bot-ambiguous: durable quota result presence",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "bot-ambiguous: ten contenders ready at common replay barrier",
+      "passed": true,
+      "actual": 10,
+      "expected": 10
+    },
+    {
+      "name": "bot-ambiguous: concurrent replay handlers actually overlap",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-ambiguous: ten concurrent redeliveries returned",
+      "passed": true,
+      "actual": [
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled"
+      ],
+      "expected": [
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled",
+        "fulfilled"
+      ]
+    },
+    {
+      "name": "bot-ambiguous: no additional provider or tool work",
+      "passed": true,
+      "actual": {
+        "chat": 0,
+        "tool": 0,
+        "image": 0
+      },
+      "expected": {
+        "chat": 0,
+        "tool": 0,
+        "image": 0
+      }
+    },
+    {
+      "name": "bot-ambiguous: ledger receipt quota account snapshot stable across 2+10 replays",
+      "passed": true,
+      "actual": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069",
+      "expected": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069"
+    },
+    {
+      "name": "bot-ambiguous: all 2+10 text replays reached durable reservation RPC",
+      "passed": true,
+      "actual": 12,
+      "expected": 12
+    },
+    {
+      "name": "bot-ambiguous: each replay produces one delivered bot response",
+      "passed": true,
+      "actual": 12,
+      "expected": 12
+    },
+    {
+      "name": "bot-ambiguous: all replay responses delivered by transport double",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-ambiguous: bot indicates pending request on each repeat",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "bot-ambiguous: normal A reads one own movement",
+      "passed": true,
+      "actual": [
+        {
+          "id": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+          "amount": 1500,
+          "type": "expense"
+        }
+      ],
+      "expected": [
+        {
+          "id": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+          "amount": 1500,
+          "type": "expense"
+        }
+      ]
+    },
+    {
+      "name": "bot-ambiguous: normal B cannot read A movement",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "bot-ambiguous: real export handler succeeds with normal A session",
+      "passed": true,
+      "actual": 200,
+      "expected": 200
+    },
+    {
+      "name": "bot-ambiguous: exported movement exactly once",
+      "passed": true,
+      "actual": [
+        {
+          "id": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+          "amount": 1500
+        }
+      ],
+      "expected": [
+        {
+          "id": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+          "amount": 1500
+        }
+      ]
+    },
+    {
+      "name": "bot-ambiguous: same archived account ledger receipt quota after new-process replay",
+      "passed": true,
+      "actual": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069",
+      "expected": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069"
+    },
+    {
+      "name": "Second process performs zero Gemini chat/tool/image work",
+      "passed": true,
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "expected": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "counters": {
+    "resolver": 53,
+    "mediaDownload": 1,
+    "imageWork": 0,
+    "chatWork": 0,
+    "toolWork": 0,
+    "ackLosses": 0,
+    "updates": 53
+  },
+  "rpcCounts": {
+    "reserve_plan_usage": 53
+  },
+  "cleanup": {
+    "ownAccountsArchived": true,
+    "profilePlanFieldsRestored": true,
+    "allOtherProfileColumnsUnchanged": true,
+    "existingRowsUnchanged": true,
+    "authSessions": 0,
+    "authRefreshTokens": 0,
+    "sdkLogout": [
+      {
+        "noError": true,
+        "status": null
+      },
+      {
+        "noError": true,
+        "status": null
+      }
+    ],
+    "ownerAOtherColumnsUnchanged": true,
+    "ownerBCompleteProfileUnchanged": true,
+    "ownerAUpdatedAtDelta": {
+      "before": "2026-10-15T09:51:45.838687+00:00",
+      "after": "2026-10-15T09:53:07.449809+00:00",
+      "changed": true,
+      "automaticPlanUpdatePerformed": true,
+      "unchangedIfNoPlanUpdate": true
+    }
+  },
+  "privacy": {
+    "inspectedWith": "formatWithOptions(showHidden:true,depth:null,maxArrayLength:Infinity,maxStringLength:Infinity,customInspect:false)",
+    "calibration": {
+      "errorMessage": true,
+      "errorStack": true,
+      "causeMessage": true,
+      "causeStack": true,
+      "callsBeforeClear": 1,
+      "callsAfterClear": 0,
+      "beforeAuthAndSql": true
+    },
+    "selectedSecretCount": 13,
+    "exactSelectedSecretHits": 0,
+    "syntheticErrorCanaryHits": 0,
+    "consoleCalls": 13,
+    "rawConsolePersisted": false,
+    "tokenOrSessionFilesCreated": false
+  },
+  "existingBotHistoryProtection": {
+    "priorUnrelatedChatRowsProtected": true,
+    "replayOwnChatRowsAllowedToAppend": [
+      1366746310,
+      1232317353,
+      1209585156,
+      1160736695
+    ]
+  },
+  "scope": {
+    "real": [
+      "application handlers/middleware",
+      "quota and tool execution",
+      "monetary services/RPC",
+      "Auth",
+      "PostgREST",
+      "PostgreSQL",
+      "owner RLS read",
+      "export handler"
+    ],
+    "doubled": [
+      "Telegraf dispatcher/transport",
+      "Gemini provider",
+      "media download"
+    ],
+    "browserOrTelegramProviderTested": false,
+    "automaticReservedAckRecoveryClaimed": false,
+    "externalCredentialsCreated": 0,
+    "newIdentities": 0,
+    "completedReplayBoundary": "2 sequential + 10 concurrent after first durable completion",
+    "processRestartScope": "new worker, same persistent database and event IDs"
+  }
+}

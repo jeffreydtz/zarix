@@ -1,0 +1,124 @@
+{
+  "productRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "buildId": "Yi9bH3FttO71PxvY-EwCH",
+  "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+  "scope": "Three original contracts; literal307 includes explicit supplemental real-component SSR composition, with all original failures retained.",
+  "commands": [
+    {
+      "phase": "syntax",
+      "command": "node --check <each of the five prepared .mjs sources>; no imports or execution"
+    },
+    {
+      "phase": "attempt-1",
+      "command": "ZARIX_EMPTY_ACCOUNT_WINDOW=parent-released-after-native-ready ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only node docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/run.mjs",
+      "sourceManifest": "attempt-1/manifest.json",
+      "result": "Stopped in erroneous FX-dependent preflight; zero financial commands"
+    },
+    {
+      "phase": "attempt-2",
+      "command": "ZARIX_EMPTY_ACCOUNT_WINDOW=parent-released-after-native-ready ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only node docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/run.mjs",
+      "sourceManifest": "attempt-2/manifest.json",
+      "result": "19+15+17 observed assertions PASS; case statuses2PASS/1harnessFAIL preserved"
+    },
+    {
+      "phase": "cp307-composition",
+      "command": "./node_modules/.bin/vitest run --config docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/cp307-composition/vitest.config.mts --reporter=json --outputFile=docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/cp307-composition/ssr-results.json",
+      "result": "3PASS; output moved from config-root-relative duplicate directory to cp307-composition/ssr-results.json without re-execution"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "README.md",
+      "sha256": "6e00e3644b51c02f62cae11e6ab9ace1d2dcd2cb47ab06c52ae37e01ddc5c6db"
+    },
+    {
+      "path": "attempt-1/manifest.json",
+      "sha256": "9cf4796230ff578e1fdb1bc4eb66222539846caa0debf80dd12e59540fc55ed4"
+    },
+    {
+      "path": "attempt-1/sources/run.mjs",
+      "sha256": "c423d87ebfe1faae81bcff499fd52ebd1553b2a40881a86014748edeeef0f162"
+    },
+    {
+      "path": "attempt-1/sources/ssr-contracts.mjs",
+      "sha256": "b7700e6d25ace41d404fdb4c4e68e270ce915b4fb3d8390298815d74e9516c38"
+    },
+    {
+      "path": "attempt-1/sources/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "attempt-1/sources/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "attempt-1/verification.json",
+      "sha256": "6ee0657f6e7b0dcb02cf9055837b7fca61c95ca209a02e5e427ab5315a46f682"
+    },
+    {
+      "path": "attempt-2/manifest.json",
+      "sha256": "06f42cbc2cffa10619b27964b9b10b3371cf36b8811baa697d159921cea318dd"
+    },
+    {
+      "path": "attempt-2/sources/run.mjs",
+      "sha256": "9dfd768487f363a39b5d78979915b0646055e3b95acdf3d33ae37f11720a05d5"
+    },
+    {
+      "path": "attempt-2/sources/ssr-contracts.mjs",
+      "sha256": "b7700e6d25ace41d404fdb4c4e68e270ce915b4fb3d8390298815d74e9516c38"
+    },
+    {
+      "path": "attempt-2/sources/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "attempt-2/sources/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "attempt-2/verification.json",
+      "sha256": "6c07f7acfd23f1832b650288edbe8cb745a79e87956074d8f2e2244d9e5514a8"
+    },
+    {
+      "path": "cp307-composition/account-cards-empty.html",
+      "sha256": "04e100e1aec205cacbdd485a29b1f3b63173adb60e465da07d6a80d93d95e895"
+    },
+    {
+      "path": "cp307-composition/empty-components.spec.tsx",
+      "sha256": "49817c2c13ccf7767eaa486b1318755329f70e834b7ef564b5c8f2a9404e8389"
+    },
+    {
+      "path": "cp307-composition/recent-transactions-empty.html",
+      "sha256": "d88694dcc2a3a7fb9e94b9e8d5b0fa9627eb9159eaae2d05c09b6b690a3834dd"
+    },
+    {
+      "path": "cp307-composition/ssr-results.json",
+      "sha256": "be5f92b0e97d8e3974ac46ff4a5b8fd9e4f0661a3487af5c3abdaaa872f806f6"
+    },
+    {
+      "path": "cp307-composition/verification.json",
+      "sha256": "d9312b830e4a4213a48081ae62f38571d1e80f43a906912afd50feed3d2cfde8"
+    },
+    {
+      "path": "cp307-composition/vitest.config.mts",
+      "sha256": "4e12016d479b5274b00c0765d3ec31f2eec9e0ed1fcfe7db50947c28f9b8680f"
+    },
+    {
+      "path": "independent-composed-review.json",
+      "sha256": "2c366dd562d1fe889988cd37b8da9381a742ae8f9e468479817ad1b076a0ef91"
+    },
+    {
+      "path": "run.mjs",
+      "sha256": "9dfd768487f363a39b5d78979915b0646055e3b95acdf3d33ae37f11720a05d5"
+    },
+    {
+      "path": "ssr-contracts.mjs",
+      "sha256": "b7700e6d25ace41d404fdb4c4e68e270ce915b4fb3d8390298815d74e9516c38"
+    },
+    {
+      "path": "verified-system-case-result.json",
+      "sha256": "96a7a94cc5fcdffeac2a88069596c1db8cbac77aa320722f8179d38096e8b77b"
+    }
+  ],
+  "generatedCacheExcluded": "cp307-composition/node_modules/.vite/ was generated cache and was removed from the versioned package; no test was rerun for this packaging adjustment."
+}

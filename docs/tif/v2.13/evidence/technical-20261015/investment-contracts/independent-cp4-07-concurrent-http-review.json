@@ -1,0 +1,149 @@
+{
+  "reviewedAt": "2026-10-15T04:23:02.031487+00:00",
+  "status": "PASS_FOR_EXECUTED_SCOPES",
+  "scope": "Independent read-only review of public reports, exact executed source snapshots and immutable Git836; no SQL/API/Auth/browser/process action by reviewer. Supplements the earlier independent-review.json without overwriting its historical state.",
+  "originalCases": [
+    {
+      "id": "CP4-07",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 32,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-2-unique-fresh-cache-pass.json",
+      "reportSha256": "855680c0c7c70c4bb19bdc830547da8c4460ff2dbc046e7bc185e28ea4d94439",
+      "acceptedScope": "Fresh unique cached assetq6/cost600 with110 retains value660/PnL60/cache/originalfresh timestamp under one observed local503. Separate new asset withoutcurrentprice values600/PnL0/purchase_reference/timestampnull under another observed503. Third new own position withZZZ/noFX receives HTTP500 valuation unavailability and full position row remains unchanged.",
+      "reconciliation": "CSV fixes no06Oct/BTC requirement for CP4-07;06Oct applies to CP4-06. Unique UUID tickers/fresh timestamp avoid prior application/Next cache contamination without changing tolerances/product. Old BTC60000 FAIL stays preserved, without conclusive attribution to503 alone.",
+      "providerScope": "Existing synthetic57910 double only; exactly two incremental crypto503 counters, no real CoinGecko acceptance.",
+      "sqlScope": "After-cleanup SQL rows and immutable creation receipts preserve quantity6/cost600 and no sales; creation receipts are not a pre-valuation SQL query."
+    }
+  ],
+  "derivedProbes": [
+    {
+      "id": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "status": "PASS",
+      "complete_original_contract": false,
+      "assertions": 32,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/verification.json",
+      "reportSha256": "9ae8047a29465d8068d36ae360ed79b97e6dfe9b23302f81000f93e8cd928031",
+      "acceptedScope": "Ten distinct normal-Auth HTTP attempts share one durable key, dispatched before gate release and all response headers, then ten201/one sale-ID cardinality/one sale/one receipt/quantity6/cost600. Exactly two observed active Lock PG sessions link transitively to the owned barrier.",
+      "ordering": {
+        "latestDispatch": "2026-10-15T04:16:22.393Z",
+        "gateReleaseStartedAt": "2026-10-15T04:16:22.526Z",
+        "firstResponseHeaders": "2026-10-15T04:16:22.610Z",
+        "observedPgSessions": 2,
+        "salesWhileBlocked": 0
+      },
+      "prior500Recovery": "Two original500 commands replay with original key/payload to existing sale; full prior position/sales/cash/receipt rows unchanged. Does not erase or diagnose old500 causes.",
+      "responseLoss": "Separate sale receives201 headers, cancels/discards body and replays to one effect/receipt, q5/cost500. Does not prove loss of every response packet.",
+      "limits": [
+        "Not ten PG sessions, CNF load/SLO acceptance or browser concurrency.",
+        "Not a new original CSV case or32additional cases."
+      ]
+    }
+  ],
+  "historicalFailures": [
+    {
+      "case": "CP4-07 firstattempt",
+      "status": "FAIL",
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-1-effective-quote-fail.json",
+      "sha256": "500d50dbec8b0b668fe782cf31f5fe0d5cbdf2c1f557b5cb8b07a72ef84c66f0",
+      "scope": "Effective BTCprice60000 differed from110;503 alone does not establish cause because earlier cache/provider200 may have been reused."
+    },
+    {
+      "case": "DERIVED-INV-CONCURRENCY tenPG",
+      "status": "FAIL",
+      "passAssertions": 18,
+      "failedAssertions": 1,
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/derived-inv-concurrency-fail.json",
+      "sha256": "2315fc1c62f3fe88bdfe8b82e7411dc4739f93c32c12c04ac5af6d1f2d096886",
+      "scope": "Original ten-PG overlap requirement remains failed; new ten-HTTP experiment neither supersedes it nor lowers its threshold."
+    }
+  ],
+  "checks": {
+    "sourceSnapshotAndArtifactHashesVerified": true,
+    "servedResponsibleFilesPerReport": 32,
+    "servedSourceMatchesImmutableGit": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "all64NamedAssertionsPass": true,
+    "allHttpRequestLogsFinished": true,
+    "protectedOriginalPublicTablesPerRun": 12,
+    "originalRowsUnchangedIncludingActiveFlags": true,
+    "sourceStableBeforeAfter": true,
+    "syntheticControlRestoredExactBytes": true,
+    "cleanup": "Only new owner-checked accounts/positions archived; original positions/accounts not archived to satisfy prerequisites.",
+    "limits": "Twelve public tables are the explicit scope; not every Auth/Storage/FX/cache/receipt table."
+  },
+  "executionBinding": {
+    "servedRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "nextPid": 52579,
+    "scope": "Unbuilt current checkout deltas are separately declared; these runs did not exercise new CI5 sources."
+  },
+  "restartReplay": {
+    "status": "PENDING_SEPARATE_EXECUTION_AND_REVIEW",
+    "preparedArtifact": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/restart-replay.json",
+    "sha256": "4cc0453c40f442a91080efb0300d94d2c7ee282ca1d12ca19c0ab04f5af6c01b",
+    "executedInTheseArtifacts": false,
+    "reviewerBlocked": false,
+    "reason": "Report says restartExecuted:false; coordinator is preparing one authorized fifth-stack Next+Postgres restart. No post-restart report reviewed yet and no restart durability PASS inferred."
+  },
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-1-effective-quote-fail.json",
+      "sha256": "500d50dbec8b0b668fe782cf31f5fe0d5cbdf2c1f557b5cb8b07a72ef84c66f0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-1-manifest.json",
+      "sha256": "bbce20c093268f7bdf4cd52d213914406e4d1acc7d548da37706c5dc60b01e61"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-1-readonly-diagnostic.json",
+      "sha256": "f40b57ff3641a3363660dfe1d799aa08f24356c9c6239d3e552f297827f5e03c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-2-manifest.json",
+      "sha256": "f0d40f665e828dc7781eec4c47b81c63ea3694b909d619c1d085947684d79cde"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-2-readonly-receipts-and-positions.json",
+      "sha256": "7c7459dafae026e66fced5ee0bbb18383c0e2c9c727826c69b01e17e70e9c686"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-2-unique-fresh-cache-pass.json",
+      "sha256": "855680c0c7c70c4bb19bdc830547da8c4460ff2dbc046e7bc185e28ea4d94439"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/phase-1-control-restored.json",
+      "sha256": "e36cfaf27427985edcd958579800117b07ebba8bd4b7c839d9f0bb54f91ccf1e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/phase-1-offline-proof.json",
+      "sha256": "9c462787f84572c0074abacde55b8c2369243259864485e5f3df73981138e1ba"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/phase-2-control-restored.json",
+      "sha256": "c58f68ebf634ccc9463776e54c04cf88cd775a62e348258680a9051d8e62cd52"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/phase-2-offline-proof.json",
+      "sha256": "0767044201c14df833097c942aeafc05376406a689ffa19c790c0107fc2add85"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/manifest.json",
+      "sha256": "1e3890cfef3c94a92c4e570acef5829bfa39967e84729c4e13512e10a74319ed"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/restart-replay.json",
+      "sha256": "4cc0453c40f442a91080efb0300d94d2c7ee282ca1d12ca19c0ab04f5af6c01b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/verification.json",
+      "sha256": "9ae8047a29465d8068d36ae360ed79b97e6dfe9b23302f81000f93e8cd928031"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/derived-inv-concurrency-fail.json",
+      "sha256": "2315fc1c62f3fe88bdfe8b82e7411dc4739f93c32c12c04ac5af6d1f2d096886"
+    }
+  ],
+  "findings": []
+}

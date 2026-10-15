@@ -1,0 +1,114 @@
+{
+  "at": "2026-10-15T02:54:33.042Z",
+  "scope": "Onecontextread-onlydiagnostic,notCNFacceptance. All12PNGvieweddirectly and physicalviewportdimensionspreserved. Attempts1/2preserved; readinessfixtureincorrectlylookedforMAINbeforeactualPageScaffold.page-shell wasidentified.",
+  "files": [
+    {
+      "path": "account-chart-1440-zoom100.png",
+      "sha256": "3af970e439580134f6d907b0926de5542e00218924c243b224950787f8680e4f",
+      "width": 1440,
+      "height": 900,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "account-chart-320-zoom100.png",
+      "sha256": "761e763f9e9e5508c311f2fe9aa38dc211d79ad708b438bd56901a622cad5e19",
+      "width": 320,
+      "height": 568,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "account-chart-375-zoom100.png",
+      "sha256": "d3ade348b01c601d1a45c97a93b98d25166e2dd868c08c63ff9d1b2cac1027e9",
+      "width": 375,
+      "height": 812,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "account-chart-375-zoom200.png",
+      "sha256": "9ebdf2610c47baa98a281e3ce4ec9bc414313d1a43eb20f548e28884975291eb",
+      "width": 375,
+      "height": 812,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "average-1440-zoom100.png",
+      "sha256": "ec03be180e4ed360ee0d7cde510ffa5a306820c92c3db4e2a4674a3d19c93ccf",
+      "width": 1440,
+      "height": 900,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "average-320-zoom100.png",
+      "sha256": "c65daae751a495747c481efc25a7cb350314208fd3615124eb260981b0e7240a",
+      "width": 320,
+      "height": 568,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "average-375-zoom100.png",
+      "sha256": "c19f3d35a495bfae06e467aa4f71ac91e7c397d28fed648919420667e1a20f76",
+      "width": 375,
+      "height": 812,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "average-375-zoom200.png",
+      "sha256": "a02e3129069cdaddc23488c59ca15bae6a268a2f9bf9e3e087250856cc9d7ff6",
+      "width": 375,
+      "height": 812,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "diagnostic.json",
+      "sha256": "eaae51cb6de1dfb5d59e121c7f4d7fbb4e90fa7527fee24546ca6f1890205f9a"
+    },
+    {
+      "path": "max-scroll-1440-zoom100.png",
+      "sha256": "0457d2631f7a269a9e5759e14787f1254f00bb0f269c5fad291fd5c09514caf8",
+      "width": 1440,
+      "height": 900,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "max-scroll-320-zoom100.png",
+      "sha256": "66cce3a62cc1361b3b9073b9f3bd0729f76158bfd855dcefda0c7c63e95b7ecd",
+      "width": 320,
+      "height": 568,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "max-scroll-375-zoom100.png",
+      "sha256": "9d6492bb83ece08211630e4461543845cc05ec6bd5495da70bf5995d1f1f1dd5",
+      "width": 375,
+      "height": 812,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "max-scroll-375-zoom200.png",
+      "sha256": "7e5d95513dbfd5bfcea1c33b4fc2e9d6c078e3bb67c1bdb2e07cf1b331440681",
+      "width": 375,
+      "height": 812,
+      "privacy": "Viewed directly: synthetic financial data only; no credentials,sessiontokens or guestcapability visible."
+    },
+    {
+      "path": "run.mjs",
+      "sha256": "2afb00a0d55d3c20d6f1a74cc76eed9c993276f43f26e49741b1414c9f93de1e"
+    },
+    {
+      "path": "attempt-1/diagnostic.json",
+      "sha256": "25b1d89390197b0111aa6a4378ba05712a42c8291cd7e3e9125ef41f251be15a"
+    },
+    {
+      "path": "attempt-1/run.mjs",
+      "sha256": "67147f17c58bd5678d403c928b4c3d0de13b952159895380a811ca6d478735f7"
+    },
+    {
+      "path": "attempt-2/diagnostic.json",
+      "sha256": "970c75657b7426badb9cb1a8828435739c0579a4e118bf0a84b39cbb157cee2f"
+    },
+    {
+      "path": "attempt-2/run.mjs",
+      "sha256": "5a118edd793e36e191e0988fd6b0cc8ab0c0e46a52fda680dde24f6beac33d6b"
+    }
+  ]
+}

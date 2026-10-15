@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-15T06:29:58.763248+00:00",
+  "status": "SUPERSEDED_NOT_EXECUTED",
+  "cases": [
+    "CP2-21",
+    "CNF-06",
+    "CNF-08"
+  ],
+  "runtimeCommandNeverExecuted": "ZARIX_CHROME_CONTRACT_WINDOW=parent-released-after-cp210 ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only node docs/tif/v2.13/evidence/technical-20261015/browser-final-contracts/run.mjs --case <CP2-21|CNF-06|CNF-08>",
+  "releaseReceived": false,
+  "newChromeActors": 0,
+  "newAuthRequests": 0,
+  "newDatabaseQueries": 0,
+  "newFinancialWrites": 0,
+  "nodeSyntaxOrImportCheckExecuted": false,
+  "sources": [
+    {
+      "path": "plan.json",
+      "sha256": "6883913d2bf9a7593231fb5860f35e36e7f7294f6cf5ae7c2ec68a83a3eebcbe"
+    },
+    {
+      "path": "context.mjs",
+      "sha256": "1d8d35d3eca7ce2b47a70d764a29159f39a11e3bbb5d25b87e3537a82baa40ab"
+    },
+    {
+      "path": "run.mjs",
+      "sha256": "4be55cebea19cb8c94062142dda297c5d389dd687bcf6ad76f9c1b9bc4834eb6"
+    }
+  ],
+  "sourceReview": "Incomplete source-only draft. No claim of syntax, safety, acceptance or readiness; not to be executed under current human steering.",
+  "privateProfileCreated": false,
+  "privateCheckpointCreated": false,
+  "currentSteering": {
+    "path": "../e2e/browser-preflight/current-user-browser-steering.json",
+    "sha256": "d47bb546d38ede2ecfaf13deed36e7f467a1b49355871549ecb8716b60021307"
+  }
+}

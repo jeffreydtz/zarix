@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-15T06:29:58.763248+00:00",
+  "status": "CURRENT_HUMAN_BROWSER_STEERING",
+  "provenance": "Direct parent relay of the latest human message on15October2026. The human instruction is usa arc; coordinator explicitly cancelled all proposed new Chrome CP2-21/CNF-06/CNF-08 executions before release.",
+  "latestHumanInstruction": "usa arc",
+  "newChromeExecutionAllowed": false,
+  "newChromeExecutionOccurred": false,
+  "cancelledCases": [
+    "CP2-21",
+    "CNF-06",
+    "CNF-08"
+  ],
+  "cancelledPreparation": "../../browser-final-contracts/preparation-manifest.json",
+  "historicalScopeFile": "user-browser-scope.json",
+  "historicalInterpretation": "The03:54 record is retained unchanged as historical context; its Chrome authorization does not authorize these new browser flows after this steering.",
+  "Arc": {
+    "requested": true,
+    "macOSAutomationPreviouslyGranted": true,
+    "ownPriorIncognitoWindowCleanup": "UNKNOWN_UNCONFIRMED",
+    "newExecutionAllowed": false,
+    "reason": "One prior incognito-window reference failed at resolution(-1728); closure was not confirmed. No further new window/tab, attachment, enumeration, quit, remote debugging or permission/configuration change until human cleanup reconciliation and a safe supported path are explicitly resolved."
+  },
+  "Safari": {
+    "newExecutionAllowed": false,
+    "remoteAutomation": "DISABLED_UNCHANGED"
+  },
+  "Firefox": {
+    "installation": "DECLINED",
+    "newExecutionAllowed": false
+  },
+  "Edge": {
+    "installation": "DECLINED",
+    "newExecutionAllowed": false
+  },
+  "scope": "No new browser session, Chrome/Auth action, DB query or software/permission change was executed by the cancelled three-case preparation. Existing historical evidence remains attributed to its exact browser/build; no API result substitutes UI acceptance or Arc."
+}

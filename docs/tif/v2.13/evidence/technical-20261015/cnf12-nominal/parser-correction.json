@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-15T05:49:23.487117+00:00",
+  "status": "RESUME_EXECUTED_PASS_INITIAL_FAILURE_PRESERVED",
+  "cause": "psql prints an unwrapped boolean as t; json.loads correctly rejects it. The database query itself did not fail.",
+  "firstAttempt": {
+    "path": "attempt-1-parser-failure/verification.json",
+    "sha256": "3a33400ef11c1cca00bfd57cf6fb1c842d72e61b37f109724822bebe051b365f",
+    "assertionsPassed": 20,
+    "status": "FAIL",
+    "source": "attempt-1-parser-failure/run-nominal.py",
+    "sourceSha256": "309e06c3629646ab84677e9f0531c9783b1139ddcc8b6cdaa31259ad3752480c"
+  },
+  "freshRunnerFix": {
+    "path": "run-nominal.py",
+    "sha256": "abf4a6e4914ef6aaba2c24e897439aa5e66b12e0b08bec5667c15fd5dd5329f7",
+    "change": "Wrap bool_and in to_jsonb so SQL returns valid JSON true/false.",
+    "executedAfterFix": false
+  },
+  "resume": {
+    "path": "resume-nominal.py",
+    "sha256": "e331056b92d3b19115cd728df925f37770f1d1ec15ff398b1ee83457cedf6c01",
+    "noSeedNoDatabaseDumpNoDatabaseRestore": true,
+    "requires": "Exact raw/dump/DB-name/full-table/catalog/1500-delta guards and Native original-preservation checkpoint.",
+    "remainingOnly": [
+      "Protected RPC grants",
+      "Rollback-only restored transfer edit/delete and sale",
+      "Post-probe complete source/target hashes/catalog",
+      "Optional private Storage fixture file restoration without HTTP claim",
+      "Explicit modeled time-boundary calculations"
+    ],
+    "executedReport": "resume-verification.json",
+    "executedReportSha256": "d40d0a2b7751dc85c23ffe53007be44bcf29db249be19963ad5f371789bca167",
+    "passedAssertions": 19,
+    "sourceStable": true
+  },
+  "completeOriginalContract": false
+}

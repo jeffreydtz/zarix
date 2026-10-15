@@ -1,0 +1,122 @@
+{
+  "recordedAt": "2026-10-15T03:16:57.379092+00:00",
+  "status": "BLOCKED_ISOLATION_NOT_VERIFIED",
+  "scope": "Read-only application metadata and installed-binary string inspection. No Arc launch, attach, profile access, tab enumeration, browser permission or OS preference change.",
+  "humanAuthorization": "Parent relayed explicit authorization to use Arc,15October2026; personal sessions must remain intact. Parent accepted this isolation blocker and prohibited launch/attach on this evidence.",
+  "installedApplication": {
+    "path": "/Applications/Arc.app",
+    "version": "1.168.0",
+    "build": "88413",
+    "bundleId": "company.thebrowser.Browser",
+    "plistSha256": "623c906df0d4c55c2d5cf3a3690c202c4a589eba022f6ce9f656d69c8f26e2c3"
+  },
+  "embeddedEngineMetadata": {
+    "version": "155.0.8059.40",
+    "build": "8059.40",
+    "plistSha256": "5a70c44bf24ebebe8c39811e865004869928183de8d3824d74fd3d13aad203e0",
+    "runtimeUserAgentObserved": false
+  },
+  "binaryInspection": {
+    "main": {
+      "user-data-dir": true,
+      "remote-debugging-pipe": false,
+      "remote-debugging-port": true,
+      "headless": true
+    },
+    "ArcCore": {
+      "user-data-dir": true,
+      "remote-debugging-pipe": true,
+      "remote-debugging-port": true,
+      "profile-directory": true
+    },
+    "interpretation": "String presence does not prove that the Arc application wrapper honors an independent profile or a debugging pipe. No executable was invoked for help/version."
+  },
+  "officialSources": [
+    {
+      "url": "https://playwright.dev/docs/api/class-browsertype",
+      "accessedAt": "2026-10-15T03:16:57.379092+00:00",
+      "support": "launch executablePath is custom/at own risk; persistentContext documents a separate user data directory for supported Chromium; no Arc wrapper compatibility guarantee."
+    },
+    {
+      "url": "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md",
+      "accessedAt": "2026-10-15T03:16:57.379092+00:00",
+      "support": "User data holds history/cookies. --user-data-dir override is implemented in ChromeMainDelegate; platforms not building it may not implement override. This is Chromium documentation, not an Arc wrapper contract."
+    },
+    {
+      "url": "https://arc.net/faq",
+      "accessedAt": "2026-10-15T03:16:57.379092+00:00",
+      "support": "Arc identifies itself as Chromium based; this does not establish profile/automation isolation."
+    },
+    {
+      "url": "https://arc.net/developers",
+      "accessedAt": "2026-10-15T03:16:57.379092+00:00",
+      "support": "Describes developer features; no isolated process/profile or pipe contract was found in the retrieved content."
+    }
+  ],
+  "officialArcHelpCenterLookup": {
+    "status": "CONTENT_UNAVAILABLE",
+    "urls": [
+      "https://resources.arc.net/hc/en-us/search?query=command%20line",
+      "https://resources.arc.net/hc/en-us/search?query=user-data-dir"
+    ],
+    "interpretation": "Lookup failure is not proof that no documentation exists."
+  },
+  "blocker": "The installed Arc wrapper has no verified isolated-profile/pipe launch contract in the evidence read. Launching it could reuse application state outside a temporary Chromium profile. No claim of technical impossibility is made.",
+  "pendingTests": {
+    "accountChartRegressionConfigurations": [
+      "375x812@100%",
+      "320x568@100%",
+      "375x812@200%",
+      "1440x900@100%"
+    ],
+    "status": "BLOCKED",
+    "reason": "Arc app launch/profile isolation is unverified; supported incognito AppleEvents route exists but native preflight reports errAEEventWouldRequireUserConsent. No event sent or setting changed."
+  },
+  "fallback": "No Chrome substitution, embedded-engine equivalence, browser installation or persistent access enabled.",
+  "supportedUiRouteReadOnlyInspection": {
+    "inspectedAt": "2026-10-15T03:19:58.562995+00:00",
+    "source": "/Applications/Arc.app/Contents/Resources/Arc.sdef",
+    "sha256": "d39068b2a33e7aaf1b4bdf7708eefc331524ba8c59e4b98c8feada0a82a00397",
+    "commandsDeclared": [
+      "make new window with mode incognito at creation",
+      "make new tab with URL; make returns object specifier",
+      "execute javascript in addressed tab",
+      "close addressed tab/window"
+    ],
+    "cliAvailable": [
+      "/usr/bin/osascript",
+      "/usr/sbin/screencapture"
+    ],
+    "cliNotFound": [
+      "cliclick",
+      "peekaboo",
+      "ydotool",
+      "xdotool",
+      "macos-use",
+      "agent-browser",
+      "playwright"
+    ],
+    "callableScreenControlTools": [],
+    "voiceOnlyToolNotUsed": "mcp__codex_app__capture_screen_context",
+    "status": "BLOCKED_EXISTING_PERMISSION_NOT_GRANTED",
+    "actionsSent": false,
+    "interpretation": "Parent clarified that a supported UI route confined to a new local tab may use the existing Arc application. This inspection discovers a scripting route; authorization state still must be checked without prompting. It does not execute any Arc command or enumerate personal windows/tabs.",
+    "permissionPreflight": {
+      "source": "arc-appleevents-native-preflight.json",
+      "osStatus": -1744,
+      "meaning": "errAEEventWouldRequireUserConsent",
+      "askedUser": false,
+      "alreadyAllowed": false
+    }
+  },
+  "preparedPermissionReview": {
+    "appleScript": "run-arc-newtab.applescript",
+    "pythonDriver": "run-arc-newtab.py",
+    "appleScriptSha256": "44109ae7a28c85e132a546641b952fd081e496803c652da3fb9f4d8b3a74d965",
+    "pythonDriverSha256": "ffa3dfc354546b02fa526603e5c902eb88d8614c0fd7c61141bbdc77b0f32af2",
+    "status": "PREPARED_NOT_EXECUTED",
+    "pythonAstSyntax": "PASS_STATIC_ONLY",
+    "appleScriptCompilation": "NOT_INVOKED",
+    "boundedPurpose": "Create a new own incognito Arc window/local login tab, scalar own DOM read, close only returned window. No login,financial write,personal tab/window enumeration,profile read,remote debug or setting change."
+  }
+}

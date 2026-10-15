@@ -1,4 +1,5 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
+import { readAllPages } from '@/lib/supabase-paginated-read';
 import {
   buildToArsConverter,
   type TransactionWithCategory,
@@ -72,15 +73,17 @@ class AnalyticsService {
   ): Promise<CategoryBreakdown[]> {
     const supabase = createServiceClientSync();
 
-    const { data, error } = await supabase
+    const data = await readAllPages((from, to) => supabase
       .from('transactions')
       .select('amount, currency, category_id, category:categories(name, icon), account:accounts!transactions_account_id_fkey(is_active)')
       .eq('user_id', userId)
       .eq('type', type)
       .gte('transaction_date', ymdToQueryStartIso(startYmd))
-      .lte('transaction_date', ymdToQueryEndIso(endYmd));
+      .lte('transaction_date', ymdToQueryEndIso(endYmd))
+      .order('transaction_date', { ascending: true })
+      .order('id', { ascending: true })
+      .range(from, to));
 
-    if (error || !data) return [];
     const rows = data.filter((t: any) => t.account?.is_active !== false);
     const { toArs } = await buildToArsConverter(rows);
     const byCat = new Map<string, { name: string; icon: string; amount: number; count: number }>();
@@ -112,14 +115,16 @@ class AnalyticsService {
     const monthKeys = monthKeysInclusive(startYmd, endYmd);
     if (monthKeys.length === 0) return [];
 
-    const { data, error } = await supabase
+    const data = await readAllPages((from, to) => supabase
       .from('transactions')
       .select('amount, currency, type, transaction_date, account:accounts!transactions_account_id_fkey(is_active)')
       .eq('user_id', userId)
       .in('type', ['expense', 'income'])
       .gte('transaction_date', ymdToQueryStartIso(startOfRange(startYmd)))
-      .lte('transaction_date', ymdToQueryEndIso(endYmd));
-    if (error || !data) return [];
+      .lte('transaction_date', ymdToQueryEndIso(endYmd))
+      .order('transaction_date', { ascending: true })
+      .order('id', { ascending: true })
+      .range(from, to));
     const rows = data.filter((t: any) => t.account?.is_active !== false);
     const { toArs } = await buildToArsConverter(rows);
     const byMonth = new Map<string, { expenses: number; income: number }>();
@@ -150,21 +155,16 @@ class AnalyticsService {
     const days = eachYmdInclusive(startYmd, endYmd);
     if (days.length === 0) return [];
 
-    const { data, error } = await supabase
+    const data = await readAllPages((from, to) => supabase
       .from('transactions')
       .select('amount, currency, type, transaction_date, account:accounts!transactions_account_id_fkey(is_active)')
       .eq('user_id', userId)
       .in('type', ['expense', 'income'])
       .gte('transaction_date', ymdToQueryStartIso(startYmd))
-      .lte('transaction_date', ymdToQueryEndIso(endYmd));
-    if (error || !data) {
-      return days.map((dateStr) => ({
-        date: dateStr,
-        dayLabel: dayLabelFromYmd(dateStr),
-        expenses: 0,
-        income: 0,
-      }));
-    }
+      .lte('transaction_date', ymdToQueryEndIso(endYmd))
+      .order('transaction_date', { ascending: true })
+      .order('id', { ascending: true })
+      .range(from, to));
     const rows = data.filter((t: any) => t.account?.is_active !== false);
     const { toArs } = await buildToArsConverter(rows);
     const byDay = new Map<string, { expenses: number; income: number }>();
@@ -196,15 +196,17 @@ class AnalyticsService {
   ): Promise<AccountBreakdown[]> {
     const supabase = createServiceClientSync();
 
-    const { data, error } = await supabase
+    const data = await readAllPages((from, to) => supabase
       .from('transactions')
       .select('amount, currency, account_id, account:accounts!transactions_account_id_fkey(name, icon, color, is_active)')
       .eq('user_id', userId)
       .eq('type', 'expense')
       .gte('transaction_date', ymdToQueryStartIso(startYmd))
-      .lte('transaction_date', ymdToQueryEndIso(endYmd));
+      .lte('transaction_date', ymdToQueryEndIso(endYmd))
+      .order('transaction_date', { ascending: true })
+      .order('id', { ascending: true })
+      .range(from, to));
 
-    if (error || !data) return [];
     const rows = data.filter((t: any) => t.account?.is_active !== false);
     const { toArs } = await buildToArsConverter(rows);
     const byAcc = new Map<string, { name: string; icon: string; color: string; amount: number }>();
@@ -243,15 +245,17 @@ class AnalyticsService {
       p_end: ymdToQueryEndIso(endYmd),
       p_limit: limit,
     });
-    if (error || !topRows || topRows.length === 0) return [];
+    if (error) throw error;
+    if (!topRows || topRows.length === 0) return [];
 
     const orderedIds = topRows.map((row: any) => String(row.id));
-    const { data: hydrated } = await supabase
+    const { data: hydrated, error: hydrationError } = await supabase
       .from('transactions')
       .select('*, category:categories(name, icon), account:accounts!transactions_account_id_fkey(name)')
       .eq('user_id', userId)
       .in('id', orderedIds);
 
+    if (hydrationError) throw hydrationError;
     if (!hydrated) return [];
     const byId = new Map(hydrated.map((row: any) => [row.id, row as TransactionWithCategory]));
     return orderedIds

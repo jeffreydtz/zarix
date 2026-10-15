@@ -1,0 +1,9 @@
+{
+  "hw.model": "Mac14,10",
+  "machdep.cpu.brand_string": "Apple M2 Pro",
+  "hw.memsize": "17179869184",
+  "hw.logicalcpu": "12",
+  "hw.physicalcpu": "12",
+  "recordedAt": "2026-10-15T01:14:44.937834+00:00",
+  "scope": "Escalated read-only local hardware fields; no serial/UUID, no system preference change; deployment equivalence unverified"
+}

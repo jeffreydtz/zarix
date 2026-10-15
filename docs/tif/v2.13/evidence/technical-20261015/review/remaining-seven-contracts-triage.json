@@ -1,0 +1,220 @@
+{
+  "at": "2026-10-15T05:30:44.859999+00:00",
+  "scope": "Read-only review of seven previously BLOCKED/PARTIAL originals. No tests, network, Auth, database or browser were executed for this review; no rawreport or matrix edits. Proposals require independent semantic review before promotion.",
+  "originalCsvSha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+  "responsibleSourceBindings": [
+    {
+      "path": "lib/cron/cron-job.ts",
+      "oldRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "oldSha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9",
+      "currentRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "currentSha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9",
+      "identical": true
+    },
+    {
+      "path": "lib/cron/recurring-job.ts",
+      "oldRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "oldSha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72",
+      "currentRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "currentSha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72",
+      "identical": true
+    },
+    {
+      "path": "app/api/cron/recurring/route.ts",
+      "oldRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "oldSha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a",
+      "currentRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "currentSha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a",
+      "identical": true
+    },
+    {
+      "path": "components/investments/InvestmentsList.tsx",
+      "oldRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "oldSha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5",
+      "currentRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "currentSha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5",
+      "identical": true
+    },
+    {
+      "path": "components/budgets/BudgetCard.tsx",
+      "oldRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "oldSha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b",
+      "currentRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "currentSha256": "b4a66c24408997fdc90656b02d16ca574090302b0288aaebb3cbdae4a2b21a74",
+      "identical": false
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "oldRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "oldSha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "currentRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "currentSha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "identical": true
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "oldRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "oldSha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "currentRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "currentSha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "identical": true
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "CP1-05",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-1-eight-cases/verification.json",
+          "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251"
+        }
+      ],
+      "existingScope": "Own account10000\u2192expense1500\u21928500. RealSQL canonical edit updates amount and amount_in_account_currency2000; balance8000/oneeconomicrow. Amount-onlySQL produced nominal2000/canonical1500/balance8500 and is preserved separately.",
+      "proposal": "Semantic review can identify canonical account amount as economic monto, with both fields kept consistent. Public PATCH route on both836/84 already recomputes canonical amount from amount2000,currencyARS,account_id. Do not call the distinct amount-only SQL observation a UI/API edit.",
+      "minimumIfNeeded": "One new ordinary PATCH integration fixture10000/expense1500 thenPATCH2000 with existing account_id/currency fields; assertbalance8000/sameID/oneeconomicrow. No browser/product change.",
+      "readiness": "SEMANTIC_REVIEW_OR_ONE_FOCAL_API",
+      "original_contract": {
+        "precondiciones": "Fixture fresco: A inicial10000; gasto1500 persistido\u2192A8500",
+        "entrada": "UPDATE monto1500\u21922000",
+        "resultado_esperado": "A=8000; una fila movimiento; no doble d\u00e9bito",
+        "evidencia_requerida": "Snapshot SQL antes/despu\u00e9s, respuesta, contador de filas y fixture."
+      },
+      "status": "PROPOSAL_NOT_MATRIX_RESULT",
+      "newExecutionPerformed": false
+    },
+    {
+      "case_id": "CP1-21",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+        }
+      ],
+      "existingScope": "Real CSV initial500persisted/balance9500, known economic tuple, preview200, skipimport200/imported0/skipped1/pending0/total1, exact ledger unchanged. Actual response skipReasons enumerates date/time,type,amount,currency,accounts,equivalents,category,description,notes.",
+      "proposal": "The literal asks response/SQL and shown matching criteria, not a browser. Existing actual response supplies criteria; close with explicit original-contract attestation, preserving rawPARTIAL.",
+      "minimumIfNeeded": "No new execution required if semantic response criterion accepted.",
+      "readiness": "EXISTING_LITERAL_COMPLETE_PENDING_REVIEW",
+      "original_contract": {
+        "precondiciones": "U1 A=10000; gasto500 ya existe\u21929500; huella conocida",
+        "entrada": "importar mismo gasto y elegir omitir",
+        "resultado_esperado": "cero altas nuevas; omitidas1; A=9500; muestra criterios de coincidencia",
+        "evidencia_requerida": "Snapshot SQL antes/despu\u00e9s, respuesta, contador de filas y fixture."
+      },
+      "status": "PROPOSAL_NOT_MATRIX_RESULT",
+      "newExecutionPerformed": false
+    },
+    {
+      "case_id": "CP1-28",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+        },
+        {
+          "path": "core-closure/final-vitest.json",
+          "sha256": "32f376cc3687dc3b737ccc4cc823fe5eaf9b951b123100338ab7abaab50651f0"
+        }
+      ],
+      "existingScope": "Native401invalidBearer/fullledgerunchanged; independentinactive0effects; end05Oct/current06Oct expiredruleinactivefalse/0newrows/balance10000. CronJob.run source returns401 before createServiceClientSync or execute; route/newjob has no DB constructor. Responsible route/job files byte-identical836 and84. CI6 existing structural401tests pass.",
+      "proposal": "Compose actual native outcomes with exact control-flow source proof of no DB access on rejected branch. No native DB-call counter was recorded; do not claim one. A runtime counter is an optional stronger diagnostic, not browser prerequisite.",
+      "minimumIfNeeded": "If reviewer requires dynamic counter, one focal invalidBearer test with mocked createServiceClientSync callcount0 against exact84 source; no database/browser.",
+      "readiness": "STATIC_RUNTIME_COMPOSITE_PENDING_REVIEW",
+      "original_contract": {
+        "precondiciones": "U1 A=10000; tres fixtures independientes",
+        "entrada": "Bearer incorrecto; regla inactiva; regla fin10-05 y hoy10-06",
+        "resultado_esperado": "401sin accesoDB paraBearer incorrecto; inactiva no ejecuta; vencida se desactiva sin nuevo movimiento",
+        "evidencia_requerida": "Snapshot SQL antes/despu\u00e9s, respuesta, contador de filas y fixture."
+      },
+      "status": "PROPOSAL_NOT_MATRIX_RESULT",
+      "newExecutionPerformed": false
+    },
+    {
+      "case_id": "CP1-30",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+        }
+      ],
+      "existingScope": "NormalPremiumB ownaccount500, rule amount1000/notificationEnabledtrue; actualcron200/count1/balance-500/marker06Oct, one durableoutboxintent. Recorded chatLinkedfalse/botCredentialPresentfalse, no providerdelivery attempted.",
+      "proposal": "Original financial/date/notification-enabled outbox contract is demonstrated. Delivery is expressly conditional on provider acceptance; no acceptance claimed. Separate realTelegramintegration remains BLOCKED for missing authorized credential, not full-case browser failure.",
+      "minimumIfNeeded": "No new execution required for this conditional original if reviewer accepts existing enabled flag+outboxintent.",
+      "readiness": "CONDITIONAL_PROVIDER_COMPOSITE_PENDING_REVIEW",
+      "original_contract": {
+        "precondiciones": "Cuenta A=500; regla gasto1000; notificaci\u00f3n habilitada",
+        "entrada": "ejecuci\u00f3n fecha v\u00e1lida",
+        "resultado_esperado": "Movimiento1000; saldo-500; fecha exitosa actual; aviso si el proveedor lo acepta. No afirmar advertencia espec\u00edfica de descubierto que el producto no tenga.",
+        "evidencia_requerida": "Snapshot SQL antes/despu\u00e9s, respuesta, contador de filas y fixture."
+      },
+      "status": "PROPOSAL_NOT_MATRIX_RESULT",
+      "newExecutionPerformed": false
+    },
+    {
+      "case_id": "CP1-31",
+      "evidence": [
+        {
+          "path": "remaining-cu001/attempt-3-fourteen-clock/verification.json",
+          "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+        },
+        {
+          "path": "core-closure/final-vitest.json",
+          "sha256": "32f376cc3687dc3b737ccc4cc823fe5eaf9b951b123100338ab7abaab50651f0"
+        }
+      ],
+      "existingScope": "Three independent actualnative budgetAPI results9999.99/10000/10000.01\u2192remaining.01/0/-.01; transfers500excluded andaccepted. Existing budget-card-boundaries.test.ts executes actual React renderToStaticMarkup(BudgetCard) with preciselythose numbers and asserts displayedremaining,near/limit/exceededlabels,includingpercentrounded100. Six tests passed inCI6.",
+      "proposal": "Compose old836API/SQL financial outcomes with current84 focal realcomponent markup; revisions explicitly separate. Component changed to preserve authoritative remaining and exactboundary semantics. Do not claim a single servedNext/browser session.",
+      "minimumIfNeeded": "No new execution required; validate source/test and CI6JSON testResult sixPASS.",
+      "readiness": "API_FOCAL_RENDER_COMPOSITE_PENDING_REVIEW",
+      "original_contract": {
+        "precondiciones": "PresupuestoAlimentosARS10000 octubre2026; independientes por fila",
+        "entrada": "consumido9999.99,10000,10000.01; agrega transferenciaAlimentos500",
+        "resultado_esperado": "restante0.01/0/-0.01; estado disponible/l\u00edmite/superado; transfer no consume; informe no bloquea movimientos",
+        "evidencia_requerida": "Snapshot SQL antes/despu\u00e9s, respuesta, contador de filas y fixture."
+      },
+      "status": "PROPOSAL_NOT_MATRIX_RESULT",
+      "newExecutionPerformed": false
+    },
+    {
+      "case_id": "CP4-01",
+      "evidence": [
+        {
+          "path": "investment-contracts/executed/cp4-01-partial.json",
+          "sha256": "e93c2031277f225c9699ed7eccf94d564aa95ab337e0b50186ee1397c8ebbf29"
+        }
+      ],
+      "existingScope": "11nativeAPI/SQLassertPASS: syntheticmanualAAPL5\u00d7185cost925/currentfixture190.50/value952.50/PnL27.50/percent27.5/925\u00d7100. CurrentInvestmentsList byte-identical836/84 formats profit_loss_percent_usd.toFixed(2). No real provider quote claim.",
+      "proposal": "Only literal display2.97% remains unobserved; source alone is not rendered output.",
+      "minimumIfNeeded": "Focal actual renderToStaticMarkup(InvestmentsList) inside actual ConfirmProvider using the preciselybacked AAPLfinancialfixture, assert(+2.97%) andprices/cost. Record focal scope/revision/sourcehash and compose with nativeAPI/SQL. No browser or new financialwrites needed.",
+      "readiness": "ONE_FOCAL_SSR_RENDER_ONLY",
+      "original_contract": {
+        "precondiciones": "U1Premium cuentaInversi\u00f3npropia; preciofixture190.50USD",
+        "entrada": "registrarAAPL5\u00d7185USD sincomisiones",
+        "resultado_esperado": "q5,costo925,valor952.50,P&L27.50,porcentaje2.972972\u2026; display2.97%",
+        "evidencia_requerida": "Operaciones/posici\u00f3n SQL antes/despu\u00e9s, fixtureprecio y c\u00e1lculo independiente."
+      },
+      "status": "PROPOSAL_NOT_MATRIX_RESULT",
+      "newExecutionPerformed": false
+    },
+    {
+      "case_id": "CP4-06",
+      "evidence": [
+        {
+          "path": "investment-contracts/executed/cp4-06-partial.json",
+          "sha256": "921f2e7f404b8c063883820f861c2b825d61952be5ce56aa9dc5a144ee1a99ac"
+        }
+      ],
+      "existingScope": "16nativeAPI/SQLassertPASS: FOOFIX2\u00d750/current55/value110/PnL10/manualsource and fixed06Octtimestamp bothAPI/DB. CurrentInvestmentsList byte-identical836/84. No real quote provider acceptance.",
+      "proposal": "Only rendered Manual/Precioingresado (and absent marketquote claim) remains; CSVdoesnot require timestamp visible inUI, timestamp already actualAPI/DB.",
+      "minimumIfNeeded": "Same focal actualInvestmentsList+ConfirmProvider with FOOFIXfinancialfixture: Manual andPrecioingresado markup, noCotizaci\u00f3ndemercado; compose with existing fixedtimestampreport. No browser or new financialwrites needed.",
+      "readiness": "ONE_FOCAL_SSR_RENDER_ONLY",
+      "original_contract": {
+        "precondiciones": "U1Premium; tickerFOOFIXnoenproveedor",
+        "entrada": "alta manualq2\u00d750USD actual55 fechafija",
+        "resultado_esperado": "q2,costo100,valor110,P&L10; etiqueta manual/timestamp, no falsapropiedadmercado",
+        "evidencia_requerida": "Operaciones/posici\u00f3n SQL antes/despu\u00e9s, fixtureprecio y c\u00e1lculo independiente."
+      },
+      "status": "PROPOSAL_NOT_MATRIX_RESULT",
+      "newExecutionPerformed": false
+    }
+  ]
+}

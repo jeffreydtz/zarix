@@ -1,0 +1,98 @@
+{
+  "status": "PASS_INDEPENDENT_PUBLIC_RETENTION_REVIEW_SCOPED",
+  "reviewedAt": "2026-10-15T07:12:22.696159+00:00",
+  "reviewer": "dependency_audit",
+  "findings": [],
+  "reviewMethod": "Read-only parsing and SHA256 comparison of six public files. No runtime command, process/listener probe, database, Auth, browser, provider, private dump, private checkpoint, credential file or private retention inventory was opened or revalidated by this review.",
+  "reportedOutcome": "RETAIN_AND_OFFICIAL_STOP_PASS",
+  "checks": {
+    "manifestAll3PublicArtifactsMatch": true,
+    "manifestCheckpointControllerPlanReferencesAgree": true,
+    "publicControllerHashMatches": true,
+    "retentionCompletedBeforeOfficialStops": true,
+    "outerRetainAndStopExit0": true,
+    "archiveRecords": 9,
+    "defaultDatabaseRecords": 6,
+    "additionalUuidDatabaseRecords": 3,
+    "globalsForDefaultStackRecords": 6,
+    "all9DeclareCustomFormatTocAndPayloadValidation": true,
+    "all9ExplicitlyDeclareNoRestoreInRetentionPhase": true,
+    "officialStopRecords": 6,
+    "officialArgvNamesWorkdirsIdsAndExitCodesAgree": true,
+    "retainedFileCountReported": 2134,
+    "selectedSourceArtifactCountReported": 620,
+    "reportedFileAndDirectoryModes": {
+      "files": "0600",
+      "directories": "0700"
+    },
+    "sourceCopyRecords": 3,
+    "sourceCopyRevisionsAndBuilds": [
+      {
+        "name": "ci5",
+        "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+        "buildId": "vPLjt1QViugJhUWR62DPp",
+        "sourceCount": 480
+      },
+      {
+        "name": "ci6",
+        "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+        "sourceCount": 483
+      },
+      {
+        "name": "empty",
+        "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "buildId": "Yi9bH3FttO71PxvY-EwCH",
+        "sourceCount": 483
+      }
+    ],
+    "binaryBuildNotRetainedAndRebuildRequiredExplicit": true,
+    "originalNative22ArchivePreservedAsSeparateRecord": true,
+    "ownedHttpStopPublicRecordCount": 9,
+    "ownedHttpStopPublicReportedPass": true,
+    "noDataDeletionOrPersonalArcCaffeinateActionReported": true,
+    "noNewRestoreAcceptanceClaimed": true
+  },
+  "scopeLimits": [
+    "This accepts consistency and scope of the sanitized public report; private preservation, all 2134 rehashes and physical process postconditions are the Native executor observations, not independently repeated here.",
+    "Nine dump records, six globals records, 620 selected source artifacts and 2134 retained files are overlapping preservation inventories, not test-case counts.",
+    "TOC enumeration, decoding and checksum retention do not prove a newly executed restoration. Native22 and nominal CNF12 restore evidence remain separate; original full CNF12 remains BLOCKED.",
+    "The reported archive is not a complete machine image: node_modules, compiled .next binaries and an active PostgreSQL data-tree image are not archived. Original temporary data is reported preserved; recompilation is required after temporary-copy loss.",
+    "Source copies preserve their own 7c3e872/84df929 revisions and builds; d9501a7 is a separate final compiler-configuration revision in Git. No newer runtime acceptance is inferred.",
+    "Private checkpoint and plan contents were not opened. Their public digest references were compared only for internal consistency; no credentials, private values, token hashes or inventory were republished.",
+    "WAL/pg_control byte equality after graceful stops is explicitly not claimed. No browser action or new acceptance/audit/provider run was performed."
+  ],
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/final-native-retention/verification.json",
+      "sha256": "a0097f1ae98236a52df0df6b8f64a978a7adc86435c599d908e3067c6771fb5a",
+      "bytes": 11127
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/final-native-retention/commands.json",
+      "sha256": "68103cd4316cbcd18842caaec6e5b1df99946222de7f10f148cf38f18a4f2cdf",
+      "bytes": 4505
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/final-native-retention/README.md",
+      "sha256": "60019dedc732170597a8ba5d28e60601f6be7ef413cf6577913ed4484df8ecc6",
+      "bytes": 2290
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/final-native-retention/manifest.json",
+      "sha256": "525fc7eae5c0bb0d6d555cfad2afe697f14266545b7a411d7907385121631212",
+      "bytes": 718
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/owned-final-http-stop/verification.json",
+      "sha256": "8552f2556894b2381c31920d00a9ee6871e490f83a8e62bb2b901566cb37ec28",
+      "bytes": 2181
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "sha256": "bab8ac98200fde1eea5bbce532ef28e97348e7976c02adf434bef0d42db48688",
+      "bytes": 45648
+    }
+  ],
+  "packaging": "Review stored beside the owner package, outside its frozen manifest, to avoid a self-referential hash cycle."
+}

@@ -1,0 +1,13 @@
+{
+  "status": "HARNESS_FAILURE_AFTER_CLONE_BEFORE_READY",
+  "revision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "executedSourceSha256": "a4b3cae575e127a01e80c1ed1f48dc408d3ea3aafbc9f40ee2c15e6925a976a6",
+  "errorType": "KeyError",
+  "identifiedCause": "Loop variable entry shadowed the stack entry at the final readonly preflight",
+  "originalTablesWritten": false,
+  "cloneCreated": true,
+  "deltaMigrationsApplied": 2,
+  "temporaryAuthRestNextStarted": false,
+  "privateDiagnosticsDirectory": "/tmp/zarix-runtime-20261015/implementation-delta-db3cf513-b7ad-4f2b-abcd-a2a44aeed27b",
+  "readyClaimed": false
+}

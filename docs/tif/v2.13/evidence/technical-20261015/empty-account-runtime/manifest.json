@@ -1,0 +1,100 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3387,
+      "sha256": "5906ff76735e41109a374ab7dddacdf96598c8cf525b87273a319c4824004937"
+    },
+    {
+      "path": "auth-readiness.mjs",
+      "bytes": 5246,
+      "sha256": "da4ed287ec49a8fa7c8535eec8e9d492190da64d952a38dfd5421d62c1f2ce9d"
+    },
+    {
+      "path": "build-app.py",
+      "bytes": 23574,
+      "sha256": "f375fbef7a1327a7091fdc8f3a983db5120e602468c5fb615cd2f2ad92453bf9"
+    },
+    {
+      "path": "clock-preload.mjs",
+      "bytes": 4207,
+      "sha256": "088b01c487cd00937b81da94edc1689f81e014887c5eafd820692bcc5a457f31"
+    },
+    {
+      "path": "executed/empty-proof-browser-assets-manifest.json",
+      "bytes": 25081,
+      "sha256": "b889afa712164fc60416a61cce57b5fb738c1d418f026d63f3dff5a69bcd70fd"
+    },
+    {
+      "path": "executed/empty-proof-build-proof.json",
+      "bytes": 76082,
+      "sha256": "41aec3bdac210c4c7695274fd81104c6cee4f8a02ca6ac1408a497e367f206c8"
+    },
+    {
+      "path": "executed/empty-proof-clock-app-state.json",
+      "bytes": 1736,
+      "sha256": "c15d85a7c74019daa8e7f37f718d4fa4b6cfd5672dac66000f5cf363b865749a"
+    },
+    {
+      "path": "executed/empty-proof-clock-auth-ready.json",
+      "bytes": 1866,
+      "sha256": "1e848dfdc955a43476465a94f8b15488eb064cee05d32595851d400ae2a7f952"
+    },
+    {
+      "path": "executed/empty-proof-clock-gemini-unavailable.json",
+      "bytes": 1780,
+      "sha256": "4a59b566eb06dc3cc8e72e3872a4f30d24b9b3922d5f8834425c7d9b21fac58a"
+    },
+    {
+      "path": "executed/empty-proof-clock-observation.json",
+      "bytes": 1269,
+      "sha256": "f8ca4295984ad72f1e9c63c1faea0b64d109050fb38dfbc951d4ee4b67fac3ee"
+    },
+    {
+      "path": "executed/readiness.json",
+      "bytes": 3586,
+      "sha256": "6d44ba9ecc0756c715e781f65707c7092df663b9c7d51e3d07178387776cc4ab"
+    },
+    {
+      "path": "executed-sources/prepare-database-a8abc2d.py",
+      "bytes": 8315,
+      "sha256": "a8abc2d19748e4db6d3718c213b835c6d63efaab2d93778fd93dde2d3c4cab7c"
+    },
+    {
+      "path": "gateway.mjs",
+      "bytes": 4051,
+      "sha256": "1b16e757389ca5ba696c45731b870a975b559f98fc28bc2fe8fc6b7a3082558e"
+    },
+    {
+      "path": "gemini-unavailable-preload.mjs",
+      "bytes": 5278,
+      "sha256": "cb3249b9c717c0a693ed411adf766cdefefe7e96dfab70061490b5e4a66f05c5"
+    },
+    {
+      "path": "prepare-database.py",
+      "bytes": 8434,
+      "sha256": "edeb2f5e893a1528adeb4a0652bfcb0dcf79a37dc852603524f0de78863b5554"
+    },
+    {
+      "path": "profiles.json",
+      "bytes": 544,
+      "sha256": "31d27d433cad42136cee24a8f3998fb7626c38ba9224d34223a08be94584926d"
+    },
+    {
+      "path": "quote-fixture.mjs",
+      "bytes": 3580,
+      "sha256": "6c10679ed7cbcb31439ec6f77ef7faab15ec503df92d26ca5867f0d37aeca5f6"
+    },
+    {
+      "path": "runtime-profile.mjs",
+      "bytes": 404,
+      "sha256": "4e8fb260cf7c442b54f68b5f3c130bc67910b3c53146007a64083cd53b85ef6a"
+    },
+    {
+      "path": "start-services.py",
+      "bytes": 9202,
+      "sha256": "742fe31beb70e407f5c2b888bb849bf83b1da3a96cef8f3e92af531fbfcd958c"
+    }
+  ],
+  "scope": "Sources and sanitized readiness only. All credentials, JWK/signing material, SQL URLs and SMTP payloads stay private outside Git; acceptance cases are separate."
+}

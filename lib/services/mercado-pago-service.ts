@@ -1,7 +1,6 @@
 import type { SubscriptionStatus } from '@/types/database';
 
 const DEFAULT_MP_API_BASE = 'https://api.mercadopago.com';
-const DEFAULT_GRACE_DAYS = 7;
 
 type MercadoPagoFrequencyType = 'days' | 'months';
 
@@ -21,13 +20,24 @@ export interface MercadoPagoPreapproval {
   status: string;
   external_reference: string | null;
   init_point?: string;
+  next_payment_date?: string | null;
   auto_recurring?: {
     frequency?: number;
     frequency_type?: MercadoPagoFrequencyType;
-    transaction_amount?: number;
+    transaction_amount?: number | string;
     currency_id?: string;
     next_payment_date?: string | null;
   };
+}
+
+export interface MercadoPagoAuthorizedPayment {
+  id: string | number;
+  preapproval_id: string;
+  external_reference: string | null;
+  currency_id: string;
+  transaction_amount: string | number;
+  debit_date: string;
+  payment?: { id?: string | number; status?: string };
 }
 
 export interface SubscriptionTransition {
@@ -58,11 +68,12 @@ class MercadoPagoService {
         ...(init?.headers || {}),
       },
       cache: 'no-store',
+      signal: AbortSignal.timeout(8_000),
     });
 
     if (!response.ok) {
-      const raw = await response.text().catch(() => '');
-      throw new Error(`MercadoPago API ${response.status}: ${raw || response.statusText}`);
+      // Provider bodies may contain payer details; do not copy them into logs.
+      throw new Error(`MercadoPago API ${response.status}`);
     }
 
     return (await response.json()) as T;
@@ -93,6 +104,16 @@ class MercadoPagoService {
     return this.request<MercadoPagoPreapproval>(
       `/preapproval/${encodeURIComponent(preapprovalId)}`
     );
+  }
+
+  async cancelPreapproval(id: string): Promise<MercadoPagoPreapproval> {
+    return this.request<MercadoPagoPreapproval>(`/preapproval/${encodeURIComponent(id)}`, {
+      method: 'PUT', body: JSON.stringify({ status: 'cancelled' }),
+    });
+  }
+
+  async getAuthorizedPayment(id: string): Promise<MercadoPagoAuthorizedPayment> {
+    return this.request<MercadoPagoAuthorizedPayment>(`/authorized_payments/${encodeURIComponent(id)}`);
   }
 
   extractPreapprovalId(
@@ -142,62 +163,15 @@ class MercadoPagoService {
   mapPreapprovalStatusToSubscription(
     preapproval: MercadoPagoPreapproval,
     currentStatus: SubscriptionStatus,
-    now: Date = new Date()
+    _now: Date = new Date()
   ): SubscriptionTransition {
     const mpStatus = preapproval.status.toLowerCase();
-    const nextPaymentDate = preapproval.auto_recurring?.next_payment_date || null;
-
-    if (mpStatus === 'authorized' || mpStatus === 'active') {
-      return {
-        status: 'ACTIVE',
-        currentPeriodEnd: nextPaymentDate,
-        gracePeriodEnd: null,
-      };
-    }
-
-    if (mpStatus === 'rejected') {
-      if (currentStatus === 'ACTIVE') {
-        const graceEnd = new Date(now);
-        graceEnd.setDate(graceEnd.getDate() + DEFAULT_GRACE_DAYS);
-        return {
-          status: 'GRACE_PERIOD',
-          currentPeriodEnd: nextPaymentDate,
-          gracePeriodEnd: graceEnd.toISOString(),
-        };
-      }
-      if (currentStatus === 'GRACE_PERIOD') {
-        return {
-          status: 'GRACE_PERIOD',
-          currentPeriodEnd: nextPaymentDate,
-        };
-      }
-      return {
-        status: 'PAST_DUE',
-        currentPeriodEnd: nextPaymentDate,
-      };
-    }
-
+    // Authorization only schedules collection. Paid time is established solely
+    // by an approved invoice in mapAuthorizedPayment, never next_payment_date.
     if (mpStatus === 'paused' || mpStatus === 'cancelled' || mpStatus === 'canceled') {
-      return {
-        status: 'CANCELED',
-        currentPeriodEnd: nextPaymentDate,
-        gracePeriodEnd: null,
-      };
+      return { status: 'CANCELED', gracePeriodEnd: null };
     }
-
-    if (mpStatus === 'pending') {
-      // Checkout acaba de crear el preapproval: no revocar el acceso hasta que
-      // MP confirme authorized/active o un fallo real (paused/cancelled).
-      return {
-        status: currentStatus,
-        currentPeriodEnd: nextPaymentDate,
-      };
-    }
-
-    return {
-      status: currentStatus,
-      currentPeriodEnd: nextPaymentDate,
-    };
+    return { status: currentStatus };
   }
 }
 

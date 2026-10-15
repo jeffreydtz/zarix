@@ -1,0 +1,74 @@
+{
+  "runAt": "2026-10-13T22:09:52.090Z",
+  "node": "v22.17.0",
+  "checks": [
+    {
+      "provider": "CriptoYa",
+      "url": "https://criptoya.com/api/dolar",
+      "method": "GET",
+      "observedAt": "2026-10-13T22:09:51.137Z",
+      "scope": "Actual public provider response only; no credentials, writes, authenticated application flow or availability claim",
+      "httpStatus": 200,
+      "responseSha256": "06e460c1b9d835f1f80f94c629386596874de53ffe3cbecda8198c058c1d07f7",
+      "parsedJson": true,
+      "schema": [
+        "mayorista",
+        "oficial",
+        "ahorro",
+        "tarjeta",
+        "blue",
+        "cripto",
+        "mep",
+        "ccl"
+      ],
+      "status": "PASS"
+    },
+    {
+      "provider": "DolarApi",
+      "url": "https://dolarapi.com/v1/dolares",
+      "method": "GET",
+      "observedAt": "2026-10-13T22:09:51.271Z",
+      "scope": "Actual public provider response only; no credentials, writes, authenticated application flow or availability claim",
+      "httpStatus": 200,
+      "responseSha256": "2479ee24362ef2fdf1802e129d0531e6e25fb1dc6e6410f61cdbf48cc44b1a7f",
+      "parsedJson": true,
+      "schema": [
+        "moneda",
+        "casa",
+        "nombre",
+        "compra",
+        "venta",
+        "fechaActualizacion"
+      ],
+      "status": "PASS"
+    },
+    {
+      "provider": "CoinGecko",
+      "url": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,ars&include_24hr_change=true&include_last_updated_at=true",
+      "method": "GET",
+      "observedAt": "2026-10-13T22:09:51.357Z",
+      "scope": "Actual public provider response only; no credentials, writes, authenticated application flow or availability claim",
+      "httpStatus": 200,
+      "responseSha256": "a64eba9a3c6edfd0a90bc4891de7a3bef59be532831150d904e9fada486c3af0",
+      "parsedJson": true,
+      "schema": [
+        "bitcoin"
+      ],
+      "status": "PASS"
+    },
+    {
+      "provider": "Yahoo",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1d&interval=1d",
+      "method": "GET",
+      "observedAt": "2026-10-13T22:09:51.625Z",
+      "scope": "Actual public provider response only; no credentials, writes, authenticated application flow or availability claim",
+      "httpStatus": 200,
+      "responseSha256": "79128f4d1e3fb5e4632ac3c2ba6bbb6c8b77a1e3924389f91e9d644bd67d9c7c",
+      "parsedJson": true,
+      "schema": [
+        "chart"
+      ],
+      "status": "PASS"
+    }
+  ]
+}

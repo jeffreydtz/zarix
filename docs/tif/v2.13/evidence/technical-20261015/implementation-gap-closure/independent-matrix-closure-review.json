@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "reviewKind": "independent-original-contract-derived-matrix-and-closure-document-review",
+  "reviewedAtUtc": "2026-10-15T08:54:27.362595+00:00",
+  "reviewer": "/root/remaining_scope",
+  "status": "PASS_INDEPENDENT_MATRIX_CLOSURE_REVIEW_SCOPED",
+  "materialFindings": [],
+  "checkpoint": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "productRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "nativeRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "scope": "Review of the new derived matrix and closure documents against unchanged original CSV, checkpoint matrix and exact reviewed evidence compositions. No product/runtime/secret-scanner action or matrix generation by this reviewer.",
+  "identityAndIntegrity": {
+    "originalCases": 273,
+    "orderedIdsMatchOriginalAndCheckpoint": true,
+    "uniqueIds": 273,
+    "originalCsvSha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+    "originalCsvUnchanged": true,
+    "frozenCheckpointMatrixUnchanged": true,
+    "baselineMatrixSha256": "5b9634e7c2668347c2f08bc67d5c2c8f3d8f9edaca819f72e503124f5d8aca92",
+    "contractRevisionLabelsUnchangedForAll273": true,
+    "fourB40MigrationsAndOctober09ReportPreservation": "Confirmed by read-only reconcile-delta.py --verify and pinned here."
+  },
+  "matrixAssessment": {
+    "before": {
+      "PASS": 232,
+      "BLOCKED": 40,
+      "FAIL": 1
+    },
+    "after": {
+      "PASS": 238,
+      "BLOCKED": 34,
+      "FAIL": 1
+    },
+    "exactPromotions": [
+      "CP1-08",
+      "CP2-11",
+      "CP2-12",
+      "CP3-17",
+      "CNF-10",
+      "CNF-13"
+    ],
+    "promotions": 6,
+    "statusesUnchanged": 267,
+    "blockedReasonUpdatesOnly": [
+      "CP2-19",
+      "CNF-06",
+      "CNF-11"
+    ],
+    "semanticRowsUpdated": 9,
+    "otherSemanticRowsUnchanged": 264,
+    "oldEvidenceLinksRebasedOnly": "The derived matrix is one directory deeper. Existing references receive ../ without rewriting the frozen source matrix.",
+    "remainingLiteralFailure": "CP2-09 remains FAIL: observed GoTrue400 versus original401/403; no denial of the separately proved safe access behavior."
+  },
+  "readOnlyVerifier": {
+    "command": "python3 docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/reconcile-delta.py --verify",
+    "sourceInspectedBeforeExecution": true,
+    "exitCode": 0,
+    "writesInVerifyBranch": false,
+    "outputCounts": {
+      "PASS": 238,
+      "BLOCKED": 34,
+      "FAIL": 1
+    },
+    "matrixSha256": "26bef9e0c174e5571a0e13ec24428983d13d08864b88b1476277901b5c9ab227"
+  },
+  "referencesAndPins": {
+    "matrixEvidenceReferencesChecked": 582,
+    "missingMatrixEvidenceReferences": [],
+    "outsideRepositoryMatrixEvidenceReferences": [],
+    "decisionReviewPinOccurrencesVerified": 17,
+    "uniqueDecisionReviews": 6,
+    "directEvidenceArtifactPinsInsideFiveReviewsVerified": 59,
+    "channelReviewExtraSourceAndReportPinsVerified": 21,
+    "closureAndTopDocumentMarkdownLinksChecked": 44,
+    "existingMarkdownLinks": 43,
+    "declaredFuturePublicationLink": {
+      "path": "publication/FINAL-PUBLICATION.md",
+      "existsAtReview": false,
+      "inOriginalCaseEvidence": false,
+      "scope": "Explicit parent-declared future publication document. It is not acceptance evidence for any promoted case and is not reviewed or claimed to exist here. Must be created and checked in the separate publication step before final delivery."
+    }
+  },
+  "compositions": [
+    {
+      "case": "CP1-08",
+      "assessment": "SUPPORTED",
+      "basis": "Native normal-session POST/DELETE plus actual ledger/audit SQL gives10000→8500→10000, no operational row, exact OLD/owner/authenticated actor, one append-only audit and foreign denial. No universalDELETE/UI claim."
+    },
+    {
+      "case": "CP2-11",
+      "assessment": "SUPPORTED_API_SQL_SSR_COMPOSITION",
+      "basis": "Native730 computes200USD from original120000ARS/100USD and preserves finances; SSR38 supplies real cookie PUT, logout/new session after save, owner settings and bound Flight total200USD/240000ARS with hidden Hero/Sticky. It does not claim animated text or visual interaction."
+    },
+    {
+      "case": "CP2-12",
+      "assessment": "SUPPORTED_API_SQL_COMPOSITION",
+      "basis": "InvalidZZZ/manipulated owner fields reject400 before changes; native foreign RLS read/write returns no rows. Real Next HTTP stale-owner header rejects403. No invented CRUD/delete semantics."
+    },
+    {
+      "case": "CP3-17",
+      "assessment": "SUPPORTED_WITH_SEPARATE_DASHBOARD_SUPPLEMENT",
+      "basis": "SSR38 B-dashboard coverage gap remains in its original review. The separately pinned26-check supplement supplies actual A and B Dashboard200 with distinct bound modules/props and seven unchanged financial/history inventories; B own0 excludes A200. No browser/hydration/pixel claim."
+    },
+    {
+      "case": "CNF-10",
+      "assessment": "SUPPORTED_LOCAL_LITERAL_COMPOSITION",
+      "basis": "Real handlers/application bot with explicit Auth/transport/data doubles cover invalid/valid credentials and no protected dispatch/writes; a normal GoTrueJWT is separately denied by native cron. Selected log privacy has26focal/60overlapping tests and fixed-string source proof, not realTelegram delivery or universal hosting-log inspection."
+    },
+    {
+      "case": "CNF-13",
+      "assessment": "SUPPORTED_LOCAL_LITERAL_SUPPLEMENT",
+      "basis": "CSV explicitly permits synthetic recurring/preapproval resources. The calibrated robust nine-path730 supplement provides9groups/42checks/54observations/27metric samples and55formatted console calls. It closes the old JSON.stringify hidden-Error limitation in a separate run, without reclassifying old logs or attributing730 runtime to f5."
+    }
+  ],
+  "criteriaAndLimits": [
+    "CNF11 remains BLOCKED. OCR/Telegram are explicitly present in its original escenario column. The pending monetarily confirmed/retried entry paths may use doubles; real Gemini extraction or Telegram delivery is not an added criterion.",
+    "The lack of first-commit contention is explicitly a limit of the after-commit replay evidence, not a new mandatory criterion. Unobserved per-channel write/ack/timeout injections and monetarily confirmed entry paths remain the stated blockers.",
+    "CP2-19 remains BLOCKED: new supported GET/PUT proofs do not create DELETE preferences or convert HTTP405 into authorization evidence. The old42/6 matrix is not relabeled as a new full run.",
+    "CNF06 remains BLOCKED for original visual/keyboard/download/viewport tasks. The reset UI is now implemented/servedHTTP, but SSR/Flight does not establish visual or browser acceptance.",
+    "CP2-13/14/15/16 real MercadoPago acceptance, OCR/Gemini integration and real Telegram delivery are not promoted by local synthetic providers.",
+    "CNF02 monthly availability remains BLOCKED; brief local execution, unit counters and nine correlations are not monthly service availability.",
+    "PNG generation in RAM does not imply RAM-only retention: its base64 deliberately persists in a synthetic private-clone note and may enter its dump. No public image/raw console file is claimed.",
+    "SDK logout error:null is not reinterpreted as captured HTTP204. Independent SQL0sessions/0refresh establishes cleanup within the declared clone scope.",
+    "Final f5 gates remain distinct from native/HTTP730, historical UI, earlier failed attempts and audit status. Full audit remainsFAIL7high/0critical while production audit isPASS0.",
+    "The52preference unit/WASM/handler/SSR tests are implementation evidence; the later native+HTTP+SSR compositions are separately identified as the acceptance basis."
+  ],
+  "closureDocumentChecks": {
+    "topDocuments": [
+      "docs/tif/v2.13/LEEME-entrega.md",
+      "docs/tif/v2.13/README.md"
+    ],
+    "oldFiguresMarkedHistorical": true,
+    "exactFourUseCasesPreserved": true,
+    "gatesFinalTests": 1037,
+    "gatesFinalTestFiles": 105,
+    "requiredGateCommandsPassed": 6,
+    "coverageFiles": 37,
+    "coverageNumeratorsAndDenominatorsMatchSavedSummary": true,
+    "pendingDecisionsNotAutoAuthorized": true,
+    "matrixDraftLinksAndRationaleExplicitlyNonCurrent": true
+  },
+  "reviewerActions": {
+    "productEdited": false,
+    "historicalEvidenceEdited": false,
+    "matrixEditedOrGenerated": false,
+    "runtimeOrTestsStarted": false,
+    "secretScannersExecuted": false,
+    "commitCreated": false,
+    "onlyNewReviewWritten": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-matrix-closure-review.json"
+  },
+  "limitations": [
+    "This is file/Git and preserved-evidence review, not a repeat of application, Auth, HTTP, SQL, provider, browser, load, backup restoration or dependency retrieval.",
+    "The final publication document was parent-declared pending and is excluded from this verdict. Its absence is recorded instead of claiming every future navigation link resolves."
+  ],
+  "pins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-decisions.json",
+      "sha256": "ec80f51fcd7dce449ece166eb7b95f4a2bc5a587b477a66a25286845059ab546"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-traceability-delta.csv",
+      "sha256": "26bef9e0c174e5571a0e13ec24428983d13d08864b88b1476277901b5c9ab227"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-status-delta.json",
+      "sha256": "26c95ff27f865414e10830d5615cb96b7ee26ce036a5547c2261c1b3d387cbb9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/reconcile-delta.py",
+      "sha256": "3f800a57633ee5f807b61b5eb10f901e41cc5a37c309cbc01a3e14ae6118a64a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/README.md",
+      "sha256": "99fe3b43010c69e728a5ef8023c4037dc3bdfe138b1a1da822a4d8ce0110c334"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/DECISIONES-PENDIENTES.md",
+      "sha256": "01e29c4e43cce6086f6f90f981e0a9aa926e50909f831e95378b168cc04a2dd2"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/independent-channel-secrets-review.json",
+      "sha256": "b0f907412c997b929009f85856391cef7813a32730289214992b8e47284d2142"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-cnf-local-focal-review.json",
+      "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-cnf13-robust-review.json",
+      "sha256": "4deab9df8c3777ef1adefa4c696251f1fb2220ab8e7e6ea4b13bde02985cc5d1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-dashboard-supplement-review.json",
+      "sha256": "c13e23856892300ebceb3b1c349a2bc1a37c18ada3a4d5e99cdd32bae71518e9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-native-delta-review.json",
+      "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-ssr-http-review.json",
+      "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-head-gates-review.json",
+      "sha256": "1cef250d9c12d07fe7cd19e0bbed012c80bab6ca080d3e987b189c28c965e7d3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-5/verification.json",
+      "sha256": "316f73efc7d1588d19fb2b4a3bf7c673bc7979594ed1551a2f7ae08be7442be5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-5/final-vitest.json",
+      "sha256": "7000cfe3aaec58985356a66016780d0d325ef8eb812ff6d3b97551a87d45bada"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-5/coverage-summary.json",
+      "sha256": "9dd5c521e98e49d29fd12eff6cc2cb476d64cd335a33ac8251700f37dea0844b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/independent-review.json",
+      "sha256": "9010e6edcb93ad932d6e6b88d5ecba1a050f32d19fb13a96b85a64992794e7a4"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/LIMITS-ADDENDUM.md",
+      "sha256": "f9815a086c09e40d2fea14dcd68eb4103d81075f3fad3641df52bac813e5cbc5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/cnf13-nine-robust.json",
+      "sha256": "79bd41d00594122547dd429c0e74efc86ab4e2b8ef9825c07c2170ed4f41a984"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/matrix-draft-links/README.md",
+      "sha256": "0287b54350bcfa0b517858990d1359ecf21638f7c7d68f3bfc0c22f644a2bc17"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/matrix-draft-rationale/README.md",
+      "sha256": "25f580158b222e07be89757c05c9a4c86b9f2d6c44078c37d64d3212f50752b0"
+    },
+    {
+      "path": "docs/tif/v2.13/LEEME-entrega.md",
+      "sha256": "4d81e4922d573b51333eb17883063d6c886e78908e86ceb0bba15018532c59cb"
+    },
+    {
+      "path": "docs/tif/v2.13/README.md",
+      "sha256": "c685feb562602bdb3fc6d9832cca200a6b14a4da0bb1e174ad0e6e48213b9388"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/case-traceability.csv",
+      "sha256": "5b9634e7c2668347c2f08bc67d5c2c8f3d8f9edaca819f72e503124f5d8aca92"
+    },
+    {
+      "path": "docs/tif/v2.13/VERIFICACION-TECNICA-20261009.md",
+      "sha256": "1990c740bb2ab4581139aca1a219b1170dad217b9b0856b53939b93dc1178ca4"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    }
+  ]
+}

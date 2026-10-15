@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "status": "PREPARED_NOT_EXECUTED",
+  "cliVersion": "2.120.0",
+  "scope": "Stop only the four existing isolated native stacks after the parent confirms completed quotes and four private backups. No action was performed by this plan.",
+  "environment": {
+    "SUPABASE_HOME": "/tmp/zarix-runtime-20261015/home",
+    "SUPABASE_EXPERIMENTAL_STACK": "1",
+    "SUPABASE_NO_UPDATE_NOTIFIER": "1"
+  },
+  "stacks": [
+    {
+      "name": "source",
+      "stackId": "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+      "workdir": "/tmp/zarix-runtime-20261015/source",
+      "expectedPostgresPort": 54322,
+      "expectedPublicApiPort": 54321,
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/source",
+        "--stack-id",
+        "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+        "--output-format",
+        "json"
+      ]
+    },
+    {
+      "name": "restore",
+      "stackId": "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+      "workdir": "/tmp/zarix-runtime-20261015/restore",
+      "expectedPostgresPort": 55322,
+      "expectedPublicApiPort": 55321,
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/restore",
+        "--stack-id",
+        "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+        "--output-format",
+        "json"
+      ]
+    },
+    {
+      "name": "load",
+      "stackId": "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+      "workdir": "/tmp/zarix-runtime-20261015/load",
+      "expectedPostgresPort": 56322,
+      "expectedPublicApiPort": 56321,
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/load",
+        "--stack-id",
+        "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+        "--output-format",
+        "json"
+      ]
+    },
+    {
+      "name": "e2e",
+      "stackId": "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+      "workdir": "/tmp/zarix-runtime-20261015/e2e",
+      "expectedPostgresPort": 57322,
+      "expectedPublicApiPort": 57321,
+      "argv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/e2e",
+        "--stack-id",
+        "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+        "--output-format",
+        "json"
+      ]
+    }
+  ],
+  "forbiddenAlternatives": [
+    "--all",
+    "stack destroy",
+    "db reset",
+    "data removal",
+    "manual kill/pg_ctl bypass",
+    "system firewall/TCC changes"
+  ],
+  "preconditions": [
+    "Parent releases the post-quotes window and confirms four private 0600 dumps are complete outside Git",
+    "No browser/harness or SQL/Auth writes remain active",
+    "Each workdir/start/manifest/state ID is the exact expected stack; native runtime and data directories remain under the task temporary root",
+    "Capture sanitized per-stack owner PID and descendant PID/comm only, current listeners, identity/configuration/credential hashes and data-directory inventory; no argv/environment/status secrets",
+    "Private stdout/stderr are 0600; never print status/env credentials"
+  ],
+  "postconditions": [
+    "Each exact owned owner/workload PID has exited, distinguishing PID reuse by executable/parent/start metadata",
+    "Expected public API/PG and captured internal listeners are gone, and no unrelated listener/process is stopped",
+    "State definition, service identities/credentials/configuration and each native PG data directory remain; PG_VERSION retained; no assertion of byte-identical WAL or pg_control after graceful shutdown",
+    "Report each stopped/unavailable/error result truthfully; an unreachable owner alone does not prove workloads stopped",
+    "If an individual stop fails, preserve its data, record that blocker and continue independent authorized stacks; do not force kill or destroy"
+  ],
+  "officialSources": {
+    "command": "https://github.com/supabase/cli/blob/v2.120.0/apps/cli/src/commands/experimental/stack/stop/stop.command.ts",
+    "handler": "https://github.com/supabase/cli/blob/v2.120.0/apps/cli/src/commands/experimental/stack/stop/stop.handler.ts",
+    "vendorTests": "https://github.com/supabase/cli/blob/v2.120.0/apps/cli/src/commands/experimental/stack/stop/stop.integration.test.ts",
+    "lifecycle": "https://github.com/supabase/cli/blob/v2.120.0/packages/stack/README.md"
+  },
+  "officialFilesSha256": {
+    "stop.command.ts": "5ea1634138ec24c1f2cb44330238f11fc219defda11622bb09cfba618a36f6db",
+    "stop.handler.ts": "cd9f0790f6e852849df811c97f9c4c0defa8efa033ba271b397e28ad19aaae4e",
+    "stop.integration.test.ts": "2e6da156482d0ec40f4fcc1c25881634fa96b14de1d60eb1cb43633eb1611645"
+  },
+  "mutationsPerformed": false,
+  "secretsIncluded": false
+}

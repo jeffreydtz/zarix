@@ -1,0 +1,45 @@
+{
+  "reviewedAt": "2026-10-15T00:42:43.793Z",
+  "scope": "Actual provider and quick-create handlers/effects with explicit React lifecycle/Auth/HTTP/account-helper doubles; pending ID preservation inside helper is simulated, not a DB or browser claim. Snapshots prove original stale completions; expanded after proves lifecycle/epoch boundaries, including microtask final recheck. Captured hashes follow runs; root final gates use their own stable source manifest.",
+  "commands": [
+    {
+      "command": "node docs/tif/v2.13/evidence/technical-20261015/review/reproduce-quick-create-owner-race.mjs --before",
+      "result": "3 PASS / 5 FAIL expected original defects",
+      "exitCode": 1,
+      "artifact": "quick-create-owner-final-before.json"
+    },
+    {
+      "command": "node docs/tif/v2.13/evidence/technical-20261015/review/reproduce-quick-create-owner-race.mjs",
+      "result": "8/8 PASS",
+      "exitCode": 0,
+      "artifact": "quick-create-owner-final-after.json"
+    }
+  ],
+  "sources": [
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "sha256": "23411cce4fa26a723ade5ef9e5abf7c78ce37b6f98705cfb35ef0117f419294b"
+    },
+    {
+      "path": "components/expenses/InlineQuickCreate.tsx",
+      "sha256": "c9cd499b693fb3714e7cb855b44570da90b13e96350b9c3ee5704236df2a13bf"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/quick-create-owner-race.test.ts.fixture",
+      "sha256": "8309f345a8cf21db086e28bf6b538afba8962bd3cd6a2b0d0b401d5a94bf63e9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/reproduce-quick-create-owner-race.mjs",
+      "sha256": "bf87125ce4915dcbfa1aaf69c83858fd0cf002b368cf2608f2b14bd97d6f5395"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/quick-create-provider-before.tsx.snapshot",
+      "sha256": "23411cce4fa26a723ade5ef9e5abf7c78ce37b6f98705cfb35ef0117f419294b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/quick-create-inline-before.tsx.snapshot",
+      "sha256": "1494115c3e136df1ea1f5cc762a4e2e4379a315d0545b96f216084051b3e50e8"
+    }
+  ],
+  "fixtureCorrection": "Expanded-v1 microtask injection required a final owner read that the original implementation lacked; its extra FAIL is a fixture artifact, not another product defect. Final fixture supplies the later-owner-switch control for that original code path. Original outputs remain preserved and are not used for final defect counts."
+}

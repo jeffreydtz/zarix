@@ -1,0 +1,524 @@
+{
+  "schema": "zarix.independent-cnf13-robust-review.v1",
+  "reviewedAt": "2026-10-15T08:41:35.968852+00:00",
+  "reviewer": "e2e",
+  "status": "PASS_INDEPENDENT_REVIEW_OF_LOCAL_LITERAL_CNF13_SUPPLEMENT",
+  "findings": [],
+  "reviewMethod": "Read public executed source snapshots, reports and exact Git blobs only; recount checks, validate public observations and hashes. No Auth, HTTP, SQL, provider call, browser, test, private credential read or process action by reviewer.",
+  "originalContract": {
+    "path": "docs/tif/v2.13/casos_prueba.csv",
+    "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+    "exactRow": [
+      "CNF-13",
+      "RNF08",
+      "CU-001",
+      "Transversal: registro; CU-001 A: 06 cron; CU-002 A: 07 pago",
+      "Sistema / aceptación no funcional",
+      "Diseñado: normal, frontera y falla",
+      "Correlación, logs y métricas de rutas/servicios/proveedores",
+      "Fixture aislado A: 10000 ARS; regla recurrente y preapproval sintéticos. Usar sólo señuelos: token=SECRETO_CNF13, texto financiero=SUELDO_PRIVADO_CNF13 e imagen con marcadorIMAGEN_CNF13. Instrumentación/correlación requeridas son meta por verificar, no se dan por implementadas.",
+      "Por cada canal manual/cron/pago producir éxito, rechazo y falla controlada. Manual:gasto 1500 válido, monto−1 rechazado, SQL falla. Cron:regla válida, Bearer inválido, proveedor Telegram falla tras commit. Pago:HMAC/recurso válidos, firma falsa, consulta MP falla. Asignar correlaciones corr-cnf13-01..09 y registrar timestamps.",
+      "1.Capturar 9 intentos con respuesta/ID. 2.Reconstruir desde logs cada resultado y escritura. 3.Buscar los tres marcadores sensibles, API keys, cookies, Authorization e imagen/base 64. 4.Revisar métricas con falla de proveedor separada de inconsistencia. 5.Verificar que un aviso fallido se enlaza a la ocurrencia confirmada sin otro débito.",
+      "",
+      "Cada intento tiene correlación válida, canal, timestamp, resultado y referencia mínima; se puede unir request→servicio→efecto o rechazo/error. Éxito manual deja A: 8500; rechazo/fallaSQL no agrega fila. Cron con aviso caído conserva 1 ocurrencia y registra error de proveedor sin declararlo rollback financiero. Pago inválido no activa; fallaMP registra fallo sin estado inventado. Cero apariciones de SECRETO_CNF13, SUELDO_PRIVADO_CNF13 e IMAGEN_CNF13 o credenciales reales. Métricas permiten distinguir proveedor de consistencia y no silencian errores. Si faltan IDs/estados o se filtra contenido, RNF08 no cumple.",
+      "No ejecutado",
+      "Diseñado; pendiente de ejecución",
+      "",
+      "Muestra sanitizada de 9 correlaciones, respuestas, IDs de filas/eventos/ocurrencias y métricas antes/después; consulta de consistencia y búsqueda de señuelos. Resultado real pendiente.",
+      "Contrato RNF objetivo y cálculo independiente; no se atribuye implementación ni corrida real.",
+      "No ejecutado",
+      "",
+      "Entorno de ensayo aislado identificado; sin aplicación ni mutación productiva.",
+      "v2.13"
+    ],
+    "syntheticProviderPermitted": true,
+    "realMercadoPagoOrTelegramDeliveryRequiredByThisRow": false,
+    "browserRequiredByThisRow": false
+  },
+  "sourceProof": {
+    "executedRevision": "730767b1723502b495d371e69c44df31eb230b56",
+    "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+    "checkoutRevisionRecordedButNotExecuted": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+    "differentRevisionsPreserved": true,
+    "sourceRowsVerifiedAgainstExactGit": 514,
+    "gitMismatches": [],
+    "workerSources": [
+      {
+        "path": "run-robust.py",
+        "sha256": "d3bb64f74486ada1484beb2f7855129d2b25f06830482c35fba2cc35a22e0eeb",
+        "matchesPinnedExecutedSnapshot": true,
+        "matchesCurrentWorkerAtReview": true
+      },
+      {
+        "path": "vitest.config.mjs",
+        "sha256": "7131665ef331ca55a0f4b0a13644b46f31159d568ee24b9489ea629591cae3ef",
+        "matchesPinnedExecutedSnapshot": true,
+        "matchesCurrentWorkerAtReview": true
+      },
+      {
+        "path": "robust.test-source.ts",
+        "sha256": "a69316cfc50bc9226322cfd792bab4393b71ac165ce39d83d72e7b9f229670f6",
+        "matchesPinnedExecutedSnapshot": true,
+        "matchesCurrentWorkerAtReview": true
+      }
+    ],
+    "workerStableReported": true,
+    "copyStableReported": true,
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--config",
+      "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/vitest.config.mjs"
+    ],
+    "exitCode": 0,
+    "publicationArtifactPinsVerified": 8,
+    "relevantSourceContrastOnly": [
+      {
+        "path": "app/api/transactions/route.ts",
+        "copy730Sha256": "a4b31c4851e912659c6a037b51b2cdadbf782b45cbd2ede2465dd1b00e3a26f8",
+        "checkoutF5Sha256": "a4b31c4851e912659c6a037b51b2cdadbf782b45cbd2ede2465dd1b00e3a26f8",
+        "sameBytes": true
+      },
+      {
+        "path": "lib/services/transactions.ts",
+        "copy730Sha256": "e150730cdfbff44ca2cd3118f15b236dd5292abf7e56ccae262bb78e710ed04f",
+        "checkoutF5Sha256": "e150730cdfbff44ca2cd3118f15b236dd5292abf7e56ccae262bb78e710ed04f",
+        "sameBytes": true
+      },
+      {
+        "path": "lib/cron/recurring-job.ts",
+        "copy730Sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72",
+        "checkoutF5Sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72",
+        "sameBytes": true
+      },
+      {
+        "path": "lib/cron/cron-job.ts",
+        "copy730Sha256": "b5ea16d8b8c5129b1ccbc7a85b28b890cd79f15f62e35d415916e19e8c012d39",
+        "checkoutF5Sha256": "b5ea16d8b8c5129b1ccbc7a85b28b890cd79f15f62e35d415916e19e8c012d39",
+        "sameBytes": true
+      },
+      {
+        "path": "lib/services/notification-outbox.ts",
+        "copy730Sha256": "385cda84c19e71134ab039c2ce6355bc6fff867620bccb0efa5c147d20168443",
+        "checkoutF5Sha256": "385cda84c19e71134ab039c2ce6355bc6fff867620bccb0efa5c147d20168443",
+        "sameBytes": true
+      },
+      {
+        "path": "app/api/webhooks/mercado-pago/route.ts",
+        "copy730Sha256": "194f0c4886eb9f7c2922972260893c3558191b44c89619aa69fd147c2c98a5a8",
+        "checkoutF5Sha256": "194f0c4886eb9f7c2922972260893c3558191b44c89619aa69fd147c2c98a5a8",
+        "sameBytes": true
+      },
+      {
+        "path": "lib/services/mercado-pago-service.ts",
+        "copy730Sha256": "6747e5f5601a5715b88097fb0f5bf6c60e6f4c792c4963faaa8c67dd1d2d7ecb",
+        "checkoutF5Sha256": "6747e5f5601a5715b88097fb0f5bf6c60e6f4c792c4963faaa8c67dd1d2d7ecb",
+        "sameBytes": true
+      },
+      {
+        "path": "lib/services/subscriptions.ts",
+        "copy730Sha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10",
+        "checkoutF5Sha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10",
+        "sameBytes": true
+      },
+      {
+        "path": "lib/observability/correlation.ts",
+        "copy730Sha256": "293698d8b7bda0a643db1ecfea17be4e1215d7f69b27323ba8eba0a53ea33a80",
+        "checkoutF5Sha256": "293698d8b7bda0a643db1ecfea17be4e1215d7f69b27323ba8eba0a53ea33a80",
+        "sameBytes": true
+      },
+      {
+        "path": "lib/api-handler.ts",
+        "copy730Sha256": "b1b19b1ca9e26e0471f4c40ed5f2a12470a89dfabf181e233b8ea089f0d2de7d",
+        "checkoutF5Sha256": "b1b19b1ca9e26e0471f4c40ed5f2a12470a89dfabf181e233b8ea089f0d2de7d",
+        "sameBytes": true
+      },
+      {
+        "path": "app/api/cron/recurring/route.ts",
+        "copy730Sha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a",
+        "checkoutF5Sha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a",
+        "sameBytes": true
+      },
+      {
+        "path": "app/api/cron/notification-outbox/route.ts",
+        "copy730Sha256": "df2ba7e00e3827ec29fcbeed437657be1ee102a2c77b2046baecbc188cf5e6ae",
+        "checkoutF5Sha256": "df2ba7e00e3827ec29fcbeed437657be1ee102a2c77b2046baecbc188cf5e6ae",
+        "sameBytes": true
+      }
+    ],
+    "revisionAttribution": "The runtime result is COPY730. Later f5 gates and the separately tested investment-log fix are not this execution. Equal relevant-source bytes support explicit composition, not a claim that this worker served or executed the full f5 revision."
+  },
+  "verifiedOutcome": {
+    "groupsPassed": 9,
+    "groupsTotal": 9,
+    "checksPassed": 42,
+    "checksTotal": 42,
+    "checkCountsByCorrelation": [
+      {
+        "id": "corr-cnf13-01",
+        "checks": 6
+      },
+      {
+        "id": "corr-cnf13-02",
+        "checks": 4
+      },
+      {
+        "id": "corr-cnf13-03",
+        "checks": 5
+      },
+      {
+        "id": "corr-cnf13-04",
+        "checks": 4
+      },
+      {
+        "id": "corr-cnf13-05",
+        "checks": 4
+      },
+      {
+        "id": "corr-cnf13-06",
+        "checks": 7
+      },
+      {
+        "id": "corr-cnf13-07",
+        "checks": 4
+      },
+      {
+        "id": "corr-cnf13-08",
+        "checks": 4
+      },
+      {
+        "id": "corr-cnf13-09",
+        "checks": 4
+      }
+    ],
+    "why42Not41": "One additional SQL check proves the successful movement retained the synthetic PNG base64 in its private fixture note. The preceding focal had41; no count is transplanted.",
+    "observations": 54,
+    "capturedPostCalibrationConsoleCalls": 55,
+    "observationsByCorrelation": {
+      "corr-cnf13-01": 6,
+      "corr-cnf13-02": 2,
+      "corr-cnf13-03": 6,
+      "corr-cnf13-04": 8,
+      "corr-cnf13-05": 2,
+      "corr-cnf13-06": 10,
+      "corr-cnf13-07": 10,
+      "corr-cnf13-08": 2,
+      "corr-cnf13-09": 8
+    },
+    "terminalMetricSamples": 27,
+    "requestTerminals": [
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:35:58.146Z",
+        "correlationId": "corr-cnf13-01",
+        "channel": "manual",
+        "operation": "transaction.create",
+        "component": "request",
+        "action": "execute",
+        "outcome": "success",
+        "status": 201,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:35:58.625Z",
+        "correlationId": "corr-cnf13-02",
+        "channel": "manual",
+        "operation": "transaction.create",
+        "component": "request",
+        "action": "execute",
+        "outcome": "rejected",
+        "failureClass": "validation",
+        "status": 400,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:35:59.233Z",
+        "correlationId": "corr-cnf13-03",
+        "channel": "manual",
+        "operation": "transaction.create",
+        "component": "request",
+        "action": "execute",
+        "outcome": "error",
+        "failureClass": "consistency",
+        "status": 500,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:35:59.628Z",
+        "correlationId": "corr-cnf13-04",
+        "channel": "cron",
+        "operation": "cron.run",
+        "job": "recurring",
+        "component": "request",
+        "action": "execute",
+        "outcome": "success",
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:35:59.929Z",
+        "correlationId": "corr-cnf13-05",
+        "channel": "cron",
+        "operation": "cron.run",
+        "job": "recurring",
+        "component": "request",
+        "action": "execute",
+        "outcome": "rejected",
+        "failureClass": "authentication",
+        "status": 401,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:36:00.200Z",
+        "correlationId": "corr-cnf13-06",
+        "channel": "cron",
+        "operation": "cron.run",
+        "job": "notification-outbox",
+        "component": "request",
+        "action": "execute",
+        "outcome": "error",
+        "failureClass": "provider",
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:36:00.384Z",
+        "correlationId": "corr-cnf13-07",
+        "channel": "payment",
+        "operation": "payment.webhook",
+        "component": "request",
+        "action": "execute",
+        "outcome": "success",
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:36:00.534Z",
+        "correlationId": "corr-cnf13-08",
+        "channel": "payment",
+        "operation": "payment.webhook",
+        "component": "request",
+        "action": "execute",
+        "outcome": "rejected",
+        "failureClass": "authentication",
+        "status": 401,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:36:00.709Z",
+        "correlationId": "corr-cnf13-09",
+        "channel": "payment",
+        "operation": "payment.webhook",
+        "component": "request",
+        "action": "execute",
+        "outcome": "error",
+        "failureClass": "provider",
+        "status": 500,
+        "metric": "zarix_operation_total",
+        "value": 1
+      }
+    ],
+    "countsAreNotNewGlobalVitestTestTotals": true
+  },
+  "captureCalibration": {
+    "method": "node:util.formatWithOptions",
+    "options": {
+      "showHidden": true,
+      "depth": null,
+      "maxStringLength": "Infinity",
+      "maxArrayLength": "Infinity",
+      "customInspect": false
+    },
+    "consoleMethodsCaptured": [
+      "log",
+      "info",
+      "debug",
+      "warn",
+      "error",
+      "dir",
+      "time",
+      "timeEnd",
+      "timeLog",
+      "trace",
+      "assert",
+      "clear",
+      "count",
+      "countReset",
+      "group",
+      "groupEnd",
+      "table",
+      "dirxml",
+      "groupCollapsed"
+    ],
+    "positiveCanary": {
+      "status": "PASS",
+      "errorMessageCaptured": true,
+      "errorStackCaptured": true,
+      "errorCauseMessageCaptured": true,
+      "errorCauseStackCaptured": true,
+      "nonEnumerableErrorFieldsUsed": true,
+      "literalSentinelCategoriesCaptured": 3,
+      "imageRepresentationCategoriesCaptured": 4,
+      "consoleCallsBeforeClear": 1,
+      "consoleCallsAfterClear": 0,
+      "performedBeforeAnyAuthOrDatabaseOperation": true
+    },
+    "sourceOrderVerified": "calibrateCapture() is the first operation in the worker try block, before metadata-driven Auth or SQL; it creates an Error/cause with non-enumerable message/stack and hidden image properties, detects all expected categories, then clears the console collection and verifies zero.",
+    "calibrationNotIncludedInRuntimeZeroHits": true,
+    "oldGapResolution": "The prior JSON.stringify(rawConsole) scope limit remains historical. This new run formats each captured call with hidden Error properties before matching; its positive canary proves message, stack, cause message and cause stack are visible to this capture."
+  },
+  "privacyResult": {
+    "selectedPrivateNeedles": 13,
+    "comparisonPredicate": "Selected strings with length at least8 are searched as complete values; no private value was read by reviewer.",
+    "exactPrivateValueHits": 0,
+    "literalSentinelCategories": 3,
+    "literalSentinelHits": 0,
+    "imageRepresentationCategories": 4,
+    "imageHits": 0,
+    "representations": [
+      "base64",
+      "hex",
+      "inspected latin1/raw latin1",
+      "numeric byte sequence/Buffer JSON"
+    ],
+    "sensitiveAuthFieldNamesInCapturedCalls": false,
+    "scope": "All55 post-calibration formatted console calls from this nine-path worker, with the declared methods, options, values and image representations. Not universal application/hosting log absence; no arbitrary encoding or external collector claim."
+  },
+  "financialAndCorrelationEvidence": {
+    "manual": "Exactly1500 creates one expense and balance10000→8500; database/service observations reference the exact committed transaction UUID. Negative amount400 and real SQL500 preserve the snapshot and receipt count.",
+    "cron": "One400 occurrence is committed, its durable outbox event is claimed once and a rejecting Telegram transport double causes provider-class error while the original finance remains committed.",
+    "outboxLinkValidatedFromPublicRows": {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.195Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "outbox",
+      "action": "dispatch",
+      "outcome": "error",
+      "failureClass": "provider",
+      "referenceType": "outbox",
+      "referenceId": "808c5556-62a7-425d-a130-e9d56917d539",
+      "transactionId": "c3f4283a-7295-474f-b237-24dbe94c4453",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    "payment": "Valid HMAC and the synthetic loopback preapproval produce its declared cancellation; forged signature401 leaves state unchanged; actual local HTTP503 produces webhook500 with provider class at provider/service/request and no subscription partial write. CNF13 does not require a paid/live resource or ACTIVE for this success branch.",
+    "minimumReferences": "Public UUID references, request IDs, channels, timestamps, terminal states and unit counter fields were checked directly from all54 allowlisted observations."
+  },
+  "imageRetention": {
+    "generatedInMemory": true,
+    "imageFileSaved": false,
+    "rawLogSaved": false,
+    "publicImageOrBase64Copied": false,
+    "privateDatabaseNoteRowsConfirmed": 1,
+    "importantLimit": "The successful synthetic transaction deliberately persists the PNG base64 in notes in the private cloned DB, and it may enter that DB backup. It is not true that the image stayed only in RAM. No standalone image file or raw console image was published."
+  },
+  "cleanup": {
+    "authSessionsRemaining": 0,
+    "authRefreshTokensRemaining": 0,
+    "sdkLogoutNoError": [
+      true,
+      true
+    ],
+    "logoutHttpStatusesInferred": false,
+    "profileSelectedColumnsRestoredAndReread": true,
+    "deferredOutboxAvailabilityRestoredAndReread": true,
+    "temporarySqlConstraintRemoved": true,
+    "preferencesAndHistoriesUnchanged": true,
+    "existingFinancialRowsUnchanged": true,
+    "existingRowBoundary": "The worker snapshots baseline IDs and full row count/digests for9 existing financial tables, allowing its own new fixture rows. This is preservation of preexisting rows, not a claim that those tables received no additions.",
+    "originalHostsAndProcesses": "No own runtime or original database inspection by reviewer; coordinator lifecycle/retention proofs remain separate."
+  },
+  "acceptanceAssessment": {
+    "localLiteralCnf13Supported": true,
+    "priorPrivacyEvidenceGapClosedByThisSupplement": true,
+    "matrixPromotionPerformed": false,
+    "integrationsNotClaimed": [
+      "realTelegram delivery/outage",
+      "MercadoPago sandbox or real charge",
+      "OCR processing of the synthetic PNG",
+      "Next browser cookies/routing or UI interaction",
+      "external collector/deployment monitoring"
+    ],
+    "additionalOriginalCasesPromoted": []
+  },
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/cnf13-nine-robust.json",
+      "sha256": "79bd41d00594122547dd429c0e74efc86ab4e2b8ef9825c07c2170ed4f41a984",
+      "bytes": 25929
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/privacy-and-cleanup.json",
+      "sha256": "7c573af45aa9777adfa91efbef5d1838422001c53be3415d406b0dc88a6dd5f0",
+      "bytes": 2702
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/canary-calibration.json",
+      "sha256": "f4a5cccf9390007da151bdc3b93b6636f6263c487c909ff23bd1a979243faa60",
+      "bytes": 401
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/execution.json",
+      "sha256": "a647e14907483affdd27675cd7a609d2ccebcad446630000341e69dae1f67890",
+      "bytes": 78937
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/sources/manifest.json",
+      "sha256": "d39424b54d8cc88d940818ec7e1c160e076405544036321b2b8242418294b786",
+      "bytes": 477
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/sources/run-robust.py",
+      "sha256": "d3bb64f74486ada1484beb2f7855129d2b25f06830482c35fba2cc35a22e0eeb",
+      "bytes": 7574
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/sources/vitest.config.mjs",
+      "sha256": "7131665ef331ca55a0f4b0a13644b46f31159d568ee24b9489ea629591cae3ef",
+      "bytes": 498
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/sources/robust.test-source.ts",
+      "sha256": "a69316cfc50bc9226322cfd792bab4393b71ac165ce39d83d72e7b9f229670f6",
+      "bytes": 34298
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/executed-attempt-1/publication-check.json",
+      "sha256": "a97430b286f58218359b10690e9fe4ab2dbbc90d44a0838fd5e69fe97d005585",
+      "bytes": 1669
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf13-robust-only/README.md",
+      "sha256": "23b7fdfa5cfba54bbe4cf3ef0437275421effd814f6c29305cce3039025e1862",
+      "bytes": 3444
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-cnf-local-focal-review.json",
+      "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab",
+      "bytes": 29638
+    }
+  ],
+  "historicalFilesModified": false,
+  "productModifiedByReviewer": false,
+  "runtimeRepeatedByReviewer": false
+}

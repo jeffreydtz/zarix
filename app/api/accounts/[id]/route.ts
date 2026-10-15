@@ -3,10 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { errorResponse } from '@/lib/api-handler';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {
@@ -31,10 +29,8 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {
@@ -58,10 +54,8 @@ export async function PATCH(
 
 export const PUT = PATCH;
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {

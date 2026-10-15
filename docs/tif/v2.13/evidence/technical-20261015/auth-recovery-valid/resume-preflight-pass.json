@@ -1,0 +1,28 @@
+{
+  "status": "PASS_PREFLIGHT_ONLY",
+  "case_id": "CP2-10",
+  "complete_original_contract": false,
+  "noPasswordOrTokenGenerated": true,
+  "noAuthOrSmtpRequest": true,
+  "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+  "sources": [
+    {
+      "path": "run.mjs",
+      "sha256": "39deb5aad522efc548dbb21acb06552fbe06e75c1421f45f625c65f307548b28"
+    },
+    {
+      "path": "contract.mjs",
+      "sha256": "4bd5d264b60369334c5802562d3ad49554e85acec6aa0e50bf8fff972fa7b06a"
+    },
+    {
+      "path": "smtp-message.mjs",
+      "sha256": "a85f050b258b6482624e317bae12cf2bb8b106bb4ae5ee1dfcca58c4630b38c3"
+    },
+    {
+      "path": "../../../../../../scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    }
+  ],
+  "protectedTablesObserved": 57,
+  "scope": "Filesystem/process metadata and read-only SQL only; normal Auth/SMTP recovery remains unexecuted."
+}

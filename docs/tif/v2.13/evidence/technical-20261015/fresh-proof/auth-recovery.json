@@ -1,0 +1,170 @@
+{
+  "status": "PASS_SCOPED_AUTH_RECOVERY",
+  "startedAt": "2026-10-15T03:29:23.944Z",
+  "target": "http://127.0.0.1:58321",
+  "checks": [
+    {
+      "name": "real recovery hash consumed once; only its new session locally closed; reuse rejected",
+      "status": "PASS",
+      "firstVerifyUserMatched": true,
+      "localLogoutHttp": 204,
+      "secondVerify": {
+        "httpStatus": 403,
+        "errorCode": "otp_expired"
+      },
+      "normalControlSessionsPreserved": true
+    },
+    {
+      "name": "current real recovery hash aged past actual3600sTTL in local fixture rejected",
+      "status": "PASS",
+      "setup": {
+        "serverNow": "2026-10-15T03:29:24.670249+00:00",
+        "recoverySentAt": "2026-10-15T02:29:19.670162+00:00",
+        "fixtureAgeSeconds": 3605
+      },
+      "verify": {
+        "httpStatus": 403,
+        "errorCode": "otp_expired"
+      },
+      "currentHashUnchanged": true,
+      "scope": "Only recovery_sent_at fixture field aged3605s; OS/Auth clock unchanged; no false real-wait or SMTP claim"
+    }
+  ],
+  "scope": "Only cloned ordinary identity A in fifth replica. Real local GoTrue admin.generateLink creates recovery hashes without sending email. One new recovery session consumed and locally closed; two prior normal control sessions preserved. No source, other identity or financial write; no browser/full CP2-09 acceptance.",
+  "configuration": {
+    "otpExpirySeconds": 3600,
+    "source": "Resolved native stack Auth creation.config.settings.email.otp_expiry; CLI AuthSettings passes GOTRUE_MAILER_OTP_EXP",
+    "columns": [
+      {
+        "name": "id",
+        "type": "uuid"
+      },
+      {
+        "name": "recovery_sent_at",
+        "type": "timestamp with time zone"
+      },
+      {
+        "name": "recovery_token",
+        "type": "character varying"
+      }
+    ]
+  },
+  "integrity": {
+    "financialTables": 12,
+    "before": {
+      "budgets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "accounts": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "investments": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "transactions": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_groups": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "recurring_rules": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_expenses": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "investment_sales": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "net_worth_snapshots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_group_members": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_expense_splits": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "portfolio_performance_snapshots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    "after": {
+      "budgets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "accounts": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "investments": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "transactions": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_groups": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "recurring_rules": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_expenses": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "investment_sales": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "net_worth_snapshots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_group_members": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_expense_splits": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "portfolio_performance_snapshots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    "exactMatch": true,
+    "normalControlSessionsPreserved": 2,
+    "sourceOrOtherStacksConnected": false
+  },
+  "privateFixture": {
+    "path": "/tmp/zarix-runtime-20261015/proof-recovery-private/fixture.json",
+    "mode": "0600",
+    "fields": [
+      "ownerId",
+      "expiredAccessToken",
+      "expiredRecoveryHash",
+      "reusedRecoveryHash"
+    ],
+    "valuesPublished": false
+  },
+  "finishedAt": "2026-10-15T03:29:25.030Z"
+}

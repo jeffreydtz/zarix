@@ -1,0 +1,28 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Cuotas (B)
+ participant C as Movimientos(C)
+ participant D as BD (E)
+ U->>B: Total, fecha y<br/>cantidad 2–36
+ B->>C: create(input)
+ C->>D: Cuenta propia y activa
+ D-->>C: Datos de cuenta
+ alt Datos inválidos
+  C-->>B: Rechazo sin escritura
+  B-->>U: Corregir campos
+ else Gasto misma moneda
+  C->>D: RPC<br/>create_installment_transactions
+  Note over C: Conjunto atómico, suma<br/>igual al total
+  alt SQL confirma
+   D-->>C: ID del grupo
+   C->>D: Leer primera cuota del<br/>mismo dueño
+   D-->>C: Registro
+   C-->>B: Resultado
+   B-->>U: Grupo confirmado
+  else SQL falla
+   D-->>C: Rollback completo
+   C-->>B: Error de guardado
+   B-->>U: Error, sin cuotas<br/>parciales
+  end
+ end

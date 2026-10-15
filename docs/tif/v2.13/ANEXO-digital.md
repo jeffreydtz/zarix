@@ -1,0 +1,105 @@
+# Catálogo del anexo digital de ZARIX
+
+El documento principal tiene 122 páginas, 37 figuras centrales y exactamente cuatro casos de uso. Este catálogo conserva las 101 figuras completas del paquete. Los 64 archivos de detalle complementan el mismo alcance. Extraer el ZIP completo y abrir el Word desde la carpeta v2.13 para utilizar sus enlaces relativos.
+
+- [PT01 PT01](figures/PT01.png) — Figura 1 del Word.
+- [PT02 PT02](figures/PT02.png) — Detalle del anexo digital.
+- [PT03 PT03](figures/PT03.png) — Detalle del anexo digital.
+- [PT04 PT04](figures/PT04.png) — Detalle del anexo digital.
+- [PT05 PT05](figures/PT05.png) — Figura 2 del Word.
+- [PT06 PT06](figures/PT06.png) — Detalle del anexo digital.
+- [PT07 PT07](figures/PT07.png) — Figura 3 del Word.
+- [PT08 PT08](figures/PT08.png) — Detalle del anexo digital.
+- [PT09 PT09](figures/PT09.png) — Figura 4 del Word.
+- [PT10 PT10](figures/PT10.png) — Detalle del anexo digital.
+- [PT11 PT11](figures/PT11.png) — Detalle del anexo digital.
+- [PT12 PT12](figures/PT12.png) — Detalle del anexo digital.
+- [UC-General Cuatro casos de uso y actores externos](figures/UC-General.svg) — Figura 5 del Word.
+- [DOM-Finanzas Dominio conceptual: cuentas y movimientos](figures/DOM-Finanzas.svg) — Figura 6 del Word.
+- [DOM-Automatizacion Dominio conceptual: reglas y presupuestos](figures/DOM-Automatizacion.svg) — Figura 7 del Word.
+- [DOM-Inversiones Dominio conceptual: inversiones](figures/DOM-Inversiones.svg) — Figura 8 del Word.
+- [DOM-Personal Dominio conceptual: preferencias y plan](figures/DOM-Personal.svg) — Figura 9 del Word.
+- [DOM-Compartidos Dominio conceptual: gastos compartidos](figures/DOM-Compartidos.svg) — Figura 10 del Word.
+- [ER-CU001-Movimientos ER: movimientos y destino exacto](figures/ER-CU001-Movimientos.svg) — Figura 11 del Word.
+- [ER-CU002-Cuentas ER: cuentas y categorías](figures/ER-CU002-Cuentas.svg) — Figura 12 del Word.
+- [ER-CU002-Usuario ER: identidad y estado comercial](figures/ER-CU002-Usuario.svg) — Figura 13 del Word.
+- [ER-CU004-Inversiones ER: lotes y ventas](figures/ER-CU004-Inversiones.svg) — Figura 14 del Word.
+- [ER-CU003-Snapshots ER: historial de patrimonio y portafolio](figures/ER-CU003-Snapshots.svg) — Detalle del anexo digital.
+- [ER-CU001-Recurrentes ER: reglas recurrentes](figures/ER-CU001-Recurrentes.svg) — Detalle del anexo digital.
+- [ER-CU001-Presupuestos ER: presupuestos y avisos](figures/ER-CU001-Presupuestos.svg) — Detalle del anexo digital.
+- [ER-CU001-Grupos ER: grupo y miembros](figures/ER-CU001-Grupos.svg) — Figura 15 del Word.
+- [ER-CU001-Reparto ER: gasto y partes del reparto](figures/ER-CU001-Reparto.svg) — Detalle del anexo digital.
+- [ER-CU002-Integraciones ER: sesión bot y referencias](figures/ER-CU002-Integraciones.svg) — Detalle del anexo digital.
+- [ARQ-Logica-Impresa Arquitectura: vista lógica](figures/ARQ-Logica-Impresa.svg) — Figura 16 del Word.
+- [ARQ-Componentes-Datos Componentes: identidad y datos](figures/ARQ-Componentes-Datos.svg) — Detalle del anexo digital.
+- [ARQ-Componentes-Analisis Componentes: precios y análisis](figures/ARQ-Componentes-Analisis.svg) — Detalle del anexo digital.
+- [ARQ-Componentes-Canales Componentes: Telegram y cobro](figures/ARQ-Componentes-Canales.svg) — Detalle del anexo digital.
+- [ARQ-Despliegue-Impresa Arquitectura: despliegue objetivo](figures/ARQ-Despliegue-Impresa.svg) — Figura 17 del Word.
+- [ROB-CU001-Registro ROB-CU001: Básico, A01/A08/A10/A11](figures/ROB-CU001-Registro.svg) — Figura 18 del Word.
+- [ROB-CU001-OCR ROB-CU001: A02: ticket y confirmación](figures/ROB-CU001-OCR.svg) — Detalle del anexo digital.
+- [ROB-CU001-Importacion ROB-CU001: A04: importación por fila](figures/ROB-CU001-Importacion.svg) — Detalle del anexo digital.
+- [ROB-CU001-Telegram ROB-CU001: A03: borrador confirmado](figures/ROB-CU001-Telegram.svg) — Detalle del anexo digital.
+- [ROB-CU001-Reglas ROB-CU001: A05: regla y calendario](figures/ROB-CU001-Reglas.svg) — Detalle del anexo digital.
+- [ROB-CU001-Cron ROB-CU001: A06: ejecución y recuperación](figures/ROB-CU001-Cron.svg) — Detalle del anexo digital.
+- [ROB-CU001-Aviso ROB-CU001: A06: aviso posterior al registro](figures/ROB-CU001-Aviso.svg) — Detalle del anexo digital.
+- [ROB-CU001-Presupuesto ROB-CU001: A07: presupuesto y consumo](figures/ROB-CU001-Presupuesto.svg) — Detalle del anexo digital.
+- [ROB-CU001-Compartidos ROB-CU001: A09: grupo, invitado y reparto](figures/ROB-CU001-Compartidos.svg) — Detalle del anexo digital.
+- [ROB-CU002-Cuentas ROB-CU002: Básico, A01/A02/A03: cuentas](figures/ROB-CU002-Cuentas.svg) — Figura 19 del Word.
+- [ROB-CU002-Datos ROB-CU002: A04: exportación propia](figures/ROB-CU002-Datos.svg) — Detalle del anexo digital.
+- [ROB-CU002-Preferencias ROB-CU002: A06: presentación e identidad](figures/ROB-CU002-Preferencias.svg) — Detalle del anexo digital.
+- [ROB-CU002-Acceso ROB-CU002: A05: identidad y vínculo](figures/ROB-CU002-Acceso.svg) — Detalle del anexo digital.
+- [ROB-CU002-Plan ROB-CU002: A07: estado comercial verificado](figures/ROB-CU002-Plan.svg) — Detalle del anexo digital.
+- [ROB-CU003-Patrimonio ROB-CU003: Básico/A05: saldos y composición](figures/ROB-CU003-Patrimonio.svg) — Figura 20 del Word.
+- [ROB-CU003-Cotizaciones ROB-CU003: E01/E03: referencia y respaldo](figures/ROB-CU003-Cotizaciones.svg) — Detalle del anexo digital.
+- [ROB-CU003-Resumen ROB-CU003: A01: período y filtros](figures/ROB-CU003-Resumen.svg) — Detalle del anexo digital.
+- [ROB-CU003-Chat ROB-CU003: A02/A03: consulta autorizada](figures/ROB-CU003-Chat.svg) — Detalle del anexo digital.
+- [ROB-CU003-RF11 ROB-CU003: A04: anomalías y proyección](figures/ROB-CU003-RF11.svg) — Detalle del anexo digital.
+- [ROB-CU004-Operacion ROB-CU004: Básico/A01: lote y venta](figures/ROB-CU004-Operacion.svg) — Figura 21 del Word.
+- [ROB-CU004-Referencias ROB-CU004: A02/A03: precio y respaldo](figures/ROB-CU004-Referencias.svg) — Detalle del anexo digital.
+- [ROB-CU004-Simulacion ROB-CU004: A04: comparación sin escritura](figures/ROB-CU004-Simulacion.svg) — Detalle del anexo digital.
+- [SEC-CU001-Crear Secuencia CU001 Crear](figures/SEC-CU001-Crear.svg) — Figura 22 del Word.
+- [SEC-CU001-EditarEliminar Secuencia CU001 EditarEliminar](figures/SEC-CU001-EditarEliminar.svg) — Figura 23 del Word.
+- [SEC-CU001-OCR Secuencia CU001 OCR](figures/SEC-CU001-OCR.svg) — Detalle del anexo digital.
+- [SEC-CU001-Telegram Secuencia CU001 Telegram](figures/SEC-CU001-Telegram.svg) — Detalle del anexo digital.
+- [SEC-CU001-Importar Secuencia CU001 Importar](figures/SEC-CU001-Importar.svg) — Detalle del anexo digital.
+- [SEC-CU001-ReglasPresupuestos Secuencia CU001 ReglasPresupuestos](figures/SEC-CU001-ReglasPresupuestos.svg) — Detalle del anexo digital.
+- [SEC-CU001-CronSeleccion Secuencia CU001 CronSeleccion](figures/SEC-CU001-CronSeleccion.svg) — Detalle del anexo digital.
+- [SEC-CU001-CronOcurrencia Secuencia CU001 CronOcurrencia](figures/SEC-CU001-CronOcurrencia.svg) — Detalle del anexo digital.
+- [SEC-CU001-Cuotas Secuencia CU001 Cuotas](figures/SEC-CU001-Cuotas.svg) — Detalle del anexo digital.
+- [SEC-CU001-Cola Secuencia CU001 Cola](figures/SEC-CU001-Cola.svg) — Detalle del anexo digital.
+- [SEC-CU001-Sincronizacion Secuencia CU001 Sincronizacion](figures/SEC-CU001-Sincronizacion.svg) — Detalle del anexo digital.
+- [SEC-CU002-AccesoPreferencias Secuencia CU002 AccesoPreferencias](figures/SEC-CU002-AccesoPreferencias.svg) — Detalle del anexo digital.
+- [SEC-CU002-PagoInicio Secuencia CU002 PagoInicio](figures/SEC-CU002-PagoInicio.svg) — Detalle del anexo digital.
+- [SEC-CU002-PagoWebhook Secuencia CU002 PagoWebhook](figures/SEC-CU002-PagoWebhook.svg) — Detalle del anexo digital.
+- [SEC-CU003-Dashboard Secuencia CU003 Dashboard](figures/SEC-CU003-Dashboard.svg) — Figura 24 del Word.
+- [SEC-CU003-Cotizaciones Secuencia CU003 Cotizaciones](figures/SEC-CU003-Cotizaciones.svg) — Detalle del anexo digital.
+- [SEC-CU003-ChatIntencion Secuencia CU003 ChatIntencion](figures/SEC-CU003-ChatIntencion.svg) — Detalle del anexo digital.
+- [SEC-CU003-ChatRespuesta Secuencia CU003 ChatRespuesta](figures/SEC-CU003-ChatRespuesta.svg) — Detalle del anexo digital.
+- [SEC-CU003-AnomaliasSeleccion Secuencia CU003 AnomaliasSeleccion](figures/SEC-CU003-AnomaliasSeleccion.svg) — Detalle del anexo digital.
+- [SEC-CU003-AnomaliasCalculo Secuencia CU003 AnomaliasCalculo](figures/SEC-CU003-AnomaliasCalculo.svg) — Detalle del anexo digital.
+- [SEC-CU003-Proyeccion Secuencia CU003 Proyeccion](figures/SEC-CU003-Proyeccion.svg) — Detalle del anexo digital.
+- [SEC-CU004-Compra Secuencia CU004 Compra](figures/SEC-CU004-Compra.svg) — Figura 25 del Word.
+- [SEC-CU004-VentaValidar Secuencia CU004 VentaValidar](figures/SEC-CU004-VentaValidar.svg) — Detalle del anexo digital.
+- [SEC-CU004-VentaRPC Secuencia CU004 VentaRPC](figures/SEC-CU004-VentaRPC.svg) — Figura 26 del Word.
+- [SEC-CU004-Valoracion Secuencia CU004 Valoracion](figures/SEC-CU004-Valoracion.svg) — Detalle del anexo digital.
+- [SEC-CU001-CompartidosGrupo Secuencia CU001 CompartidosGrupo](figures/SEC-CU001-CompartidosGrupo.svg) — Detalle del anexo digital.
+- [SEC-CU001-CompartidosReparto Secuencia CU001 CompartidosReparto](figures/SEC-CU001-CompartidosReparto.svg) — Detalle del anexo digital.
+- [SEC-CU002-CuentasAlta Secuencia CU002 CuentasAlta](figures/SEC-CU002-CuentasAlta.svg) — Figura 27 del Word.
+- [SEC-CU002-CuentasDatos Secuencia CU002 CuentasDatos](figures/SEC-CU002-CuentasDatos.svg) — Detalle del anexo digital.
+- [SEC-CU004-Simulacion-Detalle Secuencia CU004 Simulacion Detalle](figures/SEC-CU004-Simulacion-Detalle.svg) — Detalle del anexo digital.
+- [CLASES-Datos-Movimientos DTO: movimiento y clasificación](figures/CLASES-Datos-Movimientos.svg) — Detalle del anexo digital.
+- [CLASES-Datos-Cuentas DTO: cuenta y saldos](figures/CLASES-Datos-Cuentas.svg) — Detalle del anexo digital.
+- [CLASES-Datos-Inversiones DTO: inversión y venta](figures/CLASES-Datos-Inversiones.svg) — Detalle del anexo digital.
+- [CLASES-Datos-Automatizacion DTO: regla y presupuesto](figures/CLASES-Datos-Automatizacion.svg) — Detalle del anexo digital.
+- [CLASES-CU001-Movimientos Clases CU001: registro y conversión](figures/CLASES-CU001-Movimientos.svg) — Figura 28 del Word.
+- [CLASES-CU001-Automatizacion Clases CU001: reglas y presupuestos](figures/CLASES-CU001-Automatizacion.svg) — Figura 29 del Word.
+- [CLASES-CU001-Compartidos Clases CU001: gasto compartido](figures/CLASES-CU001-Compartidos.svg) — Figura 30 del Word.
+- [CLASES-CU002-Cuentas Clases CU002: cuenta y consulta de saldos](figures/CLASES-CU002-Cuentas.svg) — Figura 31 del Word.
+- [CLASES-CU003-Analisis Clases CU003: análisis determinista](figures/CLASES-CU003-Analisis.svg) — Figura 32 del Word.
+- [CLASES-CU004-Inversiones Clases CU004: inversión y venta](figures/CLASES-CU004-Inversiones.svg) — Figura 33 del Word.
+- [CFG-01-Guardas CFG 01 Guardas](figures/CFG-01-Guardas.svg) — Figura 34 del Word.
+- [CFG-01-Frecuencia CFG 01 Frecuencia](figures/CFG-01-Frecuencia.svg) — Figura 35 del Word.
+- [PATRONES-Cotizaciones Patrones: Strategy y Adapter](figures/PATRONES-Cotizaciones.svg) — Figura 36 del Word.
+- [PATRONES-Cron Patrón: Template Method](figures/PATRONES-Cron.svg) — Figura 37 del Word.
+- [SEC-StrategyAdapter Secuencia StrategyAdapter](figures/SEC-StrategyAdapter.svg) — Detalle del anexo digital.
+- [SEC-TemplateMethod Secuencia TemplateMethod](figures/SEC-TemplateMethod.svg) — Detalle del anexo digital.

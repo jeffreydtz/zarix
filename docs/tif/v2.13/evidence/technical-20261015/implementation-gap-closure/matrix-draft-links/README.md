@@ -1,0 +1,1 @@
+Borrador derivado previo a la revisión de enlaces. Tres referencias de archivo se normalizaron en el paquete padre; no es una corrida ni cambia resultados de pruebas. Se conserva por procedencia; la matriz vigente es ../case-traceability-delta.csv.

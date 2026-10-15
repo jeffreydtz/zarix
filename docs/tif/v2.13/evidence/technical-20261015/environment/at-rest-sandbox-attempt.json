@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-15T00:56:54.369174Z",
+  "attemptedAt": null,
+  "recordingNote": "Initial sandbox commands ran before the successful 00:55 UTC read; exact start timestamp was not captured. No successful encryption observation is inferred from this attempt.",
+  "status": "BLOCKED_IN_SANDBOX",
+  "results": [
+    {
+      "command": "fdesetup status",
+      "exitCode": 15,
+      "status": "BLOCKED",
+      "diagnostic": "System root volume/device could not be resolved in the sandbox; FileVault status unavailable"
+    },
+    {
+      "command": "df -P /tmp/zarix-runtime-20261015",
+      "exitCode": 0,
+      "status": "PASS_MAPPING_ONLY",
+      "device": "/dev/disk3s5",
+      "mountPoint": "/System/Volumes/Data"
+    },
+    {
+      "command": "diskutil info -plist /System/Volumes/Data",
+      "exitCode": 1,
+      "status": "BLOCKED",
+      "diagnostic": "DiskManagement framework unavailable in sandbox"
+    }
+  ],
+  "resolution": "Separate authorized read-only observation recorded in at-rest.json",
+  "configurationChanged": false,
+  "administratorPasswordRequested": false,
+  "keychainAccessed": false,
+  "sanitization": "Only static error categories and device mapping retained; no raw plist, hardware UUID/serial, account identifiers or secrets"
+}

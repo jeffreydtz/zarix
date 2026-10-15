@@ -1,0 +1,513 @@
+{
+  "startedAt": "2026-10-15T02:46:31.358Z",
+  "status": "PASS",
+  "profile": {
+    "purpose": "isolated-public-quote-profile",
+    "profile": "fallback-real",
+    "providers": {
+      "criptoya": "http://127.0.0.1:57910/fallback-primary",
+      "dolarapi": "https://dolarapi.com/v1",
+      "coingecko": "https://api.coingecko.com/api/v3"
+    },
+    "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+    "nextPid": 36287,
+    "maxRateAgeSeconds": 86400,
+    "marketTimeoutMs": 8000,
+    "metadataSha256": "f9b5a413cbb5182f079ce2dec6dda47ce9ff7a6647b69b19b59355c4ca42c8bc"
+  },
+  "target": {
+    "app": "http://127.0.0.1:3000",
+    "api": "http://127.0.0.1:57321",
+    "postgresPort": "57322"
+  },
+  "scope": "One normal A API request, existing credentials only; 25 canonical public tables read only for counts/hashes; auxiliary rates/cache may change. No financial writes, new users, provider credentials, SOURCE/RESTORE/LOAD.",
+  "hashScope": "Hashes use PostgreSQL canonical JSONB text before JavaScript numeric parsing, preserving exact NUMERIC digits",
+  "results": [
+    {
+      "check": "API normalization and existing freshness contract",
+      "status": "PASS",
+      "dollarQuotes": 4,
+      "cryptoQuotes": 3
+    },
+    {
+      "check": "Dollar provenance",
+      "status": "PASS",
+      "observedProviders": [
+        "dolarapi"
+      ],
+      "observedOrigins": [
+        "provider"
+      ],
+      "scope": "Application metadata and configured endpoint binding; caches can retain provider provenance"
+    },
+    {
+      "check": "Configured primary failure and DolarAPI selection",
+      "status": "PASS",
+      "scope": "CriptoYa endpoint is an explicit local failure double; selected DolarAPI URL is real. Primary request count/status requires the separate root transport evidence."
+    },
+    {
+      "check": "API rates match durable DB source/timestamp/NUMERIC(20,8)",
+      "status": "PASS",
+      "rowsMatched": 8,
+      "scope": "Live source bulk persistence expects eight matching tuples; DB fallback may combine existing buy/sell dates and does not promise a new INSERT"
+    }
+  ],
+  "transportScope": "Official endpoint binding is supplied by the private server profile. Root must verify PID/listener binding when releasing the window. Application and Next fetch caches can serve provider data; no claim of a fresh external socket per quote without separate transport logs. Crypto has no origin/provider metadata in this API.",
+  "sourceManifest": [
+    {
+      "path": "app/api/cotizaciones/route.ts",
+      "sha256": "30913229964de4ef7384ff4cd118592247996cd1b9d1f2f2211210e081257886"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece"
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "sha256": "09caabac5758f32281e72733a3ad1acbef90e5588c9a551942f36f4fb8429587"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "runnerSha256": "296bf3d81a2cd004a672443ea77c78f590a11770bd8888c2dd3b46d9e45ea128",
+  "revision": "31bf9f96e3e88f4fdf880b522690091f369d3f8f",
+  "auth": {
+    "normalUsers": 1,
+    "role": "authenticated",
+    "verified": true,
+    "newIdentities": 0
+  },
+  "before": {
+    "canonical": {
+      "sha256": "fe6bf084536d8835806519fd9ecf985f5c3fb682734f721f8d8169a9239d100a",
+      "tables": {
+        "users": {
+          "rows": 2,
+          "sha256": "a4127fa135f47eaea8673555bd23e56189d10b3861e4ca3e7d6488d7b5803b88"
+        },
+        "accounts": {
+          "rows": 35,
+          "sha256": "4ec68d04e486ee627a43f3fa726da9c9d3922650b4a5d00253c5768db1b8a611"
+        },
+        "categories": {
+          "rows": 31,
+          "sha256": "aa0051f888dd5d12321cb90d4e7bd2a626c2480da4397771940c7644a55e1737"
+        },
+        "transactions": {
+          "rows": 66,
+          "sha256": "1c502cda8dfbd645360a39e23462d91119f5d37cc91cb6a10fa00a0fd6e9425e"
+        },
+        "recurring_rules": {
+          "rows": 3,
+          "sha256": "5264304b436590690b8a8e68a18d2ed1fee65232151a48eff053eb674798d94e"
+        },
+        "budgets": {
+          "rows": 2,
+          "sha256": "8e1e87ef1d953587b4607a731a61f7b5b2d11d2a350fe796e4f6a2f9a9df9c9d"
+        },
+        "investments": {
+          "rows": 5,
+          "sha256": "48d4fc68c948822fcd789756208a625b58959c0a934a01f90732b6a48d4d60a2"
+        },
+        "portfolio_performance_snapshots": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "bot_sessions": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "budget_alerts": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "investment_sales": {
+          "rows": 2,
+          "sha256": "f97753e02d408cf4db93d24a47d7cd18e723e2d3efb8451fea68a39f6226fe09"
+        },
+        "shared_groups": {
+          "rows": 2,
+          "sha256": "2d713e87e8daa7d3fdb08b748690892529904d8aa9fce82ba4230f7037fe2a5a"
+        },
+        "shared_group_members": {
+          "rows": 4,
+          "sha256": "c551579320fc74cc33e983bcd6302c46d4348862be6855ace2ea6c65b2c042e4"
+        },
+        "shared_expenses": {
+          "rows": 1,
+          "sha256": "20352669220ffe63ef1f847a7a5f137a008157c86ada22175ef0e3b205d9d8aa"
+        },
+        "shared_expense_splits": {
+          "rows": 3,
+          "sha256": "d6b313b1fae122f15539c77c7366892c4ec4f00bb2456dbe8ee5b5a4011425c2"
+        },
+        "net_worth_snapshots": {
+          "rows": 2,
+          "sha256": "24345e82ff0325a46c40ab4edb33dcc37f28349724917e297d6d6f5e65e61d9e"
+        },
+        "transaction_requests": {
+          "rows": 28,
+          "sha256": "8b0b868ef50cd41b459c8b038edf45c5ae407da6ea7b840883ee869eb49838cb"
+        },
+        "notification_outbox": {
+          "rows": 1,
+          "sha256": "3dd2eacc471b85b46cfb1cad5cdca6f7dedf17d8f009f35b92c71473d1ea224f"
+        },
+        "plan_usage_cycles": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "plan_usage_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "account_creation_requests": {
+          "rows": 29,
+          "sha256": "a3ef22894e1ed2d0dd60544a352e180ad36a89969bd592827fb73f4a3e97a7d8"
+        },
+        "investment_sale_requests": {
+          "rows": 2,
+          "sha256": "34f149dbf0edc9be139deadd09b66b980d122cc15722f7fa7391af6a2578844d"
+        },
+        "shared_expense_requests": {
+          "rows": 1,
+          "sha256": "454826779ae0ba7391cf0c14f54725afd90f352f4a7008b4c1789615b5ff8e8a"
+        },
+        "investment_create_requests": {
+          "rows": 5,
+          "sha256": "c0f54f1cda8d0b8b50cf3a72c1b4171df8b98173da00543224cd063d592b8e59"
+        },
+        "import_batches": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    "auxiliary": {
+      "exchange_rates": {
+        "rows": 16,
+        "sha256": "e617c0f50401f3b6515ca9b79f995904054af4a8f7b73090f7d320fe5e65a557"
+      },
+      "market_data_cache": {
+        "rows": 1,
+        "sha256": "98d6ed244dc61942dbdd03dd46cbadef7fe6927c913cca547915590529642663"
+      }
+    }
+  },
+  "httpStatus": 200,
+  "responseSha256": "3b80fe827a33699ad19edd314a6b36f5aeee6d049a0c0cd64d4d42e655d1fc30",
+  "requestWindow": {
+    "startedAt": "2026-10-15T02:46:31.621Z",
+    "finishedAt": "2026-10-15T02:46:31.805Z"
+  },
+  "normalizedPublicQuotes": {
+    "dolar": {
+      "blue": {
+        "type": "blue",
+        "buy": 1530,
+        "sell": 1550,
+        "timestamp": "2026-10-14T20:59:00.000Z",
+        "origin": "provider",
+        "provider": "dolarapi"
+      },
+      "oficial": {
+        "type": "oficial",
+        "buy": 1485,
+        "sell": 1535,
+        "timestamp": "2026-10-14T18:00:00.000Z",
+        "origin": "provider",
+        "provider": "dolarapi"
+      },
+      "mep": {
+        "type": "mep",
+        "buy": 1534,
+        "sell": 1539.7,
+        "timestamp": "2026-10-14T20:59:00.000Z",
+        "origin": "provider",
+        "provider": "dolarapi"
+      },
+      "ccl": {
+        "type": "ccl",
+        "buy": 1615.8,
+        "sell": 1617.3,
+        "timestamp": "2026-10-14T20:59:00.000Z",
+        "origin": "provider",
+        "provider": "dolarapi"
+      }
+    },
+    "crypto": {
+      "btc": {
+        "symbol": "BTC",
+        "priceUSD": 81190,
+        "priceARS": 122862814,
+        "change24h": -2.5906911927002265,
+        "timestamp": "2026-10-15T02:45:35.000Z"
+      },
+      "eth": {
+        "symbol": "ETH",
+        "priceUSD": 2372.6,
+        "priceARS": 3590414,
+        "change24h": -5.303242968173652,
+        "timestamp": "2026-10-15T02:45:35.000Z"
+      },
+      "usdt": {
+        "symbol": "USDT",
+        "priceUSD": 0.998995,
+        "priceARS": 1511.76,
+        "change24h": -0.03441335217914529,
+        "timestamp": "2026-10-15T02:45:35.000Z"
+      }
+    }
+  },
+  "matchingPublicFx": [
+    {
+      "source": "blue",
+      "api_rate": 1550,
+      "timestamp": "2026-10-14T20:59:00+00:00",
+      "stored_rate": 1550,
+      "matching_rows": 1
+    },
+    {
+      "source": "blue_buy",
+      "api_rate": 1530,
+      "timestamp": "2026-10-14T20:59:00+00:00",
+      "stored_rate": 1530,
+      "matching_rows": 1
+    },
+    {
+      "source": "ccl",
+      "api_rate": 1617.3,
+      "timestamp": "2026-10-14T20:59:00+00:00",
+      "stored_rate": 1617.3,
+      "matching_rows": 1
+    },
+    {
+      "source": "ccl_buy",
+      "api_rate": 1615.8,
+      "timestamp": "2026-10-14T20:59:00+00:00",
+      "stored_rate": 1615.8,
+      "matching_rows": 1
+    },
+    {
+      "source": "mep",
+      "api_rate": 1539.7,
+      "timestamp": "2026-10-14T20:59:00+00:00",
+      "stored_rate": 1539.7,
+      "matching_rows": 1
+    },
+    {
+      "source": "mep_buy",
+      "api_rate": 1534,
+      "timestamp": "2026-10-14T20:59:00+00:00",
+      "stored_rate": 1534,
+      "matching_rows": 1
+    },
+    {
+      "source": "oficial",
+      "api_rate": 1535,
+      "timestamp": "2026-10-14T18:00:00+00:00",
+      "stored_rate": 1535,
+      "matching_rows": 1
+    },
+    {
+      "source": "oficial_buy",
+      "api_rate": 1485,
+      "timestamp": "2026-10-14T18:00:00+00:00",
+      "stored_rate": 1485,
+      "matching_rows": 1
+    }
+  ],
+  "after": {
+    "canonical": {
+      "sha256": "fe6bf084536d8835806519fd9ecf985f5c3fb682734f721f8d8169a9239d100a",
+      "tables": {
+        "users": {
+          "rows": 2,
+          "sha256": "a4127fa135f47eaea8673555bd23e56189d10b3861e4ca3e7d6488d7b5803b88"
+        },
+        "accounts": {
+          "rows": 35,
+          "sha256": "4ec68d04e486ee627a43f3fa726da9c9d3922650b4a5d00253c5768db1b8a611"
+        },
+        "categories": {
+          "rows": 31,
+          "sha256": "aa0051f888dd5d12321cb90d4e7bd2a626c2480da4397771940c7644a55e1737"
+        },
+        "transactions": {
+          "rows": 66,
+          "sha256": "1c502cda8dfbd645360a39e23462d91119f5d37cc91cb6a10fa00a0fd6e9425e"
+        },
+        "recurring_rules": {
+          "rows": 3,
+          "sha256": "5264304b436590690b8a8e68a18d2ed1fee65232151a48eff053eb674798d94e"
+        },
+        "budgets": {
+          "rows": 2,
+          "sha256": "8e1e87ef1d953587b4607a731a61f7b5b2d11d2a350fe796e4f6a2f9a9df9c9d"
+        },
+        "investments": {
+          "rows": 5,
+          "sha256": "48d4fc68c948822fcd789756208a625b58959c0a934a01f90732b6a48d4d60a2"
+        },
+        "portfolio_performance_snapshots": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "bot_sessions": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "budget_alerts": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "investment_sales": {
+          "rows": 2,
+          "sha256": "f97753e02d408cf4db93d24a47d7cd18e723e2d3efb8451fea68a39f6226fe09"
+        },
+        "shared_groups": {
+          "rows": 2,
+          "sha256": "2d713e87e8daa7d3fdb08b748690892529904d8aa9fce82ba4230f7037fe2a5a"
+        },
+        "shared_group_members": {
+          "rows": 4,
+          "sha256": "c551579320fc74cc33e983bcd6302c46d4348862be6855ace2ea6c65b2c042e4"
+        },
+        "shared_expenses": {
+          "rows": 1,
+          "sha256": "20352669220ffe63ef1f847a7a5f137a008157c86ada22175ef0e3b205d9d8aa"
+        },
+        "shared_expense_splits": {
+          "rows": 3,
+          "sha256": "d6b313b1fae122f15539c77c7366892c4ec4f00bb2456dbe8ee5b5a4011425c2"
+        },
+        "net_worth_snapshots": {
+          "rows": 2,
+          "sha256": "24345e82ff0325a46c40ab4edb33dcc37f28349724917e297d6d6f5e65e61d9e"
+        },
+        "transaction_requests": {
+          "rows": 28,
+          "sha256": "8b0b868ef50cd41b459c8b038edf45c5ae407da6ea7b840883ee869eb49838cb"
+        },
+        "notification_outbox": {
+          "rows": 1,
+          "sha256": "3dd2eacc471b85b46cfb1cad5cdca6f7dedf17d8f009f35b92c71473d1ea224f"
+        },
+        "plan_usage_cycles": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "plan_usage_requests": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "account_creation_requests": {
+          "rows": 29,
+          "sha256": "a3ef22894e1ed2d0dd60544a352e180ad36a89969bd592827fb73f4a3e97a7d8"
+        },
+        "investment_sale_requests": {
+          "rows": 2,
+          "sha256": "34f149dbf0edc9be139deadd09b66b980d122cc15722f7fa7391af6a2578844d"
+        },
+        "shared_expense_requests": {
+          "rows": 1,
+          "sha256": "454826779ae0ba7391cf0c14f54725afd90f352f4a7008b4c1789615b5ff8e8a"
+        },
+        "investment_create_requests": {
+          "rows": 5,
+          "sha256": "c0f54f1cda8d0b8b50cf3a72c1b4171df8b98173da00543224cd063d592b8e59"
+        },
+        "import_batches": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    "auxiliary": {
+      "exchange_rates": {
+        "rows": 24,
+        "sha256": "819d559bf66b6b9f3dc649a09583f62d4870042733d1a4194b9919566119dbea"
+      },
+      "market_data_cache": {
+        "rows": 1,
+        "sha256": "98d6ed244dc61942dbdd03dd46cbadef7fe6927c913cca547915590529642663"
+      }
+    }
+  },
+  "canonicalUnchanged": true,
+  "newPublicFxRows": [
+    {
+      "source": "blue_buy",
+      "from_currency": "USD",
+      "to_currency": "ARS",
+      "rate": 1530,
+      "timestamp": "2026-10-14T20:59:00+00:00"
+    },
+    {
+      "source": "mep_buy",
+      "from_currency": "USD",
+      "to_currency": "ARS",
+      "rate": 1534,
+      "timestamp": "2026-10-14T20:59:00+00:00"
+    },
+    {
+      "source": "oficial",
+      "from_currency": "USD",
+      "to_currency": "ARS",
+      "rate": 1535,
+      "timestamp": "2026-10-14T18:00:00+00:00"
+    },
+    {
+      "source": "oficial_buy",
+      "from_currency": "USD",
+      "to_currency": "ARS",
+      "rate": 1485,
+      "timestamp": "2026-10-14T18:00:00+00:00"
+    },
+    {
+      "source": "blue",
+      "from_currency": "USD",
+      "to_currency": "ARS",
+      "rate": 1550,
+      "timestamp": "2026-10-14T20:59:00+00:00"
+    },
+    {
+      "source": "ccl",
+      "from_currency": "USD",
+      "to_currency": "ARS",
+      "rate": 1617.3,
+      "timestamp": "2026-10-14T20:59:00+00:00"
+    },
+    {
+      "source": "mep",
+      "from_currency": "USD",
+      "to_currency": "ARS",
+      "rate": 1539.7,
+      "timestamp": "2026-10-14T20:59:00+00:00"
+    },
+    {
+      "source": "ccl_buy",
+      "from_currency": "USD",
+      "to_currency": "ARS",
+      "rate": 1615.8,
+      "timestamp": "2026-10-14T20:59:00+00:00"
+    }
+  ],
+  "oldPublicFxPreserved": true,
+  "incrementalPersistence": {
+    "newPublicTuples": 8,
+    "newIds": 8,
+    "newMatchingExpectedIds": 8,
+    "status": "PASS",
+    "scope": "Exactly eight new IDs, still present in the final snapshot and matching the expected source/rate/timestamp, prove a new INSERT. All earlier FX rows must remain byte-equivalent in PostgreSQL JSONB text. Existing matches alone do not prove insertion; UNIQUE collisions are swallowed by the service."
+  },
+  "marketDataCacheUnchanged": true,
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T02:46:31.996Z"
+}

@@ -1,0 +1,275 @@
+{
+  "status": "RETAIN_AND_OFFICIAL_STOP_PASS",
+  "generatedAt": "2026-10-15T07:09:29.036103+00:00",
+  "retentionStartedAt": "2026-10-15T07:06:33.605193+00:00",
+  "retentionCompletedAt": "2026-10-15T07:06:43.782092+00:00",
+  "stopStartedAt": "2026-10-15T07:07:08.186587+00:00",
+  "stopCompletedAt": "2026-10-15T07:07:18.221560+00:00",
+  "privateDirectory": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix-private-final-20261015T070553Z",
+  "checkpointSha256": "f378869280ad473b096630ed45ac839fcf822a6735f9dea1598dffaf3ca41a24",
+  "privateStopReportSha256": "4a5dc86a43ac3da3cc7f30f78af5d6e72c22763705eb30d8ee5f32ae85e920c3",
+  "controllerSha256": "bab8ac98200fde1eea5bbce532ef28e97348e7976c02adf434bef0d42db48688",
+  "planSha256": "a1c79c47a8853dc33d6f553b07c3112fe16821f929faae08b06d1c7ded29bbbb",
+  "ownedHttpStopProof": "../owned-final-http-stop/verification.json",
+  "archives": [
+    {
+      "name": "source",
+      "kind": "default-stack-database",
+      "bytes": 560313,
+      "sha256": "2030c604df5d18c544408e38817ea78136e44cd9054d54029dfc7be9e64bf00a",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "globalsRetained": true,
+      "globalsSha256": "024d819f4350c879fa80037cbd93e1ebe585beb78212814c742478a94fd36b65",
+      "storageInventoryRetained": true,
+      "restoreExecutedInRetentionPhase": false
+    },
+    {
+      "name": "restore",
+      "kind": "default-stack-database",
+      "bytes": 561475,
+      "sha256": "7df08943006f613c44923b055e29d529dbe9b91b3e9fbfcb1d61f37d20e0299e",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "globalsRetained": true,
+      "globalsSha256": "a35913494cf6b6aa54cd197ad8833801b85a6592a3bc8432d6b8d95eeab0e724",
+      "storageInventoryRetained": true,
+      "restoreExecutedInRetentionPhase": false
+    },
+    {
+      "name": "load",
+      "kind": "default-stack-database",
+      "bytes": 910623,
+      "sha256": "b633146f1ef37c7019275d4a3a522aa8182609085fff8ac5dcf48515dea9467f",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "globalsRetained": true,
+      "globalsSha256": "738a725fe927bd4a85f666eff8551cb68eb2d9a4b1e50261e66c8b2d75c7a553",
+      "storageInventoryRetained": true,
+      "restoreExecutedInRetentionPhase": false
+    },
+    {
+      "name": "e2e",
+      "kind": "default-stack-database",
+      "bytes": 568276,
+      "sha256": "fa5fde2d8ecd42bcf183e6ffc0a55595e5ab8ba5cc83769be19ac57ea847480c",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "globalsRetained": true,
+      "globalsSha256": "eafe3875c207bf01b0f94e34596aaa6bb03a59aeac2129db9b0e4fcc92366c79",
+      "storageInventoryRetained": true,
+      "restoreExecutedInRetentionPhase": false
+    },
+    {
+      "name": "proof",
+      "kind": "default-stack-database",
+      "bytes": 677301,
+      "sha256": "b2006c91a87a039e9cfa5d87995c622d62dd8a59596f916718f356383a350a0a",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "globalsRetained": true,
+      "globalsSha256": "20a5cb453cc6b9ea729e0e18065e409a22770a9db0b327826abaeeaa61d7cb61",
+      "storageInventoryRetained": true,
+      "restoreExecutedInRetentionPhase": false
+    },
+    {
+      "name": "import-target",
+      "kind": "default-stack-database",
+      "bytes": 550249,
+      "sha256": "4a8702300569503e8ecf200782804cedb11e1281bb8bfa98889196465a541c4f",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "globalsRetained": true,
+      "globalsSha256": "24ed1c2c7516bf282a73ec9c83e323020c19cd06d427a4b27453f7195215f5bd",
+      "storageInventoryRetained": true,
+      "restoreExecutedInRetentionPhase": false
+    },
+    {
+      "name": "cnf12-source",
+      "kind": "additional-uuid-database",
+      "databaseName": "cnf12_source_836ea2b13ba649fa891be962c8f803dc",
+      "bytes": 550295,
+      "sha256": "d32101f6c87c612437c72dc16238118e27627022a3c91918390d45a1341f36df",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "logicalTablesValidated": 64,
+      "catalogSha256": "79239a424ce44c3c000930551c26d85bc407f163ba431ced1d6d8185ebb2a0c9",
+      "restoreExecutedInRetentionPhase": false
+    },
+    {
+      "name": "cnf12-target",
+      "kind": "additional-uuid-database",
+      "databaseName": "cnf12_target_3000a0d2ff074380ac90df368a87a33b",
+      "bytes": 550220,
+      "sha256": "1e7b8e83fa3033f8321e0f6dfaa82cabbe54980bc6df1cac31a4a0ca63958edf",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "logicalTablesValidated": 64,
+      "catalogSha256": "c951d8bdd7d5c5555d0f9408c2f5644eff32c474d7f2fc50dd9c4a753c96bd47",
+      "restoreExecutedInRetentionPhase": false
+    },
+    {
+      "name": "empty",
+      "kind": "additional-uuid-database",
+      "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+      "bytes": 557369,
+      "sha256": "9beefc307d5a667551d9154bef8f559a6a6c5fc3f14aac66c60688f3975b3f28",
+      "customFormatTocValidated": true,
+      "payloadDecoded": true,
+      "logicalTablesValidated": 64,
+      "catalogSha256": "6b0108bb15a10af3eb653c00fee17067ff58cc69b138511c33109f48a27a8da2",
+      "restoreExecutedInRetentionPhase": false
+    }
+  ],
+  "retainedFileCount": 2134,
+  "selectedSourceArtifactCount": 620,
+  "retainedFilesRehashedAfterStops": true,
+  "privateDirectoryMode": "0700",
+  "retainedFileModes": "0600",
+  "retainedDirectoriesMode": "0700",
+  "originalNative22Archive": {
+    "bytes": 560313,
+    "sha256": "d4e45b59b72841890ee7a738ed09f05a3372567ac6bddc982fbef20e76f290b0",
+    "criticalBeforeStop": true,
+    "directory": "full-native-evidence/"
+  },
+  "applicationCopies": [
+    {
+      "name": "ci5",
+      "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+      "buildId": "vPLjt1QViugJhUWR62DPp",
+      "sourceCount": 480,
+      "sourceManifestSha256": "cc31fad1e5cc8a2c2e6396479ca1d0a3619fb078429bf10526ab2e7be41106bc",
+      "privateEnvSha256": "7c0aa2740d032d36c64b1fda4b80170ddbf602e1dc136e7d6a17745b540fc99f",
+      "buildIdSha256": "d8588bd28ef2b2baa4d1e012f4e5f3a6b37c7338ee6e6c771396c2602b4ebeb3",
+      "binaryBuildRetained": false,
+      "rebuildRequiredAfterTmpLoss": true
+    },
+    {
+      "name": "ci6",
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+      "sourceCount": 483,
+      "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+      "privateEnvSha256": "6c648363799ba411ff8f8628bc39adf7cfba6ed0723646efd0db51e4cb04e5e1",
+      "buildIdSha256": "ea4e90f4ce0b541f7499bff10462984f5acda258fb92461f1c8a8342fe596cd9",
+      "binaryBuildRetained": false,
+      "rebuildRequiredAfterTmpLoss": true
+    },
+    {
+      "name": "empty",
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "buildId": "Yi9bH3FttO71PxvY-EwCH",
+      "sourceCount": 483,
+      "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+      "privateEnvSha256": "cf828f5022da0a0899dc7fc6cf722865123350406f9a99986441459257e07c75",
+      "buildIdSha256": "ea4a8f648a34dd2964da65e1450417192d1326bf82ed2d1a038d4233602169e2",
+      "binaryBuildRetained": false,
+      "rebuildRequiredAfterTmpLoss": true
+    }
+  ],
+  "stacks": [
+    {
+      "name": "source",
+      "stackId": "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+      "status": "PASS",
+      "officialCliExitCode": 0,
+      "postconditions": {
+        "oldOwnedProcessIdentitiesExited": true,
+        "capturedListenersGone": true,
+        "nativePgDataDirectoryRetained": true,
+        "pgVersionRetained": true,
+        "stateConfigurationCredentialsRetained": true,
+        "storageBytesRetained": true,
+        "walAndPgControlByteEqualityClaimed": false
+      }
+    },
+    {
+      "name": "restore",
+      "stackId": "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+      "status": "PASS",
+      "officialCliExitCode": 0,
+      "postconditions": {
+        "oldOwnedProcessIdentitiesExited": true,
+        "capturedListenersGone": true,
+        "nativePgDataDirectoryRetained": true,
+        "pgVersionRetained": true,
+        "stateConfigurationCredentialsRetained": true,
+        "storageBytesRetained": true,
+        "walAndPgControlByteEqualityClaimed": false
+      }
+    },
+    {
+      "name": "load",
+      "stackId": "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+      "status": "PASS",
+      "officialCliExitCode": 0,
+      "postconditions": {
+        "oldOwnedProcessIdentitiesExited": true,
+        "capturedListenersGone": true,
+        "nativePgDataDirectoryRetained": true,
+        "pgVersionRetained": true,
+        "stateConfigurationCredentialsRetained": true,
+        "storageBytesRetained": true,
+        "walAndPgControlByteEqualityClaimed": false
+      }
+    },
+    {
+      "name": "e2e",
+      "stackId": "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+      "status": "PASS",
+      "officialCliExitCode": 0,
+      "postconditions": {
+        "oldOwnedProcessIdentitiesExited": true,
+        "capturedListenersGone": true,
+        "nativePgDataDirectoryRetained": true,
+        "pgVersionRetained": true,
+        "stateConfigurationCredentialsRetained": true,
+        "storageBytesRetained": true,
+        "walAndPgControlByteEqualityClaimed": false
+      }
+    },
+    {
+      "name": "proof",
+      "stackId": "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+      "status": "PASS",
+      "officialCliExitCode": 0,
+      "postconditions": {
+        "oldOwnedProcessIdentitiesExited": true,
+        "capturedListenersGone": true,
+        "nativePgDataDirectoryRetained": true,
+        "pgVersionRetained": true,
+        "stateConfigurationCredentialsRetained": true,
+        "storageBytesRetained": true,
+        "walAndPgControlByteEqualityClaimed": false
+      }
+    },
+    {
+      "name": "import-target",
+      "stackId": "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+      "status": "PASS",
+      "officialCliExitCode": 0,
+      "postconditions": {
+        "oldOwnedProcessIdentitiesExited": true,
+        "capturedListenersGone": true,
+        "nativePgDataDirectoryRetained": true,
+        "pgVersionRetained": true,
+        "stateConfigurationCredentialsRetained": true,
+        "storageBytesRetained": true,
+        "walAndPgControlByteEqualityClaimed": false
+      }
+    }
+  ],
+  "dataDeleted": false,
+  "originalTmpDataPreserved": true,
+  "arcOrPersonalProcessesTouched": false,
+  "caffeinateTouched": false,
+  "newRestoreAcceptanceClaimed": false,
+  "limitations": [
+    "TOC/payload/checksum validation and preservation do not constitute another restore test.",
+    "No node_modules, .next binary build or active PG data tree is archived as a complete machine image.",
+    "Source copies remain bound to their own CI5/CI6 product revisions; final d950 config revision is kept in Git.",
+    "WAL/pg_control bytes may change during graceful official stops; byte equality is not claimed.",
+    "Native22 and nominal CNF12 restore acceptances remain separate; original full CNF12 stays BLOCKED."
+  ]
+}

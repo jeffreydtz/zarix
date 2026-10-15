@@ -1,0 +1,63 @@
+{
+  "observedAt": "2026-10-15T02:42:18.309546+00:00",
+  "target": "LOAD existing synthetic stack only",
+  "apiOrigin": "http://127.0.0.1:56321",
+  "windowUtc": [
+    "2026-10-15T02:32:00Z",
+    "2026-10-15T02:38:59.999Z"
+  ],
+  "scope": "Read-only aggregate of native Auth/REST logs. No request bodies, paths, headers, query strings, user identities or connection credentials included. No causal inference from status totals; no service control or database connection.",
+  "services": {
+    "auth": {
+      "windowLogRows": 986,
+      "httpStatusCounts": {
+        "200": 904,
+        "504": 2
+      },
+      "jsonErrorCodeCounts": {
+        "request_timeout": 2
+      },
+      "levelCounts": {
+        "info": 984,
+        "error": 2
+      },
+      "firstTimestamp": "2026-10-15T02:32:30.615Z",
+      "lastTimestamp": "2026-10-15T02:38:27.274Z",
+      "files": [
+        {
+          "serviceRelativeFile": "auth/d11319e3-a788-4f62-94eb-6891024f4a46/0000000001.log",
+          "bytes": 828150,
+          "sha256": "69fd3398bd866fdae4180e9daca2695a4cd60bc46959e75c9b81cf2b5a0029ec"
+        }
+      ]
+    },
+    "rest": {
+      "windowLogRows": 4818,
+      "httpStatusCounts": {
+        "200": 4472,
+        "409": 76,
+        "500": 3,
+        "504": 248
+      },
+      "jsonErrorCodeCounts": {
+        "57014": 3,
+        "PGRST003": 16
+      },
+      "levelCounts": {},
+      "firstTimestamp": "2026-10-15T02:32:13.526Z",
+      "lastTimestamp": "2026-10-15T02:38:27.641Z",
+      "files": [
+        {
+          "serviceRelativeFile": "rest/1ebb48ff-9bd1-49c3-9d65-ec999ed80f79/0000000001.log",
+          "bytes": 5241905,
+          "sha256": "59421e4281f463318eb8b49df14c56f5f17bb6b370cb615c3e2bdd2e1bac6b69"
+        },
+        {
+          "serviceRelativeFile": "rest/1ebb48ff-9bd1-49c3-9d65-ec999ed80f79/0000000002.log",
+          "bytes": 1986409,
+          "sha256": "0990f5df0a5166837d08754da38966bc64c7a593465cc7f7f32713d09fd66d57"
+        }
+      ]
+    }
+  }
+}

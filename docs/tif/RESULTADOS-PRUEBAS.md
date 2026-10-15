@@ -1,3 +1,5 @@
+> **Referencia histórica.** La entrega vigente y sus cuatro CU se encuentran en [v2.13](../tif/v2.13/README.md). Este catálogo y sus resultados conservan el contexto anterior.
+
 # Anexo — Resultados de Pruebas (ejecución real en producción)
 
 **Sistema:** Zarix — gestor de finanzas personales (Next.js 14 + Supabase)

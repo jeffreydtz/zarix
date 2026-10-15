@@ -1,0 +1,16 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.5",ranksep="0.65",splines=polyline];
+node [fontname="Arial",fontsize=20]; edge [fontname="Arial",fontsize=18,color="#64748b"];
+label="Componentes: Telegram y cobro"; labelloc=t; fontsize=22;
+api [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Backend Node\nAPI y controles de\naplicación"];
+bot [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Entrada / salida\nTelegram"];
+pay [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Adaptador Mercado\nPago"];
+extt [shape=plaintext,fontcolor="#243b53",label="Telegram"];
+extp [shape=plaintext,fontcolor="#243b53",label="Mercado Pago"];
+api -> pay [label="cobro /\nverificación"];
+pay -> extp [label="HTTP / eventos"];
+extt -> bot [label="webhook"];
+bot -> api [label="vínculo + contexto"];
+api -> bot [label="respuesta / aviso"];
+bot -> extt [label="envío"];
+}

@@ -1,0 +1,17 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="Dominio conceptual: gastos compartidos"; labelloc=t; fontsize=22;
+Usuario [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Usuario</B></TD></TR><TR><TD ALIGN="LEFT">nombre</TD></TR></TABLE>>];
+GrupoCompartido [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>GrupoCompartido</B></TD></TR><TR><TD ALIGN="LEFT">nombre</TD></TR><TR><TD ALIGN="LEFT">moneda</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR></TABLE>>];
+MiembroGrupo [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>MiembroGrupo</B></TD></TR><TR><TD ALIGN="LEFT">nombreVisible</TD></TR></TABLE>>];
+GastoCompartido [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>GastoCompartido</B></TD></TR><TR><TD ALIGN="LEFT">descripcion</TD></TR><TR><TD ALIGN="LEFT">fecha</TD></TR><TR><TD ALIGN="LEFT">importe</TD></TR></TABLE>>];
+ParteGasto [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>ParteGasto</B></TD></TR><TR><TD ALIGN="LEFT">importe</TD></TR></TABLE>>];
+Usuario -> GrupoCompartido [dir=none,label="administra\nUsuario 1\nGrupoCompartido 0..*"];
+GrupoCompartido -> MiembroGrupo [dir=none,label="reúne\nGrupoCompartido 1\nMiembroGrupo 0..30"];
+GrupoCompartido -> GastoCompartido [dir=none,label="registra\nGrupoCompartido 1\nGastoCompartido 0..*"];
+MiembroGrupo -> GastoCompartido [dir=none,label="pagó\nMiembroGrupo 1\nGastoCompartido 0..*"];
+GastoCompartido -> ParteGasto [dir=none,label="reparte\nGastoCompartido 1\nParteGasto 1..*"];
+MiembroGrupo -> ParteGasto [dir=none,label="debe\nMiembroGrupo 1\nParteGasto 0..*"];
+}

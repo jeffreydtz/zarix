@@ -1,0 +1,20 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Cartera (B)
+ participant C as Lote (C)
+ participant D as Posición (E)
+ U->>B: Registrar compra<br/>externa
+ B->>C: create(input)
+ C->>D: Comprobar cuenta<br/>propia
+ D-->>C: Cuenta / rechazo
+ C->>C: Validar<br/>cantidad/precios
+ alt Ajeno o datos inválidos
+  C-->>B: Rechazo sin INSERT
+ else Válido
+  C->>D: INSERT lote y precio<br/>compra
+  D-->>C: Posición / error
+  C-->>B: Resultado real
+  B-->>U: Lote registrado /<br/>error
+ end
+ Note over C: Nuevo lote, sin<br/>promedio mutante caja<br/>externa se concilia<br/>aparte

@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-15T02:31:20.805Z",
+  "status": "INTERRUPTED",
+  "reason": "Execution transport disconnected while measuring cold-start profile; recorded raw report left RUNNING. Recovery confirmed original runner24027/Chrome24183 absent and3101no listener at02:28:34.952Z. No operator signal was sent because strict PID guard found original runner absent.",
+  "observations": {
+    "warm": 100,
+    "coldStart": 60,
+    "providerOutage": 0
+  },
+  "rawScope": "All160actual measured failures retained. Cold profile is incomplete; remaining40cold and100outage were not measured. Raw historical report is preserved byte-for-byte without rewriting RUNNING to completed.",
+  "knownHarnessDefect": "Independent USD expectation omitted the existing rounding of aggregated account USD to2decimals before adding portfolio. This defect does not explain goto timeouts without httpStatus.",
+  "files": [
+    {
+      "path": "browser-load.json",
+      "sha256": "0e8c8752f1caf5aab2e30df227ce39306deba0eb8dc4b78dda6d2414c9364354"
+    },
+    {
+      "path": "warm-observations.csv",
+      "sha256": "ca4f0c8a00de770975ceb076420ec80b44309472aa1001318395c27938f8b508"
+    },
+    {
+      "path": "coldStart-observations.csv",
+      "sha256": "2e145e8a452a63b6f9136cd73a8df648aec92db7fe1e7b652ebc955549cc274f"
+    },
+    {
+      "path": "providerOutage-observations.csv",
+      "sha256": "23de8972f1302d637861037c79c02610461bbc68fd3e4c2ac7249b7f59658202"
+    }
+  ]
+}

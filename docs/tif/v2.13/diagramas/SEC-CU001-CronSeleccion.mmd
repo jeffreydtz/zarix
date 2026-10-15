@@ -1,0 +1,25 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor R as Scheduler
+ participant B as API (B)
+ participant J as Job (C)
+ participant D as BD (E)
+ R->>B: GET con Bearer
+ B->>J: run(request)
+ J->>J: CronJob valida Bearer
+ alt No autorizado
+  J-->>B: 401
+ else Autorizado
+  J->>D: Desactivar fin menor<br/>que hoy AR
+  J->>D: Cargar activas y<br/>cuentas
+  D-->>J: Reglas
+  loop Cada regla
+   J->>J: shouldProcess
+   opt Calendario y<br/>cuenta activos
+    J->>J: Procesar ocurrencia
+    Note over J: Vista CronOcurrencia
+   end
+  end
+  J-->>B: processed/errors
+ end
+ B-->>R: Respuesta uniforme

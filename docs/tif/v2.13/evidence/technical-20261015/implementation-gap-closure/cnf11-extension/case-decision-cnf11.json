@@ -1,0 +1,67 @@
+{
+  "createdAt": "2026-10-15T10:01:19.420157+00:00",
+  "case_id": "CNF-11",
+  "status": "PASS",
+  "decisionOwner": "root",
+  "productRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "sourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+  "baselineDocumentationCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b",
+  "contract_revision": "Original case contract",
+  "scope": "Composición revisada del contrato original. Seis protocolos nominales y entradas monetarias bot/OCR ejecutados sobre copia exacta f5 con Auth/REST/PG reales; proveedores y límite del acuse dobles explícitos. Timeout observado después del estado SQL confirmado, 2 replays y 10 concurrentes por comando. Cold replay del bot en proceso nuevo con la misma DB. Rollback, UPDATE/DELETE y sobreventa anteriores conservan sus revisiones y alcances enlazados, sin presentarlos como nuevas corridas.",
+  "evidence": "README.md; independent-acceptance-review.json; nominal/executed-attempt-2/nominal-six-and-payment-rollback.json; bot/executed-prepare-attempt-1/bot-verification.json; bot/executed-replay-attempt-1/bot-verification.json; coordinator/executed-attempt-1/retention-stop.sanitized.json",
+  "assertions": "Gasto1500 deja8500; transferencia1500 deja8500/3500 y total12000 | Import200+300 deja2filas/9500; cron400 deja1ocurrencia/9600 y1outbox | Venta4x120 de10x100 deja6 y realizado80USD; mismo pagoACTIVE/período fijo es NOOP | Seis timeouts40ms con10participantes/peak10 y efectos idénticos tras2+10replays; pagoSQLfallida conserva perfil completo | Bottexto gasto/transfer y foto propuesta-confirmación dejan1efecto/recibo; tres timeouts posteriores a cuota completed | Proceso nuevo conserva eventos/claves/snapshots y cero trabajo adicional de modelo/OCR/tool; resolver53/mediaDownload1 declarados | AIpostcommit deja reserved/resultnull y1efecto legible/exportable A/RLSinvisible B; replay fenced sin autorecuperarrespuesta | Nominal217 ybot121/113checks separados; cleanup/Auth0/4actores+PROOFdetenidos; originales39 ybackupsintactos",
+  "blocker": "",
+  "limitations": [
+    "El timeout es controlado en el límite del consumidor en proceso; no es caída física de red, UI o entrega Telegram real.",
+    "Gemini/OCR, Telegraf/media y Mercado Pago/cotizaciones son dobles locales. El CSV permite el recurso de pago sintético; no se acredita proveedor externo.",
+    "La reserva ambigua sin TTL evita duplicación y conserva lectura/exportación; no recupera automáticamente el acuse ni se liberó artificialmente.",
+    "El nuevo reinicio es del worker bot. Los reinicios previos de navegador/Next y PostgreSQL/Next tienen revisiones y fixtures distintos.",
+    "Los rollback anteriores se componen por mecanismo y revisión. La retención nueva de65tablas pasó TOC/decodificación; no es otra restauración ni prueba nueva de objetosStorage.",
+    "El intento nominal1 conserva FAIL agregado por dos flags del arnés; su evidencia no se sobrescribió ni reclasificó."
+  ],
+  "reviews": [
+    {
+      "path": "independent-acceptance-review.json",
+      "sha256": "efefe5c08da1a14c57e94f5299822e7f6240fcb9175f99e358c9453da3520bfe"
+    },
+    {
+      "path": "independent-postruntime-privacy-review.json",
+      "sha256": "31a88701f8bc56c00a500602c5873e30367b96d2964ec19b7c1968641f6aae09"
+    },
+    {
+      "path": "independent-source-guard-review.json",
+      "sha256": "383a1c095066ad3aa03181f43ff7688c97434656f4fae24c20e2ba96a5c1e9b6"
+    },
+    {
+      "path": "independent-harness-boolean-fix-review.json",
+      "sha256": "f73754e59e4155d7cfe28eb8155ba8bb923e1ba6741ee4f878e705fcb65aee3f"
+    }
+  ],
+  "evidencePins": [
+    {
+      "path": "nominal/executed-attempt-2/nominal-six-and-payment-rollback.json",
+      "sha256": "24aca0ee08bb41cd648c7f28978cd65aa361403ccd264b6a7d1dc0fe0dec0180"
+    },
+    {
+      "path": "bot/executed-prepare-attempt-1/bot-verification.json",
+      "sha256": "5861ee666f829c1587d97d219d8068d297a993b86408548c8d9230c5a43f983a"
+    },
+    {
+      "path": "bot/executed-replay-attempt-1/bot-verification.json",
+      "sha256": "87a3ce96d80963c35c798e7f07df08c3c6f7b1a3fdf1291ded22cd1fbfeabd19"
+    },
+    {
+      "path": "coordinator/executed-attempt-1/retention-stop.sanitized.json",
+      "sha256": "02aed8138224ee2ddc42acfef219ad79bb89e50d4fabb625718914cc70ccc868"
+    },
+    {
+      "path": "nominal/executed-attempt-1/nominal-six-and-payment-rollback.json",
+      "sha256": "fd85600e8cd89b594045ae02631a2bfc2ef9fd7cfd5572b09c5d3954c3f0895a"
+    },
+    {
+      "path": "coordinator/nominal-attempt1-cleanup-readonly.json",
+      "sha256": "90552e73430238a330635ec4466db94875f817f416da900cf1cfc83a4a619ede"
+    }
+  ],
+  "scopeExcludesOtherCases": true
+}

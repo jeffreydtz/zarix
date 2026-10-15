@@ -1,0 +1,1046 @@
+{
+  "status": "FAIL",
+  "startedAt": "2026-10-15T05:04:51.297Z",
+  "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD.",
+  "results": [
+    {
+      "case_id": "CP3-06",
+      "status": "FAIL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Own secondary-debt setup200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Read own converted accounts200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Original primary debt is unchanged",
+          "actual": true,
+          "expected": true,
+          "numericActual": -10000,
+          "numericExpected": -10000,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "Exact secondary debt",
+          "actual": true,
+          "expected": true,
+          "numericActual": -100,
+          "numericExpected": -100,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "Physical primary account balance unchanged",
+          "actual": true,
+          "expected": true,
+          "numericActual": -10000,
+          "numericExpected": -10000,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "ExactUSD10debt setup200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Read own converted accounts200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Original primary debt is unchanged",
+          "actual": true,
+          "expected": true,
+          "numericActual": -10000,
+          "numericExpected": -10000,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "Exact secondary debt",
+          "actual": true,
+          "expected": true,
+          "numericActual": -10,
+          "numericExpected": -10,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "Physical primary account balance unchanged",
+          "actual": true,
+          "expected": true,
+          "numericActual": -10000,
+          "numericExpected": -10000,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual dashboard SSR200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual SSR aggregate totalARSBlue",
+          "actual": true,
+          "expected": true,
+          "numericActual": 218000,
+          "numericExpected": 218000,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual SSR aggregate totalUSD",
+          "actual": true,
+          "expected": true,
+          "numericActual": 181.67,
+          "numericExpected": 181.67,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "SSR secondary data numeric value",
+          "actual": true,
+          "expected": true,
+          "numericActual": 181.67,
+          "numericExpected": 181.67,
+          "tolerance": 1e-08,
+          "status": "PASS"
+        },
+        {
+          "name": "SSR secondary amount retains original documented precision",
+          "actual": "\u2248 US$ 182",
+          "expected": "\u2248 US$ 181,67",
+          "status": "FAIL"
+        },
+        {
+          "name": "Cashoriginal balances preserved",
+          "actual": [
+            120000,
+            100
+          ],
+          "expected": [
+            120000,
+            100
+          ],
+          "status": "PASS"
+        }
+      ],
+      "original_contract": {
+        "precondiciones": "U1 efectivo120000ARS+100USD; tarjeta deuda10000ARS+10USD; FX1200",
+        "entrada": "consultar patrimonio neto",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento expl\u00edcito; observar respuesta y estado persistido; comparar con or\u00e1culo independiente.",
+        "resultado_esperado": "240000-10000-12000=218000ARS;181.666666\u2026USD, display181.67; deuda con signo negativo",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "startedAt": "2026-10-15T05:04:54.233Z",
+      "apiSqlScope": {
+        "status": "PASS",
+        "assertions": 19
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP3-06",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "3c60391e-d187-4385-b6a4-3f41c5346cfa",
+      "startedAt": "2026-10-15T05:04:54.611Z",
+      "status": 201,
+      "responseSha256": "df730568e61c6edb8677c5d3b72bba66bc38268229f5905355202e40b9c91161",
+      "endedAt": "2026-10-15T05:04:54.716Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "e359ddd8-408a-4c4a-af94-3d746d546180",
+      "startedAt": "2026-10-15T05:04:54.935Z",
+      "status": 201,
+      "responseSha256": "0874544bb11e495be8e91d129791aa22cf41ff0a3cd462e3e95dc3a0f0e366f1",
+      "endedAt": "2026-10-15T05:04:55.027Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "27d91900-e465-4f94-84c4-e651c9821c1e",
+      "startedAt": "2026-10-15T05:04:55.184Z",
+      "status": 201,
+      "responseSha256": "eb79dfd5a4b0a6123b6219237863ec9b45acbc71c3c64c7da3f2c5921eb7e099",
+      "endedAt": "2026-10-15T05:04:55.271Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "POST",
+      "path": "/api/accounts/8061e6b7-8f4c-4fc1-89dc-36f921ef1448/adjust-secondary-balance",
+      "requestId": "c282e7a3-286a-4007-897a-2d61c95db073",
+      "startedAt": "2026-10-15T05:04:55.349Z",
+      "status": 200,
+      "responseSha256": "c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97",
+      "endedAt": "2026-10-15T05:04:55.441Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "5b8e83f0-f8c3-4aa1-9a2f-9f21df35729c",
+      "startedAt": "2026-10-15T05:04:55.441Z",
+      "status": 200,
+      "responseSha256": "5f3b6923074562c6f2668d5a499d59fd0250363f113184a94891b491503d7b82",
+      "endedAt": "2026-10-15T05:04:55.531Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "POST",
+      "path": "/api/accounts/8061e6b7-8f4c-4fc1-89dc-36f921ef1448/adjust-secondary-balance",
+      "requestId": "0b3993d4-5eb5-4aec-bdbb-5af520831046",
+      "startedAt": "2026-10-15T05:04:55.610Z",
+      "status": 200,
+      "responseSha256": "c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97",
+      "endedAt": "2026-10-15T05:04:55.699Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "9ef10ed2-fa2e-410e-9702-5a66c4853561",
+      "startedAt": "2026-10-15T05:04:55.699Z",
+      "status": 200,
+      "responseSha256": "5a3971af314b956ae786d8add776adf8f3e9099f1953a9999bd4ef9d1d1d9cd5",
+      "endedAt": "2026-10-15T05:04:55.789Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "GET",
+      "path": "/dashboard",
+      "kind": "ordinary-authenticated-SSR",
+      "startedAt": "2026-10-15T05:04:55.996Z",
+      "status": 200,
+      "responseSha256": "52f6906a9a33ee516356256aadedb46d348c8ec3906b8b860f3c493b7e69b215",
+      "endedAt": "2026-10-15T05:04:56.144Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "DELETE",
+      "path": "/api/accounts/3dbc46a2-4f91-4b46-adc3-8109263f27c4",
+      "requestId": "3e0a3d20-932a-445a-9e66-056932122613",
+      "startedAt": "2026-10-15T05:04:56.465Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T05:04:56.553Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "DELETE",
+      "path": "/api/accounts/45e91077-019d-48a9-a59f-a0c1941de5af",
+      "requestId": "3d2bb04d-425f-42b0-abf9-30c4679e4998",
+      "startedAt": "2026-10-15T05:04:56.630Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T05:04:56.717Z"
+    },
+    {
+      "caseId": "CP3-06",
+      "method": "DELETE",
+      "path": "/api/accounts/8061e6b7-8f4c-4fc1-89dc-36f921ef1448",
+      "requestId": "a882ef65-369f-413e-9055-f2ecbc74057b",
+      "startedAt": "2026-10-15T05:04:56.796Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T05:04:56.882Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "3dbc46a2-4f91-4b46-adc3-8109263f27c4",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP3-06"
+    },
+    {
+      "kind": "account",
+      "id": "45e91077-019d-48a9-a59f-a0c1941de5af",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP3-06"
+    },
+    {
+      "kind": "account",
+      "id": "8061e6b7-8f4c-4fc1-89dc-36f921ef1448",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP3-06"
+    }
+  ],
+  "executionCount": 1,
+  "case": {
+    "case_id": "CP3-06",
+    "status": "FAIL",
+    "complete_original_contract": false,
+    "assertions": [
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Own secondary-debt setup200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Read own converted accounts200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Original primary debt is unchanged",
+        "actual": true,
+        "expected": true,
+        "numericActual": -10000,
+        "numericExpected": -10000,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "Exact secondary debt",
+        "actual": true,
+        "expected": true,
+        "numericActual": -100,
+        "numericExpected": -100,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "Physical primary account balance unchanged",
+        "actual": true,
+        "expected": true,
+        "numericActual": -10000,
+        "numericExpected": -10000,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "ExactUSD10debt setup200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Read own converted accounts200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Original primary debt is unchanged",
+        "actual": true,
+        "expected": true,
+        "numericActual": -10000,
+        "numericExpected": -10000,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "Exact secondary debt",
+        "actual": true,
+        "expected": true,
+        "numericActual": -10,
+        "numericExpected": -10,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "Physical primary account balance unchanged",
+        "actual": true,
+        "expected": true,
+        "numericActual": -10000,
+        "numericExpected": -10000,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual dashboard SSR200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual SSR aggregate totalARSBlue",
+        "actual": true,
+        "expected": true,
+        "numericActual": 218000,
+        "numericExpected": 218000,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual SSR aggregate totalUSD",
+        "actual": true,
+        "expected": true,
+        "numericActual": 181.67,
+        "numericExpected": 181.67,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "SSR secondary data numeric value",
+        "actual": true,
+        "expected": true,
+        "numericActual": 181.67,
+        "numericExpected": 181.67,
+        "tolerance": 1e-08,
+        "status": "PASS"
+      },
+      {
+        "name": "SSR secondary amount retains original documented precision",
+        "actual": "\u2248 US$ 182",
+        "expected": "\u2248 US$ 181,67",
+        "status": "FAIL"
+      },
+      {
+        "name": "Cashoriginal balances preserved",
+        "actual": [
+          120000,
+          100
+        ],
+        "expected": [
+          120000,
+          100
+        ],
+        "status": "PASS"
+      }
+    ],
+    "original_contract": {
+      "precondiciones": "U1 efectivo120000ARS+100USD; tarjeta deuda10000ARS+10USD; FX1200",
+      "entrada": "consultar patrimonio neto",
+      "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento expl\u00edcito; observar respuesta y estado persistido; comparar con or\u00e1culo independiente.",
+      "resultado_esperado": "240000-10000-12000=218000ARS;181.666666\u2026USD, display181.67; deuda con signo negativo",
+      "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+    },
+    "startedAt": "2026-10-15T05:04:54.233Z",
+    "apiSqlScope": {
+      "status": "PASS",
+      "assertions": 19
+    }
+  },
+  "runtimeProfile": "final-core-acceptance",
+  "runtimeMode": "clock",
+  "ssrWealth": true,
+  "executionMode": "api-sql-only",
+  "logicalOwner": "A",
+  "pendingScopes": [],
+  "run": "eb8dab0c-c417-449f-8fb9-932e6487f2b9",
+  "nativePreparation": {
+    "sha256": "b94b67366b193af018f973d7e3689a32b9f59b0e7436d5e762ea72db1cd31bc4",
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "normalAuthIdsBound": true
+  },
+  "buildBinding": {
+    "profile": "final-core-acceptance",
+    "runtimeMode": "clock",
+    "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+    "buildId": "vPLjt1QViugJhUWR62DPp",
+    "nextPid": 17292,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
+    "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
+    "physicalSourceCount": 480,
+    "frozenGitSourceCount": 479,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "privateEnvBoundToExactNativeProject": true,
+    "ownedListenerAndCwdVerified": true,
+    "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+  },
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "e912c13b6ce163b0bebb38e75949edb99d5051af9b869ab8bc1677ddfcc7b5fc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "cdcbc2eab3af64c1aa38c29a7f33238151934225045f7e59be68ee4ef3ee1f07"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "029ba8c8ac0a5fcf33e965e0e989b0a90e6cb7c213baa42b4042e8f310c89d8f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "3a6fa3a9bd2f768f747324902c44410271bcc800929de73454a4f5ba0acc1348"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "44f9f28d9ad95e7b56e7514a02329693d2bc448295b6a41a6164dd7f31eb869a",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    }
+  ],
+  "workingSourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "e912c13b6ce163b0bebb38e75949edb99d5051af9b869ab8bc1677ddfcc7b5fc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "cdcbc2eab3af64c1aa38c29a7f33238151934225045f7e59be68ee4ef3ee1f07"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "029ba8c8ac0a5fcf33e965e0e989b0a90e6cb7c213baa42b4042e8f310c89d8f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "3a6fa3a9bd2f768f747324902c44410271bcc800929de73454a4f5ba0acc1348"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "44f9f28d9ad95e7b56e7514a02329693d2bc448295b6a41a6164dd7f31eb869a"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb"
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "unbuiltCurrentDeltas": [],
+  "clockProof": {
+    "path": "final-proof-clock-observation.json",
+    "sha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118",
+    "fixedTime": "2026-10-06T12:00:00.000Z",
+    "observedApplicationTime": "2026-10-06T12:00:00.000Z",
+    "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+  },
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "users": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "logicalRole": "selected-owner",
+      "physicalLabel": "A",
+      "normalAuth": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "logicalRole": "other-owner",
+      "physicalLabel": "B",
+      "normalAuth": true
+    }
+  ],
+  "ssrOwnershipSource": {
+    "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+    "sourceRun": "56423408-b755-44b5-8045-45e1a6b925ee"
+  },
+  "ssrSnapshotOwnership": {
+    "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+    "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "snapshotDate": "2026-10-06",
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "initialCount": 0,
+    "createdByOrdinaryDashboardSSR": true,
+    "createdDuringRun": "56423408-b755-44b5-8045-45e1a6b925ee"
+  },
+  "ssrSnapshotInventoryBefore": {
+    "table": "net_worth_snapshots",
+    "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "snapshotDate": "2026-10-06",
+    "existing": 1,
+    "ownedExistingId": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+    "beforeSha256": "0e28d6e5fe01e0cd6689ebc2d49fb7008067e8f7a37ac5cf22b77aacc1983ad1",
+    "before": [
+      {
+        "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+        "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "total_usd": 200,
+        "created_at": "2026-10-15T05:03:36.988847+00:00",
+        "liquid_usd": 200,
+        "snapshot_date": "2026-10-06",
+        "total_ars_blue": 240000,
+        "investments_usd": 0,
+        "blue_ars_per_usd": 1200
+      }
+    ]
+  },
+  "ssrObservations": [
+    {
+      "path": "/dashboard",
+      "status": 200,
+      "responseSha256": "52f6906a9a33ee516356256aadedb46d348c8ec3906b8b860f3c493b7e69b215",
+      "compiled": {
+        "module": {
+          "id": 48648,
+          "name": "*",
+          "chunks": [
+            "6815",
+            "static/chunks/d7509858-b5bfa9c471a66b9e.js",
+            "8333",
+            "static/chunks/8333-c31a2ed39f1c1a7b.js",
+            "418",
+            "static/chunks/418-bf981cd8137a170a.js",
+            "4433",
+            "static/chunks/4433-d54e1b89122e6cec.js",
+            "5940",
+            "static/chunks/5940-ca7f71b8fb1bf179.js",
+            "4390",
+            "static/chunks/4390-3b5cb54eb8a2c748.js",
+            "640",
+            "static/chunks/640-82eeea1f82f63315.js",
+            "2077",
+            "static/chunks/2077-46496adc4c75db5a.js",
+            "508",
+            "static/chunks/508-aefa69ea3371fc93.js",
+            "9503",
+            "static/chunks/9503-a190351e1a5d1f64.js",
+            "4172",
+            "static/chunks/app/(authenticated)/dashboard/page-e9cfbddd99873339.js"
+          ],
+          "async": false
+        },
+        "manifestPath": ".next/server/app/(authenticated)/dashboard/page_client-reference-manifest.js",
+        "manifestSha256": "7237a0a85f1450e4d4afee49acd69ffaa4806c59438f43a373fcaac3b673746b",
+        "component": "components/dashboard/NetWorthHero.tsx"
+      },
+      "scope": "Actual ordinary authenticated server response and client-component Flight props. No browser, hydration, animation, chart or visual acceptance claimed.",
+      "now": {
+        "liquidUSD": 181.67,
+        "investmentsUSD": 0,
+        "totalUSD": 181.67,
+        "totalARSBlue": 218000,
+        "blueRate": 1200,
+        "blueReferences": [
+          {
+            "component": "accounts",
+            "reference": {
+              "type": "blue",
+              "side": "sell",
+              "rate": 1200,
+              "observedAt": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          }
+        ]
+      },
+      "amounts": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "181.67",
+          "text": "\u2248 US$ 182"
+        }
+      ],
+      "expectedSecondaryText": "\u2248 US$ 181,67",
+      "snapshot": {
+        "before": [
+          {
+            "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "total_usd": 200,
+            "created_at": "2026-10-15T05:03:36.988847+00:00",
+            "liquid_usd": 200,
+            "snapshot_date": "2026-10-06",
+            "total_ars_blue": 240000,
+            "investments_usd": 0,
+            "blue_ars_per_usd": 1200
+          }
+        ],
+        "after": [
+          {
+            "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "total_usd": 181.67,
+            "created_at": "2026-10-15T05:03:36.988847+00:00",
+            "liquid_usd": 181.67,
+            "snapshot_date": "2026-10-06",
+            "total_ars_blue": 218000,
+            "investments_usd": 0,
+            "blue_ars_per_usd": 1200
+          }
+        ],
+        "intendedOwnedUpsert": true,
+        "completedBeforeFixtureCleanup": true
+      }
+    }
+  ],
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 110,
+      "beforeMd5": "2f3cd85be3bc17e216d59d5c7d2ea7e0",
+      "afterMd5": "2f3cd85be3bc17e216d59d5c7d2ea7e0",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 146,
+      "beforeMd5": "49e946af3520d637f22c199d188ac5a4",
+      "afterMd5": "49e946af3520d637f22c199d188ac5a4",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 22,
+      "beforeMd5": "e0358b3a791e5d98ea59ea08cca7b1eb",
+      "afterMd5": "e0358b3a791e5d98ea59ea08cca7b1eb",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 8,
+      "beforeMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "afterMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 38,
+      "beforeMd5": "0d0d3e0d6335f0de72944c959237803c",
+      "afterMd5": "0d0d3e0d6335f0de72944c959237803c",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 10,
+      "beforeMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "afterMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "servedBuildStable": true,
+  "finishedAt": "2026-10-15T05:04:58.072Z"
+}

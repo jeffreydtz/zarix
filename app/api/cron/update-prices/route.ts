@@ -19,6 +19,29 @@ class UpdatePricesJob extends IterativeCronJob<any> {
   readonly name = 'update-prices';
 
   private priceCache: Record<string, number> = {};
+  private integrationErrors = 0;
+
+  private storePrice(key: string, price: number): void {
+    if (!Number.isFinite(price) || price <= 0) {
+      throw new Error(`Cotización inválida para ${key}`);
+    }
+    this.priceCache[key] = price;
+  }
+
+  protected async execute(supabase: ServiceClient): Promise<Record<string, unknown>> {
+    // Fetch USD/ARS rate (useful for USDT plazo fijo)
+    try {
+      const dolar = await cotizacionesService.getDolarQuotes();
+      this.storePrice('USD_ARS', dolar.blue.sell);
+    } catch (e) {
+      this.integrationErrors++;
+      console.error('Error fetching USD rate:', e);
+    }
+    const result = await super.execute(supabase);
+    // Los fallos de precarga no llegan a processItem: contarlos también permite
+    // que CronJob avise al administrador aunque no se actualice ninguna fila.
+    return { ...result, errors: Number(result.errors ?? 0) + this.integrationErrors };
+  }
 
   protected async fetchItems(supabase: ServiceClient): Promise<any[]> {
     // Get all active investments with crypto or USD-priced assets
@@ -57,8 +80,9 @@ class UpdatePricesJob extends IterativeCronJob<any> {
     for (const ticker of cryptoTickers) {
       try {
         const quote = await cotizacionesService.getCryptoQuote(ticker);
-        this.priceCache[ticker] = quote.priceUSD;
+        this.storePrice(ticker, quote.priceUSD);
       } catch (e) {
+        this.integrationErrors++;
         console.error(`Error fetching price for ${ticker}:`, e);
       }
     }
@@ -67,8 +91,9 @@ class UpdatePricesJob extends IterativeCronJob<any> {
     for (const ticker of usTickers) {
       try {
         const quote = await cotizacionesService.getStockQuote(ticker, 'us');
-        this.priceCache[`US:${ticker}`] = quote.price;
+        this.storePrice(`US:${ticker}`, quote.price);
       } catch (e) {
+        this.integrationErrors++;
         console.error(`Error fetching US stock price for ${ticker}:`, e);
       }
     }
@@ -77,8 +102,9 @@ class UpdatePricesJob extends IterativeCronJob<any> {
     for (const ticker of argTickers) {
       try {
         const quote = await cotizacionesService.getStockQuote(ticker, 'arg');
-        this.priceCache[`ARG:${ticker}`] = quote.price;
+        this.storePrice(`ARG:${ticker}`, quote.price);
       } catch (e) {
+        this.integrationErrors++;
         console.error(`Error fetching ARG stock price for ${ticker}:`, e);
       }
     }
@@ -87,19 +113,14 @@ class UpdatePricesJob extends IterativeCronJob<any> {
     for (const ticker of cedearTickers) {
       try {
         const quote = await cotizacionesService.getStockQuote(ticker, 'cedear');
-        this.priceCache[`CEDEAR:${ticker}`] = quote.price;
+        this.storePrice(`CEDEAR:${ticker}`, quote.price);
       } catch (e) {
+        this.integrationErrors++;
         console.error(`Error fetching CEDEAR price for ${ticker}:`, e);
       }
     }
 
-    // Fetch USD/ARS rate (useful for USDT plazo fijo)
-    try {
-      const dolar = await cotizacionesService.getDolarQuotes();
-      this.priceCache['USD_ARS'] = dolar.blue.sell;
-    } catch (e) {
-      console.error('Error fetching USD rate:', e);
-    }
+
   }
 
   private resolvePrice(inv: any): number | null {
@@ -138,16 +159,8 @@ class UpdatePricesJob extends IterativeCronJob<any> {
   /** Persiste el histórico de cotizaciones obtenidas en esta corrida. */
   protected async afterAll(supabase: ServiceClient, _items: any[]): Promise<void> {
     try {
-      const usdRate = this.priceCache['USD_ARS'] ?? 0;
-      if (usdRate > 0) {
-        await supabase.from('exchange_rates').upsert({
-          source: 'blue',
-          from_currency: 'USD',
-          to_currency: 'ARS',
-          rate: usdRate,
-          timestamp: new Date().toISOString(),
-        }, { onConflict: 'source,from_currency,to_currency,timestamp' });
-      }
+      // getDolarQuotes already persists both sides at the original quote time.
+      // Re-stamping only blue.sell here would corrupt freshness/spread fallback.
 
       for (const [ticker, price] of Object.entries(this.priceCache)) {
         if (ticker === 'USD_ARS') continue;
@@ -157,15 +170,17 @@ class UpdatePricesJob extends IterativeCronJob<any> {
         if (ticker.includes(':')) continue;
         // Nunca persistir tasas <= 0 en exchange_rates.
         if (!(price > 0)) continue;
-        await supabase.from('exchange_rates').upsert({
+        const { error } = await supabase.from('exchange_rates').upsert({
           source: 'coingecko',
           from_currency: ticker,
           to_currency: 'USD',
           rate: price,
           timestamp: new Date().toISOString(),
         }, { onConflict: 'source,from_currency,to_currency,timestamp' });
+        if (error) throw error;
       }
     } catch (e) {
+      this.integrationErrors++;
       console.error('Error storing exchange rates:', e);
     }
   }

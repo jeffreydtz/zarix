@@ -1,0 +1,49 @@
+{
+  "results": [
+    {
+      "case_id": "CP1-27",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "notification-timeout-contract/verification.json",
+        "notification-timeout-contract/execution.json",
+        "notification-timeout-contract/vitest-result.json",
+        "notification-timeout-contract/manifest.json"
+      ],
+      "assertion_names": [
+        "one committed expense debits account 10000 to9000",
+        "one occurrence row",
+        "occurrence amount1000",
+        "recurring marker advances inclusively to6Oct",
+        "one durable financial receipt",
+        "receipt owns exact occurrence request",
+        "one durable notification intention",
+        "outbox refers to committed movement",
+        "outbox key exact recurring occurrence",
+        "first provider ACK timeout counted as unconfirmed delivery",
+        "provider accepted before timeout",
+        "timeout does not change financial rows",
+        "timeout leaves durable undelivered intention",
+        "provider raw timeout is replaced with safe uncertainty text",
+        "failed lease released",
+        "first lease attempt recorded",
+        "retry is scheduled after current wall time",
+        "financial request survives DB close/reopen",
+        "replay after reopen preserves full financial rows",
+        "pending outbox survives DB close/reopen",
+        "retry confirms same durable notification",
+        "full financial snapshot identical after second provider acceptance",
+        "same unique outbox row remains",
+        "same outbox ID retained",
+        "second attempt recorded durably",
+        "delivered timestamp confirmed",
+        "safe error cleared after confirmed acknowledgement",
+        "no more claimable event after acknowledgement",
+        "double observed two possible physical acceptances",
+        "same message on both provider acceptances",
+        "no hidden additional provider call"
+      ],
+      "scope": "Real persisted PGlite/PostgreSQL bootstrap, migrations, atomic financial RPC and actual outbox worker; query adapter substitutes PostgREST; synthetic role fixture substitutes Auth; only sendTelegramDm replaced by an accepting-then-timeout provider double. No native stack, GoTrue, browser, credentials or external Telegram. After a provider accepts a message but loses its acknowledgement, application cannot know physical delivery. This controlled provider model accepts both attempts, illustrating a possible duplicate. No Telegram exactly-once or automatic reconciliation is claimed."
+    }
+  ]
+}

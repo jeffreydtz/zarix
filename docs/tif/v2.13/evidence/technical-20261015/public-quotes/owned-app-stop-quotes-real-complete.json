@@ -1,0 +1,48 @@
+{
+  "phase": "quotes-real-complete",
+  "stoppedAt": "2026-10-15T02:46:07.529826+00:00",
+  "ownedSupervisorPid": 35667,
+  "lastBuildId": "QcXclgO6C0_ktQ5ac8YWh",
+  "state": {
+    "purpose": "isolated-e2e-app-supervisor",
+    "supervisorPid": 35667,
+    "appOrigin": "http://127.0.0.1:3000",
+    "apiOrigin": "http://127.0.0.1:57321",
+    "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+    "nextPid": null,
+    "runtimeQuoteProfile": {
+      "environmentFileName": "e2e-app-live-quotes.env",
+      "providers": {
+        "criptoya": "https://criptoya.com/api",
+        "dolarapi": "https://dolarapi.com/v1",
+        "coingecko": "https://api.coingecko.com/api/v3"
+      },
+      "marketTimeoutMs": 8000,
+      "maxRateAgeSeconds": 86400
+    },
+    "providerDouble": {
+      "port": 57910,
+      "response": 503,
+      "realIntegration": false
+    },
+    "events": [
+      {
+        "type": "start",
+        "pid": 35669,
+        "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+        "startedAt": "2026-10-15T02:45:22.264933Z",
+        "readyAt": "2026-10-15T02:45:23.006334Z",
+        "startConfirmed": true,
+        "listenerOwned": true
+      },
+      {
+        "type": "stop",
+        "pid": 35669,
+        "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+        "stoppedAt": "2026-10-15T02:46:07.243717Z",
+        "stopConfirmed": true
+      }
+    ]
+  },
+  "status": "PASS"
+}

@@ -3,10 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { errorResponse } from '@/lib/api-handler';
 
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const supabase = await createClient();
     const {

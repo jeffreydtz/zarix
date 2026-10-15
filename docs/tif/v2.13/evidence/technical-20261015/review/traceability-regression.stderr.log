@@ -1,0 +1,8 @@
+test_mixed_statuses_preserve_failure_then_blocked_precedence (__main__.TraceabilityStatusRegression.test_mixed_statuses_preserve_failure_then_blocked_precedence) ... ok
+test_system_pass_fail_and_blocked_keep_their_distinct_results (__main__.TraceabilityStatusRegression.test_system_pass_fail_and_blocked_keep_their_distinct_results) ... ok
+test_unmatched_cases_remain_blocked_and_summary_counts_match_matrix (__main__.TraceabilityStatusRegression.test_unmatched_cases_remain_blocked_and_summary_counts_match_matrix) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.042s
+
+OK

@@ -1,3 +1,4 @@
+import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import { GoogleGenerativeAI, Content, type FunctionDeclaration } from '@google/generative-ai';
 import { createServiceClientSync } from '@/lib/supabase/server';
 
@@ -64,6 +65,18 @@ export class GeminiClient {
     this.genAI = new GoogleGenerativeAI(apiKey.trim());
   }
 
+  private async withDeadline<T>(run: (signal: AbortSignal) => Promise<T>): Promise<T> {
+    const configured = Number(process.env.GEMINI_TIMEOUT_MS);
+    const timeout = Number.isFinite(configured) && configured > 0 ? Math.min(configured, 45_000) : 20_000;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try {
+      return await run(controller.signal);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   async chat(
     message: string,
     options: GeminiChatOptions = {}
@@ -93,7 +106,7 @@ export class GeminiClient {
       },
     });
 
-    const result = await chat.sendMessage(message);
+    const result = await this.withDeadline(signal => chat.sendMessage(message, { signal }));
     return result.response.text();
   }
 
@@ -139,49 +152,55 @@ export class GeminiClient {
       generationConfig: { maxOutputTokens: maxTokens, temperature: 0.3 },
     });
 
-    const toolsUsed: string[] = [];
-    let result = await chat.sendMessage(message);
+    return this.withDeadline(async (signal) => {
+      const toolsUsed: string[] = [];
+      let result = await chat.sendMessage(message, { signal });
 
-    for (let round = 0; round < maxRounds; round++) {
-      const calls = result.response.functionCalls();
-      if (!calls || calls.length === 0) break;
+      for (let round = 0; round < maxRounds; round++) {
+        signal.throwIfAborted();
+        const calls = result.response.functionCalls();
+        if (!calls || calls.length === 0) break;
 
-      const responses = [];
-      for (const call of calls) {
-        toolsUsed.push(call.name);
-        let toolResult: Record<string, unknown>;
-        if (allowedToolNames && !allowedToolNames.has(call.name)) {
-          toolResult = { error: 'Herramienta no permitida.' };
-        } else {
-          try {
-            toolResult = await onToolCall(call.name, (call.args as Record<string, unknown>) ?? {});
-          } catch (e) {
-            console.error('[gemini] tool error', call.name, e);
-            toolResult = { error: 'No pude completar esa acción.' };
+        const responses = [];
+        for (const call of calls) {
+          signal.throwIfAborted();
+          toolsUsed.push(call.name);
+          let toolResult: Record<string, unknown>;
+          if (allowedToolNames && !allowedToolNames.has(call.name)) {
+            toolResult = { error: 'Herramienta no permitida.' };
+          } else {
+            try {
+              toolResult = await onToolCall(call.name, (call.args as Record<string, unknown>) ?? {});
+            } catch (e) {
+              if (e instanceof AmbiguousFinancialMutationError) throw e;
+              console.error('[gemini] tool error', call.name, e);
+              toolResult = { error: 'No pude completar esa acción.' };
+            }
           }
+          responses.push({ functionResponse: { name: call.name, response: toolResult ?? {} } });
         }
-        responses.push({ functionResponse: { name: call.name, response: toolResult ?? {} } });
+
+        signal.throwIfAborted();
+        result = await chat.sendMessage(responses, { signal });
       }
 
-      result = await chat.sendMessage(responses);
-    }
+      const leftover = result.response.functionCalls();
+      if (leftover && leftover.length > 0) {
+        return {
+          text: 'No pude terminar de procesar el pedido. ¿Lo reintentamos en partes más chicas?',
+          toolsUsed,
+        };
+      }
 
-    const leftover = result.response.functionCalls();
-    if (leftover && leftover.length > 0) {
-      return {
-        text: 'No pude terminar de procesar el pedido. ¿Lo reintentamos en partes más chicas?',
-        toolsUsed,
-      };
-    }
-
-    let text = '';
-    try {
-      text = result.response.text();
-    } catch (err) {
-      console.error('[gemini] failed to extract response text', err);
-      text = '';
-    }
-    return { text: text.trim(), toolsUsed };
+      let text = '';
+      try {
+        text = result.response.text();
+      } catch (err) {
+        console.error('[gemini] failed to extract response text', err);
+        text = '';
+      }
+      return { text: text.trim(), toolsUsed };
+    });
   }
 
   async chatWithImage(
@@ -215,7 +234,7 @@ export class GeminiClient {
       },
     });
 
-    const result = await chat.sendMessage([
+    const result = await this.withDeadline(signal => chat.sendMessage([
       { text: message },
       {
         inlineData: {
@@ -223,7 +242,7 @@ export class GeminiClient {
           data: imageBase64,
         },
       },
-    ]);
+    ], { signal }));
 
     return result.response.text();
   }

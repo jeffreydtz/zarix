@@ -1,0 +1,2257 @@
+{
+  "status": "FAIL",
+  "startedAt": "2026-10-15T03:47:25.804Z",
+  "run": "5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+  "scope": "Eight declared original CU001 cases, API/SQL scope only. No browser, cron, import, shared group, external provider acceptance, plan change or new identity.",
+  "results": [
+    {
+      "id": "CP1-01",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Visible categories200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Own literal category201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Exact expense balance8500",
+          "actual": 8500,
+          "expected": 8500,
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly one economic row",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Literal amount/category/date/owner",
+          "actual": {
+            "amount": 1500,
+            "category": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+            "date": "2026-10-06",
+            "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+          },
+          "expected": {
+            "amount": 1500,
+            "category": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+            "date": "2026-10-06",
+            "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "List API displays same1500 row",
+          "actual": {
+            "status": 200,
+            "id": "2a3beea0-efe9-465b-a54f-d8adf04de9da",
+            "amount": 1500
+          },
+          "expected": {
+            "status": 200,
+            "id": "2a3beea0-efe9-465b-a54f-d8adf04de9da",
+            "amount": 1500
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [
+        {
+          "name": "Actual list/dashboard UI1500",
+          "status": "BLOCKED",
+          "reason": "Arc-specific permission/controls are pending; this runner does not launch a browser."
+        }
+      ],
+      "startedAt": "2026-10-15T03:47:32.214Z",
+      "finishedAt": "2026-10-15T03:47:33.517Z"
+    },
+    {
+      "id": "CP1-02",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Visible categories200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Own literal category201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "October summary200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly one500 income and10500 balance",
+          "actual": {
+            "count": 1,
+            "balance": 10500,
+            "type": "income"
+          },
+          "expected": {
+            "count": 1,
+            "balance": 10500,
+            "type": "income"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Literal500 income category/date/owner persisted",
+          "actual": {
+            "amount": 500,
+            "category": "62dc6515-f74e-40f3-9941-bec78d2a48c6",
+            "date": "2026-10-06",
+            "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+          },
+          "expected": {
+            "amount": 500,
+            "category": "62dc6515-f74e-40f3-9941-bec78d2a48c6",
+            "date": "2026-10-06",
+            "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "October summary200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Financial flow income increases500 only",
+          "actual": {
+            "income": 500,
+            "expense": 0,
+            "balance": 500
+          },
+          "expected": {
+            "income": 500,
+            "expense": 0,
+            "balance": 500
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:33.517Z",
+      "finishedAt": "2026-10-15T03:47:35.355Z"
+    },
+    {
+      "id": "CP1-03",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 2000,
+          "expected": 2000,
+          "status": "PASS"
+        },
+        {
+          "name": "October summary200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "One transfer/two exact impacts and conserved total",
+          "actual": {
+            "rows": 1,
+            "type": "transfer",
+            "debit": 1500,
+            "credit": 1500,
+            "balances": [
+              8500,
+              3500
+            ],
+            "total": 12000
+          },
+          "expected": {
+            "rows": 1,
+            "type": "transfer",
+            "debit": 1500,
+            "credit": 1500,
+            "balances": [
+              8500,
+              3500
+            ],
+            "total": 12000
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "October summary200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Transfer excluded from income/expense/flow",
+          "actual": {
+            "income": 0,
+            "expense": 0,
+            "balance": 0
+          },
+          "expected": {
+            "income": 0,
+            "expense": 0,
+            "balance": 0
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:35.356Z",
+      "finishedAt": "2026-10-15T03:47:37.362Z"
+    },
+    {
+      "id": "CP1-05",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Literal initial balance8500",
+          "actual": 8500,
+          "expected": 8500,
+          "status": "PASS"
+        },
+        {
+          "name": "Canonical SQL edit applies one new economic impact",
+          "actual": {
+            "balance": 8000,
+            "rows": 1,
+            "amount": 2000,
+            "canonical": 2000
+          },
+          "expected": {
+            "balance": 8000,
+            "rows": 1,
+            "amount": 2000,
+            "canonical": 2000
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "name": "Amount-only update is recorded without substituting the canonical edit",
+          "balance": 8500,
+          "row": {
+            "id": "fc0c2e29-deb8-478a-928e-f20243642d6d",
+            "type": "expense",
+            "amount": "2000.00000000",
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "account_id": "55f672a5-d529-4e8f-a1c9-6125c9be1f80",
+            "category_id": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "destination_account_id": null,
+            "amount_in_account_currency": "1500.00000000",
+            "destination_amount_in_account_currency": null
+          },
+          "statement": "UPDATE own transaction SET amount=2000 only",
+          "literalExpectedBalance": 8000
+        }
+      ],
+      "pendingScopes": [
+        {
+          "name": "Original monto UPDATE column binding",
+          "status": "BLOCKED_CONTRACT_REVIEW",
+          "reason": "The CSV does not name an SQL column. Both amount-only observation and canonical edit are preserved; canonical-edit success is not promoted to original-case PASS."
+        }
+      ],
+      "startedAt": "2026-10-15T03:47:37.362Z",
+      "finishedAt": "2026-10-15T03:47:38.757Z"
+    },
+    {
+      "id": "CP1-09",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Income500 initial balance10500",
+          "actual": 10500,
+          "expected": 10500,
+          "status": "PASS"
+        },
+        {
+          "name": "Direct SQL income DELETE exact reverse",
+          "actual": {
+            "balance": 10000,
+            "economicRows": 0
+          },
+          "expected": {
+            "balance": 10000,
+            "economicRows": 0
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:38.757Z",
+      "finishedAt": "2026-10-15T03:47:39.784Z"
+    },
+    {
+      "id": "CP1-11",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 2000,
+          "expected": 2000,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Literal predelete balances8500/3500",
+          "actual": [
+            8500,
+            3500
+          ],
+          "expected": [
+            8500,
+            3500
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Direct SQL transfer DELETE reverses both impacts exactly",
+          "actual": {
+            "balances": [
+              10000,
+              2000
+            ],
+            "economicRows": 0
+          },
+          "expected": {
+            "balances": [
+              10000,
+              2000
+            ],
+            "economicRows": 0
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:39.784Z",
+      "finishedAt": "2026-10-15T03:47:41.610Z"
+    },
+    {
+      "id": "CP1-33",
+      "status": "FAIL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Archive own new account204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "inactive-own access/state rejection",
+          "actual": false,
+          "expected": true,
+          "status": "FAIL"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:41.610Z",
+      "failure": {
+        "type": "AssertionError",
+        "sourceLine": "31",
+        "reason": "Named assertion/prerequisite failed; raw errors withheld"
+      },
+      "finishedAt": "2026-10-15T03:47:43.195Z"
+    },
+    {
+      "id": "CP1-34",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "One cent accepted with exact0.99 balance",
+          "actual": {
+            "balance": 0.99,
+            "rows": 1
+          },
+          "expected": {
+            "balance": 0.99,
+            "rows": 1
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Accepted cent fixture archived before independent rejection fixtures",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "zero rejected400",
+          "actual": 400,
+          "expected": 400,
+          "status": "PASS"
+        },
+        {
+          "name": "zero no balance/full-ledger change including initial adjustment",
+          "actual": {
+            "accounts": [
+              {
+                "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 12 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:44.20473+00:00",
+                "sort_order": 15,
+                "updated_at": "2026-10-15T03:47:44.20473+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "dfe58876-56aa-40a7-8dcb-bd0154f7cd03",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:44.20473+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "expected": {
+            "accounts": [
+              {
+                "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 12 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:44.20473+00:00",
+                "sort_order": 15,
+                "updated_at": "2026-10-15T03:47:44.20473+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "dfe58876-56aa-40a7-8dcb-bd0154f7cd03",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:44.20473+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "zero no economic movement created",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "zero own fixture archived204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "negative rejected400",
+          "actual": 400,
+          "expected": 400,
+          "status": "PASS"
+        },
+        {
+          "name": "negative no balance/full-ledger change including initial adjustment",
+          "actual": {
+            "accounts": [
+              {
+                "id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 13 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:45.224436+00:00",
+                "sort_order": 16,
+                "updated_at": "2026-10-15T03:47:45.224436+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "1bd38ed9-5029-441c-8639-c9b0ef824e81",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:45.224436+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "expected": {
+            "accounts": [
+              {
+                "id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 13 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:45.224436+00:00",
+                "sort_order": 16,
+                "updated_at": "2026-10-15T03:47:45.224436+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "1bd38ed9-5029-441c-8639-c9b0ef824e81",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:45.224436+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "negative no economic movement created",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "negative own fixture archived204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "subcent rejected400",
+          "actual": 400,
+          "expected": 400,
+          "status": "PASS"
+        },
+        {
+          "name": "subcent no balance/full-ledger change including initial adjustment",
+          "actual": {
+            "accounts": [
+              {
+                "id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 14 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:46.257585+00:00",
+                "sort_order": 17,
+                "updated_at": "2026-10-15T03:47:46.257585+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "073bbd84-22fd-4d68-8c93-4304864d5264",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:46.257585+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "expected": {
+            "accounts": [
+              {
+                "id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 14 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:46.257585+00:00",
+                "sort_order": 17,
+                "updated_at": "2026-10-15T03:47:46.257585+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "073bbd84-22fd-4d68-8c93-4304864d5264",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:46.257585+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "subcent no economic movement created",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "subcent own fixture archived204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "numeric-conversion-NaN rejected400",
+          "actual": 400,
+          "expected": 400,
+          "status": "PASS"
+        },
+        {
+          "name": "numeric-conversion-NaN no balance/full-ledger change including initial adjustment",
+          "actual": {
+            "accounts": [
+              {
+                "id": "20276f40-3ce3-40b0-8207-76450e661d73",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 15 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:47.279611+00:00",
+                "sort_order": 18,
+                "updated_at": "2026-10-15T03:47:47.279611+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "0d645b2b-b3e3-4848-8f4e-f937618d9d89",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "20276f40-3ce3-40b0-8207-76450e661d73",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:47.279611+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "expected": {
+            "accounts": [
+              {
+                "id": "20276f40-3ce3-40b0-8207-76450e661d73",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 15 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:47.279611+00:00",
+                "sort_order": 18,
+                "updated_at": "2026-10-15T03:47:47.279611+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "0d645b2b-b3e3-4848-8f4e-f937618d9d89",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "20276f40-3ce3-40b0-8207-76450e661d73",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:47.279611+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "numeric-conversion-NaN no economic movement created",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "numeric-conversion-NaN own fixture archived204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "name": "NaN transport semantics",
+          "wireAmount": "NaN string",
+          "apiConversion": "Number('NaN') is NaN",
+          "notClaimed": "JSON numeric NaN, null equivalence or actual browser numeric input behavior"
+        }
+      ],
+      "pendingScopes": [
+        {
+          "name": "Browser numeric-input NaN behavior",
+          "status": "BLOCKED",
+          "reason": "Actual Arc input behavior remains unexecuted; API string-to-number rejection is recorded separately."
+        }
+      ],
+      "startedAt": "2026-10-15T03:47:43.195Z",
+      "finishedAt": "2026-10-15T03:47:49.172Z"
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP1-01",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "0662f200-943c-4128-9a41-b6bdf24e523c",
+      "startedAt": "2026-10-15T03:47:32.342Z",
+      "status": 201,
+      "responseSha256": "8646c43e0e1a1da92f225ae873b2afe7dd3b3cfa38e07f17c60aeb075aa64b04",
+      "endedAt": "2026-10-15T03:47:32.444Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "GET",
+      "path": "/api/categories",
+      "requestId": "473a9ac6-81b5-459f-b607-8a796d87bf45",
+      "startedAt": "2026-10-15T03:47:32.647Z",
+      "status": 200,
+      "responseSha256": "dc1866aff976373f37529447e23a45065c043e3c8e93cbcfae557ec4d2f71b25",
+      "endedAt": "2026-10-15T03:47:32.740Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "POST",
+      "path": "/api/categories",
+      "requestId": "59888b67-0107-4629-97f9-28570c421ae5",
+      "startedAt": "2026-10-15T03:47:32.790Z",
+      "status": 201,
+      "responseSha256": "57ea2412892e3688a457fd677d788f0c2fc7181cb6e30c0a57b5b7ba1f09f46a",
+      "endedAt": "2026-10-15T03:47:32.873Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "81540fa9-7357-467a-889c-072f7f3940a9",
+      "startedAt": "2026-10-15T03:47:32.921Z",
+      "status": 201,
+      "responseSha256": "a31e10415e0d55db4baa018ad7f207d9b4ae38124377c6c0c5e21acab19b90a3",
+      "endedAt": "2026-10-15T03:47:33.017Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "GET",
+      "path": "/api/transactions",
+      "requestId": "42cb2c8b-dbad-4890-9c07-30d11ffaa987",
+      "startedAt": "2026-10-15T03:47:33.221Z",
+      "status": 200,
+      "responseSha256": "cfb3702b36b220a9eb53dcb0aa682c7176ca1df9624e614f9626ed03c098b534",
+      "endedAt": "2026-10-15T03:47:33.305Z"
+    },
+    {
+      "caseId": "CP1-01",
+      "method": "DELETE",
+      "path": "/api/accounts/fcc34447-22d1-4b48-aec5-c03f8a0123f0",
+      "requestId": "8f580b53-13d5-4b10-a1a2-08a83fdd6fc5",
+      "startedAt": "2026-10-15T03:47:33.432Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:33.516Z"
+    },
+    {
+      "caseId": "CP1-02",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "d7f6a8ae-fc87-4046-9873-1d0206eeaf42",
+      "startedAt": "2026-10-15T03:47:33.647Z",
+      "status": 201,
+      "responseSha256": "29be497321adad099818722a5f09e008d671e73c3b8797a6780fc15e67a94f9e",
+      "endedAt": "2026-10-15T03:47:33.734Z"
+    },
+    {
+      "caseId": "CP1-02",
+      "method": "GET",
+      "path": "/api/categories",
+      "requestId": "6c185666-d944-45d8-bd8b-bc402338febc",
+      "startedAt": "2026-10-15T03:47:33.949Z",
+      "status": 200,
+      "responseSha256": "fe95028959429dac56a7b184f691c69785625f8b9833e6f0e40fcbfc1e90d785",
+      "endedAt": "2026-10-15T03:47:34.037Z"
+    },
+    {
+      "caseId": "CP1-02",
+      "method": "POST",
+      "path": "/api/categories",
+      "requestId": "4fc240fe-790a-4240-b20b-582bc5130487",
+      "startedAt": "2026-10-15T03:47:34.088Z",
+      "status": 201,
+      "responseSha256": "cbb856233ff290bb0667d123e386a4555af3a1b44376c4b721b79c2840a6629f",
+      "endedAt": "2026-10-15T03:47:34.175Z"
+    },
+    {
+      "caseId": "CP1-02",
+      "method": "GET",
+      "path": "/api/transactions/summary",
+      "requestId": "ea5bd5c6-b5a1-4846-8561-46c8880c02c6",
+      "startedAt": "2026-10-15T03:47:34.226Z",
+      "status": 200,
+      "responseSha256": "b46ccf707d3d1e2038e9601d32da3909d79ec98df1013df7a9bdb4e9ac6cc1ba",
+      "endedAt": "2026-10-15T03:47:34.317Z"
+    },
+    {
+      "caseId": "CP1-02",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "7bd40e7d-8933-4d0c-9bf6-906d301110b7",
+      "startedAt": "2026-10-15T03:47:34.366Z",
+      "status": 201,
+      "responseSha256": "3c24a06677a6196d850206fb4933e95177976ca3ef2a2c120c47d77ced073beb",
+      "endedAt": "2026-10-15T03:47:34.461Z"
+    },
+    {
+      "caseId": "CP1-02",
+      "method": "GET",
+      "path": "/api/transactions/summary",
+      "requestId": "505e3605-0908-43df-a25e-e26045302261",
+      "startedAt": "2026-10-15T03:47:35.063Z",
+      "status": 200,
+      "responseSha256": "0c1f283c5b62b22be41ca0a683c187ae5acbddc245624b570131de1ceea7f050",
+      "endedAt": "2026-10-15T03:47:35.148Z"
+    },
+    {
+      "caseId": "CP1-02",
+      "method": "DELETE",
+      "path": "/api/accounts/325735e7-4d02-4ac8-9e96-fa68a31892b5",
+      "requestId": "2603e4df-1ed6-4dbf-9a72-f14e4b5da118",
+      "startedAt": "2026-10-15T03:47:35.273Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:35.355Z"
+    },
+    {
+      "caseId": "CP1-03",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "4dc48ee5-b161-4d6c-923a-0adadcc36320",
+      "startedAt": "2026-10-15T03:47:35.557Z",
+      "status": 201,
+      "responseSha256": "967a9e3f184e37543df263a71f3c96a264778d906a348589f99865321d6cdd0f",
+      "endedAt": "2026-10-15T03:47:35.645Z"
+    },
+    {
+      "caseId": "CP1-03",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "19dd74b3-21a5-4459-b898-1259e45325b4",
+      "startedAt": "2026-10-15T03:47:35.922Z",
+      "status": 201,
+      "responseSha256": "6c68b85b66485a7f335935f4c7da5f34f3a68861adf65ce03cb4f3beedcd5f94",
+      "endedAt": "2026-10-15T03:47:36.006Z"
+    },
+    {
+      "caseId": "CP1-03",
+      "method": "GET",
+      "path": "/api/transactions/summary",
+      "requestId": "1e192759-ba9f-4694-a19e-383a3ccc97be",
+      "startedAt": "2026-10-15T03:47:36.209Z",
+      "status": 200,
+      "responseSha256": "fec390832dbc0bbb0067051987a81197ce5b898ba73484399dfc959e46edab70",
+      "endedAt": "2026-10-15T03:47:36.294Z"
+    },
+    {
+      "caseId": "CP1-03",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "b228d4e0-9c44-4d07-a11c-bd0047ace679",
+      "startedAt": "2026-10-15T03:47:36.342Z",
+      "status": 201,
+      "responseSha256": "54754466f6e879c6fe025fc0ed75fabadb0e361fee289bab4011facc2aa523a9",
+      "endedAt": "2026-10-15T03:47:36.431Z"
+    },
+    {
+      "caseId": "CP1-03",
+      "method": "GET",
+      "path": "/api/transactions/summary",
+      "requestId": "dfefd2fb-5a3f-400b-8c5a-b7956e99edbb",
+      "startedAt": "2026-10-15T03:47:36.857Z",
+      "status": 200,
+      "responseSha256": "829864745234affbbe5dc08f050177a7197d4f7295bb63400a1d76b75acbb813",
+      "endedAt": "2026-10-15T03:47:36.942Z"
+    },
+    {
+      "caseId": "CP1-03",
+      "method": "DELETE",
+      "path": "/api/accounts/74454e43-3d60-4a03-82eb-150c8eb5fe65",
+      "requestId": "139d6985-d021-4739-a4b0-6fb4fe61b9bc",
+      "startedAt": "2026-10-15T03:47:37.069Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:37.152Z"
+    },
+    {
+      "caseId": "CP1-03",
+      "method": "DELETE",
+      "path": "/api/accounts/f79412e5-7964-4f58-9d11-b4fd8699ee1e",
+      "requestId": "59f6b251-6c01-4c01-b179-021aee38c010",
+      "startedAt": "2026-10-15T03:47:37.278Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:37.362Z"
+    },
+    {
+      "caseId": "CP1-05",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "af420a9d-ce87-4dcf-be19-bfba8049f75b",
+      "startedAt": "2026-10-15T03:47:37.488Z",
+      "status": 201,
+      "responseSha256": "c77f2d55030e5126c6bcdb42b3bd543bbbf838b2666ab44d0bbb9cb59b11d0c9",
+      "endedAt": "2026-10-15T03:47:37.571Z"
+    },
+    {
+      "caseId": "CP1-05",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "56c73c81-951a-49b7-8c2f-89b47a10fd17",
+      "startedAt": "2026-10-15T03:47:37.773Z",
+      "status": 201,
+      "responseSha256": "ac346c109382267826f232d770225457599f39c8da9b9776eff154483216ac7d",
+      "endedAt": "2026-10-15T03:47:37.862Z"
+    },
+    {
+      "caseId": "CP1-05",
+      "method": "DELETE",
+      "path": "/api/accounts/55f672a5-d529-4e8f-a1c9-6125c9be1f80",
+      "requestId": "6ed59534-6612-4bb5-ac2d-5cef0620b42b",
+      "startedAt": "2026-10-15T03:47:38.673Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:38.757Z"
+    },
+    {
+      "caseId": "CP1-09",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "9723e50f-90b6-46f3-aeda-88f2835bd47a",
+      "startedAt": "2026-10-15T03:47:38.885Z",
+      "status": 201,
+      "responseSha256": "18b143d79d1a7d8bc9cc6770ad086072c4b96d4ae5bb10989a695508a7b7ad9f",
+      "endedAt": "2026-10-15T03:47:38.967Z"
+    },
+    {
+      "caseId": "CP1-09",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "9302b63a-9ea8-4c5b-a3ca-bfc20b6c2941",
+      "startedAt": "2026-10-15T03:47:39.179Z",
+      "status": 201,
+      "responseSha256": "29e0d866e79b3aec564afe1c0729f9aa8b5ba4c5905dfa562a94bc69d3101936",
+      "endedAt": "2026-10-15T03:47:39.268Z"
+    },
+    {
+      "caseId": "CP1-09",
+      "method": "DELETE",
+      "path": "/api/accounts/3e1932b5-0679-4a68-be5e-d89b422410bd",
+      "requestId": "58640b39-c143-4bd7-bfab-2a7b18ecb47f",
+      "startedAt": "2026-10-15T03:47:39.699Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:39.783Z"
+    },
+    {
+      "caseId": "CP1-11",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "107f4121-c39e-4660-9fa3-c81da3f15946",
+      "startedAt": "2026-10-15T03:47:39.985Z",
+      "status": 201,
+      "responseSha256": "b50128a907eb95784084b747ce463ed3e9d0fceaaa569b67cf03fd58f53b6cc2",
+      "endedAt": "2026-10-15T03:47:40.070Z"
+    },
+    {
+      "caseId": "CP1-11",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "d14d5035-bb1e-4be9-86eb-2055fb837d04",
+      "startedAt": "2026-10-15T03:47:40.351Z",
+      "status": 201,
+      "responseSha256": "f93cabb2088e1d1183e8a90b97adadc7fd5751e1379e53f08f855536a8976edd",
+      "endedAt": "2026-10-15T03:47:40.433Z"
+    },
+    {
+      "caseId": "CP1-11",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "33ca1909-8a5c-4129-af90-67a72d73bc55",
+      "startedAt": "2026-10-15T03:47:40.636Z",
+      "status": 201,
+      "responseSha256": "ca30336a8cd1d8b8273e772b91fc2ab944d71627c2e0f3716c014995c5a164ce",
+      "endedAt": "2026-10-15T03:47:40.726Z"
+    },
+    {
+      "caseId": "CP1-11",
+      "method": "DELETE",
+      "path": "/api/accounts/ea242d27-a46b-42b1-8267-15ef088d9c57",
+      "requestId": "5e164d21-b337-4ff1-8a8c-ed3f46c80c22",
+      "startedAt": "2026-10-15T03:47:41.308Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:41.396Z"
+    },
+    {
+      "caseId": "CP1-11",
+      "method": "DELETE",
+      "path": "/api/accounts/85fdae28-a60b-47a4-925f-f8a42cf82fca",
+      "requestId": "956c1d96-abb6-437f-b3b2-b93366c18604",
+      "startedAt": "2026-10-15T03:47:41.523Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:41.609Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "9ee41ddb-d096-4c0a-aa0e-bc197922e894",
+      "startedAt": "2026-10-15T03:47:41.740Z",
+      "status": 201,
+      "responseSha256": "e188f51f282f7bfa7c01036561f37cbdd0dea75b7090fd4ac7f28c9deadf250f",
+      "endedAt": "2026-10-15T03:47:41.826Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "1655640c-12d3-4d48-b2a4-22a9424f753c",
+      "startedAt": "2026-10-15T03:47:42.105Z",
+      "status": 201,
+      "responseSha256": "c67ba51c98dea53a76500f4f7070a13b9a82277b0f8657abccf408c1c3f47c7a",
+      "endedAt": "2026-10-15T03:47:42.191Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "DELETE",
+      "path": "/api/accounts/0594686e-0798-4481-b61f-887739dc9778",
+      "requestId": "e5e6fc37-7f03-42ec-ae67-cd8666016503",
+      "startedAt": "2026-10-15T03:47:42.391Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:42.477Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "dd4ae339-6619-4e19-8660-f0178516b5d9",
+      "startedAt": "2026-10-15T03:47:42.679Z",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5",
+      "endedAt": "2026-10-15T03:47:42.767Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "DELETE",
+      "path": "/api/accounts/0594686e-0798-4481-b61f-887739dc9778",
+      "requestId": "1188a73d-286a-4b39-9233-9182041d4943",
+      "startedAt": "2026-10-15T03:47:42.900Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:42.984Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "DELETE",
+      "path": "/api/accounts/bc0922e2-5384-4fa5-a112-952ebc27f25a",
+      "requestId": "be318fcf-c17f-4164-9a51-cb379c3cede9",
+      "startedAt": "2026-10-15T03:47:43.112Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:43.194Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "ebcc329a-c2f0-4a61-aa39-ad4959485898",
+      "startedAt": "2026-10-15T03:47:43.327Z",
+      "status": 201,
+      "responseSha256": "ec51dcd0a67b1bf4f8b1c9b3e713b728eda909afabe53114577f98cb15f7f239",
+      "endedAt": "2026-10-15T03:47:43.412Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "b0d1930c-f40b-454f-976d-9bbf616f3c6c",
+      "startedAt": "2026-10-15T03:47:43.615Z",
+      "status": 201,
+      "responseSha256": "13208d66da1b38d510de53f427591ddb9b161de98ab15a6cd5ec8c8dcdfdc4af",
+      "endedAt": "2026-10-15T03:47:43.703Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/2af9c5db-8910-4c81-84fd-9214f2b0b0e2",
+      "requestId": "c8469c5f-1e09-47ed-aa19-c0c899179dae",
+      "startedAt": "2026-10-15T03:47:43.909Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:43.994Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "b2d97470-ae61-455f-b697-9653b44e8c91",
+      "startedAt": "2026-10-15T03:47:44.120Z",
+      "status": 201,
+      "responseSha256": "0dc27b8b5ba698d3e728bdcd3cd3def449f16786579dd9ff1a85c4043e0e2e22",
+      "endedAt": "2026-10-15T03:47:44.207Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "33005700-f9ab-44b1-a3a9-33fc0a0d5b14",
+      "startedAt": "2026-10-15T03:47:44.564Z",
+      "status": 400,
+      "responseSha256": "ca392391bfa42eeb75eb56959e4ce4c7bcfbf278f645824d5e2c6b5c7cad2e73",
+      "endedAt": "2026-10-15T03:47:44.647Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+      "requestId": "ab37cf99-70e7-408c-8a71-07994ae06589",
+      "startedAt": "2026-10-15T03:47:44.927Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:45.014Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "41940ad8-e571-42d8-89ff-69b25d9469f9",
+      "startedAt": "2026-10-15T03:47:45.144Z",
+      "status": 201,
+      "responseSha256": "e93a57c352422a01b5f84b0d45e8c444c61393b5ac04bc362763fe0dab80d93d",
+      "endedAt": "2026-10-15T03:47:45.227Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "e9841990-ffcb-45d9-b8e5-2d30cafd614c",
+      "startedAt": "2026-10-15T03:47:45.585Z",
+      "status": 400,
+      "responseSha256": "ca392391bfa42eeb75eb56959e4ce4c7bcfbf278f645824d5e2c6b5c7cad2e73",
+      "endedAt": "2026-10-15T03:47:45.669Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/0a564310-4098-47b3-9b48-527c89c1e60c",
+      "requestId": "95208a93-554c-4191-9478-a4ae19b1925e",
+      "startedAt": "2026-10-15T03:47:45.958Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:46.042Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "e250fd09-0107-4f74-baf1-ca68ec1a8841",
+      "startedAt": "2026-10-15T03:47:46.173Z",
+      "status": 201,
+      "responseSha256": "d79b2997fafd663aad39837ea8e453dca85021af0eb9c046df6b0f5a7e17c0de",
+      "endedAt": "2026-10-15T03:47:46.260Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "85c9d229-ca91-4f20-a1de-c4ee3877a8c2",
+      "startedAt": "2026-10-15T03:47:46.613Z",
+      "status": 400,
+      "responseSha256": "fc72bddc493b15d9706df02a3f7e462460ca18aeeee7093c62e47537b9f70d4c",
+      "endedAt": "2026-10-15T03:47:46.698Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/37c53b67-92b5-418c-b649-97d982b2ebdb",
+      "requestId": "61eaa2a8-f73d-4418-b00c-f8f1642a0a53",
+      "startedAt": "2026-10-15T03:47:46.980Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:47.066Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "39683eff-e4ef-4cd7-ae10-76e08ae0a9c4",
+      "startedAt": "2026-10-15T03:47:47.195Z",
+      "status": 201,
+      "responseSha256": "ddd90475456c77d13ee65439d3a4365880369f7dbdd4ff9dfea6d394d4285f34",
+      "endedAt": "2026-10-15T03:47:47.282Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "9d4a0050-b783-4917-84b6-0dddc5aa3327",
+      "startedAt": "2026-10-15T03:47:47.641Z",
+      "status": 400,
+      "responseSha256": "ca392391bfa42eeb75eb56959e4ce4c7bcfbf278f645824d5e2c6b5c7cad2e73",
+      "endedAt": "2026-10-15T03:47:47.724Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/20276f40-3ce3-40b0-8207-76450e661d73",
+      "requestId": "ec52ad91-6145-40a0-a522-0acde9de6f6c",
+      "startedAt": "2026-10-15T03:47:48.005Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:48.094Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/2af9c5db-8910-4c81-84fd-9214f2b0b0e2",
+      "requestId": "71a9b371-1ba2-4cb9-b087-c619345edfea",
+      "startedAt": "2026-10-15T03:47:48.223Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:48.307Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+      "requestId": "47cea7f9-a9bc-4a10-a490-b9e8cd8d557f",
+      "startedAt": "2026-10-15T03:47:48.436Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:48.521Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/0a564310-4098-47b3-9b48-527c89c1e60c",
+      "requestId": "fb1f68f0-c85a-4a81-8d00-7f05f1f44366",
+      "startedAt": "2026-10-15T03:47:48.654Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:48.737Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/37c53b67-92b5-418c-b649-97d982b2ebdb",
+      "requestId": "9cf5ba98-3701-4253-b666-b7cafa4b92d5",
+      "startedAt": "2026-10-15T03:47:48.867Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:48.955Z"
+    },
+    {
+      "caseId": "CP1-34",
+      "method": "DELETE",
+      "path": "/api/accounts/20276f40-3ce3-40b0-8207-76450e661d73",
+      "requestId": "39c8fd3f-32f1-432c-97fe-c11858c39544",
+      "startedAt": "2026-10-15T03:47:49.084Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:47:49.171Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "fcc34447-22d1-4b48-aec5-c03f8a0123f0",
+      "name": "RemainingCU001 CP1-01 1 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "2d6eee8f-edd0-4d71-983d-36d613e28d1c",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "fcc34447-22d1-4b48-aec5-c03f8a0123f0",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:32.433552+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+      "name": "Alimentos",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+    },
+    {
+      "id": "325735e7-4d02-4ac8-9e96-fa68a31892b5",
+      "name": "RemainingCU001 CP1-02 2 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "69c53275-4fed-418b-ba16-d0b518700b94",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "325735e7-4d02-4ac8-9e96-fa68a31892b5",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:33.731261+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "id": "62dc6515-f74e-40f3-9941-bec78d2a48c6",
+      "name": "Sueldo",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+    },
+    {
+      "id": "74454e43-3d60-4a03-82eb-150c8eb5fe65",
+      "name": "RemainingCU001 CP1-03 3 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "18153a7a-bc29-4630-8464-e4b2cac43d5b",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "74454e43-3d60-4a03-82eb-150c8eb5fe65",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:35.639516+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "f79412e5-7964-4f58-9d11-b4fd8699ee1e",
+      "name": "RemainingCU001 CP1-03 4 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 2000,
+      "openingLedgerRows": [
+        {
+          "id": "30eb458b-afa2-4b6f-ba65-ef1d023aac5f",
+          "type": "adjustment",
+          "amount": "2000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "f79412e5-7964-4f58-9d11-b4fd8699ee1e",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:36.003056+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "2000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "55f672a5-d529-4e8f-a1c9-6125c9be1f80",
+      "name": "RemainingCU001 CP1-05 5 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "cf9337a1-90fb-4b4d-8a33-e427880d69bf",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "55f672a5-d529-4e8f-a1c9-6125c9be1f80",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:37.567735+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "3e1932b5-0679-4a68-be5e-d89b422410bd",
+      "name": "RemainingCU001 CP1-09 6 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "ddead81a-6409-4a14-864c-e097d60d0a51",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "3e1932b5-0679-4a68-be5e-d89b422410bd",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:38.964488+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "ea242d27-a46b-42b1-8267-15ef088d9c57",
+      "name": "RemainingCU001 CP1-11 7 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "ec87dc81-0386-4488-9d79-2628a1a57fd1",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "ea242d27-a46b-42b1-8267-15ef088d9c57",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:40.066942+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "85fdae28-a60b-47a4-925f-f8a42cf82fca",
+      "name": "RemainingCU001 CP1-11 8 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 2000,
+      "openingLedgerRows": [
+        {
+          "id": "b8b5120e-8812-4f13-947e-d9c22ddb49d7",
+          "type": "adjustment",
+          "amount": "2000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "85fdae28-a60b-47a4-925f-f8a42cf82fca",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:40.430585+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "2000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "0594686e-0798-4481-b61f-887739dc9778",
+      "name": "RemainingCU001 CP1-33 9 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "03931829-ee59-41fc-af54-be9cd24aa11f",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "0594686e-0798-4481-b61f-887739dc9778",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:41.824043+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "bc0922e2-5384-4fa5-a112-952ebc27f25a",
+      "name": "RemainingCU001 CP1-33 10 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "4b3ec9fa-b29c-4d34-b04c-81bb5f500710",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "currency": "ARS",
+          "account_id": "bc0922e2-5384-4fa5-a112-952ebc27f25a",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:42.188012+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "2af9c5db-8910-4c81-84fd-9214f2b0b0e2",
+      "name": "RemainingCU001 CP1-34 11 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 1,
+      "openingLedgerRows": [
+        {
+          "id": "a715c8e3-66a1-4872-b30c-592e6e4cb15e",
+          "type": "adjustment",
+          "amount": "1.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "2af9c5db-8910-4c81-84fd-9214f2b0b0e2",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:43.409581+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "1.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+      "name": "RemainingCU001 CP1-34 12 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 1,
+      "openingLedgerRows": [
+        {
+          "id": "dfe58876-56aa-40a7-8dcb-bd0154f7cd03",
+          "type": "adjustment",
+          "amount": "1.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:44.20473+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "1.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+      "name": "RemainingCU001 CP1-34 13 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 1,
+      "openingLedgerRows": [
+        {
+          "id": "1bd38ed9-5029-441c-8639-c9b0ef824e81",
+          "type": "adjustment",
+          "amount": "1.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:45.224436+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "1.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+      "name": "RemainingCU001 CP1-34 14 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 1,
+      "openingLedgerRows": [
+        {
+          "id": "073bbd84-22fd-4d68-8c93-4304864d5264",
+          "type": "adjustment",
+          "amount": "1.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:46.257585+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "1.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "20276f40-3ce3-40b0-8207-76450e661d73",
+      "name": "RemainingCU001 CP1-34 15 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 1,
+      "openingLedgerRows": [
+        {
+          "id": "0d645b2b-b3e3-4848-8f4e-f937618d9d89",
+          "type": "adjustment",
+          "amount": "1.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "20276f40-3ce3-40b0-8207-76450e661d73",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:47:47.279611+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "1.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-basic.mjs",
+      "sha256": "7a7da5eeedab6f5e0096758f80d84b7b607154842fae52219c220305744f1620"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/categories/route.ts",
+      "sha256": "8e54159c4573379e82d42b06a6f6a862953082a8e200e69c55eb2751565e4dbc"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/transactions/summary/route.ts",
+      "sha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "buildBinding": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "nextPid": 52579,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "copyRoot": "/tmp/zarix-app-account-analysis-20261015",
+    "copiedSources": 477,
+    "allCopiedSourcesMatchGitOrDeclaredCliMetadata": true,
+    "ownedListenerAndCwdConfirmed": true,
+    "privateEnvBoundToNative": true,
+    "coreVerificationSha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
+    "buildProofSha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201"
+  },
+  "identities": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "normalPasswordAuthAndGetUser": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "normalPasswordAuthAndGetUser": true
+    }
+  ],
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 9,
+      "beforeMd5": "e92c023da2df17831a82b3b7b4643910",
+      "afterMd5": "e92c023da2df17831a82b3b7b4643910",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 11,
+      "beforeMd5": "0b210bd81a2ec6af02a73acbbab28686",
+      "afterMd5": "0b210bd81a2ec6af02a73acbbab28686",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 27,
+      "beforeMd5": "e43b3d0333696c312f6e10bee1ffa043",
+      "afterMd5": "e43b3d0333696c312f6e10bee1ffa043",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T03:47:50.273Z"
+}

@@ -1,0 +1,2374 @@
+
+> zarix@0.1.0 test:db
+> node scripts/test-balance-trigger.mjs && node scripts/test-shared-expenses-sql.mjs && node scripts/test-plan-limits.mjs && node scripts/test-durable-financial-operations.mjs && node scripts/test-durable-import.mjs && node scripts/test-atomic-account-recompute.mjs && node scripts/test-isolated-schema-mirror.mjs && node scripts/test-isolated-database.mjs
+
+{
+  "date": "2026-10-15T03:12:33.580Z",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "mode": "revised",
+  "scope": "PL/pgSQL de update_account_balance; esquema mínimo aislado, no RLS/proveedores/concurrencia remota",
+  "passed": 28,
+  "total": 28,
+  "results": [
+    {
+      "id": "SQL-01 gasto INSERT",
+      "status": "PASS",
+      "expected": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-02 ingreso INSERT",
+      "status": "PASS",
+      "expected": [
+        10500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-03 transferencia INSERT",
+      "status": "PASS",
+      "expected": [
+        8500,
+        3500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        3500,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-04 UPDATE monto gasto",
+      "status": "PASS",
+      "expected": [
+        8000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-05 UPDATE cuenta gasto",
+      "status": "PASS",
+      "expected": [
+        10000,
+        500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        500,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-06 UPDATE tipo gasto a ingreso",
+      "status": "PASS",
+      "expected": [
+        11500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        11500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-07 DELETE gasto",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-08 DELETE ingreso",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-09 UPDATE destino y monto transferencia",
+      "status": "PASS",
+      "expected": [
+        9000,
+        2000,
+        4000,
+        -10000
+      ],
+      "obtained": [
+        9000,
+        2000,
+        4000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-10 UPDATE origen transferencia",
+      "status": "PASS",
+      "expected": [
+        10000,
+        3500,
+        1500,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        3500,
+        1500,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-11 DELETE transferencia",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-12 ajuste secundario INSERT UPDATE DELETE",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-13 ajuste secundario a primario",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -9500
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -9500
+      ]
+    },
+    {
+      "id": "SQL-14 ingreso a transferencia",
+      "status": "PASS",
+      "expected": [
+        9500,
+        2500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        9500,
+        2500,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-15 transferencia a gasto",
+      "status": "PASS",
+      "expected": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-16 rollback transferencia",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-17 transferencia FX DELETE",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-18 UPDATE tipo primario a ajuste secundario",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-19 ARS120000 a USD100 exactos",
+      "status": "PASS",
+      "expected": [
+        -110000,
+        2100,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        -110000,
+        2100,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-20 importe grande conserva destino",
+      "status": "PASS",
+      "expected": [
+        -119990000,
+        102000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        -119990000,
+        102000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-21 UPDATE importes destino confirmados",
+      "status": "PASS",
+      "expected": [
+        -230000,
+        2200,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        -230000,
+        2200,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-22 DELETE reversión destino exacto",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-23 USD100 a ARS120000 exactos",
+      "status": "PASS",
+      "expected": [
+        130000,
+        1900,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        130000,
+        1900,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-24 histórico sin destino explícito conserva fallback",
+      "status": "PASS",
+      "expected": [
+        -110000,
+        2099.9996,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        -110000,
+        2099.9996,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-25 UPDATE destino exacto a otra cuenta",
+      "status": "PASS",
+      "expected": [
+        -110000,
+        2000,
+        3100,
+        -10000
+      ],
+      "obtained": [
+        -110000,
+        2000,
+        3100,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-26 resumen bimoneda crédito exacto",
+      "status": "PASS",
+      "expected": 100,
+      "obtained": 100
+    },
+    {
+      "id": "SQL-27 resumen bimoneda UPDATE crédito exacto",
+      "status": "PASS",
+      "expected": 200,
+      "obtained": 200
+    },
+    {
+      "id": "SQL-28 resumen bimoneda DELETE revierte",
+      "status": "PASS",
+      "expected": 0,
+      "obtained": 0
+    }
+  ]
+}
+{
+  "date": "2026-10-15T03:12:34.467Z",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "scope": "Real PL/pgSQL, minimum isolated schema, RPC access privileges, group scopes and rollback. No hosted deployment, RLS environment or multi-connection load test.",
+  "passed": 11,
+  "total": 11,
+  "results": [
+    {
+      "id": "SH-SQL-01 RPC is executable only by backend role",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-02 create and remainder cents conserve total",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-03 update replaces amount and splits atomically",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-04 actor from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-05 payer from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-06 split from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-07 sub-cent amount",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-08 another group cannot edit an existing expense",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-09 invalid/revoked capabilities do not mutate",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-10 split insert failure rolls back UPDATE and removed old splits",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-11 split insert failure leaves no orphan new expense",
+      "status": "PASS"
+    }
+  ]
+}
+{
+  "engine": "PGlite (isolated real PL/pgSQL, serialized requests)",
+  "passed": 18,
+  "total": 18,
+  "results": [
+    {
+      "name": "Free first three allowed and fourth blocked",
+      "status": "PASS"
+    },
+    {
+      "name": "Free cannot bypass cap with reactivation",
+      "status": "PASS"
+    },
+    {
+      "name": "Premium permits 20 and rejects 21",
+      "status": "PASS"
+    },
+    {
+      "name": "Downgrade retains all accounts and historical transactions",
+      "status": "PASS"
+    },
+    {
+      "name": "Explicit selection preserves history and allows only chosen source/destination",
+      "status": "PASS"
+    },
+    {
+      "name": "Selection is atomic and rejects foreign/duplicate/over-limit IDs",
+      "status": "PASS"
+    },
+    {
+      "name": "Free recurring activation and execution rejected but read retained",
+      "status": "PASS"
+    },
+    {
+      "name": "Null/expired entitlement and Free AI fail closed",
+      "status": "PASS"
+    },
+    {
+      "name": "Cancellation keeps paid access to exact end; grace explicit",
+      "status": "PASS"
+    },
+    {
+      "name": "Reservation, in-flight duplicate and payload conflict",
+      "status": "PASS"
+    },
+    {
+      "name": "Success replays cached answer with no second consumption",
+      "status": "PASS"
+    },
+    {
+      "name": "Failed call releases quota and retry fences stale owner",
+      "status": "PASS"
+    },
+    {
+      "name": "40 AI limit independent of 20 OCR limit; excess reservations roll back",
+      "status": "PASS"
+    },
+    {
+      "name": "Mid-cycle webhook end changes do not reset quota",
+      "status": "PASS"
+    },
+    {
+      "name": "Renewal after frozen end starts new bucket; old request still replays",
+      "status": "PASS"
+    },
+    {
+      "name": "Quota tables/RPC inaccessible to public authenticated client",
+      "status": "PASS"
+    },
+    {
+      "name": "Service-role RPC executes without security-definer escalation",
+      "status": "PASS"
+    },
+    {
+      "name": "Account plus opening balance is atomic, idempotent, and conflict-safe",
+      "status": "PASS"
+    }
+  ]
+}
+{
+  "engine": "PGlite PostgreSQL WASM",
+  "scope": "Real PL/pgSQL and role grants; simultaneous submissions serialized in one database session, not a multi-session contention claim; provider delivery tested separately with doubles",
+  "manifest": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "passed": 25,
+  "total": 25,
+  "results": [
+    {
+      "name": "response loss/restart replay returns exact persisted result and one debit",
+      "status": "PASS"
+    },
+    {
+      "name": "identical legitimate operations have different IDs and both debit",
+      "status": "PASS"
+    },
+    {
+      "name": "same-key submitted together is replayed once (single-session scheduling)",
+      "status": "PASS"
+    },
+    {
+      "name": "changed payload is a conflict, not another financial operation",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt remains after transaction deletion; retry does not recreate it",
+      "status": "PASS"
+    },
+    {
+      "name": "installment group and first response share one atomic receipt",
+      "status": "PASS"
+    },
+    {
+      "name": "tenant mismatch cannot write a transaction or receipt",
+      "status": "PASS"
+    },
+    {
+      "name": "recurring financial insert, date marker, reply and notification commit together",
+      "status": "PASS"
+    },
+    {
+      "name": "failure after financial insert rolls back balance, marker, receipt and outbox",
+      "status": "PASS"
+    },
+    {
+      "name": "claim excludes leased messages and retries with a fresh lease after expiry",
+      "status": "PASS"
+    },
+    {
+      "name": "committed replay survives downgrade and movement account disablement",
+      "status": "PASS"
+    },
+    {
+      "name": "browser roles cannot invoke server-only RPC or inspect receipt/outbox payloads",
+      "status": "PASS"
+    },
+    {
+      "name": "investment response loss repeats neither quantity reduction nor sale",
+      "status": "PASS"
+    },
+    {
+      "name": "full liquidation replay still returns committed response after position closes",
+      "status": "PASS"
+    },
+    {
+      "name": "stale price, currency or type rejects atomically after the basis row is locked",
+      "status": "PASS"
+    },
+    {
+      "name": "sale receipt failure rolls quantity and sale back atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "investment create response-loss replay creates one lot; new request creates a distinct lot",
+      "status": "PASS"
+    },
+    {
+      "name": "investment create receipt outlives later edits, deletion and account deactivation",
+      "status": "PASS"
+    },
+    {
+      "name": "investment create rejects another owner and invalid account without a receipt",
+      "status": "PASS"
+    },
+    {
+      "name": "investment create receipt failure rolls back the new lot",
+      "status": "PASS"
+    },
+    {
+      "name": "shared expense and splits replay once; identical new expense is distinct",
+      "status": "PASS"
+    },
+    {
+      "name": "shared edit replay cannot revert a later confirmed edit",
+      "status": "PASS"
+    },
+    {
+      "name": "capability authorization precedes shared receipt replay",
+      "status": "PASS"
+    },
+    {
+      "name": "shared receipt failure rolls expense and all splits back",
+      "status": "PASS"
+    },
+    {
+      "name": "sale and shared receipt tables and RPCs are server-only",
+      "status": "PASS"
+    }
+  ]
+}
+{
+  "suite": "durable-import",
+  "results": [
+    {
+      "name": "batch binds immutable file/options hash and freezes original mapping",
+      "status": "PASS"
+    },
+    {
+      "name": "partial row failure and retry preserve one effect per original row",
+      "status": "PASS"
+    },
+    {
+      "name": "same batch replay and simultaneous submissions keep exact receipts (single-session scheduling)",
+      "status": "PASS"
+    },
+    {
+      "name": "equal legitimate rows and explicit new batches remain separate operations",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit duplicate skip matches existing content and survives deletion of the match",
+      "status": "PASS"
+    },
+    {
+      "name": "historical equivalents and durable replay ignore changed computed FX",
+      "status": "PASS"
+    },
+    {
+      "name": "imported transfer debits and credits historical equivalents exactly once",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt failure rolls back the imported row and its balance impact",
+      "status": "PASS"
+    },
+    {
+      "name": "batch and receipt payload conflicts cannot add new financial effects",
+      "status": "PASS"
+    },
+    {
+      "name": "anon and authenticated roles cannot access import ledger or RPCs",
+      "status": "PASS"
+    }
+  ]
+}
+{
+  "startedAt": "2026-10-15T03:12:37.582Z",
+  "command": "node scripts/test-atomic-account-recompute.mjs",
+  "runtime": {
+    "node": "v22.17.0"
+  },
+  "scope": "Fresh baseline and migrations in PGlite; synthetic ledger and role claims. No GoTrue, PostgREST, UI, provider, or native multi-session concurrency verification.",
+  "concurrency": {
+    "verified": false,
+    "legacyInterleaving": "Sequential replay of independently committed commands; not simultaneous WASM sessions."
+  },
+  "results": [
+    {
+      "id": "RECOMPUTE-01",
+      "name": "RPC is SECURITY INVOKER, JSONB, and executable only by service_role",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-02",
+      "name": "anon and authenticated owners A/B cannot invoke RPC or change balances",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-03",
+      "name": "wrong owner and missing account fail without modifying either tenant",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-04",
+      "name": "an empty ledger recomputes to zero rather than preserving a corrupt baseline",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-05",
+      "name": "initial and signed adjustments plus income, expense, and source transfer retain eight decimals",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-06",
+      "name": "the authoritative SQL sum includes more than 1000 ledger rows",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-07",
+      "name": "destination credit uses the stored amount through edit, replay, and deletion",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-08",
+      "name": "reverse FX transfer retains its independently stored destination credit",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-09",
+      "name": "historical destination fallback rounds each credit to eight decimals and null rate defaults to one",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-10",
+      "name": "secondary USD card adjustments are excluded without excluding USD income or expense",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-11",
+      "name": "secondary exclusion applies only to enabled multicurrency cards with a secondary currency",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-12",
+      "name": "editing source account and transaction type follows the current committed ledger",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-13",
+      "name": "a fault after UPDATE rolls back the new balance and side effects",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-14",
+      "name": "old read then committed income then stale UPDATE loses an effect; RPC repairs the ledger",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-15",
+      "name": "a service-role call carrying another user claim is rejected without a write",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-16",
+      "name": "a single legacy half-unit credit crossing zero is independent of insertion order",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-17",
+      "name": "two legacy half-unit credits and an expense match RPC in either insertion order",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-18",
+      "name": "legacy fractional credit edit and deletion reverse the same rounded impact",
+      "status": "PASS"
+    }
+  ],
+  "scriptSha256": "bb0723fd45ad9e2ac5795af32b444ebc55a29cc86d8047ee3f01172fae6f3ade",
+  "beforeProof": {
+    "startedAt": "2026-10-15T03:12:38.485Z",
+    "scope": "Separate fresh PGlite instance with baseline and 26 pre-repair migrations; original trigger order dependence is a reproduced failure, not repaired behavior.",
+    "sqlSourceManifest": [
+      {
+        "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+        "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+      },
+      {
+        "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+        "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+      },
+      {
+        "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+        "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+      },
+      {
+        "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+        "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+      },
+      {
+        "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+        "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+      },
+      {
+        "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+        "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+      },
+      {
+        "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+        "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+      },
+      {
+        "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+        "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+      },
+      {
+        "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+        "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+      },
+      {
+        "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+        "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+      },
+      {
+        "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+        "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+      },
+      {
+        "path": "supabase/migrations/20260526130000_investment_sales.sql",
+        "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+      },
+      {
+        "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+        "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+      },
+      {
+        "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+        "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+      },
+      {
+        "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+        "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+      },
+      {
+        "path": "supabase/migrations/20260811120000_security_hardening.sql",
+        "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+      },
+      {
+        "path": "supabase/migrations/20260811130000_data_integrity.sql",
+        "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+      },
+      {
+        "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+        "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+      },
+      {
+        "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+        "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+      },
+      {
+        "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+        "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+      },
+      {
+        "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+        "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+      },
+      {
+        "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+        "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+      },
+      {
+        "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+        "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+      },
+      {
+        "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+        "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+      },
+      {
+        "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+        "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+      },
+      {
+        "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+        "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+      },
+      {
+        "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+        "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+      }
+    ],
+    "status": "ORIGINAL_FAILURE_REPRODUCED",
+    "passed": 1,
+    "total": 1,
+    "results": [
+      {
+        "id": "RECOMPUTE-BEFORE-01",
+        "name": "Original trigger produces different balances for identical impacts in opposite orders",
+        "status": "PASS"
+      }
+    ],
+    "finishedAt": "2026-10-15T03:12:38.506Z"
+  },
+  "sqlSourceManifest": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "finishedAt": "2026-10-15T03:12:39.862Z",
+  "passed": 18,
+  "total": 18,
+  "status": "PASS"
+}
+Schema mirror verified against 28 sources.
+{
+  "runAt": "2026-10-15T03:12:45.143Z",
+  "baselineCommit": "ed894431968775dba1d9ba01df99d9a442407865",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "scope": "Reconstructed prehistory baseline + EVERY repository migration unchanged in timestamp order. Real PostgreSQL roles/RLS; synthetic Auth fixture only.",
+  "history": {
+    "migrations-only": {
+      "status": "BLOCKED",
+      "file": "20260401140000_user_integrations_gemini_telegram.sql",
+      "code": "42P01",
+      "message": "relation \"public.users\" does not exist"
+    },
+    "snapshot-then-all-migrations": {
+      "status": "BLOCKED",
+      "file": "20260526130000_investment_sales.sql",
+      "code": "42710",
+      "message": "policy \"investment_sales_all\" for table \"investment_sales\" already exists"
+    },
+    "reconstructed-baseline-then-all-migrations": {
+      "status": "PASS",
+      "sources": 28,
+      "migrations": 27,
+      "skipped": 0
+    }
+  },
+  "manifest": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "passed": 128,
+  "total": 128,
+  "recovery": {
+    "format": "PGlite physical datadir gzip archive",
+    "sessionSearchPathRestored": "public, extensions",
+    "bytes": 5180086,
+    "sha256": "485eb370c9ae93b8c7840f00e8d5b1f42a6476c4b2ee3cdbaba07fd87a3660e3",
+    "restoreMs": 281,
+    "catalogSha256": "8ddbc5251c1a7d1de7907bb40a34ae643eef4f858d1f92dd287e8dddf75dcda9",
+    "tables": 28,
+    "rowCounts": {
+      "auth.users": 2,
+      "public.account_creation_requests": 1,
+      "public.accounts": 4,
+      "public.bot_sessions": 1,
+      "public.budget_alerts": 1,
+      "public.budgets": 1,
+      "public.categories": 27,
+      "public.exchange_rates": 1,
+      "public.import_batches": 1,
+      "public.investment_create_requests": 1,
+      "public.investment_sale_requests": 1,
+      "public.investment_sales": 5,
+      "public.investments": 4,
+      "public.market_data_cache": 1,
+      "public.net_worth_snapshots": 1,
+      "public.notification_outbox": 1,
+      "public.plan_usage_cycles": 1,
+      "public.plan_usage_requests": 1,
+      "public.portfolio_performance_snapshots": 1,
+      "public.recurring_rules": 1,
+      "public.shared_expense_requests": 1,
+      "public.shared_expense_splits": 4,
+      "public.shared_expenses": 2,
+      "public.shared_group_members": 3,
+      "public.shared_groups": 2,
+      "public.transaction_requests": 1,
+      "public.transactions": 3,
+      "public.users": 2
+    },
+    "tableHashes": {
+      "auth.users": "1d88246f543852e1f412595ca22724d0a91975aa01bb1a959d7e9098cb0ab14c",
+      "public.account_creation_requests": "088668c0b577ad737aac81fb5c5bbf0f9dae5ca4d813f2d5399fdb7f67b22b33",
+      "public.accounts": "a9e5d4a3322f50d0e2b24860267195cc3f07e8253c352c45e7c005ea7a1704a0",
+      "public.bot_sessions": "4944ded7a95b4f1f38b9b4d78cb764682312b750712e79544712213ba2b19914",
+      "public.budget_alerts": "e2c645b9e1a1abcc3b9d686df0fe7ad61260952fb7b34cb4360cc7b6a1ea2911",
+      "public.budgets": "6c62c43026419f0e3ac2ff3ae6da12a3fdf7dfce25e42464677971186dc8266f",
+      "public.categories": "6a6aadb7a60b4c732f03af55179dc44444ce779fbff7b83a7821934b9591b73a",
+      "public.exchange_rates": "75a2e1788071602b314b6e39c5a47f315679d5e0f42e0c1740d7993085723886",
+      "public.import_batches": "df8a1a72e0c9e4b06431aba01dc38ee7282003fe13b52e6f2afa92b17c248ea5",
+      "public.investment_create_requests": "e018cd0939356850b20e1a0257f9bf3a54289edab489a9dee9cfeb91b487d6f9",
+      "public.investment_sale_requests": "523994bc2bf2d5d817c0669e82b804b7bc728316cbd0940b3ee584348318405f",
+      "public.investment_sales": "89deed3649af9e0269acde6b3016d74730caf06785cbb74e6b3d7648714f21b8",
+      "public.investments": "a8bb91c535f42eb085c85b88b9744c2624cd5adf77fcc33394c41338446ae5bd",
+      "public.market_data_cache": "bd553bc1eb5a51b0a90290b260ee185627cf4e486c7463f1a350b9c30fe0fbad",
+      "public.net_worth_snapshots": "dcf1dfda130d38f7f659af8f5cbbbf7023d38c544e1a73567d6826a1370bab66",
+      "public.notification_outbox": "3616364980808b420d4fb2db49446f204c733bce1a9338958a52bd8e68ed1d01",
+      "public.plan_usage_cycles": "694d97ee8e732c3de67dc6a71581a595050bb118caaf777f3aaa34de34c4fec3",
+      "public.plan_usage_requests": "bf0824de5dde21b8b27602a4a60bc23e4ad4a5ccaffb7b4b747ae95ca6848bd2",
+      "public.portfolio_performance_snapshots": "3b9568bb218f8e3bef5cc147a308fdeed27d12a642f4b054d6c36342c329ccd1",
+      "public.recurring_rules": "984d8e8bd6308f96c3db13d5436e2e6047b39a33e94432c0d5a2c7edba33463c",
+      "public.shared_expense_requests": "90d6d0a2a6e3727cc18c06b1d0ebfa7ccab8f1cd0acbd4dbf3dab1b6c875f006",
+      "public.shared_expense_splits": "6ecb3dfa3e2671c1ebded9bc3720bfbc645c53c8878311e69740ff6dcea297aa",
+      "public.shared_expenses": "4268d33445210ebe75931ab5a39e2db08430ef39a67770de6afc06faa5bb6168",
+      "public.shared_group_members": "68863375ed88f3e2a9648da58046c40453b51c21595a0d3e4ab1684a73955027",
+      "public.shared_groups": "5bd9ff199397fd5de1d78a24df9e0220eb7e316031e2b5149e2a8f1f533c7c9e",
+      "public.transaction_requests": "dce7bf5215a4e02e6981e8f9bda432aca86d3570d7cbd915405a4635968f4f3b",
+      "public.transactions": "b12483717f8ab9edfbdabab1bc0f8d4ba5c07f82d3848f1d9ad24eff5b333aaf",
+      "public.users": "8d239e85665230a2f08498f0f93fd001a390e37562914243b76e5c30095a152d"
+    },
+    "scope": "Complete isolated PostgreSQL fixture, including auth fixture, application schema, data, roles, RLS, grants, functions, triggers and indexes. Not a Supabase-hosted backup or GoTrue restore."
+  },
+  "results": [
+    {
+      "profile": "explicit-grants-only",
+      "name": "generated schema mirror equals complete chronological replay",
+      "status": "PASS",
+      "evidence": {
+        "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "two synthetic normal identities and one guest",
+      "status": "PASS",
+      "evidence": [
+        {
+          "rolname": "anon",
+          "rolsuper": false,
+          "rolbypassrls": false
+        },
+        {
+          "rolname": "authenticated",
+          "rolsuper": false,
+          "rolbypassrls": false
+        }
+      ]
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "every public table has RLS and views are invoker",
+      "status": "PASS",
+      "evidence": {
+        "tables": 27,
+        "policies": 24
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "normal A and B see only their own accounts",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "owner can create update and delete an account",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "other tenant account updates/deletes affect zero rows",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "owner cannot reassign account ownership",
+      "status": "PASS",
+      "evidence": {
+        "code": "P0001",
+        "message": "plan_invalid_selection"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "anon cannot read accounts",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table accounts"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "anon cannot read transactions",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table transactions"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "anon cannot read investments",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table investments"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "anon cannot read shared_groups",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table shared_groups"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "anon cannot read users",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "own profile safe read and settings update work",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "credential column gemini_api_key is not readable",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "credential column telegram_bot_token is not readable",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "credential column telegram_link_code is not readable",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "profile cannot change privileged status",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "profile cannot change privileged telegram_chat_id",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "profile cannot change privileged current_period_end",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "own transaction CRUD and type edit preserve balance",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "normal-role nonfinite transaction NaN cannot poison balance",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "normal-role nonfinite transaction Infinity cannot poison balance",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "normal-role nonfinite transaction -Infinity cannot poison balance",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "normal-role accounts.balance rejects NaN",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "normal-role investments.quantity rejects NaN",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "normal-role investments.purchase_price rejects NaN",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "installment RPC works with extensions schema and conserves cents",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "adjustment and bulk RPC lock order is user before account",
+      "status": "PASS",
+      "evidence": {
+        "scope": "Definition order and executed adjustment, not a native multi-session deadlock proof"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "cross-tenant transaction references are rejected without debit",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "cross-tenant investment account is rejected",
+      "status": "PASS",
+      "evidence": {
+        "code": "23503",
+        "message": "insert or update on table \"investments\" violates foreign key constraint \"investments_account_owner_fk\""
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "cross-tenant category is rejected",
+      "status": "PASS",
+      "evidence": {
+        "code": "23503",
+        "message": "La categoría no pertenece al usuario."
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "own category and budget work",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "system categories cannot be minted or modified",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "exchange rates are read-only to authenticated users",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invoker views do not expose another tenant",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "read RPC with another user parameter leaks no rows",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "anon cannot directly execute sale RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for function sell_investment_position"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "anon cannot directly execute shared RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for function save_shared_expense"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "authenticated cannot directly execute sale RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for function sell_investment_position"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "authenticated cannot directly execute shared RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for function save_shared_expense"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "guest capability through backend creates cent-conserving split",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "normal owner sees shared data but other owner cannot",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "shared amount/split edits must go through atomic backend RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table shared_expenses"
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "cross-group actor payer and splits are rejected",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "wrong and invalid token cannot edit another group expense",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "revoked capability fails closed",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "shared split storage failure rolls back parent and old splits",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "sale partially decrements and inserts one exact record",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "mismatched claimed user and position owner cannot sell",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invalid sale input {\"quantity\":0} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invalid sale input {\"quantity\":-1} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invalid sale input {\"price\":0} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invalid sale input {\"price\":\"NaN\"} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invalid sale input {\"quantity\":\"NaN\"} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invalid sale input {\"pnl\":\"NaN\"} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invalid sale input {\"rate\":0} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "invalid sale input {\"rate\":\"Infinity\"} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "overselling is rejected with unchanged position and sales",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "sale insert failure rolls back prior quantity decrement",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "two overlapping submitted sale calls cannot oversell (single connection)",
+      "status": "PASS",
+      "evidence": {
+        "submitted": 2,
+        "succeeded": 1,
+        "rejected": 1,
+        "limitation": "PGlite serializes one connection; this is NOT a two-connection PostgreSQL lock race."
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "full sale closes position and a replay cannot sell more",
+      "status": "PASS"
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "CB-P03 full close: four units at cost 100 sold at 120",
+      "status": "PASS",
+      "evidence": {
+        "caseId": "CB-P03",
+        "initialQuantity": 4,
+        "initialCost": 400,
+        "saleQuantity": 4,
+        "salePrice": 120,
+        "remainingQuantity": 0,
+        "remainingCost": 0,
+        "realized": 80,
+        "closedHistory": 1
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "new ownership constraints validate against all synthetic data",
+      "status": "PASS",
+      "evidence": {
+        "validated": 40
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "representative synthetic records populate every application table for recovery",
+      "status": "PASS",
+      "evidence": {
+        "rowCounts": {
+          "auth.users": 2,
+          "public.account_creation_requests": 1,
+          "public.accounts": 4,
+          "public.bot_sessions": 1,
+          "public.budget_alerts": 1,
+          "public.budgets": 1,
+          "public.categories": 27,
+          "public.exchange_rates": 1,
+          "public.import_batches": 1,
+          "public.investment_create_requests": 1,
+          "public.investment_sale_requests": 1,
+          "public.investment_sales": 5,
+          "public.investments": 4,
+          "public.market_data_cache": 1,
+          "public.net_worth_snapshots": 1,
+          "public.notification_outbox": 1,
+          "public.plan_usage_cycles": 1,
+          "public.plan_usage_requests": 1,
+          "public.portfolio_performance_snapshots": 1,
+          "public.recurring_rules": 1,
+          "public.shared_expense_requests": 1,
+          "public.shared_expense_splits": 4,
+          "public.shared_expenses": 2,
+          "public.shared_group_members": 3,
+          "public.shared_groups": 2,
+          "public.transaction_requests": 1,
+          "public.transactions": 3,
+          "public.users": 2
+        }
+      }
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "complete isolated snapshot restores to a separate fresh database",
+      "status": "PASS",
+      "evidence": {
+        "format": "PGlite physical datadir gzip archive",
+        "sessionSearchPathRestored": "public, extensions",
+        "bytes": 5180086,
+        "sha256": "485eb370c9ae93b8c7840f00e8d5b1f42a6476c4b2ee3cdbaba07fd87a3660e3",
+        "restoreMs": 281,
+        "catalogSha256": "8ddbc5251c1a7d1de7907bb40a34ae643eef4f858d1f92dd287e8dddf75dcda9",
+        "tables": 28,
+        "rowCounts": {
+          "auth.users": 2,
+          "public.account_creation_requests": 1,
+          "public.accounts": 4,
+          "public.bot_sessions": 1,
+          "public.budget_alerts": 1,
+          "public.budgets": 1,
+          "public.categories": 27,
+          "public.exchange_rates": 1,
+          "public.import_batches": 1,
+          "public.investment_create_requests": 1,
+          "public.investment_sale_requests": 1,
+          "public.investment_sales": 5,
+          "public.investments": 4,
+          "public.market_data_cache": 1,
+          "public.net_worth_snapshots": 1,
+          "public.notification_outbox": 1,
+          "public.plan_usage_cycles": 1,
+          "public.plan_usage_requests": 1,
+          "public.portfolio_performance_snapshots": 1,
+          "public.recurring_rules": 1,
+          "public.shared_expense_requests": 1,
+          "public.shared_expense_splits": 4,
+          "public.shared_expenses": 2,
+          "public.shared_group_members": 3,
+          "public.shared_groups": 2,
+          "public.transaction_requests": 1,
+          "public.transactions": 3,
+          "public.users": 2
+        },
+        "tableHashes": {
+          "auth.users": "1d88246f543852e1f412595ca22724d0a91975aa01bb1a959d7e9098cb0ab14c",
+          "public.account_creation_requests": "088668c0b577ad737aac81fb5c5bbf0f9dae5ca4d813f2d5399fdb7f67b22b33",
+          "public.accounts": "a9e5d4a3322f50d0e2b24860267195cc3f07e8253c352c45e7c005ea7a1704a0",
+          "public.bot_sessions": "4944ded7a95b4f1f38b9b4d78cb764682312b750712e79544712213ba2b19914",
+          "public.budget_alerts": "e2c645b9e1a1abcc3b9d686df0fe7ad61260952fb7b34cb4360cc7b6a1ea2911",
+          "public.budgets": "6c62c43026419f0e3ac2ff3ae6da12a3fdf7dfce25e42464677971186dc8266f",
+          "public.categories": "6a6aadb7a60b4c732f03af55179dc44444ce779fbff7b83a7821934b9591b73a",
+          "public.exchange_rates": "75a2e1788071602b314b6e39c5a47f315679d5e0f42e0c1740d7993085723886",
+          "public.import_batches": "df8a1a72e0c9e4b06431aba01dc38ee7282003fe13b52e6f2afa92b17c248ea5",
+          "public.investment_create_requests": "e018cd0939356850b20e1a0257f9bf3a54289edab489a9dee9cfeb91b487d6f9",
+          "public.investment_sale_requests": "523994bc2bf2d5d817c0669e82b804b7bc728316cbd0940b3ee584348318405f",
+          "public.investment_sales": "89deed3649af9e0269acde6b3016d74730caf06785cbb74e6b3d7648714f21b8",
+          "public.investments": "a8bb91c535f42eb085c85b88b9744c2624cd5adf77fcc33394c41338446ae5bd",
+          "public.market_data_cache": "bd553bc1eb5a51b0a90290b260ee185627cf4e486c7463f1a350b9c30fe0fbad",
+          "public.net_worth_snapshots": "dcf1dfda130d38f7f659af8f5cbbbf7023d38c544e1a73567d6826a1370bab66",
+          "public.notification_outbox": "3616364980808b420d4fb2db49446f204c733bce1a9338958a52bd8e68ed1d01",
+          "public.plan_usage_cycles": "694d97ee8e732c3de67dc6a71581a595050bb118caaf777f3aaa34de34c4fec3",
+          "public.plan_usage_requests": "bf0824de5dde21b8b27602a4a60bc23e4ad4a5ccaffb7b4b747ae95ca6848bd2",
+          "public.portfolio_performance_snapshots": "3b9568bb218f8e3bef5cc147a308fdeed27d12a642f4b054d6c36342c329ccd1",
+          "public.recurring_rules": "984d8e8bd6308f96c3db13d5436e2e6047b39a33e94432c0d5a2c7edba33463c",
+          "public.shared_expense_requests": "90d6d0a2a6e3727cc18c06b1d0ebfa7ccab8f1cd0acbd4dbf3dab1b6c875f006",
+          "public.shared_expense_splits": "6ecb3dfa3e2671c1ebded9bc3720bfbc645c53c8878311e69740ff6dcea297aa",
+          "public.shared_expenses": "4268d33445210ebe75931ab5a39e2db08430ef39a67770de6afc06faa5bb6168",
+          "public.shared_group_members": "68863375ed88f3e2a9648da58046c40453b51c21595a0d3e4ab1684a73955027",
+          "public.shared_groups": "5bd9ff199397fd5de1d78a24df9e0220eb7e316031e2b5149e2a8f1f533c7c9e",
+          "public.transaction_requests": "dce7bf5215a4e02e6981e8f9bda432aca86d3570d7cbd915405a4635968f4f3b",
+          "public.transactions": "b12483717f8ab9edfbdabab1bc0f8d4ba5c07f82d3848f1d9ad24eff5b333aaf",
+          "public.users": "8d239e85665230a2f08498f0f93fd001a390e37562914243b76e5c30095a152d"
+        },
+        "scope": "Complete isolated PostgreSQL fixture, including auth fixture, application schema, data, roles, RLS, grants, functions, triggers and indexes. Not a Supabase-hosted backup or GoTrue restore."
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "two synthetic normal identities and one guest",
+      "status": "PASS",
+      "evidence": [
+        {
+          "rolname": "anon",
+          "rolsuper": false,
+          "rolbypassrls": false
+        },
+        {
+          "rolname": "authenticated",
+          "rolsuper": false,
+          "rolbypassrls": false
+        }
+      ]
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "every public table has RLS and views are invoker",
+      "status": "PASS",
+      "evidence": {
+        "tables": 27,
+        "policies": 24
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "normal A and B see only their own accounts",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "owner can create update and delete an account",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "other tenant account updates/deletes affect zero rows",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "owner cannot reassign account ownership",
+      "status": "PASS",
+      "evidence": {
+        "code": "P0001",
+        "message": "plan_invalid_selection"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "anon cannot read accounts",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table accounts"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "anon cannot read transactions",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table transactions"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "anon cannot read investments",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table investments"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "anon cannot read shared_groups",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table shared_groups"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "anon cannot read users",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "own profile safe read and settings update work",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "credential column gemini_api_key is not readable",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "credential column telegram_bot_token is not readable",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "credential column telegram_link_code is not readable",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "profile cannot change privileged status",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "profile cannot change privileged telegram_chat_id",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "profile cannot change privileged current_period_end",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table users"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "own transaction CRUD and type edit preserve balance",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "normal-role nonfinite transaction NaN cannot poison balance",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "normal-role nonfinite transaction Infinity cannot poison balance",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "normal-role nonfinite transaction -Infinity cannot poison balance",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "normal-role accounts.balance rejects NaN",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "normal-role investments.quantity rejects NaN",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "normal-role investments.purchase_price rejects NaN",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "installment RPC works with extensions schema and conserves cents",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "adjustment and bulk RPC lock order is user before account",
+      "status": "PASS",
+      "evidence": {
+        "scope": "Definition order and executed adjustment, not a native multi-session deadlock proof"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "cross-tenant transaction references are rejected without debit",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "cross-tenant investment account is rejected",
+      "status": "PASS",
+      "evidence": {
+        "code": "23503",
+        "message": "insert or update on table \"investments\" violates foreign key constraint \"investments_account_owner_fk\""
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "cross-tenant category is rejected",
+      "status": "PASS",
+      "evidence": {
+        "code": "23503",
+        "message": "La categoría no pertenece al usuario."
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "own category and budget work",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "system categories cannot be minted or modified",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "exchange rates are read-only to authenticated users",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invoker views do not expose another tenant",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "read RPC with another user parameter leaks no rows",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "anon cannot directly execute sale RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for function sell_investment_position"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "anon cannot directly execute shared RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for function save_shared_expense"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "authenticated cannot directly execute sale RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for function sell_investment_position"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "authenticated cannot directly execute shared RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for function save_shared_expense"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "guest capability through backend creates cent-conserving split",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "normal owner sees shared data but other owner cannot",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "shared amount/split edits must go through atomic backend RPC",
+      "status": "PASS",
+      "evidence": {
+        "code": "42501",
+        "message": "permission denied for table shared_expenses"
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "cross-group actor payer and splits are rejected",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "wrong and invalid token cannot edit another group expense",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "revoked capability fails closed",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "shared split storage failure rolls back parent and old splits",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "sale partially decrements and inserts one exact record",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "mismatched claimed user and position owner cannot sell",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invalid sale input {\"quantity\":0} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invalid sale input {\"quantity\":-1} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invalid sale input {\"price\":0} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invalid sale input {\"price\":\"NaN\"} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invalid sale input {\"quantity\":\"NaN\"} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invalid sale input {\"pnl\":\"NaN\"} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invalid sale input {\"rate\":0} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "invalid sale input {\"rate\":\"Infinity\"} rolls back",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "overselling is rejected with unchanged position and sales",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "sale insert failure rolls back prior quantity decrement",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "two overlapping submitted sale calls cannot oversell (single connection)",
+      "status": "PASS",
+      "evidence": {
+        "submitted": 2,
+        "succeeded": 1,
+        "rejected": 1,
+        "limitation": "PGlite serializes one connection; this is NOT a two-connection PostgreSQL lock race."
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "full sale closes position and a replay cannot sell more",
+      "status": "PASS"
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "CB-P03 full close: four units at cost 100 sold at 120",
+      "status": "PASS",
+      "evidence": {
+        "caseId": "CB-P03",
+        "initialQuantity": 4,
+        "initialCost": 400,
+        "saleQuantity": 4,
+        "salePrice": 120,
+        "remainingQuantity": 0,
+        "remainingCost": 0,
+        "realized": 80,
+        "closedHistory": 1
+      }
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "new ownership constraints validate against all synthetic data",
+      "status": "PASS",
+      "evidence": {
+        "validated": 40
+      }
+    },
+    {
+      "profile": "source-integrity",
+      "name": "SQL sources did not change during the verification run",
+      "status": "PASS"
+    }
+  ],
+  "remaining": [
+    "Raw historical migration directory still requires the explicit fresh-install baseline first; do not apply it to an existing database.",
+    "This harness does not exercise GoTrue, JWT signature validation, PostgREST, browser session cookies, external providers or independent database connections."
+  ]
+}

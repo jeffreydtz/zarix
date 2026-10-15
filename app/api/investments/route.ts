@@ -1,3 +1,4 @@
+import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { investmentsService } from '@/lib/services/investments';
@@ -48,6 +49,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const queueOwner = req.headers.get('X-Queue-Owner');
+    if (queueOwner && queueOwner !== user.id) {
+      return NextResponse.json({ error: 'La operación pertenece a otra sesión.' }, { status: 403 });
+    }
+    const requestId = req.headers.get('Idempotency-Key');
+    if (!validTransactionRequestId(requestId)) {
+      return NextResponse.json({ error: 'Falta un identificador de solicitud válido.' }, { status: 400 });
+    }
     const body = (await req.json()) as Record<string, unknown>;
     const type = body.type as InvestmentType;
     if (!INVESTMENT_TYPES.has(type)) {
@@ -103,6 +112,7 @@ export async function POST(req: NextRequest) {
           : undefined;
 
     const investment = await investmentsService.create({
+      requestId,
       userId: user.id,
       accountId,
       type,
@@ -120,7 +130,7 @@ export async function POST(req: NextRequest) {
       currentPrice,
     });
 
-    return NextResponse.json(investment, { status: 201 });
+    return NextResponse.json(investment, { status: 201, headers: { 'Idempotency-Key': requestId } });
   } catch (error: unknown) {
     console.error('Investments POST error:', error);
     return errorResponse(error);

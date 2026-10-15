@@ -1,0 +1,5 @@
+{
+  "scope": "Only booleans from public.users in the synthetic source instance",
+  "gemini_api_key_present": false,
+  "telegram_bot_token_present": false
+}

@@ -1,0 +1,51 @@
+{
+  "reviewedAt": "2026-10-15T01:06:47.360Z",
+  "coreRevision": "b456c4220ee524406670f65837fcd4fd6c4b8275",
+  "coreSourceStable": true,
+  "coreSourceWorkingTreeClean": true,
+  "applicationAndSqlSourceChangesSinceCore": [],
+  "reviewContextChangesSinceCore": [
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "coreReviewSha256": "c6d375c83be1088f025eb3eb215eb12368f65668115118ca22e80d1e885ad13a",
+      "currentSha256": "fb6bd181f1d8b7985be105c0d219f312f115871fe7dd954320d86cac7fb28714"
+    }
+  ],
+  "coreCounts": {
+    "vitest": 796,
+    "passed": 796,
+    "coverageSelectedScope": {
+      "lines": {
+        "total": 2478,
+        "covered": 1751,
+        "skipped": 0,
+        "pct": 70.66
+      },
+      "statements": {
+        "total": 2877,
+        "covered": 1949,
+        "skipped": 0,
+        "pct": 67.74
+      },
+      "functions": {
+        "total": 414,
+        "covered": 276,
+        "skipped": 0,
+        "pct": 66.66
+      },
+      "branches": {
+        "total": 2481,
+        "covered": 1523,
+        "skipped": 0,
+        "pct": 61.38
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    }
+  },
+  "scope": "Read-only contrast after global core. A later harness selector correction does not change the compiled application/SQL sources; global checks remain attributed to b456c422, not a later harness or documentation HEAD. This comparison does not execute browser tests."
+}

@@ -1,0 +1,35 @@
+{
+  "checks": [
+    {
+      "scenario": "base",
+      "observed": {
+        "registered_m12": 1360,
+        "premium_m24": 310,
+        "project_npv": 6385.449840297092,
+        "economic_npv": -4155.934916564738,
+        "funding": 1300
+      }
+    },
+    {
+      "scenario": "optimista",
+      "observed": {
+        "registered_m12": 2860,
+        "premium_m24": 1122,
+        "project_npv": 28291.551932496972,
+        "economic_npv": 18174.190936621053,
+        "funding": 1250
+      }
+    },
+    {
+      "scenario": "adverso",
+      "observed": {
+        "registered_m12": 640,
+        "premium_m24": 29,
+        "project_npv": -2489.6360628085636,
+        "economic_npv": -13349.9711391308,
+        "funding": 3700
+      }
+    }
+  ],
+  "errors": "{\"kind\":\"notice\",\"message\":\"Cell search matched 0 entries.\"}"
+}

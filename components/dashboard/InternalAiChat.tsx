@@ -1,6 +1,8 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useMemo, useState, useRef, useEffect } from 'react';
+import { getQueueOwnerId } from '@/lib/offline-transaction-store';
+import { readPendingAiChat, persistPendingAiChat, clearPendingAiChat, type PendingAiChat } from '@/lib/pending-ai-chat';
 import type {
   InternalAiChatHistoryItem,
   InternalAiChatRequest,
@@ -43,9 +45,26 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
     },
   ]);
   const [input, setInput] = useState('');
+  const pendingRequest = useRef<PendingAiChat | null>(null);
+  const activeOwner = useRef<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [blockedStatus, setBlockedStatus] = useState<'PAST_DUE' | 'CANCELED' | null>(null);
+
+  useEffect(() => {
+    let current = true;
+    void getQueueOwnerId().then(ownerId => {
+      if (!ownerId || !current) return;
+      activeOwner.current = ownerId;
+      const pending = readPendingAiChat(ownerId);
+      if (pending) {
+        pendingRequest.current = pending;
+        setInput(pending.payload.message);
+        setError('Hay una solicitud anterior sin confirmar. Reintentá este mensaje con la misma clave.');
+      }
+    }).catch(() => { if (current) setError('No se pudo revisar la solicitud pendiente. No envíes otra hasta recuperar el almacenamiento.'); });
+    return () => { current = false; };
+  }, []);
 
   const canSend = useMemo(
     () => !loading && input.trim().length > 0 && blockedStatus === null,
@@ -54,31 +73,54 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
 
   const sendText = async (text: string) => {
     if (!text.trim() || loading || blockedStatus !== null) return;
+    if (text.length > 4000) { setError('El mensaje admite hasta 4000 caracteres.'); return; }
     const userMessage: UiMessage = {
       id: `${Date.now()}-user`,
       role: 'user',
       text,
     };
     const historySnapshot = messages;
-    setMessages((prev) => [...prev, userMessage]);
+    const retry = pendingRequest.current?.payload.message === text ? pendingRequest.current : null;
+    if (!retry) setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setError(null);
     setLoading(true);
 
     try {
-      const payload: InternalAiChatRequest = {
+      const payload: InternalAiChatRequest = retry?.payload || {
         message: text,
         history: toApiHistory(historySnapshot),
       };
 
+      const ownerId = await getQueueOwnerId();
+      if (!ownerId) throw new Error('Iniciá sesión para enviar el mensaje.');
+      if (activeOwner.current && activeOwner.current !== ownerId) {
+        activeOwner.current = ownerId;
+        pendingRequest.current = readPendingAiChat(ownerId);
+        setMessages([]);
+        setInput(pendingRequest.current?.payload.message || '');
+        setError('La sesión cambió. Revisá el mensaje antes de enviarlo desde esta cuenta.');
+        return;
+      }
+      activeOwner.current = ownerId;
+      const saved = readPendingAiChat(ownerId);
+      if (saved && saved.payload.message !== text) {
+        pendingRequest.current = saved;
+        throw new Error('Hay una solicitud anterior sin confirmar. Reintentá primero el mensaje pendiente.');
+      }
+      const durable = persistPendingAiChat({ ownerId, key: saved?.key || retry?.key || crypto.randomUUID(), payload: saved?.payload || payload });
+      pendingRequest.current = durable;
+      const key = durable.key;
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': key, 'X-Queue-Owner': ownerId },
+        body: JSON.stringify(durable.payload),
       });
       const data = await response.json();
 
       if (!response.ok) {
+        // Route validation 400 happens before any model/tool execution.
+        if (response.status === 400) { clearPendingAiChat(ownerId, key); pendingRequest.current = null; }
         if (
           response.status === 403 &&
           data?.code === 'subscription_required' &&
@@ -89,6 +131,11 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
         throw new Error(data?.error || 'No pude procesar tu mensaje.');
       }
 
+      if (response.headers.get('Idempotency-Key') !== key || typeof data?.assistant_message !== 'string') {
+        throw new Error('No recibimos una confirmación válida. Reintentá la solicitud pendiente.');
+      }
+      clearPendingAiChat(ownerId, key);
+      pendingRequest.current = null;
       const chatResponse = data as InternalAiChatSuccessResponse;
       const assistantMessage: UiMessage = {
         id: `${Date.now()}-assistant`,
@@ -104,9 +151,26 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
       const message =
         requestError instanceof Error ? requestError.message : 'No pude enviar el mensaje.';
       setError(message);
+      setInput(pendingRequest.current?.payload.message || text);
     } finally {
       setLoading(false);
     }
+  };
+
+  const abandonPending = async () => {
+    if (loading) return;
+    try {
+      const ownerId = await getQueueOwnerId();
+      if (!ownerId) return;
+      const pending = readPendingAiChat(ownerId);
+      if (!pending) return;
+      const reviewed = window.confirm('Revisá primero tus cuentas y movimientos: esta solicitud pudo haberse completado aunque no recibimos respuesta. Descartarla no revierte ninguna operación. ¿Ya revisaste y querés descartar la solicitud pendiente?');
+      if (!reviewed) return;
+      clearPendingAiChat(ownerId, pending.key);
+      pendingRequest.current = null;
+      setInput('');
+      setError('Solicitud pendiente descartada. Los movimientos existentes no se modificaron.');
+    } catch { setError('No se pudo descartar la solicitud pendiente.'); }
   };
 
   const sendMessage = async (event: FormEvent<HTMLFormElement>) => {
@@ -194,6 +258,10 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
         </div>
       )}
 
+      {pendingRequest.current && !loading && <button type="button" onClick={abandonPending} className="text-xs underline text-muted-foreground">
+        Revisé mis movimientos: descartar solicitud pendiente
+      </button>}
+
       {messages.length <= 1 && !blockedStatus && (
         <div className="flex flex-wrap gap-1.5">
           {EXAMPLE_CHIPS.map((chip) => (
@@ -212,6 +280,7 @@ export default function InternalAiChat({ embedded = false, className = '' }: Int
       <form onSubmit={sendMessage} className="flex items-stretch gap-2">
         <input
           value={input}
+          maxLength={4000}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Escribí un movimiento..."
           className="flex-1 rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:ring-2 focus:ring-ring"

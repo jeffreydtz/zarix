@@ -1,0 +1,140 @@
+{
+  "at": "2026-10-15T06:43:18.842683+00:00",
+  "status": "PASS_EXPLICIT_SCAN_METADATA_ADDENDUM",
+  "case_id": "CP2-10",
+  "scope": "File-only reconciliation after a detected pin mismatch. No runtime, scanner rerun, private credential/checkpoint/MIME read, individual-secret hash or source/result modification. Original independent review remains immutable and the mismatched pin is explicitly replaced only through this addendum.",
+  "originalReview": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/independent-executed-review.json",
+    "sha256": "1cd5b17c09ddf293be5dac6d1421e2b6b7011897a2ab97335d8ac49c2d608d4b",
+    "preservedUnchanged": true
+  },
+  "detectedChange": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/private-value-scan.json",
+    "originalPeerExpectedSha256": "4af2e16c9f3b6a14cc2d34f3eea34ce927d97b42974bb050d9cc7b8d521b0cf7",
+    "currentSha256": "195321ee6e92baba3adab242ab06a1112215647c01786edeefda768411b6055c"
+  },
+  "cause": {
+    "confirmedByArtifactOwner": "Owner confirms rerunning the scoped scanner under the same output filename after adding three final closure/peer files. checkedFiles changed56\u219259, with the same20 compared private values and zero findings. Owner confirms no prior scan bytes retained.",
+    "exactDifferenceVerifiedWithoutRerun": {
+      "oldMetadata": {
+        "checkedFiles": 56,
+        "privateValuesCompared": 20,
+        "findings": 0
+      },
+      "currentMetadata": {
+        "checkedFiles": 59,
+        "privateValuesCompared": 20,
+        "findings": 0
+      },
+      "method": "Read current public scan JSON, clone it only in memory, set checkedFiles to56, serialize JSON with indent2 and final newline; SHA256 exactly matches the original peer expected4af2e16c\u2026. No reconstructed historical file is written or misrepresented as an original retained artifact.",
+      "onlyFieldDifferent": "checkedFiles",
+      "exactOldExpectedHashMatched": true,
+      "privateValuesOrValueHashesPublished": false
+    }
+  },
+  "currentScanScope": "Exact strings of12or more characters in the two explicit recovery checkpoints, selected existing env/login/Auth config and private JWK d/k values against only these two public evidence packages, excluding generated node_modules cache. Short local defaults, other repository files and universal absence of secrets are outside this scoped check; parent final scanner is separate.",
+  "revalidation": {
+    "originalReviewPins": 17,
+    "unchangedOriginalPins": 16,
+    "explicitlyUpdatedPins": 1,
+    "all17CurrentPinsVerified": true,
+    "finalAuthManifest": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/manifest.json",
+      "sha256": "8b938c940cb62d2c84f0dee0ae69eb62147eea000888887850e0bfca8884e07e",
+      "internalArtifactEntries": 34,
+      "all34InternalHashesMatch": true,
+      "frozenBeforeAddendum": true,
+      "addendumIsSeparateParallelArtifactToAvoidHashCycle": true
+    },
+    "originalAuthResultUnchanged": {
+      "status": "PASS",
+      "assertionsPassed": 18,
+      "sourceStable": true,
+      "preservedInventories": 57,
+      "beforeAfterIdentical": true,
+      "originalPasswordRestored": true,
+      "remainingOwnSessions": 0,
+      "unrevokedOwnRefreshGrants": 0,
+      "smtpAcceptedTotal": 1,
+      "newRecoveryRequestsInContinuation": 0
+    }
+  },
+  "currentPins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/run.mjs",
+      "sha256": "39deb5aad522efc548dbb21acb06552fbe06e75c1421f45f625c65f307548b28"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/contract.mjs",
+      "sha256": "4bd5d264b60369334c5802562d3ad49554e85acec6aa0e50bf8fff972fa7b06a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/smtp-message.mjs",
+      "sha256": "a85f050b258b6482624e317bae12cf2bb8b106bb4ae5ee1dfcca58c4630b38c3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/verification.json",
+      "sha256": "ae3c4747fd9da45af01ce9cb7000e95aa027fec906931451730230c866402b9e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/manifest.json",
+      "sha256": "fdacf1228849536c9328cd22b1e915f5a34351834b6b493aba76aa632b90a6a8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/smtp-closure-observation.json",
+      "sha256": "0237072a38e2935a97c5b23775c080d5ad032c85bf896cbaf8c06cf4a6720982"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/recovery-attempt-1/verification.json",
+      "sha256": "379ca988b15d592a4ce70bfd2686f5639fabf9f002f323c926f79b79616dc78b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/recovery-attempt-1/manifest.json",
+      "sha256": "bbb72c92a53f6ee3c11b486fa07861362d942274e37c3f9baaaf22cb3e1e7aba"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/preflight-attempt-1/verification.json",
+      "sha256": "e1f9c2b94bae068b5234d6449c0f52f632d5e38b861260b2b5117865de4867c7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/preflight-attempt-2/verification.json",
+      "sha256": "c1d9cc62dcf9ee84cd2ced05ea9f500f991ad34500dd3fa2629c01a9eeb625b3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/preflight-pass.json",
+      "sha256": "59afec1b1cc0deef1370fec02327d28651c2c58cdfa5a320cef01be62916d68e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume-preflight-pass.json",
+      "sha256": "c7f69b464efe56f9634ef38ee171fd2cf445731f4247d8a47a758924d367d61b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/verified-system-case-result.json",
+      "sha256": "24944198b4df1f834613fd12ed28cc70efbcbd79909f2899c556f037d32d0665"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/README.md",
+      "sha256": "8fa795d0338c3d2c3c44a924ab731853472357e423e7799cd593f1720412a646"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/PRIVATE-ARTIFACTS.md",
+      "sha256": "b86368f8925685fff774c6ddb6df73defa2b7f9a39f5922b8a852d1cc9d6a0b0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/private-value-scan.json",
+      "sha256": "195321ee6e92baba3adab242ab06a1112215647c01786edeefda768411b6055c"
+    }
+  ],
+  "sourceScannerPin": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/scan-private-values.mjs",
+    "sha256": "e52a0ef5679f327087e875ac1aef62abb41b429f431d025ee3d2f12d3413673f",
+    "sourceInspectedOnly": true,
+    "notExecutedByReviewer": true
+  },
+  "freezeAgreement": "Artifact owner has frozen scan195321ee and Authmanifest8b938c94/34; no scanner rerun under the same filename and no further Auth artifact edits. Parent final publication scan is independent. Any later drift must be reported, not silently skipped.",
+  "findings": []
+}

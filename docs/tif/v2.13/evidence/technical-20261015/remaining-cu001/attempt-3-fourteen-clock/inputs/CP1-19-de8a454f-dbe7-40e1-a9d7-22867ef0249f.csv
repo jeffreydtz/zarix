@@ -1,0 +1,4 @@
+Fecha,Tipo,Monto,Moneda,Cuenta,Categoría,Descripción,Notas
+"2026-10-06","gasto","500","ARS","RemainingCU001 CP1-19 4 41855ad7-0bed-4504-b9e3-673c428bc39d","Alimentos","CP1-19 expense 41855ad7-0bed-4504-b9e3-673c428bc39d","sintético"
+"2026-10-06","ingreso","700","ARS","RemainingCU001 CP1-19 4 41855ad7-0bed-4504-b9e3-673c428bc39d","Sueldo","CP1-19 income 41855ad7-0bed-4504-b9e3-673c428bc39d","sintético"
+"2026-10-06","gasto","0","ARS","RemainingCU001 CP1-19 4 41855ad7-0bed-4504-b9e3-673c428bc39d","Alimentos","CP1-19 zero 41855ad7-0bed-4504-b9e3-673c428bc39d","sintético"

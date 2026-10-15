@@ -1,0 +1,150 @@
+{
+  "status": "PASS_SCOPED_FINAL_CP1_20",
+  "reviewedAt": "2026-10-15T04:51:24.769167+00:00",
+  "method": "Independent file-only review of original CSV, native report/assertions, exact executed harness snapshots, fresh/old inputs, frozen Git and copied build files. No reviewer runtime, API, database, tests, package imports or browser execution.",
+  "originalCases": [
+    {
+      "id": "CP1-20",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 6,
+      "original_contract": {
+        "precondiciones": "Restaurar U1 A=10000; SIN filas CSV de CP1-19",
+        "entrada": "JSON equivalente a CP1-19; contrato de claves documentado",
+        "resultado_esperado": "mismo oráculo CP1-19: dos altas, una rechazada, saldo10200",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "proof": [
+        "Independent new account starts10000 with only its opening adjustment; no CP1-19 CSV economic rows are reused in the new fixture.",
+        "Actual normal-session JSON import HTTP200; native oracle exactly2economic rows500expense/700income, balance10200.",
+        "Raw imported2/skipped1/pending0/total3 plus exactly one invalid-amount detail proves2valid/1rejected/0other-omissions under the explicit reviewed semantic mapping. No new API response properties invented.",
+        "Fresh JSON complete keys/date/currency/account/category/description/notes inspected; invalid0 omitted; duplicate omission false.",
+        "Owned fresh account archived through successful normal DELETE204; prior rows and12original tables preserved."
+      ]
+    }
+  ],
+  "derivedCases": [
+    {
+      "id": "DERIVED-CP1-20-ARCHIVED-BATCH-REPLAY",
+      "status": "PASS",
+      "complete_original_contract": false,
+      "assertions": 9,
+      "scope": "Recovery of the same historical archived failed batch, separate from fresh original CP1-20 acceptance.",
+      "sameOriginalReport": {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+      },
+      "sameOriginalInput": {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-20-ab41bc3d-eacf-4e0a-ae30-a05c0fe07336.json",
+        "sha256": "90d87ac037dd8e1f5009bf30eccd0b5c5056b413ba19b3bb2386c19cb2ff624c"
+      },
+      "beforeAfterFullAccountLedgerReceiptsBatchSha256": "0f137fc5ea080fb80c267744e0fbc10b27b251740d311df921a8a51f889de39c",
+      "originalReceiptIndices": [
+        0,
+        1
+      ],
+      "newFinancialEffects": 0,
+      "newReceipts": 0,
+      "originalAccountRemainsArchived": true,
+      "proof": "Normal-session replay uses same exact original file bytes/batch/owner/dateFormat/resolutions/duplicate choice; HTTP200/completed2acknowledgements/one invalid skip/pending0. Full account+ledger+two receipts+batch objects independently equal and their SHA recomputed. No reactivation, receipt deletion, history rewrite or new batch identity."
+    }
+  ],
+  "binding": {
+    "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "buildId": "vPLjt1QViugJhUWR62DPp",
+    "nextPid": 17292,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+    "runtimeProfile": "final-core-acceptance",
+    "buildProfile": "final-core-acceptance",
+    "stateFile": "final-proof-clock-app-state.json",
+    "clockObservationFile": "final-proof-clock-observation.json",
+    "copiedSources": 480,
+    "allCopiedSourcesMatchGitOrDeclaredCliMetadata": true,
+    "ownedListenerAndCwdConfirmed": true,
+    "privateEnvBoundToNative": true,
+    "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
+    "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
+    "physicalCopiedSourcesIndependentlyVerified": 480,
+    "versionedCopiedSourcesIndependentlyComparedWithPinnedGit": 479,
+    "manifestOnlyMetadata": "Only supabase/.temp/cli-latest; no source exception.",
+    "coreSourceManifestSha256": "c099b890ce8129b815318786cf5d3d4c0e0123ab0ef21cb758cd3bcfcb3401d8",
+    "privateBuildProof": {
+      "path": "/tmp/zarix-runtime-20261015/final-proof-build-proof.json",
+      "sha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976"
+    },
+    "clock": {
+      "path": "final-proof-clock-observation.json",
+      "sha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118",
+      "fixedTime": "2026-10-06T12:00:00.000Z",
+      "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    "clockObservedApplicationTime": "2026-10-06T12:00:00.000Z",
+    "metadataScope": "Build/state/clock metadata and physical bytes inspected only; live process checks and normal Auth/API observations are evidence from executed harness, not rerun by reviewer."
+  },
+  "integrity": {
+    "all15AssertionsIndividuallyMatched": true,
+    "exactHarnessSnapshotsVerified": 3,
+    "sourceStable": true,
+    "servedCopyStable": true,
+    "originalTables": 12,
+    "allOriginalColumnsIncludingActiveFlagsUnchanged": true,
+    "cleanupFailures": 0,
+    "allRequestEndTimestampsPresent": true
+  },
+  "historicalPreservation": {
+    "original836Attempt3RetainsCp120FAIL503": true,
+    "originalTwoEffectsAndReceiptsRemainIdentical": true,
+    "new7c3e872ResultDoesNotRewriteHistoricalReportOrInput": true,
+    "sourceUnitBeforeFailuresRemainSeparate": "import-zero-regression before24PASS2FAIL/after26PASS is earlier source/unit evidence; native acceptance is the new observed final6assertion report."
+  },
+  "limits": [
+    "No browser is required by the literal CP1-20 integration/system CSV; this review does not claim browser execution.",
+    "The derived archived-batch replay is not an additional original acceptance case or a load/concurrency benchmark.",
+    "Raw response uses skipped for invalid input; semantic invalidAmountRejections1/otherOmissions0 is a closed partition justified by exactly one invalid detail and skipDuplicatesfalse, not additional API fields.",
+    "Old836runtime remains old836; only final retry is attributed to7c3e872/vPLjt1QViugJhUWR62DPp."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-5-final-cp1-20-and-replay/verification.json",
+      "sha256": "d181458bca14c0a3d72811b4f28acff4cda3c70dbaf1bab81d050da94080c9d9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-5-final-cp1-20-and-replay/summary.json",
+      "sha256": "02a24180c582fa749ce6eca3056ab7910f6f849a8cae3de4d12a547f98e6b7ae"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/cp1-19-semantic-review.json",
+      "sha256": "72a4f1cc27dbd7b64054876a4a65a59b2505af8ca6a768242306ccc32600a355"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-20-ab41bc3d-eacf-4e0a-ae30-a05c0fe07336.json",
+      "sha256": "90d87ac037dd8e1f5009bf30eccd0b5c5056b413ba19b3bb2386c19cb2ff624c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-5-final-cp1-20-and-replay/inputs/CP1-20-bd9ddb1b-7b36-4afa-902a-5924ac9499c7.json",
+      "sha256": "d3b4e53ddcf0b33c09488e7d48871c9ab37fa0e92c5793ca199f111ca71ae7f7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-5-final-cp1-20-and-replay/executed-harness/remaining-cp120-replay.mjs",
+      "sha256": "abff2b790eb3cf8f6b1c7a74a952055be283719dbb779db4019804f0eb10c9d1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-5-final-cp1-20-and-replay/executed-harness/remaining-scenarios.mjs",
+      "sha256": "4eb718afb7321acfc87bcf8a2e0e9971be0c5b8a0634db1bb1a1031874941b50"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-5-final-cp1-20-and-replay/executed-harness/run-remaining.mjs",
+      "sha256": "f591971a924db3d5008a8df0b2cb1de41275bfa5ad08b3188361b62af7594510"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "status": "PASS_STATIC_SUPPLEMENT_PENDING_OPERATION",
+  "reviewedAt": "2026-10-15T06:32:01.453867Z",
+  "reviewer": "sql_security; independent of controller author",
+  "method": "File-only source/diff review, AST parsing without importing or executing the controller, and SHA256 reads of the six exact existing cached launcher/binary/runtime-profile files. No process inspection, listener probe, signal, network, database command, retention, native stop, browser, or Chrome action was performed by reviewer.",
+  "supplements": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/environment/independent-final-retention-preparation-review.json",
+    "sha256": "457d55ffabaa18c49d99a5fdee08dde35f6225a462c9b5fdba21d8e8d7ccbe8c",
+    "historicalStopSourceSha256": "428f836dbfb59b1b5fcffc4482c18413513be072fe03e7d9b27cf67089b5199d",
+    "historicalReviewRetainedUnchanged": true
+  },
+  "reviewedDelta": [
+    "Auth and PostgREST keep their same exact PID/UID/start/cwd/listener targets while the command marker is bound to the official .auth-wrapped/.postgrest-wrapped executable instead of its shell launcher.",
+    "Each of those services additionally requires exact SHA256 of its existing launcher, wrapped binary, and .runtime-env.sh before target identification. All six pinned files match their existing bytes.",
+    "Identification requires lsof txt to map the exact resolved wrapped executable. The existing start-time, current-user, working-directory, exact loopback listener and command-marker checks remain in force at initial identification and immediately before each SIGTERM.",
+    "The same nine task-owned target PID/port sets, absent-only-if-port-free rule, SIGTERM-only behavior, bounded wait, explicit root release gate, and refusal to use stronger/broad signals remain unchanged.",
+    "The final retainer and plan are byte-identical to their previously reviewed pins. Retention still requires the exact nine-process stop report and absent listeners before snapshot/dump validation, and native stops require their separate final gate."
+  ],
+  "resolvedPreExecutionFinding": {
+    "firstReviewedWrapperSourceSha256": "ff5ce984557a2b89691e94b72184f25371e1fedbea986b27270aa2daf410a8a8",
+    "issue": "The wrapper-material map reused the name expected, overwriting the service PID/port map and causing the next service lookup to fail before target identification or signals.",
+    "resolution": "The author renamed the inner map to wrapped_expected. AST inspection confirms the service expected map is now assigned only once. This resolves the static defect before execution.",
+    "fixedSourceSha256": "6f223de901d7c11e34969f8cf3a6324a8013868b8de4a6d76f8c5c3e3cef7cd3",
+    "runtimeFailureClaimed": false
+  },
+  "wrappedMaterialFileChecks": [
+    {
+      "kind": "auth",
+      "path": "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/auth/v2.197.0-r0/darwin-arm64/bin/auth",
+      "sha256": "2814745719ac5830d28152874dfe23d2bd703c1c985569115d9568d6b9345115",
+      "matchesCurrentFile": true
+    },
+    {
+      "kind": "auth",
+      "path": "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/auth/v2.197.0-r0/darwin-arm64/bin/.auth-wrapped",
+      "sha256": "04606de0bd299c575f2459daa8768e2529c95334ef1af878d21bb93e358bebba",
+      "matchesCurrentFile": true
+    },
+    {
+      "kind": "auth",
+      "path": "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/auth/v2.197.0-r0/darwin-arm64/bin/.runtime-env.sh",
+      "sha256": "8269c5167fa1730f82618ec100053ca84ff2256e8bde19b53e9190bd39a5aef8",
+      "matchesCurrentFile": true
+    },
+    {
+      "kind": "postgrest",
+      "path": "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgrest/v16.4-r0/darwin-arm64/bin/postgrest",
+      "sha256": "5ad4c1b59bfa74dcd9ed37038c18f7ce1b091990e1930fc367b6d77a56463af9",
+      "matchesCurrentFile": true
+    },
+    {
+      "kind": "postgrest",
+      "path": "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgrest/v16.4-r0/darwin-arm64/bin/.postgrest-wrapped",
+      "sha256": "b7abbdfa383f6c2039f919b3b442fa6598319314f360e0c90575c07faa8583e4",
+      "matchesCurrentFile": true
+    },
+    {
+      "kind": "postgrest",
+      "path": "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgrest/v16.4-r0/darwin-arm64/bin/.runtime-env.sh",
+      "sha256": "6cce1989c6320397596088f5506cbf9566da748605c8df8ff931369c0d661b8a",
+      "matchesCurrentFile": true
+    }
+  ],
+  "findings": [],
+  "limits": [
+    "Preparation review does not prove that any process is currently owned, listening, stopped, or quiescent; the controller must make and preserve those operational observations after root final release.",
+    "No current process configuration was changed by this source-only guard correction, and no new software permission or browser fallback is authorized by this review.",
+    "No successful retention, actual restore, hosted recovery, or CNF acceptance follows from this static supplement. Historical review and raw operation reports remain separate.",
+    "A further controller, target, launcher, binary, runtime-profile, plan or retainer change requires renewed comparison."
+  ],
+  "executionPerformed": false,
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/stop-owned-final-http-services.py",
+      "sha256": "6f223de901d7c11e34969f8cf3a6324a8013868b8de4a6d76f8c5c3e3cef7cd3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "sha256": "9921d9bc196efa5b3828bbdcefe23f7db2b56163bdf8846661c6f5f94706e7d1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/native-retention-final-plan.json",
+      "sha256": "a91b4fa86d391676e5008fcf4e2254346fde290f0188c2b1da8b155434a9ec43"
+    }
+  ]
+}

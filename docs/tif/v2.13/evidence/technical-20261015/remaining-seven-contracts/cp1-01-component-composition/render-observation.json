@@ -1,0 +1,15 @@
+{
+  "case_id": "CP1-01",
+  "identity": {
+    "id": "2a3beea0-efe9-465b-a54f-d8adf04de9da",
+    "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "account_id": "fcc34447-22d1-4b48-aec5-c03f8a0123f0",
+    "category_id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+    "amount": 1500,
+    "currency": "ARS",
+    "type": "expense",
+    "date": "2026-10-06"
+  },
+  "text": "Ultimos Movimientos Ver todo 🔁 RemainingCU001 CP1-01 5c27607b-6fd5-411f-a8cc-2e78e23e002c RemainingCU001 CP1-01 1 5c27607b-6fd5-411f-a8cc-2e78e23e002c • hace 9 días -$1.500,00 ARS",
+  "scope": "Actual RecentTransactions SSR component with matching independently recorded native input. Historical and current global dashboard top5 membership were not observed; no Next request/browser/hydration/mobile expansion/animation acceptance."
+}

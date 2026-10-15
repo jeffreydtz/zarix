@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useFinancialOperation } from '@/lib/hooks/useFinancialOperation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2, ChevronDown, Loader2, Plus, Search, TriangleAlert, X } from 'lucide-react';
@@ -40,6 +41,7 @@ interface AddInvestmentPanelProps {
 }
 
 export default function AddInvestmentPanel({ investmentAccounts, onCreated }: AddInvestmentPanelProps) {
+  const { submit } = useFinancialOperation('investment:create');
   const [open, setOpen] = useState(false);
   const [accountId, setAccountId] = useState('');
   const [type, setType] = useState<InvestmentType>('stock_us');
@@ -194,10 +196,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
 
     setSubmitting(true);
     try {
-      const r = await fetch('/api/investments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const result = await submit('/api/investments', {
           accountId,
           type,
           ticker: needsTicker ? ticker.trim().toUpperCase() : undefined,
@@ -213,11 +212,11 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
           marketCurrency: manualPrice
             ? marketCurrency || purchaseCurrency
             : marketCurrency || undefined,
-        }),
       });
-      const data = await r.json();
-      if (!r.ok) {
-        throw new Error(data.error || 'No se pudo guardar');
+      if (!result) return;
+      if (result.state === 'pending') {
+        setError(result.error || 'Inversión guardada pendiente de confirmación.');
+        return;
       }
       resetForm();
       setOpen(false);

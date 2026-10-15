@@ -1,0 +1,16 @@
+{
+  "createdAt": "2026-10-15T08:24:30.955769+00:00",
+  "revision": "b055ac83107175c29418b8d8ed664d0e6395651a",
+  "sources": [
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-sources/app/api/investments/[id]/sell/route.ts"
+    },
+    {
+      "path": "__tests__/investment-sell-log-privacy.test.ts",
+      "sha256": "e7a0fe7280e9a6b617aa982c29fc20a5f4ab2abf4a970392289f18f2ef637b7b",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-sources/__tests__/investment-sell-log-privacy.test-source.ts"
+    }
+  ]
+}

@@ -1,0 +1,821 @@
+[
+  {
+    "etiqueta": "base M0 registrados_acumulados",
+    "pagina": 26,
+    "actual": "0",
+    "esperado": "0",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M0 premium_fin",
+    "pagina": 26,
+    "actual": "0",
+    "esperado": "0",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M0 facturacion_bruta",
+    "pagina": 26,
+    "actual": "0,00",
+    "esperado": "0,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M0 cobros_brutos",
+    "pagina": 26,
+    "actual": "0,00",
+    "esperado": "0,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M0 pagos_totales",
+    "pagina": 26,
+    "actual": "198,00",
+    "esperado": "198,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M0 flujo_proyecto",
+    "pagina": 26,
+    "actual": "−198,00",
+    "esperado": "−198,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M0 acumulado_proyecto",
+    "pagina": 26,
+    "actual": "−198,00",
+    "esperado": "−198,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M3 registrados_acumulados",
+    "pagina": 26,
+    "actual": "100",
+    "esperado": "100",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M3 premium_fin",
+    "pagina": 26,
+    "actual": "0",
+    "esperado": "0",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M3 facturacion_bruta",
+    "pagina": 26,
+    "actual": "0,00",
+    "esperado": "0,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M3 cobros_brutos",
+    "pagina": 26,
+    "actual": "0,00",
+    "esperado": "0,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M3 pagos_totales",
+    "pagina": 26,
+    "actual": "10,00",
+    "esperado": "10,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M3 flujo_proyecto",
+    "pagina": 26,
+    "actual": "−10,00",
+    "esperado": "−10,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M3 acumulado_proyecto",
+    "pagina": 26,
+    "actual": "−228,00",
+    "esperado": "−228,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M6 registrados_acumulados",
+    "pagina": 26,
+    "actual": "340",
+    "esperado": "340",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M6 premium_fin",
+    "pagina": 26,
+    "actual": "15",
+    "esperado": "15",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M6 facturacion_bruta",
+    "pagina": 26,
+    "actual": "112,50",
+    "esperado": "112,50",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M6 cobros_brutos",
+    "pagina": 26,
+    "actual": "64,13",
+    "esperado": "64,13",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M6 pagos_totales",
+    "pagina": 27,
+    "actual": "180,20",
+    "esperado": "180,20",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M6 flujo_proyecto",
+    "pagina": 27,
+    "actual": "−116,07",
+    "esperado": "−116,07",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M6 acumulado_proyecto",
+    "pagina": 27,
+    "actual": "−661,80",
+    "esperado": "−661,80",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M12 registrados_acumulados",
+    "pagina": 27,
+    "actual": "1360",
+    "esperado": "1360",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M12 premium_fin",
+    "pagina": 27,
+    "actual": "77",
+    "esperado": "77",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M12 facturacion_bruta",
+    "pagina": 27,
+    "actual": "577,50",
+    "esperado": "577,50",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M12 cobros_brutos",
+    "pagina": 27,
+    "actual": "456,00",
+    "esperado": "456,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M12 pagos_totales",
+    "pagina": 27,
+    "actual": "252,91",
+    "esperado": "252,91",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M12 flujo_proyecto",
+    "pagina": 27,
+    "actual": "203,09",
+    "esperado": "203,09",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M12 acumulado_proyecto",
+    "pagina": 27,
+    "actual": "−328,65",
+    "esperado": "−328,65",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M18 registrados_acumulados",
+    "pagina": 27,
+    "actual": "3100",
+    "esperado": "3100",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M18 premium_fin",
+    "pagina": 27,
+    "actual": "179",
+    "esperado": "179",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M18 facturacion_bruta",
+    "pagina": 27,
+    "actual": "1342,50",
+    "esperado": "1342,50",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M18 cobros_brutos",
+    "pagina": 27,
+    "actual": "1132,88",
+    "esperado": "1132,88",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M18 pagos_totales",
+    "pagina": 27,
+    "actual": "328,67",
+    "esperado": "328,67",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M18 flujo_proyecto",
+    "pagina": 27,
+    "actual": "804,21",
+    "esperado": "804,21",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M18 acumulado_proyecto",
+    "pagina": 27,
+    "actual": "2937,55",
+    "esperado": "2937,55",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M24 registrados_acumulados",
+    "pagina": 27,
+    "actual": "5560",
+    "esperado": "5560",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M24 premium_fin",
+    "pagina": 27,
+    "actual": "310",
+    "esperado": "310",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M24 facturacion_bruta",
+    "pagina": 27,
+    "actual": "2325,00",
+    "esperado": "2325,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M24 cobros_brutos",
+    "pagina": 27,
+    "actual": "2037,75",
+    "esperado": "2037,75",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M24 pagos_totales",
+    "pagina": 27,
+    "actual": "671,82",
+    "esperado": "671,82",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M24 flujo_proyecto",
+    "pagina": 27,
+    "actual": "1365,93",
+    "esperado": "1365,93",
+    "ok": true
+  },
+  {
+    "etiqueta": "base M24 acumulado_proyecto",
+    "pagina": 27,
+    "actual": "9410,21",
+    "esperado": "9410,21",
+    "ok": true
+  },
+  {
+    "etiqueta": "base collections_total",
+    "pagina": 28,
+    "actual": "16572,81",
+    "esperado": "16572,81",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista collections_total",
+    "pagina": 28,
+    "actual": "55095,60",
+    "esperado": "55095,60",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso collections_total",
+    "pagina": 28,
+    "actual": "2193,75",
+    "esperado": "2193,75",
+    "ok": true
+  },
+  {
+    "etiqueta": "base payments_total",
+    "pagina": 28,
+    "actual": "7162,60",
+    "esperado": "7162,60",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista payments_total",
+    "pagina": 28,
+    "actual": "14189,15",
+    "esperado": "14189,15",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso payments_total",
+    "pagina": 28,
+    "actual": "5233,73",
+    "esperado": "5233,73",
+    "ok": true
+  },
+  {
+    "etiqueta": "base project_cash_accum_m24",
+    "pagina": 28,
+    "actual": "9410,21",
+    "esperado": "9410,21",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista project_cash_accum_m24",
+    "pagina": 28,
+    "actual": "40906,45",
+    "esperado": "40906,45",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso project_cash_accum_m24",
+    "pagina": 28,
+    "actual": "−3039,98",
+    "esperado": "−3039,98",
+    "ok": true
+  },
+  {
+    "etiqueta": "base project_npv",
+    "pagina": 28,
+    "actual": "6385,45",
+    "esperado": "6385,45",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista project_npv",
+    "pagina": 28,
+    "actual": "28291,55",
+    "esperado": "28291,55",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso project_npv",
+    "pagina": 28,
+    "actual": "−2489,64",
+    "esperado": "−2489,64",
+    "ok": true
+  },
+  {
+    "etiqueta": "base irr_monthly",
+    "pagina": 28,
+    "actual": "18,765%",
+    "esperado": "18,765%",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista irr_monthly",
+    "pagina": 28,
+    "actual": "32,160%",
+    "esperado": "32,160%",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso irr_monthly",
+    "pagina": 28,
+    "actual": "No existe",
+    "esperado": "No existe",
+    "ok": true
+  },
+  {
+    "etiqueta": "base irr_annual",
+    "pagina": 28,
+    "actual": "687,521%",
+    "esperado": "687,521%",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista irr_annual",
+    "pagina": 28,
+    "actual": "2739,166%",
+    "esperado": "2739,166%",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso irr_annual",
+    "pagina": 28,
+    "actual": "No existe",
+    "esperado": "No existe",
+    "ok": true
+  },
+  {
+    "etiqueta": "base cash_positive_first_month",
+    "pagina": 28,
+    "actual": "M9",
+    "esperado": "M9",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista cash_positive_first_month",
+    "pagina": 28,
+    "actual": "M8",
+    "esperado": "M8",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso cash_positive_first_month",
+    "pagina": 28,
+    "actual": "No ocurre",
+    "esperado": "No ocurre",
+    "ok": true
+  },
+  {
+    "etiqueta": "base payback_month",
+    "pagina": 28,
+    "actual": "M14",
+    "esperado": "M14",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista payback_month",
+    "pagina": 28,
+    "actual": "M10",
+    "esperado": "M10",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso payback_month",
+    "pagina": 28,
+    "actual": "No ocurre",
+    "esperado": "No ocurre",
+    "ok": true
+  },
+  {
+    "etiqueta": "base break_even_premium_m12_mau_no_support",
+    "pagina": 28,
+    "actual": "29",
+    "esperado": "29",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista break_even_premium_m12_mau_no_support",
+    "pagina": 28,
+    "actual": "31",
+    "esperado": "31",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso break_even_premium_m12_mau_no_support",
+    "pagina": 28,
+    "actual": "40",
+    "esperado": "40",
+    "ok": true
+  },
+  {
+    "etiqueta": "base break_even_premium_m12_mau_with_support",
+    "pagina": 28,
+    "actual": "61",
+    "esperado": "61",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista break_even_premium_m12_mau_with_support",
+    "pagina": 28,
+    "actual": "63",
+    "esperado": "63",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso break_even_premium_m12_mau_with_support",
+    "pagina": 28,
+    "actual": "77",
+    "esperado": "77",
+    "ok": true
+  },
+  {
+    "etiqueta": "base economic_npv",
+    "pagina": 28,
+    "actual": "−4155,93",
+    "esperado": "−4155,93",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista economic_npv",
+    "pagina": 28,
+    "actual": "18174,19",
+    "esperado": "18174,19",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso economic_npv",
+    "pagina": 28,
+    "actual": "−13349,97",
+    "esperado": "−13349,97",
+    "ok": true
+  },
+  {
+    "etiqueta": "base economic_payback",
+    "pagina": 28,
+    "actual": "No ocurre",
+    "esperado": "No ocurre",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista economic_payback",
+    "pagina": 28,
+    "actual": "M17",
+    "esperado": "M17",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso economic_payback",
+    "pagina": 28,
+    "actual": "No ocurre",
+    "esperado": "No ocurre",
+    "ok": true
+  },
+  {
+    "etiqueta": "base founder_opportunity_total",
+    "pagina": 28,
+    "actual": "12720,00",
+    "esperado": "12720,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista founder_opportunity_total",
+    "pagina": 28,
+    "actual": "12144,00",
+    "esperado": "12144,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso founder_opportunity_total",
+    "pagina": 28,
+    "actual": "13200,00",
+    "esperado": "13200,00",
+    "ok": true
+  },
+  {
+    "etiqueta": "base economic_irr_monthly",
+    "pagina": 28,
+    "actual": "−3,235%",
+    "esperado": "−3,235%",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista economic_irr_monthly",
+    "pagina": 28,
+    "actual": "10,882%",
+    "esperado": "10,882%",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso economic_irr_monthly",
+    "pagina": 28,
+    "actual": "No existe",
+    "esperado": "No existe",
+    "ok": true
+  },
+  {
+    "etiqueta": "base economic_irr_annual",
+    "pagina": 28,
+    "actual": "−32,605%",
+    "esperado": "−32,605%",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista economic_irr_annual",
+    "pagina": 28,
+    "actual": "245,415%",
+    "esperado": "245,415%",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso economic_irr_annual",
+    "pagina": 28,
+    "actual": "No existe",
+    "esperado": "No existe",
+    "ok": true
+  },
+  {
+    "etiqueta": "base VAN @ 0.15",
+    "pagina": 29,
+    "actual": "7384,72",
+    "esperado": "7384,72",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista VAN @ 0.15",
+    "pagina": 29,
+    "actual": "32458,88",
+    "esperado": "32458,88",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso VAN @ 0.15",
+    "pagina": 29,
+    "actual": "−2678,16",
+    "esperado": "−2678,16",
+    "ok": true
+  },
+  {
+    "etiqueta": "base VAN @ 0.25",
+    "pagina": 29,
+    "actual": "6385,45",
+    "esperado": "6385,45",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista VAN @ 0.25",
+    "pagina": 29,
+    "actual": "28291,55",
+    "esperado": "28291,55",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso VAN @ 0.25",
+    "pagina": 29,
+    "actual": "−2489,64",
+    "esperado": "−2489,64",
+    "ok": true
+  },
+  {
+    "etiqueta": "base VAN @ 0.35",
+    "pagina": 29,
+    "actual": "5579,74",
+    "esperado": "5579,74",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista VAN @ 0.35",
+    "pagina": 29,
+    "actual": "24930,94",
+    "esperado": "24930,94",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso VAN @ 0.35",
+    "pagina": 29,
+    "actual": "−2331,38",
+    "esperado": "−2331,38",
+    "ok": true
+  },
+  {
+    "etiqueta": "base VAN @ 0.5",
+    "pagina": 29,
+    "actual": "4632,76",
+    "esperado": "4632,76",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista VAN @ 0.5",
+    "pagina": 29,
+    "actual": "20979,64",
+    "esperado": "20979,64",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso VAN @ 0.5",
+    "pagina": 29,
+    "actual": "−2136,46",
+    "esperado": "−2136,46",
+    "ok": true
+  },
+  {
+    "etiqueta": "base mrr_m24",
+    "pagina": 30,
+    "actual": "2325",
+    "esperado": "2325",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista mrr_m24",
+    "pagina": 30,
+    "actual": "8415",
+    "esperado": "8415",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso mrr_m24",
+    "pagina": 30,
+    "actual": "217,50",
+    "esperado": "217,50",
+    "ok": true
+  },
+  {
+    "etiqueta": "base minimum_project_cash",
+    "pagina": 30,
+    "actual": "777,76",
+    "esperado": "777,76",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista minimum_project_cash",
+    "pagina": 30,
+    "actual": "669,55",
+    "esperado": "669,55",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso minimum_project_cash",
+    "pagina": 30,
+    "actual": "3039,98",
+    "esperado": "3039,98",
+    "ok": true
+  },
+  {
+    "etiqueta": "base three_month_fixed_reserve",
+    "pagina": 30,
+    "actual": "510",
+    "esperado": "510",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista three_month_fixed_reserve",
+    "pagina": 30,
+    "actual": "555",
+    "esperado": "555",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso three_month_fixed_reserve",
+    "pagina": 30,
+    "actual": "637,50",
+    "esperado": "637,50",
+    "ok": true
+  },
+  {
+    "etiqueta": "base initial_founder_funding",
+    "pagina": 30,
+    "actual": "1300",
+    "esperado": "1300",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista initial_founder_funding",
+    "pagina": 30,
+    "actual": "1250",
+    "esperado": "1250",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso initial_founder_funding",
+    "pagina": 30,
+    "actual": "3700",
+    "esperado": "3700",
+    "ok": true
+  },
+  {
+    "etiqueta": "base funded_closing_cash",
+    "pagina": 30,
+    "actual": "10710,21",
+    "esperado": "10710,21",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista funded_closing_cash",
+    "pagina": 30,
+    "actual": "42156,45",
+    "esperado": "42156,45",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso funded_closing_cash",
+    "pagina": 30,
+    "actual": "660,02",
+    "esperado": "660,02",
+    "ok": true
+  },
+  {
+    "etiqueta": "base support_start_month",
+    "pagina": 30,
+    "actual": "M20",
+    "esperado": "M20",
+    "ok": true
+  },
+  {
+    "etiqueta": "optimista support_start_month",
+    "pagina": 30,
+    "actual": "M14",
+    "esperado": "M14",
+    "ok": true
+  },
+  {
+    "etiqueta": "adverso support_start_month",
+    "pagina": 30,
+    "actual": "No",
+    "esperado": "No",
+    "ok": true
+  }
+]

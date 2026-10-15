@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "runtimeRevision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+  "buildId": "vPLjt1QViugJhUWR62DPp",
+  "copiedSources": 480,
+  "caseResults": [
+    {
+      "id": "CP1-20",
+      "status": "PASS",
+      "assertions": 6,
+      "complete_original_contract": true
+    }
+  ],
+  "derivedResults": [
+    {
+      "id": "DERIVED-CP1-20-ARCHIVED-BATCH-REPLAY",
+      "status": "PASS",
+      "assertions": 9,
+      "complete_original_contract": false,
+      "observedResponse": [
+        {
+          "name": "Observed settled response and full snapshot parity",
+          "rawResponse": {
+            "success": true,
+            "status": "completed",
+            "batchId": "5862d31a-d757-4b90-bc48-f42b6f77c8d5",
+            "imported": 2,
+            "skipped": 1,
+            "pending": 0,
+            "total": 3,
+            "importKind": "standard",
+            "errors": [
+              "Fila omitida — monto inválido: El monto debe ser numérico y mayor a 0."
+            ],
+            "skippedDetails": [
+              {
+                "title": "Fila omitida — monto inválido",
+                "reason": "El monto debe ser numérico y mayor a 0.",
+                "suggestion": "Corregí el monto de esta fila en el archivo y reintentá.",
+                "context": "Fecha: 2026-10-06 · Monto: 0 ARS · Desc.: CP1-20 zero 41855ad7-0bed-4504-b9e3-673c428bc39d"
+              }
+            ],
+            "skippedDetailsTruncated": false
+          },
+          "afterSha256": "0f137fc5ea080fb80c267744e0fbc10b27b251740d311df921a8a51f889de39c",
+          "beforeSha256": "0f137fc5ea080fb80c267744e0fbc10b27b251740d311df921a8a51f889de39c",
+          "newFinancialEffects": 0,
+          "newReceipts": 0,
+          "accountStillArchived": true
+        }
+      ]
+    }
+  ],
+  "sourceStable": true,
+  "servedCopyStable": true,
+  "allOriginalTablesUnchanged": true,
+  "originalTables": 12,
+  "cleanupFailures": 0,
+  "reportSha256": "d181458bca14c0a3d72811b4f28acff4cda3c70dbaf1bab81d050da94080c9d9",
+  "browserExecuted": false
+}

@@ -1,0 +1,26 @@
+import{it,expect,vi}from'vitest';
+import{readFile,writeFile,stat}from'node:fs/promises';
+import{fileURLToPath}from'node:url';
+import{createHash}from'node:crypto';
+import{createClient}from'@supabase/supabase-js';
+import dotenv from'dotenv';
+import{isolatedApiFetch}from'../../../../../../scripts/lib/test-isolated-native-target.mjs';
+const provider=vi.hoisted(()=>({send:vi.fn()}));
+vi.mock('@/lib/telegram/send',()=>({sendTelegramDm:provider.send}));
+import{deliverNotificationOutbox}from'@/lib/services/notification-outbox';
+it('CP1-24 current outbox worker dispatches the unique native recurring intention to an explicit local provider double',async()=>{
+ expect(process.env.ZARIX_ISOLATED_DATABASE_CONFIRM).toBe('synthetic-only');
+ const inputFile=process.env.ZARIX_CP124_WORKER_CONFIG!;expect(inputFile).toMatch(/^\/tmp\/zarix-runtime-20261015\/empty-followup-contracts-[\da-f-]+\/worker-input\.json$/);expect((await stat(inputFile)).mode&0o077).toBe(0);
+ const input=JSON.parse(await readFile(inputFile,'utf8'));expect(input.purpose).toBe('empty-followup-worker');expect(input.apiOrigin).toBe('http://127.0.0.1:60321');expect(input.userId).toMatch(/^[a-f\d-]{36}$/);expect(input.syntheticChatId).toBe(-8600000124);expect(input.outputFile).toBe(inputFile.replace(/worker-input\.json$/,'worker-observation.json'));
+ const envFile='/tmp/zarix-runtime-20261015/empty-proof.env';expect((await stat(envFile)).mode&0o077).toBe(0);const config=dotenv.parse(await readFile(envFile));expect(config.ZARIX_EMPTY_SUPABASE_URL.replace(/\/$/,'')).toBe(input.apiOrigin);
+ const client=createClient(input.apiOrigin,config.ZARIX_EMPTY_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:isolatedApiFetch}});
+ const query=async(table:string,filters:Record<string,string>)=>{let q=client.from(table).select('*');for(const[k,v]of Object.entries(filters))q=q.eq(k,v);const r=await q.order(table==='transaction_requests'?'request_id':'id');expect(r.error).toBeNull();return r.data;};
+ const snapshot=async()=>({account:await query('accounts',{id:input.accountId,user_id:input.userId}),transactions:await query('transactions',{account_id:input.accountId,user_id:input.userId}),rule:await query('recurring_rules',{id:input.ruleId,user_id:input.userId}),receipts:await query('transaction_requests',{user_id:input.userId,request_id:input.requestId})});
+ const before=await snapshot();const pending=await query('notification_outbox',{});expect(pending).toHaveLength(1);expect(pending![0].id).toBe(input.outboxId);expect(pending![0].delivered_at).toBeNull();
+ const accepted:Array<unknown>=[];provider.send.mockImplementation(async(chat:number,text:string)=>{accepted.push({syntheticChatId:chat,text,accepted:true});});
+ const delivered=await deliverNotificationOutbox(client as any);expect(delivered).toEqual({delivered:1,failed:0});expect(provider.send).toHaveBeenCalledTimes(1);expect(provider.send.mock.calls[0][0]).toBe(input.syntheticChatId);expect(provider.send.mock.calls[0][1]).toContain(input.description);
+ const replay=await deliverNotificationOutbox(client as any);expect(replay).toEqual({delivered:0,failed:0});expect(provider.send).toHaveBeenCalledTimes(1);const after=await snapshot();expect(after).toEqual(before);
+ const outbox=await query('notification_outbox',{});expect(outbox).toHaveLength(1);expect(outbox![0].id).toBe(input.outboxId);expect(outbox![0].attempts).toBe(1);expect(outbox![0].delivered_at).not.toBeNull();
+ const sha=(x:unknown)=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
+ await writeFile(input.outputFile,JSON.stringify({case_id:'CP1-24',status:'PASS',scope:'Actual current worker and Supabase service-role client against the same new native DB via realPostgREST. Only sendTelegramDm replaced by local capturing provider double. Backend delivery role; no RLS/Authuser or realTelegram acceptance claim.',accepted,delivered,replay,financialSha256Before:sha(before),financialSha256After:sha(after),sameFinancialRows:true,outbox:{id:outbox![0].id,event_key:outbox![0].event_key,attempts:outbox![0].attempts,delivered_at:outbox![0].delivered_at}},null,2)+'\n',{mode:0o600});
+},30000);

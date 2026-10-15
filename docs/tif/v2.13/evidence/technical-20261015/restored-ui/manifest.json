@@ -1,0 +1,132 @@
+{
+  "generatedAt": "2026-10-15T03:02:25.575928+00:00",
+  "scope": "Current scoped restore-UI evidence and preserved earlier attempts; path/hashes only, no private env/dump/credentials",
+  "files": [
+    {
+      "path": "CU001-restored-read.png",
+      "sha256": "80b49ef20c4121bf0d51a0540507a394873effeb649e6c2b1ece98460a69cc37",
+      "bytes": 100206
+    },
+    {
+      "path": "CU002-restored-read.png",
+      "sha256": "5fb886c771c255df3059b0caa50790d493a4894a034e1a3b94bcce5f23863332",
+      "bytes": 105835
+    },
+    {
+      "path": "CU003-restored-read.png",
+      "sha256": "c661329d9a05ee1fb6c00f516a7df7a8780b7a38ed74e700496fde382a9ce10d",
+      "bytes": 185225
+    },
+    {
+      "path": "CU004-restored-read.png",
+      "sha256": "46202d54bd78ba4d8d34c567db3a2e6b013d66d15d33c4d3b9d586854ef1aff1",
+      "bytes": 137227
+    },
+    {
+      "path": "README.md",
+      "sha256": "d54be613a4e045ab84cd587482822f03d7500052258ea763dbd849c441b43f54",
+      "bytes": 5141
+    },
+    {
+      "path": "attempt-1/CU002-restored-read.png",
+      "sha256": "d402a7dd3311cecb9375577c3555ce4ce010fad5a7c9630cc047133e1659693b",
+      "bytes": 95089
+    },
+    {
+      "path": "attempt-1/CU003-restored-read.png",
+      "sha256": "c235a938ad65c510dcf1340f9e6df61ec3d0be102661fd0f14fbe9ec13cf9f5f",
+      "bytes": 183703
+    },
+    {
+      "path": "attempt-1/CU004-restored-read.png",
+      "sha256": "cbe932ea3e7582f2942da4042846173a560df34c9a9edbb85c77272e6fb355a3",
+      "bytes": 137127
+    },
+    {
+      "path": "attempt-1/README.md",
+      "sha256": "77421d1b07aadf01b3c81f6b7dae68bd69a8981483a0d43a1164dd3a20a460d0",
+      "bytes": 803
+    },
+    {
+      "path": "attempt-1/harness.mjs",
+      "sha256": "f668e00ff7c6849cf4b026fe14058fa0fa6042e6102c3c263497b56a3bfa610b",
+      "bytes": 22976
+    },
+    {
+      "path": "attempt-1/restored-ui-read.json",
+      "sha256": "cbc3f6cc95d4e667263353a60e887639ca436ddcfee5baa1bf7ba50c24470ca3",
+      "bytes": 22444
+    },
+    {
+      "path": "attempt-2/CU001-restored-read.png",
+      "sha256": "752060dd525ac04650ea461fade601bfe875f80936a626ba0b29bdd490feda4f",
+      "bytes": 97065
+    },
+    {
+      "path": "attempt-2/CU002-restored-read.png",
+      "sha256": "3a8367e0f710a69a8f06ecef52e96d49a3bb2e60edb985045b9602f2c973033b",
+      "bytes": 97520
+    },
+    {
+      "path": "attempt-2/CU003-restored-read.png",
+      "sha256": "6e28529e9487e89371ec857334c01fffab745089d3fde2d101e3f5650310d145",
+      "bytes": 184314
+    },
+    {
+      "path": "attempt-2/CU004-restored-read.png",
+      "sha256": "f611e16bdcd9ad07cca9722be02a9f4a5952ce67a7b8bf54b884d68d33d5e3c8",
+      "bytes": 137363
+    },
+    {
+      "path": "attempt-2/README.md",
+      "sha256": "bbef203c08a5a45a317c365cb58c7307ba428894b4845655571dd0c53370f743",
+      "bytes": 817
+    },
+    {
+      "path": "attempt-2/harness.mjs",
+      "sha256": "8f4aad7b2bc73d65e9dc436bc39bec06ee34ac52ff7d3a5b16fe2887181d4b86",
+      "bytes": 22996
+    },
+    {
+      "path": "attempt-2/restored-ui-read.json",
+      "sha256": "651181a743c58ebe6db53e078466ac0ff435b44b4bfeeaf437ebe850827091c7",
+      "bytes": 22833
+    },
+    {
+      "path": "next-cleanup.json",
+      "sha256": "80543cc209b6b3ed04694ce422bbc344e658fc6082158270cf34a12fa0956a57",
+      "bytes": 1489
+    },
+    {
+      "path": "prepared-checks.json",
+      "sha256": "6a3e8c7202092a651bc45f810553733d2d54240ad97923112fd519abb922269b",
+      "bytes": 1133
+    },
+    {
+      "path": "restored-read-app-state.json",
+      "sha256": "d4f4c30bc55e42d46c39b5d2783069cbd6f771270c1477b5f6fbad2a3dfd407b",
+      "bytes": 470
+    },
+    {
+      "path": "restored-read-build-proof.json",
+      "sha256": "fbd258d866a4d2097fb70d034fffec639012c6ca88e4aa1d0b6ec035b9d0894f",
+      "bytes": 72541
+    },
+    {
+      "path": "restored-ui-read.json",
+      "sha256": "30232dc47656f2fb1abf1e36f1752ee36c7b0842cdd975a11dd816eb2f3711c3",
+      "bytes": 23443
+    },
+    {
+      "path": "screenshot-review.json",
+      "sha256": "c0114ca48150b2c4269b63d4aa40066234dc11cdc520d393fd064f5bc809ca08",
+      "bytes": 2385
+    }
+  ],
+  "secretHeuristic": {
+    "textFiles": 13,
+    "candidateCount": 0,
+    "limit": "Only JWT/provider-key patterns; screenshot review and semantic inspection separate"
+  },
+  "screenshotsPrivacyReview": "screenshot-review.json (final4 plus earlier3/4 separately reviewed); no real personal data or credentials seen"
+}

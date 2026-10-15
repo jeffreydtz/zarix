@@ -1,0 +1,65 @@
+
+> zarix@0.1.0 test:coverage
+> vitest run --coverage --reporter=json --outputFile=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-2/final-vitest.json
+
+JSON report written to /Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-2/final-vitest.json
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   70.45 |    64.22 |   69.54 |   73.51 |                   
+ ...ment-selection |      90 |      100 |     100 |     100 |                   
+  route.ts         |      90 |      100 |     100 |     100 |                   
+ ...i/ai/anomalies |       0 |        0 |       0 |       0 |                   
+  route.ts         |       0 |        0 |       0 |       0 | 11-52             
+ ...ai/projections |    86.2 |       75 |     100 |   85.71 |                   
+  route.ts         |    86.2 |       75 |     100 |   85.71 | 34-35,67-68       
+ ...scription-link |    87.5 |    89.09 |      50 |   91.11 |                   
+  route.ts         |    87.5 |    89.09 |      50 |   91.11 | 11,26,58,69       
+ ...cron/recurring |       0 |      100 |       0 |       0 |                   
+  route.ts         |       0 |      100 |       0 |       0 | 4-8               
+ .../export/backup |   96.29 |    76.47 |     100 |     100 |                   
+  route.ts         |   96.29 |    76.47 |     100 |     100 | 24,34-47          
+ ...s/mercado-pago |   90.76 |    86.84 |   95.23 |   98.09 |                   
+  route.ts         |   90.76 |    86.84 |   95.23 |   98.09 | 83,129            
+ ...nents/settings |   42.98 |    35.61 |   21.95 |   44.82 |                   
+  SettingsForm.tsx |   42.98 |    35.61 |   21.95 |   44.82 | ...32-348,386-791 
+ lib               |   89.82 |    83.09 |   84.61 |   97.32 |                   
+  ...-anomalies.ts |   96.55 |     82.5 |   66.66 |     100 | 58,63-64,88       
+  ...rojections.ts |   96.77 |    88.46 |     100 |     100 | 25-27             
+  ...queue-sync.ts |      84 |     82.5 |      80 |   88.63 | 90-91,104-108     
+  ...tion-store.ts |   86.02 |    76.31 |   80.95 |   98.95 | 104               
+  ...nated-read.ts |     100 |    83.33 |     100 |     100 | 18                
+ lib/billing       |     100 |    97.41 |     100 |     100 |                   
+  plans.ts         |     100 |    98.21 |     100 |     100 | 30                
+  ...ion-events.ts |     100 |    96.66 |     100 |     100 | 6,24              
+ lib/cron          |   92.38 |    91.04 |   81.25 |   95.34 |                   
+  cron-job.ts      |   94.28 |      100 |      75 |   93.93 | 109-120           
+  recurring-job.ts |   81.81 |       76 |      75 |    91.3 | 37,90             
+ lib/hooks         |   42.27 |    42.85 |   33.33 |   46.22 |                   
+  ...flineQueue.ts |   42.27 |    42.85 |   33.33 |   46.22 | ...24-128,132-160 
+ lib/import        |   93.93 |    85.71 |     100 |   96.36 |                   
+  csv.ts           |   93.93 |    85.71 |     100 |   96.36 | 8-9               
+ lib/plans         |    90.9 |     87.8 |   85.71 |   94.59 |                   
+  rules.ts         |     100 |    95.23 |     100 |     100 | 41                
+  service.ts       |    87.5 |       80 |      75 |    92.3 | 14-17             
+ lib/services      |   66.57 |    58.36 |   71.55 |   69.63 |                   
+  accounts.ts      |   39.32 |    41.66 |   39.65 |   42.76 | ...9-685,742-1012 
+  analytics.ts     |    88.7 |    62.96 |   87.87 |   91.57 | ...63,268,283-284 
+  botSessions.ts   |   94.28 |    81.48 |   71.42 |   96.29 | 10                
+  cotizaciones.ts  |   75.79 |    65.88 |    93.1 |   77.87 | ...11-612,619-626 
+  ...al-ai-chat.ts |   77.22 |    63.86 |     100 |   79.54 | ...49,185-188,222 
+  investments.ts   |   79.52 |    70.12 |   77.41 |   85.53 | ...53,895,911-924 
+  ...go-service.ts |   57.14 |    44.11 |   88.88 |   57.14 | 123-160           
+  month-flow.ts    |   81.48 |    33.33 |      80 |   85.71 | ...22-123,134-137 
+  ...ion-outbox.ts |   86.79 |     62.5 |     100 |     100 | ...34,41-50,65-80 
+  subscriptions.ts |    42.5 |    34.61 |   16.66 |   41.02 | 26-71,86,92       
+  transactions.ts  |   58.99 |     57.5 |   76.47 |   59.44 | ...92,638,660-766 
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 70.45% ( 2082/2955 )
+Branches     : 64.22% ( 1632/2541 )
+Functions    : 69.54% ( 306/440 )
+Lines        : 73.51% ( 1874/2549 )
+================================================================================

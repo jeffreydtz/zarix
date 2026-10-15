@@ -1,0 +1,89 @@
+{
+  "status": "PASS_SCOPED_ORIGINAL_CASES",
+  "cases": [
+    {
+      "case_id": "CP3-03",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": "attempt-2/verification.json",
+      "assertions": [
+        "Actual new fixture has no persisted quote cache",
+        "Actual normal account API201",
+        "Actual normal account API201",
+        "No-cache unavailable quote returns the bound API500 rather than an Auth rejection",
+        "Unavailable quote response contains only an explicit safe error",
+        "Mixed wealth returns the bound safe500 rather than fabricated rates or an Auth rejection",
+        "CP3-03 fixture DB has no persisted quote cache before request",
+        "CP3-03 actual authenticated safe-error page status",
+        "CP3-03 actual safe error explicitly declares financial unavailability",
+        "CP3-03 actual retry is an anchor to dashboard, not an invented button",
+        "CP3-03 no financial hero fabricates a consolidated zero or unit rate",
+        "CP3-03 actual Flight contains no financial Hero aggregate",
+        "CP3-03 failed quote requests persisted no0 or1 fallback",
+        "CP3-03 unavailable read does not create or overwrite any snapshot",
+        "Unavailable reads preserve both complete account rows",
+        "Mixed original balances remain120000ARS and100USD",
+        "Cold provider journal is append-only",
+        "This exact failed read observed new real503 provider requests",
+        "Every cold provider sample failed with the exact unavailable control"
+      ],
+      "scope": "Real failed synthetic HTTP provider/cold-cache integration, normal Auth/API/SSR/native oracles. No external provider outage asserted."
+    },
+    {
+      "case_id": "CP3-07",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": "cp307-composition/verification.json",
+      "assertions": "15 actual empty native/API/SSR observations plus frozen real empty AccountCards/RecentTransactions SSR and exact Dashboard wiring",
+      "scope": "Composition explicitly authorized by coordinator:15 actual empty native/API/SSR observations plus real frozen empty-component SSR and Dashboard wiring"
+    },
+    {
+      "case_id": "CP2-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": "attempt-2/verification.json",
+      "assertions": [
+        "CP2-01 literal first account precondition includes archived rows",
+        "Actual normal account API201",
+        "Actual normal-authenticated dashboard SSR status",
+        "Actual server aggregate total ARS",
+        "Known valid fixture never becomes partial",
+        "No safe-error alert on this valid-FX empty/account dashboard",
+        "Actual own SSR snapshot completion observed before any fixture cleanup",
+        "Own snapshot liquid_usd",
+        "Own snapshot investments_usd",
+        "Own snapshot total_usd",
+        "Own snapshot total_ars_blue",
+        "Only the same newly owned empty-dashboard snapshot was updated",
+        "CP2-01 exactly one own active bank account exists",
+        "CP2-01 account is active and ARS",
+        "CP2-01 literal BancoARS is a bank account",
+        "CP2-01 bank account balance",
+        "CP2-01 one explicit opening adjustment documents the 50000 origin"
+      ],
+      "scope": "Actual normal account API result plus independent SQL and authenticated server-calculated patrimony increase0→50000ARS; no browser claim."
+    }
+  ],
+  "counts": {
+    "PASS": 3,
+    "FAIL": 0,
+    "BLOCKED": 0
+  },
+  "originalAttemptPreserved": "attempt-1/verification.json",
+  "originalFinancialPhaseStatusPreserved": "attempt-2/verification.json",
+  "originalFinancialPhaseCounts": {
+    "PASS": 2,
+    "FAIL": 1,
+    "BLOCKED": 0
+  },
+  "financialFixturesRetained": [
+    "ef815340-5b35-498b-be59-80af72b50509",
+    "5ec86212-0ac0-4c55-83c3-14cbccd591f4",
+    "cbc90531-5097-4309-912b-eb1e703e6787"
+  ],
+  "ownedSnapshotId": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+  "sourceStable": true,
+  "originalRowsUnchanged": true,
+  "ownSessionsClosed": true,
+  "scope": "Three exact original contracts with explicit composed307 evidence; no full UI, provider outage outside the declared synthetic HTTP source, or global CI gate claim."
+}

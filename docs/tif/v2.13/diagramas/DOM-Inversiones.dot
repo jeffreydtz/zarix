@@ -1,0 +1,15 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="Dominio conceptual: inversiones"; labelloc=t; fontsize=22;
+Cuenta [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Cuenta</B></TD></TR><TR><TD ALIGN="LEFT">nombre</TD></TR><TR><TD ALIGN="LEFT">tipo</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR><TR><TD ALIGN="LEFT">politicaSaldo</TD></TR></TABLE>>];
+Activo [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Activo</B></TD></TR><TR><TD ALIGN="LEFT">simbolo</TD></TR><TR><TD ALIGN="LEFT">mercado</TD></TR><TR><TD ALIGN="LEFT">moneda</TD></TR></TABLE>>];
+Posicion [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Posicion</B></TD></TR><TR><TD ALIGN="LEFT">cantidad</TD></TR><TR><TD ALIGN="LEFT">precioCompra</TD></TR><TR><TD ALIGN="LEFT">costoRemanente</TD></TR></TABLE>>];
+VentaInversion [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>VentaInversion</B></TD></TR><TR><TD ALIGN="LEFT">tipo</TD></TR><TR><TD ALIGN="LEFT">fecha</TD></TR><TR><TD ALIGN="LEFT">cantidad</TD></TR><TR><TD ALIGN="LEFT">precio</TD></TR><TR><TD ALIGN="LEFT">costoAsignado</TD></TR></TABLE>>];
+Cotizacion [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>Cotizacion</B></TD></TR><TR><TD ALIGN="LEFT">precio</TD></TR><TR><TD ALIGN="LEFT">fuente</TD></TR><TR><TD ALIGN="LEFT">fecha</TD></TR><TR><TD ALIGN="LEFT">monedaReferencia</TD></TR><TR><TD ALIGN="LEFT">estado</TD></TR></TABLE>>];
+Cuenta -> Posicion [dir=none,label="contiene\nCuenta 1\nPosicion 0..*"];
+Activo -> Posicion [dir=none,label="representa\nActivo 1\nPosicion 0..*"];
+Posicion -> VentaInversion [dir=none,label="ventas históricas\nPosicion 1\nVentaInversion 0..*"];
+Activo -> Cotizacion [dir=none,label="valor de referencia\nActivo 1\nCotizacion 0..*"];
+}

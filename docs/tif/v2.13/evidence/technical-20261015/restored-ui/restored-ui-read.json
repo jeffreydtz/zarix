@@ -1,0 +1,590 @@
+{
+  "startedAt": "2026-10-15T02:56:43.210Z",
+  "status": "PARTIAL",
+  "cases": [
+    {
+      "cu": "CU001",
+      "name": "Movimientos",
+      "status": "PASS",
+      "scope": "Restored ordinary authenticated reading only; no complete original CU/CNF acceptance",
+      "evidence": {
+        "restoredRows": 1,
+        "exactIdsAmountsAndOwner": true,
+        "api": "/api/transactions",
+        "transferImpacts": []
+      }
+    },
+    {
+      "cu": "CU002",
+      "name": "Cuentas",
+      "status": "PASS",
+      "scope": "Restored ordinary authenticated reading only; no complete original CU/CNF acceptance",
+      "evidence": {
+        "restoredAccounts": 1,
+        "exactIdsBalancesOwnerAndVisibleNames": true,
+        "renderedBalances": [
+          {
+            "id": "3e42ca5d-c8b8-4375-b5ea-57e7721c6bbe",
+            "text": "$9.987,66"
+          }
+        ],
+        "uiBalancesEqualIndependentSql": true,
+        "api": "/api/accounts"
+      }
+    },
+    {
+      "cu": "CU003",
+      "name": "Análisis financiero",
+      "status": "PASS",
+      "scope": "Restored ordinary authenticated reading only; no complete original CU/CNF acceptance",
+      "evidence": {
+        "independentSql": {
+          "month": "2026-10",
+          "balance": "-12.34000000",
+          "endDate": "2026-10-31",
+          "startDate": "2026-10-01",
+          "totalIncome": "0",
+          "totalExpenses": "12.34000000"
+        },
+        "displayedRoundedValuesMatch": true,
+        "auxiliaryArsPerUsd": 1200,
+        "api": "/api/transactions/summary"
+      }
+    },
+    {
+      "cu": "CU004",
+      "name": "Inversiones",
+      "status": "PASS",
+      "scope": "Restored ordinary authenticated reading only; no complete original CU/CNF acceptance",
+      "evidence": {
+        "positions": 1,
+        "independentSqlPortfolio": {
+          "totalPnL": "0.0000000000000000",
+          "totalCurrentValue": "80.0000000000000000",
+          "totalPurchaseValue": "80.0000000000000000",
+          "totalRealizedPnLUsd": "30.00000000"
+        },
+        "uiStoredPositionsAndPnlVisible": true,
+        "api": "/api/investments/portfolio",
+        "liveQuoteRefresh": false
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "CU001-restored-read.png",
+      "sha256": "80b49ef20c4121bf0d51a0540507a394873effeb649e6c2b1ece98460a69cc37",
+      "readiness": "Fonts, exact heading, visible financial card/section/number ancestors opacity>=0.99 and page-shell text stable for six frames; CU002 each rendered balance matches exact independent SQL target. No login/credentials captured"
+    },
+    {
+      "path": "CU002-restored-read.png",
+      "sha256": "5fb886c771c255df3059b0caa50790d493a4894a034e1a3b94bcce5f23863332",
+      "readiness": "Fonts, exact heading, visible financial card/section/number ancestors opacity>=0.99 and page-shell text stable for six frames; CU002 each rendered balance matches exact independent SQL target. No login/credentials captured"
+    },
+    {
+      "path": "CU003-restored-read.png",
+      "sha256": "c661329d9a05ee1fb6c00f516a7df7a8780b7a38ed74e700496fde382a9ce10d",
+      "readiness": "Fonts, exact heading, visible financial card/section/number ancestors opacity>=0.99 and page-shell text stable for six frames; CU002 each rendered balance matches exact independent SQL target. No login/credentials captured"
+    },
+    {
+      "path": "CU004-restored-read.png",
+      "sha256": "46202d54bd78ba4d8d34c567db3a2e6b013d66d15d33c4d3b9d586854ef1aff1",
+      "readiness": "Fonts, exact heading, visible financial card/section/number ancestors opacity>=0.99 and page-shell text stable for six frames; CU002 each rendered balance matches exact independent SQL target. No login/credentials captured"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/accounts",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "guards": [
+    {
+      "kind": "dashboard-navigation-denied",
+      "reason": "Avoid automatic derived net-worth snapshot while reading only four requested CU pages"
+    },
+    {
+      "kind": "dashboard-navigation-denied",
+      "reason": "Avoid automatic derived net-worth snapshot while reading only four requested CU pages"
+    },
+    {
+      "kind": "dashboard-navigation-denied",
+      "reason": "Avoid automatic derived net-worth snapshot while reading only four requested CU pages"
+    },
+    {
+      "kind": "dashboard-navigation-denied",
+      "reason": "Avoid automatic derived net-worth snapshot while reading only four requested CU pages"
+    },
+    {
+      "kind": "dashboard-navigation-denied",
+      "reason": "Avoid automatic derived net-worth snapshot while reading only four requested CU pages"
+    },
+    {
+      "kind": "dashboard-navigation-denied",
+      "reason": "Avoid automatic derived net-worth snapshot while reading only four requested CU pages"
+    },
+    {
+      "kind": "market-widget-refresh-denied",
+      "reason": "The market widget can upsert original cache; this proof reads stored financial positions only"
+    }
+  ],
+  "scope": "Exactly four scoped restored CU reads via ordinary Auth, restored API and independent SQL. Original Native22 fixture preserved; eight explicitly auxiliary synthetic FX cache rows added after restore. No financial submit, new identity, provider acceptance, original nominal CNF12 fixture or contracted-backup claim.",
+  "buildBinding": {
+    "revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+    "buildId": "8KCE9yl_NuWCW33jQ5gBP",
+    "sourceCount": 467,
+    "sourceManifestSha256": "27aebb46f0e38699078c2cc897be941eb49f12e02b5447dfb3e601fc4af036a3",
+    "nextPid": 39226,
+    "sourceCopyBound": true
+  },
+  "sqlReadControl": {
+    "scope": "Only the independently queried psql sessions use PGOPTIONS default_transaction_read_only=on; no global DB/REST read-only claim",
+    "observed": "on"
+  },
+  "auxiliaryFxSetup": {
+    "insertedCount": 8,
+    "timestamp": "2026-10-15T02:51:59.089Z",
+    "insertedRowsHashById": {
+      "09809f02-80bd-47c8-8ccc-b92cfff13829": "2cbcbeb96c81d1b03c19a4aa85a890b92fece63351a28f74ab10cf3edd9975bc",
+      "0e666389-2fe7-4255-bda0-8cd53740ddd4": "224220605dbbf7bdf475457318f9b89e04ef91f604c7136d2cb687582c208bd4",
+      "1f900d4a-701a-448b-b110-9f0cdfaf1bbf": "2291d9d210f688822986639030050100f282989dcfdf36049f7e63b689ad61fe",
+      "60827f29-6550-450c-81a4-5bfa3bc821f7": "8594e9732f965b7a93ecf5ba4591b1cae6ea98a603b9c1d04b2665a1b59ca428",
+      "a176636d-3300-4f35-8c2a-9c19c8dac494": "766ea65cad99f1a0dd902a514db5c746dd26a34b14867c01d48219cc937bcb9f",
+      "b6e2f660-9e04-4254-bead-d7f47b689e6f": "7a85cc9a1dc08e8f382ac2eb13779345f5e4f6a01221565e2b81f332f5a37c6b",
+      "c129d907-5f57-40d8-9b6d-b49b0144ab33": "74bf3294aa2ded9c60bbf705fb4475ec07062397acb0159593a2aa432ba0400b",
+      "d31f5d6f-cca7-4180-8830-fcfe2c02333e": "ee0184bc404021d4d3f1b5d6d6c95cfe16ef2228bf16aca6b3c212f4637403a3"
+    },
+    "insertedIds": [
+      "b6e2f660-9e04-4254-bead-d7f47b689e6f",
+      "0e666389-2fe7-4255-bda0-8cd53740ddd4",
+      "d31f5d6f-cca7-4180-8830-fcfe2c02333e",
+      "09809f02-80bd-47c8-8ccc-b92cfff13829",
+      "c129d907-5f57-40d8-9b6d-b49b0144ab33",
+      "a176636d-3300-4f35-8c2a-9c19c8dac494",
+      "60827f29-6550-450c-81a4-5bfa3bc821f7",
+      "1f900d4a-701a-448b-b110-9f0cdfaf1bbf"
+    ],
+    "sources": [
+      "blue",
+      "blue_buy",
+      "oficial",
+      "oficial_buy",
+      "mep",
+      "mep_buy",
+      "ccl",
+      "ccl_buy"
+    ],
+    "fromCurrency": "USD",
+    "toCurrency": "ARS",
+    "rate": 1200,
+    "action": "reused",
+    "newlyInsertedCount": 0,
+    "planSha256": "c5af7789edd6c01c203b343f6edfb79806cebfbb0889906e598a62f8b0d4b181",
+    "scope": "One checkpointed auxiliary plan only; exact existing rows reused after lost response/restart. No original FX updated/deleted; no automatic retries, backup-content or real-provider claim"
+  },
+  "auxiliaryCheckpoint": {
+    "path": "/tmp/zarix-runtime-20261015/restored-read-aux-setup.json",
+    "phase": "committed",
+    "stablePlanReused": true,
+    "privateMode": "0600",
+    "writtenAndFsyncedBeforeInsert": true
+  },
+  "harnessSources": {
+    "scripts/test-restored-ui-read.mjs": "ce8e4652267c0bd97e0234cfd3de7ebb40aee6f4a82aa59e4ce6a32ba2a3c5c0",
+    "scripts/lib/restored-ui-oracles.mjs": "6c181e128652cb84ba034eebd8a65f11cbd460c8bc3bdfff20307bcfa7b2e527",
+    "scripts/lib/restored-read-fetch-guard.mjs": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5"
+  },
+  "fixture": {
+    "ordinaryExistingUsers": 2,
+    "userIds": [
+      "172273ed-7c48-427d-a55b-742069a4d9de",
+      "0ed8880e-3f8c-41e3-a009-ce03e342994b"
+    ],
+    "actualRestored": {
+      "sales": [
+        {
+          "id": "5fc9c8de-34c8-4288-a26b-7ef1a3934cea",
+          "price": "25.00000000",
+          "soldAt": "2026-10-08",
+          "currency": "USD",
+          "quantity": "6.00000000",
+          "investmentId": "2729660f-230f-42e0-a017-e8753f2aef67",
+          "realizedPnlUsd": "30.00000000",
+          "realizedPnlNative": "30.00000000"
+        }
+      ],
+      "scope": "Actual restored Native22 owner rows; transfers may be absent because the original transfer test deleted its own fixture. Stored balances include direct initial fixture values, so this does not infer a complete opening ledger.",
+      "accounts": [
+        {
+          "id": "3e42ca5d-c8b8-4375-b5ea-57e7721c6bbe",
+          "name": "Cuenta A editada",
+          "type": "bank",
+          "balance": "9987.66000000",
+          "currency": "ARS"
+        }
+      ],
+      "analysis": {
+        "month": "2026-10",
+        "balance": "-12.34000000",
+        "endDate": "2026-10-31",
+        "startDate": "2026-10-01",
+        "totalIncome": "0",
+        "totalExpenses": "12.34000000"
+      },
+      "portfolio": {
+        "totalPnL": "0.0000000000000000",
+        "totalCurrentValue": "80.0000000000000000",
+        "totalPurchaseValue": "80.0000000000000000",
+        "totalRealizedPnLUsd": "30.00000000"
+      },
+      "investments": [
+        {
+          "id": "2729660f-230f-42e0-a017-e8753f2aef67",
+          "name": "Posición sintética",
+          "type": "stock_us",
+          "quantity": "4.00000000",
+          "costBasisUsd": "80.0000000000000000",
+          "currentPrice": null,
+          "priceCurrency": "USD",
+          "purchasePrice": "20.00000000",
+          "currentValueUsd": "80.0000000000000000",
+          "purchaseCurrency": "USD"
+        }
+      ],
+      "transactions": [
+        {
+          "id": "7698fa75-aeec-48f1-a590-06a047bdd995",
+          "type": "expense",
+          "amount": "12.34000000",
+          "currency": "ARS",
+          "accountId": "3e42ca5d-c8b8-4375-b5ea-57e7721c6bbe",
+          "description": "Reintento sintético",
+          "transactionDate": "2026-10-15T00:40:46.468194+00:00",
+          "destinationAccountId": null,
+          "amountInAccountCurrency": "12.34000000",
+          "destinationAmountInAccountCurrency": null
+        }
+      ],
+      "transferImpacts": [],
+      "referenceArsPerUsd": 1200,
+      "unsupportedCurrencies": [],
+      "unsupportedPositionCurrencies": []
+    },
+    "nominalOriginalCnf12FixtureClaimed": false,
+    "originalFxBefore": {
+      "rowCount": 1,
+      "sha256": "266853a75b1535ec699d672abef16966ae06a256531398a020770c493950a39c",
+      "rows": {
+        "1debb6a9-a4d7-4e76-9cbc-b75dbeec05f8": "156a3329ab1d8d6cd582d0cc2fa0b667a0c4f36abceb01bb333920b4ee888117"
+      }
+    },
+    "credentialsPublished": false
+  },
+  "browser": {
+    "product": "Installed Google Chrome",
+    "version": "146.0.7680.165",
+    "headless": true,
+    "privateEphemeralContext": true
+  },
+  "normalUiPasswordAuth": true,
+  "normalRestoredBReadRls": {
+    "verifiedUser": true,
+    "foreignOwnerAccounts": 0
+  },
+  "integrity": {
+    "canonical25Before": {
+      "tableCount": 25,
+      "hashScope": "Exact PostgreSQL JSONB text before numeric parsing; all public columns except exchange_rates/market_data_cache; Auth session changes excluded",
+      "sha256": "3cd02db58d698a0749ab16bc339b59398b5d56e1a72d1d5b8ab02066eb3aa7ba",
+      "tables": {
+        "users": {
+          "rows": 2,
+          "sha256": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d"
+        },
+        "budgets": {
+          "rows": 1,
+          "sha256": "b9b6afcda70aea3f059f5c180bf389b3759693e4df4a97f82a6e0aa919a86aa0"
+        },
+        "accounts": {
+          "rows": 3,
+          "sha256": "5e83ec445dbb4900b8a34ccf8f6c717fb372d083322abdac206ff1884294668c"
+        },
+        "categories": {
+          "rows": 26,
+          "sha256": "752dc2b9e57c727da02496aeb20e875b41f0e31b042f71f29dae4516c33d09ae"
+        },
+        "investments": {
+          "rows": 2,
+          "sha256": "0ea4607f0f3d7cb9cc8cd5aee2c265328e6217d8c1cf59a626d17f4981235aa4"
+        },
+        "bot_sessions": {
+          "rows": 1,
+          "sha256": "c7889f86295f624926a93eb0d39e4643eed4cae0e2e6aa2928e5064a8e62d42e"
+        },
+        "transactions": {
+          "rows": 3,
+          "sha256": "87961a6efc9c5e188cb8d3d5107992840aa8a82eec992997539129d1ab075619"
+        },
+        "budget_alerts": {
+          "rows": 1,
+          "sha256": "10a06b9a9af8954c2ca3acbb8cbf745ea633a1f2615d3252a868eb76b0dd8bd0"
+        },
+        "shared_groups": {
+          "rows": 2,
+          "sha256": "d92436c93db665dee8dbdecfe8768fcf9b3ee64d28be7982a185769342c95540"
+        },
+        "import_batches": {
+          "rows": 1,
+          "sha256": "3256d1ae30fa923b40a45edf013c1895b61ca59765385d465dba996618a6b43b"
+        },
+        "recurring_rules": {
+          "rows": 1,
+          "sha256": "5cfba72d16be9e069494d9038ddb97c85daae887aca7b479400c20281e3dd81e"
+        },
+        "shared_expenses": {
+          "rows": 2,
+          "sha256": "658becb2b0bdd430df22fe9cb36012b502a6a3b7952aeb5ac5227357b740bbea"
+        },
+        "investment_sales": {
+          "rows": 2,
+          "sha256": "d563ef06268ba75875d3db7c59efd15004fe8510b53d0189dcaf0a2614c2e68d"
+        },
+        "plan_usage_cycles": {
+          "rows": 1,
+          "sha256": "08ab86d668fb751b27cbf2731a9e63426a62ee256ef761ab16e6190a6b927be0"
+        },
+        "net_worth_snapshots": {
+          "rows": 1,
+          "sha256": "244c54a4abc2e1d91b560f33cad7d39fe08c9dbdf32f6fc242bbb3858dd04456"
+        },
+        "notification_outbox": {
+          "rows": 1,
+          "sha256": "eaf2dfd3367fffded3a61baf18e09dd935d9d10ce5375db95afb80364d2963d7"
+        },
+        "plan_usage_requests": {
+          "rows": 1,
+          "sha256": "9b1869d6863375a5f7dd4408aa4a5c586838bc35ac9396c9a9681619b93178bb"
+        },
+        "shared_group_members": {
+          "rows": 3,
+          "sha256": "1eb6b3eef9b5970211f69aa2996ebf4c8e49f2f0e55580f7634035d23c675845"
+        },
+        "transaction_requests": {
+          "rows": 2,
+          "sha256": "19e84f71848480fb1e155d7ac6937c6553a8c39a277c73be91082562d3832776"
+        },
+        "shared_expense_splits": {
+          "rows": 4,
+          "sha256": "0cb552cad50349712a4678a1b1c48c531a2d64c11ad397cbc15e056cd8292f2f"
+        },
+        "shared_expense_requests": {
+          "rows": 1,
+          "sha256": "782d78f9a36ad031818f6e099f8168d2922fb7d418aa0d9fe0d1ff18597255c4"
+        },
+        "investment_sale_requests": {
+          "rows": 1,
+          "sha256": "a2e08db8a2a26449a6408e6569f4b4311a64ab232f5e1d19a9410fa11ad2121b"
+        },
+        "account_creation_requests": {
+          "rows": 1,
+          "sha256": "75038e3bd69198ed25ba43c9b10c0ebae4bc726be8f86deb6648e21c2dc9d8f9"
+        },
+        "investment_create_requests": {
+          "rows": 1,
+          "sha256": "15908b52260281820dc6e041804d3c3080a513a62be4e6c1710cbfc605145e27"
+        },
+        "portfolio_performance_snapshots": {
+          "rows": 1,
+          "sha256": "42bf7df9677221aa96205ca37835b70f1e0a0d29f29cd72dc8f5cc6118dd3bb1"
+        }
+      }
+    },
+    "canonical25After": {
+      "tableCount": 25,
+      "hashScope": "Exact PostgreSQL JSONB text before numeric parsing; all public columns except exchange_rates/market_data_cache; Auth session changes excluded",
+      "sha256": "3cd02db58d698a0749ab16bc339b59398b5d56e1a72d1d5b8ab02066eb3aa7ba",
+      "tables": {
+        "users": {
+          "rows": 2,
+          "sha256": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d"
+        },
+        "budgets": {
+          "rows": 1,
+          "sha256": "b9b6afcda70aea3f059f5c180bf389b3759693e4df4a97f82a6e0aa919a86aa0"
+        },
+        "accounts": {
+          "rows": 3,
+          "sha256": "5e83ec445dbb4900b8a34ccf8f6c717fb372d083322abdac206ff1884294668c"
+        },
+        "categories": {
+          "rows": 26,
+          "sha256": "752dc2b9e57c727da02496aeb20e875b41f0e31b042f71f29dae4516c33d09ae"
+        },
+        "investments": {
+          "rows": 2,
+          "sha256": "0ea4607f0f3d7cb9cc8cd5aee2c265328e6217d8c1cf59a626d17f4981235aa4"
+        },
+        "bot_sessions": {
+          "rows": 1,
+          "sha256": "c7889f86295f624926a93eb0d39e4643eed4cae0e2e6aa2928e5064a8e62d42e"
+        },
+        "transactions": {
+          "rows": 3,
+          "sha256": "87961a6efc9c5e188cb8d3d5107992840aa8a82eec992997539129d1ab075619"
+        },
+        "budget_alerts": {
+          "rows": 1,
+          "sha256": "10a06b9a9af8954c2ca3acbb8cbf745ea633a1f2615d3252a868eb76b0dd8bd0"
+        },
+        "shared_groups": {
+          "rows": 2,
+          "sha256": "d92436c93db665dee8dbdecfe8768fcf9b3ee64d28be7982a185769342c95540"
+        },
+        "import_batches": {
+          "rows": 1,
+          "sha256": "3256d1ae30fa923b40a45edf013c1895b61ca59765385d465dba996618a6b43b"
+        },
+        "recurring_rules": {
+          "rows": 1,
+          "sha256": "5cfba72d16be9e069494d9038ddb97c85daae887aca7b479400c20281e3dd81e"
+        },
+        "shared_expenses": {
+          "rows": 2,
+          "sha256": "658becb2b0bdd430df22fe9cb36012b502a6a3b7952aeb5ac5227357b740bbea"
+        },
+        "investment_sales": {
+          "rows": 2,
+          "sha256": "d563ef06268ba75875d3db7c59efd15004fe8510b53d0189dcaf0a2614c2e68d"
+        },
+        "plan_usage_cycles": {
+          "rows": 1,
+          "sha256": "08ab86d668fb751b27cbf2731a9e63426a62ee256ef761ab16e6190a6b927be0"
+        },
+        "net_worth_snapshots": {
+          "rows": 1,
+          "sha256": "244c54a4abc2e1d91b560f33cad7d39fe08c9dbdf32f6fc242bbb3858dd04456"
+        },
+        "notification_outbox": {
+          "rows": 1,
+          "sha256": "eaf2dfd3367fffded3a61baf18e09dd935d9d10ce5375db95afb80364d2963d7"
+        },
+        "plan_usage_requests": {
+          "rows": 1,
+          "sha256": "9b1869d6863375a5f7dd4408aa4a5c586838bc35ac9396c9a9681619b93178bb"
+        },
+        "shared_group_members": {
+          "rows": 3,
+          "sha256": "1eb6b3eef9b5970211f69aa2996ebf4c8e49f2f0e55580f7634035d23c675845"
+        },
+        "transaction_requests": {
+          "rows": 2,
+          "sha256": "19e84f71848480fb1e155d7ac6937c6553a8c39a277c73be91082562d3832776"
+        },
+        "shared_expense_splits": {
+          "rows": 4,
+          "sha256": "0cb552cad50349712a4678a1b1c48c531a2d64c11ad397cbc15e056cd8292f2f"
+        },
+        "shared_expense_requests": {
+          "rows": 1,
+          "sha256": "782d78f9a36ad031818f6e099f8168d2922fb7d418aa0d9fe0d1ff18597255c4"
+        },
+        "investment_sale_requests": {
+          "rows": 1,
+          "sha256": "a2e08db8a2a26449a6408e6569f4b4311a64ab232f5e1d19a9410fa11ad2121b"
+        },
+        "account_creation_requests": {
+          "rows": 1,
+          "sha256": "75038e3bd69198ed25ba43c9b10c0ebae4bc726be8f86deb6648e21c2dc9d8f9"
+        },
+        "investment_create_requests": {
+          "rows": 1,
+          "sha256": "15908b52260281820dc6e041804d3c3080a513a62be4e6c1710cbfc605145e27"
+        },
+        "portfolio_performance_snapshots": {
+          "rows": 1,
+          "sha256": "42bf7df9677221aa96205ca37835b70f1e0a0d29f29cd72dc8f5cc6118dd3bb1"
+        }
+      }
+    },
+    "exactMatch": true,
+    "grantsBefore": {
+      "scope": "Public relation/column ACL, RLS/policies, routines, defaults and ordinary-role flags; no role passwords",
+      "sha256": "e7cec6dc54ef83126c6b92ebc50f7402ddab12265d96cb0626f2f836640ee871",
+      "policies": 24,
+      "functions": 68,
+      "relations": 29
+    },
+    "grantsAfter": {
+      "scope": "Public relation/column ACL, RLS/policies, routines, defaults and ordinary-role flags; no role passwords",
+      "sha256": "e7cec6dc54ef83126c6b92ebc50f7402ddab12265d96cb0626f2f836640ee871",
+      "policies": 24,
+      "functions": 68,
+      "relations": 29
+    },
+    "originalFxBefore": {
+      "rowCount": 1,
+      "sha256": "266853a75b1535ec699d672abef16966ae06a256531398a020770c493950a39c",
+      "rows": {
+        "1debb6a9-a4d7-4e76-9cbc-b75dbeec05f8": "156a3329ab1d8d6cd582d0cc2fa0b667a0c4f36abceb01bb333920b4ee888117"
+      }
+    },
+    "fxAfter": {
+      "rowCount": 9,
+      "sha256": "89c1c09b863372246cfb4f42e29f10b0eecf6f0bb17a84c879a21a53867dfd86",
+      "rows": {
+        "09809f02-80bd-47c8-8ccc-b92cfff13829": "2cbcbeb96c81d1b03c19a4aa85a890b92fece63351a28f74ab10cf3edd9975bc",
+        "0e666389-2fe7-4255-bda0-8cd53740ddd4": "224220605dbbf7bdf475457318f9b89e04ef91f604c7136d2cb687582c208bd4",
+        "1debb6a9-a4d7-4e76-9cbc-b75dbeec05f8": "156a3329ab1d8d6cd582d0cc2fa0b667a0c4f36abceb01bb333920b4ee888117",
+        "1f900d4a-701a-448b-b110-9f0cdfaf1bbf": "2291d9d210f688822986639030050100f282989dcfdf36049f7e63b689ad61fe",
+        "60827f29-6550-450c-81a4-5bfa3bc821f7": "8594e9732f965b7a93ecf5ba4591b1cae6ea98a603b9c1d04b2665a1b59ca428",
+        "a176636d-3300-4f35-8c2a-9c19c8dac494": "766ea65cad99f1a0dd902a514db5c746dd26a34b14867c01d48219cc937bcb9f",
+        "b6e2f660-9e04-4254-bead-d7f47b689e6f": "7a85cc9a1dc08e8f382ac2eb13779345f5e4f6a01221565e2b81f332f5a37c6b",
+        "c129d907-5f57-40d8-9b6d-b49b0144ab33": "74bf3294aa2ded9c60bbf705fb4475ec07062397acb0159593a2aa432ba0400b",
+        "d31f5d6f-cca7-4180-8830-fcfe2c02333e": "ee0184bc404021d4d3f1b5d6d6c95cfe16ef2228bf16aca6b3c212f4637403a3"
+      }
+    },
+    "auxiliaryFxOnly": true,
+    "marketCacheBefore": {
+      "rows": 1,
+      "sha256": "2fe5cc4dee4e0282f2bf0675c3dfd83a242de9e5fbe55ee5f80f7a75b3cda35c"
+    },
+    "marketCacheAfter": {
+      "rows": 1,
+      "sha256": "2fe5cc4dee4e0282f2bf0675c3dfd83a242de9e5fbe55ee5f80f7a75b3cda35c"
+    },
+    "originalMarketCacheExactMatch": true,
+    "authSessionWritesExpected": true,
+    "noFinancialMutations": true
+  },
+  "serverFetchGuard": {
+    "installedBeforeNext": true,
+    "guardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+    "decisions": 792,
+    "deniedExternal": [],
+    "scope": "globalThis.fetch only, not firewall/universal TCP; browser also bounded to restore/app loopback origins"
+  },
+  "sourceStable": true,
+  "harnessStable": true,
+  "blockers": [
+    "Original CNF12 contracted-backup plan and nominal2accounts/20movements/3lots/1rule/1group/timing/boundaries not claimed",
+    "Eight1200 auxiliary FX rows are declared post-restore test references, not contents of the original backup",
+    "No live provider, TLS, full four-CU acceptance, host/power failure or complete network isolation claim"
+  ],
+  "cleanup": [
+    {
+      "operation": "own-sdk-session-local-signout",
+      "status": "PASS"
+    },
+    {
+      "operation": "own-ui-session-local-signout",
+      "status": "PASS",
+      "httpStatus": 204
+    },
+    {
+      "operation": "own-chrome-close",
+      "status": "PASS"
+    }
+  ],
+  "finishedAt": "2026-10-15T02:56:53.426Z"
+}

@@ -1,0 +1,20 @@
+{
+  "revision": "730767b1723502b495d371e69c44df31eb230b56",
+  "sqlApplicationBaseline": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "buildId": "GrFyU52-vQBoa29ojnwTI",
+  "nextPid": 85310,
+  "copyRoot": "/tmp/zarix-app-delta-db3cf513-b7ad-4f2b-abcd-a2a44aeed27b",
+  "appOrigin": "http://127.0.0.1:3006",
+  "apiOrigin": "http://127.0.0.1:61321",
+  "rawOutputDisposition": "discarded-before-filesystem",
+  "argv": [
+    "node",
+    "/tmp/zarix-app-delta-db3cf513-b7ad-4f2b-abcd-a2a44aeed27b/node_modules/next/dist/bin/next",
+    "start",
+    "-H",
+    "127.0.0.1",
+    "-p",
+    "3006"
+  ],
+  "startedAt": "2026-10-15T07:57:58.189120+00:00"
+}

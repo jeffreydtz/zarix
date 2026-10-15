@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-15T00:39:35.527Z",
+  "mode": "read-only preflight",
+  "targets": [
+    {
+      "name": "ZARIX_LOCAL",
+      "apiOrigin": "http://127.0.0.1:54321",
+      "databasePort": "54322",
+      "role": "supabase_admin",
+      "postgres": "17.11",
+      "authUsers": 0,
+      "publicTables": 0,
+      "storageBuckets": 0,
+      "storageObjects": 0
+    },
+    {
+      "name": "ZARIX_RESTORE",
+      "apiOrigin": "http://127.0.0.1:55321",
+      "databasePort": "55322",
+      "role": "supabase_admin",
+      "postgres": "17.11",
+      "authUsers": 0,
+      "publicTables": 0,
+      "storageBuckets": 0,
+      "storageObjects": 0
+    }
+  ]
+}

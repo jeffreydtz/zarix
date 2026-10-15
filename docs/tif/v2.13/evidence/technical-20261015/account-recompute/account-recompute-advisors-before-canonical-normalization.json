@@ -1,0 +1,567 @@
+{
+  "startedAt": "2026-10-15T00:14:12.281Z",
+  "scope": "Read-only official CLI security/performance advisors for E2E localhost:57322. Existing schema findings are reported separately from the new repair RPC.",
+  "command": "supabase db advisors --db-url \"$GUARDED_LOOPBACK_URL_WITH_SSLMODE_DISABLE\" --type all --level info --fail-on none --output json",
+  "status": "PASS",
+  "findings": [
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "budgets"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investment_sales"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investments"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "recurring_rules"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "recurring_rules"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "recurring_rules"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "shared_expenses"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "shared_expenses"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "shared_group_members"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "portfolio_performance_snapshots"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "users"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "users"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "accounts"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "accounts"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "accounts"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "accounts"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "categories"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "shared_groups"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "categories"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "recurring_rules"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "budgets"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "budget_alerts"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "investments"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "bot_sessions"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "investment_sales"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "shared_group_members"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "shared_expenses"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "shared_expense_splits"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "categories"
+    },
+    {
+      "name": "auth_rls_initplan",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "categories"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "categories"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "users"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "users"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "users"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "categories"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "accounts"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transactions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "portfolio_performance_snapshots"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "recurring_rules"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "recurring_rules"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "budgets"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investments"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investments"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investments"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investments"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "bot_sessions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "bot_sessions"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "exchange_rates"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "exchange_rates"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "exchange_rates"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "budget_alerts"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investment_sales"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investment_sales"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "shared_groups"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "shared_expenses"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "shared_expense_splits"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "shared_expense_splits"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "net_worth_snapshots"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "notification_outbox"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "plan_usage_requests"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "account_creation_requests"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "import_batches"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investment_create_requests"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "investment_sale_requests"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "market_data_cache"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "net_worth_snapshots"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "notification_outbox"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "plan_usage_cycles"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "plan_usage_requests"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "shared_expense_requests"
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "schema": "public",
+      "entity": "transaction_requests"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "update_updated_at"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "analytics_category_breakdown"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "analytics_daily_trend"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "analytics_monthly_trend"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "analytics_account_breakdown"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "analytics_top_expenses"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "get_multicurrency_balances"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "guard_transaction_immutability"
+    },
+    {
+      "name": "extension_in_public",
+      "level": "WARN",
+      "schema": "public",
+      "entity": "pg_trgm"
+    }
+  ],
+  "counts": {
+    "INFO": 61,
+    "WARN": 31
+  },
+  "newRpcFindings": [],
+  "scriptSha256": "ec0cfd1ec4a66d1efb25f08b2033f5ad9c5e1f642efc5dfdc8f5fc3e18f533dc",
+  "finishedAt": "2026-10-15T00:14:13.337Z"
+}

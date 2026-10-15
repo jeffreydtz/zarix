@@ -1,11 +1,17 @@
+import { randomUUID } from 'node:crypto';
+import { ApiError } from '@/lib/api-handler';
+import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
+import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
+import { blueFxReference, type BlueFxReference } from '@/lib/blue-fx-reference';
 import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
 import type { Investment, InvestmentSale, InvestmentType } from '@/types/database';
 
 export interface CreateInvestmentInput {
+  requestId?: string;
   userId: string;
   accountId: string;
   type: InvestmentType;
@@ -44,6 +50,8 @@ export type PatchInvestmentInput = {
 };
 
 export interface InvestmentWithPnL extends Investment {
+  /** Diferencia precio confirmado/caché de la referencia inicial de compra. */
+  valuation_price_source: 'live' | 'manual' | 'cache' | 'purchase_reference';
   current_value: number;
   profit_loss: number;
   profit_loss_percent: number;
@@ -65,12 +73,13 @@ export interface InvestmentWithPnL extends Investment {
 }
 
 export interface SellPositionInput {
+  requestId?: string;
   userId: string;
   investmentId: string;
   quantity: number;
   price: number;
   currency: string;
-  soldAt: string;
+  soldAt?: string;
   notes?: string;
 }
 
@@ -90,6 +99,8 @@ export interface PortfolioSummaryPayload {
   totalPnLPercent: number;
   /** Cotización blue usada (ARS por 1 USD). */
   blueArsPerUsd: number;
+  /** Exact FX reference used here; distinct from the price source of each asset. */
+  blueReference?: BlueFxReference;
   /** Equivalentes en ARS (referencia blue). */
   totalCurrentValueArsBlue: number;
   totalPurchaseValueArsBlue: number;
@@ -119,9 +130,9 @@ function priceFactorForType(type: InvestmentType): number {
 }
 
 function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
-  if (blue.sell > 0) return blue.sell;
-  if (blue.buy > 0) return blue.buy;
-  return 1;
+  if (Number.isFinite(blue.sell) && blue.sell > 0) return blue.sell;
+  if (Number.isFinite(blue.buy) && blue.buy > 0) return blue.buy;
+  throw new Error('No hay una cotización blue válida para valorar el portafolio.');
 }
 
 function amountToUsd(
@@ -133,19 +144,19 @@ function amountToUsd(
   const c = (currency || 'USD').toUpperCase();
   if (STABLE_AS_USD.has(c)) return amount;
   if (c === 'ARS') {
-    const rate = arsPerUsd > 0 ? arsPerUsd : 1;
-    return amount / rate;
+    if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+    return amount / arsPerUsd;
   }
   if (extraUsdPerUnit) {
     const extra = extraUsdPerUnit.get(c);
-    return extra && extra > 0 ? amount * extra : 0;
+    if (extra != null && Number.isFinite(extra) && extra > 0) return amount * extra;
   }
   throw new Error(`No hay cotización a USD para ${c}`);
 }
 
 function usdToArsBlue(usd: number, arsPerUsd: number): number {
-  const rate = arsPerUsd > 0 ? arsPerUsd : 1;
-  return usd * rate;
+  if (!Number.isFinite(arsPerUsd) || arsPerUsd <= 0) throw new Error('Cotización ARS/USD inválida');
+  return usd * arsPerUsd;
 }
 
 function marketCurrencyForInvestment(type: InvestmentType, purchaseCurrency: string | null): string {
@@ -178,6 +189,16 @@ interface QuoteResult {
   price: number;
   changePct: number | null;
   currency: string;
+  /** Provider observation time, never the portfolio fetch/cache-write time. */
+  timestamp: string | null;
+}
+
+function quoteSourceTimestamp(quote: unknown): string | null {
+  if (!quote || typeof quote !== 'object' || !('timestamp' in quote)) return null;
+  const timestamp = quote.timestamp;
+  const time = timestamp instanceof Date ? timestamp.getTime()
+    : typeof timestamp === 'string' && timestamp ? Date.parse(timestamp) : Number.NaN;
+  return Number.isFinite(time) ? new Date(time).toISOString() : null;
 }
 
 async function assertOwnedInvestmentAccount(
@@ -193,10 +214,10 @@ async function assertOwnedInvestmentAccount(
     .maybeSingle();
   if (error) throw error;
   if (!data || !data.is_active) {
-    throw new Error('Cuenta no encontrada');
+    throw new ApiError('Cuenta no encontrada', 404);
   }
   if (data.type !== 'investment') {
-    throw new Error('La cuenta tiene que ser de tipo inversión');
+    throw new ApiError('La cuenta tiene que ser de tipo inversión');
   }
 }
 
@@ -228,12 +249,33 @@ function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
 
 class InvestmentsService {
   async create(input: CreateInvestmentInput): Promise<Investment> {
+    input = { ...input, requestId: input.requestId ?? nextFinancialRequestId() };
+    if (!Number.isFinite(input.quantity) || input.quantity <= 0 ||
+        !Number.isFinite(input.purchasePrice) || input.purchasePrice <= 0) {
+      throw new Error('La cantidad y el precio de compra deben ser finitos y mayores a cero.');
+    }
+    if (input.isManualPrice &&
+        (input.currentPrice == null || !Number.isFinite(input.currentPrice) || input.currentPrice <= 0)) {
+      throw new Error('El precio manual debe ser finito y mayor a cero.');
+    }
     const supabase = createServiceClientSync();
+    const requestId = input.requestId ?? randomUUID();
+    if (!validTransactionRequestId(requestId)) throw new ApiError('Identificador de solicitud inválido.');
+    const requestHash = transactionRequestHash(input as unknown as Record<string, unknown>);
+    if (input.requestId) {
+      const { data: prior, error } = await supabase.from('investment_create_requests')
+        .select('request_hash, response').eq('user_id', input.userId).eq('request_id', requestId).maybeSingle();
+      if (error) throw error;
+      if (prior) {
+        if (prior.request_hash !== requestHash) throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+        return prior.response as Investment;
+      }
+    }
     await assertOwnedInvestmentAccount(supabase, input.accountId, input.userId);
 
-    const { data, error } = await supabase
-      .from('investments')
-      .insert({
+    const { data, error } = await supabase.rpc('create_investment_once', {
+      p_user_id: input.userId, p_request_id: requestId, p_request_hash: requestHash,
+      p_investment: {
         user_id: input.userId,
         account_id: input.accountId,
         type: input.type,
@@ -244,18 +286,18 @@ class InvestmentsService {
         purchase_currency: input.purchaseCurrency,
         purchase_date: input.purchaseDate,
         maturity_date: input.maturityDate || null,
-        interest_rate: input.interestRate || null,
+        interest_rate: input.interestRate ?? null,
         notes: input.notes || null,
         market_currency: input.marketCurrency || null,
         is_manual_price: input.isManualPrice ?? false,
         current_price: input.currentPrice ?? null,
         current_price_updated_at: input.currentPrice != null ? new Date().toISOString() : null,
-      })
-      .select()
-      .single();
-
+      },
+    });
+    if (error?.code === 'Z0001') throw new ApiError('La solicitud ya se usó con otros datos.', 409);
     if (error) throw error;
-    return data;
+    if (!data?.id) throw new Error('No se pudo confirmar la inversión.');
+    return data as Investment;
   }
 
   /**
@@ -306,6 +348,7 @@ class InvestmentsService {
               price: hit.price,
               changePct: hit.changePct,
               currency: hit.currency,
+              timestamp: quoteSourceTimestamp(hit),
             });
           } else {
             // No matcheó data912: derivar a Yahoo .BA como fallback.
@@ -332,6 +375,7 @@ class InvestmentsService {
             price: q.price,
             changePct: Number.isFinite(q.changePct) ? q.changePct : null,
             currency: q.currency,
+            timestamp: quoteSourceTimestamp(q),
           });
         } else {
           missingForStooq.push(ySym);
@@ -349,6 +393,7 @@ class InvestmentsService {
               price: stooq.price,
               changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
               currency: stooq.currency,
+              timestamp: quoteSourceTimestamp(stooq),
             });
           }
         } catch {
@@ -364,6 +409,7 @@ class InvestmentsService {
           price: q.priceUSD,
           changePct: Number.isFinite(q.change24h) ? q.change24h : null,
           currency: 'USD',
+          timestamp: quoteSourceTimestamp(q),
         });
       } catch {
         /* sin crypto: nos quedamos con el último guardado */
@@ -376,11 +422,12 @@ class InvestmentsService {
   private async loadInvestmentsNormalized(
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipQuoteRefresh?: boolean }
-  ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number }> {
+  ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number; blueReference: BlueFxReference }> {
     const supabase = createServiceClientSync();
 
     const dolar = await cotizacionesService.getDolarQuotes();
     const blueArsPerUsd = arsPerUsdFromDolar(dolar.blue);
+    const reference = blueFxReference(dolar.blue, dolar.blue.sell > 0 && Number.isFinite(dolar.blue.sell) ? 'sell' : 'buy');
 
     const { data: investmentsRaw, error } = await supabase
       .from('investments')
@@ -405,18 +452,19 @@ class InvestmentsService {
       try {
         extraUsd.set(c, await cotizacionesService.getExchangeRate(c, 'USD'));
       } catch {
-        /* sin tasa: amountToUsd devolverá 0 para esa moneda */
+        /* amountToUsd rechazará la valoración; no inventar un valor cero. */
       }
     }
 
     const investmentIds = investments.map((inv) => inv.id);
     const salesByInvestment = new Map<string, { realized: number; count: number }>();
     if (investmentIds.length > 0) {
-      const { data: salesRows } = await supabase
+      const { data: salesRows, error: salesError } = await supabase
         .from('investment_sales')
         .select('investment_id, realized_pnl_usd')
         .eq('user_id', userId)
         .in('investment_id', investmentIds);
+      if (salesError) throw salesError;
       for (const row of salesRows || []) {
         const cur = salesByInvestment.get(row.investment_id) || { realized: 0, count: 0 };
         cur.realized += Number(row.realized_pnl_usd) || 0;
@@ -443,10 +491,13 @@ class InvestmentsService {
       ? await this.refreshQuotesForInvestments(candidatesForRefresh)
       : new Map<string, QuoteResult>();
 
-    const updates: Array<{ id: string; price: number; changePct: number | null }> = [];
+    const updates: Array<QuoteResult & { id: string }> = [];
 
     const investmentsWithPnL: InvestmentWithPnL[] = investments.map((inv) => {
       let currentPrice = Number(inv.current_price ?? inv.purchase_price);
+      let priceSource: InvestmentWithPnL['valuation_price_source'] = inv.current_price == null
+        ? 'purchase_reference' : inv.is_manual_price ? 'manual' : 'cache';
+      let priceUpdatedAt = inv.current_price == null ? null : inv.current_price_updated_at;
       let dailyChangePct: number | null =
         inv.current_price_change_pct == null ? null : Number(inv.current_price_change_pct);
       let liveCurrency: string | null = null;
@@ -458,19 +509,21 @@ class InvestmentsService {
           currentPrice = fresh.price;
           dailyChangePct = fresh.changePct;
           liveCurrency = fresh.currency;
-          updates.push({ id: inv.id, price: fresh.price, changePct: fresh.changePct });
+          priceSource = 'live';
+          priceUpdatedAt = fresh.timestamp;
+          updates.push({ id: inv.id, ...fresh });
         }
       }
 
       const qty = Number(inv.quantity);
       const purchaseUnit = Number(inv.purchase_price);
       const purchaseCur = (inv.purchase_currency || 'USD').toUpperCase();
-      // Moneda de mercado: override manual del usuario > moneda real de la cotización
-      // en vivo (no para bonos: data912 hardcodea ARS y rompería un bono en USD) >
-      // default por tipo.
+      // La referencia de compra conserva la moneda de compra. Una cotización
+      // confirmada conserva la moneda del proveedor, también para bonos: no
+      // se reetiqueta un precio ARS como USD por el tipo o la preferencia.
       const typeDefaultCur = marketCurrencyForInvestment(inv.type, inv.purchase_currency);
-      const autoCur = inv.type !== 'bond' ? liveCurrency : null;
-      const marketCur = (inv.market_currency || autoCur || typeDefaultCur).toUpperCase();
+      const marketCur = (priceSource === 'purchase_reference' ? purchaseCur
+        : liveCurrency || inv.market_currency || typeDefaultCur).trim().toUpperCase();
       const priceFactor = priceFactorForType(inv.type);
 
       const costNative = (qty * purchaseUnit) / priceFactor;
@@ -498,6 +551,8 @@ class InvestmentsService {
         quantity: qty,
         purchase_price: purchaseUnit,
         current_price: currentPrice,
+        current_price_updated_at: priceUpdatedAt,
+        valuation_price_source: priceSource,
         current_price_change_pct: dailyChangePct,
         interest_rate: inv.interest_rate ? Number(inv.interest_rate) : null,
         market_price_currency: marketCur,
@@ -517,22 +572,22 @@ class InvestmentsService {
     });
 
     if (updates.length > 0) {
-      const nowIso = new Date().toISOString();
       await Promise.all(
         updates.map((u) =>
           supabase
             .from('investments')
             .update({
               current_price: u.price,
-              current_price_updated_at: nowIso,
+              current_price_updated_at: u.timestamp,
               current_price_change_pct: u.changePct,
+              market_currency: u.currency.trim().toUpperCase(),
             })
             .eq('id', u.id)
         )
       );
     }
 
-    return { investments: investmentsWithPnL, blueArsPerUsd };
+    return { investments: investmentsWithPnL, blueArsPerUsd, blueReference: reference };
   }
 
   async list(userId: string, options?: { forceRefreshQuotes?: boolean }): Promise<InvestmentWithPnL[]> {
@@ -555,6 +610,11 @@ class InvestmentsService {
   }
 
   async update(id: string, userId: string, updates: PatchInvestmentInput): Promise<Investment> {
+    if ((updates.quantity !== undefined && (!Number.isFinite(updates.quantity) || updates.quantity <= 0)) ||
+        (updates.purchasePrice !== undefined && (!Number.isFinite(updates.purchasePrice) || updates.purchasePrice <= 0)) ||
+        (updates.currentPrice != null && (!Number.isFinite(updates.currentPrice) || updates.currentPrice <= 0))) {
+      throw new Error('La cantidad y los precios deben ser finitos y mayores a cero.');
+    }
     const supabase = createServiceClientSync();
     const row = mapPatchToRow(updates);
     if (Object.keys(row).length === 0) {
@@ -572,6 +632,8 @@ class InvestmentsService {
       .select()
       .single();
 
+    // Primary-key + owner filters can match at most one row.
+    if (error?.code === 'PGRST116') throw new ApiError('Inversión no encontrada', 404);
     if (error) throw error;
     return data;
   }
@@ -594,6 +656,7 @@ class InvestmentsService {
    * Si la cantidad restante llega a 0, marca la posición como archivada.
    */
   async sell(input: SellPositionInput): Promise<SellPositionResult> {
+    input = { ...input, requestId: input.requestId ?? nextFinancialRequestId() };
     if (!Number.isFinite(input.quantity) || input.quantity <= 0) {
       throw new Error('La cantidad a vender debe ser mayor a 0.');
     }
@@ -602,6 +665,19 @@ class InvestmentsService {
     }
 
     const supabase = createServiceClientSync();
+    const requestHash = transactionRequestHash(input as unknown as Record<string, unknown>);
+    if (input.requestId) {
+      if (!validTransactionRequestId(input.requestId)) throw new ApiError('Identificador de solicitud inválido.');
+      const { data: prior, error } = await supabase.from('investment_sale_requests')
+        .select('request_hash, response').eq('user_id', input.userId).eq('request_id', input.requestId).maybeSingle();
+      if (error) throw error;
+      if (prior) {
+        if (prior.request_hash !== requestHash) throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+        return { sale: prior.response.sale, remainingQuantity: Number(prior.response.remaining_quantity),
+          positionClosed: Boolean(prior.response.position_closed) };
+      }
+    }
+
 
     const { data: invRow, error: invErr } = await supabase
       .from('investments')
@@ -620,7 +696,7 @@ class InvestmentsService {
     // Validación temprana para un mensaje amigable; la garantía real contra
     // oversell (doble click / ventas concurrentes) la da el RPC atómico.
     if (input.quantity > currentQty + 1e-9) {
-      throw new Error(`No podés vender más de lo que tenés (${currentQty}).`);
+      throw new ApiError(`No podés vender más de lo que tenés (${currentQty}).`);
     }
 
     const dolar = await cotizacionesService.getDolarQuotes();
@@ -641,28 +717,43 @@ class InvestmentsService {
     const saleUsdPerUnit = amountToUsd(input.price, saleCurrency, arsPerUsd, extra);
     const purchaseUsdPerUnit = amountToUsd(purchasePrice, basisCurrency, arsPerUsd, extra);
     const realizedUsd = ((saleUsdPerUnit - purchaseUsdPerUnit) * input.quantity) / priceFactor;
-    const realizedNative =
-      saleCurrency === 'ARS' ? usdToArsBlue(realizedUsd, arsPerUsd) : realizedUsd;
+    // Native se expresa en la moneda de la venta, también si es EUR/crypto:
+    // no guardar un importe USD etiquetado con otra moneda.
+    const saleUsdPerCurrencyUnit = amountToUsd(1, saleCurrency, arsPerUsd, extra);
+    const realizedNative = realizedUsd / saleUsdPerCurrencyUnit;
 
     // RPC atómico (una transacción): descuenta quantity SOLO si alcanza e
     // inserta la venta. Elimina la carrera lectura-validación-escritura que
     // permitía sobrevender con dos requests simultáneos.
-    const { data: rpcData, error: rpcErr } = await supabase.rpc('sell_investment_position', {
+    const saleParameters = {
       p_user_id: input.userId,
       p_investment_id: input.investmentId,
       p_quantity: input.quantity,
       p_price: input.price,
       p_currency: saleCurrency,
-      p_sold_at: input.soldAt,
+      p_sold_at: input.soldAt ?? new Date().toISOString().split('T')[0],
       p_realized_pnl_native: realizedNative,
       p_realized_pnl_usd: realizedUsd,
       p_ars_per_usd: arsPerUsd,
       p_notes: input.notes ?? null,
+      // These exact basis fields are checked while the SQL row lock is held.
+      // Provider IO above must never let a concurrent edit change the sale basis.
+      p_expected_purchase_price: invRow.purchase_price,
+      p_expected_purchase_currency: invRow.purchase_currency,
+      p_expected_type: invRow.type,
+    };
+    const { data: rpcData, error: rpcErr } = await supabase.rpc('sell_investment_once', {
+      p_user_id: input.userId, p_request_id: input.requestId ?? randomUUID(),
+      p_request_hash: requestHash, p_sale: saleParameters,
     });
+    if (rpcErr?.code === 'Z0001') throw new ApiError('La solicitud ya se usó con otros datos.', 409);
+    if (rpcErr?.code === 'Z0002') {
+      throw new ApiError('La base de compra cambió mientras se calculaba la venta. Reintentá la misma solicitud para actualizar el cálculo.', 409);
+    }
 
     if (rpcErr) {
       if (rpcErr.message?.includes('CANTIDAD_INSUFICIENTE')) {
-        throw new Error(
+        throw new ApiError(
           'No podés vender más de lo que tenés (la posición cambió o ya se vendió en otra operación).'
         );
       }
@@ -735,7 +826,7 @@ class InvestmentsService {
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipDailySnapshot?: boolean; skipQuoteRefresh?: boolean }
   ): Promise<PortfolioSummaryPayload> {
-    const { investments, blueArsPerUsd } = await this.loadInvestmentsNormalized(userId, options);
+    const { investments, blueArsPerUsd, blueReference } = await this.loadInvestmentsNormalized(userId, options);
 
     const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.market_value_usd, 0);
     const totalPurchaseValue = investments.reduce((sum, inv) => sum + inv.cost_basis_usd, 0);
@@ -753,10 +844,11 @@ class InvestmentsService {
     const totalDailyPnLArsBlue = usdToArsBlue(totalDailyPnLUsd, blueArsPerUsd);
 
     const supabase = createServiceClientSync();
-    const { data: allSales } = await supabase
+    const { data: allSales, error: allSalesError } = await supabase
       .from('investment_sales')
       .select('realized_pnl_usd')
       .eq('user_id', userId);
+    if (allSalesError) throw allSalesError;
     const totalRealizedPnLUsd = (allSales || []).reduce(
       (sum, row) => sum + (Number(row.realized_pnl_usd) || 0),
       0
@@ -786,6 +878,7 @@ class InvestmentsService {
       totalPnL,
       totalPnLPercent,
       blueArsPerUsd,
+      blueReference,
       totalCurrentValueArsBlue,
       totalPurchaseValueArsBlue,
       totalPnLArsBlue,

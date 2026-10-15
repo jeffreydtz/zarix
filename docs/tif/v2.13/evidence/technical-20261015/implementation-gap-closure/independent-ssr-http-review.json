@@ -1,0 +1,236 @@
+{
+  "status": "PASS_INDEPENDENT_SSR_HTTP_REVIEW_SCOPED_WITH_CP317_COVERAGE_GAP",
+  "reviewedAt": "2026-10-15T08:13:31.237872+00:00",
+  "reviewer": "dependency_audit",
+  "revision": "730767b1723502b495d371e69c44df31eb230b56",
+  "sqlApplicationBaseline": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "reviewMethod": "Only existing public package reports, snapshots, JSON/hash comparisons and frozen Git blobs were read. No private files, copied runtime tree, credentials, Auth/HTTP/SQL request, browser, gate, provider call or process action was performed by this reviewer.",
+  "productDefectsFound": [],
+  "coverageFindings": [
+    {
+      "id": "SSR 38-CP317-B-DASHBOARD-NOT-REQUESTED",
+      "priority": "P2",
+      "case": "CP3-17",
+      "finding": "The actual 13-request record contains two dashboard requests for A, but B is checked through GET preferences and SettingsForm Flight props only. Original CP3-17 explicitly requests dashboard reload for both U1 and U2; the B dashboard path is not an observed acceptance in this preserved run.",
+      "impact": "U2 preferences/session isolation is supported, but full original CP3-17 dashboard composition must remain pending. This is missing test scope, not a demonstrated product defect.",
+      "resolutionState": "Parent reports a separate bounded Dashboard B HTTP supplement is planned. No future result is credited here, and SSR 38 is not replaced or rerun."
+    }
+  ],
+  "verifiedOutcome": {
+    "checksPassed": 38,
+    "checksTotal": 38,
+    "actualHttpRequests": 13,
+    "manifestArtifactPinsVerified": 11,
+    "buildId": "GrFyU52-vQBoa29ojnwTI",
+    "physicalSourceRows": 514,
+    "all514HashesMatchFrozenGit730": true,
+    "sourceListEqualsNative730Execution": true,
+    "compactSourceManifestSha256": "e1e3d2c6cef6f6f1389f36ed263b897b6a700faa6bcc5db41fd38bbe69157433",
+    "buildReportedStable": true,
+    "httpPhaseReportedFrozenCopyStable": true,
+    "schemaDeltaTo730": "Only scripts/test-atomic-account-recompute.mjs differs from the applied faae schema baseline; SQL is unchanged."
+  },
+  "transportAndSessionProof": {
+    "transport": "Actual fetch requests to the listening frozen Next app at 127.0.0.1:3006 with cookies produced in memory by the real @supabase/ssr normal GoTrue client against the isolated clone 61321. The Next cookie/session adapter is not replaced in this phase.",
+    "sequence": [
+      "A-first and B sign in normally.",
+      "A-first saves USD/visible through real cookie-authenticated PUT, then GET/dashboard returns the bound Hero Flight payload 200USD/240000ARS.",
+      "A-first saves USD/hidden, a mismatched owner header is denied 403, then the first A session signs out locally with SDK error:null.",
+      "A-new is created after saving and logout; real GET preferences retains USD/hidden, while B retains ARS/visible.",
+      "A-new GET/dashboard excludes Hero/Sticky Flight and the actual HTML sentinel; A-new/B GET/settings carry distinct owner-bound preference props."
+    ],
+    "cleanup": "First A local SDK logout is a passed check; B and A-new local SDK logouts report error:null. The separate read-only closure report confirms clone auth.sessions 0 and auth.refresh_tokens 0. No HTTP logout status is invented."
+  },
+  "htmlFlightAndPresentation": {
+    "observedInRealServerHtml": [
+      "Presence of recovery-email form ID on anonymous forgot-password200.",
+      "Anonymous update-password200 contains the safe invalid/expired-link message and no recovery-password input.",
+      "Normal-session update-password200 contains recovery-password input.",
+      "Hidden A dashboard response has no id=networth-sentinel element."
+    ],
+    "observedInRealFlightProps": [
+      "NetWorthHero module 48648 is selected through the actual compiled dashboard client-reference manifest; baseCurrency USD, now.totalUSD 200 and now.totalARSBlue 240000 are asserted as server-produced props.",
+      "Hidden A dashboard has no bound NetWorthHero or StickyNetWorthBar payload.",
+      "SettingsForm module 23820 is bound through the actual settings client-reference manifest; A-new owner/preferences USD/false and B owner/preferences ARS/true discriminate sessions.",
+      "Authenticated PasswordRecoveryForm receives expectedUserId matching the current A-new session."
+    ],
+    "observedAsHttpOnly": [
+      "Preferences PUT200/GET200 and stale-owner PUT403.",
+      "Anonymous invalid recovery callback returns 307 to the exact safe forgot-password location without reflecting the invalid code."
+    ],
+    "notClaimed": [
+      "A formatted, visible or animated USD200/ARS240000 amount was not asserted from HTML text; these totals are Flight props.",
+      "Settings checkbox/select DOM state, hydration, click/change interactions, visual hiding after client transitions, sticky scrolling, CSS layout and browser cookie attributes were not exercised.",
+      "No browser was used. Source-rendered markup and Flight absence are not a visual acceptance or a screenshot.",
+      "No valid recovery email/link journey, email delivery, password update or callback token exchange success is exercised."
+    ]
+  },
+  "financialAndOriginalIntegrity": {
+    "cloneFinancialTables": [
+      "accounts",
+      "transactions",
+      "investments",
+      "investment_sales",
+      "net_worth_snapshots",
+      "portfolio_performance_snapshots",
+      "transaction_deletion_audit"
+    ],
+    "cloneFullRowInventoryComparisons": 7,
+    "reportedUnchanged": true,
+    "interpretation": "The frozen runner compares count plus deterministic full-row JSON MD5 inventories before/after HTTP. Identical data is proven by its reported oracle; same-value snapshot upserts are not claimed absent. This reviewer did not reopen database/private snapshots.",
+    "originalInventoryEntriesReportedUnchanged": 39,
+    "originalComparisonBoundary": "Readiness explicitly starts the original comparison after stack startup and does not claim absence of original Auth startup housekeeping. The 39 entries are not a claim covering every possible native table or all process state.",
+    "backupCheckpointUnchangedReported": true,
+    "cloneAuthSessionsRemaining": 0,
+    "cloneAuthRefreshTokensRemaining": 0,
+    "profileScope": "SSR intentionally leaves the cloned A preference USD/hidden while B remains ARS/visible. It does not claim those cloned profile preferences were restored to the earlier Native phase initial state."
+  },
+  "buildAndPrivacyScope": {
+    "frozenCopyRevision": "730767b1723502b495d371e69c44df31eb230b56",
+    "sourceCount": 514,
+    "offlineFontFilesReported": 7,
+    "offlineFontMockSha256": "e40239404df92b6fb966b9be84d5f42dff2a146b38dab7d2096904ee7c144d5a",
+    "fetchGuardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+    "environmentValuesPassedInMemoryOnlyReported": true,
+    "credentialFilesCreatedReported": 0,
+    "loopbackMetadata": "App argv binds 127.0.0.1:3006; the four new service records declare exact own loopback listeners. Readiness lists some preexisting native listeners as wildcard, so no universal host/network isolation claim is added.",
+    "fetchGuardLimit": "Inspected build source verifies the existing font hashes and fetch preload. A global-fetch preload is not a universal firewall for all clients.",
+    "browserStaticValueScan": {
+      "files": 139,
+      "matchingPaths": {
+        "SUPABASE_SERVICE_ROLE_KEY": [],
+        "CRON_SECRET": [],
+        "MP_WEBHOOK_SECRET": [],
+        "MP_ACCESS_TOKEN": []
+      },
+      "status": "PASS",
+      "scope": "Four complete selected private values in .next/static bytes only; not universal absence proof."
+    },
+    "scanLimit": "Four complete selected private values across 139 .next/static files, as reported by the owner; no universal secret absence or new reviewer scan is claimed.",
+    "rawResponsesRetained": false,
+    "rawResponseLimit": "HTML, cookies and tokens stayed in memory; public response SHA256 values, extracted safe props and 38 checks are retained. This reviewer cannot independently reparse discarded response bodies.",
+    "sharedParser": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+      "matchesFrozen730Git": true,
+      "separatelySnapshottedInOwnerManifest": false,
+      "scope": "The imported parser uses JSON.parse only and does not evaluate response JavaScript. Its current bytes match the frozen Git 730 helper; the owner 11-file snapshot manifest does not independently snapshot this shared documentation helper."
+    }
+  },
+  "originalContractComposition": [
+    {
+      "case": "CP2-11",
+      "assessment": "SUPPORTED_API_SQL_SSR_COMPOSITE_CANDIDATE",
+      "completeOriginalContractSupportedWithinApiSsrScope": true,
+      "evidence": "Native 730 proves strict persistence, original 120000ARS/100USD balances, real 200USD aggregation and profile isolation; SSR 38 adds real cookie PUT, bound 200USD/240000ARS data and post-save logout/newlogin with USD/hidden retained. Original evidence allows API/UI. No browser or visual interaction is credited.",
+      "matrixPromotionPerformed": false
+    },
+    {
+      "case": "CP2-12",
+      "assessment": "SUPPORTED_API_SQL_COMPOSITE_CANDIDATE",
+      "completeOriginalContractSupportedWithinApiSsrScope": true,
+      "evidence": "Native 730 supplies invalid ZZZ/manipulated input 400, real B foreign RLS read/write zero rows, SQL 23514 and unchanged configurations/financial rows; SSR 38 supplies real Next stale-owner 403 and distinct owner-bound A/B preferences. These are explicit complementary scopes from the same frozen application revision.",
+      "matrixPromotionPerformed": false
+    },
+    {
+      "case": "CP3-17",
+      "assessment": "PARTIAL_PENDING_ACTUAL_B_DASHBOARD_SUPPLEMENT",
+      "completeOriginalContractSupportedWithinApiSsrScope": false,
+      "evidence": "A visible/hidden dashboards, saved base/widget state and unchanged history are observed. B own preferences and SettingsForm are observed, but a B dashboard reload is not in the actual request record. A future supplement must retain its own source/request/integrity bindings.",
+      "matrixPromotionPerformed": false
+    }
+  ],
+  "matrixMutated": false,
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/manifest.json",
+      "sha256": "fb7434a09bd4f052802cbb2d329e9c72a1447a761db7d30a423c0c2e72225dc8",
+      "bytes": 1754
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/after-sessions-original-integrity.json",
+      "sha256": "be2851d5bbf140528c4d3f7cf22ebb1bc1bf9e2a459daa453ce001f5080b1c2f",
+      "bytes": 3441
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/app-state.json",
+      "sha256": "e8386c6c97cb87fe90948dd00d7febd6f42498bd12e5209f7ab1c63dad2193a0",
+      "bytes": 642
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/build-verification.json",
+      "sha256": "4fd07e7883e94b35c19d47d4b628b17c9497709fac3f5bfa1504bf49932e19b9",
+      "bytes": 78301
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/clone-readiness.json",
+      "sha256": "dbea560dbc24ca57f189c413c68e2581013b6be0f12f4aea78d315a8b498bfb5",
+      "bytes": 1914
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/services-metadata.json",
+      "sha256": "42dab77553a9c534aa7eeb442eb0dbb3221d87f037adc9c757a3226a4ab5060b",
+      "bytes": 3108
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/sources/build-app.py",
+      "sha256": "04c5e4759c358e681a67346e74c9df2d70df459c5e86d5eb7d1333ebfa712f3e",
+      "bytes": 12571
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/sources/launch-services.py",
+      "sha256": "945cb4a1a0150184d73973aeaaaebdc5f1264eb8eb9b886b96a0dc57a93de614",
+      "bytes": 8950
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/sources/local-http.mjs",
+      "sha256": "dca2d230c162345be5dd15d0ace1860e2277badb456619711dce05b78c6b4e33",
+      "bytes": 5062
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/sources/resume-readiness.py",
+      "sha256": "e85e5a4e94fdb024c5df5bce80b633e5ad750adb21c2ff195545ad2d6ed66b15",
+      "bytes": 8776
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/sources/run-ssr-http.mjs",
+      "sha256": "9f2bcfd497752620ec1f1fdc7e76d168ab627f2ebd6e1bf09cdf10c5f1d234b2",
+      "bytes": 13984
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/verification.json",
+      "sha256": "32db3165f6a6bc9b75534b9ca7e9f51b66d382aa8f308f0888ceae00b9597bed",
+      "bytes": 8607
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+      "bytes": 14502
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/verification.json",
+      "sha256": "a602708a02ee68760e71015b81baae5f774b5f5a9f36d70a2b6a565c5190038c",
+      "bytes": 43427
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/execution.json",
+      "sha256": "dfa10e03ec3af313afb44ea1ccb611c869abbc23b9dc24075109f735fcb58424",
+      "bytes": 78374
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/sources/manifest.json",
+      "sha256": "66fdd85cf7a5d93d10a1ee617a30441b207715511d1af970be0559c7c3f69ca1",
+      "bytes": 723
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-native-delta-review.json",
+      "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40",
+      "bytes": 14439
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+      "bytes": 231190
+    }
+  ]
+}

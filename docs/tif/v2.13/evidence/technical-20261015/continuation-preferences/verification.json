@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "workingTreeSources": true,
+  "status": "PASS_FOCUSED_IMPLEMENTATION",
+  "caseIds": [
+    "CP2-11",
+    "CP2-12",
+    "CP3-17"
+  ],
+  "originalCaseMatrixChanged": false,
+  "nativeAcceptanceRun": false,
+  "gates": [
+    {
+      "name": "focused",
+      "command": "node node_modules/vitest/vitest.mjs run __tests__/presentation-preferences.test.ts __tests__/presentation-preferences-ui.test.ts __tests__/presentation-preferences-hero.test.ts __tests__/dashboard-read-failures.test.ts __tests__/cp318-net-worth-hero.test.ts __tests__/net-worth-usd-formatting.test.ts __tests__/billing-settings-cancellation.test.ts --reporter=json --outputFile=docs/tif/v2.13/evidence/technical-20261015/continuation-preferences/focused-final.json",
+      "exitCode": 0,
+      "passed": 52,
+      "failed": 0,
+      "testFiles": 7,
+      "report": "focused-final.json"
+    },
+    {
+      "name": "typecheck",
+      "command": "node node_modules/typescript/bin/tsc --noEmit --incremental false",
+      "exitCode": 0,
+      "log": "typecheck-final.log"
+    },
+    {
+      "name": "lint",
+      "command": "node node_modules/next/dist/bin/next lint --file app/api/user/preferences/route.ts --file lib/presentation-preferences.ts --file lib/services/presentation-preferences.ts --file components/settings/SettingsForm.tsx --file app/(authenticated)/settings/page.tsx --file app/(authenticated)/dashboard/page.tsx --file components/dashboard/NetWorthHero.tsx --file components/dashboard/StickyNetWorthBar.tsx --file lib/constants/user-columns.ts --file types/database.ts --file __tests__/presentation-preferences.test.ts --file __tests__/presentation-preferences-ui.test.ts --file __tests__/presentation-preferences-hero.test.ts --file __tests__/dashboard-read-failures.test.ts",
+      "exitCode": 0,
+      "log": "lint-final.log",
+      "files": 14
+    }
+  ],
+  "migration": {
+    "command": "SUPABASE_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 SUPABASE_NO_UPDATE_NOTIFIER=1 /tmp/zarix-runtime-20261015/bin/supabase migration new presentation_preferences",
+    "path": "supabase/migrations/20261015072807_presentation_preferences.sql",
+    "appliedToNativeDatabase": false
+  },
+  "testScopes": [
+    {
+      "file": "presentation-preferences.test.ts",
+      "assertions": 19,
+      "scope": "Actual route handlers and PostgreSQL WASM full migration replay/RLS plus disk reopen; Auth and PostgREST query adapter are explicit doubles."
+    },
+    {
+      "file": "presentation-preferences-ui.test.ts",
+      "assertions": 3,
+      "scope": "Settings event handlers with React-hook/router/fetch doubles; no browser."
+    },
+    {
+      "file": "presentation-preferences-hero.test.ts",
+      "assertions": 2,
+      "scope": "Real Hero/Amount/React SSR and history values; only ResponsiveContainer sizing is replaced. Browser animation/visibility are not exercised."
+    },
+    {
+      "file": "dashboard-read-failures.test.ts",
+      "assertions": 15,
+      "scope": "Dashboard orchestration/SSR with documented service/widget doubles; verifies owner base, visibility and no snapshot writes."
+    },
+    {
+      "file": "cp318-net-worth-hero.test.ts",
+      "assertions": 3,
+      "scope": "Existing actual Hero SSR partial-valuation/history regression."
+    },
+    {
+      "file": "net-worth-usd-formatting.test.ts",
+      "assertions": 6,
+      "scope": "Existing actual Hero/Amount SSR USD cents, integers, ARS and initially hidden Sticky regression."
+    },
+    {
+      "file": "billing-settings-cancellation.test.ts",
+      "assertions": 4,
+      "scope": "Existing Settings cancellation handler regressions with documented doubles."
+    }
+  ],
+  "priorAttempts": [
+    {
+      "report": "focused-attempt-1.json",
+      "passed": 46,
+      "failed": 0,
+      "note": "Before full-state PUT, legacy regression and optional stale-owner guard were added."
+    },
+    {
+      "report": "focused-before-owner-guard.json",
+      "passed": 50,
+      "failed": 0,
+      "note": "Before optional stale-owner header; retained without overwrite."
+    },
+    {
+      "gate": "initial-typecheck",
+      "exitCode": 2,
+      "rawLogRetained": false,
+      "note": "Five TS2571 unknown row.value accesses in the new PGlite test. Fixed by explicit query generics; subsequent checks pass. Original diagnostics remain in task tool transcript."
+    },
+    {
+      "gate": "migration-help-initial",
+      "exitCode": 1,
+      "note": "CLI telemetry attempted a home-directory write denied by sandbox. The documented help and migration creation succeeded with telemetry disabled, without changing HOME or external config."
+    }
+  ],
+  "preservation": [
+    "Preference writes touch only users.default_currency and users.net_worth_widget_visible.",
+    "Original balances, transactions, investments and net-worth history are compared unchanged in the isolated WASM fixture.",
+    "A/B RLS, invalid currency, unknown fields, stale owner headers and unavailable Auth/DB are covered.",
+    "Dashboard GET no longer records a financial snapshot. Existing scheduled snapshot computation/writer is unchanged.",
+    "Global Hero currency localStorage is removed; saved server props and user keys isolate component state.",
+    "Unsupported existing legacy base values are not rewritten; the owner must explicitly save both valid fields to correct configuration."
+  ],
+  "limitations": [
+    "No native PostgreSQL/GoTrue/PostgREST, browser, load test, quote provider or financial runtime was started.",
+    "No frozen evidence, original CSV, original case result or old matrix is modified/promoted by this package.",
+    "The new migration still needs the authorized deployment/migration workflow; shared generated types were updated additively and are not claimed as a native CLI regeneration.",
+    "Only the two authorized settings are offered: ARS/USD base and Patrimonio visibility. Other widgets, ordering and additional currencies are outside this delta."
+  ],
+  "independentReview": {
+    "file": "independent-source-review.json",
+    "sha256": "44524bd150a74c979c9a988634b6c18ac63537330f61fb8876027b7bbb7819ff",
+    "status": "PASS_SOURCE_ONLY"
+  }
+}

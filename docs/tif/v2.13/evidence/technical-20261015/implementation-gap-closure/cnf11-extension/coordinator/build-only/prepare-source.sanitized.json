@@ -1,0 +1,16 @@
+{
+  "status": "BUILD_ONLY_SOURCE_READY_RUNTIME_NOT_STARTED",
+  "run": "27e6af51-dcbd-4498-99ef-aec049bb9cc0",
+  "privateDirectory": "/tmp/zarix-runtime-20261015/cnf11-extension-27e6af51-dcbd-4498-99ef-aec049bb9cc0",
+  "targetsFile": "/tmp/zarix-runtime-20261015/cnf11-extension-27e6af51-dcbd-4498-99ef-aec049bb9cc0/targets.metadata.json",
+  "sourceCopyRoot": "/tmp/zarix-cnf11-extension-app-27e6af51-dcbd-4498-99ef-aec049bb9cc0",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "sourceCount": 517,
+  "sourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+  "sourceProofFile": "/tmp/zarix-runtime-20261015/cnf11-extension-27e6af51-dcbd-4498-99ef-aec049bb9cc0/source-proof.metadata.json",
+  "sqlExecuted": false,
+  "nativeStarted": false,
+  "newCredentialFiles": 0,
+  "controllerSha256": "0a0183d9aad4b124f924fa255dbe364ec7c63b52b6c6d9be74e0573146593711",
+  "preparedAt": "2026-10-15T09:28:24.311160+00:00"
+}

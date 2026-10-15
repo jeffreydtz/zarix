@@ -1,0 +1,62 @@
+{
+  "startedAt": "2026-10-15T01:17:24.864Z",
+  "caseId": "CP2-19",
+  "resource": "budgets",
+  "layer": "API",
+  "operation": "SELECT_U2",
+  "status": "PASS",
+  "scope": "One corrected read-only API SELECT, normal A/B sessions, no new fixtures or writes; the earlier48-cell attempt is preserved unchanged",
+  "query": {
+    "month": "2099-01-01"
+  },
+  "target": {
+    "app": "http://127.0.0.1:3000",
+    "api": "http://127.0.0.1:57321",
+    "postgresPort": "57322"
+  },
+  "normalVerifiedUsers": 2,
+  "before": {
+    "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+    "columns": [
+      "alert_at_percent",
+      "amount",
+      "category_id",
+      "created_at",
+      "currency",
+      "id",
+      "month",
+      "rollover_amount",
+      "rollover_enabled",
+      "user_id"
+    ],
+    "rows": 1
+  },
+  "httpStatus": 200,
+  "observation": {
+    "status": 200,
+    "foreignRows": 0,
+    "contract": "The collection is scoped to session A; a valid DATE month does not expose B rows"
+  },
+  "after": {
+    "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+    "rows": 1
+  },
+  "bSnapshotUnchanged": true,
+  "sourceManifest": [
+    {
+      "path": "app/api/budgets/route.ts",
+      "sha256": "0eb41dcefd5a142ff3d73c77524673cb48eb0300856085dc55433cfd4e87b6c6"
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "sha256": "ac665283107e18ab3f23f19631dd6986b8312a2ae577bc398fbce13e8b7a71df"
+    },
+    {
+      "path": "lib/api-handler.ts",
+      "sha256": "a44bd8a18078edd9569197e18e4025ea68bcfcf7d9f322498f75336fa0537159"
+    }
+  ],
+  "revision": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+  "runnerSha256": "33c4388bbd5f58577232ae254c716fb3d7169ec11482839bb2359de2cdf9e049",
+  "finishedAt": "2026-10-15T01:17:25.197Z"
+}

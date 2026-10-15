@@ -1,0 +1,930 @@
+{
+  "sourceRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "completedAt": "2026-10-15T08:36:02.016Z",
+  "outerFailure": false,
+  "cleanup": {
+    "profileRestored": true,
+    "deferredOutboxRestored": true,
+    "controlledConstraintRemoved": true,
+    "authSessions": 0,
+    "authRefreshTokens": 0,
+    "sdkLogoutResults": [
+      {
+        "noError": true,
+        "errorStatus": null
+      },
+      {
+        "noError": true,
+        "errorStatus": null
+      }
+    ],
+    "historyUnchanged": true,
+    "preferencesUnchanged": true,
+    "existingFinancialRowsUnchanged": true
+  },
+  "browserUsed": false,
+  "externalProvidersAccepted": false,
+  "rawConsolePersisted": false,
+  "credentialValuesCopied": false,
+  "envFilesCreated": false,
+  "sessionsPersisted": false,
+  "status": "PASS",
+  "scope": "Nine actual COPY730 handler/service/native-DB paths, literal manual1500 fixture and positively calibrated non-enumerable Error console capture. Synthetic PNG is generated in RAM and its base64 may reside in private fixture DB notes, never an image/log file. Telegram transport rejects as a double, quotes/MP actual loopback HTTP fixtures, not external integrations or collector/deployment acceptance.",
+  "correlations": [
+    {
+      "id": "corr-cnf13-01",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Literal expense1500 status201",
+          "passed": true
+        },
+        {
+          "name": "Fixed correlation returned",
+          "passed": true
+        },
+        {
+          "name": "Balance8500",
+          "passed": true
+        },
+        {
+          "name": "One committed expense1500",
+          "passed": true
+        },
+        {
+          "name": "Synthetic image remains only in the new private fixture note, never an image file",
+          "passed": true
+        },
+        {
+          "name": "DB/service linked to exact committed UUID",
+          "passed": true
+        }
+      ],
+      "details": {
+        "amount": 1500,
+        "initialBalance": 10000,
+        "finalBalance": 8500,
+        "transactionId": "3bd41e21-e367-4299-af6d-8dec73c90e8d",
+        "syntheticImageBase64PrivateFixtureNoteRows": 1,
+        "imageFileCreated": false
+      }
+    },
+    {
+      "id": "corr-cnf13-02",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Negative amount400",
+          "passed": true
+        },
+        {
+          "name": "Validation correlation header",
+          "passed": true
+        },
+        {
+          "name": "Negative amount creates no row or receipt",
+          "passed": true
+        },
+        {
+          "name": "Validation classified",
+          "passed": true
+        }
+      ],
+      "details": {}
+    },
+    {
+      "id": "corr-cnf13-03",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Real SQL rejection500",
+          "passed": true
+        },
+        {
+          "name": "SQL correlation header",
+          "passed": true
+        },
+        {
+          "name": "No partial SQL effect or receipt",
+          "passed": true
+        },
+        {
+          "name": "SQL classified consistency",
+          "passed": true
+        },
+        {
+          "name": "Public failure has no sentinel or image",
+          "passed": true
+        }
+      ],
+      "details": {}
+    },
+    {
+      "id": "corr-cnf13-04",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Cron valid200",
+          "passed": true
+        },
+        {
+          "name": "Cron correlation header",
+          "passed": true
+        },
+        {
+          "name": "Exactly one new400 occurrence",
+          "passed": true
+        },
+        {
+          "name": "Cron event links committed transaction",
+          "passed": true
+        }
+      ],
+      "details": {}
+    },
+    {
+      "id": "corr-cnf13-05",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Invalid cron token401",
+          "passed": true
+        },
+        {
+          "name": "Invalid cron correlation header",
+          "passed": true
+        },
+        {
+          "name": "No new transactions",
+          "passed": true
+        },
+        {
+          "name": "Authentication classified",
+          "passed": true
+        }
+      ],
+      "details": {}
+    },
+    {
+      "id": "corr-cnf13-06",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Dispatcher200 with failure recorded",
+          "passed": true
+        },
+        {
+          "name": "Outbox correlation header",
+          "passed": true
+        },
+        {
+          "name": "Exactly one failure and zero delivery",
+          "passed": true
+        },
+        {
+          "name": "Explicit Telegram double called once",
+          "passed": true
+        },
+        {
+          "name": "Financial commit retained",
+          "passed": true
+        },
+        {
+          "name": "Native event remains pending retry with generic error",
+          "passed": true
+        },
+        {
+          "name": "Outbox log links event and committed transaction",
+          "passed": true
+        }
+      ],
+      "details": {}
+    },
+    {
+      "id": "corr-cnf13-07",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Valid local fixture webhook200",
+          "passed": true
+        },
+        {
+          "name": "Valid MP correlation header",
+          "passed": true
+        },
+        {
+          "name": "Cancellation persists once",
+          "passed": true
+        },
+        {
+          "name": "Database persistence and provider success observed",
+          "passed": true
+        }
+      ],
+      "details": {}
+    },
+    {
+      "id": "corr-cnf13-08",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Forged webhook401",
+          "passed": true
+        },
+        {
+          "name": "Forged MP correlation header",
+          "passed": true
+        },
+        {
+          "name": "No subscription effect",
+          "passed": true
+        },
+        {
+          "name": "Authentication classified",
+          "passed": true
+        }
+      ],
+      "details": {}
+    },
+    {
+      "id": "corr-cnf13-09",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Real provider503 causes webhook500",
+          "passed": true
+        },
+        {
+          "name": "Provider MP correlation header",
+          "passed": true
+        },
+        {
+          "name": "No subscription partial write",
+          "passed": true
+        },
+        {
+          "name": "Provider/service/request share provider failure class",
+          "passed": true
+        }
+      ],
+      "details": {}
+    }
+  ],
+  "assertions": 42,
+  "observationContract": true,
+  "observations": [
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:58.086Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:58.118Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:58.135Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:58.146Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "3bd41e21-e367-4299-af6d-8dec73c90e8d",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:58.146Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "3bd41e21-e367-4299-af6d-8dec73c90e8d",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:58.146Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "success",
+      "status": 201,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:58.593Z",
+      "correlationId": "corr-cnf13-02",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:58.625Z",
+      "correlationId": "corr-cnf13-02",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "rejected",
+      "failureClass": "validation",
+      "status": 400,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.157Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.191Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.222Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.233Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "error",
+      "failureClass": "consistency",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.233Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "consistency",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.233Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "consistency",
+      "status": 500,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.571Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.572Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.596Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.608Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.622Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "database",
+      "action": "persist",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "c3f4283a-7295-474f-b237-24dbe94c4453",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.622Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "c3f4283a-7295-474f-b237-24dbe94c4453",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.628Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.628Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "request",
+      "action": "execute",
+      "outcome": "success",
+      "status": 200,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.929Z",
+      "correlationId": "corr-cnf13-05",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:35:59.929Z",
+      "correlationId": "corr-cnf13-05",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "request",
+      "action": "execute",
+      "outcome": "rejected",
+      "failureClass": "authentication",
+      "status": 401,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.178Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.178Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.179Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "database",
+      "action": "claim",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.187Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "database",
+      "action": "claim",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.187Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "outbox",
+      "action": "dispatch",
+      "outcome": "started",
+      "referenceType": "outbox",
+      "referenceId": "808c5556-62a7-425d-a130-e9d56917d539",
+      "transactionId": "c3f4283a-7295-474f-b237-24dbe94c4453"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.192Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "provider",
+      "action": "deliver",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.195Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "provider",
+      "action": "deliver",
+      "outcome": "error",
+      "failureClass": "provider",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.195Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "outbox",
+      "action": "dispatch",
+      "outcome": "error",
+      "failureClass": "provider",
+      "referenceType": "outbox",
+      "referenceId": "808c5556-62a7-425d-a130-e9d56917d539",
+      "transactionId": "c3f4283a-7295-474f-b237-24dbe94c4453",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.200Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.200Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "request",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "provider",
+      "status": 200,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.358Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.358Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.358Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "lookup",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.365Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "lookup",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.371Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "provider",
+      "action": "lookup",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.377Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "provider",
+      "action": "lookup",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.377Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.384Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "persist",
+      "outcome": "success",
+      "referenceType": "user",
+      "referenceId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.384Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.384Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "success",
+      "status": 200,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.534Z",
+      "correlationId": "corr-cnf13-08",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.534Z",
+      "correlationId": "corr-cnf13-08",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "rejected",
+      "failureClass": "authentication",
+      "status": 401,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.691Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.691Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.691Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "lookup",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.698Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "lookup",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.704Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "provider",
+      "action": "lookup",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.709Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "provider",
+      "action": "lookup",
+      "outcome": "error",
+      "failureClass": "provider",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.709Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "service",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "provider",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T08:36:00.709Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "provider",
+      "status": 500,
+      "metric": "zarix_operation_total",
+      "value": 1
+    }
+  ],
+  "privacyPassed": true
+}

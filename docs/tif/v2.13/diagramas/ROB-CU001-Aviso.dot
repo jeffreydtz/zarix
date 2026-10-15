@@ -1,0 +1,24 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: A06: aviso posterior al registro"; labelloc=t; fontsize=22;
+c [shape=plaintext,fontcolor="#243b53",label="Programador externo"];
+bc [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nEntrada Cron"];
+v [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+r [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nRecurrencias"];
+m [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nMovimientos"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+a [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAvisos"];
+b3 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP03 Conversación\nTelegram"];
+t [shape=plaintext,fontcolor="#243b53",label="Telegram"];
+b3 -> t [label="A06 resultado"];
+c -> bc [label="A06"];
+b3 -> v [label="vínculo y plan"];
+bc -> v [label="autorizar\nservicio"];
+bc -> r [label="A06 evaluar\ncalendario\nactual"];
+r -> m [label="unicidad\nregla/día AR"];
+r -> a [label="sólo ganador,\ntras\nconfirmación"];
+a -> b3 [label="aviso posterior"];
+m -> em [label="escritura\natómica"];
+}

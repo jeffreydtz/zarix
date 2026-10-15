@@ -10,11 +10,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function SharedGroupPage({
-  params,
-}: {
-  params: { token: string };
-}) {
+export default async function SharedGroupPage(
+  props: {
+    params: Promise<{ token: string }>;
+  }
+) {
+  const params = await props.params;
   if (!isValidShareToken(params.token)) notFound();
 
   const detail = await sharedExpensesService.getGroupByToken(params.token);

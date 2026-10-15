@@ -1,0 +1,61 @@
+{
+  "reviewedAt": "2026-10-15T04:16:42.188709+00:00",
+  "reviewer": "/root/native_runtime",
+  "status": "PASS_SCOPED_CODE_REVIEW",
+  "runtimeRetest": "PENDING_NEW_COMPILED_BUILD",
+  "complete_original_contract": false,
+  "method": "Independent read-only comparison of diff, SQL day/digit constraints, current existing currency valuators, literal CP2-02 and before/after Vitest JSON. No test rerun, browser, SQL, HTTP or runtime mutation.",
+  "artifacts": [
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+    },
+    {
+      "path": "__tests__/account-create-atomic.test.ts",
+      "sha256": "2045ea821c5ee11a5e29c26c608d732f9b4db8068a866672c8ca235f094c8dd8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-validation-regression/before.json",
+      "sha256": "f707a676505d75b61f8bb876ab27c3d25dbf46d97e63e240cdfa382088617522"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-validation-regression/after.json",
+      "sha256": "ff88e833c99f5415490be0072addfc75481ba7d83df886740d50688fb56d77ea"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-validation-regression/cp2-02-before-api.json",
+      "sha256": "87544f9b6d4d2eb504de189cbfd700341a618c8a2557fa1d0b24f17092584d93"
+    }
+  ],
+  "checks": {
+    "originalSixCapturedVariantsGuardedBeforeRpc": true,
+    "nonBlankValidationPreservesValidRawNameAndFingerprint": true,
+    "currencyNormalizationAndExistingNineCurrencyCompatibilityRetained": true,
+    "dayRangeAndFourCharacterLengthMatchExistingSqlConstraints": true,
+    "invalidKnownInputsDoNotReachRpcInRecordedFocals": true,
+    "before": {
+      "passed": 16,
+      "failed": 6,
+      "total": 22
+    },
+    "after": {
+      "passed": 22,
+      "failed": 0,
+      "total": 22
+    },
+    "newCases": 17,
+    "newCompiledApiRetestExecutedByReviewer": false
+  },
+  "residualScope": {
+    "values": [
+      "boolean true closing/due day",
+      "numeric-looking string1.0 closing/due day"
+    ],
+    "staticCause": "Number(day) is an integer for these values, while the unnormalized raw value reaches SQL INTEGER conversion and can return a raw RPC error/HTTP500 without a row. Existing integer strings remain compatible.",
+    "decision": "Parent explicitly retained the six documented variants and existing integer-string compatibility. No extra JSON-type validation is introduced. CP2-02 requires rejection/no incomplete account, not exhaustive typedJSON validation or all4xx.",
+    "exhaustiveJsonValidationClaimed": false,
+    "allInvalidInputsReturn4xxClaimed": false,
+    "blocksSixDocumentedVariants": false
+  },
+  "scope": "Review accepts the narrow fix and its recorded unit proof; preserves the observed live-before failure. It does not relabel the old836 build or approve post-fix API/system acceptance."
+}

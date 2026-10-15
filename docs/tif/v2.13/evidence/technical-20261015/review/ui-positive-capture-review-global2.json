@@ -1,0 +1,32 @@
+{
+  "reviewedAt": "2026-10-15T01:29:20.273782+00:00",
+  "reviewer": "dependency_audit",
+  "method": "Direct view_image visual inspection of each of the four actual PNG files",
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui/CU001-movements.png",
+      "sha256": "e50937eae258ec82a26073efe19d8daf515e78e4e7d57978eb352067ff3d957a",
+      "privacyReview": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data observed. Synthetic financial names and public market quotations only.",
+      "observation": "Nearly blank page background during transition; no movement content visible. Privacy reviewed, not final visual proof."
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui/CU002-accounts.png",
+      "sha256": "08cb64ba984243e4e313528b426a01c7ec07b9280b7eec4293d885f0d49088f8",
+      "privacyReview": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data observed. Synthetic financial names and public market quotations only.",
+      "observation": "Accounts UI with named synthetic fixtures, balances and archived synthetic accounts. No session values visible."
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui/CU003-analysis.png",
+      "sha256": "1fa6c7c5a27c591d17d2ed79614e466b1de10f050035b7fd41237dfd2387c9d3",
+      "privacyReview": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data observed. Synthetic financial names and public market quotations only.",
+      "observation": "Analysis values and synthetic expenses visible; multiple charts are still skeletons and content has transition opacity. Not final rendered-chart proof."
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui/CU004-investments.png",
+      "sha256": "725de2de2fbc13502f9e60b7abfc56ec573af9265712a46a7cc18661d48e3ab7",
+      "privacyReview": "No visible credentials, JWT/cookies, secret keys, capability paths or personal data observed. Synthetic financial names and public market quotations only.",
+      "observation": "Investment UI with synthetic FOOFIX positions and public quotation cards. No session values visible."
+    }
+  ],
+  "scope": "Manual visible-pixel privacy review only, not automated binary secret scanning and not proof of hidden PNG metadata or whole-CU acceptance. The root/E2E report binds these positive UI assertions to the served b456c4 app and later harness; this review does not reexecute UI. CU001 and CU003 rendering limitations are preserved explicitly."
+}

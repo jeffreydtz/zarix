@@ -1,0 +1,11 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="Patrón: Template Method"; labelloc=t; fontsize=22;
+CronJob [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>CronJob</B></TD></TR><TR><TD ALIGN="LEFT">«abstract»</TD></TR><TR><TD ALIGN="LEFT">+name: string</TD></TR><TR><TD ALIGN="LEFT">+run(...)</TD></TR><TR><TD ALIGN="LEFT">#execute(...)</TD></TR></TABLE>>];
+IterativeCronJob [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>IterativeCronJob</B></TD></TR><TR><TD ALIGN="LEFT">&lt;&lt;abstract&gt;&gt;</TD></TR><TR><TD ALIGN="LEFT">#execute(...)</TD></TR><TR><TD ALIGN="LEFT">#fetchItems(...)</TD></TR><TR><TD ALIGN="LEFT">#shouldProcess(...)</TD></TR><TR><TD ALIGN="LEFT">#processItem(...)</TD></TR><TR><TD ALIGN="LEFT">#beforeAll(...)</TD></TR><TR><TD ALIGN="LEFT">#afterAll(...)</TD></TR></TABLE>>];
+RecurringRulesJob [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>RecurringRulesJob</B></TD></TR><TR><TD ALIGN="LEFT">+name: string</TD></TR><TR><TD ALIGN="LEFT">#fetchItems(...)</TD></TR><TR><TD ALIGN="LEFT">#shouldProcess(...)</TD></TR><TR><TD ALIGN="LEFT">#processItem(...)</TD></TR></TABLE>>];
+IterativeCronJob -> CronJob [arrowhead=empty];
+RecurringRulesJob -> IterativeCronJob [arrowhead=empty];
+}

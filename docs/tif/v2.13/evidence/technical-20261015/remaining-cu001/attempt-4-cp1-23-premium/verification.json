@@ -1,0 +1,641 @@
+{
+  "status": "PARTIAL",
+  "startedAt": "2026-10-15T04:39:22.167Z",
+  "run": "155a7ed2-1023-4c88-9a80-4a5d62318b74",
+  "selectedIds": [
+    "CP1-23"
+  ],
+  "scope": "Fourteen declared remaining CU001 cases in the explicitly selected isolated clock profile. The immutable intermediate core-reliability build and future final core-acceptance build remain separate phases. Normal Auth/API, native SQL oracle and narrowly scoped temporary fault hooks. Cron/import are local synthetic only. No browser, delivery/provider acceptance, plan change or new identity.",
+  "results": [
+    {
+      "id": "CP1-23",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Visible categories200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Own literal category201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Create own literal rule201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Rule suspend has own state and inclusive end",
+          "actual": {
+            "status": 200,
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "active": false,
+            "end": "2026-10-06",
+            "amount": 1000
+          },
+          "expected": {
+            "status": 200,
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "active": false,
+            "end": "2026-10-06",
+            "amount": 1000
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Rule reactivate has own state and inclusive end",
+          "actual": {
+            "status": 200,
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "active": true,
+            "end": "2026-10-06",
+            "amount": 1000
+          },
+          "expected": {
+            "status": 200,
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "active": true,
+            "end": "2026-10-06",
+            "amount": 1000
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Rule edit has own state and inclusive end",
+          "actual": {
+            "status": 200,
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "active": true,
+            "end": "2026-10-06",
+            "amount": 1200
+          },
+          "expected": {
+            "status": 200,
+            "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "active": true,
+            "end": "2026-10-06",
+            "amount": 1200
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Saving/suspending/reactivating/editing never creates a movement",
+          "actual": [
+            {
+              "id": "0b0e9bcd-3493-4a82-8b7a-c9d35b1a25e9",
+              "type": "adjustment",
+              "amount": "10000.00000000",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "ARS",
+              "account_id": "a1fb16e0-fee5-4d41-8c07-e9fe88a446c8",
+              "category_id": null,
+              "transaction_date": "2026-10-15T04:39:28.760334+00:00",
+              "destination_account_id": null,
+              "amount_in_account_currency": "10000.00000000",
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "0b0e9bcd-3493-4a82-8b7a-c9d35b1a25e9",
+              "type": "adjustment",
+              "amount": "10000.00000000",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "ARS",
+              "account_id": "a1fb16e0-fee5-4d41-8c07-e9fe88a446c8",
+              "category_id": null,
+              "transaction_date": "2026-10-15T04:39:28.760334+00:00",
+              "destination_account_id": null,
+              "amount_in_account_currency": "10000.00000000",
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [
+        {
+          "name": "Next occurrence presentation",
+          "status": "BLOCKED",
+          "reason": "No nonexistent API next-date field is invented. Actual recurring UI next-occurrence rendering is unexecuted; inclusive-date execution is tested separately by real cron cases."
+        }
+      ],
+      "startedAt": "2026-10-15T04:39:28.511Z",
+      "physicalOwner": "B",
+      "premiumFixture": {
+        "status": "ACTIVE",
+        "chatLinked": false,
+        "botCredentialPresent": false
+      },
+      "finishedAt": "2026-10-15T04:39:29.886Z"
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP1-23",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "4df250ad-0c0e-41bf-8549-d21b45235fd6",
+      "startedAt": "2026-10-15T04:39:28.713Z",
+      "status": 201,
+      "responseSha256": "1338589ffd4f19683ecb47a8a0169e284f9fab5eeb1068b94399a37c85265252",
+      "endedAt": "2026-10-15T04:39:28.770Z"
+    },
+    {
+      "caseId": "CP1-23",
+      "method": "GET",
+      "path": "/api/categories",
+      "requestId": "c0390e2a-f2c7-4d6f-9a54-657eb37e098a",
+      "startedAt": "2026-10-15T04:39:28.974Z",
+      "status": 200,
+      "responseSha256": "ba7b2d0f7ac5e98baff8156a05117af7554134808bd464920ff715e610143d64",
+      "endedAt": "2026-10-15T04:39:29.011Z"
+    },
+    {
+      "caseId": "CP1-23",
+      "method": "POST",
+      "path": "/api/categories",
+      "requestId": "b02c6228-5252-4e88-a861-947adbb8f2e4",
+      "startedAt": "2026-10-15T04:39:29.059Z",
+      "status": 201,
+      "responseSha256": "6eb614962f8e7818a87267b127d639ce637a8245906deb974b4236a6a94b9c03",
+      "endedAt": "2026-10-15T04:39:29.095Z"
+    },
+    {
+      "caseId": "CP1-23",
+      "method": "POST",
+      "path": "/api/recurring",
+      "requestId": "c0206bb3-1df7-4835-bcde-ce548cf8b795",
+      "startedAt": "2026-10-15T04:39:29.228Z",
+      "status": 201,
+      "responseSha256": "8c56a5c3cd09d46bc3b28f898f4e01b0b17c9cb9ae010726f2d31c4af8e17cde",
+      "endedAt": "2026-10-15T04:39:29.272Z"
+    },
+    {
+      "caseId": "CP1-23",
+      "method": "PUT",
+      "path": "/api/recurring/4879f493-a907-4265-a7a6-b92219cc00db",
+      "requestId": "4e54cfba-ad5c-47ce-be33-674e2239b198",
+      "startedAt": "2026-10-15T04:39:29.322Z",
+      "status": 200,
+      "responseSha256": "ac4629fd48be55a46f1a7b41b7684f5b92400bacc3461cc1176ad4a384da1dc0",
+      "endedAt": "2026-10-15T04:39:29.363Z"
+    },
+    {
+      "caseId": "CP1-23",
+      "method": "PUT",
+      "path": "/api/recurring/4879f493-a907-4265-a7a6-b92219cc00db",
+      "requestId": "ce7a7a54-f07f-4e73-a269-a42b6e3899b3",
+      "startedAt": "2026-10-15T04:39:29.413Z",
+      "status": 200,
+      "responseSha256": "8c56a5c3cd09d46bc3b28f898f4e01b0b17c9cb9ae010726f2d31c4af8e17cde",
+      "endedAt": "2026-10-15T04:39:29.452Z"
+    },
+    {
+      "caseId": "CP1-23",
+      "method": "PUT",
+      "path": "/api/recurring/4879f493-a907-4265-a7a6-b92219cc00db",
+      "requestId": "a47655bf-06f9-43e5-80b7-1355e7815b88",
+      "startedAt": "2026-10-15T04:39:29.502Z",
+      "status": 200,
+      "responseSha256": "bf126a64c975f5881829282ab4275864c249e8bc37999de83786dc717affae6d",
+      "endedAt": "2026-10-15T04:39:29.542Z"
+    },
+    {
+      "caseId": "CP1-23",
+      "method": "PUT",
+      "path": "/api/recurring/4879f493-a907-4265-a7a6-b92219cc00db",
+      "requestId": "7f171bb5-9ae4-4a9b-931f-43a987124001",
+      "startedAt": "2026-10-15T04:39:29.675Z",
+      "status": 200,
+      "responseSha256": "38ba6742f8f048a24bfe6206c7d592e96a1213120d341055d3129aa6b5ae4e2f",
+      "endedAt": "2026-10-15T04:39:29.716Z"
+    },
+    {
+      "caseId": "CP1-23",
+      "method": "DELETE",
+      "path": "/api/accounts/a1fb16e0-fee5-4d41-8c07-e9fe88a446c8",
+      "requestId": "b2fb8d1b-86c6-4194-a9b6-4310efbf66c8",
+      "startedAt": "2026-10-15T04:39:29.848Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:39:29.885Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "a1fb16e0-fee5-4d41-8c07-e9fe88a446c8",
+      "name": "RemainingCU001 CP1-23 1 155a7ed2-1023-4c88-9a80-4a5d62318b74",
+      "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "0b0e9bcd-3493-4a82-8b7a-c9d35b1a25e9",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "currency": "ARS",
+          "account_id": "a1fb16e0-fee5-4d41-8c07-e9fe88a446c8",
+          "category_id": null,
+          "transaction_date": "2026-10-15T04:39:28.760334+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "kind": "category",
+      "id": "c34671f6-d905-45d8-8018-726c4aa0eb64",
+      "name": "Alimentos",
+      "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b"
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs",
+      "sha256": "6b9c4edf7e52906ba269bc578d769fb6b846901c713d3e6a405690e981aa6639"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-scenarios.mjs",
+      "sha256": "c580f3956237c0ad29f5aa06665a784a99c6420680e6f76f76a70a43eaadcdfb"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444"
+    },
+    {
+      "path": "app/api/recurring/route.ts",
+      "sha256": "f14f7b6ca2a2315f0d44ac2af2a8504f830c9d975ac089a45368e237a3808c6f"
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "sha256": "97e92a3a07335768ff4c5c0fb6c4576087ed0782cf7b7745feb0f496fbd058c8"
+    },
+    {
+      "path": "app/api/cron/recurring/route.ts",
+      "sha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a"
+    },
+    {
+      "path": "app/api/budgets/route.ts",
+      "sha256": "0eb41dcefd5a142ff3d73c77524673cb48eb0300856085dc55433cfd4e87b6c6"
+    },
+    {
+      "path": "app/api/budgets/[id]/route.ts",
+      "sha256": "973b113a716e99a3b4ceb3fc9ef7e98b62023a352625b575df1f9e4a1580ad08"
+    },
+    {
+      "path": "app/api/budgets/status/route.ts",
+      "sha256": "f6d931c842563afc73563c9ed6ed9c8862e212782d8eacb5bfd8f114c8aaa37d"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "lib/cron/recurring-job.ts",
+      "sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72"
+    },
+    {
+      "path": "lib/cron/cron-job.ts",
+      "sha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9"
+    },
+    {
+      "path": "lib/cron/recurring-schedule.ts",
+      "sha256": "d9725bfd1d8735d24a65d19bb6f462e3a920ef1130df34299bf4dd2790c2547e"
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "sha256": "32ff3118923983eb02e1bd79103bbde3461cd6efe1de2ac0302ec53ce831fd3e"
+    },
+    {
+      "path": "lib/observability/alert.ts",
+      "sha256": "d09bce5d9c248f1bc6d3c29a36464afbf9846ebbd3c1fa9bac2514c7a2c03954"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/categories/route.ts",
+      "sha256": "8e54159c4573379e82d42b06a6f6a862953082a8e200e69c55eb2751565e4dbc"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/transactions/summary/route.ts",
+      "sha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "currentCheckoutDifferences": [
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "currentCheckoutSha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "servedGitSha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "executedByThisBuild": false
+    },
+    {
+      "path": "components/budgets/BudgetCard.tsx",
+      "currentCheckoutSha256": "b4a66c24408997fdc90656b02d16ca574090302b0288aaebb3cbdae4a2b21a74",
+      "servedGitSha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b",
+      "executedByThisBuild": false
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "currentCheckoutSha256": "674fe1139550b084a8e9afbce04bb9fea42e7de060f582512219586ef3d6c2bd",
+      "servedGitSha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+      "executedByThisBuild": false
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "currentCheckoutSha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401",
+      "servedGitSha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8",
+      "executedByThisBuild": false
+    }
+  ],
+  "buildBinding": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+    "nextPid": 1822,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "copyRoot": "/tmp/zarix-app-contract-clock-20261015",
+    "runtimeProfile": "intermediate-core-reliability-clock-retry",
+    "buildProfile": "intermediate-core-reliability-clock",
+    "stateFile": "contract-clock-retry-app-state.json",
+    "clockObservationFile": "contract-clock-retry-observation.json",
+    "copiedSources": 477,
+    "allCopiedSourcesMatchGitOrDeclaredCliMetadata": true,
+    "ownedListenerAndCwdConfirmed": true,
+    "privateEnvBoundToNative": true,
+    "coreVerificationSha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
+    "buildProofSha256": "2fd7d419dd3fb4f724da3bb707eb0455a0aa976e91f494793f1b739a56ea51d8"
+  },
+  "identities": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "normalPasswordAuthAndGetUser": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "normalPasswordAuthAndGetUser": true
+    }
+  ],
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "profile": "intermediate-core-reliability-clock-retry",
+  "clockProof": {
+    "path": "contract-clock-retry-observation.json",
+    "sha256": "ce9af30f4e005a9a10c7c4039b6f16576b9ac064ee408f0b463637eeaf8754e5",
+    "fixedTime": "2026-10-06T12:00:00.000Z",
+    "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+  },
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 78,
+      "beforeMd5": "faad321d52fe621248b855450bb9d490",
+      "afterMd5": "faad321d52fe621248b855450bb9d490",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 110,
+      "beforeMd5": "2c6a6e026ec53daac6c695eaa8224248",
+      "afterMd5": "2c6a6e026ec53daac6c695eaa8224248",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 19,
+      "beforeMd5": "09167c8a67ba0766607832e91b8a587c",
+      "afterMd5": "09167c8a67ba0766607832e91b8a587c",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 8,
+      "beforeMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "afterMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 34,
+      "beforeMd5": "61e39bc88b6f84df951108718247379e",
+      "afterMd5": "61e39bc88b6f84df951108718247379e",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 9,
+      "beforeMd5": "2c04240f3061f583b32a874d485cf4a2",
+      "afterMd5": "2c04240f3061f583b32a874d485cf4a2",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "servedCopyStable": true,
+  "finishedAt": "2026-10-15T04:39:30.994Z"
+}

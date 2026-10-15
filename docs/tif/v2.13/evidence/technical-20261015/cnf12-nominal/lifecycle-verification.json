@@ -1,0 +1,57 @@
+{
+  "status": "PASS_LIFECYCLE_PREPARATION",
+  "generatedAt": "2026-10-15T05:46:45.431041+00:00",
+  "purpose": "cnf12-nominal-two-database-recovery",
+  "nativeStack": "RESTORE55321/55322",
+  "sourceDatabaseName": "cnf12_source_836ea2b13ba649fa891be962c8f803dc",
+  "targetDatabaseName": "cnf12_target_3000a0d2ff074380ac90df368a87a33b",
+  "sourceInitiallyFinanciallyEmpty": true,
+  "targetInitiallyNonSystemTables": 0,
+  "authUsersCloned": 2,
+  "profilesCloned": 2,
+  "existingGroupCloned": 1,
+  "storageMetadataCloned": true,
+  "httpReconfigured": false,
+  "newRolesOrCredentialsCreated": false,
+  "newAuthIdentitiesCreated": false,
+  "databasesDropped": false,
+  "originalTableCount": 64,
+  "originalRowsUnchanged": true,
+  "originalCatalogueRolesUnchanged": true,
+  "originalStorageUnchanged": true,
+  "originalSchemaAuthOwnerPreserved": true,
+  "schemaArchiveSha256": "4118f26cf51465fdff62829b81dc8d77fe30762c56a21592cfb8246d6bde53d9",
+  "retentionRequired": "Both CNF12 source and target databases plus custom dump/Storage bytes/attempt checkpoints must be retained separately from six default-postgres archives.",
+  "helperAtExecution": {
+    "snapshot": "native-executed-sources/ec952cec38d711a10f2c64dd932c2823c3b2eaff93597dfc91a1e129bff535bb.py",
+    "sha256": "ec952cec38d711a10f2c64dd932c2823c3b2eaff93597dfc91a1e129bff535bb"
+  },
+  "preservedAttempts": [
+    {
+      "attempt": "prepare",
+      "result": "BLOCKED_BOOTSTRAP_ROLE",
+      "reason": "Existing postgres could not assign Auth schema owner supabase_admin; two new DBs retained."
+    },
+    {
+      "attempt": "resume1",
+      "result": "BLOCKED_BEFORE_WRITES",
+      "reason": "Role-dependent catalogue serialization; identical-role postgres readonly comparison confirms no original drift."
+    },
+    {
+      "attempt": "resume2",
+      "result": "BLOCKED_BEFORE_WRITES",
+      "reason": "Fail-safe schema inventory omitted the already-created empty _realtime schema."
+    },
+    {
+      "attempt": "resume3",
+      "result": "BLOCKED_AT_ATOMIC_COPY",
+      "reason": "COPY SELECT* included generated Auth column; no user rows committed."
+    },
+    {
+      "attempt": "resume4",
+      "result": "PASS",
+      "reason": "Continue COPY with exact explicit non-generated columns, then post-data; no reset or DROP."
+    }
+  ],
+  "scope": "Lifecycle and preservation only. No acceptance of nominal financial fixture, timed RPO/RTO, provider plan, HTTP Auth/Storage or nominal UI. Separate Native22/RESTOREUI scopes remain separate."
+}

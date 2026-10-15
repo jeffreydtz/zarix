@@ -1,0 +1,108 @@
+{
+  "recordedAt": "2026-10-15T04:15:06.201377+00:00",
+  "originalCase": "CP2-02",
+  "servedBeforeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "beforeApi": {
+    "status": "FAIL",
+    "acceptedInvalidVariants": [
+      1,
+      2,
+      4
+    ],
+    "observations": [
+      {
+        "index": 1,
+        "payload": {
+          "name": "",
+          "type": "bank",
+          "currency": "ARS"
+        },
+        "status": 201,
+        "createdRows": 1
+      },
+      {
+        "index": 2,
+        "payload": {
+          "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+          "type": "bank",
+          "currency": "ZZZ"
+        },
+        "status": 201,
+        "createdRows": 1
+      },
+      {
+        "index": 3,
+        "payload": {
+          "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+          "type": "bank",
+          "currency": "ARS",
+          "initialBalance": "NaN"
+        },
+        "status": 400,
+        "createdRows": 0
+      },
+      {
+        "index": 4,
+        "payload": {
+          "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+          "type": "credit_card",
+          "currency": "ARS",
+          "closingDay": 0
+        },
+        "status": 201,
+        "createdRows": 1
+      },
+      {
+        "index": 5,
+        "payload": {
+          "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+          "type": "credit_card",
+          "currency": "ARS",
+          "dueDay": 32
+        },
+        "status": 500,
+        "createdRows": 0
+      },
+      {
+        "index": 6,
+        "payload": {
+          "name": "AccountAnalysis dbeb011a-4a6c-47e0-a9ef-d4a06ad4fe9c",
+          "type": "credit_card",
+          "currency": "ARS",
+          "last4Digits": "123"
+        },
+        "status": 500,
+        "createdRows": 0
+      }
+    ],
+    "original12TablesUnchanged": true,
+    "sourceStable": true,
+    "cleanupFailure": false
+  },
+  "unitBefore": {
+    "total": 22,
+    "passed": 16,
+    "failed": 6
+  },
+  "unitAfter": {
+    "total": 22,
+    "passed": 22,
+    "failed": 0
+  },
+  "checks": {
+    "typecheckExitCode": 0,
+    "targetedLintExitCode": 0
+  },
+  "currentFiles": [
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+    },
+    {
+      "path": "__tests__/account-create-atomic.test.ts",
+      "sha256": "2045ea821c5ee11a5e29c26c608d732f9b4db8068a866672c8ca235f094c8dd8"
+    }
+  ],
+  "beforeServiceSha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8",
+  "scope": "Actual isolated API failure followed by focused unit regression. New unit cases preserve nine already valued currencies and valid boundaries/raw name fingerprints. Full CI5 and corrected compiled API replay remain pending."
+}

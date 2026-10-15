@@ -1,3 +1,6 @@
+import { createHash, randomUUID } from 'node:crypto';
+import { withFinancialRequestContext } from '@/lib/financial-request-context';
+import { withPlanQuota, AmbiguousPlanWorkError } from '@/lib/plans/service';
 import type { Content } from '@google/generative-ai';
 import { getGeminiForUser } from '@/lib/ai/gemini';
 import { buildBotSystemPrompt, type FinancialContext } from '@/lib/ai/prompts';
@@ -79,114 +82,144 @@ function executionSummaryLine(executed: ExecutedTransactionSummary): string {
 
 export async function processInternalAiChatMessage(input: {
   userId: string;
+  requestKey?: string;
+  /** Immutable provider event binds retries independently of evolving bot history. */
+  eventFingerprint?: string;
+  /** Server-only media preparation runs inside the same one-request quota. */
+  prepareMessage?: () => Promise<string>;
   message: string;
   financialContext: FinancialContext;
   history?: InternalAiChatHistoryItem[];
   allowLegacyWriteFallback?: boolean;
 }): Promise<InternalAiChatSuccessResponse> {
-  const systemPrompt = buildBotSystemPrompt(input.financialContext);
-  // Siempre 'full' (gemini-2.5-flash): el modelo lite es poco confiable para
-  // function-calling y deja de llamar create_transaction (movimiento "responde
-  // bien pero no impacta"). El costo extra es despreciable para este volumen.
-  const tier = 'full' as const;
+  const requestKey = input.requestKey || randomUUID();
+  const financialKey = `ai:${input.userId}:${createHash('sha256').update(requestKey).digest('hex')}`;
+  return withPlanQuota({ userId: input.userId, feature: 'ai', requestKey,
+    fingerprint: input.eventFingerprint || JSON.stringify({ message: input.message, history: input.history ?? [] }),
+  }, () => withFinancialRequestContext(financialKey, async () => {
+    let writeAttempted = false;
+    try {
+      const messageText = input.prepareMessage ? await input.prepareMessage() : input.message;
+      const systemPrompt = buildBotSystemPrompt(input.financialContext);
+      // Siempre 'full' (gemini-2.5-flash): el modelo lite es poco confiable para
+      // function-calling y deja de llamar create_transaction (movimiento "responde
+      // bien pero no impacta"). El costo extra es despreciable para este volumen.
+      const tier = 'full' as const;
 
-  const gemini = await getGeminiForUser(input.userId);
+      const gemini = await getGeminiForUser(input.userId);
 
-  const executed: ExecutedTransactionSummary[] = [];
-  let writeCalls = 0;
-  let pendingConfirm: { preview: string } | undefined;
-  const allowedTools = new Set(BOT_FUNCTION_DECLARATIONS.map((d) => d.name));
+      const executed: ExecutedTransactionSummary[] = [];
+      let writeCalls = 0;
+      const successfulWrites = new Set<string>();
+      const failedWrites: string[] = [];
+      let pendingConfirm: { preview: string } | undefined;
+      const allowedTools = new Set(BOT_FUNCTION_DECLARATIONS.map((d) => d.name));
 
-  const { text, toolsUsed } = await gemini.chatWithTools(input.message.slice(0, MAX_CHAT_MESSAGE_CHARS), {
-    tier,
-    systemInstruction: systemPrompt,
-    history: mapHistoryToGemini(input.history),
-    functionDeclarations: BOT_FUNCTION_DECLARATIONS,
-    allowedToolNames: allowedTools,
-    maxTokens: 2048,
-    onToolCall: async (name, args) => {
-      if (BOT_WRITE_TOOLS.has(name)) {
-        writeCalls += 1;
-        if (writeCalls > 2 || executed.length >= MAX_BATCH_TRANSACTIONS) {
-          return { success: false, error: 'Límite de escrituras en este mensaje. Confirmá el resto después.' };
-        }
-      }
-      const out = await executeBotTool(name, args, {
-        userId: input.userId,
-        financialContext: input.financialContext,
+      const { text, toolsUsed } = await gemini.chatWithTools(messageText.slice(0, MAX_CHAT_MESSAGE_CHARS), {
+        tier,
+        systemInstruction: systemPrompt,
+        history: mapHistoryToGemini(input.history),
+        functionDeclarations: BOT_FUNCTION_DECLARATIONS,
+        allowedToolNames: allowedTools,
+        maxTokens: 2048,
+        onToolCall: async (name, args) => {
+          if (BOT_WRITE_TOOLS.has(name)) {
+            writeAttempted = true;
+            writeCalls += 1;
+            if (writeCalls > 2 || executed.length >= MAX_BATCH_TRANSACTIONS) {
+              return { success: false, error: 'Límite de escrituras en este mensaje. Confirmá el resto después.' };
+            }
+          }
+          const out = await executeBotTool(name, args, {
+            userId: input.userId,
+            financialContext: input.financialContext,
+          });
+          if (out.response?.needs_confirm) {
+            const raw = out.response.preview;
+            let preview = '¿Confirmás esta acción?';
+            if (typeof raw === 'string' && raw.trim()) preview = raw;
+            else if (raw && typeof raw === 'object') {
+              const o = raw as Record<string, unknown>;
+              preview = [o.type, o.amount != null ? `${o.amount} ${o.currency ?? ''}`.trim() : null, o.description]
+                .filter(Boolean)
+                .join(' · ') || preview;
+            } else if (out.response.error) {
+              preview = String(out.response.error);
+            }
+            pendingConfirm = { preview };
+          }
+          if (out.executed?.length) executed.push(...out.executed);
+          if (BOT_WRITE_TOOLS.has(name)) {
+            if (out.response?.success === true || out.executed?.length) successfulWrites.add(name);
+            else if (!out.response?.needs_confirm) failedWrites.push(String(out.response?.error || 'No se pudo completar la operación.'));
+          }
+          return out.response;
+        },
       });
-      if (out.response?.needs_confirm) {
-        const raw = out.response.preview;
-        let preview = '¿Confirmás esta acción?';
-        if (typeof raw === 'string' && raw.trim()) preview = raw;
-        else if (raw && typeof raw === 'object') {
-          const o = raw as Record<string, unknown>;
-          preview = [o.type, o.amount != null ? `${o.amount} ${o.currency ?? ''}`.trim() : null, o.description]
-            .filter(Boolean)
-            .join(' · ') || preview;
-        } else if (out.response.error) {
-          preview = String(out.response.error);
+
+      let assistantText = text;
+
+      // Red de seguridad: si el modelo no llamó ninguna tool y devolvió JSON viejo
+      // {action, transaction, response} (por historial heredado del bot anterior),
+      // lo ejecutamos a mano para no perder el movimiento ni mostrarle JSON crudo.
+      if (
+        input.allowLegacyWriteFallback &&
+        toolsUsed.length === 0 &&
+        executed.length === 0 &&
+        assistantText
+      ) {
+        const legacy = parseLegacyActionJson(assistantText);
+        if (legacy?.tool) {
+          writeAttempted = true;
+          try {
+            const out = await executeBotTool(legacy.tool, legacy.args, {
+              userId: input.userId,
+              financialContext: input.financialContext,
+            });
+            if (out.executed?.length) executed.push(...out.executed);
+            if (out.response?.success === true || out.executed?.length) successfulWrites.add(legacy.tool);
+            else failedWrites.push(String(out.response?.error || 'No se pudo completar la operación.'));
+            toolsUsed.push(legacy.tool);
+            assistantText = ''; // usamos el resumen real de `executed`
+          } catch (error) {
+            throw new AmbiguousPlanWorkError(error);
+          }
+        } else if (legacy) {
+          assistantText = legacy.response; // acción sin escritura: mostrar solo el texto
         }
-        pendingConfirm = { preview };
       }
-      if (out.executed?.length) executed.push(...out.executed);
-      return out.response;
-    },
-  });
 
-  let assistantText = text;
+      const didWrite = executed.length > 0 || successfulWrites.size > 0;
 
-  // Red de seguridad: si el modelo no llamó ninguna tool y devolvió JSON viejo
-  // {action, transaction, response} (por historial heredado del bot anterior),
-  // lo ejecutamos a mano para no perder el movimiento ni mostrarle JSON crudo.
-  if (
-    input.allowLegacyWriteFallback &&
-    toolsUsed.length === 0 &&
-    executed.length === 0 &&
-    assistantText
-  ) {
-    const legacy = parseLegacyActionJson(assistantText);
-    if (legacy?.tool) {
-      try {
-        const out = await executeBotTool(legacy.tool, legacy.args, {
-          userId: input.userId,
-          financialContext: input.financialContext,
-        });
-        if (out.executed?.length) executed.push(...out.executed);
-        toolsUsed.push(legacy.tool);
-        assistantText = ''; // usamos el resumen real de `executed`
-      } catch {
-        assistantText = legacy.response;
-      }
-    } else if (legacy) {
-      assistantText = legacy.response; // acción sin escritura: mostrar solo el texto
+      const fallback = executed.length
+        ? executed.map(executionSummaryLine).join('\n')
+        : 'Listo.';
+
+      const message = failedWrites.length
+        ? [...(executed.length ? [fallback] : []), ...failedWrites].join('\n')
+        : assistantText || fallback;
+
+      // Historial (memoria del bot): si se ejecutó una tool de escritura, dejamos
+      // una marca explícita. Sin esto, lo guardado es pura prosa de confirmación y
+      // "entrena" al modelo a confirmar SIN volver a llamar la tool → el próximo
+      // movimiento no se persiste. No se muestra al usuario (solo va al history).
+      const writeToolsUsed = Array.from(successfulWrites);
+      const historyText = writeToolsUsed.length
+        ? `${message}\n⟦ejecuté ${writeToolsUsed.join(', ')} con resultado confirmado⟧`
+        : message;
+
+      return {
+        mode: pendingConfirm ? 'confirm' : didWrite ? 'executed' : 'chat',
+        assistant_message: pendingConfirm
+          ? pendingConfirm.preview
+          : message,
+        executed: executed.length ? executed : undefined,
+        pending_confirm: pendingConfirm,
+        raw_response: historyText,
+      };
+    } catch (error) {
+      if (writeAttempted) throw new AmbiguousPlanWorkError(error);
+      throw error;
     }
-  }
-
-  const didWrite = executed.length > 0 || toolsUsed.some((t) => BOT_WRITE_TOOLS.has(t));
-
-  const fallback = executed.length
-    ? executed.map(executionSummaryLine).join('\n')
-    : 'Listo.';
-
-  const message = assistantText || fallback;
-
-  // Historial (memoria del bot): si se ejecutó una tool de escritura, dejamos
-  // una marca explícita. Sin esto, lo guardado es pura prosa de confirmación y
-  // "entrena" al modelo a confirmar SIN volver a llamar la tool → el próximo
-  // movimiento no se persiste. No se muestra al usuario (solo va al history).
-  const writeToolsUsed = toolsUsed.filter((t) => BOT_WRITE_TOOLS.has(t));
-  const historyText = writeToolsUsed.length
-    ? `${message}\n⟦ejecuté ${writeToolsUsed.join(', ')} y registré el/los movimiento(s)⟧`
-    : message;
-
-  return {
-    mode: pendingConfirm ? 'confirm' : didWrite ? 'executed' : 'chat',
-    assistant_message: pendingConfirm
-      ? pendingConfirm.preview
-      : message,
-    executed: executed.length ? executed : undefined,
-    pending_confirm: pendingConfirm,
-    raw_response: historyText,
-  };
+  }));
 }

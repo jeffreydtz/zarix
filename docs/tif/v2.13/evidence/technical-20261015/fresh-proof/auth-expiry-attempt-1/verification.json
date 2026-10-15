@@ -1,0 +1,12 @@
+{
+  "status": "FAIL",
+  "startedAt": "2026-10-15T03:17:25.873Z",
+  "target": "http://127.0.0.1:58321",
+  "checks": [],
+  "scope": "Real short-lived JWT of a new ordinary temporary session; only that session locally revoked. Two other ordinary control sessions preserved with legitimate refresh. Not browser/API-app CP2-21 acceptance or an SMTP/recovery delivery test.",
+  "failure": {
+    "type": "AssertionError",
+    "rawExceptionPublished": false
+  },
+  "finishedAt": "2026-10-15T03:17:26.671Z"
+}

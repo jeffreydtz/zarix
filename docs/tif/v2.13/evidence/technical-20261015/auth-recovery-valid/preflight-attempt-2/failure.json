@@ -1,0 +1,11 @@
+{
+  "case_id": "CP2-10",
+  "status": "FAIL",
+  "complete_original_contract": false,
+  "assertions": [],
+  "fatal": {
+    "type": "AssertionError",
+    "location": "run.mjs:49:158",
+    "rawMessagePublished": false
+  }
+}

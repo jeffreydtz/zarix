@@ -1,0 +1,33 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ participant I as Iterativo (C)
+ participant J as Job (C)
+ participant C as Movim. (C)
+ participant D as BD (E)
+ participant N as Telegram (B)
+ I->>J: processItem
+ J->>C: create(fecha AR)
+ C->>D: INSERT y trigger
+ alt Nuevo
+  D-->>C: Commit
+  C-->>J: Creado nuevo
+ else Conflicto23505
+  C-->>J: Conflicto
+  J->>D: Misma regla/día/dueño
+  D-->>J: Existente / error
+ else Otro error
+  C-->>J: Error, no marcar
+ end
+ opt Nuevo o recuperado
+  J->>D: Marcar tras INSERT
+  alt Marca confirma
+   D-->>J: Éxito
+   opt Sólo nuevo y aviso
+    J->>N: Enviar resultado
+    N-->>J: Éxito / falla<br/>registrada
+   end
+  else Marca falla
+   D-->>J: Error, retry repara
+  end
+ end
+ J-->>I: Resultado / error

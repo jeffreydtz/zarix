@@ -1,0 +1,24 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Cartera (B)
+ participant C as Venta (C)
+ participant Q as FX (C)
+ participant D as Lote (E)
+ U->>B: Vender parcial/total
+ B->>C: sell(input)
+ C->>D: Lote propio/cantidad
+ D-->>C: Lote / rechazo
+ alt Inválido/sobreventa
+  C-->>B: Rechazo sin RPC
+ else Válido
+  C->>Q: Tasas válidas
+  Q-->>C: Referencias / error
+  alt FX inválido
+   C-->>B: Error sin venta
+  else FX válido
+   C->>C: PnL nativo y USD
+   C->>C: Continuar VentaRPC
+  end
+ end
+ Note over C: Bono porVN100 acción<br/>por1

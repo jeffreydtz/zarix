@@ -1,0 +1,531 @@
+{
+  "recordedAt": "2026-10-15T03:18:03.899120+00:00",
+  "scope": "Documentación de los24casos CU001 solicitados, con cadenas literales del CSV. Este plan no ejecuta navegador/API/SQL/cron/importación/proveedor ni crea fixtures.",
+  "status": "PLAN_ONLY_NO_MATRIX_PROMOTION",
+  "csv": {
+    "path": "docs/tif/v2.13/casos_prueba.csv",
+    "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+  },
+  "summary": {
+    "requested": 24,
+    "notExecutedLiteralFixture": 22,
+    "reconcilableExistingSqlScope": 2,
+    "newPassClaims": 0
+  },
+  "protectedEnvironments": [
+    "SOURCE54321/54322",
+    "RESTORE55321/55322",
+    "LOAD56321/56322",
+    "E2E57321/57322 existing financial fixtures"
+  ],
+  "allowedFutureExecution": "Sólo réplica scratch nueva58321/58322 tras entrega explícita de disponibilidad y propietario. No se asume que esté lista; no crear identidades Auth, credenciales externas ni acceso persistente.",
+  "commonGuards": [
+    "LoopbackAPI58321/database58322/purpose guards must all match before first request or SQL statement. Never derive target from generic production variables.",
+    "Read existing private clonedA/B fixture only; normal UI/API Auth sessions for actions; privileged SQL confined to synthetic fixture setup,independent oracle and narrowly scoped fault.",
+    "Independent names/runUUID and before/after canonical-table fingerprints; do not reset or overwrite preserved databases.",
+    "Cron/import/shared/fault tests exclusively scratch. Use isolated process clock where literal date requires; no OS clock change.",
+    "No real Telegram bot delivery/no secrets; local doubles declared. HTTP401 alone does not establish no DB-call order.",
+    "Browser assertions blocked until isolated Arc mechanism is verified; no silent Chrome or embeddedArcCore substitution.",
+    "Record exactproductrevision/build,runnerhashes,commands,counters/results/failurepositions. Keep implemented,tested,blocked distinct; no matrix update by this file."
+  ],
+  "evidenceSources": [
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "sha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b"
+    },
+    {
+      "path": "scripts/test-isolated-api.mjs",
+      "sha256": "79980da2891870029c46ed9a942c15bda3dd142ae0bcfc369cf1b6bf1bfc9c92"
+    },
+    {
+      "path": "scripts/test-shared-expenses-sql.mjs",
+      "sha256": "4e8556588933d11818db72bbd5f29ca05e8bd40bd45f3d16a9bed64be8f8394f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-reliability/shared-sql.json",
+      "sha256": "969154e7ae1d72793408a3d5229fc0def10f3fabd54dd236a3be04ec08994cd0"
+    }
+  ],
+  "cases": [
+    {
+      "id": "CP1-01",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000 ARS",
+        "entrada": "gasto=1500 ARS, categoría Alimentos, fecha=2026-10-06",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "un registro económico; saldo=8500; listado/dashboard muestran 1500",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "API_UI_DB",
+      "isolationGuard": "FRESH_SCRATCH",
+      "priorEvidenceAssessment": "La UI previa prueba gasto 1500 y saldo 8500, pero no categoría/fecha literal y listado/dashboard 1500 conjuntamente.",
+      "plannedIndependentOracle": "A nueva con 10000ARS: crear gasto 1500, categoríaAlimentos, fecha 2026-10-06. Comparar respuesta normal, una fila, saldo 8500 y listado/dashboard 1500; las aserciones de navegador siguen bloqueadas por Arc."
+    },
+    {
+      "id": "CP1-02",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000 ARS",
+        "entrada": "ingreso=500 ARS, categoría Sueldo, fecha=2026-10-06",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "un registro; saldo=10500; flujo ingreso +500",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "API_UI_DB",
+      "isolationGuard": "FRESH_SCRATCH",
+      "priorEvidenceAssessment": "No se reconcilió evidencia literal de ingreso 500 y flujo+500.",
+      "plannedIndependentOracle": "A nueva con 10000ARS: ingreso 500, Sueldo, fecha 2026-10-06. Una fila, saldo 10500 y aumento de ingresos 500 en flujo."
+    },
+    {
+      "id": "CP1-03",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000, B=2000 ARS",
+        "entrada": "transferir 1500 A→B",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "un movimiento lógico con dos impactos; A=8500 B=3500; total=12000; ingresos/gastos no aumentan",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "API_DB_PLUS_ANALYTICS",
+      "isolationGuard": "FRESH_SCRATCH",
+      "priorEvidenceAssessment": "La transferencia UI previa prueba 8500/3500 y reintento durable; no se afirmó exclusión de agregados ingreso/gasto.",
+      "plannedIndependentOracle": "A10000 y B2000 nuevas: transferencia 1500, un movimiento lógico, dos impactos 8500/3500, total 12000. Comparar agregados ingreso/gasto antes y después."
+    },
+    {
+      "id": "CP1-04",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Falla",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000, B=2000 ARS",
+        "entrada": "fallo inyectado al segundo impacto/COMMIT de transferencia1500",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "rollback total: A=10000 B=2000, cero movimiento confirmado; retry con misma clave una vez deja8500/3500",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "SQL_FAULT_AND_NORMAL_RETRY",
+      "isolationGuard": "SCRATCH_FAULT_ONLY",
+      "priorEvidenceAssessment": "La idempotencia y los reinicios previos no inyectan la falla literal del segundo impacto/COMMIT.",
+      "plannedIndependentOracle": "Fixture independiente: fallar en el segundo impacto o COMMIT y conservar el punto exacto. Exigir 10000/2000 y cero movimientos confirmados; retirar falla y reintentar la MISMA clave durable una vez para 8500/3500."
+    },
+    {
+      "id": "CP1-05",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal UPDATE SQL",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Fixture fresco: A inicial10000; gasto1500 persistido→A8500",
+        "entrada": "UPDATE monto1500→2000",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "A=8000; una fila movimiento; no doble débito",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "DIRECT_SQL_TRIGGER",
+      "isolationGuard": "SCRATCH_SQL_ONLY",
+      "priorEvidenceAssessment": "PATCH por UI/API llega a 8000, pero la RPC de recomputación podría ocultar un defecto del trigger.",
+      "plannedIndependentOracle": "Fixture independiente con gasto 1500 y saldo 8500: UPDATE SQL directo a 2000; misma fila y saldo 8000, sin segundo débito."
+    },
+    {
+      "id": "CP1-09",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal DELETE SQL",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Fixture fresco: A inicial10000; ingreso500→A10500",
+        "entrada": "DELETE movimiento ingreso",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "A=10000; no efecto adicional",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "DIRECT_SQL_TRIGGER",
+      "isolationGuard": "SCRATCH_SQL_ONLY",
+      "priorEvidenceAssessment": "No se reconcilió DELETE SQL directo del ingreso 500 literal.",
+      "plannedIndependentOracle": "Fixture independiente con ingreso 500 y saldo 10500: DELETE SQL directo; saldo 10000 y ningún efecto adicional."
+    },
+    {
+      "id": "CP1-11",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal DELETE SQL",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Fixture fresco: A=10000 B=2000; transferencia1500→8500/3500",
+        "entrada": "DELETE transferencia",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "A=10000 B=2000; reversión exacta de ambos impactos",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "DIRECT_SQL_TRIGGER",
+      "isolationGuard": "SCRATCH_SQL_ONLY",
+      "priorEvidenceAssessment": "Los ensayos SQL previos de transferencias usan otros fixtures y no se atribuyeron a esta fila literal.",
+      "plannedIndependentOracle": "Transferencia nueva 1500: saldos 8500/3500; DELETE SQL directo debe restaurar 10000/2000 exactamente."
+    },
+    {
+      "id": "CP1-12",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal SQL ajuste secundario",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Tarjeta bimoneda ledgerARS=-10000, ledgerUSD=-100; representación adaptar al esquema",
+        "entrada": "ajuste saldoUSD +10 firmado con identificador de moneda",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "USD=-90; ARS=-10000; no modificación del saldo primario por ajuste secundario; una auditoría",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "API_DB_MULTI_CURRENCY",
+      "isolationGuard": "FRESH_SCRATCH",
+      "priorEvidenceAssessment": "La transferencia multimoneda previa difiere del ajuste USD con signo de la tarjeta.",
+      "plannedIndependentOracle": "Inspeccionar representación documentada de tarjeta bimoneda: ARS-10000/USD-100 y ajuste USD+10 identificado. Exigir USD-90, ARS y saldo principal intactos, un registro auditable; no inventar campos."
+    },
+    {
+      "id": "CP1-19",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal/parcial CSV",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000; fixture fecha2026-10-06",
+        "entrada": "CSV filas gasto500 ARS, ingreso700 ARS, gasto0 ARS; esquema obligatorio completo",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "dos operaciones válidas; una rechazada; importadas2/rechazadas1/omitidas0; total3; A=10200",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "IMPORT_CSV_API_DB",
+      "isolationGuard": "SCRATCH_IMPORT_ONLY",
+      "priorEvidenceAssessment": "Importación no ejecutada por el arnés previo de cuatro CU.",
+      "plannedIndependentOracle": "Fixture nuevo A10000 y fecha 2026-10-06. CSV completo con gasto 500/ingreso 700/gasto 0: válidos 2, rechazados 1, omitidos 0, total 3 y A10200."
+    },
+    {
+      "id": "CP1-20",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal/parcial JSON",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Restaurar U1 A=10000; SIN filas CSV de CP1-19",
+        "entrada": "JSON equivalente a CP1-19; contrato de claves documentado",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "mismo oráculo CP1-19: dos altas, una rechazada, saldo10200",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "IMPORT_JSON_API_DB",
+      "isolationGuard": "SCRATCH_IMPORT_ONLY",
+      "priorEvidenceAssessment": "Importación no ejecutada; este caso no puede reutilizar las filas de CP1-19.",
+      "plannedIndependentOracle": "Fixture independiente A10000: JSON equivalente al CSV; válidos 2, rechazados 1 y saldo 10200."
+    },
+    {
+      "id": "CP1-21",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Duplicado",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000; gasto500 ya existe→9500; huella conocida",
+        "entrada": "importar mismo gasto y elegir omitir",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "cero altas nuevas; omitidas1; A=9500; muestra criterios de coincidencia",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "IMPORT_UI_API_DB",
+      "isolationGuard": "SCRATCH_IMPORT_ONLY",
+      "priorEvidenceAssessment": "No existe evidencia de elección de duplicado y omisión en importación.",
+      "plannedIndependentOracle": "Fixture nuevo A10000 con gasto 500 existente, saldo 9500 y huella conocida. Importar duplicado, elegir omitir: nuevos 0, omitidos 1, saldo 9500 y criterio visible; UI bloqueada por Arc."
+    },
+    {
+      "id": "CP1-22",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Falla",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000; cuentaB perteneceU2",
+        "entrada": "fila sin monto; fila cuentaB; archivo truncado en corridas independientes",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "rechaza sin impactos inválidos ni exposiciónU2; archivo irresoluble no inicia lote",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "IMPORT_REJECTION_API_DB",
+      "isolationGuard": "SCRATCH_IMPORT_ONLY",
+      "priorEvidenceAssessment": "Las tres ramas literales de archivo/cuenta inválidos no fueron ejecutadas.",
+      "plannedIndependentOracle": "Fixtures independientes para fila sin importe, cuenta de U2 y archivo truncado. Rechazar impactos inválidos y exposición de U2; un archivo irresoluble no inicia lote."
+    },
+    {
+      "id": "CP1-23",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A activa; categoríaAlimentos",
+        "entrada": "crear diaria gasto1000 inicio2026-10-01 fin2026-10-06; suspender/reactivar/editar",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "regla propiedadU1 refleja estados/datos; fin inclusiva; próxima ejecución coherente; sin movimientos al guardar regla",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "RECURRING_CRUD_API_DB",
+      "isolationGuard": "SCRATCH_CRON_ONLY",
+      "priorEvidenceAssessment": "No se reconcilió el fixture literal de regla con suspensión/reactivación/edición y fin inclusivo.",
+      "plannedIndependentOracle": "Cuenta activa y Alimentos: gasto diario 1000 desde 2026-10-01 hasta 2026-10-06. Crear, suspender, reactivar y editar; estados propios, fin inclusivo, próxima fecha coherente y cero movimientos al guardar."
+    },
+    {
+      "id": "CP1-24",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Concurrencia/reintento",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000; diaria1000 activa inicio10-01 ultima10-05; bot vinculado",
+        "entrada": "dos disparos concurrentes reloj2026-10-06T12:00:00Z y retry misma fecha",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "una ocurrencia clave(regla,2026-10-06); un gasto; A=9000; ultima10-06; una intención de notificación",
+        "evidencia_requerida": "Logs claim/SQL/clave única, movimiento, saldo, ultima, outbox lógico y proveedor simulado",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "CONCURRENT_CRON_DB_OUTBOX",
+      "isolationGuard": "SCRATCH_CRON_ONLY",
+      "priorEvidenceAssessment": "El cron anterior prueba una ocurrencia/outbox con 400 y fecha actual; no el fixture 1000 fijo ni el tercer reintento.",
+      "plannedIndependentOracle": "Reloj del proceso 2026-10-06T12:00Z; regla diaria 1000 desde 10-01, última 10-05 y saldo 10000. Dos cron concurrentes más reintento del día: una clave(regla,fecha), un gasto, saldo 9000, última 10-06 y una intención outbox; bot_tokenNULL y chat sintético."
+    },
+    {
+      "id": "CP1-25",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Falla SQL",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Mismo fixtureCP1-24",
+        "entrada": "Fallo SQL al crear movimiento antes de INSERT; reintentar; segunda variante falla al marcar después de INSERT",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Fallo antes de crear no marca last_executed_date. Tras INSERT confirmado y fallo de marca, retry23505 recupera ocurrencia y repara marca sin segundo débito.",
+        "evidencia_requerida": "Logs estados claim/rollback/retry y snapshot SQL",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "CRON_FAULT_RETRY_DB",
+      "isolationGuard": "SCRATCH_FAULT_ONLY",
+      "priorEvidenceAssessment": "Outbox durable y reintentos financieros no prueban ambas posiciones de falla de recurrentes.",
+      "plannedIndependentOracle": "Dos fixtures: falla SQL antes de INSERT no marca última fecha y permite reintento único; INSERT confirmado con falla posterior de marca permite recuperar 23505 y reparar marca sin segundo débito. Distinguir commit de rollback."
+    },
+    {
+      "id": "CP1-28",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Autorización/fin/inactividad",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=10000; tres fixtures independientes",
+        "entrada": "Bearer incorrecto; regla inactiva; regla fin10-05 y hoy10-06",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "401sin accesoDB paraBearer incorrecto; inactiva no ejecuta; vencida se desactiva sin nuevo movimiento",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "CRON_AUTH_DATE_API_DB",
+      "isolationGuard": "SCRATCH_CRON_ONLY",
+      "priorEvidenceAssessment": "El 401 previo no prueba todas las ramas de fecha ni el orden anterior aDB.",
+      "plannedIndependentOracle": "Variantes independientes: Bearer erróneo, regla inactiva y fin 10-05 con fecha 10-06. El 401 antes deDB exige contador/traza de llamadas; la inactiva no ejecuta y la vencida se desactiva sin movimiento."
+    },
+    {
+      "id": "CP1-29",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Política de saldo",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Cuenta A=500; regla gasto1000; no existe atributo allowOverdraft",
+        "entrada": "ejecución fecha válida",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Movimiento1000; saldo-500; marca éxito actual. No se espera rechazo por saldo insuficiente.",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "CRON_NEGATIVE_BALANCE",
+      "isolationGuard": "SCRATCH_CRON_ONLY",
+      "priorEvidenceAssessment": "No se reconcilió ejecución literal de cuenta 500 y regla 1000.",
+      "plannedIndependentOracle": "Fixture nuevo saldo 500 y regla 1000 válida, sin campo allowOverdraft: un movimiento 1000, saldo-500, fecha y marca de éxito; no agregar rechazo por fondos insuficientes."
+    },
+    {
+      "id": "CP1-30",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Política de saldo",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Cuenta A=500; regla gasto1000; notificación habilitada",
+        "entrada": "ejecución fecha válida",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Movimiento1000; saldo-500; fecha exitosa actual; aviso si el proveedor lo acepta. No afirmar advertencia específica de descubierto que el producto no tenga.",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "CRON_NOTIFICATION",
+      "isolationGuard": "SCRATCH_CRON_ONLY",
+      "priorEvidenceAssessment": "Entrega Telegram real bloqueada por falta de bot autorizado; un doble local sólo demuestra su contrato.",
+      "plannedIndependentOracle": "Fixture independiente saldo 500, regla 1000 y notificaciones: un efecto, saldo-500 y fecha actual. Aviso sólo si proveedor acepta; no inventar advertencia de descubierto. Etiquetar doble y bloqueo de integración real."
+    },
+    {
+      "id": "CP1-31",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Normal/límite",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "PresupuestoAlimentosARS10000 octubre2026; independientes por fila",
+        "entrada": "consumido9999.99,10000,10000.01; agrega transferenciaAlimentos500",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "restante0.01/0/-0.01; estado disponible/límite/superado; transfer no consume; informe no bloquea movimientos",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "BUDGET_BOUNDARIES_API_DB",
+      "isolationGuard": "FRESH_SCRATCH",
+      "priorEvidenceAssessment": "Las pruebas anteriores de presupuesto no cubren los tres límites literales de consumo.",
+      "plannedIndependentOracle": "Presupuestos independientes Alimentos 10000ARS de octubre 2026, consumo 9999.99/10000/10000.01 y transferenciaAlimentos 500. Restante.01/0/-.01 y estados disponible/límite/excedido; excluir transferencia y no bloquear movimientos."
+    },
+    {
+      "id": "CP1-33",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Falla",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A inactiva; otro fixture cuentaU2",
+        "entrada": "gasto1500 en inactiva / cuentaU2",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "no movimiento ni saldo; error estado/acceso; no revela saldo ajeno",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "OWNER_STATE_API_DB",
+      "isolationGuard": "FRESH_SCRATCH",
+      "priorEvidenceAssessment": "Los IDs ajenos previos no prueban ambos fixtures literales inactiva/ajena con gasto 1500.",
+      "plannedIndependentOracle": "Variantes independientes con cuenta inactiva y cuenta de U2, gasto 1500 con sesión normal de A. Cero movimiento/impacto, error de estado/acceso y ninguna exposición del saldo ajeno."
+    },
+    {
+      "id": "CP1-34",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Límite/falla",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "U1 A=1.00 ARS; no descubierto",
+        "entrada": "gasto0.01; después fixture fresco monto0, -1,0.001 yNaN",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "0.01 acepta y A=0.99; demásrechazan sin cambio; precisión2decimales propuesta",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture.",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "INPUT_CENTS_API_DB_UI",
+      "isolationGuard": "FRESH_SCRATCH",
+      "priorEvidenceAssessment": "El rechazo API de 1.001 es parcial; no se ejecutaron todos los límites literales con fixture.01.",
+      "plannedIndependentOracle": "A nueva 1.00ARS y gasto.01 debe terminar.99. Variantes independientes 0/-1/.001/NaN: rechazar sin efecto. JSON.stringify(NaN) genera null; distinguir entrada UI, null y JSON malformado."
+    },
+    {
+      "id": "CP1-35",
+      "status": "NOT_EXECUTED_LITERAL_FIXTURE",
+      "literalCsv": {
+        "nivel": "Integración / sistema",
+        "tipo": "Lote vacío/parcial",
+        "unidad_o_componente": "Movimientos / captura / recurrentes",
+        "precondiciones": "Reloj fijo; primer lote0; segundo lote3 reglas: activa válida,inactiva,activa con falloSQL",
+        "entrada": "ejecutar cron en fixtures independientes",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Lote vacío: total0/processed0/errors0. Lote de tres: processed1/errors1, regla archivada omitida. El resumen actual no expone contador skipped; la omisión se reconstruye de total y resultados.",
+        "evidencia_requerida": "Logs resumen y estados persistidos; ajustar nomenclatura de campos al código real",
+        "origen_del_oraculo": "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+        "revision_del_diseno": "v2.13 propuesta"
+      },
+      "executionMode": "CRON_BATCH_COUNTERS",
+      "isolationGuard": "SCRATCH_FAULT_ONLY",
+      "priorEvidenceAssessment": "El cron previo no cubre lote vacío ni contadores del lote mixto literal.",
+      "plannedIndependentOracle": "Reloj fijo: lote vacío total 0/procesados 0/errores 0. Otro fixture con tres reglas(válida activa,inactiva,activa con fallaSQL): procesados 1/errores 1 e inactiva omitida; no inventar contador skipped inexistente."
+    },
+    {
+      "id": "CP1-37",
+      "status": "RECONCILABLE_EXISTING_SQL_SCOPE",
+      "literalCsv": {
+        "nivel": "Integración / aceptación",
+        "tipo": "Compartidos / normal/límite/falla",
+        "unidad_o_componente": "SharedExpensesService / save_shared_expense",
+        "precondiciones": "Grupo sintético con miembros y capability de ensayo; base aislada.",
+        "entrada": "Gasto10.01ARS entre tres miembros; luego12.35 con miembros [C,A,C]",
+        "pasos": "",
+        "resultado_esperado": "Primera división3.34+3.34+3.33; dedup [C,A] produce6.18+6.17; conserva fecha. El fixture fue ejecutado por SGSQL con alcance SQL aislado.",
+        "evidencia_requerida": "",
+        "origen_del_oraculo": "Contrato compartidos revisado; pruebas SQL se enlazan por separado.",
+        "revision_del_diseno": "v2.13"
+      },
+      "executionMode": "EXACT_EXISTING_SQL_RECONCILIATION",
+      "isolationGuard": "NO_NEW_EXECUTION_REQUIRED_FOR_SQL_SCOPE",
+      "priorEvidenceAssessment": "El CSV permite alcance SQL aislado: SH02/03 coincide literalmente en 10.01, tres divisiones,12.35[C,A,C] y fecha conservada.",
+      "plannedIndependentOracle": "Reconciliar shared-sql.json de CI4(11/11) con SH02/03 exactos. Mantener Auth normal y UI como alcances separados; no atribuir nueva ejecución de navegador."
+    },
+    {
+      "id": "CP1-38",
+      "status": "RECONCILABLE_EXISTING_SQL_SCOPE",
+      "literalCsv": {
+        "nivel": "Integración / aceptación",
+        "tipo": "Compartidos / normal/límite/falla",
+        "unidad_o_componente": "SharedExpensesService / save_shared_expense",
+        "precondiciones": "Grupo sintético con miembros y capability de ensayo; base aislada.",
+        "entrada": "Actor/pagador/miembro ajeno, token inválido/revocado, falla al insertar split",
+        "pasos": "",
+        "resultado_esperado": "Rechazo sin cambios; falla revierte gasto+splits, no huérfanos. Autoría por capability declarada, no prueba identidad Auth individual.",
+        "evidencia_requerida": "",
+        "origen_del_oraculo": "Contrato compartidos revisado; pruebas SQL se enlazan por separado.",
+        "revision_del_diseno": "v2.13"
+      },
+      "executionMode": "EXACT_EXISTING_SQL_RECONCILIATION",
+      "isolationGuard": "NO_NEW_EXECUTION_REQUIRED_FOR_SQL_SCOPE",
+      "priorEvidenceAssessment": "SH04/05/06/08/09/10/11 prueba actor/pagador/split ajenos, capability inválida/revocada, sin cambios, rollback y ausencia de huérfanos.",
+      "plannedIndependentOracle": "Reconciliar shared-sql.json de CI4(11/11) y sus aserciones exactas. El CSV declara alcance SQL; Auth/RLS nativo es evidencia adicional y no identidad Auth individual del invitado."
+    }
+  ]
+}

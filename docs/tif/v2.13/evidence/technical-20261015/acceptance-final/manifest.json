@@ -1,0 +1,154 @@
+{
+  "status": "INTERMEDIATE_AND_FINAL_SCOPED_READINESS_PRESERVED",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "02e79b49b929cd6254b587fde3730fae03f7da9dece18d61001fced4c7326833"
+    },
+    {
+      "path": "attempt-1-clock-preload-failure/contract-clock-app-state.json",
+      "sha256": "c0b9f201481730133bc74dcce223bc050b0fa1262c1307669f6d167d745afd28"
+    },
+    {
+      "path": "attempt-1-clock-preload-failure/contract-clock-auth-ready-attempt-4.json",
+      "sha256": "224d495ab031cbef29e298f485071078b87325b487f10cfa03f8937bd3325f9b"
+    },
+    {
+      "path": "attempt-1-clock-preload-failure/contract-clock-gemini-unavailable.json",
+      "sha256": "47ba7bf318e237799df22d6f125e23129668e8c5fc72efcfd795047fe9799180"
+    },
+    {
+      "path": "attempt-1-clock-preload-failure/contract-clock-observation.json",
+      "sha256": "acdc4e212114a7cbfb9197b3de66a5bcb9aa71db5cae0731e42a5e0059b40a5b"
+    },
+    {
+      "path": "attempt-1-clock-preload-failure/executed-clock-preload.mjs",
+      "sha256": "9f8a984500e6f7150c124c2364275379d7a07e32521a295ec1238eef9511333c"
+    },
+    {
+      "path": "attempt-1-clock-preload-failure/sanitized-diagnosis.json",
+      "sha256": "4c30516636984a6a3788769bf4faf523a201022e9ad224afff6a2819d67734f0"
+    },
+    {
+      "path": "build-app.py",
+      "sha256": "1bb807c6aedb55d6a4ac9602a8ba5f9ef8bf5f2bab70667f8fe6f3e07d66e5d1"
+    },
+    {
+      "path": "clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "clock-quote-fixture.mjs",
+      "sha256": "4b5f1a0df734fb66c89063541d98800724129e0056169c1ceca56a3d3f93b471"
+    },
+    {
+      "path": "final-clock-executed/README.md",
+      "sha256": "1d4f12b43619d9128046669f90bdec091420d562f4ff7b0da70fe792ef1395f7"
+    },
+    {
+      "path": "final-clock-executed/auth-readiness-harness.mjs",
+      "sha256": "f53215c544273a53c9e0804692492504bd41aa301480e18bcc2141df99da8c01"
+    },
+    {
+      "path": "final-clock-executed/final-proof-browser-assets-manifest.json",
+      "sha256": "949ca2b6c8323ab6c74a13e70bee00a1b29f0e3f274785d524e4e347308fa7e9"
+    },
+    {
+      "path": "final-clock-executed/final-proof-build-proof.json",
+      "sha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976"
+    },
+    {
+      "path": "final-clock-executed/final-proof-clock-app-state.json",
+      "sha256": "d7bde38eea6cf42a09e7f4ac4392a7b085e987608407875b53b44d1f279bbb2b"
+    },
+    {
+      "path": "final-clock-executed/final-proof-clock-auth-ready.json",
+      "sha256": "9f03835bf42f87b6dcc28d83c0fc3a658babba925ffe85b030c277ad0c688b31"
+    },
+    {
+      "path": "final-clock-executed/final-proof-clock-gemini-unavailable.json",
+      "sha256": "b342350c3534c099e85a259be94a65c8a54235e007c13a3af648a8e2b1af2ae1"
+    },
+    {
+      "path": "final-clock-executed/final-proof-clock-observation.json",
+      "sha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118"
+    },
+    {
+      "path": "final-clock-executed/independent-review.json",
+      "sha256": "817fffe99c35c44fe127f262c0ae7458b14e613cfe52088ce7d6994be3b09ae9"
+    },
+    {
+      "path": "gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "intermediate-clock-executed/auth-readiness-harness.mjs",
+      "sha256": "b492d7c14979efb87ff519fd91a52e16b14a489e43ef77148b4e657eb478b11a"
+    },
+    {
+      "path": "intermediate-clock-executed/clock-quote-server-state.json",
+      "sha256": "d78c63b111be04bfd15e9e035b2a4f1169dd44d15679aa2f989b3aa79f520a22"
+    },
+    {
+      "path": "intermediate-clock-executed/contract-clock-browser-assets-manifest.json",
+      "sha256": "3d1c62a9c6b88b418239c09275a9618f3d81700c146d1af0fdb27717e2a2934e"
+    },
+    {
+      "path": "intermediate-clock-executed/contract-clock-build-proof.json",
+      "sha256": "2fd7d419dd3fb4f724da3bb707eb0455a0aa976e91f494793f1b739a56ea51d8"
+    },
+    {
+      "path": "intermediate-clock-executed/contract-clock-retry-app-state.json",
+      "sha256": "7dda799a0536446d354216b1b1378c6529b4140cfcf47ffde56af667fcdb65b3"
+    },
+    {
+      "path": "intermediate-clock-executed/contract-clock-retry-auth-ready.json",
+      "sha256": "65918c05ff34f371fe92ad5a273b83c1a0a20417fb8f4e4fc3362a4c18c6fa6b"
+    },
+    {
+      "path": "intermediate-clock-executed/contract-clock-retry-gemini-unavailable.json",
+      "sha256": "0468871b63c0374ecfb8d6f0ed5f212e8a127288bc5bf94e1afc21950ac6df14"
+    },
+    {
+      "path": "intermediate-clock-executed/contract-clock-retry-observation.json",
+      "sha256": "ce9af30f4e005a9a10c7c4039b6f16576b9ac064ee408f0b463637eeaf8754e5"
+    },
+    {
+      "path": "intermediate-clock-executed/executed-build-app.py",
+      "sha256": "9da48471412129dea08ed8ea5dc6269316c1f4f903dd7041420f00c58d3c75e2"
+    },
+    {
+      "path": "intermediate-clock-executed/verification.json",
+      "sha256": "21213f9eafe0d11acf4c47891982077286a479dcdfeb981f815f9ec9c7d340bf"
+    },
+    {
+      "path": "prepared-checks.json",
+      "sha256": "116a6a66014c1d13b7d57eeaa4c73163bef1e69780081aac889b503ba95a2788"
+    },
+    {
+      "path": "profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "publication-scan.json",
+      "sha256": "e3564cecbbfd3f12cca61d4dfca6255141c6d11efba389bbfbc59284c15973b8"
+    },
+    {
+      "path": "retry-independent-review.json",
+      "sha256": "6b69668c69ab080260847c36e2717e30c6db8ea017748d504df0478cb538bd20"
+    },
+    {
+      "path": "runtime-profile.mjs",
+      "sha256": "1d770968ed0b79b3e2d69b597910f19754b68caad98c0897534f9e10d0f0a606"
+    },
+    {
+      "path": "test-clock-model.mjs",
+      "sha256": "4f0107da4cfd95a2829361d21643f8d93df5c279f784031291f62804015d544a"
+    },
+    {
+      "path": "test-clock-quote-fixture.mjs",
+      "sha256": "c41525d3c9e3284bb1572e2d4409429ae81db725b76d962df08c98173d377a4e"
+    }
+  ],
+  "scope": "Both frozen copies, original shim failure and independently reviewed final readiness. Financial original contracts have separate reports; no bundles/env/dumps included."
+}

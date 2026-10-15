@@ -1,0 +1,58 @@
+{
+  "reviewedAt": "2026-10-15T06:15:33.584952Z",
+  "status": "PASS_STATIC_PREPARATION_REVIEW_PENDING_EXECUTION",
+  "reviewers": {
+    "targetAndPreservation": "sql_security",
+    "recoveryContractMimeRestorationAndLogHandling": "e2e; independent file-only review reported with matching source hashes"
+  },
+  "scope": "Independent source-only review of the CP2-10 runner and its isolated target/preservation guards. No module import, test, process probe, HTTP, Auth, SMTP, SQL, runtime mutation, password change, or credential generation was performed by this review.",
+  "originalCase": {
+    "id": "CP2-10",
+    "status": "NOT_PROMOTED_BY_PREPARATION_REVIEW",
+    "expected": "Old password denied, new password accepted, valid recovery token consumed, and no secret in ordinary logs. Actual execution is required."
+  },
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/run.mjs",
+      "sha256": "27225897b3c370735d6d1cbbae08bec6b4c2c2a1c28d485d8b306b61cd649b11"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/contract.mjs",
+      "sha256": "c558b79986164be8ca24813b65504685a296c4b3ba646c8308e70b17d5797f5c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/smtp-message.mjs",
+      "sha256": "adfe2ce69186df6fbef6ffbc90c2e3a48c2293e77a798aecc35378ffd0687d70"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-reset-contract/smtp-sink.mjs",
+      "sha256": "0c1d72411a5204e9f7483b0c494364a920ba0ce25775ac9c749a775afae20342"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    }
+  ],
+  "findings": [],
+  "guardsReviewed": [
+    "Explicit parent release and synthetic-only confirmation are required before network or SQL actions.",
+    "Private target/config/readiness/SMTP files must be regular, non-symlinked, mode 0600-equivalent, and remain under the resolved task runtime directory.",
+    "API 60321, separate GoTrue 60327, SMTP 60325, and PostgREST 60323 belong to the new UUID database on local PostgreSQL 55322; the original database is separately fixed to postgres. No request is directed to original Auth 55321.",
+    "Auth database DSN, external API/site URL, SMTP endpoint, binary/config/readiness/gateway hashes, exact listener PIDs, mapped executable, and SMTP identity are checked before and after the operation.",
+    "Every returned access token must belong to the selected existing synthetic owner, and its session_id must exist in auth.sessions in the isolated new database.",
+    "All public tables in both databases are compared by full-row count/digest, and original Auth users/sessions/refresh_tokens are additionally protected. All direct SQL in this runner uses BEGIN READ ONLY.",
+    "Only the two existing synthetic recipients are accepted; each recovery message must be a new private MIME receipt with exact recipient, sequence, bytes, SHA, and loopback-origin validation.",
+    "Temporary password and issued sessions remain in a private restoration checkpoint. The contract restores the original synthetic password in finally; fallback administrative repair is restricted to the selected owner in the isolated clone.",
+    "Ordinary Auth/SMTP log inspection compares secret values only in memory and publishes counts without raw messages, matching excerpts, or values. Intentional private MIME, checkpoint, and env files are outside that ordinary-log claim.",
+    "Final protected-row and source/config binding checks must succeed before the execution report can claim completeness."
+  ],
+  "limitations": [
+    "This preparation review is not evidence that recovery succeeded, that the token was consumed, or that ordinary runtime logs contain no secrets; those require the owner execution report.",
+    "This review does not approve or infer hosted Supabase behavior, external email delivery, new credentials, access grants, or original-instance mutations.",
+    "A source/config change after these pins requires a new comparison; no blanket approval or raw diagnostic suppression is inferred."
+  ]
+}

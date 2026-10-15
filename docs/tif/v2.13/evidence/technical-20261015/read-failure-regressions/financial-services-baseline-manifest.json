@@ -1,0 +1,58 @@
+{
+  "sourceRevision": "4842247adf83ac07cb6893d5932b5222886045cd",
+  "scope": "Two pre-fix service files routed through a temporary Vitest alias. No application checkout was reverted. Four new isolated unit regressions use mocks only; no DB/network/browser.",
+  "files": [
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "6ec3915b5fe655a912133275700cc77a6750a31e732ac94092b162da1d8a54cb",
+      "role": "Pre-fix HEAD bytes via exact Vitest alias in private temporary files"
+    },
+    {
+      "path": "lib/services/budget-summary.ts",
+      "sha256": "32bcc250151b43dc9023db91a6d3433357e7ac2b1b6f8c85498dc0f189ad38d4",
+      "role": "Pre-fix HEAD bytes via exact Vitest alias in private temporary files"
+    }
+  ],
+  "test": {
+    "path": "__tests__/financial-read-errors.test.ts",
+    "sha256": "b5a82cf4d224ebcf0dc4e1899f15ad93ea055cf6143d35e085920856229fb000"
+  },
+  "config": {
+    "root": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+    "resolve": {
+      "alias": [
+        {
+          "find": "./budgets",
+          "replacement": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/lib/services/budgets.ts"
+        },
+        {
+          "find": "@/lib/services/net-worth",
+          "replacement": "/tmp/zarix-runtime-20261015/financial-read-regression-baseline/net-worth.ts"
+        },
+        {
+          "find": "@/lib/services/budget-summary",
+          "replacement": "/tmp/zarix-runtime-20261015/financial-read-regression-baseline/budget-summary.ts"
+        },
+        {
+          "find": "@",
+          "replacement": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix"
+        }
+      ]
+    },
+    "test": {
+      "environment": "node",
+      "globals": true,
+      "include": [
+        "__tests__/financial-read-errors.test.ts"
+      ],
+      "exclude": [
+        "node_modules/**",
+        ".next/**"
+      ]
+    }
+  },
+  "setupAttempt": {
+    "path": "before-financial-services-setup-failed.json",
+    "reason": "Temporary baseline copy used a relative budgets import outside the original service directory; zero tests executed. Fixed only the temporary alias; no production source changes."
+  }
+}

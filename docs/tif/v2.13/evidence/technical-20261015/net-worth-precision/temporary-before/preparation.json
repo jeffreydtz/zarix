@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-15T04:58:58.485146+00:00",
+  "status": "PREPARED_BEFORE_REGRESSION",
+  "repoChanged": false,
+  "temporaryDirectory": "/tmp/zarix-cp306-ssr-20261015",
+  "testScope": "Real React SSR, real Hero/Sticky/Amount/privacy hooks. No mocks, providers, browser, hook overrides or decimals prop injected by the test. Sticky visible/client USD-view remain outside SSR coverage.",
+  "sources": [
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb"
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "sha256": "f5eacff2eba0c2e6b96beae73a4ea84849d80966cc034379248cd9d2576b1b4a"
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520"
+    },
+    {
+      "path": "lib/hooks/use-privacy.ts",
+      "sha256": "1429c9bee887ff5e3816afe9eec6435c1bfdaf6c2ce507865a56ee01e47eb43c"
+    }
+  ],
+  "temporaryFiles": [
+    {
+      "path": "vitest.config.mjs",
+      "sha256": "c8caa9105dac5eb6720ceab61738e4911d3f264fc8213acf5e5b75aa362cfe4c"
+    },
+    {
+      "path": "net-worth-money-regression.test.ts",
+      "sha256": "ecc41283ec3854a8f8f6fff037935b48ffce05711d7c292166037ea1f06da0b0"
+    }
+  ]
+}

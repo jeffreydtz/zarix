@@ -3,6 +3,9 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ImportSkippedDetail } from '@/types/import';
+import { acknowledgeImportBatch, getImportBatch, prepareImportBatch, type ImportBatch } from '@/lib/import/batch-journal';
+
+const PENDING_IMPORT_MESSAGE = 'El lote sigue guardado: reintentá el mismo lote con el archivo original, sin editarlo, para evitar duplicados. No inicies un lote nuevo hasta confirmar el resultado.';
 
 export default function ExportImport() {
   const [exporting, setExporting] = useState(false);
@@ -10,6 +13,8 @@ export default function ExportImport() {
   const [showGuide, setShowGuide] = useState(false);
   const [importResult, setImportResult] = useState<{
     success: boolean;
+    pending?: boolean;
+    pendingCount?: number;
     imported?: number;
     skipped?: number;
     skippedDetails?: ImportSkippedDetail[];
@@ -27,6 +32,11 @@ export default function ExportImport() {
   >({});
   /** Fechas tipo 02/04/2025: DD/MM (Argentina) vs MM/DD (EE.UU.); debe coincidir en vista previa y confirmación. */
   const [importDateFormat, setImportDateFormat] = useState<'dmy' | 'mdy'>('dmy');
+  const [skipDuplicates, setSkipDuplicates] = useState(false);
+  const [priorBatch, setPriorBatch] = useState<ImportBatch | null>(null);
+  const [batchChoice, setBatchChoice] = useState<'retry' | 'new' | null>(null);
+  const [previewIdentity, setPreviewIdentity] = useState<{ ownerId: string; fileHash: string } | null>(null);
+  const importInFlight = useRef(false);
 
   const sortedImportAccounts = useMemo(
     () =>
@@ -128,11 +138,16 @@ export default function ExportImport() {
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || importInFlight.current) return;
+    importInFlight.current = true;
 
     setImporting(true);
     setImportResult(null);
     setSelectedFile(file);
+    setReviewStep(false);
+    setPreviewIdentity(null);
+    setPriorBatch(null);
+    setBatchChoice(null);
 
     try {
       const formData = new FormData();
@@ -158,15 +173,17 @@ export default function ExportImport() {
             unresolved.map((name: string) => [name, { action: 'none' as const }])
           )
         );
-        setReviewStep(unresolved.length > 0);
-
-        if (unresolved.length === 0) {
-          await handleConfirmImport(file, {});
-        }
+        const identity = { ownerId: result.ownerId as string, fileHash: result.fileHash as string };
+        const saved = await getImportBatch(identity.ownerId, identity.fileHash);
+        setPreviewIdentity(identity);
+        setPriorBatch(saved);
+        setBatchChoice(saved ? null : 'new');
+        setReviewStep(true);
       }
     } catch (error) {
-      setImportResult({ success: false, message: 'Error importando archivo' });
+      setImportResult({ success: false, message: 'No se pudo preparar el archivo o guardar su identificación. No se inició la importación.' });
     } finally {
+      importInFlight.current = false;
       setImporting(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -174,20 +191,30 @@ export default function ExportImport() {
     }
   };
 
-  const handleConfirmImport = async (
-    fileArg?: File,
-    resolutionsArg?: Record<string, { action: 'none' | 'map' | 'keep_name'; accountId?: string }>
-  ) => {
-    const file = fileArg || selectedFile;
-    if (!file) return;
-
+  const handleConfirmImport = async () => {
+    const file = selectedFile;
+    if (!file || !previewIdentity || !batchChoice || importInFlight.current) return;
+    importInFlight.current = true;
     setImporting(true);
+    setImportResult(null);
+    let savedBatch: ImportBatch | null = null;
     try {
+      // Persist before the request. Re-selecting the same file after restart
+      // offers this exact ID and original options, including account mappings.
+      const batch = await prepareImportBatch({ ...previewIdentity, fileName: file.name,
+        options: { dateFormat: importDateFormat, resolutions, skipDuplicates },
+      }, batchChoice === 'new' ? priorBatch?.id : undefined);
+      savedBatch = batch;
+      setPriorBatch(batch);
+      setBatchChoice('retry');
       const formData = new FormData();
       formData.append('file', file);
       formData.append('mode', 'import');
-      formData.append('dateFormat', importDateFormat);
-      formData.append('resolutions', JSON.stringify(resolutionsArg || resolutions));
+      formData.append('batchId', batch.id);
+      formData.append('ownerId', batch.ownerId);
+      formData.append('dateFormat', batch.options.dateFormat);
+      formData.append('resolutions', JSON.stringify(batch.options.resolutions));
+      formData.append('skipDuplicates', String(batch.options.skipDuplicates));
 
       const response = await fetch('/api/import/transactions', {
         method: 'POST',
@@ -195,9 +222,23 @@ export default function ExportImport() {
       });
       const result = await response.json();
 
-      if (!response.ok) {
-        setImportResult({ success: false, message: result.error });
+      const validCounts = Number.isInteger(result.imported) && result.imported >= 0 &&
+        Number.isInteger(result.skipped) && result.skipped >= 0;
+      if (result.status === 'pending' && result.success === false && result.batchId === batch.id &&
+          validCounts && Number.isInteger(result.pending) && result.pending > 0) {
+        setImportResult({ success: false, pending: true, imported: result.imported,
+          skipped: result.skipped, pendingCount: result.pending, message: PENDING_IMPORT_MESSAGE });
+      } else if (!response.ok) {
+        setImportResult({ success: false, pending: true,
+          message: `${typeof result.error === 'string' ? result.error + ' ' : ''}${PENDING_IMPORT_MESSAGE}` });
       } else {
+        if (result.success !== true || result.batchId !== batch.id || !validCounts ||
+            (result.pending != null && result.pending !== 0) ||
+            (result.status != null && result.status !== 'completed')) {
+          throw new Error('Confirmación de lote inválida.');
+        }
+        // A failed local acknowledgement cannot discard the durable retry ID.
+        await acknowledgeImportBatch(batch).catch(() => {});
         setImportResult({
           success: true,
           imported: result.imported,
@@ -210,8 +251,11 @@ export default function ExportImport() {
         setUnresolvedAccounts([]);
       }
     } catch (error) {
-      setImportResult({ success: false, message: 'Error confirmando importación' });
+      setImportResult({ success: false, pending: !!savedBatch, message: savedBatch
+        ? `No se recibió confirmación. ${PENDING_IMPORT_MESSAGE}`
+        : `No se inició la importación: ${error instanceof Error ? error.message : 'no se pudo guardar el lote.'}` });
     } finally {
+      importInFlight.current = false;
       setImporting(false);
     }
   };
@@ -252,11 +296,11 @@ export default function ExportImport() {
               disabled={exporting}
               className="btn bg-accent-invest hover:bg-accent-invest/90 text-primary-foreground px-4 py-2 text-sm"
             >
-              {exporting ? '...' : '💾 Backup completo'}
+              {exporting ? '...' : '💾 Exportación de datos'}
             </button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            CSV es compatible con Excel. JSON es mejor para programadores. Backup incluye todo.
+            CSV es compatible con Excel. La exportación de datos incluye cuentas, movimientos, categorías, presupuestos e inversiones. No reemplaza un respaldo del sistema, Auth o archivos.
           </p>
         </div>
 
@@ -397,8 +441,8 @@ export default function ExportImport() {
                     </p>
                     <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
                       <li><strong>Asignar a cuenta existente:</strong> mapeá el nombre importado a una cuenta que ya tenés.</li>
-                      <li><strong>Dejar sin cuenta:</strong> se importa el movimiento sin <code className="bg-secondary px-1 rounded">account_id</code> (podés editarlo después).</li>
-                      <li><strong>Guardar nombre original en notas:</strong> se anota el texto de la cuenta en las notas del movimiento.</li>
+                      <li><strong>Dejar sin cuenta:</strong> la fila se omite hasta que puedas asignarle una cuenta válida.</li>
+                      <li>Las filas sin cuenta válida no se guardan ni afectan saldos.</li>
                       <li>Si no hay nombre de cuenta pero sí moneda, a veces se sugiere una cuenta con esa moneda (solo como ayuda).</li>
                     </ul>
                     <p className="text-xs text-muted-foreground mt-2">
@@ -458,6 +502,7 @@ export default function ExportImport() {
             </label>
             <select
               id="import-date-format"
+              disabled={importing || reviewStep}
               value={importDateFormat}
               onChange={(e) => setImportDateFormat(e.target.value as 'dmy' | 'mdy')}
               className="input text-sm max-w-md"
@@ -474,6 +519,7 @@ export default function ExportImport() {
             type="file"
             ref={fileInputRef}
             accept=".csv,.json,.xlsx"
+            disabled={importing}
             onChange={handleImport}
             className="hidden"
             id="import-file"
@@ -497,15 +543,40 @@ export default function ExportImport() {
               Aceptamos .csv, .xlsx y .json (los .xls viejos: guardalos como .xlsx primero)
           </p>
 
-          {reviewStep && unresolvedAccounts.length > 0 && (
+          {reviewStep && (
             <div className="mt-4 p-4 rounded-lg border border-warning/30 bg-warning/10">
               <h4 className="font-semibold text-warning mb-2">
-                Cuentas no reconocidas (import masivo)
+                Revisar importación
               </h4>
               <p className="text-xs text-warning mb-3">
-                Elegí para cada cuenta: asignar una existente, dejar sin cuenta o guardar el nombre original.
+                Se confirma cada fila por separado. Si se interrumpe, seleccioná este archivo y reintentá el mismo lote.
               </p>
-              <div className="space-y-3">
+              {priorBatch && (
+                <fieldset className="space-y-2 text-sm mb-4" disabled={importing}>
+                  <legend className="font-medium mb-2">Este archivo tiene un lote guardado. Elegí cómo continuar:</legend>
+                  <label className="block">
+                    <input type="radio" name="import-batch-choice" checked={batchChoice === 'retry'}
+                      onChange={() => { setBatchChoice('retry'); setSkipDuplicates(priorBatch.options.skipDuplicates); setResolutions(priorBatch.options.resolutions); }} /> Reintentar el lote anterior sin duplicar filas confirmadas
+                  </label>
+                  {priorBatch.acknowledged ? (
+                    <label className="block">
+                      <input type="radio" name="import-batch-choice" checked={batchChoice === 'new'}
+                        onChange={() => setBatchChoice('new')} /> Importar como lote nuevo: puede volver a afectar los saldos
+                    </label>
+                  ) : (
+                    <p className="text-xs">Este lote está pendiente de confirmación. Reintentá el mismo lote con el archivo original sin editarlo. Primero confirmá su resultado para poder iniciar un lote nuevo.</p>
+                  )}
+                  {batchChoice === 'retry' && <p className="text-xs">Se usarán la fecha, las cuentas y la opción de coincidencias del lote original.</p>}
+                </fieldset>
+              )}
+              <fieldset disabled={importing || batchChoice === 'retry'} className="space-y-3">
+                <label className="block text-sm">
+                  <input type="checkbox" checked={skipDuplicates} onChange={(e) => setSkipDuplicates(e.target.checked)} /> Omitir coincidencias exactas
+                </label>
+                <p className="text-xs text-muted-foreground">
+                  Opcional: compara fecha y hora, tipo, monto, moneda, cuentas, equivalentes, categoría, descripción y notas con movimientos existentes y filas anteriores. Sin marcar, las filas iguales se consideran operaciones distintas.
+                </p>
+                {unresolvedAccounts.length > 0 && <p className="text-xs">Asigná cada nombre no reconocido a una cuenta existente. Las filas sin cuenta válida se omiten.</p>}
                 {unresolvedAccounts.map((name) => {
                   const current = resolutions[name] || { action: 'none' as const };
                   return (
@@ -554,16 +625,17 @@ export default function ExportImport() {
                     </div>
                   );
                 })}
-              </div>
+              </fieldset>
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => handleConfirmImport()}
-                  disabled={importing}
+                  disabled={importing || !batchChoice}
                   className="btn btn-primary"
                 >
                   {importing ? 'Importando...' : 'Confirmar importación'}
                 </button>
                 <button
+                  disabled={importing}
                   onClick={() => {
                     setReviewStep(false);
                     setUnresolvedAccounts([]);
@@ -586,7 +658,9 @@ export default function ExportImport() {
             className={`p-4 rounded-lg ${
               importResult.success
                 ? 'bg-success/10 border border-success/30'
-                : 'bg-destructive/10 border border-destructive/30'
+                : importResult.pending
+                  ? 'bg-warning/10 border border-warning/30'
+                  : 'bg-destructive/10 border border-destructive/30'
             }`}
           >
             {importResult.success ? (
@@ -595,7 +669,7 @@ export default function ExportImport() {
                   ✅ Importación completada
                 </p>
                 <p className="text-sm text-success">
-                  {importResult.imported} transacciones importadas
+                  {importResult.imported} transacciones confirmadas en este lote (incluye las recuperadas al reintentar)
                   {importResult.skipped != null && importResult.skipped > 0 && (
                     <span className="text-warning">
                       {`, ${importResult.skipped} omitidas`}
@@ -678,6 +752,17 @@ export default function ExportImport() {
                     </ul>
                   </div>
                 )}
+              </div>
+            ) : importResult.pending ? (
+              <div className="space-y-2 text-warning">
+                <p className="font-medium">Importación pendiente de confirmación</p>
+                {importResult.pendingCount != null && (
+                  <p className="text-sm">
+                    {importResult.imported} transacciones confirmadas, {importResult.pendingCount} pendientes de confirmación
+                    {importResult.skipped != null && importResult.skipped > 0 && `, ${importResult.skipped} omitidas antes de escribir o por coincidencia confirmada`}.
+                  </p>
+                )}
+                <p className="text-sm">{importResult.message}</p>
               </div>
             ) : (
               <p className="text-destructive">

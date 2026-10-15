@@ -1,16 +1,13 @@
 import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getCachedUser } from '@/lib/auth/session';
 import { accountsService } from '@/lib/services/accounts';
 import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { investmentsService } from '@/lib/services/investments';
-import {
-  computeNetWorth,
-  getNetWorthHistory,
-  recordNetWorthSnapshot,
-} from '@/lib/services/net-worth';
+import { getNetWorthHistory } from '@/lib/services/net-worth';
+import { getPresentationPreferences } from '@/lib/services/presentation-preferences';
 import { getInflacionSeries } from '@/lib/services/inflacion';
 import { getMarketSparklines } from '@/lib/services/market-history';
 import { getMonthFlow } from '@/lib/services/month-flow';
@@ -66,37 +63,24 @@ export default async function DashboardPage() {
       monthFlow,
       upcoming,
       budgets,
+      preferences,
     ] = await Promise.all([
-      accountsService.list(user.id).catch(() => []),
-      transactionsService.list(user.id, { limit: 5 }).catch(() => []),
+      accountsService.list(user.id, { allowPartialValuation: true }),
+      transactionsService.list(user.id, { limit: 5 }),
       investmentsService
-        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true })
-        .catch(() => null),
-      cotizacionesService.getAllQuotes().catch(() => ({
-        dolar: {
-          blue: { type: 'blue' as const, buy: 0, sell: 0, timestamp: new Date() },
-          oficial: { type: 'oficial' as const, buy: 0, sell: 0, timestamp: new Date() },
-          mep: { type: 'mep' as const, buy: 0, sell: 0, timestamp: new Date() },
-          ccl: { type: 'ccl' as const, buy: 0, sell: 0, timestamp: new Date() },
-        },
-        crypto: {
-          btc: { symbol: 'BTC', priceUSD: 0, priceARS: 0, change24h: 0, timestamp: new Date() },
-          eth: { symbol: 'ETH', priceUSD: 0, priceARS: 0, change24h: 0, timestamp: new Date() },
-          usdt: { symbol: 'USDT', priceUSD: 1, priceARS: 0, change24h: 0, timestamp: new Date() },
-        },
-        timestamp: new Date().toISOString(),
-      })),
-      getNetWorthHistory(user.id).catch(() => []),
+        .getPortfolioSummary(user.id, { skipQuoteRefresh: true, skipDailySnapshot: true }),
+      cotizacionesService.getAllQuotes().catch(error => {
+        unstable_rethrow(error);
+        return null;
+      }),
+      getNetWorthHistory(user.id),
       getInflacionSeries().catch(() => []),
       getMarketSparklines().catch(() => ({ blue: [], btc: [], eth: [] })),
-      getMonthFlow(user.id).catch(() => null),
-      getUpcoming(user.id).catch(() => []),
-      getTopBudgets(user.id).catch(() => []),
+      getMonthFlow(user.id),
+      getUpcoming(user.id),
+      getTopBudgets(user.id),
+      getPresentationPreferences(user.id),
     ]);
-
-    // Snapshot del día best-effort (idempotente con el cron por unique user+día):
-    // así el gráfico ancla acumula historia aunque el cron no haya corrido.
-    void recordNetWorthSnapshot(user.id);
 
     // Patrimonio HOY: misma composición que computeNetWorth pero reutilizando
     // lo ya traído (evita repetir las queries de accounts/portfolio).
@@ -113,14 +97,25 @@ export default async function DashboardPage() {
             totalCreditUsed: 0,
             totalCreditLimit: 0,
             creditUtilization: 0,
+            blueReferences: [],
+            valuation: undefined,
           };
     const netWorthNow = {
+      ...(balances.valuation ? { valuation: balances.valuation } : {}),
       liquidUSD: balances.liquidUSD,
       investmentsUSD: balances.investmentsUSD + (portfolio?.totalCurrentValue ?? 0),
       totalUSD: balances.totalUSD + (portfolio?.totalCurrentValue ?? 0),
       totalARSBlue: balances.totalARSBlue + (portfolio?.totalCurrentValueArsBlue ?? 0),
       blueRate: portfolio?.blueArsPerUsd ?? quotes?.dolar?.blue?.sell ?? 0,
+      blueReferences: [
+        ...(balances.blueReferences ?? []).map(reference => ({ component: 'accounts' as const, reference })),
+        ...(portfolio?.blueReference && portfolio.investments.length > 0
+          ? [{ component: 'portfolio' as const, reference: portfolio.blueReference }] : []),
+      ],
     };
+
+    // Reading or changing presentation preferences never rewrites history.
+    // The existing scheduled snapshot writer owns the persisted daily series.
 
     // Top 2 posiciones por valor para el strip de mercado
     const topHoldings = (portfolio?.investments ?? [])
@@ -136,23 +131,29 @@ export default async function DashboardPage() {
 
     return (
       <>
-        <StickyNetWorthBar
+        {preferences.net_worth_widget_visible && !balances.valuation && <StickyNetWorthBar
+          key={user.id}
           totalARSBlue={netWorthNow.totalARSBlue}
           totalUSD={netWorthNow.totalUSD}
           sentinelId="networth-sentinel"
-        />
+          baseCurrency={preferences.default_currency}
+        />}
         <PageScaffold
           hero={(
-            <>
-              <NetWorthHero now={netWorthNow} history={netWorthHistory} inflacion={inflacion} />
+            preferences.net_worth_widget_visible ? <>
+              <NetWorthHero key={user.id} now={netWorthNow} history={netWorthHistory} inflacion={inflacion} baseCurrency={preferences.default_currency} />
               <div id="networth-sentinel" aria-hidden="true" />
-            </>
+            </> : null
           )}
         >
           {/* Bento desktop: 12 columnas; mobile: columna única en orden de jerarquía */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <MotionSection delay={0.04} intensity="normal" className="lg:col-span-12">
-              <MarketStrip quotes={quotes} sparklines={sparklines} topHoldings={topHoldings} />
+              {quotes ? (
+                <MarketStrip quotes={quotes} sparklines={sparklines} topHoldings={topHoldings} />
+              ) : (
+                <p role="status" className="card p-4 text-muted-foreground">Cotizaciones no disponibles. Volvé a intentar en unos minutos.</p>
+              )}
             </MotionSection>
 
             <MotionSection delay={0.08} intensity="normal" className="lg:col-span-4">
@@ -167,11 +168,13 @@ export default async function DashboardPage() {
               <UpcomingRail items={upcoming} />
             </MotionSection>
 
-            <MotionSection delay={0.16} intensity="subtle" className="lg:col-span-12">
-              <Suspense fallback={<div className="card h-80 animate-pulse-subtle bg-surface-soft" />}>
-                <DashboardSpendingAnalyzerSection quotes={quotes} />
-              </Suspense>
-            </MotionSection>
+            {quotes ? (
+              <MotionSection delay={0.16} intensity="subtle" className="lg:col-span-12">
+                <Suspense fallback={<div className="card h-80 animate-pulse-subtle bg-surface-soft" />}>
+                  <DashboardSpendingAnalyzerSection quotes={quotes} />
+                </Suspense>
+              </MotionSection>
+            ) : null}
 
             <DashboardMore>
               <MotionSection delay={0.2} intensity="subtle" className="lg:col-span-6">
@@ -195,7 +198,16 @@ export default async function DashboardPage() {
       </>
     );
   } catch (error) {
-    console.error('Dashboard error:', error);
-    redirect('/login');
+    unstable_rethrow(error);
+    console.error('[dashboard] Financial data unavailable');
+    return (
+      <PageScaffold>
+        <section role="alert" className="card p-6 space-y-3">
+          <h1 className="text-xl font-semibold">No pudimos cargar tus datos financieros</h1>
+          <p>Volvé a intentar en unos minutos para consultar tu resumen completo.</p>
+          <a href="/dashboard" className="btn-primary inline-flex">Reintentar</a>
+        </section>
+      </PageScaffold>
+    );
   }
 }

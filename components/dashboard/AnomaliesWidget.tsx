@@ -18,18 +18,23 @@ export default function AnomaliesWidget() {
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [partialMessage, setPartialMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/ai/anomalies')
       .then((r) => r.json())
       .then((data) => {
         setAnomalies(data.anomalies || []);
+        const excluded = Array.isArray(data.excludedCurrencies) ? data.excludedCurrencies : [];
+        if (data.partial || excluded.length) {
+          setPartialMessage(data.message || `Análisis parcial: faltan cotizaciones para ${excluded.join(', ')}.`);
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading || anomalies.length === 0) return null;
+  if (loading || (anomalies.length === 0 && !partialMessage)) return null;
 
   const visible = expanded ? anomalies : anomalies.slice(0, 2);
 
@@ -51,7 +56,9 @@ export default function AnomaliesWidget() {
               Gastos Inusuales
             </div>
             <div className="text-xs text-warning">
-              {anomalies.length} {anomalies.length === 1 ? 'categoría' : 'categorías'} por encima del promedio
+              {anomalies.length > 0
+                ? `${anomalies.length} ${anomalies.length === 1 ? 'categoría' : 'categorías'} por encima del promedio`
+                : 'No se pudo revisar todo el historial'}
             </div>
           </div>
         </div>
@@ -65,6 +72,9 @@ export default function AnomaliesWidget() {
 
       {/* Anomalies list */}
       <div className="px-5 pb-4 space-y-2">
+        {partialMessage && (
+          <p role="status" className="text-xs text-warning">{partialMessage}</p>
+        )}
         <AnimatePresence>
           {visible.map((anomaly, i) => {
             const ratioText = anomaly.ratio

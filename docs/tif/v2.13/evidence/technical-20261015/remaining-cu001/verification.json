@@ -1,0 +1,1165 @@
+{
+  "recordedAt": "2026-10-15T03:53:37.843888+00:00",
+  "status": "PARTIAL",
+  "scope": "Eight original CU001 cases on fixed local proof58321/58322 via normal SSR sessions. Browser/entireCU completion not claimed. Prior failure remains immutable historical evidence.",
+  "phases": [
+    {
+      "name": "attempt-1-eight-cases",
+      "report": "attempt-1-eight-cases/verification.json",
+      "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251",
+      "status": "FAIL",
+      "runnerSha256": "7a7da5eeedab6f5e0096758f80d84b7b607154842fae52219c220305744f1620",
+      "buildId": "a2WBtszbvrpoT9GHwToED",
+      "productRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870"
+    },
+    {
+      "name": "attempt-2-cp1-33",
+      "report": "attempt-2-cp1-33/verification.json",
+      "sha256": "3c6318797409a8df8bc070e5b32115d47554d5def4fcfac44dc5f1759dad596f",
+      "status": "PASS",
+      "runnerSha256": "c13e7013a9770491eec6ec9d9143f3e83296ca09cd87d87bc4a7f09799d2b4b1",
+      "buildId": "a2WBtszbvrpoT9GHwToED",
+      "productRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870"
+    }
+  ],
+  "summary": {
+    "cases": 8,
+    "PASS": 5,
+    "PARTIAL": 3,
+    "FAIL": 0,
+    "acceptedAssertionsPassed": 85,
+    "acceptedAssertionsFailed": 0
+  },
+  "reconciliation": "Initial CP1-33 stopped at a harness assumption that error must be4xx. The CSV specifies state/access error without HTTP code. Authorized retry checks both branches plus full ledger/account invariance and error-only payload; observed500 statuses remain observations,not expected HTTP contract. No product edit or new validation was used.",
+  "all12OriginalTableSnapshotsUnchangedBothPhases": true,
+  "sourceStableBothPhases": true,
+  "cleanupErrorsReported": false,
+  "results": [
+    {
+      "id": "CP1-01",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Visible categories200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Own literal category201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Exact expense balance8500",
+          "actual": 8500,
+          "expected": 8500,
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly one economic row",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Literal amount/category/date/owner",
+          "actual": {
+            "amount": 1500,
+            "category": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+            "date": "2026-10-06",
+            "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+          },
+          "expected": {
+            "amount": 1500,
+            "category": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+            "date": "2026-10-06",
+            "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "List API displays same1500 row",
+          "actual": {
+            "status": 200,
+            "id": "2a3beea0-efe9-465b-a54f-d8adf04de9da",
+            "amount": 1500
+          },
+          "expected": {
+            "status": 200,
+            "id": "2a3beea0-efe9-465b-a54f-d8adf04de9da",
+            "amount": 1500
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [
+        {
+          "name": "Actual list/dashboard UI1500",
+          "status": "BLOCKED",
+          "reason": "Arc-specific permission/controls are pending; this runner does not launch a browser."
+        }
+      ],
+      "startedAt": "2026-10-15T03:47:32.214Z",
+      "finishedAt": "2026-10-15T03:47:33.517Z",
+      "acceptedPhase": "attempt-1-eight-cases"
+    },
+    {
+      "id": "CP1-02",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Visible categories200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Own literal category201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "October summary200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly one500 income and10500 balance",
+          "actual": {
+            "count": 1,
+            "balance": 10500,
+            "type": "income"
+          },
+          "expected": {
+            "count": 1,
+            "balance": 10500,
+            "type": "income"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Literal500 income category/date/owner persisted",
+          "actual": {
+            "amount": 500,
+            "category": "62dc6515-f74e-40f3-9941-bec78d2a48c6",
+            "date": "2026-10-06",
+            "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+          },
+          "expected": {
+            "amount": 500,
+            "category": "62dc6515-f74e-40f3-9941-bec78d2a48c6",
+            "date": "2026-10-06",
+            "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "October summary200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Financial flow income increases500 only",
+          "actual": {
+            "income": 500,
+            "expense": 0,
+            "balance": 500
+          },
+          "expected": {
+            "income": 500,
+            "expense": 0,
+            "balance": 500
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:33.517Z",
+      "finishedAt": "2026-10-15T03:47:35.355Z",
+      "acceptedPhase": "attempt-1-eight-cases"
+    },
+    {
+      "id": "CP1-03",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 2000,
+          "expected": 2000,
+          "status": "PASS"
+        },
+        {
+          "name": "October summary200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "One transfer/two exact impacts and conserved total",
+          "actual": {
+            "rows": 1,
+            "type": "transfer",
+            "debit": 1500,
+            "credit": 1500,
+            "balances": [
+              8500,
+              3500
+            ],
+            "total": 12000
+          },
+          "expected": {
+            "rows": 1,
+            "type": "transfer",
+            "debit": 1500,
+            "credit": 1500,
+            "balances": [
+              8500,
+              3500
+            ],
+            "total": 12000
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "October summary200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Transfer excluded from income/expense/flow",
+          "actual": {
+            "income": 0,
+            "expense": 0,
+            "balance": 0
+          },
+          "expected": {
+            "income": 0,
+            "expense": 0,
+            "balance": 0
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:35.356Z",
+      "finishedAt": "2026-10-15T03:47:37.362Z",
+      "acceptedPhase": "attempt-1-eight-cases"
+    },
+    {
+      "id": "CP1-05",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Literal initial balance8500",
+          "actual": 8500,
+          "expected": 8500,
+          "status": "PASS"
+        },
+        {
+          "name": "Canonical SQL edit applies one new economic impact",
+          "actual": {
+            "balance": 8000,
+            "rows": 1,
+            "amount": 2000,
+            "canonical": 2000
+          },
+          "expected": {
+            "balance": 8000,
+            "rows": 1,
+            "amount": 2000,
+            "canonical": 2000
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "name": "Amount-only update is recorded without substituting the canonical edit",
+          "balance": 8500,
+          "row": {
+            "id": "fc0c2e29-deb8-478a-928e-f20243642d6d",
+            "type": "expense",
+            "amount": "2000.00000000",
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "account_id": "55f672a5-d529-4e8f-a1c9-6125c9be1f80",
+            "category_id": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "destination_account_id": null,
+            "amount_in_account_currency": "1500.00000000",
+            "destination_amount_in_account_currency": null
+          },
+          "statement": "UPDATE own transaction SET amount=2000 only",
+          "literalExpectedBalance": 8000
+        }
+      ],
+      "pendingScopes": [
+        {
+          "name": "Original monto UPDATE column binding",
+          "status": "BLOCKED_CONTRACT_REVIEW",
+          "reason": "The CSV does not name an SQL column. Both amount-only observation and canonical edit are preserved; canonical-edit success is not promoted to original-case PASS."
+        }
+      ],
+      "startedAt": "2026-10-15T03:47:37.362Z",
+      "finishedAt": "2026-10-15T03:47:38.757Z",
+      "acceptedPhase": "attempt-1-eight-cases"
+    },
+    {
+      "id": "CP1-09",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Income500 initial balance10500",
+          "actual": 10500,
+          "expected": 10500,
+          "status": "PASS"
+        },
+        {
+          "name": "Direct SQL income DELETE exact reverse",
+          "actual": {
+            "balance": 10000,
+            "economicRows": 0
+          },
+          "expected": {
+            "balance": 10000,
+            "economicRows": 0
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:38.757Z",
+      "finishedAt": "2026-10-15T03:47:39.784Z",
+      "acceptedPhase": "attempt-1-eight-cases"
+    },
+    {
+      "id": "CP1-11",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 2000,
+          "expected": 2000,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Literal predelete balances8500/3500",
+          "actual": [
+            8500,
+            3500
+          ],
+          "expected": [
+            8500,
+            3500
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Direct SQL transfer DELETE reverses both impacts exactly",
+          "actual": {
+            "balances": [
+              10000,
+              2000
+            ],
+            "economicRows": 0
+          },
+          "expected": {
+            "balances": [
+              10000,
+              2000
+            ],
+            "economicRows": 0
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:47:39.784Z",
+      "finishedAt": "2026-10-15T03:47:41.610Z",
+      "acceptedPhase": "attempt-1-eight-cases"
+    },
+    {
+      "id": "CP1-33",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Archive own new account204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "inactive-own rejected with an error response",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "inactive-own no account or full-ledger change",
+          "actual": "660cc4b88e6e55d2f5fd0bddd3297546905ea0641c7bcf77276ec032b06424fb",
+          "expected": "660cc4b88e6e55d2f5fd0bddd3297546905ea0641c7bcf77276ec032b06424fb",
+          "status": "PASS"
+        },
+        {
+          "name": "inactive-own response excludes account/balance data",
+          "actual": [
+            "error"
+          ],
+          "expected": [
+            "error"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "foreign-owner rejected with an error response",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "foreign-owner no account or full-ledger change",
+          "actual": "660cc4b88e6e55d2f5fd0bddd3297546905ea0641c7bcf77276ec032b06424fb",
+          "expected": "660cc4b88e6e55d2f5fd0bddd3297546905ea0641c7bcf77276ec032b06424fb",
+          "status": "PASS"
+        },
+        {
+          "name": "foreign-owner response excludes account/balance data",
+          "actual": [
+            "error"
+          ],
+          "expected": [
+            "error"
+          ],
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "name": "inactive-own HTTP error status",
+          "status": 500,
+          "interpretation": "Observed transport status only; the CSV requires state/access rejection without naming an HTTP code. A500 is not declared the expected API contract."
+        },
+        {
+          "name": "foreign-owner HTTP error status",
+          "status": 500,
+          "interpretation": "Observed transport status only; the CSV requires state/access rejection without naming an HTTP code. A500 is not declared the expected API contract."
+        }
+      ],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:49:52.796Z",
+      "finishedAt": "2026-10-15T03:49:55.158Z",
+      "acceptedPhase": "attempt-2-cp1-33"
+    },
+    {
+      "id": "CP1-34",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal API fixture transaction201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "One cent accepted with exact0.99 balance",
+          "actual": {
+            "balance": 0.99,
+            "rows": 1
+          },
+          "expected": {
+            "balance": 0.99,
+            "rows": 1
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Accepted cent fixture archived before independent rejection fixtures",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "zero rejected400",
+          "actual": 400,
+          "expected": 400,
+          "status": "PASS"
+        },
+        {
+          "name": "zero no balance/full-ledger change including initial adjustment",
+          "actual": {
+            "accounts": [
+              {
+                "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 12 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:44.20473+00:00",
+                "sort_order": 15,
+                "updated_at": "2026-10-15T03:47:44.20473+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "dfe58876-56aa-40a7-8dcb-bd0154f7cd03",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:44.20473+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "expected": {
+            "accounts": [
+              {
+                "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 12 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:44.20473+00:00",
+                "sort_order": 15,
+                "updated_at": "2026-10-15T03:47:44.20473+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "dfe58876-56aa-40a7-8dcb-bd0154f7cd03",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:44.20473+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "zero no economic movement created",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "zero own fixture archived204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "negative rejected400",
+          "actual": 400,
+          "expected": 400,
+          "status": "PASS"
+        },
+        {
+          "name": "negative no balance/full-ledger change including initial adjustment",
+          "actual": {
+            "accounts": [
+              {
+                "id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 13 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:45.224436+00:00",
+                "sort_order": 16,
+                "updated_at": "2026-10-15T03:47:45.224436+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "1bd38ed9-5029-441c-8639-c9b0ef824e81",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:45.224436+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "expected": {
+            "accounts": [
+              {
+                "id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 13 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:45.224436+00:00",
+                "sort_order": 16,
+                "updated_at": "2026-10-15T03:47:45.224436+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "1bd38ed9-5029-441c-8639-c9b0ef824e81",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "0a564310-4098-47b3-9b48-527c89c1e60c",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:45.224436+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "negative no economic movement created",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "negative own fixture archived204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "subcent rejected400",
+          "actual": 400,
+          "expected": 400,
+          "status": "PASS"
+        },
+        {
+          "name": "subcent no balance/full-ledger change including initial adjustment",
+          "actual": {
+            "accounts": [
+              {
+                "id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 14 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:46.257585+00:00",
+                "sort_order": 17,
+                "updated_at": "2026-10-15T03:47:46.257585+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "073bbd84-22fd-4d68-8c93-4304864d5264",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:46.257585+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "expected": {
+            "accounts": [
+              {
+                "id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 14 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:46.257585+00:00",
+                "sort_order": 17,
+                "updated_at": "2026-10-15T03:47:46.257585+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "073bbd84-22fd-4d68-8c93-4304864d5264",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "37c53b67-92b5-418c-b649-97d982b2ebdb",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:46.257585+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "subcent no economic movement created",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "subcent own fixture archived204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "numeric-conversion-NaN rejected400",
+          "actual": 400,
+          "expected": 400,
+          "status": "PASS"
+        },
+        {
+          "name": "numeric-conversion-NaN no balance/full-ledger change including initial adjustment",
+          "actual": {
+            "accounts": [
+              {
+                "id": "20276f40-3ce3-40b0-8207-76450e661d73",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 15 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:47.279611+00:00",
+                "sort_order": 18,
+                "updated_at": "2026-10-15T03:47:47.279611+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "0d645b2b-b3e3-4848-8f4e-f937618d9d89",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "20276f40-3ce3-40b0-8207-76450e661d73",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:47.279611+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "expected": {
+            "accounts": [
+              {
+                "id": "20276f40-3ce3-40b0-8207-76450e661d73",
+                "icon": null,
+                "name": "RemainingCU001 CP1-34 15 5c27607b-6fd5-411f-a8cc-2e78e23e002c",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 1,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": true,
+                "created_at": "2026-10-15T03:47:47.279611+00:00",
+                "sort_order": 18,
+                "updated_at": "2026-10-15T03:47:47.279611+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "transactions": [
+              {
+                "id": "0d645b2b-b3e3-4848-8f4e-f937618d9d89",
+                "type": "adjustment",
+                "amount": "1.00000000",
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "account_id": "20276f40-3ce3-40b0-8207-76450e661d73",
+                "category_id": null,
+                "transaction_date": "2026-10-15T03:47:47.279611+00:00",
+                "destination_account_id": null,
+                "amount_in_account_currency": "1.00000000",
+                "destination_amount_in_account_currency": null
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "numeric-conversion-NaN no economic movement created",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "numeric-conversion-NaN own fixture archived204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "name": "NaN transport semantics",
+          "wireAmount": "NaN string",
+          "apiConversion": "Number('NaN') is NaN",
+          "notClaimed": "JSON numeric NaN, null equivalence or actual browser numeric input behavior"
+        }
+      ],
+      "pendingScopes": [
+        {
+          "name": "Browser numeric-input NaN behavior",
+          "status": "BLOCKED",
+          "reason": "Actual Arc input behavior remains unexecuted; API string-to-number rejection is recorded separately."
+        }
+      ],
+      "startedAt": "2026-10-15T03:47:43.195Z",
+      "finishedAt": "2026-10-15T03:47:49.172Z",
+      "acceptedPhase": "attempt-1-eight-cases"
+    }
+  ]
+}

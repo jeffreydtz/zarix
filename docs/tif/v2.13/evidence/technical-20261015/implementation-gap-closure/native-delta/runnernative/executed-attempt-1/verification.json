@@ -1,0 +1,1504 @@
+{
+  "status": "PASS",
+  "revision": "730767b1723502b495d371e69c44df31eb230b56",
+  "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "completedAt": "2026-10-15T07:56:29.706Z",
+  "scope": "Real current source handlers/services and native GoTrue/PostgREST/PostgreSQL. Next cookie adapter replaced with real normal-session clients. Telegram sender is a rejecting transport double; MP/quotes use local HTTP fixtures, not real providers. No browser/UI, remote service, availability/load or complete restoration acceptance.",
+  "passed": 14,
+  "total": 14,
+  "assertions": 159,
+  "results": [
+    {
+      "id": "CP2-11/CP3-17",
+      "status": "PASS",
+      "scope": "Real GET/PUT handlers, two distinct normal GoTrue sessions A and real native preferences/history; no browser or new session cookie adapter acceptance.",
+      "checks": [
+        {
+          "name": "Normal sessions are independent",
+          "passed": true
+        },
+        {
+          "name": "Initial real GET",
+          "passed": true
+        },
+        {
+          "name": "PUT persists complete USD hidden state",
+          "passed": true
+        },
+        {
+          "name": "PUT returned persisted settings",
+          "passed": true
+        },
+        {
+          "name": "Second normal Auth session reads saved state",
+          "passed": true
+        },
+        {
+          "name": "Real preference service uses saved owner setting",
+          "passed": true
+        },
+        {
+          "name": "Real accounts/portfolio/cotizaciones services produce USD200",
+          "passed": true
+        },
+        {
+          "name": "Local HTTP quote is ARS1200 per USD",
+          "passed": true
+        },
+        {
+          "name": "ARS presentation equivalent is 240000",
+          "passed": true
+        },
+        {
+          "name": "Preferences did not alter financial/history rows",
+          "passed": true
+        },
+        {
+          "name": "Show widget and ARS persist",
+          "passed": true
+        },
+        {
+          "name": "First session reload sees restored visible state",
+          "passed": true
+        },
+        {
+          "name": "Financial/history rows remain exact after show",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "CP2-12",
+      "status": "PASS",
+      "scope": "Actual owner RLS and column grants through normal Auth/PostgREST, strict PUT schema and stale-form owner guard; no Auth/DB doubles.",
+      "checks": [
+        {
+          "name": "Strict route rejects invalid or manipulated preference body",
+          "passed": true
+        },
+        {
+          "name": "Strict route rejects invalid or manipulated preference body",
+          "passed": true
+        },
+        {
+          "name": "Strict route rejects invalid or manipulated preference body",
+          "passed": true
+        },
+        {
+          "name": "Strict route rejects invalid or manipulated preference body",
+          "passed": true
+        },
+        {
+          "name": "Strict route rejects invalid or manipulated preference body",
+          "passed": true
+        },
+        {
+          "name": "Invalid route input is atomic for both profiles",
+          "passed": true
+        },
+        {
+          "name": "B cannot read A presentation fields",
+          "passed": true
+        },
+        {
+          "name": "B foreign write returns no SQL error",
+          "passed": true
+        },
+        {
+          "name": "B foreign write affects zero rows under RLS",
+          "passed": true
+        },
+        {
+          "name": "Direct authenticated invalid currency fails SQL trigger",
+          "passed": true
+        },
+        {
+          "name": "B real GET reads only B defaults",
+          "passed": true
+        },
+        {
+          "name": "Stale A form cannot update after switch to B",
+          "passed": true
+        },
+        {
+          "name": "B profile unchanged",
+          "passed": true
+        },
+        {
+          "name": "All financial/history rows exact",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "CP1-08",
+      "status": "PASS",
+      "scope": "Actual POST and normal-session DELETE handlers -> real PostgREST/native trigger; exact OLD JSONB and actor; operational deletion with balance reversal.",
+      "checks": [
+        {
+          "name": "Actual create handler returns 201",
+          "passed": true
+        },
+        {
+          "name": "Created row has a real UUID",
+          "passed": true
+        },
+        {
+          "name": "Expense1500 yields8500",
+          "passed": true
+        },
+        {
+          "name": "Foreign DELETE reveals no row",
+          "passed": true
+        },
+        {
+          "name": "Foreign DELETE preserves original movement",
+          "passed": true
+        },
+        {
+          "name": "Foreign DELETE creates no audit",
+          "passed": true
+        },
+        {
+          "name": "Owner DELETE returns204",
+          "passed": true
+        },
+        {
+          "name": "Deletion restores10000",
+          "passed": true
+        },
+        {
+          "name": "Operational movement absent",
+          "passed": true
+        },
+        {
+          "name": "Exactly one owner-readable event",
+          "passed": true
+        },
+        {
+          "name": "Exact prior JSONB retained",
+          "passed": true
+        },
+        {
+          "name": "Original owner retained",
+          "passed": true
+        },
+        {
+          "name": "Actual normal session actor retained",
+          "passed": true
+        },
+        {
+          "name": "Actual SQL authenticated role retained",
+          "passed": true
+        },
+        {
+          "name": "B cannot read A audit",
+          "passed": true
+        },
+        {
+          "name": "Normal owner cannot fabricate audit",
+          "passed": true
+        },
+        {
+          "name": "DELETE retry does not duplicate audit",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "CU004-read-position",
+      "status": "PASS",
+      "scope": "Actual position GET with normal native JWT/RLS, own archived position readable, foreign404 and malformed400; no quote refresh or browser acceptance.",
+      "checks": [
+        {
+          "name": "Owner reads archived position200",
+          "passed": true
+        },
+        {
+          "name": "Owner receives exact position UUID",
+          "passed": true
+        },
+        {
+          "name": "Position GET disables HTTP caching",
+          "passed": true
+        },
+        {
+          "name": "Other owner position is404",
+          "passed": true
+        },
+        {
+          "name": "Malformed position ID400",
+          "passed": true
+        },
+        {
+          "name": "Read has no financial/history mutation",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-01",
+      "status": "PASS",
+      "scope": "Real manual handler/service/idempotency RPC writes native transaction; fixed request/service/database observations.",
+      "checks": [
+        {
+          "name": "Manual valid status",
+          "passed": true
+        },
+        {
+          "name": "Manual response correlation header",
+          "passed": true
+        },
+        {
+          "name": "Native committed movement UUID",
+          "passed": true
+        },
+        {
+          "name": "Native committed balance",
+          "passed": true
+        },
+        {
+          "name": "Database and service point to one committed UUID",
+          "passed": true
+        },
+        {
+          "name": "Terminal manual success",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-02",
+      "status": "PASS",
+      "scope": "Actual manual validation rejects negative amount before native financial persistence.",
+      "checks": [
+        {
+          "name": "Negative amount rejected",
+          "passed": true
+        },
+        {
+          "name": "Validation response correlation header",
+          "passed": true
+        },
+        {
+          "name": "No financial effect",
+          "passed": true
+        },
+        {
+          "name": "No durable receipt",
+          "passed": true
+        },
+        {
+          "name": "Validation class",
+          "passed": true
+        },
+        {
+          "name": "Rejected outcome",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-03",
+      "status": "PASS",
+      "scope": "Actual PostgreSQL23514 induced by a temporary cloned-account CHECK, removed in finally; no DB mock or original schema change.",
+      "checks": [
+        {
+          "name": "Real persistence error returns500",
+          "passed": true
+        },
+        {
+          "name": "SQL failure response correlation header",
+          "passed": true
+        },
+        {
+          "name": "Safe generic response",
+          "passed": true
+        },
+        {
+          "name": "SQL failure rolls back balance and rows",
+          "passed": true
+        },
+        {
+          "name": "SQL failure leaves no receipt",
+          "passed": true
+        },
+        {
+          "name": "Native rejection has no durable matching request",
+          "passed": true
+        },
+        {
+          "name": "Persistence classified consistency",
+          "passed": true
+        },
+        {
+          "name": "No claimed successful persistence",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-04",
+      "status": "PASS",
+      "scope": "Actual recurring cron and service-role RPC atomically commit native financial effect/marker/outbox; Telegram not delivered here.",
+      "checks": [
+        {
+          "name": "Recurring HTTP200",
+          "passed": true
+        },
+        {
+          "name": "Recurring response correlation header",
+          "passed": true
+        },
+        {
+          "name": "Exactly one processed recurring rule",
+          "passed": true
+        },
+        {
+          "name": "Exactly one actual occurrence",
+          "passed": true
+        },
+        {
+          "name": "Balance9000 after committed1000",
+          "passed": true
+        },
+        {
+          "name": "Execution marker committed today",
+          "passed": true
+        },
+        {
+          "name": "Exactly one durable outbox event",
+          "passed": true
+        },
+        {
+          "name": "Outbox links real committed transaction",
+          "passed": true
+        },
+        {
+          "name": "Outbox not delivered during financial commit",
+          "passed": true
+        },
+        {
+          "name": "Recurring did not invoke sender",
+          "passed": true
+        },
+        {
+          "name": "Observed database persist refers to committed UUID",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-05",
+      "status": "PASS",
+      "scope": "Actual cron bearer rejection, no DB financial/receipt/outbox effects.",
+      "checks": [
+        {
+          "name": "Invalid bearer401",
+          "passed": true
+        },
+        {
+          "name": "Invalid bearer response correlation header",
+          "passed": true
+        },
+        {
+          "name": "Rejected cron has no service/database observations",
+          "passed": true
+        },
+        {
+          "name": "Authentication classification",
+          "passed": true
+        },
+        {
+          "name": "Financial rows unchanged",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-06",
+      "status": "PASS",
+      "scope": "Actual native outbox claim/retry and actual worker; sendTelegramDm is an explicit rejecting test double after financial commit, never real Telegram.",
+      "checks": [
+        {
+          "name": "Valid recurring prerequisite exists",
+          "passed": true
+        },
+        {
+          "name": "Outbox job reports failed item while HTTP200",
+          "passed": true
+        },
+        {
+          "name": "Outbox failure response correlation header",
+          "passed": true
+        },
+        {
+          "name": "Exactly one failed attempt",
+          "passed": true
+        },
+        {
+          "name": "Explicit sender testdouble invoked once",
+          "passed": true
+        },
+        {
+          "name": "Synthetic chat only",
+          "passed": true
+        },
+        {
+          "name": "Native claim incremented attempt",
+          "passed": true
+        },
+        {
+          "name": "No false delivery acknowledgement",
+          "passed": true
+        },
+        {
+          "name": "Lease released for retry",
+          "passed": true
+        },
+        {
+          "name": "Only safe generic retry error stored",
+          "passed": true
+        },
+        {
+          "name": "Financial rows remain committed unchanged",
+          "passed": true
+        },
+        {
+          "name": "Provider error distinguished",
+          "passed": true
+        },
+        {
+          "name": "Outbox failure links committed transaction and outbox",
+          "passed": true
+        },
+        {
+          "name": "Terminal remains error despiteHTTP200",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-07",
+      "status": "PASS",
+      "scope": "Real HMAC webhook handler/provider HTTP fixture/subscription conditional DB write; local MP fixture, no Mercado Pago sandbox or real payment acceptance.",
+      "checks": [
+        {
+          "name": "Valid local signed webhook200",
+          "passed": true
+        },
+        {
+          "name": "Valid webhook response correlation header",
+          "passed": true
+        },
+        {
+          "name": "Provider cancellation persisted",
+          "passed": true
+        },
+        {
+          "name": "Payment does not alter financial/history rows",
+          "passed": true
+        },
+        {
+          "name": "Real provider lookup successful",
+          "passed": true
+        },
+        {
+          "name": "Actual DB persistence references owner UUID",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-08",
+      "status": "PASS",
+      "scope": "Actual forged HMAC rejection before provider/database work.",
+      "checks": [
+        {
+          "name": "Forged signature401",
+          "passed": true
+        },
+        {
+          "name": "Forged webhook response correlation header",
+          "passed": true
+        },
+        {
+          "name": "Profiles unchanged",
+          "passed": true
+        },
+        {
+          "name": "Only request observations",
+          "passed": true
+        },
+        {
+          "name": "Authentication rejection classified",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "corr-cnf13-09",
+      "status": "PASS",
+      "scope": "Actual signed handler with real local provider HTTP503; provider classification and no subscription/financial partial effect.",
+      "checks": [
+        {
+          "name": "HTTP503 provider causes retryable webhook500",
+          "passed": true
+        },
+        {
+          "name": "Provider failure response correlation header",
+          "passed": true
+        },
+        {
+          "name": "Webhook response is safe generic",
+          "passed": true
+        },
+        {
+          "name": "No partial subscription write",
+          "passed": true
+        },
+        {
+          "name": "No financial changes",
+          "passed": true
+        },
+        {
+          "name": "Provider/service/request failure path present",
+          "passed": true
+        },
+        {
+          "name": "All failure observations retain provider class",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "CNF13-observation-contract",
+      "status": "PASS",
+      "scope": "All nine actual handler invocations return their correlation ID and produce allowlisted content-free counters; no universal deployment/collector acceptance.",
+      "checks": [
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "Correlation has request started and terminal samples",
+          "passed": true
+        },
+        {
+          "name": "Timestamp and exact correlation remain valid",
+          "passed": true
+        },
+        {
+          "name": "Only fixed metadata fields are logged",
+          "passed": true
+        },
+        {
+          "name": "Every terminal event is a unit counter sample",
+          "passed": true
+        },
+        {
+          "name": "No selected private runtime credential reaches captured console",
+          "passed": true
+        },
+        {
+          "name": "No synthetic private payload/error marker reaches console",
+          "passed": true
+        },
+        {
+          "name": "No synthetic private payload/error marker reaches console",
+          "passed": true
+        },
+        {
+          "name": "No synthetic private payload/error marker reaches console",
+          "passed": true
+        },
+        {
+          "name": "No raw authorization/cookie/signature field reaches console",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:25.820Z",
+      "correlationId": "4af02140-f7b3-411f-934f-9678e5bf722d",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:25.850Z",
+      "correlationId": "4af02140-f7b3-411f-934f-9678e5bf722d",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:25.864Z",
+      "correlationId": "4af02140-f7b3-411f-934f-9678e5bf722d",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:25.874Z",
+      "correlationId": "4af02140-f7b3-411f-934f-9678e5bf722d",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "488bf7bf-44bc-42b4-bf78-d6191720b169",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:25.874Z",
+      "correlationId": "4af02140-f7b3-411f-934f-9678e5bf722d",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "488bf7bf-44bc-42b4-bf78-d6191720b169",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:25.874Z",
+      "correlationId": "4af02140-f7b3-411f-934f-9678e5bf722d",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "success",
+      "status": 201,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:26.820Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:26.851Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:26.864Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:26.876Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "c2ec65e8-d36f-4d80-ad07-41f8c773b3a2",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:26.876Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "c2ec65e8-d36f-4d80-ad07-41f8c773b3a2",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:26.876Z",
+      "correlationId": "corr-cnf13-01",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "success",
+      "status": 201,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.105Z",
+      "correlationId": "corr-cnf13-02",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.136Z",
+      "correlationId": "corr-cnf13-02",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "rejected",
+      "failureClass": "validation",
+      "status": 400,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.511Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.544Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.567Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.577Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "database",
+      "action": "persist",
+      "outcome": "error",
+      "failureClass": "consistency",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.577Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "service",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "consistency",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.577Z",
+      "correlationId": "corr-cnf13-03",
+      "channel": "manual",
+      "operation": "transaction.create",
+      "component": "request",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "consistency",
+      "status": 500,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.935Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.935Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.953Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.974Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.990Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "database",
+      "action": "persist",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "81909fa5-350d-4d2e-8a42-431745630119",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.990Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "referenceType": "transaction",
+      "referenceId": "81909fa5-350d-4d2e-8a42-431745630119",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.995Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:27.995Z",
+      "correlationId": "corr-cnf13-04",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "request",
+      "action": "execute",
+      "outcome": "success",
+      "status": 200,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.370Z",
+      "correlationId": "corr-cnf13-05",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.370Z",
+      "correlationId": "corr-cnf13-05",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "recurring",
+      "component": "request",
+      "action": "execute",
+      "outcome": "rejected",
+      "failureClass": "authentication",
+      "status": 401,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.522Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.522Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.522Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "database",
+      "action": "claim",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.530Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "database",
+      "action": "claim",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.530Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "outbox",
+      "action": "dispatch",
+      "outcome": "started",
+      "referenceType": "outbox",
+      "referenceId": "1bd14062-0c70-4f06-859c-db12315abf29",
+      "transactionId": "81909fa5-350d-4d2e-8a42-431745630119"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.536Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "provider",
+      "action": "deliver",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.538Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "provider",
+      "action": "deliver",
+      "outcome": "error",
+      "failureClass": "provider",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.538Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "outbox",
+      "action": "dispatch",
+      "outcome": "error",
+      "failureClass": "provider",
+      "referenceType": "outbox",
+      "referenceId": "1bd14062-0c70-4f06-859c-db12315abf29",
+      "transactionId": "81909fa5-350d-4d2e-8a42-431745630119",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.544Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.544Z",
+      "correlationId": "corr-cnf13-06",
+      "channel": "cron",
+      "operation": "cron.run",
+      "job": "notification-outbox",
+      "component": "request",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "provider",
+      "status": 200,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.781Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.781Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.781Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "lookup",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.789Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "lookup",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.794Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "provider",
+      "action": "lookup",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.799Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "provider",
+      "action": "lookup",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.799Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "persist",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.805Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "persist",
+      "outcome": "success",
+      "referenceType": "user",
+      "referenceId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.805Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "service",
+      "action": "execute",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:28.806Z",
+      "correlationId": "corr-cnf13-07",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "success",
+      "status": 200,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.032Z",
+      "correlationId": "corr-cnf13-08",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.032Z",
+      "correlationId": "corr-cnf13-08",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "rejected",
+      "failureClass": "authentication",
+      "status": 401,
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.273Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.273Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "service",
+      "action": "execute",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.273Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "lookup",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.280Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "database",
+      "action": "lookup",
+      "outcome": "success",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.286Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "provider",
+      "action": "lookup",
+      "outcome": "started"
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.291Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "provider",
+      "action": "lookup",
+      "outcome": "error",
+      "failureClass": "provider",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.291Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "service",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "provider",
+      "metric": "zarix_operation_total",
+      "value": 1
+    },
+    {
+      "schema": "zarix.observation.v1",
+      "timestamp": "2026-10-15T07:56:29.291Z",
+      "correlationId": "corr-cnf13-09",
+      "channel": "payment",
+      "operation": "payment.webhook",
+      "component": "request",
+      "action": "execute",
+      "outcome": "error",
+      "failureClass": "provider",
+      "status": 500,
+      "metric": "zarix_operation_total",
+      "value": 1
+    }
+  ],
+  "cleanup": {
+    "authSessionsClosed": true,
+    "authRefreshGrantsClosed": true,
+    "controlledConstraintRemoved": true,
+    "profileFixtureRestored": true,
+    "logoutStatuses": [
+      204,
+      204,
+      204
+    ]
+  },
+  "fixtures": {
+    "userAId": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "userBId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+    "ars": "e600c0c4-23fe-4e94-a45a-7a92491ac3f1",
+    "usd": "9ae9f0f4-7c5b-4541-b95a-56a432c6f920",
+    "audit": "45a486ee-ced4-42fc-8a0b-be94a6018c70",
+    "manual": "88dc3cdc-7118-4b8e-8bbc-ffb1de8fd9cc",
+    "cron": "58cc7b8e-01b9-48c5-94e4-ded295d39268",
+    "snapshot": "1c5b5904-a945-459c-a526-d4b0274d2c73",
+    "rule": "f38f91f1-62e1-40e6-9d28-213198110e35",
+    "investmentAccountId": "27272dfb-7fe3-44dd-b026-72bbbdc53bd8",
+    "positionId": "4c64cc55-d927-496a-97cc-368ad89a75f2"
+  },
+  "newUsersCreated": 0,
+  "externalCredentialsCreated": 0,
+  "originalDatabaseWritten": false,
+  "credentialValuesCopied": false,
+  "sessionsPersisted": false,
+  "envFilesCreated": false,
+  "originalCheckpointRewritten": false,
+  "browserUsed": false,
+  "rawConsolePublished": false,
+  "exactCredentialAbsenceScope": "Selected local config credentials, cloned-account passwords and this runner issued sessions against captured console only; no universal absence claim."
+}

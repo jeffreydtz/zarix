@@ -1,7 +1,9 @@
+import { planError } from '@/lib/plans/rules';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { User as AuthUser } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { isRejectedSessionError } from '@/lib/auth/session-error';
 
 // ─────────────────────────────────────────────────────────────────
 // Utilidades compartidas para route handlers.
@@ -29,15 +31,22 @@ export interface AuthedContext {
 }
 
 /**
- * Resuelve el usuario autenticado o lanza ApiError(401). Reemplaza el bloque
+ * Resuelve el usuario autenticado o lanza ApiError(401/503). Reemplaza el bloque
  * `const { data: { user } } = await supabase.auth.getUser(); if (!user) 401`.
  */
 export async function requireUser(): Promise<AuthedContext> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  let result;
+  try {
+    result = await supabase.auth.getUser();
+  } catch {
+    throw new ApiError('No pudimos verificar tu sesión. Volvé a intentar en unos minutos.', 503);
+  }
+  const { data: { user }, error } = result;
+  if (error && !isRejectedSessionError(error)) {
+    throw new ApiError('No pudimos verificar tu sesión. Volvé a intentar en unos minutos.', 503);
+  }
+  if (error || !user) {
     throw new ApiError('Unauthorized', 401);
   }
   return { supabase, user };
@@ -51,8 +60,11 @@ export function errorResponse(error: unknown): NextResponse {
   if (error instanceof ApiError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
-  // Error no controlado: log completo del lado server, genérico al cliente.
-  console.error('[api] unhandled error:', error);
+  const plan = planError(error);
+  if (plan) return NextResponse.json({ error: plan.message }, { status: plan.status });
+  // DB/provider errors can embed row values or credentials. Correlated handlers
+  // emit fixed failure classes; legacy callers still get a content-free signal.
+  console.error('[api] unhandled error');
   return NextResponse.json(
     { error: 'Ocurrió un error procesando la solicitud.' },
     { status: 500 }

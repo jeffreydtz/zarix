@@ -1,0 +1,103 @@
+{
+  "checkedAt": "2026-10-15T04:10:06.703867+00:00",
+  "status": "PASS",
+  "scope": "Six real React SSR unit regressions of BudgetCard only; no HTTP/SQL/browser/provider/cron execution. Does not mark original CP1-31 PASS or prove transfer exclusion/budget RPC correctness. Served frozen836 copy was not modified.",
+  "originalCase": {
+    "id": "CP1-31",
+    "budget": 10000,
+    "currency": "ARS",
+    "spentFixtures": [
+      9999.99,
+      10000,
+      10000.01
+    ],
+    "remainingExpected": [
+      0.01,
+      0,
+      -0.01
+    ],
+    "stateExpected": [
+      "available",
+      "limit",
+      "exceeded"
+    ],
+    "outstanding": "Original API/nativeSQL/transfer500 exclusion and actual UI acceptance require separately executed evidence; SSR alone is not full contract acceptance."
+  },
+  "change": "Finite reported remaining is authoritative; absent/nonfinite remaining uses the preexisting amount−spent fallback. Color/badge use its sign, exactzero has limit label, money uses two decimals. Percentage may still round100.0%; backend, rollover fields and policy unchanged.",
+  "regressions": {
+    "before": {
+      "passed": 0,
+      "failed": 6,
+      "exitCode": 1,
+      "report": "before.json",
+      "sha256": "b9a7af2297872f425b0ee00acfcbbf9caf7ec2b60f3d39e11a0e0e4ff55502ee"
+    },
+    "after": {
+      "passed": 6,
+      "failed": 0,
+      "exitCode": 0,
+      "report": "after.json",
+      "sha256": "11968824b5685ff378c886d360fdbef52272818977e63e92dd6bc54bbc6fc4bd"
+    },
+    "additionalScope": "undefined/NaN remaining fallback and finite authoritative remaining with rollover_enabled=true; no new rollover calculation is introduced.",
+    "historicalTitleAttempt": {
+      "report": "before-title-attempt.json",
+      "sha256": "4c6f7170e6c80dc785b8259d3c65fe2a66edb65d098b968348906edf0f4c85aa",
+      "result": "Same six assertions failed before patch; literal $10000 in parameterized test name was interpreted as an absent property by Vitest. Name only corrected to ARS10000 before definitive before/after pair; prior file preserved."
+    }
+  },
+  "commands": [
+    {
+      "command": "node ./node_modules/vitest/vitest.mjs run __tests__/budget-card-boundaries.test.ts --reporter=json --outputFile=/tmp/zarix-runtime-20261015/budget-card-boundaries-before.json",
+      "exitCode": 1
+    },
+    {
+      "command": "node ./node_modules/vitest/vitest.mjs run __tests__/budget-card-boundaries.test.ts --reporter=json --outputFile=/tmp/zarix-runtime-20261015/budget-card-boundaries-after.json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0
+    }
+  ],
+  "beforeComponent": {
+    "path": "BudgetCard.before.tsx.txt",
+    "sha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b",
+    "origin": "Git HEAD component bytes before patch; no temporarily reverted workspace files"
+  },
+  "sources": [
+    {
+      "path": "components/budgets/BudgetCard.tsx",
+      "sha256": "b4a66c24408997fdc90656b02d16ca574090302b0288aaebb3cbdae4a2b21a74"
+    },
+    {
+      "path": "__tests__/budget-card-boundaries.test.ts",
+      "sha256": "98f86db24dfe1b75bbaf8126ba783ad9acc2efd2dc5df6c01d305f60e69ff5b9"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8"
+    }
+  ],
+  "limitations": [
+    "No claim that current Next3002/compiled UI serves this change before CI5 rebuild.",
+    "A percentage rounded by SQL is still shown as rounded; available/hit/exceeded classification is based on finite remaining instead.",
+    "No backend rollover semantics or budget calculations were changed."
+  ]
+}

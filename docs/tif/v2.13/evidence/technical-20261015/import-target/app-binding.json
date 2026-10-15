@@ -1,0 +1,13 @@
+{
+  "status": "PASS_PREPARED_APP",
+  "checkedAt": "2026-10-15T03:38:57.094136+00:00",
+  "nextPid": 56597,
+  "appOrigin": "http://127.0.0.1:3003",
+  "apiOrigin": "http://127.0.0.1:59321",
+  "exactOwnLoopbackListener": true,
+  "exactOwnCwd": true,
+  "buildId": "-zDTe86_KX6NVCcsRaWOj",
+  "buildIdFileSha256": "2e4d4aa1c4c80376600443b3c5b976079ffaf45b0095f195b3443b5901e19176",
+  "runtimeRequestsExecuted": 0,
+  "authOrDmlExecuted": false
+}

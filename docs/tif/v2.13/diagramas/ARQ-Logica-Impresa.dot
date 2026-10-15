@@ -1,0 +1,18 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.5",ranksep="0.65",splines=polyline];
+node [fontname="Arial",fontsize=20]; edge [fontname="Arial",fontsize=18,color="#64748b"];
+label="Arquitectura: vista lógica"; labelloc=t; fontsize=22;
+ui [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Presentación\nP01–P12 / PWA"];
+api [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Entradas API\nusuario, Telegram,\ncron, pago"];
+app [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Aplicación\n4 objetivos +\ncontroles separados"];
+dom [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Dominio y cálculo\nsaldo, costo,\nconversión,\nheurística"];
+per [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Persistencia\nsupabase-js, trigger\ny RPC SQL"];
+int [shape=box,style="rounded,filled",fillcolor="#f1f5f9",label="Integración\nCotización / OCR /\nChat / Pago / Aviso"];
+ui -> api [label="comando / consulta\nautenticada"];
+api -> app [label="contexto\nautorizado"];
+app -> dom [label="reglas puras"];
+app -> per [label="transacción /\nsnapshot"];
+app -> int [label="contratos externos"];
+app -> api [label="resultado tipado"];
+api -> ui [label="confirmación /\nerror / metadatos"];
+}

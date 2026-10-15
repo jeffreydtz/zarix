@@ -1,0 +1,50 @@
+{
+  "status": "PASS_SCOPED_READINESS",
+  "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+  "sourceCount": 483,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "1a56462e3063713829e103578aa9083928ee7e4ddaa16d2086bc4ba83f25734c",
+      "bytes": 1888
+    },
+    {
+      "path": "auth-readiness-harness.mjs",
+      "sha256": "d5c42e39b0685e85c7fae2aeeefc9769e982a5cb5d4c92f811f3d67d3d072269",
+      "bytes": 4848
+    },
+    {
+      "path": "closure-proof-browser-assets-manifest.json",
+      "sha256": "35fdaf5dc5675efb4dbbfb06f84738391e811401a0f4d455bd80b6ea5406739d",
+      "bytes": 25081
+    },
+    {
+      "path": "closure-proof-build-proof.json",
+      "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+      "bytes": 76071
+    },
+    {
+      "path": "closure-proof-clock-app-state.json",
+      "sha256": "ecbbacb798cfde43bb3645840d78dfad5819a42fc4ba7aad9421cdf17e704ac1",
+      "bytes": 1743
+    },
+    {
+      "path": "closure-proof-clock-auth-ready.json",
+      "sha256": "ab91501d6ad6a054383b61cb0f28543d4e6f97b2912d3c1206a8e17a5fd8587b",
+      "bytes": 1630
+    },
+    {
+      "path": "closure-proof-clock-gemini-unavailable.json",
+      "sha256": "d9deb5d21553e5157367d59fe4477e2f7335d97f8996ab8fe6f9aada30ac0f48",
+      "bytes": 1782
+    },
+    {
+      "path": "closure-proof-clock-observation.json",
+      "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+      "bytes": 1269
+    }
+  ],
+  "secretsIncluded": false,
+  "acceptanceScope": "Build and two temporary normal Auth/read API controls only; financial acceptance has separate execution."
+}

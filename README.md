@@ -1,5 +1,7 @@
 # Zarix
 
+Estado técnico del 09/10/2026: [correcciones, evidencia y bloqueos de verificación aislada](docs/tif/v2.13/VERIFICACION-TECNICA-20261009.md). Entrega parcial en borrador; la aceptación UI/API/Auth y proveedores reales sigue pendiente.
+
 Zarix es una app de finanzas personales para uso individual, enfocada en Argentina.
 
 > Control simple, rapido y visual de tu dinero en un solo lugar.
@@ -73,7 +75,7 @@ La web de Zarix te permite:
 
 ## Stack tecnologico
 
-- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts.
+- **Frontend**: Next.js 15.5.27, React 18, Tailwind CSS, Recharts.
 - **Backend/Data**: Supabase (PostgreSQL + Auth + APIs).
 - **Automatizaciones**: Telegram Bot (Telegraf), scripts Node/TS.
 - **Integraciones**: cotizaciones y mercado (Yahoo Finance y fuentes externas).
@@ -127,7 +129,7 @@ Zarix
 
 ### 1) Requisitos
 
-- Node.js 18+
+- Node.js >=22 y <25 (CI: Node 22)
 - npm 9+
 - Proyecto Supabase configurado
 
@@ -235,7 +237,7 @@ Si, esta optimizada para mobile y se puede usar como PWA.
 Si, podes importar desde CSV o JSON.
 
 ### Puedo exportar mi informacion?
-Si, podes exportar transacciones y tambien backup completo.
+Sí, podés exportar transacciones y cinco tablas de datos personales. Esa exportación no restaura el esquema, Auth ni Storage; ver el procedimiento técnico de recuperación.
 
 ### Tiene soporte para inversiones?
 Si, incluye portafolio y seguimiento de rendimiento.
@@ -244,3 +246,8 @@ Si, incluye portafolio y seguimiento de rendimiento.
 
 - [`docs/AUDIT.md`](./docs/AUDIT.md) — arquitectura, que anda en prod vs que esta roto, P0/P1/P2, slice recomendado.
 - [`docs/HANDOFF.md`](./docs/HANDOFF.md) — como seguir (env, mapa de codigo, Definition of Done del slice Trust).
+
+
+## Trabajo Final de Ingeniería
+
+El plan v2.13 y la evidencia de esta revisión están en [docs/tif/v2.13](docs/tif/v2.13/README.md). El alcance académico final tiene exactamente cuatro casos de uso; los diagramas y resultados anteriores conservan su carácter histórico.

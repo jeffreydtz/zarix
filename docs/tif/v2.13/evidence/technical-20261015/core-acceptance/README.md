@@ -1,0 +1,17 @@
+# CI5: verificación técnica final local
+
+Revisión de producto `7c3e8722d8fcdc5d95d205e9a12eb856647e0e06`, Node22.17.0, macOS arm64. [verification.json](verification.json) registra fuentes limpias y estables, manifiesto SHA256 `c099b890ce8129b815318786cf5d3d4c0e0123ab0ef21cb758cd3bcfcb3401d8`:455 entradas,454 blobs Git y un marcador CLI ignorado declarado. Los cambios posteriores de documentación no se atribuyen a esta ejecución.
+
+Los17 comandos terminaron: **16PASS y1FAIL**. Pasaron `npm ci`, `npm run typecheck`, `npm run lint`, `npm run test:coverage`, `npm run test:db`, `npm run build`, sintaxis del arnés nativo, regresión de trazabilidad, seis regresiones SQL específicas, reproducción completa de esquema y microbenchmark. Cada comando, duración, código de salida y log original queda registrado.
+
+**891/891 pruebas Vitest en89 archivos** (229 suites internas). [Cobertura V8](coverage-summary.json) de37 archivos instrumentados: líneas1810/2492=72,63%; sentencias2015/2895=69,60%; funciones281/414=67,87%; ramas1587/2507=63,30%. Estos porcentajes describen ese alcance; no acreditan cobertura de toda la aplicación ni aceptación de todos los casos originales.
+
+La primera consulta `npm audit` terminó con fallo de red/consulta y su [JSON original](dependency-audit.json) permanece intacto: no contiene un conteo de vulnerabilidades. El [reintento válido separado](../dependencies/ci5-current/assessment.json) y sus fuentes actuales registran siete altas de desarrollo, cero críticas; `--omit=dev` devuelve cero. Se conserva el FAIL completo y no se fuerzan actualizaciones mayores para ocultarlo.
+
+Siete informes SQL contienen **238 comprobaciones físicas**: saldos28, compartidos11, planes18, durabilidad25, importación10, conciliación18 y esquema/restauración128. `test:db` y las ejecuciones específicas repiten alcance; no se suman como casos originales únicos. PGlite es una prueba sintética. Auth/PostgREST/RLS nativos y recuperación integral tienen [su evidencia separada](../native-full/README.md).
+
+El microbenchmark usa una conexión PGlite y10 cuentas/5000 movimientos/100 posiciones. Su PASS no demuestra el SLO HTTP/browser CNF-01, concurrencia entre sesiones ni disponibilidad mensual. El intento real de carga con fallos se conserva en [su informe](../load/browser-diagnostics/README.md).
+
+El build raíz `cdcHsZEGZY1UvZuA8njLP` se compiló para Supabase aislado58321. El [escaneo de135 assets](browser-secret-scan.json) encontró cero coincidencias exactas con service-role y CRON locales; la clave anon es configuración pública. La copia final servida en3002 tiene otro BUILD_ID y manifiesto propios en [acceptance-final](../acceptance-final/README.md), aunque utiliza el mismo producto Git7c3. Este agregado no se presenta como prueba de UI o proveedores.
+
+Reproducción en esta Mac: el [wrapper exacto](../environment/core-acceptance-preparation/run-core-acceptance.py) requiere el entorno privado existente, la revisión explícita y una ventana sin Next consumidores de `node_modules`. Ejecutado: `ZARIX_CI5_WINDOW_CONFIRM=parent-released-core-acceptance python3 /tmp/zarix-runtime-20261015/run-core-acceptance.py --revision 7c3e8722d8fcdc5d95d205e9a12eb856647e0e06`. El wrapper reutiliza credenciales sintéticas privadas, fuentes Inter locales y el guard de fetch; no publica valores ni instala un reloj falso en CI5. Su destino rechaza sobrescribir esta fase: una repetición debe guardar evidencia en un directorio nuevo.

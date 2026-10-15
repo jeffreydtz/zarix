@@ -1,0 +1,862 @@
+
+> zarix@0.1.0 test:db
+> node scripts/test-balance-trigger.mjs && node scripts/test-shared-expenses-sql.mjs && node scripts/test-plan-limits.mjs && node scripts/test-durable-financial-operations.mjs && node scripts/test-durable-import.mjs && node scripts/test-atomic-account-recompute.mjs && node scripts/test-transaction-deletion-audit.mjs && node scripts/test-isolated-schema-mirror.mjs && node scripts/test-isolated-database.mjs
+
+{
+  "date": "2026-10-15T07:48:24.766Z",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "mode": "revised",
+  "scope": "PL/pgSQL de update_account_balance; esquema mínimo aislado, no RLS/proveedores/concurrencia remota",
+  "passed": 28,
+  "total": 28,
+  "results": [
+    {
+      "id": "SQL-01 gasto INSERT",
+      "status": "PASS",
+      "expected": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-02 ingreso INSERT",
+      "status": "PASS",
+      "expected": [
+        10500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-03 transferencia INSERT",
+      "status": "PASS",
+      "expected": [
+        8500,
+        3500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        3500,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-04 UPDATE monto gasto",
+      "status": "PASS",
+      "expected": [
+        8000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-05 UPDATE cuenta gasto",
+      "status": "PASS",
+      "expected": [
+        10000,
+        500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        500,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-06 UPDATE tipo gasto a ingreso",
+      "status": "PASS",
+      "expected": [
+        11500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        11500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-07 DELETE gasto",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-08 DELETE ingreso",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-09 UPDATE destino y monto transferencia",
+      "status": "PASS",
+      "expected": [
+        9000,
+        2000,
+        4000,
+        -10000
+      ],
+      "obtained": [
+        9000,
+        2000,
+        4000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-10 UPDATE origen transferencia",
+      "status": "PASS",
+      "expected": [
+        10000,
+        3500,
+        1500,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        3500,
+        1500,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-11 DELETE transferencia",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-12 ajuste secundario INSERT UPDATE DELETE",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-13 ajuste secundario a primario",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -9500
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -9500
+      ]
+    },
+    {
+      "id": "SQL-14 ingreso a transferencia",
+      "status": "PASS",
+      "expected": [
+        9500,
+        2500,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        9500,
+        2500,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-15 transferencia a gasto",
+      "status": "PASS",
+      "expected": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        8500,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-16 rollback transferencia",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-17 transferencia FX DELETE",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-18 UPDATE tipo primario a ajuste secundario",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-19 ARS120000 a USD100 exactos",
+      "status": "PASS",
+      "expected": [
+        -110000,
+        2100,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        -110000,
+        2100,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-20 importe grande conserva destino",
+      "status": "PASS",
+      "expected": [
+        -119990000,
+        102000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        -119990000,
+        102000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-21 UPDATE importes destino confirmados",
+      "status": "PASS",
+      "expected": [
+        -230000,
+        2200,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        -230000,
+        2200,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-22 DELETE reversión destino exacto",
+      "status": "PASS",
+      "expected": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        10000,
+        2000,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-23 USD100 a ARS120000 exactos",
+      "status": "PASS",
+      "expected": [
+        130000,
+        1900,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        130000,
+        1900,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-24 histórico sin destino explícito conserva fallback",
+      "status": "PASS",
+      "expected": [
+        -110000,
+        2099.9996,
+        3000,
+        -10000
+      ],
+      "obtained": [
+        -110000,
+        2099.9996,
+        3000,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-25 UPDATE destino exacto a otra cuenta",
+      "status": "PASS",
+      "expected": [
+        -110000,
+        2000,
+        3100,
+        -10000
+      ],
+      "obtained": [
+        -110000,
+        2000,
+        3100,
+        -10000
+      ]
+    },
+    {
+      "id": "SQL-26 resumen bimoneda crédito exacto",
+      "status": "PASS",
+      "expected": 100,
+      "obtained": 100
+    },
+    {
+      "id": "SQL-27 resumen bimoneda UPDATE crédito exacto",
+      "status": "PASS",
+      "expected": 200,
+      "obtained": 200
+    },
+    {
+      "id": "SQL-28 resumen bimoneda DELETE revierte",
+      "status": "PASS",
+      "expected": 0,
+      "obtained": 0
+    }
+  ]
+}
+{
+  "date": "2026-10-15T07:48:25.614Z",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "scope": "Real PL/pgSQL, minimum isolated schema, RPC access privileges, group scopes and rollback. No hosted deployment, RLS environment or multi-connection load test.",
+  "passed": 11,
+  "total": 11,
+  "results": [
+    {
+      "id": "SH-SQL-01 RPC is executable only by backend role",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-02 create and remainder cents conserve total",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-03 update replaces amount and splits atomically",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-04 actor from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-05 payer from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-06 split from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-07 sub-cent amount",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-08 another group cannot edit an existing expense",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-09 invalid/revoked capabilities do not mutate",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-10 split insert failure rolls back UPDATE and removed old splits",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-11 split insert failure leaves no orphan new expense",
+      "status": "PASS"
+    }
+  ]
+}
+{
+  "engine": "PGlite (isolated real PL/pgSQL, serialized requests)",
+  "passed": 18,
+  "total": 18,
+  "results": [
+    {
+      "name": "Free first three allowed and fourth blocked",
+      "status": "PASS"
+    },
+    {
+      "name": "Free cannot bypass cap with reactivation",
+      "status": "PASS"
+    },
+    {
+      "name": "Premium permits 20 and rejects 21",
+      "status": "PASS"
+    },
+    {
+      "name": "Downgrade retains all accounts and historical transactions",
+      "status": "PASS"
+    },
+    {
+      "name": "Explicit selection preserves history and allows only chosen source/destination",
+      "status": "PASS"
+    },
+    {
+      "name": "Selection is atomic and rejects foreign/duplicate/over-limit IDs",
+      "status": "PASS"
+    },
+    {
+      "name": "Free recurring activation and execution rejected but read retained",
+      "status": "PASS"
+    },
+    {
+      "name": "Null/expired entitlement and Free AI fail closed",
+      "status": "PASS"
+    },
+    {
+      "name": "Cancellation keeps paid access to exact end; grace explicit",
+      "status": "PASS"
+    },
+    {
+      "name": "Reservation, in-flight duplicate and payload conflict",
+      "status": "PASS"
+    },
+    {
+      "name": "Success replays cached answer with no second consumption",
+      "status": "PASS"
+    },
+    {
+      "name": "Failed call releases quota and retry fences stale owner",
+      "status": "PASS"
+    },
+    {
+      "name": "40 AI limit independent of 20 OCR limit; excess reservations roll back",
+      "status": "PASS"
+    },
+    {
+      "name": "Mid-cycle webhook end changes do not reset quota",
+      "status": "PASS"
+    },
+    {
+      "name": "Renewal after frozen end starts new bucket; old request still replays",
+      "status": "PASS"
+    },
+    {
+      "name": "Quota tables/RPC inaccessible to public authenticated client",
+      "status": "PASS"
+    },
+    {
+      "name": "Service-role RPC executes without security-definer escalation",
+      "status": "PASS"
+    },
+    {
+      "name": "Account plus opening balance is atomic, idempotent, and conflict-safe",
+      "status": "PASS"
+    }
+  ]
+}
+{
+  "engine": "PGlite PostgreSQL WASM",
+  "scope": "Real PL/pgSQL and role grants; simultaneous submissions serialized in one database session, not a multi-session contention claim; provider delivery tested separately with doubles",
+  "manifest": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    },
+    {
+      "path": "supabase/migrations/20261015072636_audit_transaction_deletions.sql",
+      "sha256": "f5e9ecde74f98b62233aada534206df22655361a661b6b1963a537b221f1b355"
+    },
+    {
+      "path": "supabase/migrations/20261015072807_presentation_preferences.sql",
+      "sha256": "ca6aefd4b6c61e4a60f4b4dd075f5fd6bbbe27dd6e72e7ecddd024544c421309"
+    }
+  ],
+  "passed": 25,
+  "total": 25,
+  "results": [
+    {
+      "name": "response loss/restart replay returns exact persisted result and one debit",
+      "status": "PASS"
+    },
+    {
+      "name": "identical legitimate operations have different IDs and both debit",
+      "status": "PASS"
+    },
+    {
+      "name": "same-key submitted together is replayed once (single-session scheduling)",
+      "status": "PASS"
+    },
+    {
+      "name": "changed payload is a conflict, not another financial operation",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt remains after transaction deletion; retry does not recreate it",
+      "status": "PASS"
+    },
+    {
+      "name": "installment group and first response share one atomic receipt",
+      "status": "PASS"
+    },
+    {
+      "name": "tenant mismatch cannot write a transaction or receipt",
+      "status": "PASS"
+    },
+    {
+      "name": "recurring financial insert, date marker, reply and notification commit together",
+      "status": "PASS"
+    },
+    {
+      "name": "failure after financial insert rolls back balance, marker, receipt and outbox",
+      "status": "PASS"
+    },
+    {
+      "name": "claim excludes leased messages and retries with a fresh lease after expiry",
+      "status": "PASS"
+    },
+    {
+      "name": "committed replay survives downgrade and movement account disablement",
+      "status": "PASS"
+    },
+    {
+      "name": "browser roles cannot invoke server-only RPC or inspect receipt/outbox payloads",
+      "status": "PASS"
+    },
+    {
+      "name": "investment response loss repeats neither quantity reduction nor sale",
+      "status": "PASS"
+    },
+    {
+      "name": "full liquidation replay still returns committed response after position closes",
+      "status": "PASS"
+    },
+    {
+      "name": "stale price, currency or type rejects atomically after the basis row is locked",
+      "status": "PASS"
+    },
+    {
+      "name": "sale receipt failure rolls quantity and sale back atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "investment create response-loss replay creates one lot; new request creates a distinct lot",
+      "status": "PASS"
+    },
+    {
+      "name": "investment create receipt outlives later edits, deletion and account deactivation",
+      "status": "PASS"
+    },
+    {
+      "name": "investment create rejects another owner and invalid account without a receipt",
+      "status": "PASS"
+    },
+    {
+      "name": "investment create receipt failure rolls back the new lot",
+      "status": "PASS"
+    },
+    {
+      "name": "shared expense and splits replay once; identical new expense is distinct",
+      "status": "PASS"
+    },
+    {
+      "name": "shared edit replay cannot revert a later confirmed edit",
+      "status": "PASS"
+    },
+    {
+      "name": "capability authorization precedes shared receipt replay",
+      "status": "PASS"
+    },
+    {
+      "name": "shared receipt failure rolls expense and all splits back",
+      "status": "PASS"
+    },
+    {
+      "name": "sale and shared receipt tables and RPCs are server-only",
+      "status": "PASS"
+    }
+  ]
+}
+{
+  "suite": "durable-import",
+  "results": [
+    {
+      "name": "batch binds immutable file/options hash and freezes original mapping",
+      "status": "PASS"
+    },
+    {
+      "name": "partial row failure and retry preserve one effect per original row",
+      "status": "PASS"
+    },
+    {
+      "name": "same batch replay and simultaneous submissions keep exact receipts (single-session scheduling)",
+      "status": "PASS"
+    },
+    {
+      "name": "equal legitimate rows and explicit new batches remain separate operations",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit duplicate skip matches existing content and survives deletion of the match",
+      "status": "PASS"
+    },
+    {
+      "name": "historical equivalents and durable replay ignore changed computed FX",
+      "status": "PASS"
+    },
+    {
+      "name": "imported transfer debits and credits historical equivalents exactly once",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt failure rolls back the imported row and its balance impact",
+      "status": "PASS"
+    },
+    {
+      "name": "batch and receipt payload conflicts cannot add new financial effects",
+      "status": "PASS"
+    },
+    {
+      "name": "anon and authenticated roles cannot access import ledger or RPCs",
+      "status": "PASS"
+    }
+  ]
+}
+{
+  "startedAt": "2026-10-15T07:48:28.573Z",
+  "command": "node scripts/test-atomic-account-recompute.mjs",
+  "runtime": {
+    "node": "v22.17.0"
+  },
+  "scope": "Fresh baseline and migrations in PGlite; synthetic ledger and role claims. No GoTrue, PostgREST, UI, provider, or native multi-session concurrency verification.",
+  "concurrency": {
+    "verified": false,
+    "legacyInterleaving": "Sequential replay of independently committed commands; not simultaneous WASM sessions."
+  },
+  "results": [],
+  "scriptSha256": "bb0723fd45ad9e2ac5795af32b444ebc55a29cc86d8047ee3f01172fae6f3ade",
+  "setupError": {
+    "type": "AssertionError",
+    "code": "ERR_ASSERTION",
+    "context": "fresh-fixture-setup"
+  },
+  "finishedAt": "2026-10-15T07:48:28.576Z",
+  "passed": 0,
+  "total": 0,
+  "status": "FAIL"
+}

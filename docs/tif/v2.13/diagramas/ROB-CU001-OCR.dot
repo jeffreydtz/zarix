@@ -1,0 +1,27 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: A02: ticket y confirmación"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b2 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP02 Ticket / Importación"];
+v [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+cap [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nCapturarTicket"];
+bg [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nAdaptador OCR"];
+g [shape=plaintext,fontcolor="#243b53",label="Gemini"];
+m [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nMovimientos"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta / Saldo"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+u -> b2 [label="A02 / A04"];
+b2 -> v [label="identidad y plan"];
+b2 -> cap [dir=both,label="A02 extraer\npropuesta\n↔\npreview editable\n/ carga manual"];
+cap -> bg [dir=both,label="extraer\n↔\ndatos\nnormalizados"];
+bg -> g [dir=both,label="imagen mínima\n↔\npropuesta /\nerror"];
+
+
+
+b2 -> m [dir=both,label="A02 confirmar\n↔\nresultado\nconfirmado"];
+m -> ec [label="propiedad /\nsaldo"];
+m -> em [label="escritura\natómica"];
+
+}

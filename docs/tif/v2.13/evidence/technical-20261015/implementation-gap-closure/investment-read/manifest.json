@@ -1,0 +1,63 @@
+{
+  "status": "IMPLEMENTED_FOCALLY_VERIFIED_NOT_NATIVE_ACCEPTED",
+  "sources": [
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "sha256": "d04079db73fac9e514318b32a2c2c25eed2d198a3b62a4108a1fc554f078cb2d",
+      "snapshot": "route-final-source.ts"
+    },
+    {
+      "path": "__tests__/investment-individual-read.test.ts",
+      "sha256": "31c5bdd42df9400005282f2e2cd13481c77af833e9399ae5ea1e108041dda565",
+      "snapshot": "investment-individual-read.test-source.ts"
+    }
+  ],
+  "preservation": {
+    "patchAndDeleteHandlersByteIdentical": true,
+    "handlerBlocksSha256": "f5ebf50f4dbc9d518e5f59c2c8704277be0626705f70d42ba24603b2fa20b8cf",
+    "schemaTypesPlansAndProvidersChanged": false
+  },
+  "before": {
+    "report": "before.json",
+    "sha256": "934d0946df5421a2ec13cec32ee205bdf062b84e04944d8d7865f1eab11294fe",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "scope": "Endpoint export existence test, not a real HTTP405 observation"
+  },
+  "after": {
+    "report": "after.json",
+    "sha256": "b024ed19630e459745869c25ee94f8c094c63b04a4b4037f9d8b52ac6278290d",
+    "tests": 14,
+    "passed": 14,
+    "failed": 0,
+    "scope": "Actual GET handler and shared requireUser/errorResponse with normal Auth/Data API builder doubles; no real JWT/RLS/DB/browser/network"
+  },
+  "behavior": [
+    "Normal request Supabase client, exact id and verified user_id predicates",
+    "200 owned including historical archived row,Cache-Control:no-store",
+    "404 indistinguishable missing/foreign under owner/RLS predicate",
+    "401 no/rejected session;503 Auth upstream outage",
+    "400 malformed UUID;500 safe unexpected DB failure"
+  ],
+  "serviceRoleUsed": false,
+  "realAuthDatabaseBrowserOperations": 0,
+  "cp219OriginalRuntimeAcceptanceChanged": false,
+  "commitCreated": false,
+  "validation": [
+    {
+      "name": "finalTypecheck",
+      "command": "node22 node_modules/typescript/bin/tsc --noEmit",
+      "exitCode": 0,
+      "toolSession": 82992,
+      "scope": "Current worktree after final reset privacy correction and investment GET addition; no Auth/DB/browser"
+    },
+    {
+      "name": "finalScopedLint",
+      "command": "node22 node_modules/next/dist/bin/next lint --file app/api/investments/[id]/route.ts --file __tests__/investment-individual-read.test.ts --file app/auth/callback/route.ts --file __tests__/password-recovery-callback.test.ts --file __tests__/password-recovery-pages.test.ts",
+      "exitCode": 0,
+      "toolSession": 25073,
+      "scope": "Changed final route/test paths; unchanged reset component/helper had already passed earlier scoped lint"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "status": "NO_MATERIAL_STATIC_FINDINGS",
+  "reviewedAt": "2026-10-15T04:34:28.340070+00:00",
+  "reviewer": "/root/native_runtime/restore_fetch_guard",
+  "scope": "Independent static source review only; no imports/test/DB/HTTP/Next or process probes by reviewer. Parent supplied executed readiness separately.",
+  "findings": [],
+  "conclusions": [
+    "Retry binds same copyRoot/artifactPrefix836/env/buildproof while explicitly accepting its original buildProfile; runtime state/observation/Gemini/journal/log/attempt are new.",
+    "Date.parse and Date.UTC are own descriptors compatible with actual Next15 wrapper.",
+    "Clock only installs in selected Next start process; guard precedes Gemini canary; failed startup terminates only the newly owned child."
+  ],
+  "sources": [
+    {
+      "path": "build-app.py",
+      "sha256": "1bb807c6aedb55d6a4ac9602a8ba5f9ef8bf5f2bab70667f8fe6f3e07d66e5d1"
+    },
+    {
+      "path": "runtime-profile.mjs",
+      "sha256": "1d770968ed0b79b3e2d69b597910f19754b68caad98c0897534f9e10d0f0a606"
+    },
+    {
+      "path": "profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "test-clock-model.mjs",
+      "sha256": "4f0107da4cfd95a2829361d21643f8d93df5c279f784031291f62804015d544a"
+    }
+  ]
+}

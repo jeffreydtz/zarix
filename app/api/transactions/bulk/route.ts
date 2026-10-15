@@ -235,7 +235,7 @@ export async function DELETE(req: NextRequest) {
 
     if (preErr) throw preErr;
 
-    const { data, error } = await serviceClient
+    const { data, error } = await supabase
       .from('transactions')
       .delete()
       .eq('user_id', user.id)
@@ -252,8 +252,8 @@ export async function DELETE(req: NextRequest) {
     for (const accId of accountIds) {
       try {
         await transactionsService.recomputeAccountBalanceFromLedger(user.id, accId);
-      } catch (e) {
-        console.error('reconcile after bulk delete', accId, e);
+      } catch {
+        console.error('reconcile after bulk delete');
       }
     }
 
@@ -262,7 +262,8 @@ export async function DELETE(req: NextRequest) {
       deleted: data?.length ?? 0,
     });
   } catch (error: unknown) {
-    console.error('Bulk transactions DELETE error:', error);
+    // Database details can contain the private deleted-row audit snapshot.
+    console.error('Bulk transactions DELETE error');
     return errorResponse(error);
   }
 }

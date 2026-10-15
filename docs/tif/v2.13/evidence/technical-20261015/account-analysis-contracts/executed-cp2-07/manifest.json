@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-15T03:51:23.709550+00:00",
+  "case_id": "CP2-07",
+  "status": "PASS",
+  "complete_original_contract": true,
+  "source": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "ordinaryIdentity": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "assertionsPassed": 9,
+    "phaseResult": "PARTIAL export only, not a case PASS by itself"
+  },
+  "target": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "-zDTe86_KX6NVCcsRaWOj",
+    "appOrigin": "http://127.0.0.1:3003",
+    "apiOrigin": "http://127.0.0.1:59321",
+    "ordinaryIdentity": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "assertionsPassed": 12,
+    "sourceStable": true,
+    "allOriginalTablesUnchanged": true
+  },
+  "sameIdentity": true,
+  "historicalRunnerReconstructionVerified": true,
+  "firstImportAttempt": {
+    "classification": "HARNESS_PRECONDITION_FAIL",
+    "requests": 0,
+    "financialMutations": 0,
+    "cause": "Overbroad check compared an unrelated current BlueFxReferenceDetails UI edit to the frozen served836 build. Physical copy remained exact. Corrected checks bind physical copy+frozenGit and compare relevant API/SQL current contract sources."
+  },
+  "command": "ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only ZARIX_ACCOUNT_ANALYSIS_WINDOW=after-load-quotes-focal-finance ZARIX_ACCOUNT_ANALYSIS_CONFIG=/tmp/zarix-runtime-20261015/import-target.env ZARIX_ACCOUNT_ANALYSIS_LOGINS=/tmp/zarix-runtime-20261015/import-target-logins.json ZARIX_ACCOUNT_ANALYSIS_APP_STATE=/tmp/zarix-runtime-20261015/import-target-app-state.json ZARIX_ACCOUNT_ANALYSIS_APP_URL=http://127.0.0.1:3003 ZARIX_ACCOUNT_ANALYSIS_ROUNDTRIP_PHASE=import ZARIX_ACCOUNT_ANALYSIS_ROUNDTRIP_SOURCE=<preserved-source-roundtrip.json> node docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs --case CP2-07 --owner A --api-only",
+  "scope": "Real HTTP preview/import/export with ordinary Auth A, readonly native SQL oracles, genuine separate empty same-user target, remapped IDs, no orphans and normalized semantic equality. No UI/provider/new production validation claim. Original target data never deleted; only newly created accounts archived by documented normal-API cleanup.",
+  "files": [
+    {
+      "path": "source-export.json",
+      "sha256": "aa7a5eb78634e1cc2c86cac0a9e2fc199b771f78d736beb833c5243d7048771e",
+      "exactCopy": true
+    },
+    {
+      "path": "source-roundtrip.json",
+      "sha256": "98cf120b225c898188c39b7bd8d29188c2499f2c6eb2f3cd4957cb386127f21e",
+      "exactCopy": true
+    },
+    {
+      "path": "import-attempt-1-precondition.json",
+      "sha256": "5cb08858fa3e8d1d46fb74f3e4e09cb3ba715208cca8dd562a56ecd50d0a4ea6",
+      "exactCopy": true
+    },
+    {
+      "path": "target-import.json",
+      "sha256": "1c6e0f92566fd535af48328ffdf65db9c532da02927b93e3f9ac944896bb43e6",
+      "exactCopy": true
+    },
+    {
+      "path": "run.target-import-executed.txt",
+      "sha256": "d968f82b15157b2e1875132172093ffdd206b4995255a312aaa5b5099a190740",
+      "scope": "Exact executed runner text snapshot, not a new runtime entrypoint"
+    },
+    {
+      "path": "run.source-export-executed.txt",
+      "sha256": "aea20df6dfcb2301cdbff5a52bfdc049cb07866a348c7a798ff1b50465b64512",
+      "scope": "Historical exact bytes reconstructed from the import-only delta and independently verified against the source export run recorded SHA256"
+    }
+  ]
+}

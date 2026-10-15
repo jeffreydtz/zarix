@@ -1,0 +1,173 @@
+// Actual provider and child handlers/effects; React/Auth/HTTP/account helper are
+// doubles. Models a delayed result retained across reset; no browser/DB claim.
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+const hooks = vi.hoisted(() => ({ states: [] as any[], index: 0, refs: [] as any[], refIndex: 0,
+  effects: [] as (() => void | (() => void))[], child: false, childStates: [] as any[], childRefs: [] as any[],
+  childEffects: [] as (() => void | (() => void))[], childCleanup: [] as (() => void)[],
+  owner: 'A', epoch: 0, cleanup: null as null | (() => void), resolve: null as any, accountStarted: false,
+  accountAttempt: null as any, accountOptions: null as any, accountPayload: null as any, childWrites: [] as number[] }));
+vi.mock('react', async original => ({ ...await original<any>(),
+  useState: (initial: any) => {
+    const index = hooks.index++, states = hooks.child ? hooks.childStates : hooks.states;
+    if (!(index in states)) states[index] = typeof initial === 'function' ? initial() : initial;
+    const child = hooks.child;
+    return [states[index], (value: any) => { if (child) hooks.childWrites.push(index); states[index] = typeof value === 'function' ? value(states[index]) : value; }];
+  },
+  useRef: (initial: any) => {
+    const index = hooks.refIndex++, refs = hooks.child ? hooks.childRefs : hooks.refs;
+    if (!(index in refs)) refs[index] = { current: initial };
+    return refs[index];
+  },
+  useEffect: (effect: () => void | (() => void)) => { (hooks.child ? hooks.childEffects : hooks.effects).push(effect); },
+  useCallback: (callback: any) => callback, useMemo: (callback: any) => callback(),
+}));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+vi.mock('@/lib/hooks/useBodyScrollLock', () => ({ useBodyScrollLock: vi.fn() }));
+vi.mock('@/lib/hooks/useFinancialOperation', () => ({ useFinancialOperation: () => ({ submit: vi.fn() }) }));
+vi.mock('@/lib/hooks/useOfflineQueue', () => ({ useOfflineQueue: () => ({ isOnline: true, pendingCount: 0,
+  pendingItems: [], discard: vi.fn(), retry: vi.fn(), syncing: false, syncError: null, needsReview: false, sync: vi.fn() }) }));
+vi.mock('@/lib/account-create-request', () => ({ submitAccountCreation: vi.fn((attempt: any, payload: any, options: any) => {
+  hooks.accountStarted = true;
+  hooks.accountAttempt = attempt; hooks.accountPayload = payload; hooks.accountOptions = options;
+  return new Promise(resolve => { hooks.resolve = resolve; });
+}) }));
+vi.mock('@/lib/offline-reference-cache', () => ({
+  REFERENCE_OWNER_CHANGED: 'zarix-reference-owner-changed',
+  getOfflineReferenceOwner: vi.fn(async () => hooks.owner),
+  fetchReferenceList: vi.fn(async (url: string) => url.startsWith('/api/accounts')
+    ? [{ id: `account-${hooks.owner}`, name: `Owner ${hooks.owner} account`, currency: 'ARS', balance: 1 }]
+    : [{ id: `category-${hooks.owner}`, name: `Owner ${hooks.owner} category`, type: 'expense', icon: 'X' }]),
+  getOfflineCachedAccounts: () => [], getOfflineCachedCategories: () => [],
+  pickReferenceList: (rows: any[], cached: any[]) => rows || cached,
+}));
+vi.mock('@/components/ui/MiniAmountCalculatorButton', () => ({ default: () => null }));
+vi.mock('@/components/dashboard/InternalAiChat', () => ({ default: () => null }));
+import { AddTransactionProvider } from '@/components/add-transaction/AddTransactionProvider';
+import { QuickCreateCategoryPanel, QuickCreateAccountPanel } from '@/components/expenses/InlineQuickCreate';
+import { getOfflineReferenceOwner } from '@/lib/offline-reference-cache';
+
+function find(node: any, predicate: (node: any) => boolean): any {
+  if (Array.isArray(node)) { for (const child of node) { const result = find(child, predicate); if (result) return result; } return null; }
+  if (!node || typeof node !== 'object') return null;
+  return predicate(node) ? node : find(node.props?.children, predicate);
+}
+function render() { hooks.child = false; hooks.index = 0; hooks.refIndex = 0; hooks.effects = []; return AddTransactionProvider({ children: null }); }
+const privateCategory = { id: 'private-late-A', name: 'Private A category', icon: 'X', type: 'expense' };
+const privateAccount = { id: 'private-late-A', name: 'Private A account', currency: 'ARS', balance: 100 };
+function unmountChild() { hooks.childCleanup.splice(0).forEach(cleanup => cleanup()); }
+async function openFor(kind: 'category' | 'account') {
+  render(); hooks.states[0] = true; hooks.states[17] = kind;
+  const tree = render();
+  const panel = find(tree, node => node.type === (kind === 'category' ? QuickCreateCategoryPanel : QuickCreateAccountPanel));
+  expect(panel).not.toBeNull();
+  hooks.cleanup = hooks.effects[0]() as (() => void);
+  await vi.waitFor(() => expect(hooks.states[3]?.[0]?.id).toBe('account-A'));
+  hooks.childStates = kind === 'category' ? ['Private A category', 'X', false, ''] : ['Private A account', 'bank', 'ARS', '100'];
+  hooks.child = true; hooks.index = 0; hooks.refIndex = 0;
+  const child = kind === 'category' ? QuickCreateCategoryPanel(panel.props) : QuickCreateAccountPanel(panel.props);
+  hooks.child = false;
+  for (const effect of hooks.childEffects) { const cleanup = effect(); if (cleanup) hooks.childCleanup.push(cleanup); }
+  const button = find(child, node => node.type === 'button' && node.props.children === 'Crear y usar');
+  expect(button).not.toBeNull();
+  const pending = button.props.onClick();
+  await vi.waitFor(() => expect(kind === 'category' ? Boolean(hooks.resolve) : hooks.accountStarted).toBe(true));
+  return {
+    complete: async () => { hooks.resolve(kind === 'category' ? new Response(JSON.stringify(privateCategory), { status: 201 }) : { state: 'confirmed', account: privateAccount }); await pending; },
+    pending: async () => {
+      // Explicit account-helper double preserves its original intent/ID while
+      // delivering onPending. Persistence itself belongs to other real-store tests.
+      const item = { id: 'saved-intent-A', ownerId: 'A', payload: hooks.accountPayload };
+      hooks.accountAttempt.pending = item;
+      hooks.accountOptions.onPending(hooks.accountPayload);
+      hooks.resolve({ state: 'pending', message: 'Saved under the original intent' }); await pending;
+      return item;
+    },
+    cancel: find(child, node => node.type === 'button' && node.props.children === 'Cancelar').props.onClick,
+    close: () => { tree.props.value.close(); unmountChild(); },
+  };
+}
+async function switchTo(owner: string) {
+  hooks.owner = owner; hooks.epoch++;
+  window.dispatchEvent(new Event('zarix-reference-owner-changed'));
+  await vi.waitFor(() => expect(hooks.states[3]?.[0]?.id).toBe(`account-${owner}`));
+}
+beforeEach(() => {
+  hooks.states = []; hooks.refs = []; hooks.effects = []; hooks.childStates = []; hooks.childRefs = []; hooks.childEffects = []; hooks.childCleanup = [];
+  hooks.owner = 'A'; hooks.epoch = 0; hooks.cleanup = null; hooks.resolve = null; hooks.accountStarted = false;
+  hooks.accountAttempt = null; hooks.accountOptions = null; hooks.accountPayload = null; hooks.childWrites = [];
+  vi.mocked(getOfflineReferenceOwner).mockImplementation(async () => hooks.owner);
+  vi.stubGlobal('window', new EventTarget()); vi.stubGlobal('navigator', { onLine: true });
+  vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => url === '/api/categories' && init?.method === 'POST'
+    ? new Promise(resolve => { hooks.resolve = resolve; }) : Promise.resolve(new Response('[]', { status: 200 }))));
+});
+afterEach(() => { hooks.cleanup?.(); unmountChild(); vi.unstubAllGlobals(); vi.clearAllMocks(); });
+
+describe('late quick-create completion belongs to its original form/session', () => {
+  it('rejects category A completion after B references finish loading', async () => {
+    const form = await openFor('category'); await switchTo('B'); await form.complete();
+    expect(hooks.states[4].some((category: any) => category.id === privateCategory.id)).toBe(false);
+    expect(hooks.states[16]).not.toBe(privateCategory.id);
+  });
+  it('rejects account A completion after B references finish loading', async () => {
+    const form = await openFor('account'); await switchTo('B'); await form.complete();
+    expect(hooks.states[3].some((account: any) => account.id === privateAccount.id)).toBe(false);
+    expect(hooks.states[14]).not.toBe(privateAccount.id);
+  });
+  it('rejects an old A completion after A to B to A reset, even before simulated unmount', async () => {
+    const form = await openFor('category'); await switchTo('B'); await switchTo('A'); await form.complete();
+    expect(hooks.states[4].some((category: any) => category.id === privateCategory.id)).toBe(false);
+    expect(hooks.states[16]).not.toBe(privateCategory.id);
+  });
+  it('accepts a completion in the same live session/form', async () => {
+    const form = await openFor('category'); await form.complete();
+    expect(hooks.states[4].some((category: any) => category.id === privateCategory.id)).toBe(true);
+    expect(hooks.states[16]).toBe(privateCategory.id);
+  });
+  it('accepts a confirmed account in the same live session/form', async () => {
+    const form = await openFor('account'); await form.complete();
+    expect(hooks.states[3].some((account: any) => account.id === privateAccount.id)).toBe(true);
+    expect(hooks.states[14]).toBe(privateAccount.id);
+  });
+  it('rejects a delayed category after sign-out leaves an anonymous form', async () => {
+    const form = await openFor('category'); hooks.owner = '';
+    window.dispatchEvent(new Event('zarix-reference-owner-changed'));
+    await form.complete();
+    expect(hooks.states[4].some((category: any) => category.id === privateCategory.id)).toBe(false);
+    expect(hooks.states[16]).not.toBe(privateCategory.id);
+  });
+  it('a normal close is not mistaken for a session leak or reopened by completion', async () => {
+    const form = await openFor('category'); form.close(); await form.complete();
+    expect(hooks.states[0]).toBe(false);
+  });
+  it('cancel invalidates a late completion immediately, before simulated React unmount', async () => {
+    const form = await openFor('category'); form.cancel(); await form.complete();
+    expect(hooks.states[4].some((category: any) => category.id === privateCategory.id)).toBe(false);
+    expect(hooks.states[16]).not.toBe(privateCategory.id);
+  });
+  it('a late pending account remains under its original helper ID without updating invalidated fields', async () => {
+    const form = await openFor('account'); await switchTo('B'); hooks.childWrites = [];
+    const item = await form.pending();
+    expect(hooks.accountAttempt.pending).toBe(item); expect(item.id).toBe('saved-intent-A');
+    expect(hooks.childWrites).toEqual([]);
+    expect(hooks.states[3].some((account: any) => account.id === privateAccount.id)).toBe(false);
+  });
+  it('revalidates synchronously when identity changes between async current and its caller continuation', async () => {
+    const form = await openFor('category');
+    let switched = false;
+    vi.mocked(getOfflineReferenceOwner).mockImplementationOnce(async () => {
+      const original = hooks.owner;
+      queueMicrotask(() => queueMicrotask(() => {
+        switched = true;
+        hooks.owner = 'B'; hooks.epoch++;
+        window.dispatchEvent(new Event('zarix-reference-owner-changed'));
+      }));
+      return original;
+    });
+    await form.complete();
+    // With no final owner read this boundary does not exist: a later switch
+    // may legitimately clear an already completed A result.
+    if (!switched) await switchTo('B');
+    expect(hooks.states[4].some((category: any) => category.id === privateCategory.id)).toBe(false);
+    expect(hooks.states[16]).not.toBe(privateCategory.id);
+  });
+});

@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "operation": "One graceful SIGTERM of the exact temporary restored-read Next process only",
+  "pid": 39226,
+  "commandBefore": "next-server (v15.5.27)",
+  "processStartUtc": "2026-10-15T02:51:07Z",
+  "appOrigin": "http://127.0.0.1:3002",
+  "restoreOrigin": "http://127.0.0.1:55321",
+  "buildId": "8KCE9yl_NuWCW33jQ5gBP",
+  "identityGuardsBeforeSignal": {
+    "privateStatePurpose": true,
+    "exactPid": true,
+    "buildIdAndCopy": true,
+    "processStartUtcWithin5s": true,
+    "listener3002ExactOwnedPid": true
+  },
+  "signalsSent": 1,
+  "exactProcessAbsent": true,
+  "port3002HasListener": false,
+  "nativeStacksControlled": false,
+  "filesDeleted": false,
+  "finishedAt": "2026-10-15T02:59:02.384770+00:00",
+  "verification": {
+    "readOnlyFinalCommand": "TZ=UTC ps -p39226 -o pid=,ppid=,lstart=,stat=,comm=; lsof -nP -iTCP:3002 -sTCP:LISTEN",
+    "finalOutput": "Both commands returned no rows",
+    "scope": "No additional signals after the first SIGTERM; no other process targeted"
+  },
+  "guardedAttempts": [
+    {
+      "phase": "beforeSignal",
+      "result": "Aborted: initial ps lstart used host local timezone; no signal sent",
+      "correction": "Explicit TZ=UTC for ps only; system timezone not changed"
+    },
+    {
+      "phase": "afterSignal",
+      "result": "Polling aborted on changed comm during process exit; no second signal sent",
+      "followup": "Independent read-only ps/lsof confirmed exact PID absent and port3002 free"
+    }
+  ]
+}

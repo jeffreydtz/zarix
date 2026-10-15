@@ -1,0 +1,26 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Cuentas (B)
+ participant A as Acceso (C)
+ participant C as Cuenta (C)
+ participant D as Datos (E)
+ U->>B: Crear o editar
+ B->>A: Validar sesión
+ A-->>B: Contexto propio
+ B->>C: Datos confirmados
+ C->>C: Validar datos
+ Note over C: Cupo3Free objetivo<br/>enforcement por probar
+ alt Inválidos
+  C-->>B: Rechazo
+ else Válidos
+  C->>D: Validar pertenencia
+  alt Alta
+   C->>D: Cuenta/apertura
+  else Configuración
+   C->>D: Datos/monedas/flags
+  end
+  D-->>C: Resultado
+  C-->>B: Cuenta / error
+ end
+ B-->>U: Estado real

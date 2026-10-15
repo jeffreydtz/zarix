@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
-import { sendTelegramDm } from '@/lib/telegram/send';
+import { enqueueNotification } from '@/lib/services/notification-outbox';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -59,8 +59,6 @@ class MaturityAlertsJob extends IterativeCronJob<any> {
   }
 
   protected async processItem(_supabase: ServiceClient, inv: any): Promise<void> {
-    const user = inv.user as any;
-
     const maturityDate = new Date(inv.maturity_date + 'T00:00:00');
     const daysUntilMaturity = Math.round((maturityDate.getTime() - this.today.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -95,10 +93,7 @@ class MaturityAlertsJob extends IterativeCronJob<any> {
       `📅 Fecha: ${maturityDate.toLocaleDateString('es-AR')}\n\n` +
       `¿Renovás o retirás? Avisame para actualizar tu portafolio.`;
 
-    await sendTelegramDm(user.telegram_chat_id, message, {
-      parse_mode: 'Markdown',
-      botToken: user.telegram_bot_token,
-    });
+    await enqueueNotification(_supabase, inv.user_id, `maturity:${inv.id}:${inv.maturity_date}:${daysUntilMaturity}`, message);
   }
 
   protected emptyMessage(): string {

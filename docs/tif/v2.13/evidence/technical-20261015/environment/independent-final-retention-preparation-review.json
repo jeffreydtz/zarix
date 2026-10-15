@@ -1,0 +1,37 @@
+{
+  "status": "PASS_STATIC_PREPARATION_REVIEW_PENDING_OPERATION",
+  "reviewedAt": "2026-10-15T06:08:11.458499+00:00",
+  "reviewer": "sql_security; independent of controller author",
+  "method": "Read-only file/diff review. No imports, retain, stop, signals, database commands, dumps, network or process inspection executed by reviewer.",
+  "reviewedChanges": [
+    "New separate controller preserves the historical controller bytes and adds exactly three already-owned UUID databases on RESTORE55322.",
+    "Nine HTTP processes are individually identified by exact metadata/PID/UID/start/cwd/listener/command marker, reidentified immediately before SIGTERM; no broad process match or stronger signal. An already-absent PID is accepted only if its port is free.",
+    "Retention refuses to begin without the exact nine-process stop proof and absent listeners. This quiesces the standalone cloned Auth service before hashing all64 extra-database tables.",
+    "Six default and three additional custom archives require format/TOC/payload-decode validation, metadata/data fingerprints and retained-file hashes. Existing supabase_admin is used for privileged globals without new roles/grants.",
+    "Additional-database snapshots are compared before/after retention and before native stop. Exactly three application source copies are preserved; no node_modules or complete compiled-runtime recovery claim.",
+    "Official six-stack stops remain separately gated after complete retention validation, with scoped postconditions and no DROP/reset/force/data-directory deletion."
+  ],
+  "scopeLimits": [
+    "Static preparation review is not operational retention, successful restore, recovery acceptance or permission to stop before all case runners/scanners and root release.",
+    "Provider/Auth/gateway/frontend stop must precede the final retention and must retain their private data/config/MIME/checkpoint files.",
+    "TOC/payload-decode proves archive retention checks, not a successful restoration. Application sources require reinstall/rebuild after losing tmp.",
+    "All private archives include credentials/Auth rows and belong outside Git with0700directories/0600files; no secret values or raw private contents are reproduced here."
+  ],
+  "presentationNote": "The plan retains a legacy sentence naming two CI5/CI6 app copies, while its explicit applicationCopies list and the new controller include three, adding the empty copy. This does not change the reviewed three-copy operational set.",
+  "findings": [],
+  "executionPerformed": false,
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "sha256": "9921d9bc196efa5b3828bbdcefe23f7db2b56163bdf8846661c6f5f94706e7d1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/native-retention-final-plan.json",
+      "sha256": "a91b4fa86d391676e5008fcf4e2254346fde290f0188c2b1da8b155434a9ec43"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/stop-owned-final-http-services.py",
+      "sha256": "428f836dbfb59b1b5fcffc4482c18413513be072fe03e7d9b27cf67089b5199d"
+    }
+  ]
+}

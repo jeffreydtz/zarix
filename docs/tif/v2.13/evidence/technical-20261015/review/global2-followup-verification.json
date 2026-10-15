@@ -1,0 +1,183 @@
+{
+  "verifiedAt": "2026-10-15T01:34:31.577239+00:00",
+  "codeRevision": "0169860016125480c19f1284890e2b578f3236af",
+  "executionOwnerGlobal": "root",
+  "executionOwnerNative": "sql_security",
+  "reviewOwner": "dependency_audit",
+  "sourceStable": true,
+  "sourceWorkingTreeClean": true,
+  "vitest": {
+    "numTotalTests": 819,
+    "numPassedTests": 819,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "coverage": {
+    "instrumentedFiles": 37,
+    "scope": "Configured37risk files only, not whole application coverage",
+    "total": {
+      "lines": {
+        "total": 2480,
+        "covered": 1783,
+        "skipped": 0,
+        "pct": 71.89
+      },
+      "statements": {
+        "total": 2881,
+        "covered": 1988,
+        "skipped": 0,
+        "pct": 69
+      },
+      "functions": {
+        "total": 414,
+        "covered": 279,
+        "skipped": 0,
+        "pct": 67.39
+      },
+      "branches": {
+        "total": 2485,
+        "covered": 1556,
+        "skipped": 0,
+        "pct": 62.61
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    }
+  },
+  "gates": [
+    {
+      "name": "npm-ci",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "typecheck",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "lint",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "coverage",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "native-harness-syntax",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "traceability-regression",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "test-db",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "build",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "dependency-audit",
+      "status": "FAIL",
+      "exitCode": 1
+    },
+    {
+      "name": "balance-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "shared-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "plan-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "durable-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "import-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "account-recompute-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "full-schema-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "performance",
+      "status": "PASS",
+      "exitCode": 0
+    }
+  ],
+  "nativeForeignUpdates": {
+    "report": "../security-matrix/foreign-updates-corrected.json",
+    "sha256": "be35354a75a62131ace7e76281ebb83e8b27550fbc1f56eeb90cc8dcc95d2135",
+    "revision": "0169860016125480c19f1284890e2b578f3236af",
+    "sourceStable": true,
+    "normalVerifiedUsers": 2,
+    "results": [
+      {
+        "resource": "investments",
+        "method": "PATCH",
+        "status": "PASS",
+        "httpStatus": 404,
+        "bSnapshotUnchanged": true
+      },
+      {
+        "resource": "recurring_rules",
+        "method": "PUT",
+        "status": "PASS",
+        "httpStatus": 404,
+        "bSnapshotUnchanged": true
+      },
+      {
+        "resource": "budgets",
+        "method": "PUT",
+        "status": "PASS",
+        "httpStatus": 404,
+        "bSnapshotUnchanged": true
+      }
+    ]
+  },
+  "matrixComposite": {
+    "report": "../security-matrix/cp2-19-composite.json",
+    "counts": {
+      "PASS": 42,
+      "FAIL": 0,
+      "BLOCKED": 6
+    },
+    "scope": "48unique cells composed from original attempt plus explicit corrected reads/negative UPDATE runs; not48new cells and not whole four-CU acceptance"
+  },
+  "dependencies": "../dependencies/global2-audit-contrast.json",
+  "postGlobalSourceContext": "source-contrast-post-global2.json",
+  "pending": [
+    "Fresh offline browser durability, complete visual matrix and LOAD are separate phases still in progress.",
+    "A final publication secret scan must run after their artifacts exist; this phase does not pre-approve future files/images."
+  ]
+}

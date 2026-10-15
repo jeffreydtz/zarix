@@ -1,0 +1,11 @@
+{
+  "status": "FAIL",
+  "startedAt": "2026-10-15T05:46:10.787678+00:00",
+  "scope": "Synthetic SMTP protocol only; no Auth, accounts, passwords, recovery tokens or external email.",
+  "smtpSourceSha256": "0c1d72411a5204e9f7483b0c494364a920ba0ce25775ac9c749a775afae20342",
+  "checkerSha256": "617c7ae4c7f1b601eb1e14e2911a0a39577a2356651c515a28687ab40adb5d69",
+  "checks": [],
+  "errorType": "JSONDecodeError",
+  "finishedAt": "2026-10-15T05:46:10.826730+00:00",
+  "actualSeconds": 0.03907229099422693
+}

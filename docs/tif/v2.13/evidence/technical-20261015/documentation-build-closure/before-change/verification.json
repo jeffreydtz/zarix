@@ -1,0 +1,13 @@
+{
+  "status": "FAIL",
+  "command": [
+    "npm",
+    "run",
+    "typecheck"
+  ],
+  "exitCode": 1,
+  "startedAt": "2026-10-15T06:52:50.909251+00:00",
+  "finishedAt": "2026-10-15T06:52:52.528217+00:00",
+  "configSha256": "ed2bc19510589ae5c0940b5e4504c6c0413ba285ae35a3d4ad9db5f5d3a8eb51",
+  "scope": "Recorded reproduction of the final TypeScript packaging failure. Archived evidence sources were included by the existing global globs. No browser, Auth, API, native database or provider actions."
+}

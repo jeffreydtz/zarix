@@ -1,0 +1,9 @@
+{
+  "status": "BOOTSTRAP_FAILED_BEFORE_NPM_OR_APPLICATION",
+  "reason": "Fetch preload audit path was outside its explicit /tmp filename allowlist. Each of eight Node processes failed during --import before executing npm. The guarded path was corrected in the next runner phase; the original outputs remain untouched.",
+  "allEightExitCodes": 1,
+  "coverageSummaryInOriginalReport": "STALE_FROM_PREVIOUS_RUN_NOT_CURRENT_EVIDENCE",
+  "buildIdInOriginalReport": "STALE_FROM_PREVIOUS_RUN_NOT_CURRENT_EVIDENCE",
+  "newSuccessfulAssertions": 0,
+  "applicationSourceChangedByThisFailure": false
+}

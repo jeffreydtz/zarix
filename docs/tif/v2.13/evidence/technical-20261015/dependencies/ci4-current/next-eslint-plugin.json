@@ -1,0 +1,778 @@
+{
+  "requestedAt": "2026-10-15T03:28:35.749808+00:00",
+  "source": "https://registry.npmjs.org/@next%2feslint-plugin-next",
+  "httpStatus": 200,
+  "transport": "system curl; TLS verification enabled",
+  "result": {
+    "name": "@next/eslint-plugin-next",
+    "dist-tags": {
+      "next-11": "11.1.4",
+      "next-12-2-6": "12.2.6",
+      "next-14-1": "14.1.1",
+      "rc": "15.0.0-rc.1",
+      "next-13": "13.5.11",
+      "next-12-3-2": "12.3.7",
+      "beta": "16.0.0-beta.0",
+      "next-14": "14.2.35",
+      "next-15-3": "15.3.9",
+      "next-15-2": "15.2.9",
+      "next-15-0": "15.1.12",
+      "next-15-0-0": "15.0.8",
+      "preview": "16.3.0-preview.10",
+      "latest": "16.4.1",
+      "backport": "15.5.28",
+      "canary": "16.5.0-canary.12"
+    },
+    "versionCount": 3216,
+    "relevantVersions": {
+      "15.0.0": {
+        "version": "15.0.0",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-10-21T18:22:11.967Z"
+      },
+      "15.0.1": {
+        "version": "15.0.1",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-10-23T00:14:43.458Z"
+      },
+      "15.0.2": {
+        "version": "15.0.2",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-10-29T15:28:41.883Z"
+      },
+      "15.0.3": {
+        "version": "15.0.3",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-11-07T13:21:14.482Z"
+      },
+      "15.0.4": {
+        "version": "15.0.4",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-12-05T23:46:06.881Z"
+      },
+      "15.0.5": {
+        "version": "15.0.5",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-03T16:10:29.296Z"
+      },
+      "15.0.6": {
+        "version": "15.0.6",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T21:25:31.695Z"
+      },
+      "15.0.7": {
+        "version": "15.0.7",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T23:20:07.342Z"
+      },
+      "15.0.8": {
+        "version": "15.0.8",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-01-26T18:46:52.754Z"
+      },
+      "15.1.0": {
+        "version": "15.1.0",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-12-10T20:11:35.693Z"
+      },
+      "15.1.1": {
+        "version": "15.1.1",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-12-17T20:50:58.693Z"
+      },
+      "15.1.10": {
+        "version": "15.1.10",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T21:23:47.475Z"
+      },
+      "15.1.11": {
+        "version": "15.1.11",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T23:16:32.358Z"
+      },
+      "15.1.12": {
+        "version": "15.1.12",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-01-26T18:44:45.827Z"
+      },
+      "15.1.2": {
+        "version": "15.1.2",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-12-19T10:50:58.020Z"
+      },
+      "15.1.3": {
+        "version": "15.1.3",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2024-12-26T18:33:48.197Z"
+      },
+      "15.1.4": {
+        "version": "15.1.4",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-01-07T20:44:27.799Z"
+      },
+      "15.1.5": {
+        "version": "15.1.5",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-01-17T12:46:45.836Z"
+      },
+      "15.1.6": {
+        "version": "15.1.6",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-01-22T11:00:53.372Z"
+      },
+      "15.1.7": {
+        "version": "15.1.7",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-02-11T02:25:57.724Z"
+      },
+      "15.1.8": {
+        "version": "15.1.8",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-05-22T20:51:37.463Z"
+      },
+      "15.1.9": {
+        "version": "15.1.9",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-03T16:07:52.155Z"
+      },
+      "15.2.0": {
+        "version": "15.2.0",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-02-26T23:15:25.216Z"
+      },
+      "15.2.1": {
+        "version": "15.2.1",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-03-03T22:27:18.248Z"
+      },
+      "15.2.2": {
+        "version": "15.2.2",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-03-11T11:10:54.735Z"
+      },
+      "15.2.3": {
+        "version": "15.2.3",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-03-18T00:18:30.288Z"
+      },
+      "15.2.4": {
+        "version": "15.2.4",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-03-24T22:10:01.931Z"
+      },
+      "15.2.5": {
+        "version": "15.2.5",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-04-08T22:59:07.439Z"
+      },
+      "15.2.6": {
+        "version": "15.2.6",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-03T16:29:11.868Z"
+      },
+      "15.2.7": {
+        "version": "15.2.7",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T21:19:39.253Z"
+      },
+      "15.2.8": {
+        "version": "15.2.8",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T23:13:30.317Z"
+      },
+      "15.2.9": {
+        "version": "15.2.9",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-01-26T18:41:21.537Z"
+      },
+      "15.3.0": {
+        "version": "15.3.0",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-04-09T20:13:41.272Z"
+      },
+      "15.3.1": {
+        "version": "15.3.1",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-04-17T15:35:38.180Z"
+      },
+      "15.3.2": {
+        "version": "15.3.2",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-05-06T22:30:36.037Z"
+      },
+      "15.3.3": {
+        "version": "15.3.3",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-05-29T19:13:53.541Z"
+      },
+      "15.3.4": {
+        "version": "15.3.4",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-06-18T17:08:35.725Z"
+      },
+      "15.3.5": {
+        "version": "15.3.5",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-07-03T22:55:14.881Z"
+      },
+      "15.3.6": {
+        "version": "15.3.6",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-03T16:11:02.957Z"
+      },
+      "15.3.7": {
+        "version": "15.3.7",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T20:59:09.076Z"
+      },
+      "15.3.8": {
+        "version": "15.3.8",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T23:07:35.635Z"
+      },
+      "15.3.9": {
+        "version": "15.3.9",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-01-26T18:39:15.771Z"
+      },
+      "15.4.0": {
+        "version": "15.4.0",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-07-14T21:22:04.288Z"
+      },
+      "15.4.1": {
+        "version": "15.4.1",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-07-14T21:33:55.396Z"
+      },
+      "15.4.10": {
+        "version": "15.4.10",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T23:02:19.664Z"
+      },
+      "15.4.11": {
+        "version": "15.4.11",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-01-26T18:36:28.352Z"
+      },
+      "15.4.2": {
+        "version": "15.4.2",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-07-18T20:33:41.433Z"
+      },
+      "15.4.3": {
+        "version": "15.4.3",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-07-22T19:40:34.165Z"
+      },
+      "15.4.4": {
+        "version": "15.4.4",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-07-24T20:04:51.434Z"
+      },
+      "15.4.5": {
+        "version": "15.4.5",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-07-29T20:43:21.728Z"
+      },
+      "15.4.6": {
+        "version": "15.4.6",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-08-06T19:20:26.386Z"
+      },
+      "15.4.7": {
+        "version": "15.4.7",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-08-18T21:54:16.081Z"
+      },
+      "15.4.8": {
+        "version": "15.4.8",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-03T15:35:01.179Z"
+      },
+      "15.4.9": {
+        "version": "15.4.9",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T20:18:37.128Z"
+      },
+      "15.5.0": {
+        "version": "15.5.0",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-08-20T00:27:48.850Z"
+      },
+      "15.5.1": {
+        "version": "15.5.1",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-08-26T18:02:50.328Z"
+      },
+      "15.5.10": {
+        "version": "15.5.10",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-01-26T18:32:14.888Z"
+      },
+      "15.5.11": {
+        "version": "15.5.11",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-01-28T23:16:34.429Z"
+      },
+      "15.5.12": {
+        "version": "15.5.12",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-02-04T17:51:41.546Z"
+      },
+      "15.5.13": {
+        "version": "15.5.13",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-03-16T23:01:07.390Z"
+      },
+      "15.5.14": {
+        "version": "15.5.14",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-03-19T18:02:33.814Z"
+      },
+      "15.5.15": {
+        "version": "15.5.15",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-04-08T19:04:28.512Z"
+      },
+      "15.5.16": {
+        "version": "15.5.16",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-05-06T18:35:18.356Z"
+      },
+      "15.5.18": {
+        "version": "15.5.18",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-05-07T19:30:00.705Z"
+      },
+      "15.5.19": {
+        "version": "15.5.19",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-06-01T18:26:45.340Z"
+      },
+      "15.5.2": {
+        "version": "15.5.2",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-08-26T22:30:31.126Z"
+      },
+      "15.5.20": {
+        "version": "15.5.20",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-07-01T21:06:01.395Z"
+      },
+      "15.5.21": {
+        "version": "15.5.21",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-07-21T15:58:13.838Z"
+      },
+      "15.5.22": {
+        "version": "15.5.22",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-07-25T20:44:00.712Z"
+      },
+      "15.5.23": {
+        "version": "15.5.23",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-08-06T19:14:39.783Z"
+      },
+      "15.5.24": {
+        "version": "15.5.24",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-08-25T15:52:13.827Z"
+      },
+      "15.5.25": {
+        "version": "15.5.25",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-08-31T19:51:07.752Z"
+      },
+      "15.5.26": {
+        "version": "15.5.26",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-09-22T16:50:22.945Z"
+      },
+      "15.5.27": {
+        "version": "15.5.27",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-09-30T16:04:54.105Z"
+      },
+      "15.5.28": {
+        "version": "15.5.28",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-10-14T17:30:11.177Z"
+      },
+      "15.5.3": {
+        "version": "15.5.3",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-09-10T21:31:13.223Z"
+      },
+      "15.5.4": {
+        "version": "15.5.4",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-09-23T16:32:28.338Z"
+      },
+      "15.5.5": {
+        "version": "15.5.5",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-10-13T16:08:10.569Z"
+      },
+      "15.5.6": {
+        "version": "15.5.6",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-10-17T02:25:21.014Z"
+      },
+      "15.5.7": {
+        "version": "15.5.7",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-03T15:25:41.165Z"
+      },
+      "15.5.8": {
+        "version": "15.5.8",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T20:08:28.666Z"
+      },
+      "15.5.9": {
+        "version": "15.5.9",
+        "dependencies": {
+          "fast-glob": "3.3.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2025-12-11T22:55:38.283Z"
+      },
+      "16.4.1": {
+        "version": "16.4.1",
+        "dependencies": {
+          "fast-glob": "3.3.1",
+          "@eslint-community/eslint-utils": "4.9.1"
+        },
+        "engines": null,
+        "deprecated": null,
+        "publishedAt": "2026-10-14T17:30:04.013Z"
+      }
+    }
+  }
+}

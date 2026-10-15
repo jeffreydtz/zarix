@@ -1,4 +1,6 @@
-/** Pure scheduling helpers for the recurring-rules cron (CU-006). */
+import { isCivilYmd } from '@/lib/transaction-date';
+
+/** Pure scheduling helpers for CU-001 A06 (recurring movements). */
 
 export function todayYmdAr(): string {
   return new Intl.DateTimeFormat('en-CA', {
@@ -28,18 +30,20 @@ export function shouldExecuteToday(rule: {
   const todayYmd = todayYmdAr();
   const today = ymdParts(todayYmd);
   const startYmd = String(rule.start_date || '').slice(0, 10);
-  if (!startYmd) return false;
+  if (!isCivilYmd(startYmd)) return false;
   const start = ymdParts(startYmd);
 
   if (todayYmd < startYmd) return false;
 
   if (rule.end_date) {
     const endYmd = String(rule.end_date).slice(0, 10);
+    if (!isCivilYmd(endYmd) || endYmd < startYmd) return false;
     if (todayYmd > endYmd) return false;
   }
 
-  if (rule.last_executed_date && String(rule.last_executed_date).slice(0, 10) === todayYmd) {
-    return false;
+  if (rule.last_executed_date) {
+    const lastYmd = String(rule.last_executed_date).slice(0, 10);
+    if (!isCivilYmd(lastYmd) || lastYmd >= todayYmd) return false;
   }
 
   const frequency = rule.frequency;

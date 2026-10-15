@@ -1,0 +1,77 @@
+{
+  "status": "PASS_STATIC_NATIVE22_SELECTION_SUPPLEMENT_PENDING_OPERATION",
+  "reviewedAt": "2026-10-15T06:45:00.611655Z",
+  "reviewer": "sql_security; independent of controller author",
+  "method": "Read-only file/diff review, AST parsing without controller import, and metadata/digest reads of the exact historical archive. No controller selection call, dump, archive decode, restore, database query, network, process probe, signal, browser, retention or stop operation was executed by reviewer.",
+  "supplements": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/independent-final-retention-preparation-review.json",
+      "sha256": "457d55ffabaa18c49d99a5fdee08dde35f6225a462c9b5fdba21d8e8d7ccbe8c",
+      "retainedUnchanged": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/independent-final-retention-wrapper-supplement.json",
+      "sha256": "5926b4a8ec55b5d0fbaf88fc4baef2760bf14924e61aabf7aa7ae2963b62446a",
+      "retainedUnchanged": true
+    }
+  ],
+  "delta": {
+    "exactDirectory": "/tmp/zarix-runtime-20261015/full-native-evidence/",
+    "sourceComparison": "Removing the one added child.name == full-native-evidence disjunct makes the complete new controller byte-identical to the retained9921d9bc source. There is no other controller change.",
+    "selectionScope": "The equality is evaluated only for immediate children of the fixed task RUNTIME directory. It does not match prefix/suffix siblings, another runtime root, or arbitrary paths. Existing project/cache/bin/runtime exclusions and no-link/special-file/raw-PG safeguards are unchanged.",
+    "planChanges": "Only the exact recursive directory selection/retention requirement and the historical preparation snapshot metadata were added. Stack IDs, source/destination paths, database set, dump commands, frontend/native stop sets and gates are unchanged.",
+    "privateRetention": "The directory is walked through the existing recursive regular-file selector. Existing copy_file writes each destination0600 under private0700 directories, refuses links/hardlinks/special files, compares source/retained SHA and fsyncs files/directories before checkpoint.",
+    "criticalSet": "The historical .dump suffix is criticalBeforeStop=true under the unchanged suffix rule. Its retained digest is rechecked, its current source digest must still match, and the complete selected critical source set must remain identical before native stop. Logs remain retained but their changing contents are not misclaimed immutable.",
+    "historicalPreparationRetained": {
+      "controllerPath": "docs/tif/v2.13/evidence/technical-20261015/environment/prepared-sources/preserve-final-retainer-9921d9bc.py",
+      "controllerSha256": "9921d9bc196efa5b3828bbdcefe23f7db2b56163bdf8846661c6f5f94706e7d1",
+      "planPath": "docs/tif/v2.13/evidence/technical-20261015/environment/prepared-sources/native-retention-final-plan-a91b4fa8.json",
+      "planSha256": "a91b4fa86d391676e5008fcf4e2254346fde290f0188c2b1da8b155434a9ec43",
+      "priorControllerOperationallyExecuted": false
+    }
+  },
+  "historicalArchiveFileObservation": {
+    "path": "/tmp/zarix-runtime-20261015/full-native-evidence/native-database.dump",
+    "bytes": 560313,
+    "sha256": "d4e45b59b72841890ee7a738ed09f05a3372567ac6bddc982fbef20e76f290b0",
+    "matchesNative22PublicRecoveryMetadata": true,
+    "nativeReport": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/native-full/native-verification.json",
+      "sha256": "8a5aa0b3f894b6d88ff899e6de5052ab4d12bb5000efdc2989a509c22de706e6"
+    },
+    "directory0700OwnedRegularNonSymlink": true,
+    "archive0600OwnedSingleLinkRegular": true,
+    "criticalUnderCurrentSuffixRule": true,
+    "claim": "The existing historical archive is present and readable with the exact Native22 public-report bytes/digest. No archive payload was published, decoded or restored by this review."
+  },
+  "findings": [],
+  "limits": [
+    "The historical Native22 dump is an additional retained input, not a newly created tenth database dump or a new restoration acceptance.",
+    "This review does not prove a future private copy, complete checkpoint, operational stop, recovery or post-stop preservation. The controller must produce those separate observations after root release.",
+    "The selected directory includes private Auth/capability material; all retained bytes must remain outside Git in the private retention directory. Only existing non-secret archive metadata is cited here.",
+    "Any further controller/plan/stop/source change requires renewed pins. Historical457d55 and5926 reviews remain valid only for their explicitly pinned earlier sources."
+  ],
+  "executionPerformed": false,
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "sha256": "bab8ac98200fde1eea5bbce532ef28e97348e7976c02adf434bef0d42db48688"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/native-retention-final-plan.json",
+      "sha256": "a1c79c47a8853dc33d6f553b07c3112fe16821f929faae08b06d1c7ded29bbbb"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/stop-owned-final-http-services.py",
+      "sha256": "6f223de901d7c11e34969f8cf3a6324a8013868b8de4a6d76f8c5c3e3cef7cd3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/prepared-sources/preserve-final-retainer-9921d9bc.py",
+      "sha256": "9921d9bc196efa5b3828bbdcefe23f7db2b56163bdf8846661c6f5f94706e7d1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/prepared-sources/native-retention-final-plan-a91b4fa8.json",
+      "sha256": "a91b4fa86d391676e5008fcf4e2254346fde290f0188c2b1da8b155434a9ec43"
+    }
+  ]
+}

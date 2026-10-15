@@ -1,0 +1,1374 @@
+{
+  "startedAt": "2026-10-15T01:15:03.112Z",
+  "status": "FAIL",
+  "caseId": "CP2-19",
+  "scope": "Six original resources, existing two normal actors, real Next API and signed-JWT PostgREST; own new A/B fixtures only. No SOURCE/RESTORE/LOAD, new users, provider calls or changed application validations.",
+  "results": [
+    {
+      "resource": "accounts",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "ownershipContract": "Owner comes from the authenticated session; only a new own A row was created"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "accounts",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.accounts WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "accounts",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "accounts",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "name"
+        ]
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "accounts",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "accounts",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Collection contains no B fixture",
+        "boundedRead": "/api/accounts"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "accounts",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 404,
+        "mechanism": "Existing owner-scoped API contract, valid payload"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "accounts",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 204,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "transactions",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.transactions WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "transactions",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "code": "P0001",
+        "reason": "Plan trigger rejects before table WITH CHECK; integrity preserved, not counted as direct RLS INSERT proof"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "transactions",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "description"
+        ]
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "transactions",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "transactions",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Collection contains no B fixture",
+        "boundedRead": "/api/transactions"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "transactions",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "contract": "Session-bound creation; own new A fixture only"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "transactions",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 404,
+        "mechanism": "Existing owner-scoped API contract, valid payload"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "transactions",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 204,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "investments",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.investments WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "investments",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "investments",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "name"
+        ]
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "investments",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "reason": "Only collection GET exists; it refreshes quotations and can update original A positions. This isolated matrix must preserve original UI fixtures and avoid provider calls"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "contract": "Session-bound creation; own new A fixture only"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.recurring_rules WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "description"
+        ]
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Collection contains no B fixture",
+        "boundedRead": "/api/recurring"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "contract": "Session-bound creation; own new A fixture only"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.budgets WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "amount"
+        ]
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "FAIL",
+      "failure": {
+        "type": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "context": "budgets/API/SELECT_U2"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "contract": "Session-bound creation; own new A fixture only"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "users",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT id,timezone,weekly_summary_enabled,monthly_summary_enabled FROM public.users WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "users",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "Profile INSERT grant denied; no duplicate/FK inference"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "users",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "weekly_summary_enabled"
+        ]
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "users",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "Profile DELETE grant denied"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Flags equal session A own row; supplied user_id=B query is not an identity selector",
+        "boundedRead": "/api/user/notification-preferences"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "reason": "No profile INSERT endpoint; POST only updates session A preferences, which this task must preserve"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "reason": "Preference endpoint has no foreign-ID UPDATE. POST would update A singleton; original A/B preferences deliberately preserved"
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "reason": "No profile/preference DELETE endpoint; unsupported methods do not prove authorization"
+      },
+      "bSnapshotUnchanged": true
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201,
+      "responseSha256": "c5e29ab63ee60db40a2580e4da9027bfc55f4de045b4291dd4688f74242408fd"
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "b7da930901e0592d72fb677244e4e786ac20f0fa7ac595a3fc1bbd596e7cfc45"
+    },
+    {
+      "method": "POST",
+      "path": "/api/investments",
+      "status": 201,
+      "responseSha256": "d1e16f98eb64bf21d5ae3cdac15be93c7fe8d5726dc1c0d8ccb45b4b479f8f1b"
+    },
+    {
+      "method": "POST",
+      "path": "/api/recurring",
+      "status": 201,
+      "responseSha256": "bb94ae6ae86cdcaa45c4ec8156d2252667fcaec7a8e525d8a4242c05e5a7b74e"
+    },
+    {
+      "method": "POST",
+      "path": "/api/budgets",
+      "status": 201,
+      "responseSha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44"
+    },
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201,
+      "responseSha256": "48642cc5fc7995cc07a89dcbc1f3cc3e85d9aad6b84dd8410a47d3b4e2df08ee"
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200,
+      "responseSha256": "aa0f50b203612330b4fce74d9f8e971115ee45e6481272420dc9f7df6fdbb68f"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/accounts/19707fab-6530-427c-972d-62c8035877aa",
+      "status": 404,
+      "responseSha256": "c8ec5451e5d9deb176de19ed4cf80739d21f2378c090a3f7dde2eef3b7c4cb48"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/accounts/19707fab-6530-427c-972d-62c8035877aa",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200,
+      "responseSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "fdc36964cf5fb3c928e8b980e36bbac62c8f8afef9551e52c36841e4b0a7026a"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/transactions/4083f09c-5a67-420d-947e-1d835043a5ec",
+      "status": 404,
+      "responseSha256": "b2a591ddbf1e07613d01e6da2d79b262514839c5b57bad97ae32531166276da6"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/transactions/4083f09c-5a67-420d-947e-1d835043a5ec",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "POST",
+      "path": "/api/investments",
+      "status": 201,
+      "responseSha256": "2cb232c733b758ce394a3008a26005c1946eb15ecaf63ba4ebed1e8bd9f2d764"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/investments/8ba5ae68-ceea-4a03-ad9e-e04f078d190e",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/investments/8ba5ae68-ceea-4a03-ad9e-e04f078d190e",
+      "status": 200,
+      "responseSha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93"
+    },
+    {
+      "method": "GET",
+      "path": "/api/recurring",
+      "status": 200,
+      "responseSha256": "36e2cb46669835738f78ffffa0d69f85bb83f895201a0823bf158aab4d9cf273"
+    },
+    {
+      "method": "POST",
+      "path": "/api/recurring",
+      "status": 201,
+      "responseSha256": "465a4d08cea1f98dbf3c79eb38fe93582d9ca83c3ebfd802d8ec600989ea5512"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/recurring/a608ab4d-d56a-44cc-9cc1-a4d3aa1ab2a3",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/recurring/a608ab4d-d56a-44cc-9cc1-a4d3aa1ab2a3",
+      "status": 200,
+      "responseSha256": "c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97"
+    },
+    {
+      "method": "GET",
+      "path": "/api/budgets",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5"
+    },
+    {
+      "method": "POST",
+      "path": "/api/budgets",
+      "status": 201,
+      "responseSha256": "b203d4aeacebef7b056ec61e2f3acaa53dbbd5a8e5faf925a8f9fb6fd812c87a"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/budgets/94126d77-cba8-44aa-959c-b10839c96861",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/budgets/94126d77-cba8-44aa-959c-b10839c96861",
+      "status": 200,
+      "responseSha256": "c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97"
+    },
+    {
+      "method": "GET",
+      "path": "/api/user/notification-preferences",
+      "status": 200,
+      "responseSha256": "a85b8712b9779c6f6524550c4b25eb2978e66d71333dc1bc53647526452f836b"
+    },
+    {
+      "method": "GET",
+      "path": "/login",
+      "status": 200,
+      "responseSha256": "aa8a91c4583ad28a8aa605b046ba5288f5bc763ee49ed1cf36702942e0e671e3"
+    }
+  ],
+  "snapshotPolicy": "All columns of owned B fixture rows and its existing public preference row are read only for hashes. No raw rows/secrets are copied to evidence.",
+  "auth": {
+    "normalVerifiedUsers": 2,
+    "role": "authenticated",
+    "fixturesReused": true,
+    "newIdentities": 0,
+    "credentials": "Private 0600, in-memory normal sessions only; no service key supplied to normal clients"
+  },
+  "target": {
+    "app": "http://127.0.0.1:3000",
+    "api": "http://127.0.0.1:57321",
+    "postgresPort": "57322"
+  },
+  "revision": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+  "sourceManifest": [
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "f81cf24ac7eaded301b329e8b67c7917ba0690d60ce9434517698709df36681a"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264"
+    },
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "sha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755"
+    },
+    {
+      "path": "app/api/recurring/route.ts",
+      "sha256": "f14f7b6ca2a2315f0d44ac2af2a8504f830c9d975ac089a45368e237a3808c6f"
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "sha256": "b570351f5042e6cc5f1c6911d32131a42a7d47700c3b135bda4151b1ba43eca2"
+    },
+    {
+      "path": "app/api/budgets/route.ts",
+      "sha256": "0eb41dcefd5a142ff3d73c77524673cb48eb0300856085dc55433cfd4e87b6c6"
+    },
+    {
+      "path": "app/api/budgets/[id]/route.ts",
+      "sha256": "973b113a716e99a3b4ceb3fc9ef7e98b62023a352625b575df1f9e4a1580ad08"
+    },
+    {
+      "path": "app/api/user/notification-preferences/route.ts",
+      "sha256": "1a82f095b2f02d52029ba28deb69e515078be3a35eaa0b7ab5ff9ec765aaf166"
+    },
+    {
+      "path": "lib/api-handler.ts",
+      "sha256": "a44bd8a18078edd9569197e18e4025ea68bcfcf7d9f322498f75336fa0537159"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "runnerSha256": "b1f41766e10651211f1e114582cd7a82f4daf5079d7a38ba22ac97abc4b243e6",
+  "before": {
+    "sha256": "46f6382056980fc642a01dbddca2d98680d39df186fcad8ad8c1360ba01b73c6",
+    "tables": {
+      "users": {
+        "rows": 1,
+        "sha256": "45126c53a5b15f5b06db312ff33059c8d27f50851014a588d75234161a416a17",
+        "columns": [
+          "created_at",
+          "current_period_end",
+          "daily_summary_enabled",
+          "default_currency",
+          "gemini_api_key",
+          "grace_period_end",
+          "id",
+          "monthly_summary_enabled",
+          "mp_preapproval_id",
+          "notification_time",
+          "onboarding_done",
+          "status",
+          "telegram_bot_token",
+          "telegram_chat_id",
+          "telegram_link_code",
+          "telegram_link_code_expires_at",
+          "telegram_username",
+          "telegram_webhook_secret",
+          "timezone",
+          "updated_at",
+          "weekly_summary_enabled"
+        ]
+      },
+      "budgets": {
+        "rows": 1,
+        "sha256": "95f120efe9aae8f1b73f51db2faa2328914d07e2af6560444e339dcad3a6703e",
+        "columns": [
+          "alert_at_percent",
+          "amount",
+          "category_id",
+          "created_at",
+          "currency",
+          "id",
+          "month",
+          "rollover_amount",
+          "rollover_enabled",
+          "user_id"
+        ]
+      },
+      "accounts": {
+        "rows": 1,
+        "sha256": "8a09c7114f969a5036e1ecea5856aa224e39f8b0aa7053ec4c447166d3cab152",
+        "columns": [
+          "balance",
+          "closing_day",
+          "color",
+          "created_at",
+          "credit_limit",
+          "currency",
+          "due_day",
+          "icon",
+          "id",
+          "include_in_liquid",
+          "include_in_total",
+          "is_active",
+          "is_debt",
+          "is_multicurrency",
+          "last_4_digits",
+          "min_balance",
+          "movement_enabled",
+          "name",
+          "secondary_currency",
+          "sort_order",
+          "type",
+          "updated_at",
+          "user_id"
+        ]
+      },
+      "investments": {
+        "rows": 1,
+        "sha256": "7368f56024c10be78c80efbb22cf54287002448fe668916b846eec0d059ca3d6",
+        "columns": [
+          "account_id",
+          "created_at",
+          "current_price",
+          "current_price_change_pct",
+          "current_price_updated_at",
+          "id",
+          "interest_rate",
+          "is_active",
+          "is_manual_price",
+          "market_currency",
+          "maturity_date",
+          "name",
+          "notes",
+          "purchase_currency",
+          "purchase_date",
+          "purchase_price",
+          "quantity",
+          "ticker",
+          "type",
+          "updated_at",
+          "user_id"
+        ]
+      },
+      "transactions": {
+        "rows": 2,
+        "sha256": "c6bc0f0d16ba09fecda11649dbfa9f89b6412508ae7eedc8a2ff1e1a7c547736",
+        "columns": [
+          "account_id",
+          "amount",
+          "amount_in_account_currency",
+          "category_id",
+          "created_at",
+          "currency",
+          "description",
+          "destination_account_id",
+          "destination_amount_in_account_currency",
+          "exchange_rate",
+          "id",
+          "installment_group_id",
+          "installment_number",
+          "installment_total",
+          "is_recurring",
+          "location",
+          "notes",
+          "receipt_url",
+          "recurring_rule_id",
+          "tags",
+          "transaction_date",
+          "type",
+          "updated_at",
+          "user_id"
+        ]
+      },
+      "recurring_rules": {
+        "rows": 1,
+        "sha256": "68bbe7b4d74795c0a371e51f5610e73315c4dfbcd5dea7271d5f978af17533fb",
+        "columns": [
+          "account_id",
+          "amount",
+          "category_id",
+          "created_at",
+          "currency",
+          "description",
+          "end_date",
+          "frequency",
+          "id",
+          "is_active",
+          "is_subscription",
+          "last_executed_date",
+          "notification_enabled",
+          "start_date",
+          "subscription_name",
+          "subscription_plan",
+          "type",
+          "user_id"
+        ]
+      }
+    }
+  },
+  "policiesAndGrants": {
+    "tables": [
+      {
+        "rls": true,
+        "name": "accounts",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      },
+      {
+        "rls": true,
+        "name": "budgets",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      },
+      {
+        "rls": true,
+        "name": "investments",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      },
+      {
+        "rls": true,
+        "name": "recurring_rules",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      },
+      {
+        "rls": true,
+        "name": "transactions",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true
+      },
+      {
+        "rls": true,
+        "name": "users",
+        "delete": false,
+        "insert": false,
+        "select": false,
+        "update": false
+      }
+    ],
+    "policies": [
+      {
+        "cmd": "DELETE",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "accounts",
+        "permissive": "PERMISSIVE",
+        "policyname": "accounts_delete_own",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "accounts",
+        "permissive": "PERMISSIVE",
+        "policyname": "accounts_insert_own",
+        "schemaname": "public",
+        "with_check": "(auth.uid() = user_id)"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "accounts",
+        "permissive": "PERMISSIVE",
+        "policyname": "accounts_select_own",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "accounts",
+        "permissive": "PERMISSIVE",
+        "policyname": "accounts_update_own",
+        "schemaname": "public",
+        "with_check": "(auth.uid() = user_id)"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "budgets",
+        "permissive": "PERMISSIVE",
+        "policyname": "budgets_all",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "investments",
+        "permissive": "PERMISSIVE",
+        "policyname": "investments_all",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "recurring_rules",
+        "permissive": "PERMISSIVE",
+        "policyname": "recurring_rules_all",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "(auth.uid() = user_id)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "transactions",
+        "permissive": "PERMISSIVE",
+        "policyname": "transactions_all",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(auth.uid() = id)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "users",
+        "permissive": "PERMISSIVE",
+        "policyname": "users_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "(auth.uid() = id)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "users",
+        "permissive": "PERMISSIVE",
+        "policyname": "users_update",
+        "schemaname": "public",
+        "with_check": "((auth.uid() = id) AND (status = ( SELECT u.status\n   FROM users u\n  WHERE (u.id = auth.uid()))) AND (NOT (mp_preapproval_id IS DISTINCT FROM ( SELECT u.mp_preapproval_id\n   FROM users u\n  WHERE (u.id = auth.uid())))) AND (NOT (current_period_end IS DISTINCT FROM ( SELECT u.current_period_end\n   FROM users u\n  WHERE (u.id = auth.uid())))) AND (NOT (grace_period_end IS DISTINCT FROM ( SELECT u.grace_period_end\n   FROM users u\n  WHERE (u.id = auth.uid())))))"
+      }
+    ]
+  },
+  "protectedColumnRead": {
+    "code": "42501",
+    "role": "authenticated",
+    "column": "gemini_api_key",
+    "valuesNeverRead": true
+  },
+  "clientKeyExposure": {
+    "serviceKeyFound": false,
+    "loginHtml": true,
+    "referencedClientChunksScanned": 12,
+    "scope": "Exact private local service key absent from sampled public HTML/chunks; does not claim exhaustive bundle analysis"
+  },
+  "after": {
+    "sha256": "46f6382056980fc642a01dbddca2d98680d39df186fcad8ad8c1360ba01b73c6",
+    "tables": {
+      "users": {
+        "rows": 1,
+        "sha256": "45126c53a5b15f5b06db312ff33059c8d27f50851014a588d75234161a416a17",
+        "columns": [
+          "created_at",
+          "current_period_end",
+          "daily_summary_enabled",
+          "default_currency",
+          "gemini_api_key",
+          "grace_period_end",
+          "id",
+          "monthly_summary_enabled",
+          "mp_preapproval_id",
+          "notification_time",
+          "onboarding_done",
+          "status",
+          "telegram_bot_token",
+          "telegram_chat_id",
+          "telegram_link_code",
+          "telegram_link_code_expires_at",
+          "telegram_username",
+          "telegram_webhook_secret",
+          "timezone",
+          "updated_at",
+          "weekly_summary_enabled"
+        ]
+      },
+      "budgets": {
+        "rows": 1,
+        "sha256": "95f120efe9aae8f1b73f51db2faa2328914d07e2af6560444e339dcad3a6703e",
+        "columns": [
+          "alert_at_percent",
+          "amount",
+          "category_id",
+          "created_at",
+          "currency",
+          "id",
+          "month",
+          "rollover_amount",
+          "rollover_enabled",
+          "user_id"
+        ]
+      },
+      "accounts": {
+        "rows": 1,
+        "sha256": "8a09c7114f969a5036e1ecea5856aa224e39f8b0aa7053ec4c447166d3cab152",
+        "columns": [
+          "balance",
+          "closing_day",
+          "color",
+          "created_at",
+          "credit_limit",
+          "currency",
+          "due_day",
+          "icon",
+          "id",
+          "include_in_liquid",
+          "include_in_total",
+          "is_active",
+          "is_debt",
+          "is_multicurrency",
+          "last_4_digits",
+          "min_balance",
+          "movement_enabled",
+          "name",
+          "secondary_currency",
+          "sort_order",
+          "type",
+          "updated_at",
+          "user_id"
+        ]
+      },
+      "investments": {
+        "rows": 1,
+        "sha256": "7368f56024c10be78c80efbb22cf54287002448fe668916b846eec0d059ca3d6",
+        "columns": [
+          "account_id",
+          "created_at",
+          "current_price",
+          "current_price_change_pct",
+          "current_price_updated_at",
+          "id",
+          "interest_rate",
+          "is_active",
+          "is_manual_price",
+          "market_currency",
+          "maturity_date",
+          "name",
+          "notes",
+          "purchase_currency",
+          "purchase_date",
+          "purchase_price",
+          "quantity",
+          "ticker",
+          "type",
+          "updated_at",
+          "user_id"
+        ]
+      },
+      "transactions": {
+        "rows": 2,
+        "sha256": "c6bc0f0d16ba09fecda11649dbfa9f89b6412508ae7eedc8a2ff1e1a7c547736",
+        "columns": [
+          "account_id",
+          "amount",
+          "amount_in_account_currency",
+          "category_id",
+          "created_at",
+          "currency",
+          "description",
+          "destination_account_id",
+          "destination_amount_in_account_currency",
+          "exchange_rate",
+          "id",
+          "installment_group_id",
+          "installment_number",
+          "installment_total",
+          "is_recurring",
+          "location",
+          "notes",
+          "receipt_url",
+          "recurring_rule_id",
+          "tags",
+          "transaction_date",
+          "type",
+          "updated_at",
+          "user_id"
+        ]
+      },
+      "recurring_rules": {
+        "rows": 1,
+        "sha256": "68bbe7b4d74795c0a371e51f5610e73315c4dfbcd5dea7271d5f978af17533fb",
+        "columns": [
+          "account_id",
+          "amount",
+          "category_id",
+          "created_at",
+          "currency",
+          "description",
+          "end_date",
+          "frequency",
+          "id",
+          "is_active",
+          "is_subscription",
+          "last_executed_date",
+          "notification_enabled",
+          "start_date",
+          "subscription_name",
+          "subscription_plan",
+          "type",
+          "user_id"
+        ]
+      }
+    }
+  },
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T01:15:12.829Z",
+  "counts": {
+    "PASS": 39,
+    "BLOCKED": 8,
+    "FAIL": 1
+  },
+  "ownFixtures": {
+    "A": [
+      {
+        "table": "accounts",
+        "id": "a52a2f1c-4453-47a6-9743-8a035e6ba6d2"
+      },
+      {
+        "table": "transactions",
+        "id": "a37b574d-d521-4a42-beda-b0323e7ac941"
+      },
+      {
+        "table": "investments",
+        "id": "108f56ce-7dca-40de-a249-ebf9a30524bf"
+      },
+      {
+        "table": "recurring_rules",
+        "id": "15708cfb-5a51-4ed6-a0af-992836f472d6"
+      },
+      {
+        "table": "budgets",
+        "id": "6c290b94-2e6b-437f-85fb-26916bd737eb"
+      }
+    ],
+    "B": [
+      {
+        "table": "accounts",
+        "id": "19707fab-6530-427c-972d-62c8035877aa"
+      },
+      {
+        "table": "transactions",
+        "id": "4083f09c-5a67-420d-947e-1d835043a5ec"
+      },
+      {
+        "table": "investments",
+        "id": "8ba5ae68-ceea-4a03-ad9e-e04f078d190e"
+      },
+      {
+        "table": "recurring_rules",
+        "id": "a608ab4d-d56a-44cc-9cc1-a4d3aa1ab2a3"
+      },
+      {
+        "table": "budgets",
+        "id": "94126d77-cba8-44aa-959c-b10839c96861"
+      }
+    ],
+    "preferencesExistingUntouched": true,
+    "historyPreserved": true,
+    "cleanup": "Only own accounts/investments/rules deactivated; own movements/budgets retained"
+  }
+}

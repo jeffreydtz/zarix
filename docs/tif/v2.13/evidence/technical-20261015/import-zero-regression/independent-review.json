@@ -1,0 +1,90 @@
+{
+  "reviewedAt": "2026-10-15T04:42:08.081686+00:00",
+  "status": "PASS_FOR_NARROW_SOURCE_AND_UNIT_SCOPE",
+  "scope": "Independent read-only diff/source/report review; no tests, HTTP, SQL, Auth or browser rerun by reviewer. This is not native CP1-20 or CI5 acceptance.",
+  "sourceFiles": [
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6"
+    },
+    {
+      "path": "__tests__/import-route.test.ts",
+      "sha256": "fc49944b5a15b7c0ac01cf1e9465844f1b0b171647795ffb89d679f986b022a6"
+    }
+  ],
+  "beforeSource": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/before-source.json",
+    "sha256": "ed841878f0bdac253f6c0b5c6973c54fdb574a393ea861defeeaf395a5fd05b9",
+    "routeSha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444",
+    "matchesGitHEADBeforePatch": true,
+    "sameTestSha256BeforeAfter": true
+  },
+  "change": "Exactly one validation block in combined.transactions iteration: after rowIdentity/replayRow, reject nonfinite/nonpositive amount with existing pushSkip+continue. No parsed-array filtering/reindexing, batchHash/requestHash/fingerprint changes, counters, RPC/FX reconciliation changes or transfer parsing changes.",
+  "checks": [
+    "Previously acknowledged rows are handled before the new amount guard; existing receipts/malformed receipt pending classification are not bypassed.",
+    "Unacknowledged immutable invalid amount is rejected before account resolution/FX/persistRow, matching existing CSV semantics.",
+    "Array JSON and backup JSON regressions both use500/0/700: two valid effects and one deterministic rejection, HTTP200/completed/imported2/skipped1/pending0/total3.",
+    "Durable requestIDs for valid rows remain transaction:0 and transaction:2; same-batch retry returns existing receipts, no third RPC write/no invalid zero RPC, no FXcalls.",
+    "The other24existing route tests still pass; ambiguous RPC/lost-response/FX behavior is not relabeled as a proven skip."
+  ],
+  "results": {
+    "before": {
+      "total": 26,
+      "passed": 24,
+      "failed": 2,
+      "failure": "Both new regression cases observe503 instead of200 before the patch.",
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/unit-before.json",
+      "sha256": "ead002e07a344a4f9e829e95e218478f47c22bcc40fa040e7115158431b64a26"
+    },
+    "after": {
+      "total": 26,
+      "passed": 26,
+      "failed": 0,
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/unit-after.json",
+      "sha256": "2e6dbb5bab5bb70a32540a1a5085bbbc1e51c29357cf71d7c1c7f903ff0cac61"
+    },
+    "gates": {
+      "source": "Owner execution record, inspected without rerunning commands",
+      "typecheckExitCode": 0,
+      "targetedLintExitCode": 0,
+      "ownerVerification": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/verification.json",
+      "ownerVerificationSha256": "3bd24f99ab767dc5a5fe267989f914f2cf5ab365759daf24d5daef8609f3e6f3"
+    }
+  },
+  "limits": [
+    "Auth/RPC are explicit test doubles; nativeamount-positive constraint is modeled, not rerun here.",
+    "Original CP1-20 executed503 remainsFAIL historically. A new successful equivalent native runtime is required after the fix before original-case promotion.",
+    "CP1-19 semantic reconciliation is stored separately; no raw result is overwritten."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/before-source.json",
+      "sha256": "ed841878f0bdac253f6c0b5c6973c54fdb574a393ea861defeeaf395a5fd05b9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/unit-before.json",
+      "sha256": "ead002e07a344a4f9e829e95e218478f47c22bcc40fa040e7115158431b64a26"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/unit-after.json",
+      "sha256": "2e6dbb5bab5bb70a32540a1a5085bbbc1e51c29357cf71d7c1c7f903ff0cac61"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/unit-before.log",
+      "sha256": "74069277813721f0eee56cc1317c1352a74c4996dffd180cec1c458caf1f36e6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/unit-after.log",
+      "sha256": "2751423e7e88333a87b9575fa7d97e94109748c937717f6d10e039578c4aa145"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/typecheck.log",
+      "sha256": "469f7b7deaf0603039d0351d61b584c9c9a9f9e495a3dde5eeb847324a9e7e24"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/lint.log",
+      "sha256": "126461655dea274e8fd1cbc5d718d82dc6d4bec6d9cc7a0696270bf8b8130728"
+    }
+  ],
+  "findings": []
+}

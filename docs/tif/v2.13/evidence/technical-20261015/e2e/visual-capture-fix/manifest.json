@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-15T01:33:19.073Z",
+  "scope": "Test harness capture readiness only, authorized after observed blank/transitional screenshots. No product edits; 819-test/global build claim remains bound to product revision0169860.",
+  "productRevision": "0169860016125480c19f1284890e2b578f3236af",
+  "harness": {
+    "path": "scripts/test-isolated-visual.mjs",
+    "beforeSha256": "70bd2bc0a334fca80de4bbc322ddfacbd1007809e3ef42e5dbf7d50cd3ee255e",
+    "afterSha256": "ca6ea0de639dfe2ded17fb3ecf5ad21ff55cb58ac45907c6e242ae9410d37ff9"
+  },
+  "checks": [
+    "Fonts loaded",
+    "Semantic CU heading present and opaque ancestors>=0.99",
+    "Bounds/text stable6animation frames",
+    "Analysis lazy chart skeletons absent and chart/heading ancestor opacity>=0.99",
+    "Failure capture retained without readiness claim"
+  ],
+  "syntax": {
+    "command": "node --check scripts/test-isolated-visual.mjs",
+    "exitCode": 0
+  },
+  "executed": false,
+  "responsiveSelector": {
+    "source": "components/Navigation.tsx",
+    "desktop": "Nuevo",
+    "mobile": "Nuevo movimiento (aria-label)",
+    "fix": "Match the two existing normal navigation labels according to responsive visibility; no product behavior change"
+  }
+}

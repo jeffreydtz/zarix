@@ -1,0 +1,14 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ER: gasto y partes del reparto"; labelloc=t; fontsize=22;
+shared_expenses [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>shared_expenses</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">uuid group_id FK</TD></TR><TR><TD ALIGN="LEFT">uuid paid_by_member_id FK</TD></TR><TR><TD ALIGN="LEFT">string description</TD></TR><TR><TD ALIGN="LEFT">numeric amount</TD></TR><TR><TD ALIGN="LEFT">date expense_date</TD></TR></TABLE>>];
+shared_expense_splits [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>shared_expense_splits</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">uuid expense_id FK</TD></TR><TR><TD ALIGN="LEFT">uuid member_id FK</TD></TR><TR><TD ALIGN="LEFT">numeric amount</TD></TR></TABLE>>];
+shared_groups [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>shared_groups</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">contexto</TD></TR></TABLE>>];
+shared_group_members [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#f8fafc"><B>shared_group_members</B></TD></TR><TR><TD ALIGN="LEFT">uuid id PK</TD></TR><TR><TD ALIGN="LEFT">contexto</TD></TR></TABLE>>];
+shared_groups -> shared_expenses [dir=none,label="registra\nshared_groups 1\nshared_expenses 0..*"];
+shared_group_members -> shared_expenses [dir=none,label="pago\nshared_group_members 1\nshared_expenses 0..*"];
+shared_expenses -> shared_expense_splits [dir=none,label="distribuye\nshared_expenses 1\nshared_expense_splits 1..*"];
+shared_group_members -> shared_expense_splits [dir=none,label="debe\nshared_group_members 1\nshared_expense_splits 0..*"];
+}

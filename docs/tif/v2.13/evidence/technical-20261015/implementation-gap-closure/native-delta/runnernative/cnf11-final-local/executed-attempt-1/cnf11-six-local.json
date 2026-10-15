@@ -1,0 +1,1399 @@
+{
+  "sourceRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "completedAt": "2026-10-15T08:18:03.790Z",
+  "outerFailure": false,
+  "cleanup": {
+    "profileRestored": true,
+    "deferredOutboxRestored": true,
+    "controlledConstraintRemoved": true,
+    "authSessions": 0,
+    "authRefreshTokens": 0,
+    "sdkLogoutResults": [
+      {
+        "noError": true,
+        "errorStatus": null
+      },
+      {
+        "noError": true,
+        "errorStatus": null
+      }
+    ],
+    "historyUnchanged": true
+  },
+  "browserUsed": false,
+  "externalProvidersAccepted": false,
+  "rawConsolePersisted": false,
+  "credentialValuesCopied": false,
+  "envFilesCreated": false,
+  "sessionsPersisted": false,
+  "status": "PASS",
+  "scope": "Six local source-handler/API/native-DB replay protocols, explicit local MP fixture, transfer edit/delete and destination-credit CHECK rollback, and a two-command native oversell race. Initial commits precede replay waves. Expense acknowledgement is deliberately discarded by the consumer; no real network-response-loss/restart injected here. No universal RNF06, external provider, UI/load or all-channel first-commit contention acceptance.",
+  "channels": [
+    {
+      "id": "manual-expense-1500",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Initial command status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays have no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "One expense with amount1500",
+          "passed": true
+        },
+        {
+          "name": "Balance8500",
+          "passed": true
+        },
+        {
+          "name": "Exactly one durable receipt points to expense",
+          "passed": true
+        }
+      ],
+      "details": {
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentPhaseStartsAfterInitialCommit": true,
+        "initialReplyDeliberatelyDiscardedByConsumer": true,
+        "networkResponseLossInjected": false,
+        "outcomes": [
+          {
+            "phase": "initial",
+            "index": 0,
+            "status": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 201,
+            "sameReply": true
+          }
+        ],
+        "snapshotAfterInitialSha256": "10547555ff952f4aaadc337807de8eed6a6fbb353558e0b10d20bf33f1ce8c80",
+        "snapshotAfterReplaysSha256": "10547555ff952f4aaadc337807de8eed6a6fbb353558e0b10d20bf33f1ce8c80",
+        "oracle": {
+          "transactionRows": 1,
+          "receiptRows": 1,
+          "amount": 1500,
+          "balance": 8500
+        }
+      }
+    },
+    {
+      "id": "transfer-1500",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Initial command status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays have no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Source8500 destination3500 total12000",
+          "passed": true
+        },
+        {
+          "name": "One transfer one receipt",
+          "passed": true
+        },
+        {
+          "name": "Transfer amount edit2000 succeeds",
+          "passed": true
+        },
+        {
+          "name": "Edited legs8000/4000 preserve12000",
+          "passed": true
+        },
+        {
+          "name": "Updated authoritative account equivalents both2000",
+          "passed": true
+        },
+        {
+          "name": "Transfer delete204",
+          "passed": true
+        },
+        {
+          "name": "DELETE restores10000/2000 and total12000",
+          "passed": true
+        },
+        {
+          "name": "Transfer removed but original durable receipt retained",
+          "passed": true
+        },
+        {
+          "name": "Destination credit CHECK aborts transfer500",
+          "passed": true
+        },
+        {
+          "name": "Debit/credit/ledger/receipt all rolled back",
+          "passed": true
+        },
+        {
+          "name": "Rollback account sums remain12000",
+          "passed": true
+        }
+      ],
+      "details": {
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentPhaseStartsAfterInitialCommit": true,
+        "initialReplyDeliberatelyDiscardedByConsumer": false,
+        "networkResponseLossInjected": false,
+        "outcomes": [
+          {
+            "phase": "initial",
+            "index": 0,
+            "status": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 201,
+            "sameReply": true
+          }
+        ],
+        "snapshotAfterInitialSha256": "7feb4e69862f1baa5821c18c6423e8a80d06250c3208aa14787516aba90d4fe1",
+        "snapshotAfterReplaysSha256": "7feb4e69862f1baa5821c18c6423e8a80d06250c3208aa14787516aba90d4fe1",
+        "oracle": {
+          "source": 8500,
+          "destination": 3500,
+          "total": 12000,
+          "transferRows": 1,
+          "receiptRows": 1
+        },
+        "transferMutationAndRollback": {
+          "edit": {
+            "source": 8000,
+            "destination": 4000
+          },
+          "deleted": {
+            "source": 10000,
+            "destination": 2000
+          },
+          "controlledCreditFailure": true,
+          "rollbackLedgerAndReceiptAbsent": true,
+          "noTriggerDisabled": true
+        }
+      }
+    },
+    {
+      "id": "import-200-plus-300",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Initial command status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays have no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Import acknowledges exactly two rows",
+          "passed": true
+        },
+        {
+          "name": "Two expenses totaling500 and balance9500",
+          "passed": true
+        },
+        {
+          "name": "One batch and exactly two per-row receipts",
+          "passed": true
+        }
+      ],
+      "details": {
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentPhaseStartsAfterInitialCommit": true,
+        "initialReplyDeliberatelyDiscardedByConsumer": false,
+        "networkResponseLossInjected": false,
+        "outcomes": [
+          {
+            "phase": "initial",
+            "index": 0,
+            "status": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 200,
+            "sameReply": true
+          }
+        ],
+        "snapshotAfterInitialSha256": "eb896b03e1d0e200f0b236cb519027d0ed3ead58ba7394aa9e619ba4a89219ab",
+        "snapshotAfterReplaysSha256": "eb896b03e1d0e200f0b236cb519027d0ed3ead58ba7394aa9e619ba4a89219ab",
+        "oracle": {
+          "rows": 2,
+          "amount": 500,
+          "balance": 9500,
+          "batchRows": 1,
+          "perRowReceipts": 2
+        }
+      }
+    },
+    {
+      "id": "cron-400",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Initial command status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays have no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Exactly one occurrence and balance9600",
+          "passed": true
+        }
+      ],
+      "details": {
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentPhaseStartsAfterInitialCommit": true,
+        "initialReplyDeliberatelyDiscardedByConsumer": false,
+        "networkResponseLossInjected": false,
+        "outcomes": [
+          {
+            "phase": "initial",
+            "index": 0,
+            "status": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 200,
+            "sameReply": false
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 200,
+            "sameReply": false
+          }
+        ],
+        "snapshotAfterInitialSha256": "3847121be977c32b567f0eea3d785fa66b8058794a3202c0ea3b1b7fae5b18f0",
+        "snapshotAfterReplaysSha256": "3847121be977c32b567f0eea3d785fa66b8058794a3202c0ea3b1b7fae5b18f0",
+        "oracle": {
+          "rows": 1,
+          "balance": 9600,
+          "receipts": 1,
+          "outbox": 1,
+          "recurringFinancialIdentity": "recurring:39271283-aff5-4ea6-8dba-70b6e466522d:2026-10-15"
+        }
+      }
+    },
+    {
+      "id": "investment-sale-4x120-from10x100",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Initial command status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays have no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "One sale quantity4 and realizedUSD80, remaining6",
+          "passed": true
+        },
+        {
+          "name": "Sale does not invent a cash ledger movement",
+          "passed": true
+        },
+        {
+          "name": "Both distinct-ID real sale RPCs reached the scheduling barrier",
+          "passed": true
+        },
+        {
+          "name": "Exactly one six-unit sale accepted and other rejected",
+          "passed": true
+        },
+        {
+          "name": "Race leaves quantity4, one sale and one receipt, never negative",
+          "passed": true
+        }
+      ],
+      "details": {
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentPhaseStartsAfterInitialCommit": true,
+        "initialReplyDeliberatelyDiscardedByConsumer": false,
+        "networkResponseLossInjected": false,
+        "outcomes": [
+          {
+            "phase": "initial",
+            "index": 0,
+            "status": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 201,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 201,
+            "sameReply": true
+          }
+        ],
+        "snapshotAfterInitialSha256": "f25ff3fa048446824a472b1f9dad76b90da1512ca7ae413be4c1f6f73195d508",
+        "snapshotAfterReplaysSha256": "f25ff3fa048446824a472b1f9dad76b90da1512ca7ae413be4c1f6f73195d508",
+        "oracle": {
+          "saleRows": 1,
+          "sold": 4,
+          "realizedUSD": 80,
+          "remaining": 6,
+          "receiptRows": 1,
+          "cashBalance": 0
+        },
+        "oversellRace": {
+          "distinctCommands": 2,
+          "eachQuantity": 6,
+          "initialQuantity": 10,
+          "remainingQuantity": 4,
+          "accepted": 1,
+          "denied": 1,
+          "realRpcRequestsAtBarrier": 2,
+          "actualDatabaseAndProviderResponses": true
+        }
+      }
+    },
+    {
+      "id": "payment-same-active-preapproval-fixed-period",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Initial command status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay status",
+          "passed": true
+        },
+        {
+          "name": "Sequential reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay has no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent reply is the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays have no new financial effect",
+          "passed": true
+        },
+        {
+          "name": "Authorized preapproval does not create paid time",
+          "passed": true
+        },
+        {
+          "name": "Existing fixed paid period remains unchanged",
+          "passed": true
+        },
+        {
+          "name": "No financial ledger side effect",
+          "passed": true
+        }
+      ],
+      "details": {
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentPhaseStartsAfterInitialCommit": true,
+        "initialReplyDeliberatelyDiscardedByConsumer": false,
+        "networkResponseLossInjected": false,
+        "outcomes": [
+          {
+            "phase": "initial",
+            "index": 0,
+            "status": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 200,
+            "sameReply": true
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 200,
+            "sameReply": true
+          }
+        ],
+        "snapshotAfterInitialSha256": "a9121f82224e302216ac17af1a19149ab654b5619932bafb62b9145cee7be8f0",
+        "snapshotAfterReplaysSha256": "a9121f82224e302216ac17af1a19149ab654b5619932bafb62b9145cee7be8f0",
+        "oracle": {
+          "status": "ACTIVE",
+          "preexistingCurrentPeriodEnd": "2026-11-06T12:00:00+00:00",
+          "nextPaymentDateOnlyDidNotExtendPeriod": true,
+          "externalMercadoPagoAccepted": false,
+          "syntheticHttpFixturePort": 61339
+        }
+      }
+    }
+  ],
+  "assertions": 182,
+  "fullCNF11Status": "BLOCKED"
+}

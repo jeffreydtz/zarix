@@ -1,0 +1,123 @@
+{
+  "startedAt": "2026-10-15T01:14:03.664Z",
+  "status": "FAIL",
+  "caseId": "CP2-19",
+  "scope": "Six original resources, existing two normal actors, real Next API and signed-JWT PostgREST; own new A/B fixtures only. No SOURCE/RESTORE/LOAD, new users, provider calls or changed application validations.",
+  "results": [],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201,
+      "responseSha256": "4242b36f787d711dd0a5f7c3e59a58be2925f978e861d2bf6367b8abc5623e98"
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "f3bbeeec036c95bf958dbbd4eb16eb9e2a8751d8eb9d6ebee9db0bf8ebaa46be"
+    },
+    {
+      "method": "POST",
+      "path": "/api/investments",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5"
+    }
+  ],
+  "snapshotPolicy": "All columns of owned B fixture rows and its existing public preference row are read only for hashes. No raw rows/secrets are copied to evidence.",
+  "auth": {
+    "normalVerifiedUsers": 2,
+    "role": "authenticated",
+    "fixturesReused": true,
+    "newIdentities": 0,
+    "credentials": "Private 0600, in-memory normal sessions only; no service key supplied to normal clients"
+  },
+  "target": {
+    "app": "http://127.0.0.1:3000",
+    "api": "http://127.0.0.1:57321",
+    "postgresPort": "57322"
+  },
+  "revision": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+  "sourceManifest": [
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "f81cf24ac7eaded301b329e8b67c7917ba0690d60ce9434517698709df36681a"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264"
+    },
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "sha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755"
+    },
+    {
+      "path": "app/api/recurring/route.ts",
+      "sha256": "f14f7b6ca2a2315f0d44ac2af2a8504f830c9d975ac089a45368e237a3808c6f"
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "sha256": "b570351f5042e6cc5f1c6911d32131a42a7d47700c3b135bda4151b1ba43eca2"
+    },
+    {
+      "path": "app/api/budgets/route.ts",
+      "sha256": "0eb41dcefd5a142ff3d73c77524673cb48eb0300856085dc55433cfd4e87b6c6"
+    },
+    {
+      "path": "app/api/budgets/[id]/route.ts",
+      "sha256": "973b113a716e99a3b4ceb3fc9ef7e98b62023a352625b575df1f9e4a1580ad08"
+    },
+    {
+      "path": "app/api/user/notification-preferences/route.ts",
+      "sha256": "1a82f095b2f02d52029ba28deb69e515078be3a35eaa0b7ab5ff9ec765aaf166"
+    },
+    {
+      "path": "lib/api-handler.ts",
+      "sha256": "a44bd8a18078edd9569197e18e4025ea68bcfcf7d9f322498f75336fa0537159"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "runnerSha256": "7717228a1b628cb5f7134458bd95475456a016a0056f9103bb2f1d55d7ef65ed",
+  "failure": {
+    "type": "AssertionError",
+    "code": "ERR_ASSERTION",
+    "context": "CP2-19 real matrix"
+  },
+  "finishedAt": "2026-10-15T01:14:04.158Z",
+  "counts": {},
+  "ownFixtures": {
+    "A": [],
+    "B": [
+      {
+        "table": "accounts",
+        "id": "b0ec601c-35d6-4615-9753-1620a67ad00f"
+      },
+      {
+        "table": "transactions",
+        "id": "0ac1d6da-5951-41ce-8984-9af33a391204"
+      }
+    ],
+    "preferencesExistingUntouched": true,
+    "historyPreserved": true,
+    "cleanup": "Only own accounts/investments/rules deactivated; own movements/budgets retained"
+  }
+}

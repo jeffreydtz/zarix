@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-15T03:19:10.659827+00:00",
+  "method": "Read-only native preflight APIs; no permission request, input event, screenshot, AppleEvent or browser launch",
+  "availableCallableUiTools": 0,
+  "voiceOnlyScreenToolExcluded": true,
+  "accessibilityTrusted": false,
+  "screenCaptureAlreadyAllowed": false,
+  "arcVersion": "1.168.0",
+  "arcBuild": "88413",
+  "arcAppleEventsAlreadyAllowed": {
+    "allowed": false,
+    "osStatus": -600,
+    "askedUser": false
+  },
+  "systemEventsAlreadyAllowed": {
+    "allowed": false,
+    "osStatus": -600,
+    "askedUser": false
+  },
+  "appleEventsStatusInterpretation": "OSStatus -600 means the target could not be resolved by this preflight; it does not establish an automation permission denial. No target was launched and askUser was false.",
+  "conclusion": "No callable general computer-use tools; native accessibility and screen-capture preflight both false. No normal screen/keyboard/mouse path with existing permissions was demonstrated. AppleEvents remains indeterminate, not enabled. Arc normal-UI execution BLOCKED in this executor; no Chrome substitution."
+}

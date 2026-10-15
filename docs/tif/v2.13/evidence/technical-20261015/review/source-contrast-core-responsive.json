@@ -1,0 +1,4355 @@
+{
+  "reviewedAt": "2026-10-15T02:08:45.762587+00:00",
+  "headRevision": "3308625d5ff88484b99a0e910e4dbb09ae778efd",
+  "executedCi3Revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+  "ci3Report": "../core-responsive/verification.json",
+  "ci3ReportSha256": "87cfbb9a22048b6a226e5c0f8f72707f45e35cf099b27869c0a0903d7eec2920",
+  "sourceManifestOriginalSha256": "9e08a8ac3216e7a525ea3c4c006a9bf07616a41dc6d42b6da221142ddad0f204",
+  "comparedEntries": 442,
+  "matchingCi3": 441,
+  "gitTrackedComparedFiles": 441,
+  "localMetadataEntriesNotGitSource": [
+    "supabase/.temp/cli-latest"
+  ],
+  "groups": {
+    "application_libraries_types_public": {
+      "entries": 286,
+      "matchesCi3": 286
+    },
+    "configuration_and_root_inputs": {
+      "entries": 12,
+      "matchesCi3": 12
+    },
+    "local_cli_cache_metadata_not_git_source": {
+      "entries": 1,
+      "matchesCi3": 1
+    },
+    "schema_migrations_sql": {
+      "entries": 31,
+      "matchesCi3": 31
+    },
+    "test_and_harness": {
+      "entries": 112,
+      "matchesCi3": 111
+    }
+  },
+  "changesSinceCi3": [
+    {
+      "path": "scripts/test-isolated-visual.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "13d1c529598a1446fbf5a3b601978a4256942cc76ae5b35513ead64e7391a998",
+      "currentSha256": "45f70570ff9ee680713bf498798fc91359ffdc967500c71f749a1e9b1534685c",
+      "matchesCi3": false,
+      "gitTracked": true,
+      "matchesHead": true
+    }
+  ],
+  "headProtectedPathChanges": [],
+  "workingProtectedPathChanges": [],
+  "newUntrackedProtectedPaths": [],
+  "allComparedTrackedCurrentFilesMatchHead": true,
+  "sources": [
+    {
+      "path": ".env.example",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "1a2eed62bc02bbc24e562ac947dc11c3df99df49e3d8918588f44a99c93384c7",
+      "currentSha256": "1a2eed62bc02bbc24e562ac947dc11c3df99df49e3d8918588f44a99c93384c7",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": ".eslintrc.json",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "1589a15e55fbebc6519c95d91d8f0a090618f20dc78e479858b9c27552484961",
+      "currentSha256": "1589a15e55fbebc6519c95d91d8f0a090618f20dc78e479858b9c27552484961",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "04a5801f2ae4b08472f15a9edfc2889c98eb15e2b910bb7122904ac7512e17d8",
+      "currentSha256": "04a5801f2ae4b08472f15a9edfc2889c98eb15e2b910bb7122904ac7512e17d8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/account-create-atomic.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "71fc5ad9eb4e90c56ab96f510992d46984384e7698d2658269817e759c50d0f0",
+      "currentSha256": "71fc5ad9eb4e90c56ab96f510992d46984384e7698d2658269817e759c50d0f0",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/account-create-components.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "63f5424a9b9f9be6df00816c3690b34fc7d72a9add736b20138c893afc3de622",
+      "currentSha256": "63f5424a9b9f9be6df00816c3690b34fc7d72a9add736b20138c893afc3de622",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/account-create-handler-outcomes.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "44b055387a94ac0b99eb52f53566ffba24af2bc8dc5f9c4ffb35709c60cea8d3",
+      "currentSha256": "44b055387a94ac0b99eb52f53566ffba24af2bc8dc5f9c4ffb35709c60cea8d3",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/account-create-route-owner.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "54cded1bcbd46c8424f7f4f1648268427021669824f5f80383f43ffa84d661a1",
+      "currentSha256": "54cded1bcbd46c8424f7f4f1648268427021669824f5f80383f43ffa84d661a1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/account-patch-currency.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "c35926cd009d9b90fcd32ebb2f4b82209dd36962b2eff434315492221922095c",
+      "currentSha256": "c35926cd009d9b90fcd32ebb2f4b82209dd36962b2eff434315492221922095c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/ai-toolchain-ambiguous-write.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "04a7adac3444a43e7a0a92a96403c343c9dd9ddffb14b595db75c2b35b0b699c",
+      "currentSha256": "04a7adac3444a43e7a0a92a96403c343c9dd9ddffb14b595db75c2b35b0b699c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/analysis-page-read-failure.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "d44d20db6005aabb8ecbd5887dda8c658f43962f99731c1700a9be75447a2610",
+      "currentSha256": "d44d20db6005aabb8ecbd5887dda8c658f43962f99731c1700a9be75447a2610",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/analysis-period.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "561272afac9c34807d5ce53b67141f93b58f9ddd906e0b77f87b0b9205b44d02",
+      "currentSha256": "561272afac9c34807d5ce53b67141f93b58f9ddd906e0b77f87b0b9205b44d02",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/analytics-pagination.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "4c70b963b8238b80c345c757969b6e8d341046f16811d3d872eaddd4bd6c7b34",
+      "currentSha256": "4c70b963b8238b80c345c757969b6e8d341046f16811d3d872eaddd4bd6c7b34",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/backup-export.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "912df87cd19085d6560ab60dab6c375ac9e5633266366b2bdc17c62b135ea644",
+      "currentSha256": "912df87cd19085d6560ab60dab6c375ac9e5633266366b2bdc17c62b135ea644",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-cancellation.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "09a397a7066369095050dea80299ae705a78363908c717613c1f107937181c39",
+      "currentSha256": "09a397a7066369095050dea80299ae705a78363908c717613c1f107937181c39",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-checkout.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "b82d68af6add19f65550fe249831ca95e0fdea1b308663501384a38da4996d6c",
+      "currentSha256": "b82d68af6add19f65550fe249831ca95e0fdea1b308663501384a38da4996d6c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-nonbilling-bot-sessions.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "48f0abefd3684590751aea7300608b4179203d06ca32b9cf66ace6a9f6c038b4",
+      "currentSha256": "48f0abefd3684590751aea7300608b4179203d06ca32b9cf66ace6a9f6c038b4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-nonbilling-quote-cron.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "0087c80600a66b32b392fae12603a1051fab8d3a17ee67e0292567eb246fc283",
+      "currentSha256": "0087c80600a66b32b392fae12603a1051fab8d3a17ee67e0292567eb246fc283",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-nonbilling-quote-freshness.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "34b9c4be0a0d6442ed571e25acad2f434f9bcb43af1b6288be8f7e84c46f1768",
+      "currentSha256": "34b9c4be0a0d6442ed571e25acad2f434f9bcb43af1b6288be8f7e84c46f1768",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-nonbilling-telegram-isolation.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "07b1c5e8219cc4b8bff8b467747b5c7e4ef837de8c9dfc3b4dfe43d9d1b9054b",
+      "currentSha256": "07b1c5e8219cc4b8bff8b467747b5c7e4ef837de8c9dfc3b4dfe43d9d1b9054b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-payment-state.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "b5d23b49cf36500ef299df9c384958b9278d8921856bb5f04b13a6fe8ff9d7c2",
+      "currentSha256": "b5d23b49cf36500ef299df9c384958b9278d8921856bb5f04b13a6fe8ff9d7c2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-plans.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "4a714bc0e88db989b8aabd0f05c43aa29851af3d1801b521b086bb3595c56b59",
+      "currentSha256": "4a714bc0e88db989b8aabd0f05c43aa29851af3d1801b521b086bb3595c56b59",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-provider-timeouts.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "94a6e7ef21be768fdef3179da05aa01c921985dda367007b47c89fad48f22ba2",
+      "currentSha256": "94a6e7ef21be768fdef3179da05aa01c921985dda367007b47c89fad48f22ba2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-service.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "d2adfc69c9cfcbc196ed925884ee13be96abd299b88a3ff547b972327cf61b46",
+      "currentSha256": "d2adfc69c9cfcbc196ed925884ee13be96abd299b88a3ff547b972327cf61b46",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-settings-cancellation.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "f83b51745be7fddef3affbe38660a476d626a08075e61536c8f2c057036f6758",
+      "currentSha256": "f83b51745be7fddef3affbe38660a476d626a08075e61536c8f2c057036f6758",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-subscription-persistence.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "f05998b1122fab5de926559d86ca9f26e22a0fe34f00e9f86b257ae3a07bfb1f",
+      "currentSha256": "f05998b1122fab5de926559d86ca9f26e22a0fe34f00e9f86b257ae3a07bfb1f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/billing-webhook.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "1e9a976903408fcfae4a63b6d599f8749b8baa0662edf54d09486a4e58605871",
+      "currentSha256": "1e9a976903408fcfae4a63b6d599f8749b8baa0662edf54d09486a4e58605871",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/blue-fx-metadata-components.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "9b7135c3f9ef3b3704e02a67105e0e117fd8116605b89d2604546e163a0bcef5",
+      "currentSha256": "9b7135c3f9ef3b3704e02a67105e0e117fd8116605b89d2604546e163a0bcef5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/blue-fx-metadata.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "9cd92e57cc0f2bb782cb2e211a33edbf9c1e666ccedbf40c9e1abaa7f890e9b2",
+      "currentSha256": "9cd92e57cc0f2bb782cb2e211a33edbf9c1e666ccedbf40c9e1abaa7f890e9b2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/cron-auth.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "91f37b1915530d2dd3d194c121d6d332397548901e2bfdff9d4c18ac55daf0b7",
+      "currentSha256": "91f37b1915530d2dd3d194c121d6d332397548901e2bfdff9d4c18ac55daf0b7",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/cron-job-structural.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "7ca7194c6c0d12efe37af832bec499e4c7eebd7fb21525beb2108add11667994",
+      "currentSha256": "7ca7194c6c0d12efe37af832bec499e4c7eebd7fb21525beb2108add11667994",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/evaluate-simple-amount-expression.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "8e21e8a4fdb0cc531c5fd1994dfbb430f8f1f63cec9fb3b69cc865e3405715f5",
+      "currentSha256": "8e21e8a4fdb0cc531c5fd1994dfbb430f8f1f63cec9fb3b69cc865e3405715f5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/export-route.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "c5560c2a1cd404264e311954028f9065ca2bff25505171281795d8fd929e7ef7",
+      "currentSha256": "c5560c2a1cd404264e311954028f9065ca2bff25505171281795d8fd929e7ef7",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/financial-anomalies.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "23b2a1be82ff0a80680ce7ef555b5b3816f9231d572b5ec8f9f446f765a928a1",
+      "currentSha256": "23b2a1be82ff0a80680ce7ef555b5b3816f9231d572b5ec8f9f446f765a928a1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/financial-intent-hooks.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "a3ad6279687ed0f62f2fca21c0284e170adcd76bdeb03cd25345cabf36c58f33",
+      "currentSha256": "a3ad6279687ed0f62f2fca21c0284e170adcd76bdeb03cd25345cabf36c58f33",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/financial-projections-route.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "d1130b9847cf16f6963bf705f53d02981419dcfd62a3bf5337e287ce07c0ec98",
+      "currentSha256": "d1130b9847cf16f6963bf705f53d02981419dcfd62a3bf5337e287ce07c0ec98",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/financial-projections.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "08cabbc64ef125a2867973a364f770862a9dd173fa6c847076ef1785ad2e14dc",
+      "currentSha256": "08cabbc64ef125a2867973a364f770862a9dd173fa6c847076ef1785ad2e14dc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/financial-services-regression.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "468775ba15ce70be22ba0c166edb84daa24d1f0dabd36947743f6212de56c8ea",
+      "currentSha256": "468775ba15ce70be22ba0c166edb84daa24d1f0dabd36947743f6212de56c8ea",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/financial-summary-pagination.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "fc85480dce28c1b575be3cbf3188aab484c757c75a087fad2f2f73dc9c8958f6",
+      "currentSha256": "fc85480dce28c1b575be3cbf3188aab484c757c75a087fad2f2f73dc9c8958f6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/financial-validation-http.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "1ead18820e1818438a38238477ea6d5447e0be4212d8628e6c3e14a40c7fa56a",
+      "currentSha256": "1ead18820e1818438a38238477ea6d5447e0be4212d8628e6c3e14a40c7fa56a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/health-route.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "4f53445f5b3be156ab2106ba9d16a9230550b8c2e41b8418f54618256d46713e",
+      "currentSha256": "4f53445f5b3be156ab2106ba9d16a9230550b8c2e41b8418f54618256d46713e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/import-batch-journal.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "c6a40a7a7455b7abe6d505a493bf2f343f6954c4530887e9cc1dad32fe3b9bad",
+      "currentSha256": "c6a40a7a7455b7abe6d505a493bf2f343f6954c4530887e9cc1dad32fe3b9bad",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/import-csv.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "43d06c07ed7d207db9204cd7dc62b6688cc91306b97d4d22930e90212001f84e",
+      "currentSha256": "43d06c07ed7d207db9204cd7dc62b6688cc91306b97d4d22930e90212001f84e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/import-date.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "48af1feffa5d8f0794540d45029f1dc6258cfad5ed24aabb21dfc7911f5caa47",
+      "currentSha256": "48af1feffa5d8f0794540d45029f1dc6258cfad5ed24aabb21dfc7911f5caa47",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/import-route.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "c413d38b11d90d2ee1d6fd9176de557f1040a7d2d5f846b542383d8f1fbde589",
+      "currentSha256": "c413d38b11d90d2ee1d6fd9176de557f1040a7d2d5f846b542383d8f1fbde589",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/import-ui-retry.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "e19c46687d6b5a926e3b624682f64caaf310f887ad22deef444ebb2adad05c5e",
+      "currentSha256": "e19c46687d6b5a926e3b624682f64caaf310f887ad22deef444ebb2adad05c5e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/inline-quick-create-owner-isolation.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "b9e8a19fb787570ced72a58f5def45e7778eeaa1350a4adc94682317d66f05bb",
+      "currentSha256": "b9e8a19fb787570ced72a58f5def45e7778eeaa1350a4adc94682317d66f05bb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/internal-ai-write-outcome.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "2ccea80151ecd42417ae3c83cee9cee4518612b15dae998ce4604799bcafd7bf",
+      "currentSha256": "2ccea80151ecd42417ae3c83cee9cee4518612b15dae998ce4604799bcafd7bf",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/investment-create-component.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "22c7c4fea78b366c09cd896a763fd8a04d3afe4284174509d0ea599ad097323a",
+      "currentSha256": "22c7c4fea78b366c09cd896a763fd8a04d3afe4284174509d0ea599ad097323a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/investment-create-durable-store.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "dc7b189ed862199ad01f3948d1260cb22cbc0fa7978d5ee35f4a8221b99eb77e",
+      "currentSha256": "dc7b189ed862199ad01f3948d1260cb22cbc0fa7978d5ee35f4a8221b99eb77e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/investment-create-route.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "0f0a279f66b4afc9951ca35d2e84a6983b1d93d77e8e8ddaa08c5d696e705acb",
+      "currentSha256": "0f0a279f66b4afc9951ca35d2e84a6983b1d93d77e8e8ddaa08c5d696e705acb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/investment-retry-boundaries.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "68f37bd9e4a74ab37a3265848f0d1c6f76e5bfc4ed1c230eb9d61bd0788b206b",
+      "currentSha256": "68f37bd9e4a74ab37a3265848f0d1c6f76e5bfc4ed1c230eb9d61bd0788b206b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/investment-sale-preview.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "f15df82d174f6de74515937c3f29f422014083f7c1361b1069730d9a09ed3c6a",
+      "currentSha256": "f15df82d174f6de74515937c3f29f422014083f7c1361b1069730d9a09ed3c6a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/investment-simulation-component.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "ef9748d355267f555362e3b408a43b0d1b0d1b55e972aa872a3e007fe5f60f79",
+      "currentSha256": "ef9748d355267f555362e3b408a43b0d1b0d1b55e972aa872a3e007fe5f60f79",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/investment-simulation.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "12fb6e4746d7f71647ad5951e50e5f64d0a20654594e8db4bea77c1a45a4fa37",
+      "currentSha256": "12fb6e4746d7f71647ad5951e50e5f64d0a20654594e8db4bea77c1a45a4fa37",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/isolated-build-csp.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "113ece4cec436069209a4e90b513a431ae38e29c743ce87065b492202b2a49f5",
+      "currentSha256": "113ece4cec436069209a4e90b513a431ae38e29c743ce87065b492202b2a49f5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/isolated-native-target.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "21d727fc7b113efe25acf19909424119b8bc37efea64817ef7b0d460d331d561",
+      "currentSha256": "21d727fc7b113efe25acf19909424119b8bc37efea64817ef7b0d460d331d561",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/notification-outbox-route.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "9a9bcce005757ed241585d3e8890c7018cd9596d52b16263ed9c037bbec6c68e",
+      "currentSha256": "9a9bcce005757ed241585d3e8890c7018cd9596d52b16263ed9c037bbec6c68e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/notification-outbox.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "865517148c166b10a0ed5d42ed82e11b89955329c8123c5b23195ce7367e7a7f",
+      "currentSha256": "865517148c166b10a0ed5d42ed82e11b89955329c8123c5b23195ce7367e7a7f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/notification-schedule.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "5cc5b80990c2beda4a531ae5098e055595ed0e49655b73a4f6d974e264758edb",
+      "currentSha256": "5cc5b80990c2beda4a531ae5098e055595ed0e49655b73a4f6d974e264758edb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/offline-durable-store.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "ae4bb86c6a1d1f54be0a56b7ef91618b16e397070a03a7b2a8c048beb4fba20a",
+      "currentSha256": "ae4bb86c6a1d1f54be0a56b7ef91618b16e397070a03a7b2a8c048beb4fba20a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/offline-queue-sync.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "86a69f0917dba16ecd254999a3bcf75e95dea6dfe70c3605e401e559420caa85",
+      "currentSha256": "86a69f0917dba16ecd254999a3bcf75e95dea6dfe70c3605e401e559420caa85",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/offline-reference-cache-isolation.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "45f92706935899b6d44df0d8a11669f68bd215dd265aff85a60f3f17e315c517",
+      "currentSha256": "45f92706935899b6d44df0d8a11669f68bd215dd265aff85a60f3f17e315c517",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/owner-scoped-http-errors.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "21f4679ae2ab39ab9fdee0ae7b1e0eae32391cb2f6f93429485976cb4a310ea8",
+      "currentSha256": "21f4679ae2ab39ab9fdee0ae7b1e0eae32391cb2f6f93429485976cb4a310ea8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/pending-ai-chat.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "d95852b55e4c43bbe4f8789925d84654b776d10a9fc248382b22f03b365acd99",
+      "currentSha256": "d95852b55e4c43bbe4f8789925d84654b776d10a9fc248382b22f03b365acd99",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/plan-quota-service.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "1350b6a221fb11151446aab86a5faa6e668b213698aa502fff5d7ec7db40828b",
+      "currentSha256": "1350b6a221fb11151446aab86a5faa6e668b213698aa502fff5d7ec7db40828b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/plan-rules.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "f3c46b9f1b5f24d16af9043b238a94ca2042a5a0a8a2a4e6b7ef85304fd73622",
+      "currentSha256": "f3c46b9f1b5f24d16af9043b238a94ca2042a5a0a8a2a4e6b7ef85304fd73622",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/plan-selection-route.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "44e9d0ac6d977d705b0c7179cdecba4be23e85564d6f0a7556c458a7998b90c5",
+      "currentSha256": "44e9d0ac6d977d705b0c7179cdecba4be23e85564d6f0a7556c458a7998b90c5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/rate-limit.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "e669978612f1bfb7fcf91b12912bba51b1288c9a1c168a411f5a8f61a6d5d77c",
+      "currentSha256": "e669978612f1bfb7fcf91b12912bba51b1288c9a1c168a411f5a8f61a6d5d77c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/recurring-job-regression.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "dc727641111aa76965bda4c15e7857cd40c5722b6f014b2a38daf2e4834150d8",
+      "currentSha256": "dc727641111aa76965bda4c15e7857cd40c5722b6f014b2a38daf2e4834150d8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/recurring-outbox-equivalence.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "2ae50a96cf8ecc09d3b8ba4c5aa6b415d513b92a584a90ffacf29931374189ac",
+      "currentSha256": "2ae50a96cf8ecc09d3b8ba4c5aa6b415d513b92a584a90ffacf29931374189ac",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/recurring-schedule.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "74a26a52c24a8fc4697f3709899a0296519156b99e9166aac65fe507da3b9133",
+      "currentSha256": "74a26a52c24a8fc4697f3709899a0296519156b99e9166aac65fe507da3b9133",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/sanitize-amount-input.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "f39576ee5b0c4b4e07af427c8080951c35b1e950ea7411c9bb916d7c7dbbdef1",
+      "currentSha256": "f39576ee5b0c4b4e07af427c8080951c35b1e950ea7411c9bb916d7c7dbbdef1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/sanitize-for-prompt.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "f833a4d623fac4047707ad09706732e3f6272839fbb9a64f0dc5f767a907ad6f",
+      "currentSha256": "f833a4d623fac4047707ad09706732e3f6272839fbb9a64f0dc5f767a907ad6f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/secure-compare.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "09196f1905b85af651dff40b7862f5a435c7f99f7ac6b660369cd99b163ef92b",
+      "currentSha256": "09196f1905b85af651dff40b7862f5a435c7f99f7ac6b660369cd99b163ef92b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/shared-expenses.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "a4d2e938f1cf9465ee39953ac0fd529f9c76273a2d5059d548658ed90856b701",
+      "currentSha256": "a4d2e938f1cf9465ee39953ac0fd529f9c76273a2d5059d548658ed90856b701",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/technical-case-contracts.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "a4ab7681a16cbf3be60d15d225f658b42ce60a26ccefe77404301f7844f645e0",
+      "currentSha256": "a4ab7681a16cbf3be60d15d225f658b42ce60a26ccefe77404301f7844f645e0",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/technical-financial-contracts.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "c016168b53dce67968329751d27931a23b57e2e15f0d3b0e3fc0e1f300473f49",
+      "currentSha256": "c016168b53dce67968329751d27931a23b57e2e15f0d3b0e3fc0e1f300473f49",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/transaction-account-impact.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "1077806d5f965d7151f7dc1f8ac717297d06f35d144a865a89ae7466bf26aa1b",
+      "currentSha256": "1077806d5f965d7151f7dc1f8ac717297d06f35d144a865a89ae7466bf26aa1b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/transaction-currencies.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "d9bd7f40a5d71099a76c80f5c0bf15ebf19202a99e9a40533fa99ebcbba92677",
+      "currentSha256": "d9bd7f40a5d71099a76c80f5c0bf15ebf19202a99e9a40533fa99ebcbba92677",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/transaction-date.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "d44453fc53e8bc0c6247393953c57ab05ba44afe09bd9ff12c6cab698535dc42",
+      "currentSha256": "d44453fc53e8bc0c6247393953c57ab05ba44afe09bd9ff12c6cab698535dc42",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/transaction-edit-regression.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "1e00e4ac332c2ac1ac0760683014b498573d3d012656a3168819ec6d62f6b2d3",
+      "currentSha256": "1e00e4ac332c2ac1ac0760683014b498573d3d012656a3168819ec6d62f6b2d3",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/transaction-exchange.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "ad5064796a3e4b707be5bad51cee851c93f70d00682ba2c379d24456365fb57f",
+      "currentSha256": "ad5064796a3e4b707be5bad51cee851c93f70d00682ba2c379d24456365fb57f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/transaction-idempotency.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "3f51a143c8123839ac87137350092ed3d5948e9a7cdf49fd33eb95af7e756655",
+      "currentSha256": "3f51a143c8123839ac87137350092ed3d5948e9a7cdf49fd33eb95af7e756655",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/transactions-structural.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "4cc306c74c2075e25624d1ba637e1b745afcc4a86938a9da0aa305549d2bb3dc",
+      "currentSha256": "4cc306c74c2075e25624d1ba637e1b745afcc4a86938a9da0aa305549d2bb3dc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "__tests__/webhook-auth.test.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "2ae08d6e6de704b9e107a7e0781d36aa77db7dd847f948e5dd78129a3bb1c886",
+      "currentSha256": "2ae08d6e6de704b9e107a7e0781d36aa77db7dd847f948e5dd78129a3bb1c886",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/accounts/[id]/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "97c7c30894268199c33223cd9c1643d14c25eaadba266e65a5121ee233c13d44",
+      "currentSha256": "97c7c30894268199c33223cd9c1643d14c25eaadba266e65a5121ee233c13d44",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/accounts/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "db47543936c2094182e0ce80ce186803aeb8b0653ffdc40fd6ddccbe8ed1aabc",
+      "currentSha256": "db47543936c2094182e0ce80ce186803aeb8b0653ffdc40fd6ddccbe8ed1aabc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/analysis/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "4e8385c1beca38ca72dc1bffc8a17d579ef9aaa6c9af8f567097588e5182e06d",
+      "currentSha256": "4e8385c1beca38ca72dc1bffc8a17d579ef9aaa6c9af8f567097588e5182e06d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/budgets/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "dbae26282b19d2bb47a0cc710f7e4a55393eea0ae39bcff291b32ce28adbb203",
+      "currentSha256": "dbae26282b19d2bb47a0cc710f7e4a55393eea0ae39bcff291b32ce28adbb203",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/categories/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "7196eabff437772bd7c42cefaf32f4883ee5b49c02259960bbff419114f4ccdc",
+      "currentSha256": "7196eabff437772bd7c42cefaf32f4883ee5b49c02259960bbff419114f4ccdc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea",
+      "currentSha256": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/expenses/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8b5b38ba3621ebdd15a90d0f96d80f405d324e89eeb159cc4f7eba28ed60d2cf",
+      "currentSha256": "8b5b38ba3621ebdd15a90d0f96d80f405d324e89eeb159cc4f7eba28ed60d2cf",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/investments/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e61aca78a8fcc06c877ff77c6cd388b6bb9038350323876f63b78d6c3107170f",
+      "currentSha256": "e61aca78a8fcc06c877ff77c6cd388b6bb9038350323876f63b78d6c3107170f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/layout.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "b1461ca21a58052346f3cc35bdab3e1cc8f860087b72030f6d19a1a2645408a7",
+      "currentSha256": "b1461ca21a58052346f3cc35bdab3e1cc8f860087b72030f6d19a1a2645408a7",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/loading.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "b128b79d1a04ed9cc9744771885f15b1adbcb12a283eb28f311cae3252ce79ad",
+      "currentSha256": "b128b79d1a04ed9cc9744771885f15b1adbcb12a283eb28f311cae3252ce79ad",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/recurring/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "dbf1b2a7452118269d85bbb60cb188fb00dc66427f5658d57ae80365a3aadf05",
+      "currentSha256": "dbf1b2a7452118269d85bbb60cb188fb00dc66427f5658d57ae80365a3aadf05",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/settings/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a1f68c78157dc05b00973b2301f0c4ed35d2dd696a2bacff0a016dd9e5b56e62",
+      "currentSha256": "a1f68c78157dc05b00973b2301f0c4ed35d2dd696a2bacff0a016dd9e5b56e62",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/(authenticated)/shared/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e54f88ea35fe64320765ee6d05eff95d948614a4757f03a500d41a32e470ae31",
+      "currentSha256": "e54f88ea35fe64320765ee6d05eff95d948614a4757f03a500d41a32e470ae31",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-balance/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "b902d53c2ef0d4e591c5d990bd4ef557e401ce5796572bca22d1d37b0d6524e1",
+      "currentSha256": "b902d53c2ef0d4e591c5d990bd4ef557e401ce5796572bca22d1d37b0d6524e1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99",
+      "currentSha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/accounts/[id]/correct-debt-sign/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1ca238d5dc9a407534468d7952f29698073ac3858dd6697cfa84a27f18de667a",
+      "currentSha256": "1ca238d5dc9a407534468d7952f29698073ac3858dd6697cfa84a27f18de667a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/accounts/[id]/reconcile-balance/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "3836f3f33c8d4947cdb63e08d562e8950996e45f1dcd37dbfb849630034d7d1b",
+      "currentSha256": "3836f3f33c8d4947cdb63e08d562e8950996e45f1dcd37dbfb849630034d7d1b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/accounts/[id]/repair-currency-range/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "319133184d812aeff319a9d0c223e7c332c9b4e6a8351fd429efb22f40a8a718",
+      "currentSha256": "319133184d812aeff319a9d0c223e7c332c9b4e6a8351fd429efb22f40a8a718",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "currentSha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/accounts/movement-selection/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a1cc859f83123a1e432fa07fa19e8562138cda2734db029445ff64e667d6257a",
+      "currentSha256": "a1cc859f83123a1e432fa07fa19e8562138cda2734db029445ff64e667d6257a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+      "currentSha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+      "currentSha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/ai/chat/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c9b0e91569333ebb0979fe4a58e6f0018d9ebd6517ffbbc5b3333572ea8a3ee8",
+      "currentSha256": "c9b0e91569333ebb0979fe4a58e6f0018d9ebd6517ffbbc5b3333572ea8a3ee8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+      "currentSha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/auth/dev-login/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "56fa4e42d5b7e0e25ad686b6d582a9c5f141ef9e69e0a6c6ac6f005b3c607bc3",
+      "currentSha256": "56fa4e42d5b7e0e25ad686b6d582a9c5f141ef9e69e0a6c6ac6f005b3c607bc3",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/auth/link-telegram/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "469b3efbc1b88bb70d2c7b9ae72ea84da735a1b801f42e98b502d240166bf51a",
+      "currentSha256": "469b3efbc1b88bb70d2c7b9ae72ea84da735a1b801f42e98b502d240166bf51a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/auth/telegram-link-code/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a7aeb04aac188c0af854f4a2d96a95d9edc69b546cc4aac1dc99861b08e0fc03",
+      "currentSha256": "a7aeb04aac188c0af854f4a2d96a95d9edc69b546cc4aac1dc99861b08e0fc03",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/billing/cancel/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "ee2787f034e9481c5b7bca24580d66712d57d3c6e661fbc7eff8e972f9e4d5f8",
+      "currentSha256": "ee2787f034e9481c5b7bca24580d66712d57d3c6e661fbc7eff8e972f9e4d5f8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/billing/subscription-link/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "b3be182be6378213a2d5bd122399fc4a95d4238415f0862f798a00c9e59c5321",
+      "currentSha256": "b3be182be6378213a2d5bd122399fc4a95d4238415f0862f798a00c9e59c5321",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/budgets/[id]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "973b113a716e99a3b4ceb3fc9ef7e98b62023a352625b575df1f9e4a1580ad08",
+      "currentSha256": "973b113a716e99a3b4ceb3fc9ef7e98b62023a352625b575df1f9e4a1580ad08",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/budgets/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "0eb41dcefd5a142ff3d73c77524673cb48eb0300856085dc55433cfd4e87b6c6",
+      "currentSha256": "0eb41dcefd5a142ff3d73c77524673cb48eb0300856085dc55433cfd4e87b6c6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/budgets/status/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f6d931c842563afc73563c9ed6ed9c8862e212782d8eacb5bfd8f114c8aaa37d",
+      "currentSha256": "f6d931c842563afc73563c9ed6ed9c8862e212782d8eacb5bfd8f114c8aaa37d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/categories/[id]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1d31a28977956a6ce1da9a5b909490a55e0e4d5c31554c856855dd9496f468e4",
+      "currentSha256": "1d31a28977956a6ce1da9a5b909490a55e0e4d5c31554c856855dd9496f468e4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/categories/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8e54159c4573379e82d42b06a6f6a862953082a8e200e69c55eb2751565e4dbc",
+      "currentSha256": "8e54159c4573379e82d42b06a6f6a862953082a8e200e69c55eb2751565e4dbc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cotizaciones/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "30913229964de4ef7384ff4cd118592247996cd1b9d1f2f2211210e081257886",
+      "currentSha256": "30913229964de4ef7384ff4cd118592247996cd1b9d1f2f2211210e081257886",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cotizaciones/transactions-fx/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1125156ab2ab5b87733abe8eb2551cc6b8a498ba9a2beadd661cdd277e57c611",
+      "currentSha256": "1125156ab2ab5b87733abe8eb2551cc6b8a498ba9a2beadd661cdd277e57c611",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/budget-alerts/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "681b45856faaee9bd65b0ac5c56bbf51be3f275d7a2dcd89f0ffc4009fd91009",
+      "currentSha256": "681b45856faaee9bd65b0ac5c56bbf51be3f275d7a2dcd89f0ffc4009fd91009",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/maturity-alerts/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5d85f1b76fec90d1892a7e5098eb9df19608f9bcd8a9231443c9095de1d0dc33",
+      "currentSha256": "5d85f1b76fec90d1892a7e5098eb9df19608f9bcd8a9231443c9095de1d0dc33",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/monthly-summary/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5db2cb4fd9e1164bceb9c46598c6b599a85d63ab6df68c5a7583c56c4d57b350",
+      "currentSha256": "5db2cb4fd9e1164bceb9c46598c6b599a85d63ab6df68c5a7583c56c4d57b350",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/net-worth-snapshot/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "470af72c9d22b30b9e9ef6b17a2d1f7c413e91d9f408d9fd22160b075a33fe3e",
+      "currentSha256": "470af72c9d22b30b9e9ef6b17a2d1f7c413e91d9f408d9fd22160b075a33fe3e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/notification-outbox/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "df2ba7e00e3827ec29fcbeed437657be1ee102a2c77b2046baecbc188cf5e6ae",
+      "currentSha256": "df2ba7e00e3827ec29fcbeed437657be1ee102a2c77b2046baecbc188cf5e6ae",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/recurring/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a",
+      "currentSha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/subscription-grace/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "44d0e4b3d580bd017fe4dfa521b41121531a8adeb3778eed20ea0201fb1524bf",
+      "currentSha256": "44d0e4b3d580bd017fe4dfa521b41121531a8adeb3778eed20ea0201fb1524bf",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/update-prices/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d5406ba010fec1d53c5464e585f71b2b0abe0a58b00ec4906192a2f0fd6163df",
+      "currentSha256": "d5406ba010fec1d53c5464e585f71b2b0abe0a58b00ec4906192a2f0fd6163df",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/cron/weekly-summary/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5af73f41c272aed6e4c7952f09e0c2ecefeab8f34f9277b31c6f489a8700e4e6",
+      "currentSha256": "5af73f41c272aed6e4c7952f09e0c2ecefeab8f34f9277b31c6f489a8700e4e6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/export/backup/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "659ae5fbc413b2253975fcb40423bac5523a3d5e6b927efdc6942afb6e3121ce",
+      "currentSha256": "659ae5fbc413b2253975fcb40423bac5523a3d5e6b927efdc6942afb6e3121ce",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "currentSha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5d8be446cf8be00277f42bc79cb04a3893ca03754d2c01ca8b4f5663415b8fd5",
+      "currentSha256": "5d8be446cf8be00277f42bc79cb04a3893ca03754d2c01ca8b4f5663415b8fd5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444",
+      "currentSha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755",
+      "currentSha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+      "currentSha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/investments/performance/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "0d6a2dadd87945760cfc348a2e6958034b339541c898a0d8212884a57f2df5e6",
+      "currentSha256": "0d6a2dadd87945760cfc348a2e6958034b339541c898a0d8212884a57f2df5e6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb",
+      "currentSha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/investments/quote/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "ca24915f48345bf02067d4e79c92e411893b1ef7f3bde093b417f73b219b28ca",
+      "currentSha256": "ca24915f48345bf02067d4e79c92e411893b1ef7f3bde093b417f73b219b28ca",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264",
+      "currentSha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/investments/ticker-search/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "ff0da09e887e1f12ae4a5feec5bd4e0ef6268c3e4b81d31ad0a836be20349b87",
+      "currentSha256": "ff0da09e887e1f12ae4a5feec5bd4e0ef6268c3e4b81d31ad0a836be20349b87",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/market-data/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "50cab9431afab8536eddb23835ebdee0fd5abe5d543dbee11bf58559cda8dee5",
+      "currentSha256": "50cab9431afab8536eddb23835ebdee0fd5abe5d543dbee11bf58559cda8dee5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "97e92a3a07335768ff4c5c0fb6c4576087ed0782cf7b7745feb0f496fbd058c8",
+      "currentSha256": "97e92a3a07335768ff4c5c0fb6c4576087ed0782cf7b7745feb0f496fbd058c8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/recurring/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f14f7b6ca2a2315f0d44ac2af2a8504f830c9d975ac089a45368e237a3808c6f",
+      "currentSha256": "f14f7b6ca2a2315f0d44ac2af2a8504f830c9d975ac089a45368e237a3808c6f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/shared-groups/[id]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5b8521b99dd9432d84ce1852c245a2861124f46cf07319146f3c4848273dc090",
+      "currentSha256": "5b8521b99dd9432d84ce1852c245a2861124f46cf07319146f3c4848273dc090",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/shared-groups/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "997a6d96fb91f63dc512e537c0c05fe06e8436f060cc14ebbb7fe5bb9a13107c",
+      "currentSha256": "997a6d96fb91f63dc512e537c0c05fe06e8436f060cc14ebbb7fe5bb9a13107c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/shared/[token]/expenses/[expenseId]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "bb8c7684b6611d1d5951dee9bd2663799502d1988cf0b4e429e9b89feabc4e79",
+      "currentSha256": "bb8c7684b6611d1d5951dee9bd2663799502d1988cf0b4e429e9b89feabc4e79",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/shared/[token]/expenses/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "6e5b2c95519f7d42c363a33b35448dafedcc6b3c19376f9be571c714653c1632",
+      "currentSha256": "6e5b2c95519f7d42c363a33b35448dafedcc6b3c19376f9be571c714653c1632",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/shared/[token]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5f0ecf1ed6864f96fef4dc79a8d28db1628f47fba3e4a3d4e5b855ada10477ac",
+      "currentSha256": "5f0ecf1ed6864f96fef4dc79a8d28db1628f47fba3e4a3d4e5b855ada10477ac",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/telegram/webhook/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "b4080d793747f4112655081c2b77175c8dadba82e9b2d4958ede3b3ae5e75afe",
+      "currentSha256": "b4080d793747f4112655081c2b77175c8dadba82e9b2d4958ede3b3ae5e75afe",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/telegram/webhook/u/[secret]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "4693bd7e623946400aba94ced88df7bbcde11fa540edbd37ee9525fd7a914191",
+      "currentSha256": "4693bd7e623946400aba94ced88df7bbcde11fa540edbd37ee9525fd7a914191",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "currentSha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/transactions/bulk/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "ae0c1dd8ff51152834999fc7befff14989e42805ad56174b116c06b22e293280",
+      "currentSha256": "ae0c1dd8ff51152834999fc7befff14989e42805ad56174b116c06b22e293280",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "currentSha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/transactions/summary/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d",
+      "currentSha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/user/integrations/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "063ca6748f7685c49a265a9569ccef1ef1b978385aed54ec4dd762566ce50059",
+      "currentSha256": "063ca6748f7685c49a265a9569ccef1ef1b978385aed54ec4dd762566ce50059",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/user/notification-preferences/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1a82f095b2f02d52029ba28deb69e515078be3a35eaa0b7ab5ff9ec765aaf166",
+      "currentSha256": "1a82f095b2f02d52029ba28deb69e515078be3a35eaa0b7ab5ff9ec765aaf166",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/user/onboarding/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "9061684a4426603729f9dc357f526d61f0d8b6eccca44c5cac68a18531f41f55",
+      "currentSha256": "9061684a4426603729f9dc357f526d61f0d8b6eccca44c5cac68a18531f41f55",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/user/subscription/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a90915772ca3889a5129d24222008cf561bd23491e7ab5f50cbae358af8d2d13",
+      "currentSha256": "a90915772ca3889a5129d24222008cf561bd23491e7ab5f50cbae358af8d2d13",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/api/webhooks/mercado-pago/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "81efe582294e93e47a45848d3d55565f7e46808610fd7541227adc5c578594fe",
+      "currentSha256": "81efe582294e93e47a45848d3d55565f7e46808610fd7541227adc5c578594fe",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/auth/callback/route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "113ff3ecdd4452b57f3a99acf1f13f287fa1cc21b0da64fd60346cd2412c2eb1",
+      "currentSha256": "113ff3ecdd4452b57f3a99acf1f13f287fa1cc21b0da64fd60346cd2412c2eb1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/demo/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e12bed066cfbacfb878af3966128a619071b803eaac833c5543feb6f1ad2e820",
+      "currentSha256": "e12bed066cfbacfb878af3966128a619071b803eaac833c5543feb6f1ad2e820",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/globals.css",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "40291f3821cf43f34241e0cd3628dff06b73d63d963df480dc01106a12e2f4d2",
+      "currentSha256": "40291f3821cf43f34241e0cd3628dff06b73d63d963df480dc01106a12e2f4d2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/layout.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c68a23b090220876b25676e5e80c16a1623a06a80c8d4d5ce874f82fa7f09753",
+      "currentSha256": "c68a23b090220876b25676e5e80c16a1623a06a80c8d4d5ce874f82fa7f09753",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/login/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1e091e02173a5a58ce2b6259dc667a37a599a6e4705ba1c74907e21a5319e287",
+      "currentSha256": "1e091e02173a5a58ce2b6259dc667a37a599a6e4705ba1c74907e21a5319e287",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "90e1a1dfcc01581a359ee9176829b65e66dc59a80141611ecf00f7c151f39449",
+      "currentSha256": "90e1a1dfcc01581a359ee9176829b65e66dc59a80141611ecf00f7c151f39449",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/register/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e991fac8bf5052d4d386ff53854a149cefe4eb912c315731d9e5117e0fef3ee8",
+      "currentSha256": "e991fac8bf5052d4d386ff53854a149cefe4eb912c315731d9e5117e0fef3ee8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "app/shared/[token]/page.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "6929b22427446ba67b30f1efa4c2bd4cabb5a8a0b3ee092cfc8e4eaab30e3d49",
+      "currentSha256": "6929b22427446ba67b30f1efa4c2bd4cabb5a8a0b3ee092cfc8e4eaab30e3d49",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/BugReportWidget.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c3c17e59455cf5e331f1060326be284e35359c366b17fcc552c5b5ea9c729bfe",
+      "currentSha256": "c3c17e59455cf5e331f1060326be284e35359c366b17fcc552c5b5ea9c729bfe",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ClientProviders.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f7847a366f3e7c84a64fe1de59fb158aad7cf30b1bcc17bcfaad5ac4a905d539",
+      "currentSha256": "f7847a366f3e7c84a64fe1de59fb158aad7cf30b1bcc17bcfaad5ac4a905d539",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/GracePeriodBanner.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "afda418ed0fd5e405e1cf7d23a51fce5c6f61384269708dce39359c5dbf528d7",
+      "currentSha256": "afda418ed0fd5e405e1cf7d23a51fce5c6f61384269708dce39359c5dbf528d7",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/Navigation.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8f0499570866751165282cdf0a07fdb0fea5db6886db799db31310185fee176c",
+      "currentSha256": "8f0499570866751165282cdf0a07fdb0fea5db6886db799db31310185fee176c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/OfflineReferenceWarmup.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5d3e118d1b7ac4be5493c3f761ac0fb61bdeb2444bf71da7dc9054bbb6b8b3fc",
+      "currentSha256": "5d3e118d1b7ac4be5493c3f761ac0fb61bdeb2444bf71da7dc9054bbb6b8b3fc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ThemeProvider.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "72577484062ecdb1c6e990c2095bef7bea83da8175acd88b5544082952e70636",
+      "currentSha256": "72577484062ecdb1c6e990c2095bef7bea83da8175acd88b5544082952e70636",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/AccountBalanceEquivalents.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f7540e2e5a121431c69af9e0f4796bbc88c5aa2b36ae088bac15f2e3548956d8",
+      "currentSha256": "f7540e2e5a121431c69af9e0f4796bbc88c5aa2b36ae088bac15f2e3548956d8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/AccountDetailEditButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "973c7cc364d3647d27e0bbbf0247e278648f396dd3b3f9b2c22e00322b26d174",
+      "currentSha256": "973c7cc364d3647d27e0bbbf0247e278648f396dd3b3f9b2c22e00322b26d174",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/AccountsList.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "77dd325e07f526781ecc659dcc91713b48228b2b9276c095317663784516af39",
+      "currentSha256": "77dd325e07f526781ecc659dcc91713b48228b2b9276c095317663784516af39",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/ArchivedAccountsPanel.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "0fb4599d6ca34f0f376cf5874872c41a6f77bf6ea568a6ba57c6a547acf20d11",
+      "currentSha256": "0fb4599d6ca34f0f376cf5874872c41a6f77bf6ea568a6ba57c6a547acf20d11",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/CorrectDebtBalanceSign.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "377ff4bfcc06a2958fafc0648d0aaa9d11b86e40b43ae54f1e395612ceea63aa",
+      "currentSha256": "377ff4bfcc06a2958fafc0648d0aaa9d11b86e40b43ae54f1e395612ceea63aa",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/CreateAccountButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1615cfbbbc2643e2faf687d72cdbebee0d644187bda7b9fef73a64b41dc1be34",
+      "currentSha256": "1615cfbbbc2643e2faf687d72cdbebee0d644187bda7b9fef73a64b41dc1be34",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/EditAccountModal.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "344fb9cf79c910739486430aa994bfb9b8685c084f25dbccb1d142f47decb5e1",
+      "currentSha256": "344fb9cf79c910739486430aa994bfb9b8685c084f25dbccb1d142f47decb5e1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/MovementAccountSelection.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f6b3bbaea8e9f81c8b7461c80f2be15f9e0c441b6537a397dfa3c72c273493ce",
+      "currentSha256": "f6b3bbaea8e9f81c8b7461c80f2be15f9e0c441b6537a397dfa3c72c273493ce",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/ReconcileBalanceButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1f44ae081c3e49f0a6d7b1b9a724660bff02acf267d6874feb803382b61c8d97",
+      "currentSha256": "1f44ae081c3e49f0a6d7b1b9a724660bff02acf267d6874feb803382b61c8d97",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/RepairCurrencyRangePanel.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "677e19176b6e38fcc306732f33ee7fd5273a062197967c49a0e4c9d54ad43eee",
+      "currentSha256": "677e19176b6e38fcc306732f33ee7fd5273a062197967c49a0e4c9d54ad43eee",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/accounts/account-form-constants.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "b7469aa4e6d14be25fcd4ec1f77bc30119c5389de7db09ed7083ac3698629eb6",
+      "currentSha256": "b7469aa4e6d14be25fcd4ec1f77bc30119c5389de7db09ed7083ac3698629eb6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "23411cce4fa26a723ade5ef9e5abf7c78ce37b6f98705cfb35ef0117f419294b",
+      "currentSha256": "23411cce4fa26a723ade5ef9e5abf7c78ce37b6f98705cfb35ef0117f419294b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/AccountBreakdownChart.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "798a47680181c7d8460ff5897a30a71324430cb7f0e2459476907ed3e58e6269",
+      "currentSha256": "798a47680181c7d8460ff5897a30a71324430cb7f0e2459476907ed3e58e6269",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/AnalysisCharts.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "31bf3e0d9897875ba907e94d6a3e3c231461365afd34368877f56da241304cd6",
+      "currentSha256": "31bf3e0d9897875ba907e94d6a3e3c231461365afd34368877f56da241304cd6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/AnalysisPeriodPicker.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "545f3c9fb45294b84129dd1ca47c38514989663b1a22cc993a62305704efac3b",
+      "currentSha256": "545f3c9fb45294b84129dd1ca47c38514989663b1a22cc993a62305704efac3b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/CashFlowChart.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e00761fc0f48274c83b4d4837de2f35c6ab5f3a80f556446d354755dfe2608dc",
+      "currentSha256": "e00761fc0f48274c83b4d4837de2f35c6ab5f3a80f556446d354755dfe2608dc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/CategoryDonut.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e8da5dcfc1aca35243330914b8508780f90b5eb594496e343104db7589ab2d12",
+      "currentSha256": "e8da5dcfc1aca35243330914b8508780f90b5eb594496e343104db7589ab2d12",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/ExpensesByCategory.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c7e5075616011a0d4be7a291bdf16df2ff1ecfc0f2a212f1b3acc12c3a152202",
+      "currentSha256": "c7e5075616011a0d4be7a291bdf16df2ff1ecfc0f2a212f1b3acc12c3a152202",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/MonthlyBarChart.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5337b80643f3b9e834b638cf13697eeb74b3e8190d7416a03595fd834f8c8dea",
+      "currentSha256": "5337b80643f3b9e834b638cf13697eeb74b3e8190d7416a03595fd834f8c8dea",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/MonthlyTrend.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "14ed14f9144624d297c1bfcd415fa6632e1eb1c71161c0fbbcf25e6920b92192",
+      "currentSha256": "14ed14f9144624d297c1bfcd415fa6632e1eb1c71161c0fbbcf25e6920b92192",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/ProjectionsWidget.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f1a8c3eba7498f3cd2ecbcab90b4a2bfa99912e9e99359ec0fd5a98e24ca5b87",
+      "currentSha256": "f1a8c3eba7498f3cd2ecbcab90b4a2bfa99912e9e99359ec0fd5a98e24ca5b87",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/analysis/TopExpenses.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "3f4dbef9e7a83583cad827c3397ed2ed38ca18ca949172e9bdbda91664d68a57",
+      "currentSha256": "3f4dbef9e7a83583cad827c3397ed2ed38ca18ca949172e9bdbda91664d68a57",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/budgets/BudgetCard.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b",
+      "currentSha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/budgets/CreateBudgetModal.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "269c13796600d61440b42614314289861bfb809a78c726a443726f84c97526c4",
+      "currentSha256": "269c13796600d61440b42614314289861bfb809a78c726a443726f84c97526c4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/categories/CategoriesList.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2e54bcf60d476374e77764877a321f9fd2a168bf515c692931ab7c658fa9dbb4",
+      "currentSha256": "2e54bcf60d476374e77764877a321f9fd2a168bf515c692931ab7c658fa9dbb4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/categories/CreateCategoryButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "33449980e936d8c7a8923a637b76f8066f16d8c2263a9083bf1d2142bd5a8ddc",
+      "currentSha256": "33449980e936d8c7a8923a637b76f8066f16d8c2263a9083bf1d2142bd5a8ddc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/AccountCards.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "52190b2edc6d6bfbdaaa404dc7b7d666f1bce5d0b2d649849e38f92f2bb26b3f",
+      "currentSha256": "52190b2edc6d6bfbdaaa404dc7b7d666f1bce5d0b2d649849e38f92f2bb26b3f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/AnomaliesWidget.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "9daf01bb22b0442948d3d7648c647093e6ebefffc6e00843350dd5364936f9db",
+      "currentSha256": "9daf01bb22b0442948d3d7648c647093e6ebefffc6e00843350dd5364936f9db",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/BalanceHeader.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "7c1310e64af826624e957c7b6b42a977644cf9820dec11ab4eaaaee28e18b07f",
+      "currentSha256": "7c1310e64af826624e957c7b6b42a977644cf9820dec11ab4eaaaee28e18b07f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/BudgetCluster.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "357ce3950e1ab8203bbf275019e6262840eb8d5f729df5eaa682815222c7b0ba",
+      "currentSha256": "357ce3950e1ab8203bbf275019e6262840eb8d5f729df5eaa682815222c7b0ba",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/CreditCardsWidget.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "eab7473916692944a31953ddc2bf0ee79ddf5f13e5eda5f14f862e268d5d5b1d",
+      "currentSha256": "eab7473916692944a31953ddc2bf0ee79ddf5f13e5eda5f14f862e268d5d5b1d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/DashboardHeroStats.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "9ee6edf2240814ac22d6bbe0fd722e6f910ba941ac67551748f29ae0ada702bd",
+      "currentSha256": "9ee6edf2240814ac22d6bbe0fd722e6f910ba941ac67551748f29ae0ada702bd",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/DashboardMore.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "abf37892ae325a52dac45fa3f6f68ff3270957bbe2c489461a19611602fc95d1",
+      "currentSha256": "abf37892ae325a52dac45fa3f6f68ff3270957bbe2c489461a19611602fc95d1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/DashboardSpendingAnalyzerSection.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "38a2b0e1e834384d5a65896abe853f191433072afbab833c0b866745391d2685",
+      "currentSha256": "38a2b0e1e834384d5a65896abe853f191433072afbab833c0b866745391d2685",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/DeferredSpendingAnalyzer.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "323f7b0d0f70efd4381caaa066db5565e7a5017139e3949c8300ea32ade627a5",
+      "currentSha256": "323f7b0d0f70efd4381caaa066db5565e7a5017139e3949c8300ea32ade627a5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/InternalAiChat.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "99a076d9bcfb6cdf2cf1cc47be66cd2b856dd869c5e2daca4157387bd472b077",
+      "currentSha256": "99a076d9bcfb6cdf2cf1cc47be66cd2b856dd869c5e2daca4157387bd472b077",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/MarketStrip.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "0dbbdc6f97a589d85f7401ce1a4e602bdc928aef4c61939b3e2586edd9b11d54",
+      "currentSha256": "0dbbdc6f97a589d85f7401ce1a4e602bdc928aef4c61939b3e2586edd9b11d54",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/MonthFlowCard.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "95679ebf74a3faed618fbc977656795e1840fd55af7047aa0345b40c0ef9a4c2",
+      "currentSha256": "95679ebf74a3faed618fbc977656795e1840fd55af7047aa0345b40c0ef9a4c2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb",
+      "currentSha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/QuotesWidget.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d1aacdc2c7c0103b2cd329a8a7f8322aa76af432cbbe7beca0d44628a05ad7ce",
+      "currentSha256": "d1aacdc2c7c0103b2cd329a8a7f8322aa76af432cbbe7beca0d44628a05ad7ce",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/RecentTransactions.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f8c496b836e91d1cd9dee662083f3f93c49ffdc69216bc63f377b26366ab1882",
+      "currentSha256": "f8c496b836e91d1cd9dee662083f3f93c49ffdc69216bc63f377b26366ab1882",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/SettleCardButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "00f54f2d00845dd57b877614b72c3e38054adf940d32281fd24e585c47ee25f5",
+      "currentSha256": "00f54f2d00845dd57b877614b72c3e38054adf940d32281fd24e585c47ee25f5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/SpendingAnalyzer.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a7bd1672f918d5f5f5096018dd9067a1a3157e66a47edad7823b94c783c67e38",
+      "currentSha256": "a7bd1672f918d5f5f5096018dd9067a1a3157e66a47edad7823b94c783c67e38",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f5eacff2eba0c2e6b96beae73a4ea84849d80966cc034379248cd9d2576b1b4a",
+      "currentSha256": "f5eacff2eba0c2e6b96beae73a4ea84849d80966cc034379248cd9d2576b1b4a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/dashboard/UpcomingRail.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "4b62be0a543ae3587d9dec91f8b54d2b79073c1d27d9bd03acfefa76875aa1f9",
+      "currentSha256": "4b62be0a543ae3587d9dec91f8b54d2b79073c1d27d9bd03acfefa76875aa1f9",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/expenses/CreateTransactionButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f5837a489db4956715e5614e81385eff99165d261b5bc32963e7ee6b215f56f1",
+      "currentSha256": "f5837a489db4956715e5614e81385eff99165d261b5bc32963e7ee6b215f56f1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/expenses/EditTransactionModal.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "edfeb0cae499e7f005412579c8a6d6dffcacd59ebdd129f12dddd1165dd5b6dd",
+      "currentSha256": "edfeb0cae499e7f005412579c8a6d6dffcacd59ebdd129f12dddd1165dd5b6dd",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/expenses/InlineQuickCreate.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c9cd499b693fb3714e7cb855b44570da90b13e96350b9c3ee5704236df2a13bf",
+      "currentSha256": "c9cd499b693fb3714e7cb855b44570da90b13e96350b9c3ee5704236df2a13bf",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/expenses/TransactionsFilters.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5c0cf7c93cfad1500d968a18f1262f07339cf73e03b174cb1a82f22ae6bdc3ed",
+      "currentSha256": "5c0cf7c93cfad1500d968a18f1262f07339cf73e03b174cb1a82f22ae6bdc3ed",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/expenses/TransactionsList.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "71b0712557a2498fa1bff5bc86d6e06dacdc76f658a18b7163b6c541c09b2e9b",
+      "currentSha256": "71b0712557a2498fa1bff5bc86d6e06dacdc76f658a18b7163b6c541c09b2e9b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/AddInvestmentPanel.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c38904e65f5efc72aee998b89637cb04942a99ae21a88cc07aa91cca470aea89",
+      "currentSha256": "c38904e65f5efc72aee998b89637cb04942a99ae21a88cc07aa91cca470aea89",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/EditInvestmentDialog.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c91a9ac27b83502f607dce8fb0fad03b193ea2c6b2d82c070ffd7f4961b17eb0",
+      "currentSha256": "c91a9ac27b83502f607dce8fb0fad03b193ea2c6b2d82c070ffd7f4961b17eb0",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/InvestmentAccountsList.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "776e42bef5c6274abd491faa84a95e1df905cffbe637a16e0fe401f201562f55",
+      "currentSha256": "776e42bef5c6274abd491faa84a95e1df905cffbe637a16e0fe401f201562f55",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/InvestmentSimulationPanel.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb",
+      "currentSha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/InvestmentsList.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5",
+      "currentSha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/InvestmentsWorkspace.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a2c1721c3d60378a1507626b9cb210c5637f03d50dd1f1d9171f8b56f50c770d",
+      "currentSha256": "a2c1721c3d60378a1507626b9cb210c5637f03d50dd1f1d9171f8b56f50c770d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/MarketDataWidget.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a804f7900f57a3039365351e725c7b3de524203f3ebc05545db18806cf36ab38",
+      "currentSha256": "a804f7900f57a3039365351e725c7b3de524203f3ebc05545db18806cf36ab38",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/PortfolioPerformanceChart.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "953d9b6b126c78a41306e8029a9bb9bd807a2805558ccdd2d8cd2de4a0e2f43f",
+      "currentSha256": "953d9b6b126c78a41306e8029a9bb9bd807a2805558ccdd2d8cd2de4a0e2f43f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/PortfolioSummary.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "397042f2d3a846f040c2b4edf0ea4104a308c4b5a2cf537fcfc7c9af2b5d67a8",
+      "currentSha256": "397042f2d3a846f040c2b4edf0ea4104a308c4b5a2cf537fcfc7c9af2b5d67a8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/PortfolioWidgets.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8b5b03bf1a00589fc7ecb97c0019a9f19b9050868a10e0c5ec21fb20c83f6899",
+      "currentSha256": "8b5b03bf1a00589fc7ecb97c0019a9f19b9050868a10e0c5ec21fb20c83f6899",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/PrivacyToggle.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "65a1b3162a44cc22b83923823e97b05b70fc12fcc4151658f7e5d5445f4bf8ef",
+      "currentSha256": "65a1b3162a44cc22b83923823e97b05b70fc12fcc4151658f7e5d5445f4bf8ef",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/investments/SellPositionDialog.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2eb8dd1c28248e9eaa54b6178c2aed51bbf58a961e73ff050e74c1a080b596fc",
+      "currentSha256": "2eb8dd1c28248e9eaa54b6178c2aed51bbf58a961e73ff050e74c1a080b596fc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/FeatureMockup.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "73f77dd1a380b76e01bcf7571485827ecb5420f70d07ff6e8f0eb2c8a27cc111",
+      "currentSha256": "73f77dd1a380b76e01bcf7571485827ecb5420f70d07ff6e8f0eb2c8a27cc111",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/FeaturesSection.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5e1bc8999361fab5ef614a723713b4d6a1714f0690696c25efa66b7540476868",
+      "currentSha256": "5e1bc8999361fab5ef614a723713b4d6a1714f0690696c25efa66b7540476868",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/FinalCTA.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "99ea9c3183d0123a142257c3d811e2a4667941d1fd0a856189e00eed014207bb",
+      "currentSha256": "99ea9c3183d0123a142257c3d811e2a4667941d1fd0a856189e00eed014207bb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/Footer.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "bd60ccf2d95524302ab685ef21214020732553d0410eaadd09d3927426a9b474",
+      "currentSha256": "bd60ccf2d95524302ab685ef21214020732553d0410eaadd09d3927426a9b474",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/HeroDashboardPreview.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "02405bdc7f0e87383f2b906d3f1096f4acf3294e3ee6b1fd12dfcf02a0be95ae",
+      "currentSha256": "02405bdc7f0e87383f2b906d3f1096f4acf3294e3ee6b1fd12dfcf02a0be95ae",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/HeroScenery.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2d15b696478ef6385f317ae1c74fc4d84d71ceaaf8faa4435e66c061aa2a545d",
+      "currentSha256": "2d15b696478ef6385f317ae1c74fc4d84d71ceaaf8faa4435e66c061aa2a545d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/HeroSection.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "282ed925e8e4730d2c2747351ce18adade5e31f20a3601442f29cd28f0d0b8af",
+      "currentSha256": "282ed925e8e4730d2c2747351ce18adade5e31f20a3601442f29cd28f0d0b8af",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/HowItWorks.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f5c64658711cd8ff00dc01c8b08d716525283965a1c8f35fa4352bef6f8065c4",
+      "currentSha256": "f5c64658711cd8ff00dc01c8b08d716525283965a1c8f35fa4352bef6f8065c4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/Navbar.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e0c1f394d2d37eeeef8c4659395e0c6f9c56a8c2bab5b4ea12e919969a41a252",
+      "currentSha256": "e0c1f394d2d37eeeef8c4659395e0c6f9c56a8c2bab5b4ea12e919969a41a252",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/PricingSection.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a117f71bca2e3cf28d78d53750db591caa3d12bed12ab3690e3f8e1cfd8090cb",
+      "currentSha256": "a117f71bca2e3cf28d78d53750db591caa3d12bed12ab3690e3f8e1cfd8090cb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/ProblemSection.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "bbfd11888e37759d176c051e03946bff97bd954d55e81c6b0cdd641cb91bfa51",
+      "currentSha256": "bbfd11888e37759d176c051e03946bff97bd954d55e81c6b0cdd641cb91bfa51",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/landing/TrustBar.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "60f1231a1c3ef52cf3094d375f26433b8a9e21ccbcaa1b0763fe29c80395c8af",
+      "currentSha256": "60f1231a1c3ef52cf3094d375f26433b8a9e21ccbcaa1b0763fe29c80395c8af",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/offline/QueueReview.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "94268e4c1a361cbd2fd46660865dc127fc4478f3232a9e512c702fef4c559fc3",
+      "currentSha256": "94268e4c1a361cbd2fd46660865dc127fc4478f3232a9e512c702fef4c559fc3",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/onboarding/FirstStepsTour.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "67d1c655701db370c3eb1e3df7cd4f88a9fa9f3137924e57756d26dbfaa09fc1",
+      "currentSha256": "67d1c655701db370c3eb1e3df7cd4f88a9fa9f3137924e57756d26dbfaa09fc1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/onboarding/ReplayTourButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "92e0cd04ff69aa2d8cfb6b41c1e9a3fe2c04dfc73bd1ba555e2b8cfec065afa4",
+      "currentSha256": "92e0cd04ff69aa2d8cfb6b41c1e9a3fe2c04dfc73bd1ba555e2b8cfec065afa4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/settings/ExportImport.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e9aebda0ec4b2feffa2a13d431d1cfbd2def81af2c9515227e7cd5061f238d9d",
+      "currentSha256": "e9aebda0ec4b2feffa2a13d431d1cfbd2def81af2c9515227e7cd5061f238d9d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/settings/LogoutButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "ad28f46ec5eaf3fe4ad482223fa1514cbfc26078bbbd28c4baddce7e4763760f",
+      "currentSha256": "ad28f46ec5eaf3fe4ad482223fa1514cbfc26078bbbd28c4baddce7e4763760f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/settings/PasskeysSection.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c137b5ed0b9c105d4d722b6f88878fe3dc9fde3bb4e5c3d49ca4ca21c3e57837",
+      "currentSha256": "c137b5ed0b9c105d4d722b6f88878fe3dc9fde3bb4e5c3d49ca4ca21c3e57837",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/settings/SettingsForm.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "98818bd466b38c362eb51a5018d2582e84ae6c547869c59295cb4ff09cb6ce53",
+      "currentSha256": "98818bd466b38c362eb51a5018d2582e84ae6c547869c59295cb4ff09cb6ce53",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/shared/SharedGroupView.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8f8964b158bab87797515afffa86eaf1764bee6a30dc1761f4cd077344bf7fdc",
+      "currentSha256": "8f8964b158bab87797515afffa86eaf1764bee6a30dc1761f4cd077344bf7fdc",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520",
+      "currentSha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/AnimatedCard.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "049deb1a387c080dfdf4e9bd6426d1b3eb029990c5a9202a9684da8eabf53ccb",
+      "currentSha256": "049deb1a387c080dfdf4e9bd6426d1b3eb029990c5a9202a9684da8eabf53ccb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/AnimatedList.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "03b90c516f77f51548133a96284feeebe26a90c8a22cf5648836ce1a78d7725b",
+      "currentSha256": "03b90c516f77f51548133a96284feeebe26a90c8a22cf5648836ce1a78d7725b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/AnimatedNumber.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "ccef919ded9f8ec59ba21dda8f7767251574a6120ab3814a8e507600f55daa58",
+      "currentSha256": "ccef919ded9f8ec59ba21dda8f7767251574a6120ab3814a8e507600f55daa58",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+      "currentSha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/BrandLoader.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "89c7f272cfa25aaad30ea38e21e86d4dfd002be7b3ee6c0d70122420ed61ce9c",
+      "currentSha256": "89c7f272cfa25aaad30ea38e21e86d4dfd002be7b3ee6c0d70122420ed61ce9c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/ChartSkeleton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f14e588a65fa95c924eae2c456ad73fec47599ef7661efd565ff3c19e54af481",
+      "currentSha256": "f14e588a65fa95c924eae2c456ad73fec47599ef7661efd565ff3c19e54af481",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/ChartTooltip.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8d7d4f80615ee03e44ade4224055ca461e1ef5a343c1b19c280e3c694e18728b",
+      "currentSha256": "8d7d4f80615ee03e44ade4224055ca461e1ef5a343c1b19c280e3c694e18728b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/ConfirmDialog.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "83e898aa9c91a25f23b3dc52d8561050bb8f447a631e4b5e243bd1213edb803f",
+      "currentSha256": "83e898aa9c91a25f23b3dc52d8561050bb8f447a631e4b5e243bd1213edb803f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/MiniAmountCalculatorButton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "db95302559aa6c68f134ad3ae428fc68186214cbe9d2d1aaedcca819892464cf",
+      "currentSha256": "db95302559aa6c68f134ad3ae428fc68186214cbe9d2d1aaedcca819892464cf",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/MotionSection.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "6b3338058d802e643471ad9dc76f7b4fa2435974073f28cd9e32ec0da7ae1087",
+      "currentSha256": "6b3338058d802e643471ad9dc76f7b4fa2435974073f28cd9e32ec0da7ae1087",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/PageScaffold.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "9e160e0d6f3158e9d80c769c0691e076b8513e0ece05bf271435af9ad1fd5bde",
+      "currentSha256": "9e160e0d6f3158e9d80c769c0691e076b8513e0ece05bf271435af9ad1fd5bde",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/ProgressBar.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d118748bf410abbbaa9267cb9334c8ea92d7362d97f3069d275f5fe77ef1ed51",
+      "currentSha256": "d118748bf410abbbaa9267cb9334c8ea92d7362d97f3069d275f5fe77ef1ed51",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/Skeleton.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8eaff2f6b0c298add4e39767be209a74146f7d0b8663a30375ef73ab1740e610",
+      "currentSha256": "8eaff2f6b0c298add4e39767be209a74146f7d0b8663a30375ef73ab1740e610",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/Sparkline.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c56f716f2dfbd4b2b84bddab24d7262bbb23f50c00b736af7e078e9729a5dea3",
+      "currentSha256": "c56f716f2dfbd4b2b84bddab24d7262bbb23f50c00b736af7e078e9729a5dea3",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "components/ui/ThemeToggle.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "52435314611dcf0cb28dc0a4a1d6c1692ef1e5c4412d89763b563cf9c0435ce2",
+      "currentSha256": "52435314611dcf0cb28dc0a4a1d6c1692ef1e5c4412d89763b563cf9c0435ce2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/account-create-request.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "20e2824d536ebbd4687c7d87a647cab7e4cf12868e8bca0f3d97af23be6a8e5c",
+      "currentSha256": "20e2824d536ebbd4687c7d87a647cab7e4cf12868e8bca0f3d97af23be6a8e5c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/account-display-name.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a91644b6689f5c22534a2412e956e740a3dcdf06f14ee5f51e42bf72a19fad79",
+      "currentSha256": "a91644b6689f5c22534a2412e956e740a3dcdf06f14ee5f51e42bf72a19fad79",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/account-route.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "3738be9cfc662c76a5f68c1f6b8d4cc30d848d3b5a9febb97f6f3abeeb64b6db",
+      "currentSha256": "3738be9cfc662c76a5f68c1f6b8d4cc30d848d3b5a9febb97f6f3abeeb64b6db",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/ai/bot-tools.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5a4b8441fca71a92d8f358c5e4e6759aab6800e564977387e2c460fa1a5f18ba",
+      "currentSha256": "5a4b8441fca71a92d8f358c5e4e6759aab6800e564977387e2c460fa1a5f18ba",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/ai/gemini.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "959f9168eb8c121465125ae32af025ddbe08bbfbebb4e83f30c7566ebb52fc15",
+      "currentSha256": "959f9168eb8c121465125ae32af025ddbe08bbfbebb4e83f30c7566ebb52fc15",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/ai/prompts.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1462c709ef738256c410058f3c4f89a4f36e937d6de408b2781d2fd97fef6ee5",
+      "currentSha256": "1462c709ef738256c410058f3c4f89a4f36e937d6de408b2781d2fd97fef6ee5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/analysis-period.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5ec178038a9e74574e3bdae5119fa96252b9a2a9851973e087b8219f65469e72",
+      "currentSha256": "5ec178038a9e74574e3bdae5119fa96252b9a2a9851973e087b8219f65469e72",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/api-handler.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a44bd8a18078edd9569197e18e4025ea68bcfcf7d9f322498f75336fa0537159",
+      "currentSha256": "a44bd8a18078edd9569197e18e4025ea68bcfcf7d9f322498f75336fa0537159",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/auth/auth-error-messages.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "13c320b7c746e9c5688af78f306f363bce094ed868b1f7f7647b428dd7471d01",
+      "currentSha256": "13c320b7c746e9c5688af78f306f363bce094ed868b1f7f7647b428dd7471d01",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/auth/email-redirect.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "67ed69dd52cd9ac6a57950a13bdab8c6bdb0e16dcfc7cb5233702c4e4e46122e",
+      "currentSha256": "67ed69dd52cd9ac6a57950a13bdab8c6bdb0e16dcfc7cb5233702c4e4e46122e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/auth/session.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "33672e7523c1a1d03a6f1c74c074ebb2eab6c80101249e0f395d55586883abd2",
+      "currentSha256": "33672e7523c1a1d03a6f1c74c074ebb2eab6c80101249e0f395d55586883abd2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/billing/plans.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2273ce67adf94ae83ff10247ab3195aa4dd3bf9633397a059c08e5e44467d41d",
+      "currentSha256": "2273ce67adf94ae83ff10247ab3195aa4dd3bf9633397a059c08e5e44467d41d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/billing/subscription-events.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a6d7a7ddb7e9a58f1c3569d0e7f99479b9d452dbbcb8ff9ed01ea5d42fbc136e",
+      "currentSha256": "a6d7a7ddb7e9a58f1c3569d0e7f99479b9d452dbbcb8ff9ed01ea5d42fbc136e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/blue-fx-reference.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c",
+      "currentSha256": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/brand.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "359b54af0b5ce77da65919033514e153cf88ef1c3d9498d18b9689ae882c8ac2",
+      "currentSha256": "359b54af0b5ce77da65919033514e153cf88ef1c3d9498d18b9689ae882c8ac2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/category-icons.tsx",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "505a51f660f74b78c2b64d4892dee1b3bf22bf07c8b23dca535a4e041bdafcd2",
+      "currentSha256": "505a51f660f74b78c2b64d4892dee1b3bf22bf07c8b23dca535a4e041bdafcd2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/chart-theme.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c4728c25083c032c0a7d0cc589c6dcd2b70f199d56d5f4cbce3c1e604a5507f0",
+      "currentSha256": "c4728c25083c032c0a7d0cc589c6dcd2b70f199d56d5f4cbce3c1e604a5507f0",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/constants/transaction-currencies.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "e30128c543e8dc5e288f07ec6ebf8f14a08dde20d7f6576de89733c5e293f59d",
+      "currentSha256": "e30128c543e8dc5e288f07ec6ebf8f14a08dde20d7f6576de89733c5e293f59d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/constants/user-columns.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2ed88d2e9368c65c6bbc1f46d032d8a48a735cba01b77f4c7adec32b14f25e7b",
+      "currentSha256": "2ed88d2e9368c65c6bbc1f46d032d8a48a735cba01b77f4c7adec32b14f25e7b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/cron-auth.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "32d0617dd5e9c197fc3b501725c671c5d31c73f672044485867104b9ac92d699",
+      "currentSha256": "32d0617dd5e9c197fc3b501725c671c5d31c73f672044485867104b9ac92d699",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/cron/cron-job.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9",
+      "currentSha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/cron/recurring-job.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72",
+      "currentSha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/cron/recurring-schedule.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d9725bfd1d8735d24a65d19bb6f462e3a920ef1130df34299bf4dd2790c2547e",
+      "currentSha256": "d9725bfd1d8735d24a65d19bb6f462e3a920ef1130df34299bf4dd2790c2547e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/evaluate-simple-amount-expression.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "70ed978b8246ab43d440f2b0c1bb9951053dbd77c5f160e441c2bf83ae72d528",
+      "currentSha256": "70ed978b8246ab43d440f2b0c1bb9951053dbd77c5f160e441c2bf83ae72d528",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+      "currentSha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/financial-mutation-error.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c26841026ccaeaad59288d2d8814ece3634f50bff1eebfcd4f6e8371cd5d376a",
+      "currentSha256": "c26841026ccaeaad59288d2d8814ece3634f50bff1eebfcd4f6e8371cd5d376a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+      "currentSha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/financial-request-context.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f21b6ff9f6645e46b96a92d04c2044ca090fbd73d4ef2b751f2c62ef53fefc1f",
+      "currentSha256": "f21b6ff9f6645e46b96a92d04c2044ca090fbd73d4ef2b751f2c62ef53fefc1f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/format-account-select.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "64d47a329079b51560862650fb7875d3948bd669f5a47427e260ee8ce4615d9d",
+      "currentSha256": "64d47a329079b51560862650fb7875d3948bd669f5a47427e260ee8ce4615d9d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/hooks/use-investments-privacy.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d76c3b7d27b8059cbfa18c4f5c8b65ed1d6fc3e91819dd6f5ea686c1edc9d850",
+      "currentSha256": "d76c3b7d27b8059cbfa18c4f5c8b65ed1d6fc3e91819dd6f5ea686c1edc9d850",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/hooks/use-privacy.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "1429c9bee887ff5e3816afe9eec6435c1bfdaf6c2ce507865a56ee01e47eb43c",
+      "currentSha256": "1429c9bee887ff5e3816afe9eec6435c1bfdaf6c2ce507865a56ee01e47eb43c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/hooks/useBodyScrollLock.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2e1c25d9e396e2c3a28f84ea49094a9eae7597a62b412ff5ec70827ee3dd40fd",
+      "currentSha256": "2e1c25d9e396e2c3a28f84ea49094a9eae7597a62b412ff5ec70827ee3dd40fd",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/hooks/useFinancialOperation.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "85d2156743a9c611b55c4a99d0113e133b7542e01ae164ab2570ca69b7495733",
+      "currentSha256": "85d2156743a9c611b55c4a99d0113e133b7542e01ae164ab2570ca69b7495733",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/hooks/useOfflineQueue.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "19f9803ce466afde4df59aec3ae9adbda569b1d0cb291d86e832796d8e04a1a1",
+      "currentSha256": "19f9803ce466afde4df59aec3ae9adbda569b1d0cb291d86e832796d8e04a1a1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/hooks/useServiceWorker.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "77bb6b9485c26fe9d5b7699e0611add9b25b96b5a56ee23a6876416bef6e6d96",
+      "currentSha256": "77bb6b9485c26fe9d5b7699e0611add9b25b96b5a56ee23a6876416bef6e6d96",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/import/batch-journal.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "cd8baafee452ac827dd5c572ac1dc3a1f8c245e4e8f51d223b18749ba73ca4b2",
+      "currentSha256": "cd8baafee452ac827dd5c572ac1dc3a1f8c245e4e8f51d223b18749ba73ca4b2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/import/csv.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "7b30c1594a9ff0747d24a02a8a228cfc4b651ec00c35825dc6ad3ac88971c833",
+      "currentSha256": "7b30c1594a9ff0747d24a02a8a228cfc4b651ec00c35825dc6ad3ac88971c833",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/import/date.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d71cc327323b3ef0f30b07eb4fdd6c92b4baa417ab06a2826f6c7d7851fdcaf8",
+      "currentSha256": "d71cc327323b3ef0f30b07eb4fdd6c92b4baa417ab06a2826f6c7d7851fdcaf8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/investment-sale-preview.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "eb84d0f8be7075ab26af7bff73cc78c8fa9c4f6a718cadcdfc117d73c1832182",
+      "currentSha256": "eb84d0f8be7075ab26af7bff73cc78c8fa9c4f6a718cadcdfc117d73c1832182",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/investment-simulation.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea",
+      "currentSha256": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/market-data-local-cache.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "633dadad13bdb579ed41729afbe1f246af6767bc013765178a91f7724c6a250c",
+      "currentSha256": "633dadad13bdb579ed41729afbe1f246af6767bc013765178a91f7724c6a250c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/market-data-merge-local.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "126a74d57beb14b447ab7b47cc92bdffbc2280a21ff31e4b964c91b612e20b81",
+      "currentSha256": "126a74d57beb14b447ab7b47cc92bdffbc2280a21ff31e4b964c91b612e20b81",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/market-data-types.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "0db524265a367b80e14f602cd1fb88fba9cf585bf75d3dd11059742402d20b09",
+      "currentSha256": "0db524265a367b80e14f602cd1fb88fba9cf585bf75d3dd11059742402d20b09",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/market-data/argentine-catalog.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "329cce8fdf1926a04daeb75f791412531af29005ed17626e80e5e3ce2d5e99cf",
+      "currentSha256": "329cce8fdf1926a04daeb75f791412531af29005ed17626e80e5e3ce2d5e99cf",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/market-data/data912-client.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "3f86caa1478404bd51888af505630448b0b172dbf8b15935a5be21e56affe40c",
+      "currentSha256": "3f86caa1478404bd51888af505630448b0b172dbf8b15935a5be21e56affe40c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/motion.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "94d37324bc30960dd664136dc468b72db76b594076edfa433f4bfbd785f85f5d",
+      "currentSha256": "94d37324bc30960dd664136dc468b72db76b594076edfa433f4bfbd785f85f5d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/notification-schedule.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "89d0efefe65eb27cec5e479126b3a7152f0740aede2928eb39393fe6ed16e09d",
+      "currentSha256": "89d0efefe65eb27cec5e479126b3a7152f0740aede2928eb39393fe6ed16e09d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/observability/alert.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d09bce5d9c248f1bc6d3c29a36464afbf9846ebbd3c1fa9bac2514c7a2c03954",
+      "currentSha256": "d09bce5d9c248f1bc6d3c29a36464afbf9846ebbd3c1fa9bac2514c7a2c03954",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/offline-queue-sync.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d",
+      "currentSha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/offline-reference-cache.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "b81df9b2083c904ae20bae46b8424499d35fa407c9120b167f370d1bade374a6",
+      "currentSha256": "b81df9b2083c904ae20bae46b8424499d35fa407c9120b167f370d1bade374a6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/offline-transaction-store.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b",
+      "currentSha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/pending-ai-chat.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5ad87d63c55762824c7827967da400858c2febe9669b572b93b54bd272bd9023",
+      "currentSha256": "5ad87d63c55762824c7827967da400858c2febe9669b572b93b54bd272bd9023",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/plans/rules.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c37543f1572292c3d5a40635033182a3c1fa3dcc21aa7899a03991df77eeef85",
+      "currentSha256": "c37543f1572292c3d5a40635033182a3c1fa3dcc21aa7899a03991df77eeef85",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/plans/service.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "9054b957e945cb49b14f269cf32fe8209571b116b9529eaf6a77e01f4efb3e87",
+      "currentSha256": "9054b957e945cb49b14f269cf32fe8209571b116b9529eaf6a77e01f4efb3e87",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/rate-limit.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f9932a0444afe651e279f0cff0532650e5871bd1d1ecae95d264d1266f282584",
+      "currentSha256": "f9932a0444afe651e279f0cff0532650e5871bd1d1ecae95d264d1266f282584",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/sanitize-amount-input.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2e2d9738e5bd2e7f0d2eb280b180dcd4be66dcf8a327cdc07df32184dd79dd2e",
+      "currentSha256": "2e2d9738e5bd2e7f0d2eb280b180dcd4be66dcf8a327cdc07df32184dd79dd2e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/secure-compare.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "144cae6b6014db58687f4b262808b38e702cfa8ec10d54fd94ef776181936471",
+      "currentSha256": "144cae6b6014db58687f4b262808b38e702cfa8ec10d54fd94ef776181936471",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496",
+      "currentSha256": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/analytics.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "0ba095592475031edf3d2d0911250c1f06a6b666527b7bbddd66562b53741d47",
+      "currentSha256": "0ba095592475031edf3d2d0911250c1f06a6b666527b7bbddd66562b53741d47",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/botSessions.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "05326917dba57b494843c33f77782c1b81c369bda597234380de0e7aec6fa88c",
+      "currentSha256": "05326917dba57b494843c33f77782c1b81c369bda597234380de0e7aec6fa88c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/budget-summary.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "32bcc250151b43dc9023db91a6d3433357e7ac2b1b6f8c85498dc0f189ad38d4",
+      "currentSha256": "32bcc250151b43dc9023db91a6d3433357e7ac2b1b6f8c85498dc0f189ad38d4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "32ff3118923983eb02e1bd79103bbde3461cd6efe1de2ac0302ec53ce831fd3e",
+      "currentSha256": "32ff3118923983eb02e1bd79103bbde3461cd6efe1de2ac0302ec53ce831fd3e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/categories.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "8ecf7141a4c55d4111e3681ab1970ab110467a3856d3f39210c5bb08e7fcae17",
+      "currentSha256": "8ecf7141a4c55d4111e3681ab1970ab110467a3856d3f39210c5bb08e7fcae17",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece",
+      "currentSha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/inflacion.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2845fbcd18fbe78897c4aafd1f27c062a77056639a3502f38e1cce4f604c59af",
+      "currentSha256": "2845fbcd18fbe78897c4aafd1f27c062a77056639a3502f38e1cce4f604c59af",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/internal-ai-chat.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "03f182e552c858bd7a4f499e217b841d9d4bbe3bdfbbed782fa0cf92943c6253",
+      "currentSha256": "03f182e552c858bd7a4f499e217b841d9d4bbe3bdfbbed782fa0cf92943c6253",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+      "currentSha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/market-history.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "414d3d4f6d2284fb2df925139cbc7a7b1d3cba6b6a9b36488661b56628481e15",
+      "currentSha256": "414d3d4f6d2284fb2df925139cbc7a7b1d3cba6b6a9b36488661b56628481e15",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/mercado-pago-service.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "6747e5f5601a5715b88097fb0f5bf6c60e6f4c792c4963faaa8c67dd1d2d7ecb",
+      "currentSha256": "6747e5f5601a5715b88097fb0f5bf6c60e6f4c792c4963faaa8c67dd1d2d7ecb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/month-flow.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5a7a1fdce2b605c442e7461e9d5a4e6a10afe53a3563489892001fe84d897a29",
+      "currentSha256": "5a7a1fdce2b605c442e7461e9d5a4e6a10afe53a3563489892001fe84d897a29",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "6ec3915b5fe655a912133275700cc77a6750a31e732ac94092b162da1d8a54cb",
+      "currentSha256": "6ec3915b5fe655a912133275700cc77a6750a31e732ac94092b162da1d8a54cb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/notification-outbox.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "82fdc8e5611bbf64601cec687ad29669fda081a5d48107ec80d3612756e868fd",
+      "currentSha256": "82fdc8e5611bbf64601cec687ad29669fda081a5d48107ec80d3612756e868fd",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/recurring.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f377f9742ebecb1c85f2941bd3b11d6d8bd5e26297338737b1f99161048b1a56",
+      "currentSha256": "f377f9742ebecb1c85f2941bd3b11d6d8bd5e26297338737b1f99161048b1a56",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/sharedExpenses.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "3f888d81605585dc6d969f7c0d9f3b04e46c9c171e28421fbf137eed4afc021b",
+      "currentSha256": "3f888d81605585dc6d969f7c0d9f3b04e46c9c171e28421fbf137eed4afc021b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/subscriptions.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10",
+      "currentSha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "currentSha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/services/upcoming.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "9fd5a92aed26d845882206c5c7730dd8cdf0d83d8651b18db0366722136175b2",
+      "currentSha256": "9fd5a92aed26d845882206c5c7730dd8cdf0d83d8651b18db0366722136175b2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/stooq-us-quote.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a6b1f9be5d735d24dc607986650641bd457e859fad6570bab49b5f620ff48fbd",
+      "currentSha256": "a6b1f9be5d735d24dc607986650641bd457e859fad6570bab49b5f620ff48fbd",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/supabase-paginated-read.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5d7a6811702b18032e465eeb7168636cd140612d8dd2001b9fb9f7583a749795",
+      "currentSha256": "5d7a6811702b18032e465eeb7168636cd140612d8dd2001b9fb9f7583a749795",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/supabase/client.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "dbf42580931fb4016d4b9b96adc853531e0cfdb74dc2348e2679a8ebfd50d7ad",
+      "currentSha256": "dbf42580931fb4016d4b9b96adc853531e0cfdb74dc2348e2679a8ebfd50d7ad",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "09caabac5758f32281e72733a3ad1acbef90e5588c9a551942f36f4fb8429587",
+      "currentSha256": "09caabac5758f32281e72733a3ad1acbef90e5588c9a551942f36f4fb8429587",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/telegram/bot.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "7c20ae76b5b9b7f69ba23f7fa16d71794c23d10693e2bb84bfa79895f00f3531",
+      "currentSha256": "7c20ae76b5b9b7f69ba23f7fa16d71794c23d10693e2bb84bfa79895f00f3531",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/telegram/download-media.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "5edfec14714daf002e3cf603d14702a42ce83fb7c42c0f3d081a1ceb11a6bf60",
+      "currentSha256": "5edfec14714daf002e3cf603d14702a42ce83fb7c42c0f3d081a1ceb11a6bf60",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/telegram/executeBotTransaction.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c8bbce93d60faa4dbd00b3c63944b595430245a28ae193a7ed9cdf62ee14795a",
+      "currentSha256": "c8bbce93d60faa4dbd00b3c63944b595430245a28ae193a7ed9cdf62ee14795a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/telegram/markdown.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "ecaa193af787fc4705269e676bccd779bd260c7ea013821a8e3bb5e4242ff478",
+      "currentSha256": "ecaa193af787fc4705269e676bccd779bd260c7ea013821a8e3bb5e4242ff478",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/telegram/send.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "276e4faa5508249c6aef89f2d920fd39a7522c9b8e532c2d0e3612cb02beff62",
+      "currentSha256": "276e4faa5508249c6aef89f2d920fd39a7522c9b8e532c2d0e3612cb02beff62",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/telegram/test-bot.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "0908baef014c5b3cbf50c70217fa16b704cb4b6a251d1fb65b9492bb629347a3",
+      "currentSha256": "0908baef014c5b3cbf50c70217fa16b704cb4b6a251d1fb65b9492bb629347a3",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/telegram/webhook-auth.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "a04686fc1885c8c687f4fb8847cbbce6ca73bcc3eed99bf57277538f96cf47ad",
+      "currentSha256": "a04686fc1885c8c687f4fb8847cbbce6ca73bcc3eed99bf57277538f96cf47ad",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/transaction-account-impact.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "2ec0db3df324901d3852e7ec044dd02223b2e25aa23a0e0e0e11bcb595626b35",
+      "currentSha256": "2ec0db3df324901d3852e7ec044dd02223b2e25aa23a0e0e0e11bcb595626b35",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/transaction-date.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "918326670a9168f97f082566b26f50909b1a7c017d090f5a5b879292553e3ffb",
+      "currentSha256": "918326670a9168f97f082566b26f50909b1a7c017d090f5a5b879292553e3ffb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/transaction-exchange.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "c66815014537a00589f3d9127c1f05088be91e8a742f061796b1741b655e8d04",
+      "currentSha256": "c66815014537a00589f3d9127c1f05088be91e8a742f061796b1741b655e8d04",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/transaction-idempotency.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "7335b7e1d226aa1b20ba49c0c251afe9669222f1ef19d3ae3bc9c35a80045fa9",
+      "currentSha256": "7335b7e1d226aa1b20ba49c0c251afe9669222f1ef19d3ae3bc9c35a80045fa9",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/utils/currency.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d8b1bbcb2da85cf604596d86e3f8ea4b59fdab84a9372644f744d289a36ed701",
+      "currentSha256": "d8b1bbcb2da85cf604596d86e3f8ea4b59fdab84a9372644f744d289a36ed701",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/yahoo-finance-headers.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "70e7ef6a137f7ba5cdf15725c79ebc6a560352f58d02926dc9e1a4e756a34dca",
+      "currentSha256": "70e7ef6a137f7ba5cdf15725c79ebc6a560352f58d02926dc9e1a4e756a34dca",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "lib/yahoo-finance-quotes.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "457e88d00ec6322ed7eb6589e65b181e4d4bad97328acf207ff0eb77ae6c64e7",
+      "currentSha256": "457e88d00ec6322ed7eb6589e65b181e4d4bad97328acf207ff0eb77ae6c64e7",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "middleware.ts",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "a9bd52cc5494645c987b968e425a31946d25e8030f118e06c41911e6e19e032d",
+      "currentSha256": "a9bd52cc5494645c987b968e425a31946d25e8030f118e06c41911e6e19e032d",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "next.config.js",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "eee12dee3e670325ea62ca306ec918610e06203f6d9456ddcea4ffbfab23b242",
+      "currentSha256": "eee12dee3e670325ea62ca306ec918610e06203f6d9456ddcea4ffbfab23b242",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "package-lock.json",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257",
+      "currentSha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "package.json",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "847259b8435bf13a49ce114795fcd71fc7a7f81322b341c067682447de87772a",
+      "currentSha256": "847259b8435bf13a49ce114795fcd71fc7a7f81322b341c067682447de87772a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "postcss.config.js",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "fa650b380adfabb151a0b352f7135e107e6352345f899060f1c5c231228f94bf",
+      "currentSha256": "fa650b380adfabb151a0b352f7135e107e6352345f899060f1c5c231228f94bf",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/build-technical-traceability.py",
+      "group": "test_and_harness",
+      "ci3Sha256": "9b3b0757441502ec5057586901d495018035aad1e7657b7ba8fd786285113434",
+      "currentSha256": "9b3b0757441502ec5057586901d495018035aad1e7657b7ba8fd786285113434",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/compare-import-with-export.ts",
+      "group": "test_and_harness",
+      "ci3Sha256": "edc2a4766041996b4400f7ee2f5a3652cec2f8832e360a465dd3506600d5a14e",
+      "currentSha256": "edc2a4766041996b4400f7ee2f5a3652cec2f8832e360a465dd3506600d5a14e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/generate-isolated-database-types.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "3fa3219a25b633406d6d53d81c1e899e7e4a9552b4f317aeed47214258cd4cd0",
+      "currentSha256": "3fa3219a25b633406d6d53d81c1e899e7e4a9552b4f317aeed47214258cd4cd0",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/lib/test-isolated-browser-profile-controller.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "d459129c7aa61210c13888d6d6d1e1726b232c052a1d0df20cc8b4f0d5573342",
+      "currentSha256": "d459129c7aa61210c13888d6d6d1e1726b232c052a1d0df20cc8b4f0d5573342",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/lib/test-isolated-database.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "395514d590d118c4b7b40a6ceca974db36fc2684a68447c857600be40e22da9b",
+      "currentSha256": "395514d590d118c4b7b40a6ceca974db36fc2684a68447c857600be40e22da9b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "currentSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/run-technical-verification.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "57f0a2935ee1e9dd4586d2256415e5b6b8d55b4b18a4b3cca213cf1752b51244",
+      "currentSha256": "57f0a2935ee1e9dd4586d2256415e5b6b8d55b4b18a4b3cca213cf1752b51244",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/set-password.js",
+      "group": "test_and_harness",
+      "ci3Sha256": "f05211f391d112b86b473de8dca84c5f8a2f7ed62072840bad12c0f8eba4cad0",
+      "currentSha256": "f05211f391d112b86b473de8dca84c5f8a2f7ed62072840bad12c0f8eba4cad0",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/setup-isolated-e2e-users.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "3ce4427a82b6ee6fb62a5f6daa101166634213d1fd0e2d44e8b573162bb9e2e4",
+      "currentSha256": "3ce4427a82b6ee6fb62a5f6daa101166634213d1fd0e2d44e8b573162bb9e2e4",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/setup-isolated-load.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "43ad048fb9888a56ece1531f02b556821a65e5975fd04d14b3f058a182c3c347",
+      "currentSha256": "43ad048fb9888a56ece1531f02b556821a65e5975fd04d14b3f058a182c3c347",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/setup-telegram-webhook.js",
+      "group": "test_and_harness",
+      "ci3Sha256": "fe416c60403d5b8874c3df401f2c0b405dbe1405d0bb56e325ccb720bd869f1f",
+      "currentSha256": "fe416c60403d5b8874c3df401f2c0b405dbe1405d0bb56e325ccb720bd869f1f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute-advisors.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "ab0b4d5547db6c9948da0b1d0fd2dbbd2ee0c78ae849c2a103b6cc73bc583853",
+      "currentSha256": "ab0b4d5547db6c9948da0b1d0fd2dbbd2ee0c78ae849c2a103b6cc73bc583853",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute-native.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "63bd3a22f9de9528b3fee1ab87a45842cb3a0aa6e60b260c08d4945f14704792",
+      "currentSha256": "63bd3a22f9de9528b3fee1ab87a45842cb3a0aa6e60b260c08d4945f14704792",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "bb0723fd45ad9e2ac5795af32b444ebc55a29cc86d8047ee3f01172fae6f3ade",
+      "currentSha256": "bb0723fd45ad9e2ac5795af32b444ebc55a29cc86d8047ee3f01172fae6f3ade",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-balance-trigger.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "99d0a0ed0fc5c3bac01a898df7a56b2fd2255e6a77c9dcf3562d04405cf50646",
+      "currentSha256": "99d0a0ed0fc5c3bac01a898df7a56b2fd2255e6a77c9dcf3562d04405cf50646",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-durable-financial-operations.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "fd3c2e2b4301e81f0798c420bde81182aaa18fd3b3c9a54c0df92c3f24e62d80",
+      "currentSha256": "fd3c2e2b4301e81f0798c420bde81182aaa18fd3b3c9a54c0df92c3f24e62d80",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-durable-import.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "25694ea0871ac294686ef2fd4ffb61d5fef6891ca24c3cafa406637d58c1a5bb",
+      "currentSha256": "25694ea0871ac294686ef2fd4ffb61d5fef6891ca24c3cafa406637d58c1a5bb",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-api.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "79980da2891870029c46ed9a942c15bda3dd142ae0bcfc369cf1b6bf1bfc9c92",
+      "currentSha256": "79980da2891870029c46ed9a942c15bda3dd142ae0bcfc369cf1b6bf1bfc9c92",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-browser-load.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "5c5723acc934b56a30290d4655e196572b20ecfea164c6417472397c3db395a7",
+      "currentSha256": "5c5723acc934b56a30290d4655e196572b20ecfea164c6417472397c3db395a7",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-database.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "db72f678bebf0059fbcd45e3b23ef06079f341c709421577a3a7c62d8afc481a",
+      "currentSha256": "db72f678bebf0059fbcd45e3b23ef06079f341c709421577a3a7c62d8afc481a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+      "currentSha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-native-supabase.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "877b2b7a29c16752bd726f3d75303a49c5175fef7c4d66e5d0a50ea84c8de71f",
+      "currentSha256": "877b2b7a29c16752bd726f3d75303a49c5175fef7c4d66e5d0a50ea84c8de71f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-offline-durability.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "6d3e0ce73e0a8cd60c28e52710170c27929f8cd8b0b7b1d052a26afbbc7856b9",
+      "currentSha256": "6d3e0ce73e0a8cd60c28e52710170c27929f8cd8b0b7b1d052a26afbbc7856b9",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-performance.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "9862d828ba1f45af5dbf42e538f6733060d75e58b623860a45812b4fd1916acd",
+      "currentSha256": "9862d828ba1f45af5dbf42e538f6733060d75e58b623860a45812b4fd1916acd",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-schema-mirror.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "8d5ee04550dc3123fd18b714035c3d7c376094f780793aff7bfeaee8a170772c",
+      "currentSha256": "8d5ee04550dc3123fd18b714035c3d7c376094f780793aff7bfeaee8a170772c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-isolated-visual.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "13d1c529598a1446fbf5a3b601978a4256942cc76ae5b35513ead64e7391a998",
+      "currentSha256": "45f70570ff9ee680713bf498798fc91359ffdc967500c71f749a1e9b1534685c",
+      "matchesCi3": false,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-plan-limits.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "052aec814b2c749d199e919137a54d01e7f3256ff28023f7c1f5ee3d45cbdaf2",
+      "currentSha256": "052aec814b2c749d199e919137a54d01e7f3256ff28023f7c1f5ee3d45cbdaf2",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-public-quote-providers.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "a38dc4b27b57dca84e74542095c2025cfbf69cfdc3f35a581c90aa58f78ccb6c",
+      "currentSha256": "a38dc4b27b57dca84e74542095c2025cfbf69cfdc3f35a581c90aa58f78ccb6c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-shared-expenses-sql.mjs",
+      "group": "test_and_harness",
+      "ci3Sha256": "4e8556588933d11818db72bbd5f29ca05e8bd40bd45f3d16a9bed64be8f8394f",
+      "currentSha256": "4e8556588933d11818db72bbd5f29ca05e8bd40bd45f3d16a9bed64be8f8394f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "scripts/test-technical-traceability.py",
+      "group": "test_and_harness",
+      "ci3Sha256": "a5b545c20c94e41ee3ae68a368704beb99d831f50cd9d280b1c7a1da4c07aede",
+      "currentSha256": "a5b545c20c94e41ee3ae68a368704beb99d831f50cd9d280b1c7a1da4c07aede",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/.temp/cli-latest",
+      "group": "local_cli_cache_metadata_not_git_source",
+      "ci3Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "currentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesCi3": true,
+      "gitTracked": false,
+      "matchesHead": null
+    },
+    {
+      "path": "supabase/baselines/20261009000000_preverification_snapshot.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "01255724ef94aced4836bf074d9e6abc571aaa640d25d41705433e91123be9f5",
+      "currentSha256": "01255724ef94aced4836bf074d9e6abc571aaa640d25d41705433e91123be9f5",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247",
+      "currentSha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60",
+      "currentSha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a",
+      "currentSha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6",
+      "currentSha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390",
+      "currentSha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121",
+      "currentSha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8",
+      "currentSha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9",
+      "currentSha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480",
+      "currentSha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797",
+      "currentSha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976",
+      "currentSha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68",
+      "currentSha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923",
+      "currentSha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b",
+      "currentSha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3",
+      "currentSha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891",
+      "currentSha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad",
+      "currentSha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e",
+      "currentSha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead",
+      "currentSha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296",
+      "currentSha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9",
+      "currentSha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f",
+      "currentSha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1",
+      "currentSha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+      "currentSha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c",
+      "currentSha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca",
+      "currentSha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88",
+      "currentSha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "currentSha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/schema.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "currentSha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "supabase/seed.sql",
+      "group": "schema_migrations_sql",
+      "ci3Sha256": "62a41021a56529cfcd749371c677ecfd2a63af76212cda63f73d6caca4995c1e",
+      "currentSha256": "62a41021a56529cfcd749371c677ecfd2a63af76212cda63f73d6caca4995c1e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "tailwind.config.ts",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "39c6f56330958f90fffedada86d2541b9f8ab6b04c09bea11bd7a69c7ed3d255",
+      "currentSha256": "39c6f56330958f90fffedada86d2541b9f8ab6b04c09bea11bd7a69c7ed3d255",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "tsconfig.json",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "ed2bc19510589ae5c0940b5e4504c6c0413ba285ae35a3d4ad9db5f5d3a8eb51",
+      "currentSha256": "ed2bc19510589ae5c0940b5e4504c6c0413ba285ae35a3d4ad9db5f5d3a8eb51",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "types/database.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982",
+      "currentSha256": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "types/import.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "f6457d9ae8bb7ebc1463913ad8823741959bb6b948db6147e50a8113be509f58",
+      "currentSha256": "f6457d9ae8bb7ebc1463913ad8823741959bb6b948db6147e50a8113be509f58",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "types/internal-ai-chat.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "d68482240bfa4c732eddf296694810d53b831243f63c0b4a5df4eeab4ef89f4e",
+      "currentSha256": "d68482240bfa4c732eddf296694810d53b831243f63c0b4a5df4eeab4ef89f4e",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "types/supabase-generated.ts",
+      "group": "application_libraries_types_public",
+      "ci3Sha256": "81928fe0332c9e6ae14230e978cc607cea5a6f694080e726700c1d0e3a81e679",
+      "currentSha256": "81928fe0332c9e6ae14230e978cc607cea5a6f694080e726700c1d0e3a81e679",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "vercel.json",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "1c91676bd72e47a7114761d552794a33f4f0a9f68b03ca85a6f7649b2aac0980",
+      "currentSha256": "1c91676bd72e47a7114761d552794a33f4f0a9f68b03ca85a6f7649b2aac0980",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    },
+    {
+      "path": "vitest.config.ts",
+      "group": "configuration_and_root_inputs",
+      "ci3Sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8",
+      "currentSha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8",
+      "matchesCi3": true,
+      "gitTracked": true,
+      "matchesHead": true
+    }
+  ],
+  "vitest": {
+    "numTotalTests": 819,
+    "numPassedTests": 819,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "coverage": {
+    "instrumentedFiles": 37,
+    "total": {
+      "lines": {
+        "total": 2480,
+        "covered": 1783,
+        "skipped": 0,
+        "pct": 71.89
+      },
+      "statements": {
+        "total": 2881,
+        "covered": 1988,
+        "skipped": 0,
+        "pct": 69
+      },
+      "functions": {
+        "total": 414,
+        "covered": 279,
+        "skipped": 0,
+        "pct": 67.39
+      },
+      "branches": {
+        "total": 2485,
+        "covered": 1556,
+        "skipped": 0,
+        "pct": 62.61
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "files": [
+      {
+        "path": "app/api/accounts/movement-selection/route.ts",
+        "sha256": "a1cc859f83123a1e432fa07fa19e8562138cda2734db029445ff64e667d6257a",
+        "matchesCi3": true
+      },
+      {
+        "path": "app/api/ai/anomalies/route.ts",
+        "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+        "matchesCi3": true
+      },
+      {
+        "path": "app/api/ai/projections/route.ts",
+        "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+        "matchesCi3": true
+      },
+      {
+        "path": "app/api/billing/cancel/route.ts",
+        "sha256": "ee2787f034e9481c5b7bca24580d66712d57d3c6e661fbc7eff8e972f9e4d5f8",
+        "matchesCi3": true
+      },
+      {
+        "path": "app/api/billing/subscription-link/route.ts",
+        "sha256": "b3be182be6378213a2d5bd122399fc4a95d4238415f0862f798a00c9e59c5321",
+        "matchesCi3": true
+      },
+      {
+        "path": "app/api/cron/recurring/route.ts",
+        "sha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a",
+        "matchesCi3": true
+      },
+      {
+        "path": "app/api/export/backup/route.ts",
+        "sha256": "659ae5fbc413b2253975fcb40423bac5523a3d5e6b927efdc6942afb6e3121ce",
+        "matchesCi3": true
+      },
+      {
+        "path": "app/api/webhooks/mercado-pago/route.ts",
+        "sha256": "81efe582294e93e47a45848d3d55565f7e46808610fd7541227adc5c578594fe",
+        "matchesCi3": true
+      },
+      {
+        "path": "components/settings/SettingsForm.tsx",
+        "sha256": "98818bd466b38c362eb51a5018d2582e84ae6c547869c59295cb4ff09cb6ce53",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/financial-anomalies.ts",
+        "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/financial-projections.ts",
+        "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/financial-request-context.ts",
+        "sha256": "f21b6ff9f6645e46b96a92d04c2044ca090fbd73d4ef2b751f2c62ef53fefc1f",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/investment-simulation.ts",
+        "sha256": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/offline-queue-sync.ts",
+        "sha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/offline-transaction-store.ts",
+        "sha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/supabase-paginated-read.ts",
+        "sha256": "5d7a6811702b18032e465eeb7168636cd140612d8dd2001b9fb9f7583a749795",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/transaction-idempotency.ts",
+        "sha256": "7335b7e1d226aa1b20ba49c0c251afe9669222f1ef19d3ae3bc9c35a80045fa9",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/billing/plans.ts",
+        "sha256": "2273ce67adf94ae83ff10247ab3195aa4dd3bf9633397a059c08e5e44467d41d",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/billing/subscription-events.ts",
+        "sha256": "a6d7a7ddb7e9a58f1c3569d0e7f99479b9d452dbbcb8ff9ed01ea5d42fbc136e",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/cron/cron-job.ts",
+        "sha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/cron/recurring-job.ts",
+        "sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/cron/recurring-schedule.ts",
+        "sha256": "d9725bfd1d8735d24a65d19bb6f462e3a920ef1130df34299bf4dd2790c2547e",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/hooks/useOfflineQueue.ts",
+        "sha256": "19f9803ce466afde4df59aec3ae9adbda569b1d0cb291d86e832796d8e04a1a1",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/import/csv.ts",
+        "sha256": "7b30c1594a9ff0747d24a02a8a228cfc4b651ec00c35825dc6ad3ac88971c833",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/plans/rules.ts",
+        "sha256": "c37543f1572292c3d5a40635033182a3c1fa3dcc21aa7899a03991df77eeef85",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/plans/service.ts",
+        "sha256": "9054b957e945cb49b14f269cf32fe8209571b116b9529eaf6a77e01f4efb3e87",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/accounts.ts",
+        "sha256": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/analytics.ts",
+        "sha256": "0ba095592475031edf3d2d0911250c1f06a6b666527b7bbddd66562b53741d47",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/botSessions.ts",
+        "sha256": "05326917dba57b494843c33f77782c1b81c369bda597234380de0e7aec6fa88c",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/cotizaciones.ts",
+        "sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/internal-ai-chat.ts",
+        "sha256": "03f182e552c858bd7a4f499e217b841d9d4bbe3bdfbbed782fa0cf92943c6253",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/investments.ts",
+        "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/mercado-pago-service.ts",
+        "sha256": "6747e5f5601a5715b88097fb0f5bf6c60e6f4c792c4963faaa8c67dd1d2d7ecb",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/month-flow.ts",
+        "sha256": "5a7a1fdce2b605c442e7461e9d5a4e6a10afe53a3563489892001fe84d897a29",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/notification-outbox.ts",
+        "sha256": "82fdc8e5611bbf64601cec687ad29669fda081a5d48107ec80d3612756e868fd",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/subscriptions.ts",
+        "sha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10",
+        "matchesCi3": true
+      },
+      {
+        "path": "lib/services/transactions.ts",
+        "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+        "matchesCi3": true
+      }
+    ],
+    "scope": "Configured risk files only. Navigation.tsx is not instrumented; its responsive class change has CI3 typecheck/lint/build and a separate real visual rerun, not an invented unit coverage claim."
+  },
+  "ci3Gates": [
+    {
+      "name": "npm-ci",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "typecheck",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "lint",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "coverage",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "native-harness-syntax",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "traceability-regression",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "test-db",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "build",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "dependency-audit",
+      "status": "FAIL",
+      "exitCode": 1
+    },
+    {
+      "name": "balance-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "shared-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "plan-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "durable-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "import-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "account-recompute-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "full-schema-sql",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "performance",
+      "status": "PASS",
+      "exitCode": 0
+    }
+  ],
+  "harnessReview": {
+    "commit": "3308625",
+    "sha256": "45f70570ff9ee680713bf498798fc91359ffdc967500c71f749a1e9b1534685c",
+    "materialFindingClosed": "CU003 observes actual scrollable ancestors including mobile Navigation DIV, requiring matching index+tag and offset change before/after. Document change is also accepted; mere visibility or newly appearing ancestor is insufficient.",
+    "captureCalibration": "Directly inspected four dataURL border PNGs plus two unsaved-modal PNGs; IHDR confirms real200percent viewport preserves physical dimensions while fullPage crops. Current successful viewport screenshots must match page.viewportSize at both zooms.",
+    "executionScope": "Post-CI3 helper-only change. The819tests belong tobb2e8a6, not this later helper. Visual32cells/40PNGrun is in progress; no pass inferred here."
+  },
+  "limits": "Read-only file/hash/git/report review. No Node, tests, browser, DB, app process or external service accessed. Documentation excluded from protected source comparison. The one ignored CLI metadata file is hashed but not treated as Git source or SQL. No credential values printed or copied."
+}

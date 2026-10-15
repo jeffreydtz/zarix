@@ -1,0 +1,94 @@
+{
+  "createdAt": "2026-10-15T08:27:05.087288+00:00",
+  "baselineRevision": "b055ac83107175c29418b8d8ed664d0e6395651a",
+  "sources": [
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "884c3de8b1610027caf590f6256c5dd11878e3ef3dc54cb82e3ed9ecca8a64f3",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/after-sources/app/api/investments/[id]/sell/route.ts"
+    },
+    {
+      "path": "__tests__/investment-sell-log-privacy.test.ts",
+      "sha256": "b46145a2c67b4ccde369ce4c29078f7646e8efabe32862f36e00034b491e7755",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/after-sources/__tests__/investment-sell-log-privacy.test-source.ts"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "after-sources/__tests__/investment-sell-log-privacy.test-source.ts",
+      "sha256": "b46145a2c67b4ccde369ce4c29078f7646e8efabe32862f36e00034b491e7755",
+      "bytes": 4741
+    },
+    {
+      "path": "after-sources/app/api/investments/[id]/sell/route.ts",
+      "sha256": "884c3de8b1610027caf590f6256c5dd11878e3ef3dc54cb82e3ed9ecca8a64f3",
+      "bytes": 3143
+    },
+    {
+      "path": "after.json",
+      "sha256": "544992863e5895bd755909a58f0b4b331b2e92468069b650fe757ace0f8570bf",
+      "bytes": 2119
+    },
+    {
+      "path": "before-manifest.json",
+      "sha256": "add6aadc30d61f7a135ee419f415c47e92bce7a57fcaa767e56c8f672200b382",
+      "bytes": 794
+    },
+    {
+      "path": "before-read-manifest.json",
+      "sha256": "870c0dbd6c17f0a3b765e2fa456cc8a1c96d30f6f54a3b0af2b04fc482fc2153",
+      "bytes": 784
+    },
+    {
+      "path": "before-read-sources/__tests__/investment-sell-log-privacy.test-source.ts",
+      "sha256": "b46145a2c67b4ccde369ce4c29078f7646e8efabe32862f36e00034b491e7755",
+      "bytes": 4741
+    },
+    {
+      "path": "before-read-sources/app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+      "bytes": 3157
+    },
+    {
+      "path": "before-sources/__tests__/investment-sell-log-privacy.test-source.ts",
+      "sha256": "e7a0fe7280e9a6b617aa982c29fc20a5f4ab2abf4a970392289f18f2ef637b7b",
+      "bytes": 3856
+    },
+    {
+      "path": "before-sources/app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+      "bytes": 3157
+    },
+    {
+      "path": "before-with-read.json",
+      "sha256": "a3ae8fe3015df70311ad07b138cd2ca8691f57ed592fdfc5b2684c7c366b7bce",
+      "bytes": 3842
+    },
+    {
+      "path": "before.json",
+      "sha256": "9428b045e5f8ed615a0997caf69d0446b66da01ecfbf0d04fdb6ad6c7620f3f1",
+      "bytes": 2794
+    },
+    {
+      "path": "verification.json",
+      "sha256": "f82361551eed4af2f4646886eeb0c4cf14d4b6d0bde7978f28d58dc6f965fedc",
+      "bytes": 2968
+    }
+  ],
+  "contextSources": [
+    {
+      "path": "lib/api-handler.ts",
+      "sha256": "b1b19b1ca9e26e0471f4c40ed5f2a12470a89dfabf181e233b8ea089f0d2de7d"
+    },
+    {
+      "path": "lib/transaction-idempotency.ts",
+      "sha256": "7335b7e1d226aa1b20ba49c0c251afe9669222f1ef19d3ae3bc9c35a80045fa9"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8"
+    }
+  ],
+  "uniqueFinalTests": 3,
+  "snapshotTestNames": "Historical tests end in .test-source.ts; no duplicate global discovery."
+}

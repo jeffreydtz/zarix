@@ -1,0 +1,330 @@
+{
+  "reviewedAt": "2026-10-15T01:48:55.244080+00:00",
+  "reviewer": "dependency_audit",
+  "method": "Direct view_image inspection of each of the16named CU002/CU004 PNG files, not a browser rerun or automatic binary scan. IHDR dimensions and recorded report hashes independently verified after viewing.",
+  "sourceDirectory": "/tmp/zarix-runtime-20261015/visual-evidence",
+  "sourceReportSha256": "15ca8a038a94607aa256a1ea7eb439f2db9fc2a00bab77168b968c34f134dba9",
+  "sourceReportStatus": "FAIL",
+  "sourceReportRevision": "4f65d26f0d4acd79ab4e335b4ed983c6da13c79a",
+  "runner": {
+    "path": "scripts/test-isolated-visual.mjs",
+    "sha256": "9402409ce5f069ba881f49436637c1335659bb6f87b08add33cdf5087294d215"
+  },
+  "files": [
+    {
+      "path": "CU002-320x568-zoom100.png",
+      "sha256": "6a1504a841f5330f829fb4892d4a52b1205be9bdf2122d4900669bde710bf346",
+      "pixelDimensions": {
+        "width": 320,
+        "height": 568
+      },
+      "cu": "CU002",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Form was scrolled to the Create Account action, so upper fields are outside the visible form region. Background monetary numbers may still be in entrance/number animation and are not an independent DB balance oracle."
+      ]
+    },
+    {
+      "path": "CU002-320x568-zoom200.png",
+      "sha256": "f819c1310f1de1d8886a34e6e55db9f9cea0f10206ef6ac9f71d61b82ed72e83",
+      "pixelDimensions": {
+        "width": 160,
+        "height": 778
+      },
+      "cu": "CU002",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Visible200percent screenshot is cropped/truncated despite passing DOM control metrics; pixel width equals reduced CSS viewport. Capture/compositor interpretation requires reconciliation; do not infer a product defect or complete visual acceptance from it.",
+        "Form was scrolled to the Create Account action, so upper fields are outside the visible form region. Background monetary numbers may still be in entrance/number animation and are not an independent DB balance oracle."
+      ]
+    },
+    {
+      "path": "CU002-375x812-zoom100.png",
+      "sha256": "7674ccd37b1690c9c375e799aa141154f75bc1ec39534498f16799c9ec9b8070",
+      "pixelDimensions": {
+        "width": 375,
+        "height": 812
+      },
+      "cu": "CU002",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Form was scrolled to the Create Account action, so upper fields are outside the visible form region. Background monetary numbers may still be in entrance/number animation and are not an independent DB balance oracle."
+      ]
+    },
+    {
+      "path": "CU002-375x812-zoom200.png",
+      "sha256": "56f9a766624fc93afaf302491ca0f61608836fab7144691e1e33104b03ab5d8b",
+      "pixelDimensions": {
+        "width": 188,
+        "height": 674
+      },
+      "cu": "CU002",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Visible200percent screenshot is cropped/truncated despite passing DOM control metrics; pixel width equals reduced CSS viewport. Capture/compositor interpretation requires reconciliation; do not infer a product defect or complete visual acceptance from it.",
+        "Form was scrolled to the Create Account action, so upper fields are outside the visible form region. Background monetary numbers may still be in entrance/number animation and are not an independent DB balance oracle."
+      ]
+    },
+    {
+      "path": "CU002-768x1024-zoom100-failure.png",
+      "sha256": "6f560278dc8bbff11491eeb0cf3b3a0debd9f07a03946f82328d643a0c58726d",
+      "pixelDimensions": {
+        "width": 781,
+        "height": 4746
+      },
+      "cu": "CU002",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "originalCellStatus": "FAIL",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Original cell FAIL preserved: page horizontal overflow recorded at768px/100percent; failure screenshot does not apply semantic-readiness claim.",
+        "Form was scrolled to the Create Account action, so upper fields are outside the visible form region. Background monetary numbers may still be in entrance/number animation and are not an independent DB balance oracle."
+      ]
+    },
+    {
+      "path": "CU002-768x1024-zoom200.png",
+      "sha256": "c40a15cff1bdc2b1a113d889752255c7671ca91d563763ba5c171aa32143ec37",
+      "pixelDimensions": {
+        "width": 384,
+        "height": 512
+      },
+      "cu": "CU002",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Visible200percent screenshot is cropped/truncated despite passing DOM control metrics; pixel width equals reduced CSS viewport. Capture/compositor interpretation requires reconciliation; do not infer a product defect or complete visual acceptance from it.",
+        "Form was scrolled to the Create Account action, so upper fields are outside the visible form region. Background monetary numbers may still be in entrance/number animation and are not an independent DB balance oracle."
+      ]
+    },
+    {
+      "path": "CU002-1440x900-zoom100.png",
+      "sha256": "391e85a17ba0ea9584da0ec298da64f44209058f5637a17fc918a97ca54f2b96",
+      "pixelDimensions": {
+        "width": 1440,
+        "height": 4726
+      },
+      "cu": "CU002",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Form was scrolled to the Create Account action, so upper fields are outside the visible form region. Background monetary numbers may still be in entrance/number animation and are not an independent DB balance oracle."
+      ]
+    },
+    {
+      "path": "CU002-1440x900-zoom200.png",
+      "sha256": "23b8966d3f1bf307d332036032db544fd63f96061de408e84004c7c64c5576e7",
+      "pixelDimensions": {
+        "width": 720,
+        "height": 450
+      },
+      "cu": "CU002",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Visible200percent screenshot is cropped/truncated despite passing DOM control metrics; pixel width equals reduced CSS viewport. Capture/compositor interpretation requires reconciliation; do not infer a product defect or complete visual acceptance from it.",
+        "Form was scrolled to the Create Account action, so upper fields are outside the visible form region. Background monetary numbers may still be in entrance/number animation and are not an independent DB balance oracle."
+      ]
+    },
+    {
+      "path": "CU004-320x568-zoom100.png",
+      "sha256": "c956d9a4e454e75c8784d60989b99a2c2b80140a7e0b6fd76d2ac16bfa775996",
+      "pixelDimensions": {
+        "width": 320,
+        "height": 568
+      },
+      "cu": "CU004",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Screenshot illustrates the already calculated synthetic simulation and incidental public market cards when visible. It does not prove a new real provider integration or per-viewport completed purchase/sale."
+      ]
+    },
+    {
+      "path": "CU004-320x568-zoom200.png",
+      "sha256": "7b41b126e900171ba81c5a4e177773d62e94a931d068474d0a923ab28f8ebc7f",
+      "pixelDimensions": {
+        "width": 160,
+        "height": 284
+      },
+      "cu": "CU004",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Visible200percent screenshot is cropped/truncated despite passing DOM control metrics; pixel width equals reduced CSS viewport. Capture/compositor interpretation requires reconciliation; do not infer a product defect or complete visual acceptance from it.",
+        "Screenshot illustrates the already calculated synthetic simulation and incidental public market cards when visible. It does not prove a new real provider integration or per-viewport completed purchase/sale."
+      ]
+    },
+    {
+      "path": "CU004-375x812-zoom100.png",
+      "sha256": "676665f7256353e5dbfdea3083a6a49c3498fa886b79c997058a8a368e3e043a",
+      "pixelDimensions": {
+        "width": 375,
+        "height": 812
+      },
+      "cu": "CU004",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Screenshot illustrates the already calculated synthetic simulation and incidental public market cards when visible. It does not prove a new real provider integration or per-viewport completed purchase/sale."
+      ]
+    },
+    {
+      "path": "CU004-375x812-zoom200.png",
+      "sha256": "ccfe6bd20a41ad5df85dc4f692ae6859277774e2c3e6ad9c1778208a8d165f2b",
+      "pixelDimensions": {
+        "width": 188,
+        "height": 406
+      },
+      "cu": "CU004",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Visible200percent screenshot is cropped/truncated despite passing DOM control metrics; pixel width equals reduced CSS viewport. Capture/compositor interpretation requires reconciliation; do not infer a product defect or complete visual acceptance from it.",
+        "Screenshot illustrates the already calculated synthetic simulation and incidental public market cards when visible. It does not prove a new real provider integration or per-viewport completed purchase/sale."
+      ]
+    },
+    {
+      "path": "CU004-768x1024-zoom100-failure.png",
+      "sha256": "12705abeccde600c755c42c486a8b0ff47b2e41a6147bc68f79f64802f6ccb82",
+      "pixelDimensions": {
+        "width": 781,
+        "height": 3073
+      },
+      "cu": "CU004",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "originalCellStatus": "FAIL",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Original cell FAIL preserved: page horizontal overflow recorded at768px/100percent; failure screenshot does not apply semantic-readiness claim.",
+        "Screenshot illustrates the already calculated synthetic simulation and incidental public market cards when visible. It does not prove a new real provider integration or per-viewport completed purchase/sale."
+      ]
+    },
+    {
+      "path": "CU004-768x1024-zoom200.png",
+      "sha256": "e83ae002146bafab75bae4c72d5ed03d0723a44c4848cbcb1f0597cb68372ff3",
+      "pixelDimensions": {
+        "width": 384,
+        "height": 512
+      },
+      "cu": "CU004",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Visible200percent screenshot is cropped/truncated despite passing DOM control metrics; pixel width equals reduced CSS viewport. Capture/compositor interpretation requires reconciliation; do not infer a product defect or complete visual acceptance from it.",
+        "Screenshot illustrates the already calculated synthetic simulation and incidental public market cards when visible. It does not prove a new real provider integration or per-viewport completed purchase/sale."
+      ]
+    },
+    {
+      "path": "CU004-1440x900-zoom100.png",
+      "sha256": "835ae1172be9654fb8a879ca5be30e7282c4e79b76ceecafa32195a5355c9f16",
+      "pixelDimensions": {
+        "width": 1440,
+        "height": 3070
+      },
+      "cu": "CU004",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Screenshot illustrates the already calculated synthetic simulation and incidental public market cards when visible. It does not prove a new real provider integration or per-viewport completed purchase/sale."
+      ]
+    },
+    {
+      "path": "CU004-1440x900-zoom200.png",
+      "sha256": "4d9d326181af261d1aad102f5c482c78cf28d5fd87984f2e585a75ce20c00dd0",
+      "pixelDimensions": {
+        "width": 720,
+        "height": 450
+      },
+      "cu": "CU004",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "originalCellStatus": "PASS",
+      "visiblePrivacy": "No credentials, JWT/cookies, API keys, capability paths or personal data observed in visible pixels; synthetic fixtures and incidental public quotations only.",
+      "limits": [
+        "Visible200percent screenshot is cropped/truncated despite passing DOM control metrics; pixel width equals reduced CSS viewport. Capture/compositor interpretation requires reconciliation; do not infer a product defect or complete visual acceptance from it.",
+        "Screenshot illustrates the already calculated synthetic simulation and incidental public market cards when visible. It does not prove a new real provider integration or per-viewport completed purchase/sale."
+      ]
+    }
+  ],
+  "scope": "Exactly the16actual images listed. CU001/CU003 belong to the E2E reviewer. No PNG metadata inspection, unseen-image attestation, source modifications, runtime/DB access or execution of tests. Privacy approval of visible pixels is separate from compatibility acceptance;200percent capture truncation and original768px overflow failures remain explicit."
+}

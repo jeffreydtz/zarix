@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-15T04:14:41.599Z",
+  "mode": "crypto-unavailable-fiat1200",
+  "buildId": "a2WBtszbvrpoT9GHwToED",
+  "nextPid": 52579,
+  "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "sourceStable": true,
+  "buildProofSha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201",
+  "privateEnvSha256": "32bd5e2d142e278f081fb72aaf07a4ea8f95995c2bb5cdbaae2966493e9d9906",
+  "upstreamOrigins": [
+    "http://127.0.0.1:57910"
+  ],
+  "providerClassification": "controlled local test double, not live CoinGecko",
+  "probe": {
+    "method": "GET",
+    "path": "/simple/price",
+    "status": 503,
+    "responseSha256": "34cd5057747b009fb8ed52e3a41c5fc0cd272f61be04bef3ad170e59e147b932"
+  },
+  "scope": "Actual503 at the exact configured local upstream and unchanged physical completed build before/after. Contract runner independently checks fiat1200 and observes cache/purchase fallback through normal API. No database mutation here."
+}

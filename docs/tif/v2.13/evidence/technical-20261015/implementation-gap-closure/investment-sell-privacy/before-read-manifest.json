@@ -1,0 +1,15 @@
+{
+  "scope": "Same old product; additional GET privacy case before changing either catch",
+  "sources": [
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-read-sources/app/api/investments/[id]/sell/route.ts"
+    },
+    {
+      "path": "__tests__/investment-sell-log-privacy.test.ts",
+      "sha256": "b46145a2c67b4ccde369ce4c29078f7646e8efabe32862f36e00034b491e7755",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-read-sources/__tests__/investment-sell-log-privacy.test-source.ts"
+    }
+  ]
+}

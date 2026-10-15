@@ -1,0 +1,72 @@
+{
+  "status": "INFRA_READY_ACCEPTANCE_PENDING",
+  "children": [
+    {
+      "name": "postgrest",
+      "pid": 83829,
+      "port": 61323,
+      "argv": [
+        "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgrest/v16.4-r0/darwin-arm64/bin/postgrest"
+      ],
+      "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+      "startedAt": "2026-10-15T07:54:41.605476+00:00",
+      "rawOutputDisposition": "discarded-before-filesystem",
+      "exactOwnLoopbackListener": true
+    },
+    {
+      "name": "auth",
+      "pid": 83840,
+      "port": 61327,
+      "argv": [
+        "/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/auth/v2.197.0-r0/darwin-arm64/bin/auth"
+      ],
+      "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+      "startedAt": "2026-10-15T07:54:41.926221+00:00",
+      "rawOutputDisposition": "discarded-before-filesystem",
+      "exactOwnLoopbackListener": true
+    },
+    {
+      "name": "gateway",
+      "pid": 83849,
+      "port": 61321,
+      "argv": [
+        "node",
+        "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/local-http.mjs",
+        "gateway"
+      ],
+      "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+      "startedAt": "2026-10-15T07:54:42.254193+00:00",
+      "rawOutputDisposition": "discarded-before-filesystem",
+      "exactOwnLoopbackListener": true
+    },
+    {
+      "name": "provider",
+      "pid": 83854,
+      "port": 61329,
+      "argv": [
+        "node",
+        "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/local-http.mjs",
+        "provider"
+      ],
+      "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+      "startedAt": "2026-10-15T07:54:42.580328+00:00",
+      "rawOutputDisposition": "discarded-before-filesystem",
+      "exactOwnLoopbackListener": true
+    }
+  ],
+  "revision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "newDatabaseName": "zarix_delta_e4bd026f703549bfa24de940134184b8",
+  "startedAt": "2026-10-15T07:54:41.603396+00:00",
+  "providerControlFile": "/tmp/zarix-runtime-20261015/implementation-delta-db3cf513-b7ad-4f2b-abcd-a2a44aeed27b/provider-control.private.json",
+  "providerJournalFile": "/tmp/zarix-runtime-20261015/implementation-delta-db3cf513-b7ad-4f2b-abcd-a2a44aeed27b/provider-journal.private.jsonl",
+  "providerOrigin": "http://127.0.0.1:61329",
+  "existingCronEnvironmentFile": "/tmp/zarix-runtime-20261015/e2e-app.env",
+  "originalAuthRequests": 0,
+  "newExternalCredentials": false,
+  "authBinarySha256": "2814745719ac5830d28152874dfe23d2bd703c1c985569115d9568d6b9345115",
+  "restBinarySha256": "5ad4c1b59bfa74dcd9ed37038c18f7ce1b091990e1930fc367b6d77a56463af9",
+  "httpSourceSha256": "dca2d230c162345be5dd15d0ace1860e2277badb456619711dce05b78c6b4e33",
+  "processSecretsPassedViaEphemeralEnvironmentOnly": true,
+  "credentialValuesCopiedToFiles": false,
+  "rawOutputDisposition": "discarded-before-filesystem"
+}

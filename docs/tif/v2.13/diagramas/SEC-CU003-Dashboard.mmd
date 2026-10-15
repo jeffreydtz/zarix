@@ -1,0 +1,25 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P07 (B)
+ participant C as Resumen (C)
+ participant Q as Precios (C)
+ participant D as Datos (E)
+ U->>B: Abrir Dashboard
+ B->>C: Cargar contexto propio
+ C->>D: Saldos y posiciones<br/>propios
+ D-->>C: Datos / vacío
+ C->>Q: Referencias y fechas
+ Q-->>C: Tasas/fuentes/estado
+ Note over C: Obtención y fallback<br/>SEC-CU003-Cotizaciones
+ C->>C: Convertir y agregar<br/>componentes
+ C-->>B: Completo/parcial/vacío
+ B-->>U: Totales y origen
+ U->>B: Período/cuenta/categoría
+ B->>C: Consultar detalle
+ C->>D: Hechos propios del<br/>período
+ D-->>C: Movimientos
+ C->>C: Sumar ingreso/gasto
+ C-->>B: Cifras y filtros
+ B-->>U: Reconstrucción del<br/>total
+ Note over C: Transferencia no es<br/>gasto efectivo +<br/>posición una sola vez

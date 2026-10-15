@@ -1,0 +1,21 @@
+{
+  "status": "PRESERVED_20_PASS_THEN_BOOLEAN_JSON_PARSER_FAIL",
+  "files": [
+    {
+      "path": "plan.json",
+      "sha256": "d53e9cf0f175cde42525135e3bd67e7c680eeccc48216db861c5c1dea635254d"
+    },
+    {
+      "path": "verification.json",
+      "sha256": "3a33400ef11c1cca00bfd57cf6fb1c842d72e61b37f109724822bebe051b365f"
+    },
+    {
+      "path": "prepared-checks.json",
+      "sha256": "251c848667013d3f858bcb1ff90e1d10410a3556784c701f732ddb48e314f85e"
+    },
+    {
+      "path": "run-nominal.py",
+      "sha256": "309e06c3629646ab84677e9f0531c9783b1139ddcc8b6cdaa31259ad3752480c"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "case_id": "CP1-24",
+  "status": "PASS",
+  "scope": "Actual current worker and Supabase service-role client against the same new native DB via realPostgREST. Only sendTelegramDm replaced by local capturing provider double. Backend delivery role; no RLS/Authuser or realTelegram acceptance claim.",
+  "accepted": [
+    {
+      "syntheticChatId": -8600000124,
+      "text": "🔄 *Transacción recurrente ejecutada*\n\n💸 Gasto diario: *EmptyFollowup124 e87c54b9-6455-4c38-ab51-6fdbd34f7d0f*\n💰 $1.000 ARS",
+      "accepted": true
+    }
+  ],
+  "delivered": {
+    "delivered": 1,
+    "failed": 0
+  },
+  "replay": {
+    "delivered": 0,
+    "failed": 0
+  },
+  "financialSha256Before": "f9ec1c5710b4ad2b33dd3dc9f13dae873bc37ae6cfcfa0374673df5553a1c29f",
+  "financialSha256After": "f9ec1c5710b4ad2b33dd3dc9f13dae873bc37ae6cfcfa0374673df5553a1c29f",
+  "sameFinancialRows": true,
+  "outbox": {
+    "id": "06b5b454-6f72-40bd-9fe8-5bc955785619",
+    "event_key": "recurring:b2be44b3-1cd6-410e-b3cc-7395eb9c0843:2026-10-06",
+    "attempts": 1,
+    "delivered_at": "2026-10-15T06:14:31.935+00:00"
+  }
+}

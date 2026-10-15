@@ -12,6 +12,7 @@ export const USER_CLIENT_SAFE_COLUMNS = [
   'current_period_end',
   'grace_period_end',
   'default_currency',
+  'net_worth_widget_visible',
   'timezone',
   'notification_time',
   'daily_summary_enabled',

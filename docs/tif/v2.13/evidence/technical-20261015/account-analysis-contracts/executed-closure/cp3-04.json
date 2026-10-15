@@ -1,0 +1,912 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T05:21:51.273Z",
+  "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD.",
+  "results": [
+    {
+      "case_id": "CP3-04",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Converted own account API200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "No foreign account owner in result",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "OriginalARS120000",
+          "actual": true,
+          "expected": true,
+          "numericActual": 120000,
+          "numericExpected": 120000,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "OriginalUSD100",
+          "actual": true,
+          "expected": true,
+          "numericActual": 100,
+          "numericExpected": 100,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Own API converted wealthUSD",
+          "actual": true,
+          "expected": true,
+          "numericActual": 200,
+          "numericExpected": 200,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual dashboard SSR200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual SSR aggregate totalARSBlue",
+          "actual": true,
+          "expected": true,
+          "numericActual": 240000,
+          "numericExpected": 240000,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual SSR aggregate totalUSD",
+          "actual": true,
+          "expected": true,
+          "numericActual": 200,
+          "numericExpected": 200,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "SSR secondary data numeric value",
+          "actual": true,
+          "expected": true,
+          "numericActual": 200,
+          "numericExpected": 200,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        }
+      ],
+      "original_contract": {
+        "precondiciones": "U1 A=120000ARS B=100USD; nocartera; fixture1USD=1200ARS",
+        "entrada": "consultar patrimonioARS/USD",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "líquido=total=240000ARS=200USD; original120000/100 intacto",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "startedAt": "2026-10-15T05:21:54.244Z",
+      "apiSqlScope": {
+        "status": "PASS",
+        "assertions": 11
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP3-04",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "16836fc6-6c1d-4a83-b4e0-99f7b8b83743",
+      "startedAt": "2026-10-15T05:21:54.616Z",
+      "status": 201,
+      "responseSha256": "bcc6e8ed05698a8b298d27bbcd063af70ed08e8c2073aeafde86bb106ba61677",
+      "endedAt": "2026-10-15T05:21:54.712Z"
+    },
+    {
+      "caseId": "CP3-04",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "f41f0cab-3b68-42d5-b298-78e48f2de0ed",
+      "startedAt": "2026-10-15T05:21:54.862Z",
+      "status": 201,
+      "responseSha256": "4193832df418de804905f7fa720ccb2093c107f23acfe22f035193cfc5624d04",
+      "endedAt": "2026-10-15T05:21:54.954Z"
+    },
+    {
+      "caseId": "CP3-04",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "56b6fd5c-ffaa-4025-8c51-bbd0a95164f7",
+      "startedAt": "2026-10-15T05:21:55.031Z",
+      "status": 200,
+      "responseSha256": "2b6a2f412417ba064dbc7989c935e3aff7dcafd13e3cbb5e99f82e543c71cf06",
+      "endedAt": "2026-10-15T05:21:55.117Z"
+    },
+    {
+      "caseId": "CP3-04",
+      "method": "GET",
+      "path": "/dashboard",
+      "kind": "ordinary-authenticated-SSR",
+      "startedAt": "2026-10-15T05:21:55.398Z",
+      "status": 200,
+      "responseSha256": "74fa7efae6d98ab4e4a48523a62948f1cf90f89cf90786d5f0542eaa30701f2f",
+      "endedAt": "2026-10-15T05:21:55.548Z"
+    },
+    {
+      "caseId": "CP3-04",
+      "method": "DELETE",
+      "path": "/api/accounts/8e07dbda-dcad-45a9-8f8e-eb3c508db9a7",
+      "requestId": "44edf36f-8cff-436e-a720-c61d1013a8b2",
+      "startedAt": "2026-10-15T05:21:55.713Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T05:21:55.801Z"
+    },
+    {
+      "caseId": "CP3-04",
+      "method": "DELETE",
+      "path": "/api/accounts/046f8eeb-963b-44de-97a0-309c94cc35b1",
+      "requestId": "ba26ef0d-39dc-476c-bb93-6529da4ace22",
+      "startedAt": "2026-10-15T05:21:55.879Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T05:21:55.966Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "8e07dbda-dcad-45a9-8f8e-eb3c508db9a7",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP3-04"
+    },
+    {
+      "kind": "account",
+      "id": "046f8eeb-963b-44de-97a0-309c94cc35b1",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP3-04"
+    }
+  ],
+  "executionCount": 1,
+  "case": {
+    "case_id": "CP3-04",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Converted own account API200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "No foreign account owner in result",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "OriginalARS120000",
+        "actual": true,
+        "expected": true,
+        "numericActual": 120000,
+        "numericExpected": 120000,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "OriginalUSD100",
+        "actual": true,
+        "expected": true,
+        "numericActual": 100,
+        "numericExpected": 100,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "Own API converted wealthUSD",
+        "actual": true,
+        "expected": true,
+        "numericActual": 200,
+        "numericExpected": 200,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual dashboard SSR200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual SSR aggregate totalARSBlue",
+        "actual": true,
+        "expected": true,
+        "numericActual": 240000,
+        "numericExpected": 240000,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual SSR aggregate totalUSD",
+        "actual": true,
+        "expected": true,
+        "numericActual": 200,
+        "numericExpected": 200,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "SSR secondary data numeric value",
+        "actual": true,
+        "expected": true,
+        "numericActual": 200,
+        "numericExpected": 200,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      }
+    ],
+    "original_contract": {
+      "precondiciones": "U1 A=120000ARS B=100USD; nocartera; fixture1USD=1200ARS",
+      "entrada": "consultar patrimonioARS/USD",
+      "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+      "resultado_esperado": "líquido=total=240000ARS=200USD; original120000/100 intacto",
+      "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+    },
+    "startedAt": "2026-10-15T05:21:54.244Z",
+    "apiSqlScope": {
+      "status": "PASS",
+      "assertions": 11
+    }
+  },
+  "runtimeProfile": "final-core-closure",
+  "runtimeMode": "clock",
+  "ssrAnalysis": false,
+  "ssrWealth": true,
+  "ssrPartial": false,
+  "executionMode": "api-sql-only",
+  "logicalOwner": "A",
+  "pendingScopes": [],
+  "run": "605e2761-6516-4f78-8bcd-3635fecfef91",
+  "nativePreparation": {
+    "sha256": "b94b67366b193af018f973d7e3689a32b9f59b0e7436d5e762ea72db1cd31bc4",
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "normalAuthIdsBound": true
+  },
+  "buildBinding": {
+    "profile": "final-core-closure",
+    "runtimeMode": "clock",
+    "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+    "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+    "nextPid": 39320,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "coreVerificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+    "buildProofSha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+    "physicalSourceCount": 483,
+    "frozenGitSourceCount": 482,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "privateEnvBoundToExactNativeProject": true,
+    "ownedListenerAndCwdVerified": true,
+    "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+  },
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+      "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "109cf8c390ab92d611e3485c803275c4692c2d514b546ff14f4d1d5f374912d3",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "c5f7dc9c57ac269b6016779db679d78406ec68c67187ac40bf40cb2ed92417c8",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/(authenticated)/analysis/page.tsx",
+      "sha256": "4e8385c1beca38ca72dc1bffc8a17d579ef9aaa6c9af8f567097588e5182e06d",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/analytics.ts",
+      "sha256": "0ba095592475031edf3d2d0911250c1f06a6b666527b7bbddd66562b53741d47",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/analysis-period.ts",
+      "sha256": "5ec178038a9e74574e3bdae5119fa96252b9a2a9851973e087b8219f65469e72",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "components/analysis/AnalysisCharts.tsx",
+      "sha256": "31bf3e0d9897875ba907e94d6a3e3c231461365afd34368877f56da241304cd6",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "components/analysis/AnalysisPeriodPicker.tsx",
+      "sha256": "545f3c9fb45294b84129dd1ca47c38514989663b1a22cc993a62305704efac3b",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "8d054941142c18363bac25f027aade6e88e111c38665a3ac1e8f53ce2fa8fdab",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "4ccb9c3fcd79fb087d23a97e7dd42797b3a66b9439cb31647eb48a4eae142bf9",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "de22df2cd35af938fdda8123099efa229ce503ad3785cf05229fd8e1e7f40762",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "scope": "Frozen84df929ab2f169251a49f3e95d0e0c148dfcb87c clock build; current checkout differences disclosed separately"
+    }
+  ],
+  "workingSourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/profiles.json",
+      "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "109cf8c390ab92d611e3485c803275c4692c2d514b546ff14f4d1d5f374912d3"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "c5f7dc9c57ac269b6016779db679d78406ec68c67187ac40bf40cb2ed92417c8"
+    },
+    {
+      "path": "app/(authenticated)/analysis/page.tsx",
+      "sha256": "4e8385c1beca38ca72dc1bffc8a17d579ef9aaa6c9af8f567097588e5182e06d"
+    },
+    {
+      "path": "lib/services/analytics.ts",
+      "sha256": "0ba095592475031edf3d2d0911250c1f06a6b666527b7bbddd66562b53741d47"
+    },
+    {
+      "path": "lib/analysis-period.ts",
+      "sha256": "5ec178038a9e74574e3bdae5119fa96252b9a2a9851973e087b8219f65469e72"
+    },
+    {
+      "path": "components/analysis/AnalysisCharts.tsx",
+      "sha256": "31bf3e0d9897875ba907e94d6a3e3c231461365afd34368877f56da241304cd6"
+    },
+    {
+      "path": "components/analysis/AnalysisPeriodPicker.tsx",
+      "sha256": "545f3c9fb45294b84129dd1ca47c38514989663b1a22cc993a62305704efac3b"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "8d054941142c18363bac25f027aade6e88e111c38665a3ac1e8f53ce2fa8fdab"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "4ccb9c3fcd79fb087d23a97e7dd42797b3a66b9439cb31647eb48a4eae142bf9"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "de22df2cd35af938fdda8123099efa229ce503ad3785cf05229fd8e1e7f40762"
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "unbuiltCurrentDeltas": [],
+  "clockProof": {
+    "path": "closure-proof-clock-observation.json",
+    "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+    "fixedTime": "2026-10-06T12:00:00.000Z",
+    "observedApplicationTime": "2026-10-06T12:00:00.000Z",
+    "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+  },
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "users": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "logicalRole": "selected-owner",
+      "physicalLabel": "A",
+      "normalAuth": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "logicalRole": "other-owner",
+      "physicalLabel": "B",
+      "normalAuth": true
+    }
+  ],
+  "ssrOwnershipSource": {
+    "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+    "sourceRun": "56423408-b755-44b5-8045-45e1a6b925ee"
+  },
+  "ssrSnapshotOwnership": {
+    "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+    "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "snapshotDate": "2026-10-06",
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "initialCount": 0,
+    "createdByOrdinaryDashboardSSR": true,
+    "createdDuringRun": "56423408-b755-44b5-8045-45e1a6b925ee"
+  },
+  "ssrSnapshotInventoryBefore": {
+    "table": "net_worth_snapshots",
+    "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+    "snapshotDate": "2026-10-06",
+    "existing": 1,
+    "ownedExistingId": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+    "beforeSha256": "83b507e9e2b622fb54cc1a0a0012eb58ba7b9a031a5c74b999083570b100c913",
+    "before": [
+      {
+        "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+        "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "total_usd": -98.33,
+        "created_at": "2026-10-15T05:03:36.988847+00:00",
+        "liquid_usd": -98.33,
+        "snapshot_date": "2026-10-06",
+        "total_ars_blue": -118000,
+        "investments_usd": 0,
+        "blue_ars_per_usd": 1200
+      }
+    ]
+  },
+  "ssrObservations": [
+    {
+      "path": "/dashboard",
+      "status": 200,
+      "responseSha256": "74fa7efae6d98ab4e4a48523a62948f1cf90f89cf90786d5f0542eaa30701f2f",
+      "compiled": {
+        "module": {
+          "id": 48648,
+          "name": "*",
+          "chunks": [
+            "6815",
+            "static/chunks/d7509858-b5bfa9c471a66b9e.js",
+            "8333",
+            "static/chunks/8333-c31a2ed39f1c1a7b.js",
+            "418",
+            "static/chunks/418-bf981cd8137a170a.js",
+            "4433",
+            "static/chunks/4433-d54e1b89122e6cec.js",
+            "5940",
+            "static/chunks/5940-ca7f71b8fb1bf179.js",
+            "4390",
+            "static/chunks/4390-3b5cb54eb8a2c748.js",
+            "640",
+            "static/chunks/640-82eeea1f82f63315.js",
+            "2077",
+            "static/chunks/2077-46496adc4c75db5a.js",
+            "508",
+            "static/chunks/508-aefa69ea3371fc93.js",
+            "9503",
+            "static/chunks/9503-a190351e1a5d1f64.js",
+            "4172",
+            "static/chunks/app/(authenticated)/dashboard/page-4a5923bad2b687bc.js"
+          ],
+          "async": false
+        },
+        "manifestPath": ".next/server/app/(authenticated)/dashboard/page_client-reference-manifest.js",
+        "manifestSha256": "e8977f7dcb0044d248772c751556c0e233d7206c9035f779fdc6f75d4b9b23a7",
+        "component": "components/dashboard/NetWorthHero.tsx"
+      },
+      "scope": "Actual ordinary authenticated server response and client-component Flight props. No browser, hydration, animation, chart or visual acceptance claimed.",
+      "now": {
+        "liquidUSD": 200,
+        "investmentsUSD": 0,
+        "totalUSD": 200,
+        "totalARSBlue": 240000,
+        "blueRate": 1200,
+        "blueReferences": [
+          {
+            "component": "accounts",
+            "reference": {
+              "type": "blue",
+              "side": "sell",
+              "rate": 1200,
+              "observedAt": "2026-10-06T12:00:00.000Z",
+              "provider": "criptoya",
+              "origin": "provider"
+            }
+          }
+        ]
+      },
+      "amounts": [
+        {
+          "value": "0",
+          "text": "$ 0"
+        },
+        {
+          "value": "200",
+          "text": "≈ US$ 200"
+        }
+      ],
+      "expectedSecondaryText": "≈ US$ 200",
+      "snapshot": {
+        "before": [
+          {
+            "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "total_usd": -98.33,
+            "created_at": "2026-10-15T05:03:36.988847+00:00",
+            "liquid_usd": -98.33,
+            "snapshot_date": "2026-10-06",
+            "total_ars_blue": -118000,
+            "investments_usd": 0,
+            "blue_ars_per_usd": 1200
+          }
+        ],
+        "after": [
+          {
+            "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "total_usd": 200,
+            "created_at": "2026-10-15T05:03:36.988847+00:00",
+            "liquid_usd": 200,
+            "snapshot_date": "2026-10-06",
+            "total_ars_blue": 240000,
+            "investments_usd": 0,
+            "blue_ars_per_usd": 1200
+          }
+        ],
+        "intendedOwnedUpsert": true,
+        "completedBeforeFixtureCleanup": true
+      },
+      "secondaryTextScope": "Recorded only. This original contract imposes calculation/debt/valuation, not an additional text-decimal criterion."
+    }
+  ],
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 122,
+      "beforeMd5": "6993969351401ff1d2356b358201a7c2",
+      "afterMd5": "6993969351401ff1d2356b358201a7c2",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 168,
+      "beforeMd5": "7deb5f9017c156444ae63ce9692a6037",
+      "afterMd5": "7deb5f9017c156444ae63ce9692a6037",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 22,
+      "beforeMd5": "e0358b3a791e5d98ea59ea08cca7b1eb",
+      "afterMd5": "e0358b3a791e5d98ea59ea08cca7b1eb",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 8,
+      "beforeMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "afterMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 40,
+      "beforeMd5": "b7f73cf9375340da72f78017a768fe59",
+      "afterMd5": "b7f73cf9375340da72f78017a768fe59",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 10,
+      "beforeMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "afterMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "servedBuildStable": true,
+  "finishedAt": "2026-10-15T05:21:57.154Z"
+}

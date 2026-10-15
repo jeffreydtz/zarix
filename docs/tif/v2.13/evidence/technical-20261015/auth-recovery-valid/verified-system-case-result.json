@@ -1,0 +1,43 @@
+{
+  "case_id": "CP2-10",
+  "status": "PASS",
+  "complete_original_contract": true,
+  "evidence": "resume/verification.json",
+  "assertions": [
+    "Original password accepts before the one reset request",
+    "Successful ordinary Auth response belongs to the same existing identity",
+    "The same retained real recovery request200 and private SMTP input are verified before continuation",
+    "Continuation dispatches no second recovery request or new SMTP message",
+    "The exact new recovery token came from the requested local SMTP message",
+    "Delivered valid recovery token yields a real authenticated session",
+    "Successful ordinary Auth response belongs to the same existing identity",
+    "Recovery session replaces the password for the same identity",
+    "Old password is denied after recovery",
+    "New password accepts after recovery",
+    "Successful ordinary Auth response belongs to the same existing identity",
+    "The same delivered recovery token is consumed and cannot create another session",
+    "Original password is restored and accepts on the isolated clone",
+    "Successful ordinary Auth response belongs to the same existing identity",
+    "Temporary replacement password is denied after restoration",
+    "All newly owned Auth sessions and their refresh grants are closed",
+    "No original/replacement password or issued token appears in ordinary Auth/SMTP logs",
+    "Original and fixture public rows remain unchanged"
+  ],
+  "assertionCount": 18,
+  "originalRecoveryPhase": "recovery-attempt-1/verification.json",
+  "resumeUsesSameEmailAndToken": true,
+  "secondRecoveryRequest": false,
+  "scope": "Original API Auth recovery contract with declared local SMTP transport double, same existing identity and exact retained email/token. Does not establish email-link click/UI routing, reset UI or external email delivery.",
+  "passwordRestorationConfirmed": true,
+  "ownSessionClosure": {
+    "knownOwnSessions": 4,
+    "remainingSessions": 0,
+    "unrevokedRefreshTokens": 0,
+    "allOwnSessionsClosed": true,
+    "scope": "Read-only observation of newly owned sessions only; no global logout or unrelated-session revocation"
+  },
+  "sourceStable": true,
+  "publicAndOriginalAuthRowsUnchanged": true,
+  "ordinaryLogSecretMatches": 0,
+  "tokenOrPasswordValuesPublished": false
+}

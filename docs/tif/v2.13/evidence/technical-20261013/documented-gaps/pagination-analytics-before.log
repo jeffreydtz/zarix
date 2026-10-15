@@ -1,0 +1,284 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.3 /Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix
+
+ ❯ __tests__/analytics-pagination.test.ts (10 tests | 8 failed) 20ms
+   ❯ analytics full reads with a 1000-row server cap (10)
+     × sums every eligible expense and category count, preserving owner/date/archived filters 8ms
+     × reads every month row and preserves expansion of the start date to the month first 3ms
+     × reads every row before grouping income and expenses by civil day 2ms
+     × includes expenses past the first page in account amounts and percentages 1ms
+     × rejects a second-page error instead of returning partial or zero category totals 2ms
+     × rejects a second-page error instead of returning partial or zero monthly totals 1ms
+     × rejects a second-page error instead of returning partial or zero daily totals 1ms
+     × rejects a second-page error instead of returning partial or zero account totals 1ms
+     ✓ preserves the existing null-account inclusion and archived-account exclusion 1ms
+     ✓ retains legitimate empty results and zero buckets without confusing them with read failures 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  __tests__/analytics-pagination.test.ts > analytics full reads with a 1000-row server cap > sums every eligible expense and category count, preserving owner/date/archived filters
+AssertionError: expected [ { name: 'Category A', …(2) } ] to deeply equal [ { name: 'Category B', …(2) }, …(1) ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "amount": 130400,
+-     "count": 300,
+-     "name": "Category B",
+-   },
+-   {
+-     "amount": 1100,
+-     "count": 1100,
++     "amount": 1000,
++     "count": 1000,
+      "name": "Category A",
+    },
+  ]
+
+ ❯ __tests__/analytics-pagination.test.ts:135:80
+    133|   it('sums every eligible expense and category count, preserving owner…
+    134|     const result = await analyticsService.getCategoryBreakdown(OWNER, …
+    135|     expect(result.map(({ name, amount, count }) => ({ name, amount, co…
+       |                                                                                ^
+    136|       { name: 'Category B', amount: 130400, count: 300 },
+    137|       { name: 'Category A', amount: 1100, count: 1100 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  __tests__/analytics-pagination.test.ts > analytics full reads with a 1000-row server cap > reads every month row and preserves expansion of the start date to the month first
+AssertionError: expected [ { month: '2026-10', …(4) } ] to deeply equal [ { month: '2026-10', …(4) } ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "balance": -131000,
+-     "expenses": 131500,
+-     "income": 500,
++     "balance": -1000,
++     "expenses": 1000,
++     "income": 0,
+      "month": "2026-10",
+      "monthLabel": "Oct 26",
+    },
+  ]
+
+ ❯ __tests__/analytics-pagination.test.ts:148:20
+    146|   it('reads every month row and preserves expansion of the start date …
+    147|     const result = await analyticsService.getMonthlyTrend(OWNER, '2026…
+    148|     expect(result).toEqual([{
+       |                    ^
+    149|       month: '2026-10', monthLabel: 'Oct 26', expenses: 131500, income…
+    150|     }]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  __tests__/analytics-pagination.test.ts > analytics full reads with a 1000-row server cap > reads every row before grouping income and expenses by civil day
+AssertionError: expected [ { date: '2026-10-01', …(3) }, …(2) ] to deeply equal [ { date: '2026-10-01', …(3) }, …(2) ]
+
+- Expected
++ Received
+
+  [
+    {
+      "date": "2026-10-01",
+      "dayLabel": "1/10",
+-     "expenses": 1100,
++     "expenses": 1000,
+      "income": 0,
+    },
+    {
+      "date": "2026-10-02",
+      "dayLabel": "2/10",
+-     "expenses": 130400,
++     "expenses": 0,
+      "income": 0,
+    },
+    {
+      "date": "2026-10-03",
+      "dayLabel": "3/10",
+      "expenses": 0,
+-     "income": 500,
++     "income": 0,
+    },
+  ]
+
+ ❯ __tests__/analytics-pagination.test.ts:158:69
+    156|
+    157|   it('reads every row before grouping income and expenses by civil day…
+    158|     expect(await analyticsService.getDailyTrend(OWNER, START, END)).to…
+       |                                                                     ^
+    159|       { date: START, dayLabel: '1/10', expenses: 1100, income: 0 },
+    160|       { date: '2026-10-02', dayLabel: '2/10', expenses: 130400, income…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  __tests__/analytics-pagination.test.ts > analytics full reads with a 1000-row server cap > includes expenses past the first page in account amounts and percentages
+AssertionError: expected [ { name: 'Account A', amount: 1000 } ] to deeply equal [ { name: 'Account B', …(1) }, …(1) ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "amount": 130400,
+-     "name": "Account B",
+-   },
+-   {
+-     "amount": 1100,
++     "amount": 1000,
+      "name": "Account A",
+    },
+  ]
+
+ ❯ __tests__/analytics-pagination.test.ts:168:66
+    166|   it('includes expenses past the first page in account amounts and per…
+    167|     const result = await analyticsService.getAccountBreakdown(OWNER, S…
+    168|     expect(result.map(({ name, amount }) => ({ name, amount }))).toEqu…
+       |                                                                  ^
+    169|       { name: 'Account B', amount: 130400 }, { name: 'Account A', amou…
+    170|     ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  __tests__/analytics-pagination.test.ts > analytics full reads with a 1000-row server cap > rejects a second-page error instead of returning partial or zero category totals
+AssertionError: promise resolved "[ { name: 'Category A', …(5) } ]" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+[
+  {
+    "amount": 1000,
+    "color": "#EF4444",
+    "count": 1000,
+    "icon": "A",
+    "name": "Category A",
+    "percent": 100,
+  },
+]
+
+ ❯ __tests__/analytics-pagination.test.ts:183:25
+    181|       account: () => analyticsService.getAccountBreakdown(OWNER, START…
+    182|     }[method];
+    183|     await expect(read()).rejects.toMatchObject(pageError);
+       |                         ^
+    184|     expect(mocks.calls).toHaveLength(2);
+    185|     expect(mocks.converter).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  __tests__/analytics-pagination.test.ts > analytics full reads with a 1000-row server cap > rejects a second-page error instead of returning partial or zero monthly totals
+AssertionError: promise resolved "[ { month: '2026-10', …(4) } ]" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+[
+  {
+    "balance": -1000,
+    "expenses": 1000,
+    "income": 0,
+    "month": "2026-10",
+    "monthLabel": "Oct 26",
+  },
+]
+
+ ❯ __tests__/analytics-pagination.test.ts:183:25
+    181|       account: () => analyticsService.getAccountBreakdown(OWNER, START…
+    182|     }[method];
+    183|     await expect(read()).rejects.toMatchObject(pageError);
+       |                         ^
+    184|     expect(mocks.calls).toHaveLength(2);
+    185|     expect(mocks.converter).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  __tests__/analytics-pagination.test.ts > analytics full reads with a 1000-row server cap > rejects a second-page error instead of returning partial or zero daily totals
+AssertionError: promise resolved "[ { date: '2026-10-01', …(3) }, …(2) ]" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+[
+  {
+    "date": "2026-10-01",
+    "dayLabel": "1/10",
+    "expenses": 1000,
+    "income": 0,
+  },
+  {
+    "date": "2026-10-02",
+    "dayLabel": "2/10",
+    "expenses": 0,
+    "income": 0,
+  },
+  {
+    "date": "2026-10-03",
+    "dayLabel": "3/10",
+    "expenses": 0,
+    "income": 0,
+  },
+]
+
+ ❯ __tests__/analytics-pagination.test.ts:183:25
+    181|       account: () => analyticsService.getAccountBreakdown(OWNER, START…
+    182|     }[method];
+    183|     await expect(read()).rejects.toMatchObject(pageError);
+       |                         ^
+    184|     expect(mocks.calls).toHaveLength(2);
+    185|     expect(mocks.converter).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  __tests__/analytics-pagination.test.ts > analytics full reads with a 1000-row server cap > rejects a second-page error instead of returning partial or zero account totals
+AssertionError: promise resolved "[ { name: 'Account A', …(4) } ]" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+[
+  {
+    "amount": 1000,
+    "color": "#111111",
+    "icon": "A",
+    "name": "Account A",
+    "percent": 100,
+  },
+]
+
+ ❯ __tests__/analytics-pagination.test.ts:183:25
+    181|       account: () => analyticsService.getAccountBreakdown(OWNER, START…
+    182|     }[method];
+    183|     await expect(read()).rejects.toMatchObject(pageError);
+       |                         ^
+    184|     expect(mocks.calls).toHaveLength(2);
+    185|     expect(mocks.converter).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 2 passed (10)
+   Start at  22:10:43
+   Duration  246ms (transform 51%, tests 30%, import 14%, worker 5%)
+
+JSON report written to /Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261013/documented-gaps/pagination-analytics-before.json

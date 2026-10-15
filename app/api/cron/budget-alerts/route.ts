@@ -8,7 +8,7 @@ export const maxDuration = 60;
 /**
  * Chequeo diario de presupuestos del mes en curso: por cada usuario con
  * presupuestos, evalúa umbrales (alert_at_percent y 100%) y manda la alerta
- * por Telegram una sola vez por nivel (dedupe vía budget_alerts).
+ * por Telegram con un evento durable por presupuesto y nivel.
  */
 class BudgetAlertsJob extends IterativeCronJob<{ userId: string }> {
   readonly name = 'budget-alerts';

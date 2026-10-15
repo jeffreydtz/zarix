@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-15T03:54:12.316069+00:00",
+  "provenance": "Direct parent relay of human steering,15October2026; no browser or OS preference action performed by this record.",
+  "browsers": {
+    "Chrome": {
+      "status": "EXISTING_BROWSER_AUTHORIZED",
+      "execution": "Only dedicated test profiles; existing installed Chrome."
+    },
+    "Firefox": {
+      "status": "DECLINED_INSTALL",
+      "tests": "NOT_EXECUTED",
+      "reason": "Not installed; human declined installation."
+    },
+    "Edge": {
+      "status": "DECLINED_INSTALL",
+      "tests": "NOT_EXECUTED",
+      "reason": "Not installed; human declined installation."
+    },
+    "Arc": {
+      "status": "AUTHORIZED_NATIVE_PERMISSION_GRANTED_UI_REFERENCE_BLOCKED",
+      "executionAllowed": false,
+      "tests": "BLOCKED",
+      "version": "1.168.0",
+      "build": "88413",
+      "reason": "Human consent and native permission result0 confirmed. One reviewed incognito-window preflight failed at own incognito property resolution(-1728); close of own returned reference was not confirmed. No further make/attach/quit/enumeration pending cleanup reconciliation.",
+      "nativePermissionEvidence": "arc-launch-permission-preflight.json",
+      "executionEvidence": "arc-newtab-execution.json",
+      "ownWindowCleanup": "UNCONFIRMED",
+      "explicitLocalTabMakeReached": false,
+      "domReadReached": false
+    },
+    "Safari": {
+      "status": "WEBDRIVER_DISABLED",
+      "tests": "BLOCKED",
+      "action": "No change to Remote Automation, TCC, preferences or other permission."
+    }
+  },
+  "interpretation": "Historical Chrome tests do not establish Arc, Safari, Firefox or Edge compatibility. No browser equivalence is claimed."
+}

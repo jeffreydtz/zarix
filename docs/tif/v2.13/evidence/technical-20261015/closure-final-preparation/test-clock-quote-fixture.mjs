@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { clockQuoteFixture, fixedTime } from './clock-quote-fixture.mjs';
+const primary=clockQuoteFixture('/dolar');
+assert.equal(primary.status,200);
+assert.equal(primary.body.blue.bid,1200);
+assert.equal(primary.body.blue.ask,1200);
+assert.equal(new Date(primary.body.blue.timestamp*1000).toISOString(),fixedTime);
+assert.equal(primary.body.mep.al30['24hs'].price,1200);
+const secondary=clockQuoteFixture('/dolares');
+assert.equal(secondary.body.length,4);
+assert.ok(secondary.body.every(q=>q.compra===1200&&q.venta===1200&&q.fechaActualizacion===fixedTime));
+const crypto=clockQuoteFixture('/simple/price');
+assert.deepEqual(Object.fromEntries(Object.entries(crypto.body).map(([id,q])=>[id,q.usd])),{bitcoin:60000,ethereum:2500,tether:1});
+assert.ok(Object.values(crypto.body).every(q=>q.ars===q.usd*1200&&new Date(q.last_updated_at*1000).toISOString()===fixedTime));
+assert.deepEqual(clockQuoteFixture('/dolar'),primary);
+assert.equal(clockQuoteFixture('/not-a-provider-route').status,404);
+console.log(JSON.stringify({status:'PASS_MODEL_ONLY',assertions:11,scope:'Pure fixture-body/idempotence checks; import starts no listener. No HTTP, database or provider request executed.'}));

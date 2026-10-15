@@ -1,0 +1,1334 @@
+{
+  "status": "FAIL",
+  "startedAt": "2026-10-15T05:44:53.333350+00:00",
+  "scope": "Nominal SQL-only additional recovery; complete original CNF12 remains BLOCKED",
+  "completeOriginalContract": false,
+  "assertions": [
+    {
+      "name": "Both names identify the exact new databases",
+      "actual": [
+        "cnf12_source_836ea2b13ba649fa891be962c8f803dc",
+        "cnf12_target_3000a0d2ff074380ac90df368a87a33b"
+      ],
+      "expected": [
+        "cnf12_source_836ea2b13ba649fa891be962c8f803dc",
+        "cnf12_target_3000a0d2ff074380ac90df368a87a33b"
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Target has no user tables before restore",
+      "actual": 0,
+      "expected": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "Source has exactly the existing two Auth IDs",
+      "actual": [
+        "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "172273ed-7c48-427d-a55b-742069a4d9de"
+      ],
+      "expected": [
+        "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "172273ed-7c48-427d-a55b-742069a4d9de"
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Source financial tables are empty",
+      "actual": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Exactly one existing group reused",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "Existing guest retained without new identity",
+      "actual": true,
+      "expected": true,
+      "status": "PASS"
+    },
+    {
+      "name": "Anon and authenticated do not bypass RLS",
+      "actual": 0,
+      "expected": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "Exact nominal counts include every economic ledger row; no opening adjustment hidden",
+      "actual": {
+        "public.accounts": 2,
+        "public.transactions": 20,
+        "public.investments": 3,
+        "public.recurring_rules": 1,
+        "public.shared_groups": 1,
+        "auth.users": 2
+      },
+      "expected": {
+        "public.accounts": 2,
+        "public.transactions": 20,
+        "public.investments": 3,
+        "public.recurring_rules": 1,
+        "public.shared_groups": 1,
+        "auth.users": 2
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "Nominal source balances",
+      "actual": [
+        "10000.00000000",
+        "2000.00000000"
+      ],
+      "expected": [
+        "10000.00000000",
+        "2000.00000000"
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Nominal income expense net transfer totals",
+      "actual": [
+        12800.0,
+        800.0,
+        12000.0,
+        2
+      ],
+      "expected": [
+        12800,
+        800,
+        12000,
+        2
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "All three lots have independent exact cost/value/PnL",
+      "actual": [
+        300.0,
+        330.0,
+        30.0
+      ],
+      "expected": [
+        300,
+        330,
+        30
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Model last business movement is exactly05Oct13Z",
+      "actual": "2026-10-05T13:00:00Z",
+      "expected": "2026-10-05T13:00:00Z",
+      "status": "PASS"
+    },
+    {
+      "name": "Source unchanged during dump",
+      "actual": {
+        "auth.audit_log_entries": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.custom_oauth_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.flow_state": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.identities": {
+          "count": 2,
+          "sha256": "cb7815c785809b3110f1f57b90e1da13909a9e9edf08b2071166b120f7312ab9"
+        },
+        "auth.instances": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_amr_claims": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_challenges": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_factors": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_recovery_code_sets": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_recovery_codes": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_authorizations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_client_states": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_clients": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_consents": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.one_time_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.refresh_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.saml_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.saml_relay_states": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.schema_migrations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.scim_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.scim_users": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sessions": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sso_domains": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sso_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.users": {
+          "count": 2,
+          "sha256": "93e8da44b17cda696013cf7a6ebfe58ac84f1efd34e5be71c32893ae70ce0087"
+        },
+        "auth.webauthn_challenges": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.webauthn_credentials": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.account_creation_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.accounts": {
+          "count": 2,
+          "sha256": "1ca5d95db531b80fb8fdc9d60b97d13d9c149b6987eaf7d2bb3c9f25a4fa5836"
+        },
+        "public.bot_sessions": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.budget_alerts": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.budgets": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.categories": {
+          "count": 2,
+          "sha256": "25a2df9241920d15dffb51ec65562d9c3bbed24226d0c2fb6fdc7ab2b9d7174e"
+        },
+        "public.exchange_rates": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.import_batches": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_create_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_sale_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_sales": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investments": {
+          "count": 3,
+          "sha256": "c868dc50ecc3200ac9e65ecbb3a0b1e27c3d8ed06634956dc9046d07288dffea"
+        },
+        "public.market_data_cache": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.net_worth_snapshots": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.notification_outbox": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.plan_usage_cycles": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.plan_usage_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.portfolio_performance_snapshots": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.recurring_rules": {
+          "count": 1,
+          "sha256": "fef946e90fd39d5d9867b98e1f310de940cffd942877594b4ed7441842f8067d"
+        },
+        "public.shared_expense_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_expense_splits": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_expenses": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_group_members": {
+          "count": 2,
+          "sha256": "2997b5c41f5df4576f904dd63d38e276913fd3a35dc8543c919728ee6ac0b909"
+        },
+        "public.shared_groups": {
+          "count": 1,
+          "sha256": "00fd6de07bfee6a78893cae1ad389f172b88d645bb0ea0a9ca42897a9e402c59"
+        },
+        "public.transaction_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.transactions": {
+          "count": 20,
+          "sha256": "f7c308b50c1a07cf62cc90187967374141afd39169b63d0ae59da96462cfee4c"
+        },
+        "public.users": {
+          "count": 2,
+          "sha256": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d"
+        },
+        "storage.buckets": {
+          "count": 1,
+          "sha256": "a506a40da440927d3c58d080829ec36ace719961cdd68757d0f8e27dbe5ddf54"
+        },
+        "storage.buckets_analytics": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.buckets_vectors": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.iceberg_namespaces": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.iceberg_tables": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.migrations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.objects": {
+          "count": 1,
+          "sha256": "22f834da3af02f4853d1db6df8e9be304fa4afb5393e4a6ac1b97b1ac0c7747d"
+        },
+        "storage.s3_multipart_uploads": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.s3_multipart_uploads_parts": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.vector_indexes": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "expected": {
+        "auth.audit_log_entries": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.custom_oauth_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.flow_state": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.identities": {
+          "count": 2,
+          "sha256": "cb7815c785809b3110f1f57b90e1da13909a9e9edf08b2071166b120f7312ab9"
+        },
+        "auth.instances": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_amr_claims": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_challenges": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_factors": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_recovery_code_sets": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_recovery_codes": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_authorizations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_client_states": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_clients": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_consents": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.one_time_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.refresh_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.saml_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.saml_relay_states": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.schema_migrations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.scim_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.scim_users": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sessions": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sso_domains": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sso_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.users": {
+          "count": 2,
+          "sha256": "93e8da44b17cda696013cf7a6ebfe58ac84f1efd34e5be71c32893ae70ce0087"
+        },
+        "auth.webauthn_challenges": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.webauthn_credentials": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.account_creation_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.accounts": {
+          "count": 2,
+          "sha256": "1ca5d95db531b80fb8fdc9d60b97d13d9c149b6987eaf7d2bb3c9f25a4fa5836"
+        },
+        "public.bot_sessions": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.budget_alerts": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.budgets": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.categories": {
+          "count": 2,
+          "sha256": "25a2df9241920d15dffb51ec65562d9c3bbed24226d0c2fb6fdc7ab2b9d7174e"
+        },
+        "public.exchange_rates": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.import_batches": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_create_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_sale_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_sales": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investments": {
+          "count": 3,
+          "sha256": "c868dc50ecc3200ac9e65ecbb3a0b1e27c3d8ed06634956dc9046d07288dffea"
+        },
+        "public.market_data_cache": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.net_worth_snapshots": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.notification_outbox": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.plan_usage_cycles": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.plan_usage_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.portfolio_performance_snapshots": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.recurring_rules": {
+          "count": 1,
+          "sha256": "fef946e90fd39d5d9867b98e1f310de940cffd942877594b4ed7441842f8067d"
+        },
+        "public.shared_expense_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_expense_splits": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_expenses": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_group_members": {
+          "count": 2,
+          "sha256": "2997b5c41f5df4576f904dd63d38e276913fd3a35dc8543c919728ee6ac0b909"
+        },
+        "public.shared_groups": {
+          "count": 1,
+          "sha256": "00fd6de07bfee6a78893cae1ad389f172b88d645bb0ea0a9ca42897a9e402c59"
+        },
+        "public.transaction_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.transactions": {
+          "count": 20,
+          "sha256": "f7c308b50c1a07cf62cc90187967374141afd39169b63d0ae59da96462cfee4c"
+        },
+        "public.users": {
+          "count": 2,
+          "sha256": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d"
+        },
+        "storage.buckets": {
+          "count": 1,
+          "sha256": "a506a40da440927d3c58d080829ec36ace719961cdd68757d0f8e27dbe5ddf54"
+        },
+        "storage.buckets_analytics": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.buckets_vectors": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.iceberg_namespaces": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.iceberg_tables": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.migrations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.objects": {
+          "count": 1,
+          "sha256": "22f834da3af02f4853d1db6df8e9be304fa4afb5393e4a6ac1b97b1ac0c7747d"
+        },
+        "storage.s3_multipart_uploads": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.s3_multipart_uploads_parts": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.vector_indexes": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "Post-snapshot source has21rows and1500debit",
+      "actual": [
+        21,
+        8500.0
+      ],
+      "expected": [
+        21,
+        8500
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "All public Auth Storage table hashes match pre-loss snapshot",
+      "actual": {
+        "auth.audit_log_entries": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.custom_oauth_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.flow_state": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.identities": {
+          "count": 2,
+          "sha256": "cb7815c785809b3110f1f57b90e1da13909a9e9edf08b2071166b120f7312ab9"
+        },
+        "auth.instances": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_amr_claims": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_challenges": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_factors": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_recovery_code_sets": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_recovery_codes": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_authorizations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_client_states": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_clients": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_consents": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.one_time_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.refresh_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.saml_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.saml_relay_states": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.schema_migrations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.scim_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.scim_users": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sessions": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sso_domains": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sso_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.users": {
+          "count": 2,
+          "sha256": "93e8da44b17cda696013cf7a6ebfe58ac84f1efd34e5be71c32893ae70ce0087"
+        },
+        "auth.webauthn_challenges": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.webauthn_credentials": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.account_creation_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.accounts": {
+          "count": 2,
+          "sha256": "1ca5d95db531b80fb8fdc9d60b97d13d9c149b6987eaf7d2bb3c9f25a4fa5836"
+        },
+        "public.bot_sessions": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.budget_alerts": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.budgets": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.categories": {
+          "count": 2,
+          "sha256": "25a2df9241920d15dffb51ec65562d9c3bbed24226d0c2fb6fdc7ab2b9d7174e"
+        },
+        "public.exchange_rates": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.import_batches": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_create_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_sale_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_sales": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investments": {
+          "count": 3,
+          "sha256": "c868dc50ecc3200ac9e65ecbb3a0b1e27c3d8ed06634956dc9046d07288dffea"
+        },
+        "public.market_data_cache": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.net_worth_snapshots": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.notification_outbox": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.plan_usage_cycles": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.plan_usage_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.portfolio_performance_snapshots": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.recurring_rules": {
+          "count": 1,
+          "sha256": "fef946e90fd39d5d9867b98e1f310de940cffd942877594b4ed7441842f8067d"
+        },
+        "public.shared_expense_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_expense_splits": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_expenses": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_group_members": {
+          "count": 2,
+          "sha256": "2997b5c41f5df4576f904dd63d38e276913fd3a35dc8543c919728ee6ac0b909"
+        },
+        "public.shared_groups": {
+          "count": 1,
+          "sha256": "00fd6de07bfee6a78893cae1ad389f172b88d645bb0ea0a9ca42897a9e402c59"
+        },
+        "public.transaction_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.transactions": {
+          "count": 20,
+          "sha256": "f7c308b50c1a07cf62cc90187967374141afd39169b63d0ae59da96462cfee4c"
+        },
+        "public.users": {
+          "count": 2,
+          "sha256": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d"
+        },
+        "storage.buckets": {
+          "count": 1,
+          "sha256": "a506a40da440927d3c58d080829ec36ace719961cdd68757d0f8e27dbe5ddf54"
+        },
+        "storage.buckets_analytics": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.buckets_vectors": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.iceberg_namespaces": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.iceberg_tables": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.migrations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.objects": {
+          "count": 1,
+          "sha256": "22f834da3af02f4853d1db6df8e9be304fa4afb5393e4a6ac1b97b1ac0c7747d"
+        },
+        "storage.s3_multipart_uploads": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.s3_multipart_uploads_parts": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.vector_indexes": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "expected": {
+        "auth.audit_log_entries": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.custom_oauth_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.flow_state": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.identities": {
+          "count": 2,
+          "sha256": "cb7815c785809b3110f1f57b90e1da13909a9e9edf08b2071166b120f7312ab9"
+        },
+        "auth.instances": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_amr_claims": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_challenges": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_factors": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_recovery_code_sets": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.mfa_recovery_codes": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_authorizations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_client_states": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_clients": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.oauth_consents": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.one_time_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.refresh_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.saml_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.saml_relay_states": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.schema_migrations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.scim_tokens": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.scim_users": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sessions": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sso_domains": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.sso_providers": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.users": {
+          "count": 2,
+          "sha256": "93e8da44b17cda696013cf7a6ebfe58ac84f1efd34e5be71c32893ae70ce0087"
+        },
+        "auth.webauthn_challenges": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "auth.webauthn_credentials": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.account_creation_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.accounts": {
+          "count": 2,
+          "sha256": "1ca5d95db531b80fb8fdc9d60b97d13d9c149b6987eaf7d2bb3c9f25a4fa5836"
+        },
+        "public.bot_sessions": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.budget_alerts": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.budgets": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.categories": {
+          "count": 2,
+          "sha256": "25a2df9241920d15dffb51ec65562d9c3bbed24226d0c2fb6fdc7ab2b9d7174e"
+        },
+        "public.exchange_rates": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.import_batches": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_create_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_sale_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investment_sales": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.investments": {
+          "count": 3,
+          "sha256": "c868dc50ecc3200ac9e65ecbb3a0b1e27c3d8ed06634956dc9046d07288dffea"
+        },
+        "public.market_data_cache": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.net_worth_snapshots": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.notification_outbox": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.plan_usage_cycles": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.plan_usage_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.portfolio_performance_snapshots": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.recurring_rules": {
+          "count": 1,
+          "sha256": "fef946e90fd39d5d9867b98e1f310de940cffd942877594b4ed7441842f8067d"
+        },
+        "public.shared_expense_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_expense_splits": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_expenses": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.shared_group_members": {
+          "count": 2,
+          "sha256": "2997b5c41f5df4576f904dd63d38e276913fd3a35dc8543c919728ee6ac0b909"
+        },
+        "public.shared_groups": {
+          "count": 1,
+          "sha256": "00fd6de07bfee6a78893cae1ad389f172b88d645bb0ea0a9ca42897a9e402c59"
+        },
+        "public.transaction_requests": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "public.transactions": {
+          "count": 20,
+          "sha256": "f7c308b50c1a07cf62cc90187967374141afd39169b63d0ae59da96462cfee4c"
+        },
+        "public.users": {
+          "count": 2,
+          "sha256": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d"
+        },
+        "storage.buckets": {
+          "count": 1,
+          "sha256": "a506a40da440927d3c58d080829ec36ace719961cdd68757d0f8e27dbe5ddf54"
+        },
+        "storage.buckets_analytics": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.buckets_vectors": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.iceberg_namespaces": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.iceberg_tables": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.migrations": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.objects": {
+          "count": 1,
+          "sha256": "22f834da3af02f4853d1db6df8e9be304fa4afb5393e4a6ac1b97b1ac0c7747d"
+        },
+        "storage.s3_multipart_uploads": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.s3_multipart_uploads_parts": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "storage.vector_indexes": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "Complete schema functions grants RLS indexes columns triggers match",
+      "actual": "cb2f4c1e4a6b7927564d10bc0968828c031c460f5d509efa09100d5a0feda9ca",
+      "expected": "cb2f4c1e4a6b7927564d10bc0968828c031c460f5d509efa09100d5a0feda9ca",
+      "status": "PASS"
+    },
+    {
+      "name": "Restored snapshot excludes exact post-snapshot lost UUID",
+      "actual": 0,
+      "expected": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "Restored two account balances remain10000/2000",
+      "actual": [
+        "10000.00000000",
+        "2000.00000000"
+      ],
+      "expected": [
+        "10000.00000000",
+        "2000.00000000"
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Actual SQL authenticated RLS counts for ownerA",
+      "actual": [
+        2,
+        20,
+        3,
+        1,
+        1
+      ],
+      "expected": [
+        2,
+        20,
+        3,
+        1,
+        1
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "Actual SQL authenticated RLS counts for foreignB",
+      "actual": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "status": "PASS"
+    }
+  ],
+  "harnessSha256": "309e06c3629646ab84677e9f0531c9783b1139ddcc8b6cdaa31259ad3752480c",
+  "fixtureIds": {
+    "accountA": "325c1270-9a95-42b9-8a90-49656d555d72",
+    "accountB": "87984a7a-37c2-429d-b76d-2640126df367",
+    "incomeCategory": "3388f9c6-ac0b-4445-b4e7-fceed4db78ea",
+    "expenseCategory": "80eb3c2c-3c87-4247-a727-87f70f3f2152",
+    "rule": "940a6086-819d-4fd7-af85-745f7d9f46f0",
+    "lost": "2e7d7203-5a57-4f38-9d55-165fb5e6a810",
+    "movements": [
+      "7b2a8310-0469-4059-a59f-be03c253239c",
+      "b06fcd9b-8dd0-4d87-a504-f1e1b0986adf",
+      "4ae47ecb-5cdf-4ee8-bda1-014bbb6ba113",
+      "192b4eb5-0a7e-4c99-84c7-8485c581e7ba",
+      "858ba164-e027-4ac6-adce-3fdbfb808b6f",
+      "5a7b1994-d106-4c16-99d2-f70e21a5ad90",
+      "2a7b51a8-ca46-4c2a-aad6-864e8ada1ae3",
+      "a50d628a-2039-4749-9cae-6ebe5335f1c2",
+      "91f8f9ae-0c35-4cd5-8c06-bc803be48f12",
+      "f1a2bd75-adcc-47c2-b380-a74f9832ccea",
+      "d082ab16-c906-49b1-b302-64ae2cbb8e86",
+      "020b4145-9152-4296-b42d-f8fc2d97bee0",
+      "6c580ef5-00a6-4388-9d0c-fe03dffab59c",
+      "20692cc8-7313-4fae-af6f-e5462ee0a8a5",
+      "460729c0-d506-4a02-a74e-5b7cc69b4665",
+      "4fbc07dc-3e9f-4155-abc0-bbf5ddc9a00b",
+      "1671f55f-a700-457c-8aab-2056f10cf7b5",
+      "a5c3676f-49b9-4dc0-a8c0-5f803836ec15",
+      "25815573-2d30-4a4c-8d91-f448acceb27c",
+      "99e7ad2a-1434-4f93-b619-af22eee9eb95"
+    ],
+    "lots": [
+      "28a53d17-e6b6-4d3c-9b11-8ba2b5667357",
+      "fd7aa073-ec87-4214-8431-53a5d3f9cc12",
+      "22c557b9-fada-46c4-9dc8-8dbc01eac799"
+    ]
+  },
+  "owners": [
+    "172273ed-7c48-427d-a55b-742069a4d9de",
+    "0ed8880e-3f8c-41e3-a009-ce03e342994b"
+  ],
+  "databases": {
+    "source": "cnf12_source_836ea2b13ba649fa891be962c8f803dc",
+    "target": "cnf12_target_3000a0d2ff074380ac90df368a87a33b",
+    "port": 55322
+  },
+  "checkoutRevision": "e6f4574f11cfd30821b2cf9244c388feab73d411",
+  "executionMethod": "Direct SQL fixture and real PostgreSQL tools; no application build or HTTP normal session is attributed to this harness.",
+  "versions": {
+    "psql": "psql (PostgreSQL) 17.11",
+    "pg_dump": "pg_dump (PostgreSQL) 17.11",
+    "pg_restore": "pg_restore (PostgreSQL) 17.11"
+  },
+  "sources": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/run-nominal.py",
+      "sha256": "309e06c3629646ab84677e9f0531c9783b1139ddcc8b6cdaa31259ad3752480c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/cnf12-nominal/plan.json",
+      "sha256": "d53e9cf0f175cde42525135e3bd67e7c680eeccc48216db861c5c1dea635254d"
+    }
+  ],
+  "backup": {
+    "startedAt": "2026-10-15T05:44:59.506430+00:00",
+    "format": "pg_dump custom",
+    "privateFileName": "nominal-snapshot.dump",
+    "finishedAt": "2026-10-15T05:44:59.679395+00:00",
+    "actualSeconds": 0.17297470800258452,
+    "sha256": "0144c592aa25d1035840313a6ecc38cd9db5d610ebd2bdbcbf4845d83745d52e",
+    "bytes": 550220,
+    "tocSha256": "7533c81d3dae941b9595b81ab3bbd1563d8c4969d866d3ec5afb273e4467f8de"
+  },
+  "restore": {
+    "startedAt": "2026-10-15T05:45:04.802468+00:00",
+    "pgRestoreFinishedAt": "2026-10-15T05:45:05.271396+00:00",
+    "pgRestoreSeconds": 0.46897091699793236
+  },
+  "error": {
+    "type": "JSONDecodeError",
+    "message": "Bounded local command failed; inspect private diagnostic, no secrets published"
+  },
+  "finishedAt": "2026-10-15T05:45:10.664179+00:00"
+}

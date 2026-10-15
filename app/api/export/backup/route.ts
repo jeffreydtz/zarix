@@ -10,37 +10,34 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Stable ordering + pagination for every table, not only transactions.
     const pageSize = 1000;
-    const transactions: Record<string, unknown>[] = [];
-    for (let from = 0; ; from += pageSize) {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('transaction_date', { ascending: false })
-        .range(from, from + pageSize - 1);
-      if (error) throw error;
-      const batch = data || [];
-      transactions.push(...batch);
-      if (batch.length < pageSize) break;
-    }
-
-    const [
-      accountsResult,
-      categoriesResult,
-      budgetsResult,
-      investmentsResult,
-      userResult,
-    ] = await Promise.all([
-      supabase.from('accounts').select('*').eq('user_id', user.id),
-      supabase.from('categories').select('*').or(`user_id.eq.${user.id},is_system.eq.true`),
-      supabase.from('budgets').select('*').eq('user_id', user.id),
-      supabase.from('investments').select('*').eq('user_id', user.id),
+    const readTable = async (table: string, systemCategories = false) => {
+      const rows: Record<string, unknown>[] = [];
+      for (let from = 0; ; from += pageSize) {
+        let query = supabase.from(table).select('*');
+        query = systemCategories
+          ? query.or(`user_id.eq.${user.id},is_system.eq.true`)
+          : query.eq('user_id', user.id);
+        const { data, error } = await query.order('id').range(from, from + pageSize - 1);
+        if (error) throw error;
+        const batch = data || [];
+        rows.push(...batch);
+        if (batch.length < pageSize) return rows;
+      }
+    };
+    const [accounts, transactions, categories, budgets, investments, userResult] = await Promise.all([
+      readTable('accounts'), readTable('transactions'), readTable('categories', true),
+      readTable('budgets'), readTable('investments'),
       supabase.from('users').select('default_currency, timezone').eq('id', user.id).single(),
     ]);
+    if (userResult.error) throw userResult.error;
 
     const backup = {
-      version: '1.0',
+      version: '1.1',
+      scope: 'personal-data-export',
+      recoveryCoverage: { schema: false, auth: false, storage: false, completeSystem: false },
+      consistency: 'Per-table paginated reads; not a transactionally consistent database snapshot',
       exportedAt: new Date().toISOString(),
       app: 'Zarix',
       user: {
@@ -50,18 +47,20 @@ export async function GET() {
         timezone: userResult.data?.timezone || 'America/Argentina/Buenos_Aires',
       },
       data: {
-        accounts: accountsResult.data || [],
+        accounts,
         transactions,
-        categories: (categoriesResult.data || []).filter(c => c.user_id === user.id),
-        budgets: budgetsResult.data || [],
-        investments: investmentsResult.data || [],
+        // System category names are needed to reconstruct category references.
+        // The query still permits only this user's categories or public system ones.
+        categories,
+        budgets,
+        investments,
       },
       stats: {
-        accountsCount: accountsResult.data?.length || 0,
+        accountsCount: accounts.length,
         transactionsCount: transactions.length,
-        categoriesCount: (categoriesResult.data || []).filter(c => c.user_id === user.id).length,
-        budgetsCount: budgetsResult.data?.length || 0,
-        investmentsCount: investmentsResult.data?.length || 0,
+        categoriesCount: categories.filter(c => c.user_id === user.id).length,
+        budgetsCount: budgets.length,
+        investmentsCount: investments.length,
       },
     };
 

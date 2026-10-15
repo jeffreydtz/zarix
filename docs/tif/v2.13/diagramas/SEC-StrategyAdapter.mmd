@@ -1,0 +1,20 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ participant D as Dashboard
+ participant C as Precios (C)
+ participant S as Strategy
+ participant H as Fuente
+ D->>C: getDolarQuotes(preferCache)
+ alt Memoria vigente
+  C-->>D: Datos y timestamp
+ else Proveedores ordenados
+  loop CriptoYa/DolarApi/DbCache
+   C->>S: fetch()
+   S->>H: Solicitar formato<br/>propio
+   H-->>S: Datos / error
+   S->>S: Adapter<br/>normaliza/valida
+   S-->>C: DolarQuote / falla
+  end
+  C-->>D: Referencia / error
+ end
+ Note over C: Se detiene al primer<br/>válido interfaz<br/>uniforme, formatos<br/>propios

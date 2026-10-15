@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-15T08:56:19.904Z",
+  "reproductionCommand": "node docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-exact-private-values-post-implementation.mjs exact-private-value-scan-post-implementation-20261015.json",
+  "scannerSha256": "952153e603a0755af04a334da9506c0558ad425a46e6d30ebc12113794e9b5f0",
+  "privateValuesCompared": 53,
+  "files": 2931,
+  "findings": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt",
+      "rule": "exact-existing-private-value"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/test-isolated-native-target.mjs",
+      "rule": "exact-existing-private-value"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/attempt-1/sources/test-isolated-native-target.mjs",
+      "rule": "exact-existing-private-value"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/attempt-2/sources/test-isolated-native-target.mjs",
+      "rule": "exact-existing-private-value"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "rule": "exact-existing-private-value"
+    }
+  ],
+  "status": "FAIL",
+  "scope": "Exact-value comparison against existing private local runtime environment credentials and password/token fields in the explicit private fixture files, including expired/reused recovery and expired/normal SSR cookie fixtures, selected local JWT/JWKS material, owned auth-valid-recovery UUID password-restoration checkpoints and private JWK scalar fields (d/k/p/q/dp/dq/qi). Values, hashes of values and matching excerpts are never published. Includes tracked and non-ignored untracked repository files, not ignored build assets or external files; no claim of universal absence of secrets."
+}

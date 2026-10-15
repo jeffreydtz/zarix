@@ -1,0 +1,19 @@
+{
+  "status": "PASS_PREPARATION_ONLY",
+  "guardStubAssertions": 175,
+  "guardTestCommand": "node scripts/test-restored-read-fetch-guard.mjs",
+  "network": "Original fetch stubbed; no sockets/servers",
+  "syntaxCommands": [
+    "node --check scripts/test-restored-ui-read.mjs",
+    "node --check scripts/lib/restored-ui-oracles.mjs",
+    "Python ast.parse(prepare-restored-ui-copy.py)"
+  ],
+  "independentStaticReview": "No material remaining defect in final checkpoint/plan/cleanup/font/build guard snapshot; actual execution follows separately",
+  "sources": {
+    "scripts/test-restored-ui-read.mjs": "ce8e4652267c0bd97e0234cfd3de7ebb40aee6f4a82aa59e4ce6a32ba2a3c5c0",
+    "scripts/lib/restored-ui-oracles.mjs": "6c181e128652cb84ba034eebd8a65f11cbd460c8bc3bdfff20307bcfa7b2e527",
+    "scripts/lib/restored-read-fetch-guard.mjs": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+    "scripts/test-restored-read-fetch-guard.mjs": "0ac43563867a6a1bcd89a701ce8c1ff4eabc82f83da3128b43a63d123d55407b",
+    "scripts/prepare-restored-ui-copy.py": "cff22c384d542cbeaacd6e0c605ae976cf28fb9adc90805f761454a832c0e067"
+  }
+}

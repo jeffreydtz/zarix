@@ -11,10 +11,8 @@ export const dynamic = 'force-dynamic';
 // función no se corte y Telegram no re-entregue (evita movimientos duplicados).
 export const maxDuration = 60;
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { secret: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ secret: string }> }) {
+  const params = await props.params;
   const secret = params.secret;
   if (!secret || secret.length < 32) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -50,8 +48,8 @@ export async function POST(
       userId: row.id,
       chatId: row.telegram_chat_id ?? null,
     });
-  } catch (error) {
-    console.error('Custom Telegram webhook error:', error);
+  } catch {
+    console.error('Custom Telegram webhook error:');
   }
 
   return NextResponse.json({ ok: true });

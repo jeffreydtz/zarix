@@ -1,0 +1,80 @@
+{
+  "startedAt": "2026-10-15T01:43:48.687Z",
+  "status": "PASS",
+  "scope": "Normal GoTrue password sessions -> Next HTTP API -> separate native SQL assertions. No browser/UI acceptance. All identities and ledger data are synthetic loopback fixtures.",
+  "results": [
+    {
+      "cu": "CU001",
+      "name": "same command after a separately executed Next/PostgreSQL restart",
+      "status": "PASS",
+      "scope": "API -> DB only; does not close original UI/system case",
+      "evidence": {
+        "requestId": "489f203e-df13-4b06-b014-080dd34374e3",
+        "transactionId": "016dab68-8406-4290-8b47-592aafab7949",
+        "effects": 1,
+        "balance": 198500,
+        "responseHashEqual": true,
+        "restartEvidence": "docs/tif/v2.13/evidence/technical-20261015/environment/app-build-final/next-restart-proof.json; docs/tif/v2.13/evidence/technical-20261015/environment/e2e-stack-restart.json"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-15T01:43:49.294Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "4cf088120da566e9b669f261fc382db83cacaade4dad5d580136ad713c5175b0"
+    }
+  ],
+  "blockers": [
+    {
+      "ids": [
+        "CU001",
+        "CU002",
+        "CU003",
+        "CU004"
+      ],
+      "reason": "API-only checks never establish the full UI -> API -> DB journey."
+    }
+  ],
+  "fixture": {
+    "users": [
+      "86ac638c-2710-4993-9622-f2e5671ad034",
+      "84fcbd70-cd40-48cd-8427-3b2f2d4073c6"
+    ],
+    "credentials": "private fixture read into memory only",
+    "instances": {
+      "app": "http://127.0.0.1:3000",
+      "auth": "http://127.0.0.1:57321",
+      "databaseHost": "127.0.0.1",
+      "databasePort": "57322"
+    },
+    "run": "d00db89f"
+  },
+  "sourceManifest": [
+    {
+      "path": "scripts/test-isolated-api.mjs",
+      "sha256": "79980da2891870029c46ed9a942c15bda3dd142ae0bcfc369cf1b6bf1bfc9c92"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    }
+  ],
+  "revision": "663cf940c7db6a2fe3a31dd2d92879f96a8a6284",
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T01:43:49.615Z"
+}

@@ -1,0 +1,56 @@
+{
+  "reviewedAt": "2026-10-15T03:08:54.208211+00:00",
+  "status": "PASS",
+  "reviewType": "Read-only artifact and executed-source review; no DB, HTTP, Auth, browser or test rerun",
+  "reviewedArtifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/focal-contracts/attempt-1-existing-full-plan/verification.json",
+      "sha256": "85664b83877a9e5f90986471568b37a9c9a4c8bd3b97845a0f254ae4a7094b63"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/focal-contracts/attempt-1-existing-full-plan/executed-run.mjs",
+      "sha256": "cb692286b5243681dbd5f3b097f61c6e82600f6ae4fd58868dfdf59dec477afd"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/api/api-verification.json",
+      "sha256": "e33f155a43215110660507bb4f79072a95e8f2c3f4510b9644e362557664f35a"
+    }
+  ],
+  "acceptedCase": {
+    "id": "CP1-36",
+    "assertions": 12,
+    "expenseAmount": "100.00 ARS",
+    "splitAmounts": [
+      "33.34",
+      "33.33",
+      "33.33"
+    ],
+    "exactExpenseNetSum": "0.00",
+    "originalGroupNetSum": "0.00",
+    "archivedGroupPreserved": true,
+    "mutations": 0,
+    "scope": "Exact original expense linked to prior passing authenticated API creation plus current independent SQL read oracle. No new API command or browser was executed for this case."
+  },
+  "remainingCases": {
+    "status": "BLOCKED",
+    "count": 4,
+    "reason": "Existing account capacity20/20. No fixtures created, financial requests attempted or original account/plan changed."
+  },
+  "preservation": {
+    "tables": 12,
+    "allOriginalRowColumnsUnchanged": true,
+    "scope": "Twelve declared tables only; not whole25/27-table preservation proof."
+  },
+  "executionBinding": {
+    "field": "buildBinding",
+    "servedCodeRevision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+    "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+    "nextPid": 36787,
+    "appOrigin": "http://127.0.0.1:3000",
+    "apiOrigin": "http://127.0.0.1:57321",
+    "coreVerificationSha256": "87cfbb9a22048b6a226e5c0f8f72707f45e35cf099b27869c0a0903d7eec2920",
+    "sourceStable": true,
+    "limits": "Later checkout TTL, Auth, dashboard and chart changes were not served by this CI3 build and are not proved by CP1-36."
+  },
+  "findings": []
+}

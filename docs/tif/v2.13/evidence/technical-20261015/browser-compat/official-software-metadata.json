@@ -1,0 +1,106 @@
+{
+  "observedAt": "2026-10-15T00:35:59.533244+00:00",
+  "status": "METADATA_ONLY_NO_BINARY_DOWNLOADED",
+  "host": {
+    "system": "macOS",
+    "version": "27.0.1",
+    "build": "26A434",
+    "architecture": "arm64"
+  },
+  "firefox": {
+    "channel": "stable",
+    "version": "158.0",
+    "releaseDate": "2026-10-13",
+    "architecture": "macOS universal; arm64 must be confirmed with lipo after extraction",
+    "binaryUrl": "https://archive.mozilla.org/pub/firefox/releases/158.0/mac/en-US/Firefox%20158.0.dmg",
+    "sha256": "dfe8508ee8880cec1578253eb02b9154b5971a55e832d97396f463cd07b5ef67",
+    "checksumUrl": "https://archive.mozilla.org/pub/firefox/releases/158.0/SHA256SUMS",
+    "versionsUrl": "https://product-details.mozilla.org/1.0/firefox_versions.json",
+    "termsUrl": "https://www.mozilla.org/en-US/about/legal/terms/firefox/",
+    "previousStable": "157.0.1; not downloaded or exercised"
+  },
+  "geckodriver": {
+    "version": "v0.37.1",
+    "releaseDate": "2026-07-20T10:46:11Z",
+    "architecture": "macos-aarch64",
+    "binaryUrl": "https://github.com/mozilla/geckodriver/releases/download/v0.37.1/geckodriver-v0.37.1-macos-aarch64.tar.gz",
+    "sha256": "d02b3f7003f999caf90974a2ef5da0286c05d01cee19112c86846d759fdba4f5",
+    "bytes": 4234637,
+    "metadataUrl": "https://api.github.com/repos/mozilla/geckodriver/releases/latest",
+    "usageUrl": "https://firefox-source-docs.mozilla.org/testing/geckodriver/Usage.html",
+    "notarizationUrl": "https://firefox-source-docs.mozilla.org/testing/geckodriver/Notarization.html"
+  },
+  "edge": {
+    "channel": "Stable",
+    "version": "155.0.4283.45",
+    "publishedAt": "2026-10-08T18:34:00",
+    "architecture": "universal",
+    "artifacts": [
+      {
+        "ArtifactName": "pkg",
+        "Location": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/e7bb64c8-bda9-4a93-8a9c-1016b460d50c/MicrosoftEdge-155.0.4283.45.pkg",
+        "Hash": "9F34FB05D8C66440CD8F972DC0C34D0F9E9EF25827525C093117BA61D69EE2E1",
+        "HashAlgorithm": "SHA256",
+        "SizeInBytes": 432193641
+      },
+      {
+        "ArtifactName": "plist",
+        "Location": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/6a85fcf0-9494-4ffa-b919-e9807c5625ec/MicrosoftEdge-155.0.4283.45.plist",
+        "Hash": "D3010C2110565BCA4A7D3BA6C35A0D65B930F005D06DB60DC26F6D0A7691BD87",
+        "HashAlgorithm": "SHA256",
+        "SizeInBytes": 1263
+      },
+      {
+        "ArtifactName": "p7s",
+        "Location": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/28fffee7-dc3b-42da-a110-36fa3c6b2b83/signature.p7s",
+        "Hash": "B7485C6FE88396C541608256CDBA8CCC8CEE195724A3F88D31297A2826DAF067",
+        "HashAlgorithm": "SHA256",
+        "SizeInBytes": 6529
+      }
+    ],
+    "metadataUrl": "https://edgeupdates.microsoft.com/api/products?view=enterprise",
+    "termsUrl": "https://explore.microsoft.com/en-us/edge/terms",
+    "downloadTermsUrl": "https://www.microsoft.com/en-us/edge/download",
+    "previousStable": "154.0.4258.62; not downloaded or exercised"
+  },
+  "edgeDriver": {
+    "version": "155.0.4283.45",
+    "architecture": "mac64_m1",
+    "binaryUrl": "https://msedgedriver.microsoft.com/155.0.4283.45/edgedriver_mac64_m1.zip",
+    "versionUrl": "https://msedgedriver.microsoft.com/LATEST_RELEASE_155_MACOS",
+    "headStatus": 200,
+    "headBytes": 9232635,
+    "sha256": null,
+    "checksumStatus": "No official SHA256 manifest identified during this preflight; record local hash and verify Microsoft code signature/notarization before executing. A local hash alone is not publisher authenticity.",
+    "docsUrl": "https://learn.microsoft.com/en-us/microsoft-edge/webdriver/"
+  },
+  "signatureStatus": "NOT_VERIFIED: browser/driver binaries have not been downloaded",
+  "authorizationStatus": "BLOCKED: explicit authorization to download/use Firefox and Edge under their linked terms is pending; cannot be inferred from free cost",
+  "publicMetadata": [
+    {
+      "url": "https://product-details.mozilla.org/1.0/firefox_versions.json",
+      "bytes": 625,
+      "sha256": "ef57afc0582b513a5236de5e955ce044588160fa3bbad86159cdbb4353f7488e"
+    },
+    {
+      "url": "https://edgeupdates.microsoft.com/api/products?view=enterprise",
+      "bytes": 304090,
+      "sha256": "dcf4af3a83e2e2c17eca9e909a2655d96a87073d10e9457fa2f317664c6dd60d"
+    },
+    {
+      "url": "https://api.github.com/repos/mozilla/geckodriver/releases/latest",
+      "bytes": 20021,
+      "sha256": "f4aa7e98fd925d0247454bfe0e7d89e69525736293b0d137c4bfdb85bf7c1613"
+    },
+    {
+      "url": "https://archive.mozilla.org/pub/firefox/releases/158.0/SHA256SUMS",
+      "bytes": 395104,
+      "sha256": "0dfaa3eef4b47e0672061740165e87665d8cc376c4bc1446a9f5f3ba64ad802d"
+    },
+    {
+      "url": "https://msedgedriver.microsoft.com/LATEST_RELEASE_155_MACOS",
+      "bytes": 32,
+      "sha256": "e04d84163da70c32324bb5dc73b5dd40301e0d18317a084d5139ef9a16b1573c"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import type { AccountWithBalance } from '@/lib/services/accounts';
+import BlueFxReferenceDetails from '@/components/ui/BlueFxReferenceDetails';
 
 type Variant = 'default' | 'dark' | 'detail';
 
@@ -26,6 +27,13 @@ export default function AccountBalanceEquivalents({
   const ars = account.balance_ars_blue != null ? Number(account.balance_ars_blue) : null;
   const usd = account.balance_usd != null ? Number(account.balance_usd) : null;
   const hasBalance = Math.abs(rawBal) > 1e-8;
+
+  if (account.valuationIssue) {
+    return <p role="status" className="text-xs text-warning">
+      Sin cotización compatible para {account.valuationIssue.currencies.join(', ')}.
+      {' '}Cuenta excluida del total; los saldos originales se conservan.
+    </p>;
+  }
 
   if (!hasBalance) return null;
 
@@ -56,6 +64,7 @@ export default function AccountBalanceEquivalents({
             ≈ ${fmtUsd(absUsd)} USD
           </span>
         </span>
+        {variant === 'detail' ? <BlueFxReferenceDetails reference={account.blueReference} className="text-xs mt-1" /> : null}
       </div>
     );
   }
@@ -72,6 +81,7 @@ export default function AccountBalanceEquivalents({
             ≈ ${fmtArs(absArs)} ARS
           </span>
         </span>
+        {variant === 'detail' ? <BlueFxReferenceDetails reference={account.blueReference} className="text-xs mt-1" /> : null}
       </div>
     );
   }
@@ -86,6 +96,7 @@ export default function AccountBalanceEquivalents({
   return (
     <div className={base}>
       <span className="tabular-nums text-muted-foreground">{parts.join(' · ')}</span>
+      {variant === 'detail' ? <BlueFxReferenceDetails reference={account.blueReference} label="Tramo USD/ARS (otros cruces no incluidos)" className="text-xs mt-1" /> : null}
     </div>
   );
 }

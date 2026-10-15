@@ -1,0 +1,23 @@
+
+ RUN  v5.0.3 /Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix
+
+ ✓ __tests__/offline-queue-sync.test.ts (20 tests) 22ms
+ ✓ __tests__/investment-create-durable-store.test.ts (2 tests) 26ms
+ ✓ __tests__/notification-outbox.test.ts (7 tests) 40ms
+ ✓ __tests__/offline-durable-store.test.ts (15 tests) 53ms
+ ✓ __tests__/account-create-handler-outcomes.test.ts (8 tests) 5ms
+ ✓ __tests__/financial-intent-hooks.test.ts (8 tests) 33ms
+ ✓ __tests__/recurring-job-regression.test.ts (12 tests) 25ms
+ ✓ __tests__/recurring-outbox-equivalence.test.ts (4 tests) 4387ms
+   ✓ historical recurring contracts reconciled with durable outbox (4)
+     ✓ RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery 1245ms
+     ✓ RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart 1096ms
+     ✓ a lost delivery acknowledgement can repeat the notice after restart without repeating its financial effect 1049ms
+     ✓ active leases survive restart; expired leases recover with a fresh token and reject a stale acknowledgement 996ms
+
+ Test Files  8 passed (8)
+      Tests  76 passed (76)
+   Start at  22:04:42
+   Duration  4.56s (tests 83%, transform 11%, import 6%, worker 1%)
+
+JSON report written to /Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261013/durability/explicit-intent-20261014/focused-vitest.json

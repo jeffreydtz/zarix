@@ -1,0 +1,54 @@
+{
+  "status": "PASS_STATIC_IMPLEMENTATION_REVIEW",
+  "reviewedAt": "2026-10-15T07:38:20.877251+00:00",
+  "reviewer": "sql_security/cron_contracts; independent read-only subagent",
+  "scope": "Source-only review; reviewer did not run SQL, Vitest, native, API, or edits. Findings were communicated before final package.",
+  "reviewedClaims": [
+    "No audit FK can erase historical transaction/owner/actor identity.",
+    "Owner-only authenticated RLS SELECT; application/backend roles cannot fabricate or mutate audit events. Private schema/function USAGE and EXECUTE revoked, fixed pg_catalog/pg_temp search_path.",
+    "Actor auth.uid is never replaced by owner; service-role without a session is explicitly NULL; role GUC avoids SECURITY DEFINER owner misattribution.",
+    "AFTER DELETE stores complete OLD; mandatory audit failure aborts the same transaction.",
+    "User DELETE routes preserve verified session and owner filter. The remaining raw bulk reconciliation logging identified by review was removed and regression-tested.",
+    "Mirror/type addition coherent; preferences fields in shared generated files remain a separate change."
+  ],
+  "resolvedFinding": "Bulk DELETE reconciliation catch still logged raw error/account ID at first inspection; final catch is content-free and its privacy regression passed.",
+  "findings": [],
+  "limits": [
+    "Append-only guarantees apply to application roles, not database owner/superuser.",
+    "The independent reviewer did not execute the16 SQL groups; actual results are in separately pinned reports."
+  ],
+  "artifacts": [
+    {
+      "path": "supabase/migrations/20261015072636_audit_transaction_deletions.sql",
+      "sha256": "f5e9ecde74f98b62233aada534206df22655361a661b6b1963a537b221f1b355"
+    },
+    {
+      "path": "scripts/test-transaction-deletion-audit.mjs",
+      "sha256": "8d47dba2240184b977dce932b4def1755bcd1efeb2bf8f7f1ef459b373a474df"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "38c6b9f14a22b6efc7cc9f38557b136e96b6b10935f44cb33c4a1b3d2fb48f72"
+    },
+    {
+      "path": "app/api/transactions/bulk/route.ts",
+      "sha256": "c5c0f8c931989716b957c072537ad425065fdca4559f7ca444476189e571c078"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "a4b31c4851e912659c6a037b51b2cdadbf782b45cbd2ede2465dd1b00e3a26f8"
+    },
+    {
+      "path": "__tests__/transaction-delete-actor.test.ts",
+      "sha256": "689128d10d1003485c669b6f227877d9b0fcddd0e947dd8f1933018392b611d0"
+    },
+    {
+      "path": "types/supabase-generated.ts",
+      "sha256": "5bb7017d68d5126f8c2e1bbf3cf1a0aae7d561040c7d64ef79e8b6448bad43ba"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "83b4b2c5c33495bfaf7a43da233f1925a58d3806a214edf93a37ac637d9a74a8"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "startedAt": "2026-10-15T07:36:52.561711+00:00",
+  "finishedAt": "2026-10-15T07:36:53.053768+00:00",
+  "command": [
+    "./node_modules/.bin/vitest",
+    "run",
+    "__tests__/transaction-delete-actor.test.ts",
+    "__tests__/transaction-edit-regression.test.ts",
+    "--reporter=json",
+    "--outputFile=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/delta-20261015-cp1-08/vitest-final.json"
+  ],
+  "exitCode": 0,
+  "sourceScope": "Only the listed focal route/test/helper files; not a full-checkout freeze",
+  "sourceManifest": [
+    {
+      "path": "__tests__/transaction-delete-actor.test.ts",
+      "sha256": "689128d10d1003485c669b6f227877d9b0fcddd0e947dd8f1933018392b611d0"
+    },
+    {
+      "path": "__tests__/transaction-edit-regression.test.ts",
+      "sha256": "1e00e4ac332c2ac1ac0760683014b498573d3d012656a3168819ec6d62f6b2d3"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "38c6b9f14a22b6efc7cc9f38557b136e96b6b10935f44cb33c4a1b3d2fb48f72"
+    },
+    {
+      "path": "app/api/transactions/bulk/route.ts",
+      "sha256": "c5c0f8c931989716b957c072537ad425065fdca4559f7ca444476189e571c078"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "a4b31c4851e912659c6a037b51b2cdadbf782b45cbd2ede2465dd1b00e3a26f8"
+    },
+    {
+      "path": "lib/api-handler.ts",
+      "sha256": "b1b19b1ca9e26e0471f4c40ed5f2a12470a89dfabf181e233b8ea089f0d2de7d"
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "sha256": "09caabac5758f32281e72733a3ad1acbef90e5588c9a551942f36f4fb8429587"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8"
+    }
+  ],
+  "sourceStable": true
+}

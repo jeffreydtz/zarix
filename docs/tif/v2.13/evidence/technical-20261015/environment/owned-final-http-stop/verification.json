@@ -1,0 +1,82 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T06:54:44.979020+00:00",
+  "finishedAt": "2026-10-15T06:54:48.674086+00:00",
+  "controllerSha256": "edced5d0c7210ed0b930e9a1588ad255be5792bf4faf96217493b94dcce5f6a8",
+  "targets": [
+    {
+      "kind": "next",
+      "pid": 39320,
+      "port": 3002,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true,
+      "buildId": "aIWVMIWgvq5sbeEtZAZEh"
+    },
+    {
+      "kind": "next",
+      "pid": 57813,
+      "port": 3004,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true,
+      "buildId": "Yi9bH3FttO71PxvY-EwCH"
+    },
+    {
+      "kind": "quotes",
+      "pid": 53373,
+      "port": 57910,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true,
+      "exactRelativeNodeScriptValidated": true
+    },
+    {
+      "kind": "quotes",
+      "pid": 443,
+      "port": 57912,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true
+    },
+    {
+      "kind": "smtp",
+      "pid": 57372,
+      "port": 60325,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true
+    },
+    {
+      "kind": "postgrest",
+      "pid": 57381,
+      "port": 60323,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true
+    },
+    {
+      "kind": "auth",
+      "pid": 57390,
+      "port": 60327,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true
+    },
+    {
+      "kind": "gateway",
+      "pid": 57398,
+      "port": 60321,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true
+    },
+    {
+      "kind": "quote",
+      "pid": 57404,
+      "port": 57914,
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true
+    }
+  ],
+  "allTargetProcessesAndListenersAbsentAfterStop": true,
+  "dataDeleted": false,
+  "nativeStacksOrPgTouched": false,
+  "arcOrPersonalProcessesTouched": false,
+  "signals": "SIGTERM only, after reidentification; no stronger or broad signals",
+  "privateReportSha256": "07de40851cc826b0e1d0429101a9ca4353c3921a1805acb07987759bb04bbc59",
+  "scope": "Exactly nine task-owned HTTP processes. Native PostgreSQL stacks and original data remain running/preserved; retention and official Native stops have not executed.",
+  "attempt1": "attempt-1.json"
+}

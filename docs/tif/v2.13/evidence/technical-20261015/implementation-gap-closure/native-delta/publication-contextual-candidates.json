@@ -1,0 +1,311 @@
+{
+  "status": "PENDING_INDEPENDENT_REVIEW",
+  "scope": "Exact substring candidates only; contextual regex is supplementary, not an adjudication.",
+  "rawExactComparisonRetained": true,
+  "originalFirstFailurePreserved": "publication-attempt-1-ambiguous-token/publication-selected-private-values.json",
+  "credentialContextMatchingFiles": [],
+  "candidates": [
+    {
+      "path": "attempt-1/prepare-native.py",
+      "lineNumbers": [
+        77,
+        139,
+        143,
+        166,
+        167
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "build-app.py",
+      "lineNumbers": [
+        92
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "launch-services.py",
+      "lineNumbers": [
+        36,
+        69,
+        77,
+        111
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "prepare-native.py",
+      "lineNumbers": [
+        77,
+        139,
+        143,
+        166,
+        167
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "publication-native-check.py",
+      "lineNumbers": [
+        31,
+        63
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "reopen-existing-clone.py",
+      "lineNumbers": [
+        67,
+        79
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "resume-readiness.py",
+      "lineNumbers": [
+        69,
+        88
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retain-and-stop-robust.py",
+      "lineNumbers": [
+        58,
+        74
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retain-and-stop.py",
+      "lineNumbers": [
+        58,
+        74
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention/independent-public-retention-review.json",
+      "lineNumbers": [
+        115
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention/sources/retain-and-stop.py",
+      "lineNumbers": [
+        58,
+        74
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention/verification.json",
+      "lineNumbers": [
+        210
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/services.metadata.json",
+      "lineNumbers": [
+        5,
+        9
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/sources/launch-services.py",
+      "lineNumbers": [
+        36,
+        69,
+        77,
+        111
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/sources/reopen-existing-clone.py",
+      "lineNumbers": [
+        67,
+        79
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/sources/retain-and-stop-robust.py",
+      "lineNumbers": [
+        58,
+        74
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/targets.metadata.json",
+      "lineNumbers": [
+        11
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/verification.json",
+      "lineNumbers": [
+        198
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/cnf11-final-local/executed-attempt-1/sources/focal.test-source.ts",
+      "lineNumbers": [
+        186
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/cnf11-final-local/focal.test-source.ts",
+      "lineNumbers": [
+        186
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/cnf13-robust-only/executed-attempt-1/sources/robust.test-source.ts",
+      "lineNumbers": [
+        188
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/cnf13-robust-only/robust.test-source.ts",
+      "lineNumbers": [
+        188
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/executed-attempt-1/sources/native-cases.test-source.ts",
+      "lineNumbers": [
+        150,
+        174
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/executed-attempt-1/sources/run-native-cases.py",
+      "lineNumbers": [
+        71
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/native-cases.test-source.ts",
+      "lineNumbers": [
+        150,
+        174
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/run-native-cases.py",
+      "lineNumbers": [
+        71
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "ssr-http/attempt-1/services-metadata.json",
+      "lineNumbers": [
+        5,
+        9
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "ssr-http/attempt-1/sources/build-app.py",
+      "lineNumbers": [
+        92
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "ssr-http/attempt-1/sources/launch-services.py",
+      "lineNumbers": [
+        36,
+        69,
+        77,
+        111
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "ssr-http/attempt-1/sources/resume-readiness.py",
+      "lineNumbers": [
+        69,
+        88
+      ],
+      "classification": "PENDING_INDEPENDENT_SEMANTIC_REVIEW",
+      "assignmentOrUrlContextDetected": false,
+      "valueOrExcerptPublished": false
+    }
+  ],
+  "valuesPublished": false,
+  "excerptsPublished": false
+}

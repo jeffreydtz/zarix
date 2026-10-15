@@ -1,0 +1,425 @@
+{
+  "startedAt": "2026-10-15T01:21:28.749Z",
+  "status": "PARTIAL",
+  "scope": "Exactly CU001-CU004; ordinary password login; actual UI writes and separate PostgreSQL assertions. Each check has its own scope; partial coverage never approves a complete CU or original CP automatically.",
+  "environment": {
+    "node": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "browser": {
+      "product": "Installed Google Chrome",
+      "version": "146.0.7680.165",
+      "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "playwright": "external isolated installation",
+      "headless": true
+    }
+  },
+  "cases": [
+    {
+      "cu": "CU002",
+      "name": "accounts/personal data: UI creation, ordinary API tenant boundaries and Free allowance",
+      "status": "PASS",
+      "checks": [
+        {
+          "ids": [
+            "CP2-01",
+            "CP2-19",
+            "CP2-20"
+          ],
+          "scope": "account creation/count + account API boundary + refusal beyond Free allowance/downgrade reads only; pre-existing synthetic accounts retained",
+          "existingAccountCount": 22,
+          "expectedInitialBalance": 50000,
+          "actualInitialBalance": 50000,
+          "activeAccountsAtDowngrade": 18,
+          "historyAndExportAfterDowngrade": true
+        }
+      ],
+      "coverage": "partial; does not close all original CP cases"
+    },
+    {
+      "cu": "CU001",
+      "name": "movements: UI expense, edit/delete balance reversal and ten durable API retries",
+      "status": "PASS",
+      "checks": [
+        {
+          "ids": [
+            "CP1-01",
+            "CP1-03",
+            "CP1-05",
+            "CP1-08",
+            "CNF-11"
+          ],
+          "scope": "UI create + authenticated API edit/delete/transfer retries; excludes injected failure/offline/restart/provider channels",
+          "expenseBalances": [
+            10000,
+            8500,
+            8000,
+            10000
+          ],
+          "transferBalances": [
+            8500,
+            3500
+          ],
+          "retryAttempts": 10,
+          "financialRows": 1,
+          "durableReceipts": 1
+        }
+      ],
+      "coverage": "partial; does not close all original CP cases"
+    },
+    {
+      "cu": "CU003",
+      "name": "financial analysis: visible totals agree with owner-only SQL period",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "CP3-08",
+          "scope": "controlled ARS period, actual visible total + complete owner SQL and new category subtotal; pre-existing synthetic rows retained; excludes Gemini and mixed FX fixtures",
+          "newCategorySubtotal": 2000,
+          "expectedExpense": 8000,
+          "observedExpense": "$8.000"
+        }
+      ],
+      "coverage": "partial; does not close all original CP cases"
+    },
+    {
+      "cu": "CU004",
+      "name": "investments: UI manual purchase and sale, excessive quantity has no effect",
+      "status": "PASS",
+      "checks": [
+        {
+          "ids": [
+            "CP4-02",
+            "CP4-04",
+            "CP4-06",
+            "CP4-08",
+            "CP4-09",
+            "CP4-12"
+          ],
+          "scope": "UI manual-price position + UI partial sale + API oversale + pure UI simulation; fixture is local ledger, no broker/trading operation",
+          "remainingQuantity": 6,
+          "realizedPnlUSD": 80,
+          "cashBalance": 0,
+          "simulationValues": {
+            "current": 660,
+            "plusTenPercent": 726,
+            "minusHundredPercent": 0,
+            "invalidRejected": [
+              "-100.01",
+              "NaN"
+            ]
+          },
+          "financeSha256BeforeAndAfter": "df708e198644b50a710185867c98e59020519bea5e25560934b6dbf8a5c98d45"
+        }
+      ],
+      "coverage": "partial; does not close all original CP cases"
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-15T01:21:31.895Z",
+      "method": "GET",
+      "path": "/api/user/onboarding",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:31.898Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:31.923Z",
+      "method": "GET",
+      "path": "/api/categories",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:32.031Z",
+      "method": "GET",
+      "path": "/api/cotizaciones",
+      "status": 500
+    },
+    {
+      "at": "2026-10-15T01:21:32.049Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:32.049Z",
+      "method": "GET",
+      "path": "/api/ai/anomalies",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:32.081Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:33.115Z",
+      "method": "GET",
+      "path": "/api/user/onboarding",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:33.267Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:33.338Z",
+      "method": "GET",
+      "path": "/api/categories",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:33.703Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:33.704Z",
+      "method": "GET",
+      "path": "/api/ai/anomalies",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:33.721Z",
+      "method": "GET",
+      "path": "/api/cotizaciones",
+      "status": 500
+    },
+    {
+      "at": "2026-10-15T01:21:33.734Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:34.522Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:21:36.048Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:21:37.573Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:21:39.071Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:21:41.648Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:21:42.286Z",
+      "method": "GET",
+      "path": "/api/transactions",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:42.292Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:42.395Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:21:43.958Z",
+      "method": "GET",
+      "path": "/api/ai/projections",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:45.139Z",
+      "method": "GET",
+      "path": "/api/market-data",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:45.152Z",
+      "method": "GET",
+      "path": "/api/investments/performance",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:46.074Z",
+      "method": "POST",
+      "path": "/api/investments",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:21:46.136Z",
+      "method": "GET",
+      "path": "/api/investments/portfolio",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:46.184Z",
+      "method": "GET",
+      "path": "/api/investments/performance",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:47.366Z",
+      "method": "POST",
+      "path": "/api/investments/ebbf2df3-31b9-4176-ad8c-09c116e2b224/sell",
+      "status": 201
+    },
+    {
+      "at": "2026-10-15T01:21:47.817Z",
+      "method": "GET",
+      "path": "/api/market-data",
+      "status": 200
+    },
+    {
+      "at": "2026-10-15T01:21:47.819Z",
+      "method": "GET",
+      "path": "/api/investments/performance",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "CU002-accounts.png",
+      "sha256": "08cb64ba984243e4e313528b426a01c7ec07b9280b7eec4293d885f0d49088f8"
+    },
+    {
+      "path": "CU001-movements.png",
+      "sha256": "e50937eae258ec82a26073efe19d8daf515e78e4e7d57978eb352067ff3d957a"
+    },
+    {
+      "path": "CU003-analysis.png",
+      "sha256": "1fa6c7c5a27c591d17d2ed79614e466b1de10f050035b7fd41237dfd2387c9d3"
+    },
+    {
+      "path": "CU004-investments.png",
+      "sha256": "725de2de2fbc13502f9e60b7abfc56ec573af9265712a46a7cc18661d48e3ab7"
+    }
+  ],
+  "blockers": [
+    {
+      "ids": [
+        "CNF-05",
+        "CNF-06",
+        "CNF-07",
+        "CNF-08"
+      ],
+      "reason": "Four viewport/200% zoom and keyboard/task flows require their own executed visual matrix; four desktop screenshots do not establish compatibility."
+    },
+    {
+      "id": "CNF-09",
+      "reason": "This harness runs installed Google Chrome only. Firefox, real Safari and Edge require distinct execution; WebKit is never labeled Safari."
+    },
+    {
+      "ids": [
+        "CNF-01",
+        "CNF-02",
+        "CNF-03",
+        "CNF-04",
+        "CNF-12",
+        "CNF-13"
+      ],
+      "reason": "Canonical 20-session/100-navigation network-shaped load, month observation, HTTPS, instance encryption, complete recovery and observability are separate acceptance evidence."
+    },
+    {
+      "ids": [
+        "CP1-14",
+        "CP1-15",
+        "CP1-16",
+        "CP1-17",
+        "CP1-18",
+        "CP2-13",
+        "CP2-14",
+        "CP2-17",
+        "CP2-18",
+        "CP3-09",
+        "CP3-10"
+      ],
+      "reason": "Real controlled Gemini/OCR, Telegram and Mercado Pago sandbox provider prerequisites are outside this local UI harness; provider doubles cannot close them."
+    }
+  ],
+  "fixture": {
+    "users": [
+      "86ac638c-2710-4993-9622-f2e5671ad034",
+      "84fcbd70-cd40-48cd-8427-3b2f2d4073c6"
+    ],
+    "syntheticOnly": true,
+    "credentials": "private test fixture file, never copied into evidence",
+    "providerMode": "pre-existing local fixture/cache only; no real-provider acceptance claimed"
+  },
+  "sourceManifest": [
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "sha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b"
+    },
+    {
+      "path": "app/login/page.tsx",
+      "sha256": "1e091e02173a5a58ce2b6259dc667a37a599a6e4705ba1c74907e21a5319e287"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    },
+    {
+      "path": "app/(authenticated)/analysis/page.tsx",
+      "sha256": "4e8385c1beca38ca72dc1bffc8a17d579ef9aaa6c9af8f567097588e5182e06d"
+    },
+    {
+      "path": "components/investments/InvestmentSimulationPanel.tsx",
+      "sha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb"
+    },
+    {
+      "path": "lib/investment-simulation.ts",
+      "sha256": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "revision": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+  "finishedAt": "2026-10-15T01:22:29.196Z",
+  "sourceStable": true
+}

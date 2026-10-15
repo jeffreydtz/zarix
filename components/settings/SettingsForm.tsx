@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { effectivePlan } from '@/lib/plans/rules';
 import type { User } from '@/types/database';
 import { useRouter } from 'next/navigation';
+import { presentationPreferencesSchema, type PresentationCurrency } from '@/lib/presentation-preferences';
 
 interface SettingsFormProps {
   user: User;
@@ -32,6 +34,11 @@ export default function SettingsForm({
   const [linkCode, setLinkCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [baseCurrency, setBaseCurrency] = useState<PresentationCurrency>(user.default_currency === 'USD' ? 'USD' : 'ARS');
+  const [netWorthVisible, setNetWorthVisible] = useState(user.net_worth_widget_visible ?? true);
+  const [preferencesLoading, setPreferencesLoading] = useState(false);
+  const [preferencesMessage, setPreferencesMessage] = useState('');
+  const preferencesInFlight = useRef(false);
 
   const [geminiKey, setGeminiKey] = useState('');
   const [integLoading, setIntegLoading] = useState(false);
@@ -52,6 +59,10 @@ export default function SettingsForm({
   const [gracePeriodEnd, setGracePeriodEnd] = useState<string | null>(
     user.grace_period_end
   );
+  const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string | null>(user.current_period_end);
+  const [preapprovalId, setPreapprovalId] = useState<string | null>(user.mp_preapproval_id);
+  const billingInFlight = useRef(false);
+  const subscriptionVersion = useRef(0);
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingPlans, setBillingPlans] = useState<BillingPlan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState('');
@@ -86,9 +97,17 @@ export default function SettingsForm({
   }, []);
 
   useEffect(() => {
+    const version = subscriptionVersion.current;
     fetch('/api/user/subscription')
       .then((r) => r.json())
       .then((d) => {
+        if (version !== subscriptionVersion.current) return;
+        if (typeof d?.current_period_end === 'string' || d?.current_period_end === null) {
+          setCurrentPeriodEnd(d.current_period_end ?? null);
+        }
+        if (typeof d?.mp_preapproval_id === 'string' || d?.mp_preapproval_id === null) {
+          setPreapprovalId(d.mp_preapproval_id ?? null);
+        }
         if (typeof d?.status === 'string') {
           setSubscriptionStatus(d.status);
         }
@@ -99,9 +118,10 @@ export default function SettingsForm({
       .catch(() => {});
   }, []);
 
-  const isPastDue = subscriptionStatus === 'PAST_DUE' || subscriptionStatus === 'CANCELED';
-  const isGracePeriod = subscriptionStatus === 'GRACE_PERIOD';
-  const isActivePlan = subscriptionStatus === 'ACTIVE';
+  const hasPremiumAccess = effectivePlan({ status: subscriptionStatus, current_period_end: currentPeriodEnd, grace_period_end: gracePeriodEnd }) === 'premium';
+  const isPastDue = !hasPremiumAccess;
+  const isGracePeriod = subscriptionStatus === 'GRACE_PERIOD' && hasPremiumAccess;
+  const isActivePlan = subscriptionStatus === 'ACTIVE' && hasPremiumAccess;
 
   const subscriptionStatusLabel: Record<string, string> = {
     ACTIVE: 'Activa',
@@ -111,6 +131,8 @@ export default function SettingsForm({
   };
 
   const startCheckout = async () => {
+    if (billingInFlight.current) return;
+    billingInFlight.current = true;
     setBillingLoading(true);
     setIntegMessage('');
     try {
@@ -130,7 +152,60 @@ export default function SettingsForm({
       const err = error as { message?: string };
       setIntegMessage(`❌ ${err.message || 'No se pudo iniciar el checkout'}`);
     } finally {
+      billingInFlight.current = false;
       setBillingLoading(false);
+    }
+  };
+
+  const cancelSubscription = async () => {
+    if (billingInFlight.current) return;
+    const paidMessage = currentPeriodEnd && Date.parse(currentPeriodEnd) > Date.now()
+      ? ` Conservás Premium hasta el ${new Date(currentPeriodEnd).toLocaleString('es-AR')}.` : '';
+    if (!window.confirm(`¿Querés cancelar la renovación de tu suscripción? Se desactivará la renovación.${paidMessage}`)) return;
+    billingInFlight.current = true;
+    subscriptionVersion.current += 1;
+    setBillingLoading(true);
+    setIntegMessage('');
+    try {
+      const response = await fetch('/api/billing/cancel', { method: 'POST' });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'No se pudo cancelar la suscripción.');
+      setSubscriptionStatus('CANCELED');
+      setGracePeriodEnd(null);
+      setCurrentPeriodEnd(data.current_period_end ?? null);
+      setIntegMessage('✅ Renovación cancelada. Conservás el acceso hasta el fin del período abonado.');
+      router.refresh();
+    } catch (error: unknown) {
+      setIntegMessage(`❌ ${error instanceof Error ? error.message : 'No se pudo cancelar la suscripción.'}`);
+    } finally {
+      billingInFlight.current = false;
+      setBillingLoading(false);
+    }
+  };
+
+  const savePreferences = async () => {
+    if (preferencesInFlight.current) return;
+    preferencesInFlight.current = true;
+    setPreferencesLoading(true);
+    setPreferencesMessage('');
+    try {
+      const response = await fetch('/api/user/preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Preferences-Owner': user.id },
+        body: JSON.stringify({ default_currency: baseCurrency, net_worth_widget_visible: netWorthVisible }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || 'No se pudieron guardar las preferencias.');
+      const saved = presentationPreferencesSchema.parse(data);
+      setBaseCurrency(saved.default_currency);
+      setNetWorthVisible(saved.net_worth_widget_visible);
+      setPreferencesMessage('Preferencias guardadas.');
+      router.refresh();
+    } catch (error) {
+      setPreferencesMessage(error instanceof Error ? error.message : 'No se pudieron guardar las preferencias.');
+    } finally {
+      preferencesInFlight.current = false;
+      setPreferencesLoading(false);
     }
   };
 
@@ -351,15 +426,26 @@ export default function SettingsForm({
             </span>
           )}
         </div>
+        {subscriptionStatus === 'CANCELED' && hasPremiumAccess && currentPeriodEnd && (
+          <p className="text-sm text-muted-foreground mb-3">
+            Renovación cancelada. Conservás Premium hasta el {new Date(currentPeriodEnd).toLocaleString('es-AR')}.
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={startCheckout}
-            disabled={billingLoading}
+            disabled={billingLoading || billingPlans.length === 0}
             className="btn btn-primary disabled:opacity-50"
           >
-            {billingLoading ? 'Abriendo checkout...' : 'Gestionar suscripción'}
+            {billingLoading ? 'Procesando...' : 'Abrir checkout'}
           </button>
+          {preapprovalId && subscriptionStatus !== 'CANCELED' && (
+            <button type="button" onClick={cancelSubscription} disabled={billingLoading}
+              className="btn border border-destructive text-destructive disabled:opacity-50">
+              Cancelar renovación
+            </button>
+          )}
           <a
             href="/recurring"
             className="px-4 py-2 rounded-lg border border-border text-sm"
@@ -715,15 +801,28 @@ export default function SettingsForm({
         <h2 className="text-xl font-semibold mb-4">Preferencias</h2>
         <div className="space-y-3">
           <div>
-            <label className="text-sm text-muted-foreground mb-2 block">Moneda por defecto</label>
+            <label htmlFor="base-currency" className="text-sm text-muted-foreground mb-2 block">Moneda base del patrimonio</label>
             <select
-              defaultValue={user.default_currency}
+              id="base-currency"
+              value={baseCurrency}
+              disabled={preferencesLoading}
+              onChange={event => setBaseCurrency(event.target.value as PresentationCurrency)}
               className="w-full px-4 py-2 rounded-lg border border-border bg-secondary"
             >
               <option value="ARS">ARS (Peso Argentino)</option>
               <option value="USD">USD (Dólar)</option>
             </select>
           </div>
+          <label className="flex items-center justify-between gap-3 text-sm">
+            Mostrar panel Patrimonio
+            <input type="checkbox" checked={netWorthVisible} disabled={preferencesLoading}
+              onChange={event => setNetWorthVisible(event.target.checked)} className="w-6 h-6 accent-primary" />
+          </label>
+          <p className="text-xs text-muted-foreground">Cambia la presentación, sin modificar los saldos ni sus monedas originales.</p>
+          <button type="button" onClick={savePreferences} disabled={preferencesLoading} className="btn-primary">
+            {preferencesLoading ? 'Guardando…' : 'Guardar preferencias'}
+          </button>
+          {preferencesMessage && <p role="status" className="text-sm">{preferencesMessage}</p>}
         </div>
       </div>
     </div>

@@ -1,0 +1,618 @@
+[
+  {
+    "id": "DOM-Finanzas",
+    "width": 467.0,
+    "height": 892.0,
+    "font": 18.0,
+    "printed_pt": 11.77
+  },
+  {
+    "id": "DOM-Automatizacion",
+    "width": 666.0,
+    "height": 1227.0,
+    "font": 18.0,
+    "printed_pt": 8.56
+  },
+  {
+    "id": "DOM-Inversiones",
+    "width": 472.0,
+    "height": 830.0,
+    "font": 18.0,
+    "printed_pt": 12.65
+  },
+  {
+    "id": "DOM-Personal",
+    "width": 452.0,
+    "height": 516.0,
+    "font": 18.0,
+    "printed_pt": 19.641
+  },
+  {
+    "id": "DOM-Compartidos",
+    "width": 475.0,
+    "height": 921.0,
+    "font": 18.0,
+    "printed_pt": 11.4
+  },
+  {
+    "id": "ER-CU001-Movimientos",
+    "width": 1003.0,
+    "height": 636.0,
+    "font": 18.0,
+    "printed_pt": 8.85
+  },
+  {
+    "id": "ER-CU002-Cuentas",
+    "width": 496.0,
+    "height": 733.0,
+    "font": 18.0,
+    "printed_pt": 14.32
+  },
+  {
+    "id": "ER-CU002-Usuario",
+    "width": 359.0,
+    "height": 330.0,
+    "font": 20.0,
+    "printed_pt": 27.48
+  },
+  {
+    "id": "ER-CU004-Inversiones",
+    "width": 684.0,
+    "height": 1272.0,
+    "font": 18.0,
+    "printed_pt": 8.25
+  },
+  {
+    "id": "ER-CU003-Snapshots",
+    "width": 617.0,
+    "height": 578.0,
+    "font": 18.0,
+    "printed_pt": 14.388
+  },
+  {
+    "id": "ER-CU001-Recurrentes",
+    "width": 772.0,
+    "height": 568.0,
+    "font": 18.0,
+    "printed_pt": 11.5
+  },
+  {
+    "id": "ER-CU001-Presupuestos",
+    "width": 310.0,
+    "height": 864.0,
+    "font": 18.0,
+    "printed_pt": 12.15
+  },
+  {
+    "id": "ER-CU001-Grupos",
+    "width": 542.0,
+    "height": 960.0,
+    "font": 18.0,
+    "printed_pt": 10.94
+  },
+  {
+    "id": "ER-CU001-Reparto",
+    "width": 665.0,
+    "height": 762.0,
+    "font": 18.0,
+    "printed_pt": 13.35
+  },
+  {
+    "id": "ER-CU002-Integraciones",
+    "width": 662.0,
+    "height": 597.0,
+    "font": 18.0,
+    "printed_pt": 13.41
+  },
+  {
+    "id": "CLASES-Datos-Movimientos",
+    "width": 873.0,
+    "height": 527.0,
+    "font": 18.0,
+    "printed_pt": 10.17
+  },
+  {
+    "id": "CLASES-Datos-Cuentas",
+    "width": 285.0,
+    "height": 500.0,
+    "font": 20.0,
+    "printed_pt": 23.33
+  },
+  {
+    "id": "CLASES-Datos-Inversiones",
+    "width": 337.0,
+    "height": 922.0,
+    "font": 18.0,
+    "printed_pt": 11.39
+  },
+  {
+    "id": "CLASES-Datos-Automatizacion",
+    "width": 612.0,
+    "height": 684.0,
+    "font": 18.0,
+    "printed_pt": 14.51
+  },
+  {
+    "id": "CLASES-CU001-Movimientos",
+    "width": 560.0,
+    "height": 486.0,
+    "font": 18.0,
+    "printed_pt": 15.85
+  },
+  {
+    "id": "CLASES-CU001-Automatizacion",
+    "width": 461.0,
+    "height": 361.0,
+    "font": 20.0,
+    "printed_pt": 21.4
+  },
+  {
+    "id": "CLASES-CU001-Compartidos",
+    "width": 360.0,
+    "height": 439.0,
+    "font": 18.0,
+    "printed_pt": 23.91
+  },
+  {
+    "id": "CLASES-CU002-Cuentas",
+    "width": 543.0,
+    "height": 520.0,
+    "font": 18.0,
+    "printed_pt": 16.35
+  },
+  {
+    "id": "CLASES-CU003-Analisis",
+    "width": 589.0,
+    "height": 350.0,
+    "font": 18.0,
+    "printed_pt": 15.072
+  },
+  {
+    "id": "CLASES-CU004-Inversiones",
+    "width": 587.0,
+    "height": 486.0,
+    "font": 18.0,
+    "printed_pt": 15.12
+  },
+  {
+    "id": "ROB-CU001-Registro",
+    "width": 571.0,
+    "height": 641.0,
+    "font": 18.0,
+    "printed_pt": 15.547
+  },
+  {
+    "id": "ROB-CU001-OCR",
+    "width": 803.0,
+    "height": 778.0,
+    "font": 18.0,
+    "printed_pt": 11.056
+  },
+  {
+    "id": "ROB-CU001-Importacion",
+    "width": 576.0,
+    "height": 704.0,
+    "font": 18.0,
+    "printed_pt": 14.911
+  },
+  {
+    "id": "ROB-CU001-Telegram",
+    "width": 472.0,
+    "height": 600.0,
+    "font": 18.0,
+    "printed_pt": 17.496
+  },
+  {
+    "id": "ROB-CU001-Reglas",
+    "width": 456.0,
+    "height": 619.0,
+    "font": 18.0,
+    "printed_pt": 16.959
+  },
+  {
+    "id": "ROB-CU001-Cron",
+    "width": 615.0,
+    "height": 747.0,
+    "font": 18.0,
+    "printed_pt": 14.053
+  },
+  {
+    "id": "ROB-CU001-Aviso",
+    "width": 641.0,
+    "height": 898.0,
+    "font": 18.0,
+    "printed_pt": 11.69
+  },
+  {
+    "id": "ROB-CU001-Presupuesto",
+    "width": 521.0,
+    "height": 598.0,
+    "font": 18.0,
+    "printed_pt": 17.04
+  },
+  {
+    "id": "ROB-CU001-Compartidos",
+    "width": 462.0,
+    "height": 619.0,
+    "font": 18.0,
+    "printed_pt": 16.959
+  },
+  {
+    "id": "ROB-CU002-Cuentas",
+    "width": 525.0,
+    "height": 665.0,
+    "font": 18.0,
+    "printed_pt": 15.786
+  },
+  {
+    "id": "ROB-CU002-Datos",
+    "width": 488.0,
+    "height": 643.0,
+    "font": 18.0,
+    "printed_pt": 16.326
+  },
+  {
+    "id": "ROB-CU002-Preferencias",
+    "width": 464.0,
+    "height": 641.0,
+    "font": 18.0,
+    "printed_pt": 16.377
+  },
+  {
+    "id": "ROB-CU002-Acceso",
+    "width": 513.0,
+    "height": 619.0,
+    "font": 18.0,
+    "printed_pt": 16.959
+  },
+  {
+    "id": "ROB-CU002-Plan",
+    "width": 514.0,
+    "height": 598.0,
+    "font": 18.0,
+    "printed_pt": 17.272
+  },
+  {
+    "id": "ROB-CU003-Patrimonio",
+    "width": 701.0,
+    "height": 655.0,
+    "font": 18.0,
+    "printed_pt": 12.664
+  },
+  {
+    "id": "ROB-CU003-Cotizaciones",
+    "width": 475.0,
+    "height": 833.0,
+    "font": 18.0,
+    "printed_pt": 12.602
+  },
+  {
+    "id": "ROB-CU003-Resumen",
+    "width": 427.0,
+    "height": 598.0,
+    "font": 18.0,
+    "printed_pt": 17.555
+  },
+  {
+    "id": "ROB-CU003-Chat",
+    "width": 585.0,
+    "height": 855.0,
+    "font": 18.0,
+    "printed_pt": 12.278
+  },
+  {
+    "id": "ROB-CU003-RF11",
+    "width": 483.0,
+    "height": 663.0,
+    "font": 18.0,
+    "printed_pt": 15.833
+  },
+  {
+    "id": "ROB-CU004-Operacion",
+    "width": 878.0,
+    "height": 676.0,
+    "font": 18.0,
+    "printed_pt": 10.111
+  },
+  {
+    "id": "ROB-CU004-Referencias",
+    "width": 437.0,
+    "height": 927.0,
+    "font": 18.0,
+    "printed_pt": 11.324
+  },
+  {
+    "id": "ROB-CU004-Simulacion",
+    "width": 644.0,
+    "height": 590.0,
+    "font": 18.0,
+    "printed_pt": 13.785
+  },
+  {
+    "id": "PATRONES-Cotizaciones",
+    "width": 917.0,
+    "height": 445.0,
+    "font": 18.0,
+    "printed_pt": 9.681
+  },
+  {
+    "id": "PATRONES-Cron",
+    "width": 286.0,
+    "height": 732.0,
+    "font": 20.0,
+    "printed_pt": 15.93
+  },
+  {
+    "id": "SEC-CU001-Crear",
+    "width": 996.5,
+    "height": 1436.0,
+    "font": 20,
+    "printed_pt": 8.123
+  },
+  {
+    "id": "SEC-CU001-EditarEliminar",
+    "width": 974.0,
+    "height": 1328.0,
+    "font": 20,
+    "printed_pt": 8.783
+  },
+  {
+    "id": "SEC-CU001-OCR",
+    "width": 1051.0,
+    "height": 1036.0,
+    "font": 20,
+    "printed_pt": 9.385
+  },
+  {
+    "id": "SEC-CU001-Telegram",
+    "width": 777.5,
+    "height": 1145.0,
+    "font": 20,
+    "printed_pt": 10.187
+  },
+  {
+    "id": "SEC-CU001-Importar",
+    "width": 819.5,
+    "height": 1222.0,
+    "font": 20,
+    "printed_pt": 9.545
+  },
+  {
+    "id": "SEC-CU001-ReglasPresupuestos",
+    "width": 772.5,
+    "height": 976.0,
+    "font": 20,
+    "printed_pt": 11.951
+  },
+  {
+    "id": "SEC-CU001-CronSeleccion",
+    "width": 702.0,
+    "height": 1100.0,
+    "font": 20,
+    "printed_pt": 10.604
+  },
+  {
+    "id": "SEC-CU001-CronOcurrencia",
+    "width": 788.0,
+    "height": 1274.0,
+    "font": 20,
+    "printed_pt": 9.155
+  },
+  {
+    "id": "SEC-CU002-AccesoPreferencias",
+    "width": 859.5,
+    "height": 1206.0,
+    "font": 20,
+    "printed_pt": 9.672
+  },
+  {
+    "id": "SEC-CU002-PagoInicio",
+    "width": 779.5,
+    "height": 890.0,
+    "font": 20,
+    "printed_pt": 12.654
+  },
+  {
+    "id": "SEC-CU002-PagoWebhook",
+    "width": 642.5,
+    "height": 1098.0,
+    "font": 20,
+    "printed_pt": 10.623
+  },
+  {
+    "id": "SEC-CU003-Dashboard",
+    "width": 927.5,
+    "height": 1256.0,
+    "font": 20,
+    "printed_pt": 9.287
+  },
+  {
+    "id": "SEC-CU003-Cotizaciones",
+    "width": 813.5,
+    "height": 1342.0,
+    "font": 20,
+    "printed_pt": 8.692
+  },
+  {
+    "id": "SEC-CU003-ChatIntencion",
+    "width": 897.0,
+    "height": 1000.0,
+    "font": 20,
+    "printed_pt": 10.997
+  },
+  {
+    "id": "SEC-CU003-ChatRespuesta",
+    "width": 780.5,
+    "height": 982.0,
+    "font": 20,
+    "printed_pt": 11.878
+  },
+  {
+    "id": "SEC-CU003-AnomaliasSeleccion",
+    "width": 740.0,
+    "height": 834.0,
+    "font": 20,
+    "printed_pt": 13.33
+  },
+  {
+    "id": "SEC-CU003-AnomaliasCalculo",
+    "width": 528.0,
+    "height": 1094.0,
+    "font": 20,
+    "printed_pt": 10.662
+  },
+  {
+    "id": "SEC-CU003-Proyeccion",
+    "width": 858.0,
+    "height": 1454.0,
+    "font": 20,
+    "printed_pt": 8.022
+  },
+  {
+    "id": "SEC-CU004-Compra",
+    "width": 730.5,
+    "height": 1012.0,
+    "font": 20,
+    "printed_pt": 11.526
+  },
+  {
+    "id": "SEC-CU004-VentaValidar",
+    "width": 772.0,
+    "height": 997.0,
+    "font": 20,
+    "printed_pt": 11.699
+  },
+  {
+    "id": "SEC-CU004-VentaRPC",
+    "width": 836.5,
+    "height": 1023.0,
+    "font": 20,
+    "printed_pt": 11.402
+  },
+  {
+    "id": "SEC-CU004-Valoracion",
+    "width": 905.5,
+    "height": 1396.0,
+    "font": 20,
+    "printed_pt": 8.355
+  },
+  {
+    "id": "SEC-StrategyAdapter",
+    "width": 758.0,
+    "height": 896.0,
+    "font": 20,
+    "printed_pt": 13.013
+  },
+  {
+    "id": "SEC-TemplateMethod",
+    "width": 678.0,
+    "height": 1068.0,
+    "font": 20,
+    "printed_pt": 10.921
+  },
+  {
+    "id": "SEC-CU001-CompartidosGrupo",
+    "width": 837.5,
+    "height": 1014.0,
+    "font": 20,
+    "printed_pt": 11.503
+  },
+  {
+    "id": "SEC-CU001-CompartidosReparto",
+    "width": 948.5,
+    "height": 1166.0,
+    "font": 20,
+    "printed_pt": 10.003
+  },
+  {
+    "id": "SEC-CU002-CuentasAlta",
+    "width": 769.0,
+    "height": 1040.0,
+    "font": 20,
+    "printed_pt": 11.215
+  },
+  {
+    "id": "SEC-CU002-CuentasDatos",
+    "width": 744.5,
+    "height": 1090.0,
+    "font": 20,
+    "printed_pt": 10.701
+  },
+  {
+    "id": "SEC-CU001-Cuotas",
+    "width": 811.5,
+    "height": 1276.0,
+    "font": 20,
+    "printed_pt": 9.141
+  },
+  {
+    "id": "SEC-CU001-Cola",
+    "width": 705.0,
+    "height": 520.0,
+    "font": 20,
+    "printed_pt": 13.991
+  },
+  {
+    "id": "SEC-CU001-Sincronizacion",
+    "width": 895.5,
+    "height": 1238.0,
+    "font": 20,
+    "printed_pt": 9.422
+  },
+  {
+    "id": "SEC-CU004-Simulacion-Detalle",
+    "width": 1099.5,
+    "height": 1394.0,
+    "font": 20,
+    "printed_pt": 8.367
+  },
+  {
+    "id": "ARQ-Logica-Impresa",
+    "width": 645.0,
+    "height": 650.0,
+    "font": 18.0,
+    "printed_pt": 13.76
+  },
+  {
+    "id": "ARQ-Componentes-Datos",
+    "width": 697.0,
+    "height": 476.0,
+    "font": 18.0,
+    "printed_pt": 12.74
+  },
+  {
+    "id": "ARQ-Componentes-Analisis",
+    "width": 457.0,
+    "height": 410.0,
+    "font": 18.0,
+    "printed_pt": 19.43
+  },
+  {
+    "id": "ARQ-Componentes-Canales",
+    "width": 513.0,
+    "height": 389.0,
+    "font": 18.0,
+    "printed_pt": 17.31
+  },
+  {
+    "id": "ARQ-Despliegue-Impresa",
+    "width": 571.0,
+    "height": 498.0,
+    "font": 18.0,
+    "printed_pt": 15.55
+  },
+  {
+    "id": "CFG-01-Guardas",
+    "width": 815.0,
+    "height": 1219.0,
+    "font": 20.0,
+    "printed_pt": 9.568
+  },
+  {
+    "id": "CFG-01-Frecuencia",
+    "width": 1023.0,
+    "height": 569.0,
+    "font": 20.0,
+    "printed_pt": 9.642
+  }
+]

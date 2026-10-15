@@ -1,0 +1,91 @@
+{
+  "sourceRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "completedAt": "2026-10-15T08:36:02.016Z",
+  "outerFailure": false,
+  "cleanup": {
+    "profileRestored": true,
+    "deferredOutboxRestored": true,
+    "controlledConstraintRemoved": true,
+    "authSessions": 0,
+    "authRefreshTokens": 0,
+    "sdkLogoutResults": [
+      {
+        "noError": true,
+        "errorStatus": null
+      },
+      {
+        "noError": true,
+        "errorStatus": null
+      }
+    ],
+    "historyUnchanged": true,
+    "preferencesUnchanged": true,
+    "existingFinancialRowsUnchanged": true
+  },
+  "browserUsed": false,
+  "externalProvidersAccepted": false,
+  "rawConsolePersisted": false,
+  "credentialValuesCopied": false,
+  "envFilesCreated": false,
+  "sessionsPersisted": false,
+  "status": "PASS",
+  "selectedPrivateNeedles": 13,
+  "secretHits": 0,
+  "sentinelNeedles": 3,
+  "sentinelHits": 0,
+  "imageRepresentationsCompared": 4,
+  "imageHits": 0,
+  "capturedConsoleCalls": 55,
+  "consoleCapture": "node:util.formatWithOptions",
+  "options": {
+    "showHidden": true,
+    "depth": null,
+    "maxStringLength": "Infinity",
+    "maxArrayLength": "Infinity",
+    "customInspect": false
+  },
+  "calibration": {
+    "status": "PASS",
+    "errorMessageCaptured": true,
+    "errorStackCaptured": true,
+    "errorCauseMessageCaptured": true,
+    "errorCauseStackCaptured": true,
+    "nonEnumerableErrorFieldsUsed": true,
+    "literalSentinelCategoriesCaptured": 3,
+    "imageRepresentationCategoriesCaptured": 4,
+    "consoleCallsBeforeClear": 1,
+    "consoleCallsAfterClear": 0,
+    "performedBeforeAnyAuthOrDatabaseOperation": true
+  },
+  "consoleMethodsCaptured": [
+    "log",
+    "info",
+    "debug",
+    "warn",
+    "error",
+    "dir",
+    "time",
+    "timeEnd",
+    "timeLog",
+    "trace",
+    "assert",
+    "clear",
+    "count",
+    "countReset",
+    "group",
+    "groupEnd",
+    "table",
+    "dirxml",
+    "groupCollapsed"
+  ],
+  "allCapturedConsoleCompared": true,
+  "imageFixtureGeneratedInMemory": true,
+  "fixtureImageFileSaved": false,
+  "syntheticImageBase64MayResideInPrivateFixtureNote": true,
+  "nineCorrelationObservations": 54,
+  "totalObservations": 54,
+  "observationContract": true,
+  "consoleContainsAuthFieldNames": false,
+  "scope": "Selected config credentials, both existing passwords, newly issued normal sessions, synthetic cookie, literal sentinels and image base64/hex/inspected-latin1/raw-byte representations against every formatted console call, including Error.message/stack/cause. No raw logs, values, images or tokens published. Scope is limited to the specified representations and captured calls."
+}

@@ -1,14 +1,18 @@
+import { parseCSVFile } from '@/lib/import/csv';
+import { parseImportDate, excelSerialToUtcCalendarDate, type ParseImportDateOpts, type ImportDateAmbiguousOrder } from '@/lib/import/date';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import ExcelJS from 'exceljs';
-import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencies';
+import { coerceTransactionCurrency, isTransactionCurrency } from '@/lib/constants/transaction-currencies';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
-import { transactionsService } from '@/lib/services/transactions';
+import { createHash } from 'node:crypto';
+import { computeTransferAmounts } from '@/lib/services/transactions';
+import { transactionRequestHash } from '@/lib/transaction-idempotency';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
 import type { ImportSkippedDetail } from '@/types/import';
-import { errorResponse } from '@/lib/api-handler';
+import { ApiError, errorResponse } from '@/lib/api-handler';
 
 const MAX_SKIPPED_DETAILS = 250;
 /** Límite de tamaño de archivo de import (mitiga DoS y reduce superficie de bugs en parsers). */
@@ -25,6 +29,11 @@ interface ImportedTransaction {
   notes?: string;
   /** Si el monto en moneda de transacción (ej. USD) difiere del de cuenta (ej. ARS), va el equivalente en moneda de cuenta */
   amountInAccountCurrency?: number;
+  destinationAccount?: string;
+  accountCurrency?: string;
+  destinationCurrency?: string;
+  destinationAmountInAccountCurrency?: number;
+  exchangeRate?: number;
 }
 
 interface ImportedTransferRow {
@@ -36,6 +45,8 @@ interface ImportedTransferRow {
   amountIncoming?: number;
   currencyIncoming?: string;
   comment?: string;
+  originalAmount?: number;
+  originalCurrency?: string;
 }
 
 type UnresolvedAction = 'none' | 'map' | 'keep_name';
@@ -43,46 +54,6 @@ type UnresolvedAction = 'none' | 'map' | 'keep_name';
 interface UnresolvedResolution {
   action: UnresolvedAction;
   accountId?: string;
-}
-
-function detectDelimiter(headerLine: string): ',' | ';' {
-  let commas = 0;
-  let semis = 0;
-  let q = false;
-  for (const char of headerLine) {
-    if (char === '"') q = !q;
-    else if (!q) {
-      if (char === ',') commas++;
-      if (char === ';') semis++;
-    }
-  }
-  return semis > commas ? ';' : ',';
-}
-
-function parseCSVLine(line: string, delimiter: ',' | ';'): string[] {
-  const values: string[] = [];
-  let current = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    if (char === '"') {
-      // RFC 4180: dentro de una celda entre comillas, `""` es una comilla literal
-      // (el export propio escribe descripciones/notas así).
-      if (inQuotes && line[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (char === delimiter && !inQuotes) {
-      values.push(current.trim());
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-  values.push(current.trim());
-  return values;
 }
 
 /**
@@ -93,19 +64,6 @@ function parseCSVLine(line: string, delimiter: ',' | ';'): string[] {
  */
 function stripFormulaGuardApostrophe(s: string): string {
   return /^'[=+\-@\t]/.test(s) ? s.slice(1) : s;
-}
-
-function parseCSVFile(text: string): { headers: string[]; rows: string[][] } {
-  const lines = text.trim().split(/\r?\n/);
-  if (lines.length < 2) return { headers: [], rows: [] };
-  const delimiter = detectDelimiter(lines[0]);
-  const headers = parseCSVLine(lines[0], delimiter);
-  const rows: string[][] = [];
-  for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
-    rows.push(parseCSVLine(lines[i], delimiter));
-  }
-  return { headers, rows };
 }
 
 function normalizeHeader(h: string): string {
@@ -153,114 +111,6 @@ function findColumnIndex(headers: string[], matchers: RegExp[]): number {
     if (matchers.some((re) => re.test(h))) return i;
   }
   return -1;
-}
-
-/** Fecha solo-calendario (sin hora) → mediodía UTC; evita correr un día al mostrar en UTC−3 u otras zonas. */
-function calendarDateToUtcNoon(y: number, m: number, d: number): Date {
-  return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
-}
-
-/** Cuando día y mes son ambiguos (≤12), elegir orden (Argentina vs EE.UU.). */
-type ImportDateAmbiguousOrder = 'dmy' | 'mdy';
-
-interface ParseImportDateOpts {
-  ambiguousOrder?: ImportDateAmbiguousOrder;
-}
-
-/**
- * Número serial de Excel (días; 1 ≈ 1900-01-01) → fecha calendario en UTC mediodía.
- * Evita que una celda numérica se interprete como milisegundos en `new Date(n)`.
- */
-function excelSerialToUtcCalendarDate(serial: number): Date | null {
-  const whole = Math.floor(serial);
-  if (whole < 1 || whole > 1000000) return null;
-  const ms = (whole - 25569) * 86400 * 1000;
-  const d = new Date(ms);
-  if (Number.isNaN(d.getTime())) return null;
-  return calendarDateToUtcNoon(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
-}
-
-function parseImportDate(
-  dateStr: string | number | undefined | null,
-  opts?: ParseImportDateOpts
-): Date | null {
-  const ambiguousOrder = opts?.ambiguousOrder ?? 'dmy';
-
-  if (typeof dateStr === 'number' && Number.isFinite(dateStr)) {
-    const n = dateStr;
-    if (n > 20000 && n < 80000) {
-      const fromExcel = excelSerialToUtcCalendarDate(n);
-      if (fromExcel) return fromExcel;
-    }
-    return null;
-  }
-
-  const raw = String(dateStr ?? '').trim();
-  if (!raw) return null;
-
-  // Serial Excel como texto (p. ej. "45321")
-  if (/^\d{5,6}$/.test(raw)) {
-    const n = Number(raw);
-    if (n > 20000 && n < 80000) {
-      const fromExcel = excelSerialToUtcCalendarDate(n);
-      if (fromExcel) return fromExcel;
-    }
-  }
-
-  // YYYY-MM-DD sin hora (común en Excel export y CSV)
-  const isoDateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (isoDateOnly) {
-    const y = Number(isoDateOnly[1]);
-    const m = Number(isoDateOnly[2]);
-    const d = Number(isoDateOnly[3]);
-    if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
-      return calendarDateToUtcNoon(y, m, d);
-    }
-  }
-
-  // ISO con hora (T o espacio) — respetar el instante (JSON export, Airtable, etc.)
-  if (/^\d{4}-\d{2}-\d{2}[T\s]\d/.test(raw)) {
-    const parsed = new Date(raw);
-    if (!Number.isNaN(parsed.getTime())) return parsed;
-  }
-
-  const datePart = raw.split(/\s+/)[0] ?? raw;
-
-  // DD/MM/YYYY o MM/DD/YYYY (export es-AR suele ser 15/1/2024; EE.UU. suele ser 2/4/2025 = 4 feb)
-  const slashMatch = datePart.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
-  if (slashMatch) {
-    const A = Number(slashMatch[1]);
-    const B = Number(slashMatch[2]);
-    const yearRaw = Number(slashMatch[3]);
-    const year = yearRaw < 100 ? 2000 + yearRaw : yearRaw;
-
-    let month: number;
-    let day: number;
-    if (A > 12) {
-      day = A;
-      month = B;
-    } else if (B > 12) {
-      month = A;
-      day = B;
-    } else {
-      // Ambiguo (ej. 02/04/2025): DD/MM → 2 abr; MM/DD (EE.UU.) → 4 feb
-      if (ambiguousOrder === 'mdy') {
-        month = A;
-        day = B;
-      } else {
-        day = A;
-        month = B;
-      }
-    }
-
-    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
-    return calendarDateToUtcNoon(year, month, day);
-  }
-
-  const fallback = new Date(raw);
-  if (!Number.isNaN(fallback.getTime())) return fallback;
-
-  return null;
 }
 
 function parseImportAmount(amountValue: unknown): number | null {
@@ -331,6 +181,11 @@ function parseStandardCSV(
     ['descripción', 'descripcion', 'description'].includes(x)
   );
   const notesIdx = h.findIndex((x) => ['notas', 'notes'].includes(x));
+  const destinationIdx = h.findIndex((x) => ['cuenta destino', 'destination account'].includes(x));
+  const accountCurrencyIdx = h.findIndex((x) => ['moneda cuenta', 'account currency'].includes(x));
+  const destinationCurrencyIdx = h.findIndex((x) => ['moneda destino', 'destination currency'].includes(x));
+  const destinationAmountIdx = h.findIndex((x) => ['monto en destino', 'destination amount'].includes(x));
+  const exchangeRateIdx = h.findIndex((x) => ['tasa de cambio', 'exchange rate'].includes(x));
 
   if (dateIdx === -1 || amountIdx === -1) {
     throw new Error('CSV debe tener columnas "Fecha" y "Monto"');
@@ -401,6 +256,11 @@ function parseStandardCSV(
       notes: getText(row, notesIdx) || undefined,
       amountInAccountCurrency:
         amountInAccount !== null && amountInAccount > 0 ? amountInAccount : undefined,
+      destinationAccount: getText(row, destinationIdx) || undefined,
+      accountCurrency: getValue(row, accountCurrencyIdx) || undefined,
+      destinationCurrency: getValue(row, destinationCurrencyIdx) || undefined,
+      destinationAmountInAccountCurrency: parseImportAmount(getValue(row, destinationAmountIdx)) ?? undefined,
+      exchangeRate: parseImportAmount(getValue(row, exchangeRateIdx)) ?? undefined,
     });
   }
 
@@ -995,8 +855,11 @@ export async function POST(request: NextRequest) {
     const mode = (formData.get('mode') as string) || 'import';
     const file = formData.get('file') as File;
 
-    if (!file) {
+    if (!file || typeof file === 'string' || typeof file.text !== 'function') {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    }
+    if (mode !== 'preview' && mode !== 'import') {
+      return NextResponse.json({ error: 'Modo de importación inválido' }, { status: 400 });
     }
 
     if (file.size > MAX_IMPORT_FILE_BYTES) {
@@ -1011,6 +874,26 @@ export async function POST(request: NextRequest) {
     const dateParseOpts: ParseImportDateOpts = { ambiguousOrder };
 
     const lowerName = file.name.toLowerCase();
+    const fileHash = createHash('sha256').update(Buffer.from(await file.arrayBuffer())).digest('hex');
+    const batchId = formData.get('batchId');
+    if (mode === 'import' && (typeof batchId !== 'string' ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(batchId))) {
+      throw new ApiError('Previsualizá el archivo y confirmá un lote con identificador estable.', 400);
+    }
+    if (mode === 'import' && formData.get('ownerId') !== user.id) {
+      throw new ApiError('El lote pertenece a otra sesión. Volvé a seleccionarlo con la cuenta original.', 409);
+    }
+    const skipDuplicates = formData.get('skipDuplicates') === 'true';
+    const resolutionsSchema = z.record(z.object({
+      action: z.enum(['none', 'map', 'keep_name']), accountId: z.string().optional(),
+    }));
+    let resolutions: Record<string, UnresolvedResolution> = {};
+    if (mode === 'import') {
+      try { resolutions = resolutionsSchema.parse(JSON.parse(String(formData.get('resolutions') || '{}'))); }
+      catch { throw new ApiError('El mapeo de cuentas no es válido.', 400); }
+    }
+    const batchHash = transactionRequestHash({ fileHash, format: lowerName.split('.').pop(),
+      dateFormat: ambiguousOrder, resolutions, skipDuplicates, protocol: 1 });
 
     let combined: ParsedImport;
 
@@ -1038,6 +921,10 @@ export async function POST(request: NextRequest) {
       if (Array.isArray(json)) {
         combined = { transfers: [], transactions: [], skips: [] };
         for (const tx of json as any[]) {
+          if (!tx || typeof tx !== 'object' || Array.isArray(tx)) {
+            combined.skips.push({ title: 'Fila omitida — formato inválido', reason: 'Cada movimiento debe ser un objeto JSON.', suggestion: 'Corregí la estructura de esta fila.' });
+            continue;
+          }
           const rawDate = tx.date || tx.transaction_date || '';
           const parsedDate = parseImportDate(rawDate, dateParseOpts);
           if (!parsedDate) {
@@ -1063,11 +950,32 @@ export async function POST(request: NextRequest) {
             description: tx.description,
             notes: tx.notes,
             amountInAccountCurrency: amtAcct,
+            destinationAccount: tx.destinationAccount || tx.destinationAccountName,
+            accountCurrency: tx.accountCurrency,
+            destinationCurrency: tx.destinationCurrency,
+            destinationAmountInAccountCurrency: parseImportAmount(tx.destinationAmountInAccountCurrency ?? tx.destination_amount_in_account_currency) ?? undefined,
+            exchangeRate: parseImportAmount(tx.exchangeRate ?? tx.exchange_rate) ?? undefined,
           });
         }
-      } else if (json.data?.transactions) {
+      } else if (Array.isArray(json?.data?.transactions)) {
         combined = { transfers: [], transactions: [], skips: [] };
+        // IDs from a backup are only used to recover its names. They never
+        // become database references; names are later mapped to this user's accounts.
+        const backupAccounts = new Map<string, { name: string; currency?: string }>(
+          (Array.isArray(json.data.accounts) ? json.data.accounts : [])
+            .filter((a: any) => a && typeof a.id === 'string' && typeof a.name === 'string')
+            .map((a: any) => [a.id, { name: a.name, currency: typeof a.currency === 'string' ? a.currency : undefined }])
+        );
+        const backupCategories = new Map<string, string>(
+          (Array.isArray(json.data.categories) ? json.data.categories : [])
+            .filter((c: any) => c && typeof c.id === 'string' && typeof c.name === 'string')
+            .map((c: any) => [c.id, c.name])
+        );
         for (const tx of json.data.transactions as any[]) {
+          if (!tx || typeof tx !== 'object' || Array.isArray(tx)) {
+            combined.skips.push({ title: 'Fila omitida — formato inválido', reason: 'Cada movimiento debe ser un objeto JSON.', suggestion: 'Corregí la estructura de esta fila.' });
+            continue;
+          }
           const rawDate = tx.transaction_date || '';
           const parsedDate = parseImportDate(rawDate, dateParseOpts);
           if (!parsedDate) {
@@ -1079,10 +987,16 @@ export async function POST(request: NextRequest) {
             type: tx.type || 'expense',
             amount: parseImportAmount(tx.amount) || 0,
             currency: tx.currency || 'ARS',
-            account: '',
-            category: undefined,
+            account: backupAccounts.get(tx.account_id)?.name || '',
+            category: backupCategories.get(tx.category_id),
             description: tx.description,
             notes: tx.notes,
+            amountInAccountCurrency: parseImportAmount(tx.amount_in_account_currency) ?? undefined,
+            destinationAccount: backupAccounts.get(tx.destination_account_id)?.name,
+            accountCurrency: backupAccounts.get(tx.account_id)?.currency,
+            destinationCurrency: backupAccounts.get(tx.destination_account_id)?.currency,
+            destinationAmountInAccountCurrency: parseImportAmount(tx.destination_amount_in_account_currency) ?? undefined,
+            exchangeRate: parseImportAmount(tx.exchange_rate) ?? undefined,
           });
         }
       } else {
@@ -1127,6 +1041,42 @@ export async function POST(request: NextRequest) {
           : { transactions: parsed.transactions, transfers: [], skips: parseSkips };
     }
 
+    // Exported mixed files carry both sides of transfers. Preserve those
+    // equivalents instead of silently discarding transfers or using today's FX.
+    const standardTransactions: ImportedTransaction[] = [];
+    for (const tx of combined.transactions) {
+      if (tx.type !== 'transfer' || !tx.destinationAccount) {
+        standardTransactions.push(tx);
+        continue;
+      }
+      const sourceAmount = tx.amountInAccountCurrency ?? tx.amount;
+      const destinationAmount = tx.destinationAmountInAccountCurrency ??
+        (tx.exchangeRate != null && tx.exchangeRate > 0 ? tx.amount * tx.exchangeRate : undefined);
+      if (!Number.isFinite(sourceAmount) || sourceAmount <= 0 ||
+          (destinationAmount != null && (!Number.isFinite(destinationAmount) || destinationAmount <= 0)) ||
+          typeof tx.account !== 'string' || typeof tx.destinationAccount !== 'string' ||
+          (tx.accountCurrency != null && typeof tx.accountCurrency !== 'string') ||
+          (tx.destinationCurrency != null && typeof tx.destinationCurrency !== 'string') ||
+          (tx.description != null && typeof tx.description !== 'string') ||
+          !isTransactionCurrency(tx.currency)) {
+        combined.skips.push({ title: 'Transferencia omitida — formato inválido', reason: 'Los equivalentes deben ser montos positivos y las cuentas deben tener nombre.', suggestion: 'Revisá los datos de origen y destino.' });
+        continue;
+      }
+      combined.transfers.push({
+        date: tx.date,
+        outgoingName: tx.account,
+        incomingName: tx.destinationAccount,
+        amountOutgoing: sourceAmount,
+        currencyOutgoing: tx.accountCurrency || (tx.amountInAccountCurrency != null ? '' : tx.currency),
+        amountIncoming: destinationAmount,
+        currencyIncoming: tx.destinationCurrency,
+        originalAmount: tx.amount,
+        originalCurrency: tx.currency,
+        comment: tx.description,
+      });
+    }
+    combined.transactions = standardTransactions;
+
     // Saneo de filas provenientes del archivo (no confiar en el contenido):
     // `type` y `currency` se fuerzan a valores permitidos antes de insertar.
     const importedTxSchema = z.object({
@@ -1134,8 +1084,9 @@ export async function POST(request: NextRequest) {
       type: z.enum(['expense', 'income', 'transfer', 'adjustment']),
       amount: z.coerce.number().finite().nonnegative().catch(0),
       currency: z
-        .unknown()
-        .transform((c) => coerceTransactionCurrency(typeof c === 'string' ? c : undefined)),
+        .string()
+        .refine(isTransactionCurrency, 'Moneda no admitida')
+        .transform(coerceTransactionCurrency),
       account: z.string(),
       category: z.string().optional(),
       description: z.string().optional(),
@@ -1148,8 +1099,8 @@ export async function POST(request: NextRequest) {
       if (!parsed.success) {
         combined.skips.push({
           title: `Movimiento omitido — ${(t as { description?: string }).description || 'sin descripción'}`,
-          reason: 'Tipo de movimiento inválido o monto ilegible.',
-          suggestion: 'Usá expense, income, transfer o adjustment, y un monto numérico.',
+          reason: 'Tipo, moneda o monto inválidos.',
+          suggestion: 'Usá un tipo permitido, moneda ARS/USD/EUR y un monto numérico.',
         });
         continue;
       }
@@ -1175,21 +1126,36 @@ export async function POST(request: NextRequest) {
 
     const serviceSupabase = createServiceClientSync();
 
-    const { data: accountsRaw } = await serviceSupabase
+    const { data: accountsRaw, error: accountsError } = await serviceSupabase
       .from('accounts')
       .select('id, name, currency')
       .eq('user_id', user.id)
       .eq('is_active', true);
 
-    const accounts = [...(accountsRaw || [])].sort((a, b) =>
+    if (accountsError) throw accountsError;
+    let accounts = [...(accountsRaw || [])].sort((a, b) =>
       a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
     );
 
-    const { data: categories } = await serviceSupabase
+    const { data: categoriesRaw, error: categoriesError } = await serviceSupabase
       .from('categories')
       .select('id, name')
       .or(`user_id.eq.${user.id},is_system.eq.true`);
 
+    if (categoriesError) throw categoriesError;
+    let categories = categoriesRaw || [];
+    if (mode === 'import') {
+      // Freeze automatic name mapping as well as user choices for the entire
+      // batch. An account rename while retrying must never redirect a row.
+      const { data: context, error } = await serviceSupabase.rpc('begin_import_batch', {
+        p_user_id: user.id, p_batch_id: batchId, p_intent_hash: batchHash,
+        p_context: { accounts, categories },
+      });
+      if (error?.code === 'Z0001') throw new ApiError('Ese lote ya está vinculado a otro archivo o configuración. Usá sus datos originales.', 409);
+      if (error) throw error;
+      accounts = context.accounts;
+      categories = context.categories;
+    }
     const accountMap = buildImportLookupMap(accounts || []);
     const validAccountIds = new Set(accounts.map((a) => a.id));
     const accountCurrencyById = new Map(accounts.map((a) => [a.id, a.currency]));
@@ -1211,6 +1177,8 @@ export async function POST(request: NextRequest) {
     if (mode === 'preview') {
       return NextResponse.json({
         success: true,
+        fileHash,
+        ownerId: user.id,
         total: totalCount,
         importKind: importKindPreview,
         unresolvedAccounts: unresolvedAccountNames,
@@ -1218,16 +1186,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    let resolutions: Record<string, UnresolvedResolution> = {};
-    try {
-      const rawResolutions = formData.get('resolutions') as string | null;
-      resolutions = rawResolutions ? JSON.parse(rawResolutions) : {};
-    } catch {
-      resolutions = {};
-    }
-
     let imported = 0;
     let skipped = 0;
+    let pending = 0;
     const skippedDetails: ImportSkippedDetail[] = [];
 
     const pushSkip = (detail: ImportSkippedDetail) => {
@@ -1238,16 +1199,86 @@ export async function POST(request: NextRequest) {
     };
 
     // Filas descartadas durante el parseo (fecha/monto ilegibles): cuentan
-    // como omitidas con su detalle, igual que los errores de inserción.
+    // como omitidas con su detalle. Una escritura sin confirmar nunca se omite.
     for (const parseSkip of combined.skips) {
       pushSkip(parseSkip);
     }
 
-    const seenFingerprints = new Set<string>();
-    const fingerprint = (...parts: Array<string | number | null | undefined>) =>
-      parts.map((p) => String(p ?? '').trim().toLowerCase()).join('|');
+    // Receipts are loaded before resolving accounts or fetching FX. A committed
+    // row remains confirmed even if the account is later archived or FX fails.
+    const priorRows = new Map<string, { request_hash: string; response: unknown }>();
+    for (let offset = 0; ; offset += 1000) {
+      const { data: receipts, error: receiptError } = await serviceSupabase.from('transaction_requests')
+        .select('request_id, request_hash, response').eq('user_id', user.id)
+        .like('request_id', `import:${batchId}:%`).order('request_id').range(offset, offset + 999);
+      if (receiptError) throw receiptError;
+      for (const receipt of receipts || []) priorRows.set(receipt.request_id, receipt);
+      if ((receipts?.length || 0) < 1000) break;
+    }
+    const rowIdentity = (kind: string, index: number, row: object) => ({
+      requestId: `import:${batchId}:${kind}:${index}`,
+      requestHash: transactionRequestHash({ batchHash, kind, index, row }),
+    });
+    const duplicateSkip = () => pushSkip({
+      title: 'Movimiento omitido — coincidencia exacta',
+      reason: 'Elegiste omitir coincidencias por fecha y hora, tipo, monto, moneda, cuentas, equivalentes, categoría, descripción y notas.',
+      suggestion: 'Si son operaciones distintas, importá un lote nuevo sin omitir coincidencias.',
+    });
+    const countAcknowledgedRow = (response: unknown): boolean => {
+      if (!response || typeof response !== 'object') return false;
+      if ('import_skipped_duplicate' in response && response.import_skipped_duplicate === true) {
+        duplicateSkip();
+      } else if ('id' in response && typeof response.id === 'string' && response.id.length > 0 &&
+          'user_id' in response && response.user_id === user.id) {
+        imported++;
+      } else {
+        return false;
+      }
+      return true;
+    };
+    const replayRow = ({ requestId, requestHash }: ReturnType<typeof rowIdentity>): boolean => {
+      const prior = priorRows.get(requestId);
+      if (!prior) return false;
+      if (prior.request_hash !== requestHash) throw new ApiError('El contenido de esta fila cambió para el mismo lote.', 409);
+      if (!countAcknowledgedRow(prior.response)) pending++;
+      return true;
+    };
+    const reconcileRow = async (identity: ReturnType<typeof rowIdentity>) => {
+      try {
+        const { data: receipt, error } = await serviceSupabase.from('transaction_requests')
+          .select('request_hash, response').eq('user_id', user.id)
+          .eq('request_id', identity.requestId).maybeSingle();
+        if (!error && receipt) {
+          if (receipt.request_hash !== identity.requestHash) {
+            throw new ApiError('El contenido de esta fila cambió para el mismo lote.', 409);
+          }
+          if (countAcknowledgedRow(receipt.response)) return;
+        }
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+      }
+      // An absent/unreadable receipt can race an in-flight commit. Keep the
+      // original batch pending; only its same-ID replay may settle the outcome.
+      pending++;
+    };
+    const persistRow = async (identity: ReturnType<typeof rowIdentity>, row: Record<string, unknown>) => {
+      // A transport/RPC error (or malformed acknowledgement) does not prove a
+      // rollback. Reconcile the exact durable receipt before classifying a row.
+      try {
+        const { data, error } = await serviceSupabase.rpc('create_import_transaction_once', {
+          p_user_id: user.id, p_batch_id: batchId, p_request_id: identity.requestId,
+          p_request_hash: identity.requestHash, p_transaction: row, p_skip_duplicates: skipDuplicates,
+        });
+        if (!error && countAcknowledgedRow(data)) return;
+      } catch {
+        // The request may have committed even when the client threw.
+      }
+      await reconcileRow(identity);
+    };
 
-    for (const tr of combined.transfers) {
+    for (const [index, tr] of combined.transfers.entries()) {
+      const identity = rowIdentity('transfer', index, tr);
+      if (replayRow(identity)) continue;
       const outRes = resolveAccountId(
         tr.outgoingName,
         accountMap,
@@ -1307,8 +1338,18 @@ export async function POST(request: NextRequest) {
 
       let description = tr.comment || 'Transferencia importada';
       let exchangeRateOverride: number | undefined;
-      if (tr.currencyIncoming && tr.currencyIncoming !== tr.currencyOutgoing) {
-        if (!(tr.amountIncoming && tr.amountIncoming > 0 && tr.amountOutgoing > 0)) {
+      const sourceCurrency = accountCurrencyById.get(outRes.accountId)!;
+      const destinationCurrency = accountCurrencyById.get(inRes.accountId)!;
+      if ((tr.currencyOutgoing && normalizeCurrency(tr.currencyOutgoing) !== normalizeCurrency(sourceCurrency)) ||
+          (tr.currencyIncoming && normalizeCurrency(tr.currencyIncoming) !== normalizeCurrency(destinationCurrency))) {
+        pushSkip({ title: 'Transferencia omitida — moneda incompatible', reason: 'La moneda del archivo no coincide con la cuenta mapeada.', suggestion: 'Mapeá a cuentas de la misma moneda o corregí los equivalentes.', context: formatTransferContext(tr) });
+        continue;
+      }
+      const amountIncoming = tr.amountIncoming ??
+        (tr.originalCurrency && normalizeCurrency(tr.originalCurrency) === normalizeCurrency(destinationCurrency)
+          ? tr.originalAmount : undefined);
+      if (normalizeCurrency(destinationCurrency) !== normalizeCurrency(sourceCurrency)) {
+        if (!(amountIncoming && amountIncoming > 0 && tr.amountOutgoing > 0)) {
           pushSkip({
             title: `Transferencia omitida — ${tr.outgoingName} → ${tr.incomingName}`,
             reason: 'Falta el monto en destino para una transferencia entre monedas distintas.',
@@ -1317,44 +1358,29 @@ export async function POST(request: NextRequest) {
           });
           continue;
         }
-        exchangeRateOverride = tr.amountIncoming / tr.amountOutgoing;
-        description += ` (${tr.amountIncoming} ${tr.currencyIncoming} en destino)`;
+        exchangeRateOverride = amountIncoming / tr.amountOutgoing;
+        description += ` (${amountIncoming} ${destinationCurrency} en destino)`;
       }
-
-      const fp = fingerprint(
-        'transfer',
-        tr.date,
-        tr.outgoingName,
-        tr.incomingName,
-        tr.amountOutgoing,
-        tr.currencyOutgoing
-      );
-      if (seenFingerprints.has(fp)) {
-        pushSkip({
-          title: 'Transferencia omitida — duplicada en el archivo',
-          reason: 'Ya se importó una transferencia idéntica en esta corrida.',
-          suggestion: 'Revisá filas repetidas en el CSV.',
-          context: formatTransferContext(tr),
-        });
-        continue;
-      }
-      seenFingerprints.add(fp);
 
       try {
-        await transactionsService.create({
-          userId: user.id,
+        const amounts = await computeTransferAmounts(tr.amountOutgoing, sourceCurrency,
+          sourceCurrency, destinationCurrency, exchangeRateOverride);
+        await persistRow(identity, {
+          user_id: user.id,
           type: 'transfer',
-          accountId: outRes.accountId,
-          destinationAccountId: inRes.accountId,
+          account_id: outRes.accountId,
+          destination_account_id: inRes.accountId,
           amount: tr.amountOutgoing,
-          currency: tr.currencyOutgoing,
+          currency: sourceCurrency,
+          amount_in_account_currency: amounts.amountInSource,
+          destination_amount_in_account_currency: amounts.amountInDestination,
+          exchange_rate: amounts.exchangeRate !== 1 ? amounts.exchangeRate : null,
           description,
-          transactionDate: tr.date,
-          exchangeRateOverride,
+          transaction_date: tr.date,
         });
-        imported++;
       } catch (e: unknown) {
-        const errMsg = e instanceof Error ? e.message : String(e);
+        if (e instanceof ApiError) throw e;
+        const errMsg = e && typeof e === 'object' && 'message' in e ? String(e.message) : String(e);
         pushSkip({
           title: `Transferencia omitida — ${tr.outgoingName} → ${tr.incomingName}`,
           reason: `Error al crear el movimiento: ${errMsg}`,
@@ -1365,7 +1391,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    for (const tx of combined.transactions) {
+    for (const [index, tx] of combined.transactions.entries()) {
+      const identity = rowIdentity('transaction', index, tx);
+      if (replayRow(identity)) continue;
+      // Match CSV validation without removing entries or changing the durable
+      // identities of later rows. An immutable invalid amount cannot commit.
+      if (!Number.isFinite(tx.amount) || tx.amount <= 0) {
+        pushSkip({
+          title: 'Fila omitida — monto inválido',
+          reason: 'El monto debe ser numérico y mayor a 0.',
+          suggestion: 'Corregí el monto de esta fila en el archivo y reintentá.',
+          context: formatTxContext(tx),
+        });
+        continue;
+      }
       const rawAccountName = (tx.account || '').trim();
       const hasAccountInFile = rawAccountName.length > 0;
       let account = hasAccountInFile ? accountMap.get(normalizeImportMatchKey(rawAccountName)) : undefined;
@@ -1469,37 +1508,15 @@ export async function POST(request: NextRequest) {
             amountInAccountCurrency = tx.amount * rate;
             exchangeRate = rate !== 1 ? rate : null;
           } catch {
-            pushSkip({
-              title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
-              reason: `No se pudo obtener la cotización ${tx.currency}→${accountCurrency} para convertir el monto a la moneda de la cuenta.`,
-              suggestion:
-                'Reintentá el import más tarde, o agregá la columna "Monto en Cuenta" con el equivalente en la moneda de la cuenta.',
-              context: formatTxContext(tx),
-            });
+            // A retry may miss a still-running earlier write before FX fails.
+            // Unlike immutable file validation, unavailable live data cannot
+            // prove that the original same-ID operation did not commit.
+            await reconcileRow(identity);
             continue;
           }
         }
 
-        const fp = fingerprint(
-          tx.type,
-          tx.date,
-          tx.amount,
-          tx.currency,
-          accountId,
-          tx.description
-        );
-        if (seenFingerprints.has(fp)) {
-          pushSkip({
-            title: `Movimiento omitido — duplicado`,
-            reason: 'Ya se importó un movimiento idéntico en esta corrida.',
-            suggestion: 'Revisá filas repetidas en el archivo.',
-            context: formatTxContext(tx),
-          });
-          continue;
-        }
-        seenFingerprints.add(fp);
-
-        const { error: insertError } = await serviceSupabase.from('transactions').insert({
+        await persistRow(identity, {
           user_id: user.id,
           type: tx.type,
           account_id: accountId,
@@ -1513,20 +1530,9 @@ export async function POST(request: NextRequest) {
           transaction_date: tx.date,
         });
 
-        if (insertError) {
-          pushSkip({
-            title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
-            reason: `Error al guardar: ${insertError.message}${insertError.code ? ` (${insertError.code})` : ''}`,
-            suggestion:
-              'Revisá fecha (formato válido), monto numérico, moneda y que el tipo (gasto/ingreso) sea coherente. Si falta cuenta y la base lo exige, asigná cuenta en el archivo o en la revisión.',
-            context: formatTxContext(tx),
-          });
-          continue;
-        }
-
-        imported++;
       } catch (e: unknown) {
-        const errMsg = e instanceof Error ? e.message : String(e);
+        if (e instanceof ApiError) throw e;
+        const errMsg = e && typeof e === 'object' && 'message' in e ? String(e.message) : String(e);
         pushSkip({
           title: `Movimiento omitido — ${tx.description || 'sin descripción'}`,
           reason: `Error inesperado: ${errMsg}`,
@@ -1541,17 +1547,21 @@ export async function POST(request: NextRequest) {
     const errorsLegacy = skippedDetails.map((d) => `${d.title}: ${d.reason}`);
 
     return NextResponse.json({
-      success: true,
+      success: pending === 0,
+      status: pending > 0 ? 'pending' : 'completed',
+      ...(pending > 0 ? { error: 'Hay movimientos pendientes de confirmación. Reintentá el mismo lote con el archivo original sin editarlo; no inicies un lote nuevo.' } : {}),
+      batchId,
       imported,
       skipped,
-      // Incluye las filas descartadas en el parseo para que imported + skipped = total.
+      pending,
+      // Only proven skips are omitted: imported + skipped + pending = total.
       total: totalCount + combined.skips.length,
       importKind: importKindPreview,
       /** @deprecated Preferir skippedDetails */
       errors: errorsLegacy,
       skippedDetails,
       skippedDetailsTruncated: truncated,
-    });
+    }, { status: pending > 0 ? 503 : 200 });
   } catch (error) {
     console.error('Import error:', error);
     return errorResponse(error);

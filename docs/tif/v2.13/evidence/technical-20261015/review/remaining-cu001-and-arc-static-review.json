@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-15T04:21:20.491363+00:00",
+  "scope": "Independent read-only material correctness/privacy review of14 preparedCU001 adapters and proposed own LittleArc preflight. No Node/check, browser, API, SQL, credentials, setting or runtime executed by reviewer. This is static acceptance only; real fixture/runtime results remain pending.",
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs",
+      "sha256": "6a8b4dedfa564c0b7ce178a0a604dda894467baf4b77c58aa21ea383c61ad4bf"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-scenarios.mjs",
+      "sha256": "c580f3956237c0ad29f5aa06665a784a99c6420680e6f76f76a70a43eaadcdfb"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/run-arc-little-tab.applescript",
+      "sha256": "592cc6a4e809b7b29446e666cb310e34be19a9922c21e1b7df8c92a1fca745b5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/run-arc-little-tab.py",
+      "sha256": "1b4a9aafcec8af06573948dcbc21cab94378d3648f7d52390f9b462e2354c856"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "P2",
+      "file": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs",
+      "problem": "Fault cleanup previously registered after CREATE could leave own temporary objects after committed installation/transport failure.",
+      "status": "CLOSED_STATIC",
+      "resolution": "Cleanup/attempt flag and exact names checkpointed before installation; IF EXISTS exact-own-object drops, original definition/ACL catalog hash/count equality and ownObjectsAfter empty;17s statement/3s lock/22sprocess timeout. Actual fault/cleanup runtime parity not yet executed."
+    }
+  ],
+  "otherMaterialFindings": [],
+  "limits": [
+    "Import19/20 keep partial counter-contract difference; not silently interpreted as originalPASS.",
+    "UI21/23/31 and Telegram delivery remain explicitly pending.",
+    "Cron25 does not manufacture a committed-unmarked branch by deleting receipts or weakening atomicity.",
+    "LittleArc uses only returned owned ref, private descriptor checkpoint and typedUUID public metadata; closeACK/unresolvable are distinct from physical absence. Authorization gates and human prior-window cleanup remain required."
+  ]
+}

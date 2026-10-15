@@ -1,0 +1,17 @@
+{
+  "status": "PRECONDITION_FAILED_NO_SIGNALS",
+  "controllerSha256": "6f223de901d7c11e34969f8cf3a6324a8013868b8de4a6d76f8c5c3e3cef7cd3",
+  "stage": "Validate every identity before any report/signal",
+  "failedGuard": "Absolute command marker for the exact original quote Node script; observed launch argument was relative to its already verified cwd.",
+  "pid": 53373,
+  "port": 57910,
+  "resolvedScriptMatchesExpected": true,
+  "resolvedScriptSha256": "fafb616944489fbc58592137e99b2c925c49494529a73348dfd8d6994b9ddee7",
+  "signalsSent": 0,
+  "dataDeleted": false,
+  "nativeStacksOrPgTouched": false,
+  "privateDiagnosticFile": "/tmp/zarix-runtime-20261015/owned-final-http-stop-attempt-1-debug.private.json",
+  "timestampScope": "Report prepared after the observed failed preflight; exact tool invocation timing remains in the session.",
+  "retryPolicy": "One root-authorized narrow relative Node script equivalence, preserving all PID/start/UID/cwd/listener/build/source guards; peer review required before retry.",
+  "reportedAt": "2026-10-15T06:53:27.078682+00:00"
+}

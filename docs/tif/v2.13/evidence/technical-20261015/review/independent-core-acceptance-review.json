@@ -1,0 +1,353 @@
+{
+  "status": "PASS_REVIEW_WITH_RETAINED_AUDIT_FINDINGS",
+  "reviewedAt": "2026-10-15T04:49:27.512766+00:00",
+  "method": "Read-only inspection of JSON/logs/source and exact Git blob comparisons. No tests, package imports, builds, network, APIs or database operations executed by reviewer.",
+  "core": {
+    "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "verification": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/verification.json",
+      "sha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc"
+    },
+    "manifestSha256": "c099b890ce8129b815318786cf5d3d4c0e0123ab0ef21cb758cd3bcfcb3401d8",
+    "manifestEntries": 455,
+    "versionedEntriesVerifiedAgainstPinnedGit": 454,
+    "currentEntriesByteIdentical": 455,
+    "manifestOnlyMetadata": [
+      {
+        "path": "supabase/.temp/cli-latest",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "sourceWorkingTreeCleanDuringRun": true,
+    "sourceStableDuringRun": true,
+    "commands": {
+      "total": 17,
+      "PASS": 16,
+      "FAIL": 1,
+      "retainedFailure": "dependency-audit: npm advisory endpoint DNS ENOTFOUND; no valid vulnerability result in this original attempt."
+    },
+    "commandStatuses": [
+      {
+        "name": "npm-ci",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "typecheck",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "lint",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "coverage",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "native-harness-syntax",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "traceability-regression",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "test-db",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "build",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "dependency-audit",
+        "status": "FAIL",
+        "exitCode": 1
+      },
+      {
+        "name": "balance-sql",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "shared-sql",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "plan-sql",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "durable-sql",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "import-sql",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "account-recompute-sql",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "full-schema-sql",
+        "status": "PASS",
+        "exitCode": 0
+      },
+      {
+        "name": "performance",
+        "status": "PASS",
+        "exitCode": 0
+      }
+    ]
+  },
+  "unitTests": {
+    "passed": 891,
+    "failed": 0,
+    "pending": 0,
+    "physicalTestFiles": 89,
+    "internalSuiteCount": 229,
+    "all891AssertionsIndividuallyChecked": true
+  },
+  "coverage": {
+    "instrumentedFiles": 37,
+    "selection": "Risk-focused include list from pinned vitest.config.ts; not whole-application coverage. All891 tests run, but coverage scope is37 selected source files.",
+    "totals": {
+      "lines": {
+        "total": 2492,
+        "covered": 1810,
+        "skipped": 0,
+        "pct": 72.63
+      },
+      "statements": {
+        "total": 2895,
+        "covered": 2015,
+        "skipped": 0,
+        "pct": 69.6
+      },
+      "functions": {
+        "total": 414,
+        "covered": 281,
+        "skipped": 0,
+        "pct": 67.87
+      },
+      "branches": {
+        "total": 2507,
+        "covered": 1587,
+        "skipped": 0,
+        "pct": 63.3
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "uncoveredExamples": [
+      "app/api/ai/anomalies/route.ts:0% lines in this unit coverage run; native RF11 proof is separate.",
+      "app/api/cron/recurring/route.ts:0% lines in this unit coverage run."
+    ]
+  },
+  "sourceFreeze": {
+    "allFiveProductDeltasSince836IncludedInManifest": true,
+    "productFilesChangedSince836": [
+      {
+        "path": "app/api/export/transactions/route.ts",
+        "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+      },
+      {
+        "path": "app/api/import/transactions/route.ts",
+        "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6"
+      },
+      {
+        "path": "components/budgets/BudgetCard.tsx",
+        "sha256": "b4a66c24408997fdc90656b02d16ca574090302b0288aaebb3cbdae4a2b21a74"
+      },
+      {
+        "path": "components/ui/BlueFxReferenceDetails.tsx",
+        "sha256": "674fe1139550b084a8e9afbce04bb9fea42e7de060f582512219586ef3d6c2bd"
+      },
+      {
+        "path": "lib/services/accounts.ts",
+        "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+      }
+    ],
+    "includesFinalCp120Guard": {
+      "route": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6",
+      "regressionTests": "fc49944b5a15b7c0ac01cf1e9465844f1b0b171647795ffb89d679f986b022a6"
+    },
+    "preservedEarlierRepairs": "Other product sources already in836 remain identical in7c3e872. Formatter, export, BudgetCard, account validation and zero JSON import fixes are all present in this CI5 source freeze.",
+    "doesNotRetroactivelyChange836RuntimeEvidence": true
+  },
+  "dependencyAudit": {
+    "originalAttemptRetained": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/dependency-audit.json",
+      "sha256": "abcf9a393d63fc0f7562b87bb163684d54549d4b96c7775e2ebc24f8633e15d6"
+    },
+    "successfulRetrievalRetry": "Separate evidence, not replacement of failed core command.",
+    "retryCommands": {
+      "runs": [
+        {
+          "command": [
+            "npm",
+            "audit",
+            "--json",
+            "--registry=https://registry.npmjs.org"
+          ],
+          "exitCode": 1
+        },
+        {
+          "command": [
+            "npm",
+            "audit",
+            "--omit=dev",
+            "--json",
+            "--registry=https://registry.npmjs.org"
+          ],
+          "exitCode": 0
+        }
+      ]
+    },
+    "fullVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "productionOmitDevVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "packages": [
+      "@next/eslint-plugin-next",
+      "braces",
+      "chokidar",
+      "eslint-config-next",
+      "fast-glob",
+      "micromatch",
+      "tailwindcss"
+    ],
+    "primarySnapshotsHashesVerified": 6,
+    "primaryEvidenceScope": "Captured npm registry and GitHub advisory data at2026-10-15T04:45:53–55Z. No claim that an old report establishes present patch availability. GHSA-vfj7-8cjw-p6xm snapshot lists braces<=3.0.3 and first_patched_version null; registry latest snapshot is3.0.3. Full audit suggested dependency-level major changes are not executed or claimed compatible by this review."
+  },
+  "limits": [
+    "Core aggregate covers local synthetic unit/SQL/benchmarks and explicit doubles; native Auth/RLS, independent connection concurrency, provider checks and browser acceptance remain their separately pinned evidence.",
+    "SQL suites invoked inside test:db and repeated individually overlap; do not count both invocations as independent checks.",
+    "Core build browser-secret scan has buildId cdcHsZEGZY1UvZuA8njLP. A separately copied/served final app has its own build/state binding; no runtime API outcome is inferred from this core build alone.",
+    "No monthly availability, hosted-at-rest encryption or load SLO is established by this review."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/verification.json",
+      "sha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/final-vitest.json",
+      "sha256": "19c44b2bd9f919c3cf9ab83fe879f968410dc8ddea132bb0130bf4ce764cfac7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/coverage-summary.json",
+      "sha256": "3a35c17423ad24696c1450ed6d2526f5c65494c32fedc6a48f987b92514c4d36"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/coverage.log",
+      "sha256": "2dd5ae69960963f5280be8478d2f787d785ad89792f8135c8c510dc8e9c1956a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/npm-ci.log",
+      "sha256": "925564562a7970427053c2526d73f3b1bf461b9714606c71b7d0fbae535c94c9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/typecheck.log",
+      "sha256": "469f7b7deaf0603039d0351d61b584c9c9a9f9e495a3dde5eeb847324a9e7e24"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/lint.log",
+      "sha256": "e961f726b387de7cc537facff218c77151a54d399b56e20dbeee1350973ee70c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/test-db.log",
+      "sha256": "3f16923faa646fc39dff15d4f1bf81d8de914cb9b93f4df5029d21542f8bc2b8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/build.log",
+      "sha256": "635a4f4c85ad3d44ea7563a8e2ff0b1de9649b886a95a8d742321f517fe790cb"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/dependency-audit.json",
+      "sha256": "abcf9a393d63fc0f7562b87bb163684d54549d4b96c7775e2ebc24f8633e15d6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/browser-secret-scan.json",
+      "sha256": "f8929452d8e86277e0b1e4ebcafd8c00d4491cb64acaccd950a8fe4bb7aa833f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/audit-commands.json",
+      "sha256": "1190a05945a36f0c2aad5e566ce7215b33b727b43785cbbef6c0e1f75fc4de2d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/audit-full.json",
+      "sha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/audit-production.json",
+      "sha256": "e7a71ea70895f12bb3d991264928cb23b141117439bf1be02bbc7907e4b92910"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/primary-retrieval.json",
+      "sha256": "9c015ac6d2605b8927a7c47f07abae10f7829297149cb2688dc5f4561bd580dd"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/braces-latest.json",
+      "sha256": "8fd4c1db771542ab5456bb4806408fea9cdb5bf77f6cb9d5d563a3bd0ebb0b13"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/micromatch-latest.json",
+      "sha256": "a65635515e4deb07ace263a33105cf4a10056affd438d48818b5368e27b05906"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/fast-glob-latest.json",
+      "sha256": "a336b6b77121af80e04a369080634b32e6bf269a08c1d5f0a09a6c1457011f7a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/tailwind-3.json",
+      "sha256": "80fafa132f0b60c00c4b43978ce3464cedadfccad993354af7cf5a86ea603777"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/next-plugin-15.json",
+      "sha256": "a5ffa1c2ea097e9974568922be0eec905d949f5ee5b0c4cc1e6475b5dd570af6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/github-advisory.json",
+      "sha256": "27a2ee7ec058cb9e53d6fe6d82bf7c5e982174fa61e958a19acdf6defc75c9da"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8"
+    },
+    {
+      "path": "scripts/run-technical-verification.mjs",
+      "sha256": "57f0a2935ee1e9dd4586d2256415e5b6b8d55b4b18a4b3cca213cf1752b51244"
+    }
+  ]
+}

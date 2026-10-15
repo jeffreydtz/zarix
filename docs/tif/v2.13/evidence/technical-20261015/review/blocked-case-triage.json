@@ -1,0 +1,1348 @@
+{
+  "snapshot": {
+    "recorded_at": "2026-10-15T02:31:37.595745+00:00",
+    "original_csv_sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+    "derived_csv_sha256": "0cfa0a07f337699a96474f29716a496b9953383d0f8f800a3d88ddac79ddcedd",
+    "original_cases": 273,
+    "derived_blocked": 103
+  },
+  "method": "Read-only semantic triage of all103BLOCKED rows against literal original cases, current source and existing15Oct evidence. Primary categories are disjoint for the COMPLETE original contract. Local permitted subscopes of mixed cases are explicit. This is not test execution or a CSV status update.",
+  "groups": {
+    "1_LOCAL_ACTIONABLE": {
+      "count": 64,
+      "case_ids": [
+        "CP1-01",
+        "CP1-02",
+        "CP1-03",
+        "CP1-04",
+        "CP1-05",
+        "CP1-06",
+        "CP1-09",
+        "CP1-10",
+        "CP1-11",
+        "CP1-12",
+        "CP1-13",
+        "CP1-19",
+        "CP1-20",
+        "CP1-21",
+        "CP1-22",
+        "CP1-23",
+        "CP1-24",
+        "CP1-25",
+        "CP1-28",
+        "CP1-29",
+        "CP1-30",
+        "CP1-31",
+        "CP1-33",
+        "CP1-34",
+        "CP1-35",
+        "CP1-36",
+        "CP1-37",
+        "CP1-38",
+        "CP2-01",
+        "CP2-02",
+        "CP2-03",
+        "CP2-05",
+        "CP2-06",
+        "CP2-07",
+        "CP2-08",
+        "CP2-09",
+        "CP2-20",
+        "CP2-21",
+        "CP3-01",
+        "CP3-02",
+        "CP3-03",
+        "CP3-04",
+        "CP3-05",
+        "CP3-06",
+        "CP3-07",
+        "CP3-08",
+        "CP3-13",
+        "CP3-14",
+        "CP3-15",
+        "CP3-16",
+        "CP3-18",
+        "CP4-01",
+        "CP4-02",
+        "CP4-03",
+        "CP4-04",
+        "CP4-05",
+        "CP4-06",
+        "CP4-07",
+        "CP4-08",
+        "CP4-09",
+        "CP4-10",
+        "CP4-11",
+        "CP4-12",
+        "CNF-10"
+      ]
+    },
+    "2_PROVIDER_OR_MAIL_PREREQUISITE": {
+      "count": 21,
+      "case_ids": [
+        "CP1-14",
+        "CP1-15",
+        "CP1-16",
+        "CP1-17",
+        "CP1-18",
+        "CP1-27",
+        "CP2-10",
+        "CP2-13",
+        "CP2-14",
+        "CP2-15",
+        "CP2-16",
+        "CP2-17",
+        "CP2-18",
+        "CP3-09",
+        "CP3-10",
+        "CP3-11",
+        "CP3-12",
+        "CNF-05",
+        "CNF-06",
+        "CNF-07",
+        "CNF-11"
+      ]
+    },
+    "3_BROWSER_OS_AUTHORIZATION": {
+      "count": 1,
+      "case_ids": [
+        "CNF-09"
+      ]
+    },
+    "4_REAL_MONTH_OBSERVATION": {
+      "count": 1,
+      "case_ids": [
+        "CNF-02"
+      ]
+    },
+    "5_DEPLOYMENT_TLS_PROVIDER_BACKUP": {
+      "count": 4,
+      "case_ids": [
+        "CNF-01",
+        "CNF-03",
+        "CNF-04",
+        "CNF-12"
+      ]
+    },
+    "6_CONTRACT_DISCREPANCY_OR_ABSENT_SURFACE": {
+      "count": 11,
+      "case_ids": [
+        "CP1-07",
+        "CP1-08",
+        "CP1-26",
+        "CP1-32",
+        "CP2-04",
+        "CP2-11",
+        "CP2-12",
+        "CP2-19",
+        "CP3-17",
+        "CP3-19",
+        "CNF-13"
+      ]
+    },
+    "7_HUMAN_STUDY_CONSENT": {
+      "count": 1,
+      "case_ids": [
+        "CNF-08"
+      ]
+    }
+  },
+  "local_minimum_actions": [
+    {
+      "case_id": "CP1-01",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-02",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-03",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-04",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-05",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-06",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-09",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-10",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-11",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-13",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-33",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-34",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-12",
+      "minimum_action": "Use existing secondary-balance adjustment with the exact ARS/USD debt fixture; prove only the secondary ledger changes and both totals remain coherent.",
+      "existing_contract_references": "app/api/accounts/[id]/adjust-secondary-balance/route.ts; lib/services/accounts.ts:492; create_secondary_balance_adjustment RPC"
+    },
+    {
+      "case_id": "CP1-19",
+      "minimum_action": "Upload separate synthetic CSV/JSON fixtures to existing import endpoint, including invalid row, duplicate omission and foreign-account mapping; assert per-row totals, persisted counts and exact closing balance.",
+      "existing_contract_references": "app/api/import/transactions/route.ts:876; lib/import/batch-journal.ts; lib/import/csv.ts"
+    },
+    {
+      "case_id": "CP1-20",
+      "minimum_action": "Upload separate synthetic CSV/JSON fixtures to existing import endpoint, including invalid row, duplicate omission and foreign-account mapping; assert per-row totals, persisted counts and exact closing balance.",
+      "existing_contract_references": "app/api/import/transactions/route.ts:876; lib/import/batch-journal.ts; lib/import/csv.ts"
+    },
+    {
+      "case_id": "CP1-21",
+      "minimum_action": "Upload separate synthetic CSV/JSON fixtures to existing import endpoint, including invalid row, duplicate omission and foreign-account mapping; assert per-row totals, persisted counts and exact closing balance.",
+      "existing_contract_references": "app/api/import/transactions/route.ts:876; lib/import/batch-journal.ts; lib/import/csv.ts"
+    },
+    {
+      "case_id": "CP1-22",
+      "minimum_action": "Upload separate synthetic CSV/JSON fixtures to existing import endpoint, including invalid row, duplicate omission and foreign-account mapping; assert per-row totals, persisted counts and exact closing balance.",
+      "existing_contract_references": "app/api/import/transactions/route.ts:876; lib/import/batch-journal.ts; lib/import/csv.ts"
+    },
+    {
+      "case_id": "CP1-23",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-24",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-25",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-28",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-29",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-30",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-35",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-31",
+      "minimum_action": "Create the exact monthly category budget and boundary expense totals; query existing budget status and prove transfers and other periods/owners are excluded.",
+      "existing_contract_references": "app/api/budgets/route.ts; app/api/budgets/status/route.ts; lib/services/budget-summary.ts"
+    },
+    {
+      "case_id": "CP1-36",
+      "minimum_action": "Use existing shared-expense route/RPC with the current owned guest capability; test exact cent allocation/order/dedup/date, foreign actor/payer/member, invalid/revoked capability and split-write rollback. Distinguish capability author from individual Auth identity.",
+      "existing_contract_references": "app/api/shared/[token]/expenses/route.ts; supabase/migrations/20261006235955_atomic_shared_expense.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP1-37",
+      "minimum_action": "Use existing shared-expense route/RPC with the current owned guest capability; test exact cent allocation/order/dedup/date, foreign actor/payer/member, invalid/revoked capability and split-write rollback. Distinguish capability author from individual Auth identity.",
+      "existing_contract_references": "app/api/shared/[token]/expenses/route.ts; supabase/migrations/20261006235955_atomic_shared_expense.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP1-38",
+      "minimum_action": "Use existing shared-expense route/RPC with the current owned guest capability; test exact cent allocation/order/dedup/date, foreign actor/payer/member, invalid/revoked capability and split-write rollback. Distinguish capability author from individual Auth identity.",
+      "existing_contract_references": "app/api/shared/[token]/expenses/route.ts; supabase/migrations/20261006235955_atomic_shared_expense.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP2-01",
+      "minimum_action": "Use exact account creation/invalid-field/archive and multicurrency debt fixtures through existing APIs; inspect opening adjustment plus all history. Validation expectations may FAIL: current schema has NOT NULL name and uppercase-only currency, not a nonempty-name/ISO allowlist. Report observed behavior without inventing validation.",
+      "existing_contract_references": "app/api/accounts/route.ts; app/api/accounts/[id]/route.ts; lib/services/accounts.ts:185; lib/services/accounts.ts:492; supabase/schema.sql:82; create_account_with_opening_balance RPC"
+    },
+    {
+      "case_id": "CP2-02",
+      "minimum_action": "Use exact account creation/invalid-field/archive and multicurrency debt fixtures through existing APIs; inspect opening adjustment plus all history. Validation expectations may FAIL: current schema has NOT NULL name and uppercase-only currency, not a nonempty-name/ISO allowlist. Report observed behavior without inventing validation.",
+      "existing_contract_references": "app/api/accounts/route.ts; app/api/accounts/[id]/route.ts; lib/services/accounts.ts:185; lib/services/accounts.ts:492; supabase/schema.sql:82; create_account_with_opening_balance RPC"
+    },
+    {
+      "case_id": "CP2-03",
+      "minimum_action": "Use exact account creation/invalid-field/archive and multicurrency debt fixtures through existing APIs; inspect opening adjustment plus all history. Validation expectations may FAIL: current schema has NOT NULL name and uppercase-only currency, not a nonempty-name/ISO allowlist. Report observed behavior without inventing validation.",
+      "existing_contract_references": "app/api/accounts/route.ts; app/api/accounts/[id]/route.ts; lib/services/accounts.ts:185; lib/services/accounts.ts:492; supabase/schema.sql:82; create_account_with_opening_balance RPC"
+    },
+    {
+      "case_id": "CP2-05",
+      "minimum_action": "Use exact account creation/invalid-field/archive and multicurrency debt fixtures through existing APIs; inspect opening adjustment plus all history. Validation expectations may FAIL: current schema has NOT NULL name and uppercase-only currency, not a nonempty-name/ISO allowlist. Report observed behavior without inventing validation.",
+      "existing_contract_references": "app/api/accounts/route.ts; app/api/accounts/[id]/route.ts; lib/services/accounts.ts:185; lib/services/accounts.ts:492; supabase/schema.sql:82; create_account_with_opening_balance RPC"
+    },
+    {
+      "case_id": "CP2-06",
+      "minimum_action": "Export the exact controlled period as CSV/JSON. For roundtrip use separate empty synthetic destination context with declared account/name mapping, preserving original data; compare dates, precision, source/destination relationships and owner scope. Check format/timezone/version metadata explicitly.",
+      "existing_contract_references": "app/api/export/transactions/route.ts; app/api/export/backup/route.ts; app/api/import/transactions/route.ts:955"
+    },
+    {
+      "case_id": "CP2-07",
+      "minimum_action": "Export the exact controlled period as CSV/JSON. For roundtrip use separate empty synthetic destination context with declared account/name mapping, preserving original data; compare dates, precision, source/destination relationships and owner scope. Check format/timezone/version metadata explicitly.",
+      "existing_contract_references": "app/api/export/transactions/route.ts; app/api/export/backup/route.ts; app/api/import/transactions/route.ts:955"
+    },
+    {
+      "case_id": "CP2-08",
+      "minimum_action": "Exercise existing local GoTrue registration/login/logout and invalid-password/JWT/recovery-token paths with the existing controlled identities. Recovery-token negative fixtures may be minted locally without sending external mail; do not claim email delivery. Confirmation-enabled registration has a mail dependency if the existing runtime requires it.",
+      "existing_contract_references": "app/register/page.tsx; app/login/page.tsx; lib/supabase/server.ts; existing local GoTrue endpoints; environment/runtime-preparation.md"
+    },
+    {
+      "case_id": "CP2-09",
+      "minimum_action": "Exercise existing local GoTrue registration/login/logout and invalid-password/JWT/recovery-token paths with the existing controlled identities. Recovery-token negative fixtures may be minted locally without sending external mail; do not claim email delivery. Confirmation-enabled registration has a mail dependency if the existing runtime requires it.",
+      "existing_contract_references": "app/register/page.tsx; app/login/page.tsx; lib/supabase/server.ts; existing local GoTrue endpoints; environment/runtime-preparation.md"
+    },
+    {
+      "case_id": "CP2-20",
+      "minimum_action": "Use an isolated exact three-active-account Free fixture: reject fourth, deactivate one and allow replacement, enable documented Premium allowance and create fourth; downgrade then read/export/history without deletion. Existing API/UI evidence uses18 active accounts and does not substitute this exact boundary.",
+      "existing_contract_references": "lib/billing/plans.ts; app/api/accounts/route.ts; app/api/accounts/movement-selection/route.ts; supabase/migrations/20261009034943_enforce_plan_allowances.sql; app/api/export/transactions/route.ts"
+    },
+    {
+      "case_id": "CP2-21",
+      "minimum_action": "Expire/revoke ordinary JWT while a synthetic draft is unsaved; confirm401 with zero financial rows, reauthenticate, recover selected original draft/intent ID and confirm exactly once. Existing response-loss/restart and owner-switch browser evidence is separate.",
+      "existing_contract_references": "lib/hooks/useFinancialOperation.ts; lib/offline-transaction-store.ts; components/add-transaction/AddTransactionProvider.tsx; scripts/test-isolated-offline-durability.mjs"
+    },
+    {
+      "case_id": "CP3-01",
+      "minimum_action": "Use configured local HTTP quote doubles, exact rates/time and controlled clock; inspect source/time/cache/missing-rate labels. CP3-02 specifically requires cache refresh at+300s and+301s with TTL300: current getFromCache uses >TTL, a concrete potential exact-boundary failure to observe. No provider credentials are needed for explicitly synthetic integration.",
+      "existing_contract_references": "lib/services/cotizaciones.ts:39; lib/services/cotizaciones.ts:281; app/api/cotizaciones/route.ts; __tests__/blue-fx-metadata.test.ts"
+    },
+    {
+      "case_id": "CP3-02",
+      "minimum_action": "Use configured local HTTP quote doubles, exact rates/time and controlled clock; inspect source/time/cache/missing-rate labels. CP3-02 specifically requires cache refresh at+300s and+301s with TTL300: current getFromCache uses >TTL, a concrete potential exact-boundary failure to observe. No provider credentials are needed for explicitly synthetic integration.",
+      "existing_contract_references": "lib/services/cotizaciones.ts:39; lib/services/cotizaciones.ts:281; app/api/cotizaciones/route.ts; __tests__/blue-fx-metadata.test.ts"
+    },
+    {
+      "case_id": "CP3-03",
+      "minimum_action": "Use configured local HTTP quote doubles, exact rates/time and controlled clock; inspect source/time/cache/missing-rate labels. CP3-02 specifically requires cache refresh at+300s and+301s with TTL300: current getFromCache uses >TTL, a concrete potential exact-boundary failure to observe. No provider credentials are needed for explicitly synthetic integration.",
+      "existing_contract_references": "lib/services/cotizaciones.ts:39; lib/services/cotizaciones.ts:281; app/api/cotizaciones/route.ts; __tests__/blue-fx-metadata.test.ts"
+    },
+    {
+      "case_id": "CP3-04",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-05",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-06",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-07",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-08",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-18",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-13",
+      "minimum_action": "Seed exact month/category/time-window fixtures then call existing authenticated anomaly/projection APIs. Verify threshold boundaries, deterministic complete-month arithmetic, other-owner/current/future exclusion and no Gemini dependency.",
+      "existing_contract_references": "app/api/ai/anomalies/route.ts; app/api/ai/projections/route.ts; lib/financial-anomalies.ts; lib/financial-projections.ts"
+    },
+    {
+      "case_id": "CP3-14",
+      "minimum_action": "Seed exact month/category/time-window fixtures then call existing authenticated anomaly/projection APIs. Verify threshold boundaries, deterministic complete-month arithmetic, other-owner/current/future exclusion and no Gemini dependency.",
+      "existing_contract_references": "app/api/ai/anomalies/route.ts; app/api/ai/projections/route.ts; lib/financial-anomalies.ts; lib/financial-projections.ts"
+    },
+    {
+      "case_id": "CP3-15",
+      "minimum_action": "Seed exact month/category/time-window fixtures then call existing authenticated anomaly/projection APIs. Verify threshold boundaries, deterministic complete-month arithmetic, other-owner/current/future exclusion and no Gemini dependency.",
+      "existing_contract_references": "app/api/ai/anomalies/route.ts; app/api/ai/projections/route.ts; lib/financial-anomalies.ts; lib/financial-projections.ts"
+    },
+    {
+      "case_id": "CP3-16",
+      "minimum_action": "Seed exact month/category/time-window fixtures then call existing authenticated anomaly/projection APIs. Verify threshold boundaries, deterministic complete-month arithmetic, other-owner/current/future exclusion and no Gemini dependency.",
+      "existing_contract_references": "app/api/ai/anomalies/route.ts; app/api/ai/projections/route.ts; lib/financial-anomalies.ts; lib/financial-projections.ts"
+    },
+    {
+      "case_id": "CP4-01",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-02",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-03",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-04",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-05",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-06",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-07",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-10",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-11",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-12",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-08",
+      "minimum_action": "Reconcile the existing exact successful UI simulation assertions and unchanged four-table financial SQL hash. No new runtime execution is needed.",
+      "existing_contract_references": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+      "resolution": "Complete original contract independently matched; proposed PASS is in the separate supplied JSON, not a CSV edit."
+    },
+    {
+      "case_id": "CP4-09",
+      "minimum_action": "Reconcile the existing exact successful UI simulation assertions and unchanged four-table financial SQL hash. No new runtime execution is needed.",
+      "existing_contract_references": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+      "resolution": "Complete original contract independently matched; proposed PASS is in the separate supplied JSON, not a CSV edit."
+    },
+    {
+      "case_id": "CNF-10",
+      "minimum_action": "Exercise ordinary JWT/noJWT plus incorrect cron/bot channel credentials before effects and valid existing local routes; assert no data/effects and sanitized logs. Successful real Telegram physical delivery is not part of auth-denial proof and remains provider-dependent.",
+      "existing_contract_references": "app/api/cron/recurring/route.ts; app/api/telegram/webhook/route.ts; lib/telegram/webhook-auth.ts; e2e/api/api-verification.json"
+    }
+  ],
+  "already_assigned_local": [
+    "CP1-06",
+    "CP1-10",
+    "CP1-13",
+    "CP1-36",
+    "CP4-03"
+  ],
+  "other_assigned_subscopes": {
+    "CNF-01": "Parent/E2E three local load profiles in progress, not deployment-equivalence claim",
+    "CNF-12": "Native four post-restore UI read journeys planned; not the nominal2accounts/20transactions fixture, timedRPO/RTO or remote planbackup mechanism",
+    "CP3-01/02": "Quote work was announced by parent; coordinate rather than duplicate, including TTL exact-boundary observation"
+  },
+  "provider_prerequisites": {
+    "Gemini/OCR": [
+      "GEMINI_API_KEY"
+    ],
+    "Telegram": [
+      "TELEGRAM_BOT_TOKEN",
+      "TELEGRAM_WEBHOOK_SECRET",
+      "controlled bot/chat and test HTTPS callback"
+    ],
+    "Mercado Pago": [
+      "MP_ACCESS_TOKEN sandbox",
+      "MP_WEBHOOK_SECRET",
+      "controlled sandbox resource with explicit amount,currency,period"
+    ],
+    "Password recovery": [
+      "Current native runtime excludes Mail and has no external SMTP configured; inspect existing authorized local mail availability before declaring an external credential mandatory. No exact missing SMTP secret name is asserted."
+    ]
+  },
+  "locally_actionable_parts_of_provider_cases": {
+    "CP1-16": "Unlinked/revoked ownership and old callback denial can be exercised with local route/session/link doubles; real Telegram callback acceptance remains missing.",
+    "CP1-18": "Invalid MIME/bytes/size and cancel-without-mutation paths are local. Illegible genuine-image extraction/correction requires OCR/Gemini acceptance.",
+    "CP1-27": "Inject accepted-but-lost-ack transport double and prove one movement/uncertain physical delivery. Do not claim real Telegram delivery or exactly-once.",
+    "CP2-10": "Local token consumption and password replacement can be tested separately; requesting and receiving the actual reset email lacks mail transport in the current runtime.",
+    "CP2-14": "Bad HMAC/no activation is local; real resource status/amount/currency verification requires MP sandbox.",
+    "CP2-15": "Plan expiry/downgrade read/history/export and deterministic time boundary are local; real cancellation/no-renewal requires MP.",
+    "CP2-16": "Free premium-gate and owner binding denial are local; real provider resource replay still requires MP.",
+    "CP2-17": "Local link-token ownership/consumption state can be exercised separately from physical bot/chat confirmation.",
+    "CP2-18": "Expired/reused/tampered local link tokens and foreign owner/chat mappings can be exercised; no real Telegram handoff acceptance claimed.",
+    "CP3-11": "Readonly tool allowlist, own context and attempted write/cross-owner denial can be tested with explicit AI doubles; semantic real model injection resistance is not proved.",
+    "CP3-12": "503 fallback and empty conventional analysis are locally injectable; semantic ambiguous real-AI reply requires Gemini.",
+    "CNF-05": "Complete manual registration/expense/budget/rule/keyboard tasks locally; genuine OCR preview depends on Gemini.",
+    "CNF-06": "Account/export/login keyboard/task flows are local. Mail delivery/reset journey is unavailable until authorized local mail transport or controlled existing SMTP is available.",
+    "CNF-07": "Dashboard/detail/anomaly long-data/negative-state accessibility is local; real AI chat acceptance remains unavailable.",
+    "CNF-11": "All financial transaction/import/cron/sale same-command2/10concurrency, durable replay/rollback and outbox intent portions are local. MP acceptance and physical external delivery are distinct missing provider portions."
+  },
+  "browser_os_blocker": "CNF-09 needs real current AND prior browser versions. Current installed Chrome alone is insufficient; Firefox/Edge installation authorization pending and Safari Remote Automation disabled. WebKit is not Safari.",
+  "month_blocker": "CNF-02 requires the actual identified month and8640scheduled5min observations; short test or43/44failure arithmetic never establishes actual monthly availability.",
+  "deployment_blockers": {
+    "CNF-01": "Original canonical performance acceptance also requires deployment-equivalent environment. Local shaped three-profile measurements remain valid with their exact scope.",
+    "CNF-03": "Existing test stack is HTTP loopback; no authorized real HTTPS financial endpoint/certificate+redirect acceptance.",
+    "CNF-04": "Local FileVault evidence does not assert encryption-at-rest configuration of an unseen deployed provider; CP2-19 remains compoundpartial.",
+    "CNF-12": "No actual remote hosting-plan backup mechanism/access demonstrated; existing independent native schema/data/Auth/Storage restore and plannedUIreads are separate valid local evidence, not nominal2/20fixture nor24h/4h observation."
+  },
+  "contract_discrepancies": {
+    "CP1-07": {
+      "detail": "API expressly rejects changing transaction type; original expects expense->income. Existing normal-JWT SQL UPDATE can test the trigger separately, without inventing API support.",
+      "references": "app/api/transactions/[id]/route.ts:87"
+    },
+    "CP1-08": {
+      "detail": "Original additionally requires actor/old-value audit after physical DELETE; no matching application audit trail was identified. Exact balance reversal is locally testable, but it is not the full contract.",
+      "references": "lib/services/transactions.ts; app/api/transactions/[id]/route.ts"
+    },
+    "CP1-26": {
+      "detail": "Original literally says durable outbox/redelivery is not implemented. The current implementation has both; an explicit contract reconciliation is needed instead of passing the contradictory literal assertion.",
+      "references": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql; durability/reconciled-contracts.json"
+    },
+    "CP1-32": {
+      "detail": "Original end-before-start budget input is not represented by the monthly month-only API/model. Zero limit, category owner and period exclusion remain locally executable.",
+      "references": "app/api/budgets/route.ts; lib/services/budgets.ts"
+    },
+    "CP2-04": {
+      "detail": "Original requests empty-account hard delete and dependency rejection. Existing delete operation always archives, preserving history. Do not add deletion behavior merely to satisfy the old fixture.",
+      "references": "lib/services/accounts.ts:715"
+    },
+    "CP2-11": {
+      "detail": "Existing SettingsForm currency select has no save/onChange and no widget persistence surface; global localStorage networth view is not owner-scoped saved base/widget preferences.",
+      "references": "components/settings/SettingsForm.tsx:774; components/dashboard/NetWorthHero.tsx:25"
+    },
+    "CP2-12": {
+      "detail": "Invalid/foreign preference update relies on the same absent saved base/widget preference surface. Existing notification-preference API is a different contract.",
+      "references": "components/settings/SettingsForm.tsx:774; app/api/user/notification-preferences/route.ts"
+    },
+    "CP2-19": {
+      "detail": "Exact compound matrix currently42PASS/6BLOCKED; absent individual investment GET and unsupported private-profile CRUD cannot be covered by creating endpoints. Existing supported operations were tested; no inference across missing operations.",
+      "references": "security-matrix/cp2-19-composite.json; app/api/investments/[id]/route.ts; app/api/user/notification-preferences/route.ts"
+    },
+    "CP3-17": {
+      "detail": "Same absent per-owner saved base/widget preference surface as CP2-11/12.",
+      "references": "components/settings/SettingsForm.tsx:774; components/dashboard/NetWorthHero.tsx:25"
+    },
+    "CP3-19": {
+      "detail": "Original selectable MEP conflicts with documented RN08/current blue-sell policy; separate blue correctness does not approve MEP.",
+      "references": "case-traceability.csv; plan.md RN08; lib/blue-fx-reference.ts"
+    },
+    "CNF-13": {
+      "detail": "RNF08 explicitly defines a target, not an implemented assumption. No universal request->service->effect correlation for all9manual/cron/payment outcomes was identified. Local canary/error logging can be executed and may fail; provider credential gaps are secondary, not justification for claiming observability.",
+      "references": "plan.md:725; lib/api-handler.ts:58; lib/cron/cron-job.ts; app/api/webhooks/mercado-pago/route.ts"
+    }
+  },
+  "rnf_and_coverage": {
+    "RNF04": "plan.md:721 additionally requires5consentingparticipants, at least4complete registration/account/query unaided. Automated40PNG/32cells and own review do not establish that user study; allowed local task/keyboard/label/focus/error states should still be completed separately.",
+    "RNF05": "Current and prior stable real Chrome/Edge/Firefox/Safari; no substitution of PlaywrightWebKit or one currentChrome version.",
+    "coverage_target": "docs/testing/coverage-criterion.md:5 historical>=90%branch target applies only scopedCFGcorefunctions; plan.md:1378 selects calendar full instrumented branches and says historicalgate does not replace final measurement. Neither document imposes90%globalcoverage of37files.",
+    "core_responsive_coverage": {
+      "source_revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+      "instrumented_files": 37,
+      "lines": "1783/2480=71.89%",
+      "statements": "1988/2881=69%",
+      "functions": "279/414=67.39%",
+      "branches": "1556/2485=62.61%",
+      "calendar_branches": "30/30=100%",
+      "cron_job_branches": "13/14=92.85%",
+      "transactions_full_file_branches": "160/277=57.76%; does not isolate the3historicalCFGhelperfunctions"
+    },
+    "limitation": "Do not claim old96.82%selectedbranch result as current, overall90%, full-app instrumentation, entiretransactioncreatecoverage or formalpath/conditioncoverage from these aggregate metrics."
+  },
+  "execution_count_during_review": 0,
+  "runtime_mutations": 0,
+  "matrix_edited": false,
+  "sources_edited": false,
+  "note": "The64LOCAL group includes5alreadyassignedcases and2exact existing simulation cases supplied for semantic reconciliation; it does not mean64newtestexecutions. Other57require exact remaining contract checks or evidence-level match, plus local subscopes from externally blocked groups and CNF08technicalflows. Current rejected validation expectations may produceFAIL, which must not be hidden as accessBLOCKED.",
+  "human_study": {
+    "case_id": "CNF-08",
+    "complete_original_acceptance": "RNF04 additionally requires five consenting participants; at least four complete each registration/account/query task unaided. No recruiting/contact or consent collection is authorized by this technical run.",
+    "authorized_local_subscope": {
+      "case_id": "CNF-08",
+      "minimum_action": "Complete actual keyboard/task flows for purchase, sale and simulation at all documented widths/zoom and states; the current40 static captures/32cells are scoped and do not prove completed purchase/sale tasks.",
+      "existing_contract_references": "components/investments/AddInvestmentPanel.tsx; components/investments/SellPositionDialog.tsx; components/investments/InvestmentSimulationPanel.tsx; e2e/visual/visual-verification.json; plan.md RNF04"
+    },
+    "rule": "Complete automated/manual technical four-CU viewport/task helper evidence remains local; do not equate it to the human study. Other RNF04 cases may share this secondary acceptance dependency."
+  },
+  "updated_at": "2026-10-15T04:39:38.155511+00:00",
+  "current_reconciliation": {
+    "recorded_at": "2026-10-15T06:48:05.045836+00:00",
+    "source_matrix": "../case-traceability.csv",
+    "source_matrix_sha256": "5b9634e7c2668347c2f08bc67d5c2c8f3d8f9edaca819f72e503124f5d8aca92",
+    "scope": "Original disjoint103-case triage snapshot remains unchanged. This is only metadata reconciliation against currently reviewed complete contracts; no new execution or claim that all locally actionable original scopes are complete.",
+    "initially_triaged_cases": 103,
+    "current_status_counts": {
+      "PASS": 62,
+      "BLOCKED": 40,
+      "FAIL": 1
+    },
+    "cases": [
+      {
+        "case_id": "CP1-01",
+        "status": "PASS",
+        "evidence": "empty-followup-contracts/executed/cp1-01/verification.json; empty-followup-contracts/executed/cp1-01/execution.json; empty-followup-contracts/manifest.json; empty-followup-contracts/executed/cp1-01/dashboard.html; empty-followup-contracts/independent-executed-review.json",
+        "assertions": "Actual normal account API201 | Normal category list200 | Own literal Alimentos category201 | New account has exactly its opening adjustment | Normal literal expense API201 | Exactly one economic row persists | Literal expense leaves8500 | Actual list API contains same1500 identity | Actual normal dashboard SSR200 | Actual server global top5 contains the exact own1500 row | Actual global recent payload has only the three known own rows | Actual dashboard aggregate includes original50000 plus new8500 | Actual server HTML formats the expense1500 ARS | Actual server HTML includes recent movements | Only the exact prior harness-owned snapshot is updated | Observed own snapshot completion liquid_usd | Observed own snapshot completion investments_usd | Observed own snapshot completion total_usd | Observed own snapshot completion total_ars_blue | Owned snapshot preserves identity id | Owned snapshot preserves identity user_id | Owned snapshot preserves identity snapshot_date | Owned snapshot preserves identity created_at",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-02",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Visible categories200 | Own literal category201 | October summary200 | Normal API fixture transaction201 | Exactly one500 income and10500 balance | Literal500 income category/date/owner persisted | October summary200 | Financial flow income increases500 only",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-03",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | October summary200 | Normal API fixture transaction201 | One transfer/two exact impacts and conserved total | October summary200 | Transfer excluded from income/expense/flow",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-04",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Injected destination-impact failure returns error | Destination failure hook was reached once | Both balances and economic rows rolled back | Failed financial request did not leave a committed receipt | Same durable key succeeds after removing only the own fault201 | Retry commits once and conserves12000",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-05",
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/cp1-05-api.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Normal own account API201 | Original fixture balance10000 | Normal own expense API201 | Expense1500 leaves8500 | Normal API amount edit200 | Edited amount changes one economic impact | Opening adjustment row is unchanged | Owner remains exact",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-06",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+        "assertions": "CP1-06 initial expense succeeds | CP1-06 exact pre-edit balances | CP1-06 origin-account update succeeds | CP1-06 exact post-edit balances | CP1-06 one original movement preserves identity owner amount and points to B | CP1-06 historical API relation is consistent",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-07",
+        "status": "PASS",
+        "evidence": "remaining-cu001/cp1-07-sql-composite-review.json; core-closure/balance-sql.json; core-closure/database-verification.json; core-closure/verification.json; native-full/native-verification.json; native-full/manifest.json; native-full/README.md",
+        "assertions": "SQL-01 gasto INSERT | SQL-06 UPDATE tipo gasto a ingreso | ordinary financial writes run actual triggers and reject another tenant account | own transaction CRUD and type edit preserve balance",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-08",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../lib/services/transactions.ts",
+        "assertions": "",
+        "blocker": "La reversión de saldo al eliminar tiene pruebas separadas; no se identificó el rastro de auditoría exigido con identidad del movimiento, actor y valor previo después del DELETE físico. No es una falta de credenciales."
+      },
+      {
+        "case_id": "CP1-09",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Normal API fixture transaction201 | Income500 initial balance10500 | Direct SQL income DELETE exact reverse",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-10",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+        "assertions": "CP1-10 initial summary is available | CP1-10 initial transfer succeeds | CP1-10 original transfer balances | CP1-10 destination-and-amount update succeeds | CP1-10 exact final balances and total | CP1-10 one transfer preserves identity and both authoritative amounts | CP1-10 transfer does not increment API income expense or economic flow | CP1-10 independent SQL finds no income or expense for this transfer",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-11",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Normal API fixture transaction201 | Literal predelete balances8500/3500 | Direct SQL transfer DELETE reverses both impacts exactly",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-12",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Initial own USD debt setup200 | SignedUSD delta+10 accepted200 | Secondary currency changes independently of primary debt | Exactly one signed currency-identified audit row",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-13",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+        "assertions": "CP1-13 two independent database connections overlap behind own-row barrier | CP1-13 neither blocked request committed before barrier release | CP1-13 two distinct logical keys | CP1-13 both distinct expense commands commit | CP1-13 exactly two distinct 6000 expense effects | CP1-13 final balance is -2000 without lost updates | CP1-13 two durable receipts exist for the two commands",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-14",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../lib/telegram",
+        "assertions": "",
+        "blocker": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET existentes autorizados para el flujo real. Los contratos exigen preview/confirmación duplicada o cancelación y rechazo de callback antiguo tras unlink. Las rutas/dobles locales cubren partes; no hay aceptación completa de captura Telegram con identidad propia y sin efectos indebidos."
+      },
+      {
+        "case_id": "CP1-15",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../lib/telegram",
+        "assertions": "",
+        "blocker": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET existentes autorizados para el flujo real. Los contratos exigen preview/confirmación duplicada o cancelación y rechazo de callback antiguo tras unlink. Las rutas/dobles locales cubren partes; no hay aceptación completa de captura Telegram con identidad propia y sin efectos indebidos."
+      },
+      {
+        "case_id": "CP1-16",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../lib/telegram",
+        "assertions": "",
+        "blocker": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET existentes autorizados para el flujo real. Los contratos exigen preview/confirmación duplicada o cancelación y rechazo de callback antiguo tras unlink. Las rutas/dobles locales cubren partes; no hay aceptación completa de captura Telegram con identidad propia y sin efectos indebidos."
+      },
+      {
+        "case_id": "CP1-17",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; documented-gaps/README.md",
+        "assertions": "",
+        "blocker": "Falta GEMINI_API_KEY válida de pruebas para extracción OCR real. Corrección 1500→1600, preview sin alta y PNG ilegible no están aceptados íntegramente; validación MIME/tamaño/cancelación local es un alcance separado. No se exige contratar proveedor nuevo."
+      },
+      {
+        "case_id": "CP1-18",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; documented-gaps/README.md",
+        "assertions": "",
+        "blocker": "Falta GEMINI_API_KEY válida de pruebas para extracción OCR real. Corrección 1500→1600, preview sin alta y PNG ilegible no están aceptados íntegramente; validación MIME/tamaño/cancelación local es un alcance separado. No se exige contratar proveedor nuevo."
+      },
+      {
+        "case_id": "CP1-19",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-19-de8a454f-dbe7-40e1-a9d7-22867ef0249f.csv; remaining-cu001/attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs; remaining-cu001/cp1-19-semantic-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Partial valid local import200 | Exactly two economic writes and balance10200 | Raw current importer counters",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-20",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-5-final-cp1-20-and-replay/verification.json; remaining-cu001/independent-final-cp1-20-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Partial valid local import200 | Exactly two economic writes and balance10200 | Raw current importer counters | Exactly one documented invalid-amount rejection detail",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-21",
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Known existing500 expense imported once | Exactly one known duplicate-comparison tuple exists | Same-file local preview200 | Choosing omit creates no new write | Duplicate omission leaves exact full ledger",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-22",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Foreign-name file preview200 | Actual preview returns an account array | Foreign account and balance absent from actual selectable preview | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt | Foreign account is not disclosed as a selectable account | Archive only own new independent fixture204 | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Invalid import rejects without confirming a write | Invalid import leaves full account/ledger snapshots intact | Invalid import creates no durable batch receipt",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-23",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-4-cp1-23-premium/verification.json; remaining-cu001/independent-recurring-amount-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Visible categories200 | Own literal category201 | Create own literal rule201 | Rule suspend has own state and inclusive end | Rule reactivate has own state and inclusive end | Rule edit has own state and inclusive end | Saving/suspending/reactivating/editing never creates a movement",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-24",
+        "status": "PASS",
+        "evidence": "empty-followup-contracts/executed/cp1-24/verification.json; empty-followup-contracts/executed/cp1-24/execution.json; empty-followup-contracts/manifest.json; empty-followup-contracts/executed/cp1-24/worker-observation.json; empty-followup-contracts/executed/cp1-24/worker-result.json; empty-followup-contracts/independent-executed-review.json",
+        "assertions": "Synthetic cloned B has no external Telegram credential or existing link | Only exact authorized synthetic B profile fixture updated | Actual normal account API201 | Normal owned recurring rule201 | Normal RLS initializes only owned new rule last5Oct | Literal active daily rule precondition | Both actual HTTP calls started before first response | Two concurrent cron calls plus same-date retry200 | No hidden cron item error | One exact recurring expense, marker, balance and outbox | Outbox identity matches one own committed occurrence | Actual worker focal with same real service-role DB exits0 | Provider double accepts one notice without new financial effect",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-25",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; remaining-cu001/independent-recurring-amount-review.json; remaining-cu001/cron-contract-review.json",
+        "assertions": "",
+        "blocker": "La variante real antes del INSERT tiene evidencia. La segunda variante literal INSERT confirmado/marca fallida/retry 23505 contradice la transacción atómica actual de movimiento/marca/outbox y su replay durable: ese interleaving nativo no está disponible. Los mocks del recovery 23505 son otro alcance. No se deshabilitan triggers ni se borran recibos para fabricar ese estado; requiere reconciliación de contrato/arquitectura, no credenciales externas."
+      },
+      {
+        "case_id": "CP1-26",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; durability/reconciled-contracts.json; ../../../../../supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+        "assertions": "",
+        "blocker": "El literal original afirma que no existe outbox durable ni reentrega persistente; el código actual sí los implementa. Requiere reconciliación explícita de ese contrato, sin aprobar una afirmación histórica contradictoria. Las pruebas durables actuales no borran el literal."
+      },
+      {
+        "case_id": "CP1-27",
+        "status": "PASS",
+        "evidence": "notification-timeout-contract/verification.json; notification-timeout-contract/execution.json; notification-timeout-contract/vitest-result.json; notification-timeout-contract/manifest.json; notification-timeout-contract/independent-review.json",
+        "assertions": "one committed expense debits account 10000 to9000 | one occurrence row | occurrence amount1000 | recurring marker advances inclusively to6Oct | one durable financial receipt | receipt owns exact occurrence request | one durable notification intention | outbox refers to committed movement | outbox key exact recurring occurrence | first provider ACK timeout counted as unconfirmed delivery | provider accepted before timeout | timeout does not change financial rows | timeout leaves durable undelivered intention | provider raw timeout is replaced with safe uncertainty text | failed lease released | first lease attempt recorded | retry is scheduled after current wall time | financial request survives DB close/reopen | replay after reopen preserves full financial rows | pending outbox survives DB close/reopen | retry confirms same durable notification | full financial snapshot identical after second provider acceptance | same unique outbox row remains | same outbox ID retained | second attempt recorded durably | delivered timestamp confirmed | safe error cleared after confirmed acknowledgement | no more claimable event after acknowledgement | double observed two possible physical acceptances | same message on both provider acceptances | no hidden additional provider call",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-28",
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Invalid Bearer401 | Invalid Bearer no financial effect | Own normal-session recurring fixture201 | Inactive rule skips without movement | Own normal-session recurring fixture201 | Expired rule deactivates without movement",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-29",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Negative balance is allowed by the documented rule",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-30",
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Negative balance is allowed by the documented rule | One durable notification intention",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-31",
+        "status": "PASS",
+        "evidence": "remaining-seven-contracts/four-existing-composites.json; remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Independent own category201 | Independent literal budget201 | Normal API fixture transaction201 | Real budget-status API200 | Exact independent consumed and remaining cents | Normal API fixture transaction201 | Transfer does not consume or block the budget | Archive only own new independent fixture204 | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Independent own category201 | Independent literal budget201 | Normal API fixture transaction201 | Real budget-status API200 | Exact independent consumed and remaining cents | Normal API fixture transaction201 | Transfer does not consume or block the budget | Archive only own new independent fixture204 | Archive only own new independent fixture204 | Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Independent own category201 | Independent literal budget201 | Normal API fixture transaction201 | Real budget-status API200 | Exact independent consumed and remaining cents | Normal API fixture transaction201 | Transfer does not consume or block the budget | Archive only own new independent fixture204 | Archive only own new independent fixture204",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-32",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../app/api/budgets/route.ts; ../../../../../lib/services/budgets.ts",
+        "assertions": "",
+        "blocker": "El modelo/API de presupuestos usa un mes, no un intervalo inicio/fin. La variante fin anterior a inicio del contrato no tiene entrada equivalente. Tope cero, categoría ajena y exclusión de meses/usuarios no bastan para aprobar todo el caso."
+      },
+      {
+        "case_id": "CP1-33",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-2-cp1-33/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Own normal-session fixture account201 | Initial native balance | Archive own new account204 | inactive-own rejected with an error response | inactive-own no account or full-ledger change | inactive-own response excludes account/balance data | foreign-owner rejected with an error response | foreign-owner no account or full-ledger change | foreign-owner response excludes account/balance data",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-34",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-1-eight-cases/verification.json; remaining-cu001/independent-recurring-amount-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Normal API fixture transaction201 | One cent accepted with exact0.99 balance | Accepted cent fixture archived before independent rejection fixtures | Own normal-session fixture account201 | Initial native balance | zero rejected400 | zero no balance/full-ledger change including initial adjustment | zero no economic movement created | zero own fixture archived204 | Own normal-session fixture account201 | Initial native balance | negative rejected400 | negative no balance/full-ledger change including initial adjustment | negative no economic movement created | negative own fixture archived204 | Own normal-session fixture account201 | Initial native balance | subcent rejected400 | subcent no balance/full-ledger change including initial adjustment | subcent no economic movement created | subcent own fixture archived204 | Own normal-session fixture account201 | Initial native balance | numeric-conversion-NaN rejected400 | numeric-conversion-NaN no balance/full-ledger change including initial adjustment | numeric-conversion-NaN no economic movement created | numeric-conversion-NaN own fixture archived204",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-35",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/independent-review-ten-cases.json; remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+        "assertions": "Independent empty batch exact counters | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Own normal-session fixture account201 | Initial native balance | Own normal-session recurring fixture201 | Mixed batch counts only successful and failed active items | Persisted mixed outcomes independently reconcile | Current summary does not invent a skipped field",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-01",
+        "status": "PASS",
+        "evidence": "empty-account-contracts/attempt-2/verification.json; empty-account-contracts/independent-composed-review.json",
+        "assertions": "CP2-01 literal first account precondition includes archived rows | Actual normal account API201 | Actual normal-authenticated dashboard SSR status | Actual server aggregate total ARS | Known valid fixture never becomes partial | No safe-error alert on this valid-FX empty/account dashboard | Actual own SSR snapshot completion observed before any fixture cleanup | Own snapshot liquid_usd | Own snapshot investments_usd | Own snapshot total_usd | Own snapshot total_ars_blue | Only the same newly owned empty-dashboard snapshot was updated | CP2-01 exactly one own active bank account exists | CP2-01 account is active and ARS | CP2-01 literal BancoARS is a bank account | CP2-01 bank account balance | CP2-01 one explicit opening adjustment documents the 50000 origin",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-02",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-02.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Invalid variant1 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant2 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant3 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant4 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant5 rejected without incomplete account (CSV does not mandate4xx) | Invalid variant6 rejected without incomplete account (CSV does not mandate4xx) | All documented invalid variants rejected",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-03",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-03.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture transaction API201 | Fixture manual position API201 | Rename/deactivate200 | New name and inactive state | Existing movements retained | Existing positions retained | Inactive account operation is denied (CSV does not mandate4xx) | Rejected operation has no ledger effect",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-04",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../lib/services/accounts.ts",
+        "assertions": "",
+        "blocker": "El servicio archiva cuentas para conservar historial; no implementa el hard-delete de cuenta vacía con rechazo por dependencias que exige el contrato. No se agrega eliminación destructiva para fingir esa aceptación."
+      },
+      {
+        "case_id": "CP2-05",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-closure/cp2-05.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Own secondary-debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | ExplicitUSD10payment200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-06",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-06.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | OwnCSVexport200 | Complete documented15column format | Exactly three own period records | CSV preserves exact dates/types/amounts/currencies/relations | Export explicitly informs version and timezone",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-07",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-cp2-07/source-export.json; account-analysis-contracts/executed-cp2-07/source-roundtrip.json; account-analysis-contracts/executed-cp2-07/target-import.json; account-analysis-contracts/executed-cp2-07/manifest.json",
+        "assertions": "SameU1identityroundtrip | Exactunchangedexportfilehash | Sourcephaseactualstableandoriginalsintact | Fixture account API201 | Fixture account API201 | Targetpreview200 | Targetnamemappingresolved | Targetimport200 | Threeimportedzeroomittedpending | Semanticexport-importequivalence | NooriginalaccountIDreused | Noorphanorforeignrelationship",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-08",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; fresh-proof/auth-negative-contract/independent-review.json; empty-account-runtime/README.md",
+        "assertions": "",
+        "blocker": "Los logins de usuarios sintéticos existentes y logout/JWT se probaron por separado; no se ejecutó el contrato completo registrar una identidad nueva, verificar correo si procede y entrar/salir. La réplica nueva tiene signup deshabilitado y reutiliza identidades existentes; no se atribuye ese setup a registro de usuario."
+      },
+      {
+        "case_id": "CP2-09",
+        "status": "FAIL",
+        "evidence": "fresh-proof/auth-negative-contract/verification.json; fresh-proof/auth-negative-contract/independent-review.json; fresh-proof/verify-auth-negative-contract.mjs; fresh-proof/auth-recovery.json; fresh-proof/auth-expiry.json",
+        "assertions": "Wrong password literal HTTP401/403 | No sensitive existence enumeration | Normal Auth/API control A | Normal Auth/API control B | Altered current ordinary JWT literal HTTP401/403 | Expired original ordinary JWT literal HTTP401/403 | Expired recovery hash literal HTTP401/403 | Reused recovery hash literal HTTP401/403 | ZARIX API401 for actual expired access plus its own revoked refresh | Financial12 state unchanged and two prior normal controls preserved",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-10",
+        "status": "PASS",
+        "evidence": "auth-recovery-valid/resume/verification.json; auth-recovery-valid/recovery-attempt-1/verification.json; auth-recovery-valid/independent-executed-review.json; auth-recovery-valid/independent-executed-review-addendum.json",
+        "assertions": "Original password accepts before the one reset request | Successful ordinary Auth response belongs to the same existing identity | The same retained real recovery request200 and private SMTP input are verified before continuation | Continuation dispatches no second recovery request or new SMTP message | The exact new recovery token came from the requested local SMTP message | Delivered valid recovery token yields a real authenticated session | Successful ordinary Auth response belongs to the same existing identity | Recovery session replaces the password for the same identity | Old password is denied after recovery | New password accepts after recovery | Successful ordinary Auth response belongs to the same existing identity | The same delivered recovery token is consumed and cannot create another session | Original password is restored and accepts on the isolated clone | Successful ordinary Auth response belongs to the same existing identity | Temporary replacement password is denied after restoration | All newly owned Auth sessions and their refresh grants are closed | No original/replacement password or issued token appears in ordinary Auth/SMTP logs | Original and fixture public rows remain unchanged",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../components/settings/SettingsForm.tsx; ../../../../../components/dashboard/NetWorthHero.tsx; ../../../../../app/api/user/notification-preferences/route.ts",
+        "assertions": "",
+        "blocker": "Falta la superficie de preferencias base/widget persistidas por propietario: el selector de moneda de SettingsForm no guarda/onChange y la vista localStorage de patrimonio no equivale a preferencia guardada por usuario. Por eso tampoco se acredita rechazo de base inválida o edición ajena en esa superficie. La API de notificaciones es otro contrato."
+      },
+      {
+        "case_id": "CP2-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../components/settings/SettingsForm.tsx; ../../../../../components/dashboard/NetWorthHero.tsx; ../../../../../app/api/user/notification-preferences/route.ts",
+        "assertions": "",
+        "blocker": "Falta la superficie de preferencias base/widget persistidas por propietario: el selector de moneda de SettingsForm no guarda/onChange y la vista localStorage de patrimonio no equivale a preferencia guardada por usuario. Por eso tampoco se acredita rechazo de base inválida o edición ajena en esa superficie. La API de notificaciones es otro contrato."
+      },
+      {
+        "case_id": "CP2-13",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; investment-contracts/README.md",
+        "assertions": "",
+        "blocker": "Faltan MP_ACCESS_TOKEN de sandbox, MP_WEBHOOK_SECRET y recurso controlado con importe/moneda/período para verificar estado del proveedor, firma y asociación de orden. Gates Free/Premium, firma inválida y downgrade histórico/exportación locales se prueban aparte; no equivalen a aprobación/cancelación/replay del recurso MercadoPago real."
+      },
+      {
+        "case_id": "CP2-14",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; investment-contracts/README.md",
+        "assertions": "",
+        "blocker": "Faltan MP_ACCESS_TOKEN de sandbox, MP_WEBHOOK_SECRET y recurso controlado con importe/moneda/período para verificar estado del proveedor, firma y asociación de orden. Gates Free/Premium, firma inválida y downgrade histórico/exportación locales se prueban aparte; no equivalen a aprobación/cancelación/replay del recurso MercadoPago real."
+      },
+      {
+        "case_id": "CP2-15",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; investment-contracts/README.md",
+        "assertions": "",
+        "blocker": "Faltan MP_ACCESS_TOKEN de sandbox, MP_WEBHOOK_SECRET y recurso controlado con importe/moneda/período para verificar estado del proveedor, firma y asociación de orden. Gates Free/Premium, firma inválida y downgrade histórico/exportación locales se prueban aparte; no equivalen a aprobación/cancelación/replay del recurso MercadoPago real."
+      },
+      {
+        "case_id": "CP2-16",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; investment-contracts/README.md",
+        "assertions": "",
+        "blocker": "Faltan MP_ACCESS_TOKEN de sandbox, MP_WEBHOOK_SECRET y recurso controlado con importe/moneda/período para verificar estado del proveedor, firma y asociación de orden. Gates Free/Premium, firma inválida y downgrade histórico/exportación locales se prueban aparte; no equivalen a aprobación/cancelación/replay del recurso MercadoPago real."
+      },
+      {
+        "case_id": "CP2-17",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json",
+        "assertions": "",
+        "blocker": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET para handoff/vinculación/unlink reales. Las variantes locales de token vencido/reusado/alterado y mapping ajeno no acreditan por sí solas la confirmación física del chat ni su revocación completa."
+      },
+      {
+        "case_id": "CP2-18",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json",
+        "assertions": "",
+        "blocker": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET para handoff/vinculación/unlink reales. Las variantes locales de token vencido/reusado/alterado y mapping ajeno no acreditan por sí solas la confirmación física del chat ni su revocación completa."
+      },
+      {
+        "case_id": "CP2-19",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; security-matrix/cp2-19-composite.json",
+        "assertions": "",
+        "blocker": "La matriz compuesta tiene 42 PASS/6 BLOCKED: faltan el GET individual de inversión y operaciones privadas de perfil no soportadas. El contrato exige SELECT/INSERTasU2/UPDATE/DELETE vía API y JWT DB en cuentas/movimientos/posiciones/reglas/presupuestos/preferencias. Las operaciones soportadas y el scan service-key están probados aparte; no se extrapola a las seis celdas ausentes."
+      },
+      {
+        "case_id": "CP2-20",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-final/cp2-20.json; account-analysis-contracts/executed-final/manifest.json; account-analysis-contracts/independent-executed-final-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture account API201 | LiteralFree3accountprecondition | Freefourthrejects4xx | Rejectedfourthcreatesnoaccount | Deactivateonlynewownedfirstaccount204 | Fixture account API201 | Freereplacementkeeps3active | Fixture account API201 | Premiumacceptsfourth | OwnexportremainsFree200",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-21",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; fresh-proof/auth-negative-contract/independent-review.json; offline-durability/README.md; e2e/browser-preflight/current-user-browser-steering.json",
+        "assertions": "",
+        "blocker": "Se probaron expiración realJWT60, refresh válido y rechazo 401 con refresh revocado por separado. Falta el recorrido exacto de draft conservado tras 401 y reconfirmación única después de reautenticar a la misma identidad. Los cuatro controles offline acotados no sustituyen ese contrato completo. El steering humano más reciente exige Arc y no permite suplirlo con más Chrome; la ventana Arc creada sigue con cierre UNKNOWN, por lo que nuevas acciones quedan pendientes de reconciliación humana."
+      },
+      {
+        "case_id": "CP3-01",
+        "status": "PASS",
+        "evidence": "quote-contracts/attempt-1/mapping.json; quote-contracts/attempt-1/verification.json; quote-contracts/independent-composite-review.json; quote-contracts/postfix-contracts.json",
+        "assertions": "CP3-01 blue value/source/time | CP3-01 oficial value/source/time | CP3-01 mep value/source/time | CP3-01 ccl value/source/time | CP3-01 BTC USD/source time | CP3-01 ETH USD/source time | CP3-01 USDT USD/source time | CP3-01 aggregate timestamp | CP3-01 actual HTTP double requests",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-02",
+        "status": "PASS",
+        "evidence": "quote-contracts/attempt-1/hit299.json; quote-contracts/attempt-1/refresh300.json; quote-contracts/attempt-1/refresh301.json; quote-contracts/attempt-1/failure300.json; quote-contracts/ssr-followup-after-fix.json; quote-contracts/independent-composite-review.json; quote-contracts/postfix-contracts.json",
+        "assertions": "hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 returned quote | hit299 returned quote | hit299 returned quote | hit299 returned quote | hit299 provider request counters | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 returned quote | refresh300 returned quote | refresh300 returned quote | refresh300 returned quote | refresh300 provider request counters | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 returned quote | refresh301 returned quote | refresh301 returned quote | refresh301 returned quote | refresh301 provider request counters | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 returned quote | failure300 returned quote | failure300 returned quote | failure300 returned quote | failure300 provider request counters | Actual persisted BlueFxReference keeps1200/T0/null provider | Actual component labels saved quote | Actual component does not fabricate provider | Actual component time attribute preservesT0 | Visible UTC clock shows original16:00 instead of04:00",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-03",
+        "status": "PASS",
+        "evidence": "empty-account-contracts/attempt-2/verification.json; empty-account-contracts/independent-composed-review.json",
+        "assertions": "Actual new fixture has no persisted quote cache | Actual normal account API201 | Actual normal account API201 | No-cache unavailable quote returns the bound API500 rather than an Auth rejection | Unavailable quote response contains only an explicit safe error | Mixed wealth returns the bound safe500 rather than fabricated rates or an Auth rejection | CP3-03 fixture DB has no persisted quote cache before request | CP3-03 actual authenticated safe-error page status | CP3-03 actual safe error explicitly declares financial unavailability | CP3-03 actual retry is an anchor to dashboard, not an invented button | CP3-03 no financial hero fabricates a consolidated zero or unit rate | CP3-03 actual Flight contains no financial Hero aggregate | CP3-03 failed quote requests persisted no0 or1 fallback | CP3-03 unavailable read does not create or overwrite any snapshot | Unavailable reads preserve both complete account rows | Mixed original balances remain120000ARS and100USD | Cold provider journal is append-only | This exact failed read observed new real503 provider requests | Every cold provider sample failed with the exact unavailable control",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-04",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-04.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Converted own account API200 | No foreign account owner in result | OriginalARS120000 | OriginalUSD100 | Own API converted wealthUSD | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-05",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-05.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture manual position API201 | Actual portfolio API200 | Position6x110 is660USD | Position purchase cost600 | Exactly own expected active position | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | Actual SSR liquidUSD | Actual SSR investmentsUSD | SSR secondary data numeric value | Cash account full row remains untouched by portfolio valuation | Broker cash remains0",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-06",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-06.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Own secondary-debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | ExactUSD10debt setup200 | Read own converted accounts200 | Original primary debt is unchanged | Exact secondary debt | Physical primary account balance unchanged | Actual dashboard SSR200 | Actual SSR aggregate totalARSBlue | Actual SSR aggregate totalUSD | SSR secondary data numeric value | SSR secondary amount retains original documented precision | Cashoriginal balances preserved",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-07",
+        "status": "PASS",
+        "evidence": "empty-account-contracts/cp307-composition/verification.json; empty-account-contracts/independent-composed-review.json",
+        "assertions": "CP3-07 literal absence includes archived accounts and all own history/positions | CP3-07 no prior synthetic history is presented as existing history | Actual normal-authenticated dashboard SSR status | Actual server aggregate total ARS | Known valid fixture never becomes partial | No safe-error alert on this valid-FX empty/account dashboard | Actual own SSR snapshot completion observed before any fixture cleanup | Own snapshot liquid_usd | Own snapshot investments_usd | Own snapshot total_usd | Own snapshot total_ars_blue | CP3-07 liquid zero | CP3-07 portfolio zero | CP3-07 total USD zero | CP3-07 actual server returned no invented historic points | CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR preserves the actual empty request, all15 observed assertions and exact frozen component wiring | CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR renders the real empty accounts explanation and CU002 create-account help | CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR renders the real empty movements explanation and CU001 expense-registration help",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-08",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-08.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Normal JWT query is owner only | Owner category/period independent sum | Actual analysis SSR200 | Actual server custom inclusive period | Actual server expense category aggregate excludes transfer, U2 and September | Actual server income aggregate | Actual server rendered period totals",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-09",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json",
+        "assertions": "",
+        "blocker": "Falta GEMINI_API_KEY de pruebas para semántica real 2000 ARS/período/categoría, aclaración de ambigüedad y resistencia a petición de datos/edición ajenos; CP3-10 requiere además Telegram de pruebas vinculado. Allowlist/lectura/dobles 503/no-mutación locales no acreditan todas esas respuestas del modelo."
+      },
+      {
+        "case_id": "CP3-10",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json",
+        "assertions": "",
+        "blocker": "Falta GEMINI_API_KEY de pruebas para semántica real 2000 ARS/período/categoría, aclaración de ambigüedad y resistencia a petición de datos/edición ajenos; CP3-10 requiere además Telegram de pruebas vinculado. Allowlist/lectura/dobles 503/no-mutación locales no acreditan todas esas respuestas del modelo."
+      },
+      {
+        "case_id": "CP3-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json",
+        "assertions": "",
+        "blocker": "Falta GEMINI_API_KEY de pruebas para semántica real 2000 ARS/período/categoría, aclaración de ambigüedad y resistencia a petición de datos/edición ajenos; CP3-10 requiere además Telegram de pruebas vinculado. Allowlist/lectura/dobles 503/no-mutación locales no acreditan todas esas respuestas del modelo."
+      },
+      {
+        "case_id": "CP3-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json",
+        "assertions": "",
+        "blocker": "Falta GEMINI_API_KEY de pruebas para semántica real 2000 ARS/período/categoría, aclaración de ambigüedad y resistencia a petición de datos/edición ajenos; CP3-10 requiere además Telegram de pruebas vinculado. Allowlist/lectura/dobles 503/no-mutación locales no acreditan todas esas respuestas del modelo."
+      },
+      {
+        "case_id": "CP3-13",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-rf11/cp3-13.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+        "assertions": "Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | 1999/1000noalert | Removeonlynew1999fixture204 | Independentsecondfixturestartsfromidenticalhistory | Independentsecondfixtureidenticalbalance | Fixture transaction API201 | IndependentvariantusesdistinctmovementID | At2000exactalert",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-14",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-rf11/cp3-14.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+        "assertions": "Fixture account API201 | Fixture transaction API201 | Newcategory5000noalert | Removeonlynew5000variant204 | Independentvariantrestoresemptyfixture | Independentvariantbalance0 | Fixture transaction API201 | Newcategory5000.01alert | Removeonlynew5000.01variant204 | Thirdindependentfixtureisempty | Noeligiblemovementsmeansnoanomaly | NoeligiblecompletedmonthmeanshasDatafalse",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-15",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-rf11/cp3-15.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+        "assertions": "Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Set own new cash base through existing adjustment200 | Projection cash fixture exactly50000 | Projection endpoint200 | Exact observed-three-month arithmetic",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-16",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-rf11/cp3-16.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+        "assertions": "Selected synthetic user has no stored Gemini credential | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Set own new cash base through existing adjustment200 | Projection cash fixture exactly50000 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Maintain exact own cash base50000 | Destination transfercash normalized through explicit adjustment | Projection endpoint200 | Exact observed-three-month arithmetic | Projection succeeds without any additional Gemini-host fetch attempt",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-17",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../../../../components/settings/SettingsForm.tsx; ../../../../../components/dashboard/NetWorthHero.tsx; ../../../../../app/api/user/notification-preferences/route.ts",
+        "assertions": "",
+        "blocker": "Falta la superficie de preferencias base/widget persistidas por propietario: el selector de moneda de SettingsForm no guarda/onChange y la vista localStorage de patrimonio no equivale a preferencia guardada por usuario. Por eso tampoco se acredita rechazo de base inválida o edición ajena en esa superficie. La API de notificaciones es otro contrato."
+      },
+      {
+        "case_id": "CP3-18",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-closure/cp3-18.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
+        "assertions": "Fixture account API201 | Fixture account API201 | Normal RLS own legacy-currency setup has no error | Normal RLS sets only the own zero-balance fixture currency | Normal RLS consistent legacy opening adjustment accepted | Legacy unknown balance is10 | Legacy row has one consistent opening amount | Unknown currency retains original balances | Read does not mutate either account | Read preserves legacy ledger | Known account converts to120000ARS | Unknown account keeps currency/balance and explicit exclusion | Unknown FX is not fabricated as0or1 | Retained snapshot equals the prior complete CI5 row before any partial GET | Partial dashboard SSR200 | Partial valuation preserves every existing snapshot and creates none | Known ARS subtotal is120000 | Known USD subtotal uses actual1200rate | Server explicitly reports partial valuation | Server excludes only the own unknown10ZZZ account | Actual SSR partial notice explains ZZZ exclusion | Known account remains present",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-19",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../plan.md; ../../../../../lib/blue-fx-reference.ts",
+        "assertions": "",
+        "blocker": "El contrato exige MEP seleccionable 1250 y total 125000; RN08 y la implementación fijan blue.sell. Las pruebas de consistencia blue no aprueban selección MEP ni sustituyen la política literal."
+      },
+      {
+        "case_id": "CP4-01",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-01-partial.json; remaining-seven-contracts/investment-display-summary.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-01.html; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "AAPL | 5 unidades | Compra: USD 185.00 | Precio: USD 190.50 | USD 952.50 | +USD 27.50 | (+2.97%) | Precio ingresado | Manual",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-02",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-02-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Actual partial sale201 | Persisted exact quantity | Persisted exact remaining cost | Original purchase durable history retained | Purchase original quantity retained in creation receipt | Purchase original unit retained in creation receipt | Exactly one separate sale-history row | Sold quantity exact | Original cost unit retained at sale | Own visible sale history200 | Sale API history equals persisted row | Actual owner portfolio200 | New own position visible exactly once | Position quantity | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position realized_pnl_usd | Position sales_count | External purchase/sale does not silently debit cash ledger",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-03",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+        "assertions": "CP4-03 exact manual lot purchase succeeds | CP4-03 exact pre-sale quantity and cost | CP4-03 entire lot sale succeeds and closes position | CP4-03 independent closed quantity and remaining cost are zero | CP4-03 exactly one sale has realized profit 80 USD | CP4-03 sale history remains visible through authenticated API after closure | CP4-03 visible sale history preserves exact quantities price and realized profit | CP4-03 zero-quantity closure and visible history contain finite financial outputs",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-04",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-04-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Persisted exact quantity | Persisted exact remaining cost | Literal7greaterthan6 rejects known client error | Full position/cost/sales/cash/receipts unchanged after rejected7 | Persisted exact quantity | Persisted exact remaining cost",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-05",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-05-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Injected position transaction returns500 | Actualpositionfaultmarkerobservedinboundprivatelog | Rollback position: zero own positions | Rollback position: zero durable purchase operation | Rollback position: original own cash ledger unchanged | Temporary position DDL removed with exact catalog parity | Injected receipt transaction returns500 | Actualreceiptfaultmarkerobservedinboundprivatelog | Rollback receipt: zero own positions | Rollback receipt: zero durable purchase operation | Rollback receipt: original own cash ledger unchanged | Temporary receipt DDL removed with exact catalog parity | Same-key original purchase retry201 after real rollback | Persisted exact quantity | Persisted exact remaining cost | Durable replay returns original position ID | Replay no position drift | Exactly one committed creation operation | Exactly one final new position | Final catalog matches before injection",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-06",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-06-partial.json; remaining-seven-contracts/investment-display-summary.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-result.json; remaining-seven-contracts/investment-display-attempt-2-manual-fixture/investment-display-cp4-06.html; remaining-seven-contracts/manifest.json; remaining-seven-contracts/independent-review.json",
+        "assertions": "FOOFIX | 2 unidades | Compra: USD 50.00 | Precio: USD 55.00 | USD 110.00 | +USD 10.00 | Precio ingresado | Manual",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-07",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed-cp4-07/attempt-2-unique-fresh-cache-pass.json; investment-contracts/independent-cp4-07-concurrent-http-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Turn only new position into cached nonmanual fixture200 | Normal JWT own synthetic timestamp fixture accepted | Synthetic timestamp setup targets only own new position | Fixed price timestamp is persisted | Actual owner portfolio200 | fresh unique asset cached110: actual upstream crypto503 observed | New own position visible exactly once | Position quantity | Position current_price | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position valuation_price_source | Unavailable provider preserves actual fresh cache timestamp | Archive only new own completed valuation fixture200 | Actual normal-owner investment create201 | Actual owner portfolio200 | separate unique asset without current price: actual upstream crypto503 observed | New own position visible exactly once | Position quantity | Position current_price | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position valuation_price_source | Purchase reference does not invent quote timestamp | Archive only new own completed valuation fixture200 | Actual normal-owner investment create201 | Missing required FX explicitly fails valuation | Valuation failure never changes own original quantities/cost/price",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-08",
+        "status": "PASS",
+        "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+        "assertions": "CU004 investments: UI manual purchase and sale, excessive quantity has no effect / persisted remaining quantity = 6 and manual current unit price = 110 USD | UI simulation +10%: simulation-hypothetical-value = USD 726,00; simulation-current-value = USD 660,00 | Cerrar simulación followed by identical SHA256 of accounts + transactions + investments + investment_sales",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-09",
+        "status": "PASS",
+        "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+        "assertions": "UI simulation -100%: simulation-hypothetical-value = USD 0,00 | Separate -100.01 and NaN submissions: role alert visible and investment-simulation-result count = 0 | Original current value = USD 660,00 and identical final four-table financial SQL SHA256 after all submissions and closing",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-10",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-10-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Fixture account API201 | Deactivate only new own account204 | Foreign/inactive own account purchase rejected404 | Rejected purchase creates no own position | Rejected purchase creates no durable success receipt | Foreign/inactive own account purchase rejected404 | Rejected purchase creates no own position | Rejected purchase creates no durable success receipt | Actual owner portfolio200 | Foreign position not visible in existing safe owner collection | Ordinary Auth RLS excludes foreign position | Foreign newly created full rows unchanged",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-11",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-11-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Actual sale4of10 returns201 | Actual normal-owner investment create201 | Second purchase creates distinct lot | Persisted exact quantity | Persisted exact remaining cost | Persisted exact quantity | Persisted exact remaining cost | Original lot unit stays100, never averaged140 | New lot unit remains200 | Original purchase durable history retained | Purchase original quantity retained in creation receipt | Purchase original unit retained in creation receipt | Exactly one separate sale-history row | Sold quantity exact | Original cost unit retained at sale | Actual owner portfolio200 | Aggregated quantity10 | Exact two-lot totalPurchaseValue | Exact two-lot totalRealizedPnLUsd | Exact two-lot totalCurrentValue | Exact two-lot totalPnL | Both original lots retained",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-12",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-12-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | External cash already reconciled0USD | Actual normal-owner investment create201 | Persisted exact quantity | Persisted exact remaining cost | Registering external purchase does not debit cash ledger | Actual owner portfolio200 | New own position visible exactly once | Position market_value_usd | Position cost_basis_usd | Position profit_loss_usd | Actual converted own accounts200 | Original external cash remains0 | Independent cash plus portfolio equals networth1000USD",
+        "blocker": ""
+      },
+      {
+        "case_id": "CNF-01",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; load/browser-attempt-1-interrupted/interruption.json; load/browser-diagnostics/README.md; environment/load-native-log-aggregate.json",
+        "assertions": "",
+        "blocker": "El intento local conserva una tanda cálida de 100 navegaciones con umbral p 95 incumplido y una tanda fría con 60 observadas/40 sin observar, además de outage no completado; no hay serie canónica completa p 95<2000 ms con 20 sesiones/20 Mbps/50 ms equivalente a despliegue. REST504/PGRST003 y Auth 504 no tienen causa aislada demostrada. No se repite carga masiva sin nueva ventana."
+      },
+      {
+        "case_id": "CNF-02",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../casos_prueba.csv",
+        "assertions": "",
+        "blocker": "Falta una serie mensual real de sondas autenticadas cada 5 min con éxito/falla/timeout/ausencias y módulo financiero separado. Una corrida breve o el modelo 43/44 fallas sobre 8640 no prueba disponibilidad mensual≥99.5%. No es un bloqueo por credenciales de IA."
+      },
+      {
+        "case_id": "CNF-03",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; environment/native-lifecycle-inspection.md; closure-final-preparation/clock-executed/README.md",
+        "assertions": "",
+        "blocker": "Las solicitudes de prueba usan HTTPloopback. No hay endpoint financiero HTTPS/certificado vigente/redirect autorizado y verificado. El scan cliente service-role/CRON0 no prueba cifrado TLS; RESTinterno Nativewildcard tampoco prueba aislamientoLAN."
+      },
+      {
+        "case_id": "CNF-04",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; environment/at-rest.json; review/blocked-case-triage.json; security-matrix/cp2-19-composite.json",
+        "assertions": "",
+        "blocker": "FileVault local está observado, pero falta configuración/evidencia de cifrado en reposo del proveedor de despliegue. RLS es control separado y CP2-19 mantiene 42 PASS/6 BLOCKED por operaciones ausentes, no por falta de sockets locales."
+      },
+      {
+        "case_id": "CNF-05",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; e2e/visual/visual-verification.json",
+        "assertions": "",
+        "blocker": "Las 32 celdas/40 PNG Chrome y cuatroCU acotados no completan todos los flujos originales de gasto/OCRpreview/regla/presupuesto con teclado, scroll/modal y estados de error. OCR real requiere Gemini; las tareas locales no se declaran ejecutadas sólo por una captura."
+      },
+      {
+        "case_id": "CNF-06",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; e2e/visual/visual-verification.json; ../../../../../app/login/page.tsx; e2e/browser-preflight/current-user-browser-steering.json",
+        "assertions": "",
+        "blocker": "La UI de login ofrece contraseña/magic-link pero no el flujo de reset solicitado. CP2-10 ya tiene reset completo real GoTrue/SMTP local revisado, con clave restaurada; ese alcance API no equivale a la UI de reset ausente. Restan las tareas de cuenta/exportación/login con teclado, errores junto al campo y descarga en la matriz requerida; no se añade una función UI para fabricar aceptación. El último steering exige Arc; cierre de ventana UNKNOWN impide continuar esas tareas con Arc y no se sustituye por Chrome."
+      },
+      {
+        "case_id": "CNF-07",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; account-analysis-contracts/independent-closure-review.json; e2e/visual/visual-verification.json",
+        "assertions": "",
+        "blocker": "Dashboard/detalle/anomalías tienen lecturas SSR y capturas acotadas; falta la suite completa de números/unidades/fechas y respuesta/scroll/chat accesible en todos los estados. El chat semántico real requiere Gemini; no se oculta ese límite bajo un PASS de SSR."
+      },
+      {
+        "case_id": "CNF-08",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; e2e/visual/visual-verification.json; ../../plan.md; e2e/browser-preflight/current-user-browser-steering.json",
+        "assertions": "",
+        "blocker": "El contrato literal es responsive de inversiones: faltan las tareas completas compra/venta/simulación, con cantidad/costo/P&L legibles y sin clipping en anchos/zooms/estados originales. Las 40 capturas estáticas sólo acreditan lecturas acotadas. No se atribuye a este CSV un bloqueo por estudio con participantes; los permisos/ausencias de otros navegadores se registran enCNF09. El steering más reciente exige Arc y prohíbe suplirlo con Chrome; nuevas tareas Arc esperan reconciliar el cierre de su ventana UNKNOWN."
+      },
+      {
+        "case_id": "CNF-09",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; browser-compat/current-status.json; browser-compat/README.md",
+        "assertions": "",
+        "blocker": "Sólo Chrome 146 tiene UI real ejecutada. El usuario rechazó instalar Firefox/Edge; SafariWebDriver está disabled. ArcAutomation fue autorizada/habilitada por el humano, pero su ventana creada quedó con cierreUNKNOWN y no hay aceptaciónUI; no se toca perfil/tabs/sesiones personales. Falta la suite crítica enChrome/Firefox/Safari/Edge con versiones estables exactas al ensayo y perfiles frescos; el CSV no exige versión anterior adicional. WebKit no es Safari."
+      },
+      {
+        "case_id": "CNF-10",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; remaining-cu001/README.md",
+        "assertions": "",
+        "blocker": "Hay rechazos y controles cron/Auth/RPC parciales; falta comparar inválido/válido antes de efectos en todos los canales del contrato (cron y webhookbot incluidos), con secretos ausentes de todos sus logs. Los dobles y la ausencia de Telegram/MP real no aprueban esa matriz completa."
+      },
+      {
+        "case_id": "CP1-36",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-1-existing-full-plan/verification.json; focal-contracts/cp1-36-review.json; e2e/api/api-verification.json",
+        "assertions": "CP1-36 original API assertion passed on this exact expense ID | CP1-36 owned archived group remains inactive | CP1-36 original group currency is ARS | CP1-36 exact original group has three members | CP1-36 original expense is exactly 100 ARS | CP1-36 exactly three distinct same-group split members | CP1-36 split amounts are 33.34 33.33 33.33 | CP1-36 exact expense split sum equals its 100 amount | CP1-36 payer belongs to exact original group | CP1-36 original 100 expense net total is exact numeric zero | CP1-36 every existing expense in the same group independently reconciles and has same-group members | CP1-36 same original group net total is independently exact numeric zero",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-37",
+        "status": "PASS",
+        "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
+        "assertions": "SH-SQL-02 create and remainder cents conserve total | SH-SQL-03 update replaces amount and splits atomically",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-38",
+        "status": "PASS",
+        "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
+        "assertions": "SH-SQL-04 actor from another group | SH-SQL-05 payer from another group | SH-SQL-06 split from another group | SH-SQL-08 another group cannot edit an existing expense | SH-SQL-09 invalid/revoked capabilities do not mutate | SH-SQL-10 split insert failure rolls back UPDATE and removed old splits | SH-SQL-11 split insert failure leaves no orphan new expense",
+        "blocker": ""
+      },
+      {
+        "case_id": "CNF-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; native-full/README.md; investment-contracts/independent-restart-review.json; notification-timeout-contract/independent-review.json",
+        "assertions": "",
+        "blocker": "Recibos/restarts/locks/rollback/outbox ya están probados en alcances explícitos, pero falta la matriz literal 2 replays+10 concurrentes del mismo comando para gasto/transferencia/importación/cron/venta/pago, con cada fixture/saldo y fallos después de commit. Pago requiere sandboxMP; incertidumbre de entrega Telegram se documenta aparte. No se suman ensayos distintos como esa serie completa."
+      },
+      {
+        "case_id": "CNF-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; cnf12-nominal/summary.json; cnf12-nominal/independent-review.json; cnf12-nominal/original-preservation-final.json; restored-ui/README.md",
+        "assertions": "",
+        "blocker": "El fixture nominal 2 cuentas/20 movimientos/3 lotes/1 regla/1 grupo, snapshot 05→06 Oct, gasto 1500 posterior ausente y restoreSQL0.469 s ya se ejecutaron en DBs nuevas; Storage 34 B y 64 tablas originales intactos. Fronteras 23 h/3 h 30/24 h/4 h/+1 s son modelos de timestamps. Faltan respaldo del plan real contratado, cuatrolecturasUI del fixture nominal y RTO 3 h 30 realmente observado. Las cuatroUIRESTORE anteriores tienen otra fixture y ochoFX auxiliares declaradas."
+      },
+      {
+        "case_id": "CNF-13",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-closure/final-vitest.json; native-full/native-verification.json; review/blocked-case-triage.json; ../../plan.md; ../../../../../lib/api-handler.ts; ../../../../../lib/cron/cron-job.ts",
+        "assertions": "",
+        "blocker": "RNF08 declara una meta, no una capacidad ya implementada. No se identificó correlación universal request→servicio→efecto/rechazo/error para nueve resultados manual/cron/pago con los tres marcadores señuelo. Scanners/logs/canary locales no sustituyen IDs y métricas de todos esos caminos; faltan además proveedores reales en sus variantes."
+      }
+    ],
+    "superseded_historical_interpretations": {
+      "CP1-07": "Original CSV is Normal UPDATE SQL. Historical API immutability was not a blocker; independent SQL/native composite review now governs status.",
+      "CNF-08": "Original CSV is responsive investments, without a participant-study precondition. Do not carry historical group7/human_study interpretation into the current blocker. Current missing purchase/sale/simulation tasks are explicit.",
+      "CNF-12": "Nominal fixture/snapshot/post1500/realSQLrestore/Storage bytes and time-boundary models now executed. Actual plan/four nominalUI/observed3h30 remain unproved; historical deployment_blockers text predates this execution."
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "reviewer": "independent e2e peer",
+  "reviewedAt": "2026-10-15T06:16:22.574920+00:00",
+  "method": "Read-only source/report review and SHA-256 comparisons. No imported harness, Node/Vitest run, HTTP, Auth, DB query, process inspection, browser or fixture recreation by this reviewer.",
+  "status": "ACCEPTED_SCOPED_ORIGINAL_CASE_COMPOSITION",
+  "materialFindings": [],
+  "csv": {
+    "path": "docs/tif/v2.13/casos_prueba.csv",
+    "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+  },
+  "artifacts": [
+    {
+      "path": "attempt-1/manifest.json",
+      "sha256": "9cf4796230ff578e1fdb1bc4eb66222539846caa0debf80dd12e59540fc55ed4"
+    },
+    {
+      "path": "attempt-1/verification.json",
+      "sha256": "6ee0657f6e7b0dcb02cf9055837b7fca61c95ca209a02e5e427ab5315a46f682"
+    },
+    {
+      "path": "attempt-2/manifest.json",
+      "sha256": "06f42cbc2cffa10619b27964b9b10b3371cf36b8811baa697d159921cea318dd"
+    },
+    {
+      "path": "attempt-2/verification.json",
+      "sha256": "6c07f7acfd23f1832b650288edbe8cb745a79e87956074d8f2e2244d9e5514a8"
+    },
+    {
+      "path": "verified-system-case-result.json",
+      "sha256": "96a7a94cc5fcdffeac2a88069596c1db8cbac77aa320722f8179d38096e8b77b"
+    },
+    {
+      "path": "cp307-composition/verification.json",
+      "sha256": "d9312b830e4a4213a48081ae62f38571d1e80f43a906912afd50feed3d2cfde8"
+    },
+    {
+      "path": "cp307-composition/empty-components.spec.tsx",
+      "sha256": "49817c2c13ccf7767eaa486b1318755329f70e834b7ef564b5c8f2a9404e8389"
+    },
+    {
+      "path": "cp307-composition/vitest.config.mts",
+      "sha256": "4e12016d479b5274b00c0765d3ec31f2eec9e0ed1fcfe7db50947c28f9b8680f"
+    },
+    {
+      "path": "cp307-composition/ssr-results.json",
+      "sha256": "be5f92b0e97d8e3974ac46ff4a5b8fd9e4f0661a3487af5c3abdaaa872f806f6"
+    },
+    {
+      "path": "cp307-composition/account-cards-empty.html",
+      "sha256": "04e100e1aec205cacbdd485a29b1f3b63173adb60e465da07d6a80d93d95e895"
+    },
+    {
+      "path": "cp307-composition/recent-transactions-empty.html",
+      "sha256": "d88694dcc2a3a7fb9e94b9e8d5b0fa9627eb9159eaae2d05c09b6b690a3834dd"
+    }
+  ],
+  "provenance": {
+    "productRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "buildId": "Yi9bH3FttO71PxvY-EwCH",
+    "sourcesVerifiedAgainstGitAndPhysicalCopy": [
+      "components/dashboard/AccountCards.tsx",
+      "components/dashboard/RecentTransactions.tsx",
+      "app/(authenticated)/dashboard/page.tsx"
+    ],
+    "attemptManifestsAndAllEightArchivedHarnessSourcesRehashed": true
+  },
+  "cases": [
+    {
+      "case_id": "CP3-03",
+      "opinion": "PASS original CSV within declared synthetic source integration",
+      "basis": "19 actual normal Auth/API/native/SSR assertions. Cold exchange_rates0, no-cache quote/wealth safe500, SSR explicit unavailable alert without consolidated Hero or rate0/1; original balances120000ARS/100USD unchanged; no snapshot persisted. Append-only journal retains20 real synthetic503 requests,18 new since initial preflight, before control switched1200.",
+      "limits": [
+        "The unavailable provider is a declared local HTTP double, not an observed public-provider outage.",
+        "No browser or hydration proof."
+      ]
+    },
+    {
+      "case_id": "CP3-07",
+      "opinion": "PASS original CSV by coordinator-authorized composition",
+      "basis": "The fifteen actual empty observations match exactly the preserved failed phase: no accounts including archived, no transactions/positions/prior snapshots, real authenticated HTTP200, Hero aggregates0/history[], no financial error, own snapshot0. Two real frozen SSR renders add literal empty accounts help /accounts and expense-registration help; a third focal checks exact Dashboard dynamic wiring/provenance.",
+      "rawFailureRetained": true,
+      "rawPhaseStatus": "FAIL",
+      "rawFailureLocation": "ssr-contracts.mjs:46:10",
+      "actualObservations": 15,
+      "componentSsrTests": 2,
+      "provenanceTests": 1,
+      "limits": [
+        "Full original HTTP HTML/Flight was not retained, so there is no offline reparse claim.",
+        "Supplemental component renders are offline SSR, not another native Dashboard request, browser, hydration, animation or viewport.",
+        "Planned projections endpoint assertion was never executed and is not used.",
+        "B now has the first account created by CP2-01; no empty fixture was recreated."
+      ]
+    },
+    {
+      "case_id": "CP2-01",
+      "opinion": "PASS original CSV within normal API/native/authenticated SSR scope",
+      "basis": "17 actual assertions retain literal zero-account precondition, one normal POST201 for BancoARS, owned active ARS bank account50000 and one explicit Saldo inicial adjustment50000. Actual server patrimony increases0→50000ARS; only newly created own snapshot UUID4f8abad4-1c2d-49a2-8bab-032bc71a288d is updated.",
+      "limits": [
+        "No browser or client animation proof."
+      ]
+    }
+  ],
+  "preservation": {
+    "sourceStableReported": true,
+    "acceptanceGuardsSatisfiedReported": true,
+    "originalRestoreFullTablesUnchanged": 13,
+    "fixtureBaselineTablesUnchanged": 13,
+    "twoOwnSessionsLocallyClosed": true,
+    "rawAttemptTwoCountsRetained": {
+      "PASS": 2,
+      "FAIL": 1,
+      "BLOCKED": 0
+    },
+    "rawAttemptTwoAcceptanceEligibleRemainsFalse": true,
+    "newComposedCountsAreSeparate": {
+      "PASS": 3,
+      "FAIL": 0,
+      "BLOCKED": 0
+    }
+  },
+  "publicationNote": "Package owner was asked to omit the ignored node_modules/.vite cache entry from the versionable top-level manifest. This does not alter any case observation, report or SSR output.",
+  "globalSuiteClaim": false,
+  "browserClaim": false
+}

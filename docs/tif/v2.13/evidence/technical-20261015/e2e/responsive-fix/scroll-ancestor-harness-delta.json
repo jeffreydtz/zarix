@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-15T02:05:18.988Z",
+  "productBuildRevision": "bb2e8a6",
+  "scope": "Post-CI3 harness-only correction; inspect every actual scrollable ancestor of the existing lower analysis heading, including mobile Navigation overflow DIV. Product and both compiled artifacts unchanged; no CI4 or attribution of819globaltests to this delta.",
+  "harness": {
+    "path": "scripts/test-isolated-visual.mjs",
+    "beforeSha256": "13d1c529598a1446fbf5a3b601978a4256942cc76ae5b35513ead64e7391a998",
+    "afterSha256": "45f70570ff9ee680713bf498798fc91359ffdc967500c71f749a1e9b1534685c"
+  },
+  "syntax": {
+    "command": "node --check scripts/test-isolated-visual.mjs",
+    "exitCode": 0
+  },
+  "executed": true,
+  "executedResult": "../visual/visual-verification.json"
+}

@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-15T03:50:16.318966+00:00",
+  "scope": "Explicitly authorized launch Arc in background via open -g -a; native AppleEvents permission check askUser=true for the already approved Codex-to-Arc purpose. No AppleEvent action,window/tab read,setting or profile inspection.",
+  "launchCommand": "/usr/bin/open -g -a /Applications/Arc.app",
+  "authorization": "Human authorization relayed by parent15October2026,03:39; no second authorization asked.",
+  "osStatus": 0,
+  "alreadyAllowedAfterCheck": true,
+  "askUser": true,
+  "driverExecuted": false
+}

@@ -2,6 +2,7 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { applyArchivedAccountsTransactionFilter, buildToArsConverter } from '@/lib/services/transactions';
 import type { Transaction, RecurringRule } from '@/types/database';
+import { readAllPages } from '@/lib/supabase-paginated-read';
 
 export interface MonthFlow {
   incomeARS: number;
@@ -56,39 +57,43 @@ export async function getMonthFlow(userId: string): Promise<MonthFlow> {
   const activeIds = await accountsService.getActiveAccountIds(userId);
 
   // Movimientos del mes en curso, de arranque de mes hasta ahora (MTD).
-  let mtdQuery = supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('transaction_date', monthStart.toISOString())
-    .lte('transaction_date', now.toISOString());
-  mtdQuery = applyArchivedAccountsTransactionFilter(mtdQuery, activeIds);
-  const { data: mtdData } = await mtdQuery;
-  const mtdTransactions: Transaction[] = mtdData || [];
+  const mtdTransactions = await readAllPages<Transaction>((from, to) => {
+    let mtdQuery = supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('transaction_date', monthStart.toISOString())
+      .lte('transaction_date', now.toISOString());
+    mtdQuery = applyArchivedAccountsTransactionFilter(mtdQuery, activeIds);
+    return mtdQuery.order('transaction_date', { ascending: true })
+      .order('id', { ascending: true }).range(from, to);
+  });
 
   // Ventana corrida de los últimos 14 días (solo gastos) para el run-rate diario.
   const trailingStart = new Date(now);
   trailingStart.setDate(trailingStart.getDate() - TRAILING_WINDOW_DAYS);
-  let trailingQuery = supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('type', 'expense')
-    .gte('transaction_date', trailingStart.toISOString())
-    .lte('transaction_date', now.toISOString());
-  trailingQuery = applyArchivedAccountsTransactionFilter(trailingQuery, activeIds);
-  const { data: trailingData } = await trailingQuery;
-  const trailingExpenses: Transaction[] = trailingData || [];
+  const trailingExpenses = await readAllPages<Transaction>((from, to) => {
+    let trailingQuery = supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('type', 'expense')
+      .gte('transaction_date', trailingStart.toISOString())
+      .lte('transaction_date', now.toISOString());
+    trailingQuery = applyArchivedAccountsTransactionFilter(trailingQuery, activeIds);
+    return trailingQuery.order('transaction_date', { ascending: true })
+      .order('id', { ascending: true }).range(from, to);
+  });
 
   // Reglas recurrentes de gasto activas con frecuencia mensual/semanal/diaria.
-  const { data: rulesData } = await supabase
+  const activeExpenseRules = await readAllPages<RecurringRule>((from, to) => supabase
     .from('recurring_rules')
     .select('*')
     .eq('user_id', userId)
     .eq('is_active', true)
     .eq('type', 'expense')
-    .in('frequency', ['monthly', 'weekly', 'daily']);
-  const activeExpenseRules: RecurringRule[] = rulesData || [];
+    .in('frequency', ['monthly', 'weekly', 'daily'])
+    .order('id', { ascending: true }).range(from, to));
 
   const { toArs, excludedCurrencies } = await buildToArsConverter([
     ...mtdTransactions,

@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-15T01:30:17.609870+00:00",
+  "reviewer": "e2e",
+  "method": "Attestation received from E2E agent after that agent directly inspected all eight PNGs; dependency_audit independently verified each attested hash, not these eight pixels.",
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-2/CU001-movements.png",
+      "sha256": "e50937eae258ec82a26073efe19d8daf515e78e4e7d57978eb352067ff3d957a",
+      "matchesAttestedHash": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-2/CU002-accounts.png",
+      "sha256": "97ecdd97c4eea9c74a0000af9dee90e94d976c88aa3a5e4d110f745ac4a88c5f",
+      "matchesAttestedHash": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-2/CU003-analysis.png",
+      "sha256": "b052d1a29934c10fe40607377ab23faa747c22f2f9aaf8ee5d44b650a24db0a5",
+      "matchesAttestedHash": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-2/CU004-failed.png",
+      "sha256": "5df5fe27861cd8fc18e5bef2cf2e0a8c4b1d94578a1ecc0b6ad4a3e947c8628c",
+      "matchesAttestedHash": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-3/CU001-movements.png",
+      "sha256": "e50937eae258ec82a26073efe19d8daf515e78e4e7d57978eb352067ff3d957a",
+      "matchesAttestedHash": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-3/CU002-accounts.png",
+      "sha256": "7dca84418880f1d87fd9534b82a863015e7f643f66964a1817d13de6fb308d12",
+      "matchesAttestedHash": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-3/CU003-analysis.png",
+      "sha256": "fb3fc7f8b91412e74ced33422093e435184fc764446888e871ee0445f60777ce",
+      "matchesAttestedHash": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-3/CU004-failed.png",
+      "sha256": "3d6defa1ffd10f1fd1db3e06fbf4d88b39b0ccde609974e5117c30efeb4da115",
+      "matchesAttestedHash": true
+    }
+  ],
+  "observedPrivacy": "Only synthetic fixtures/FOOFIX and incidental public market cards; no URL bar, sessions, credentials or capability paths visible.",
+  "limits": [
+    "Both CU001 screenshots are nearly blank during page transition.",
+    "CU003 has figures but charts still skeletons/opacity; not complete final rendered-chart acceptance.",
+    "CU002 account balances were captured during number animation; a visible49,999.99 approaching50,000 is not proof of discrepant DB balances.",
+    "CU004-failed captures intermediate purchase/sale forms, not acceptance of the completed investment journey.",
+    "This is manual visible-pixel review; it does not inspect hidden image metadata and is not automated binary secret scanning."
+  ]
+}

@@ -1,0 +1,17 @@
+import { beforeEach, afterEach, it, expect, vi } from 'vitest';
+import { IDBFactory } from 'fake-indexeddb';
+const state=vi.hoisted(()=>({queryError:null as unknown}));
+const query=vi.hoisted(()=>({select:vi.fn(),eq:vi.fn(),limit:vi.fn()}));
+vi.mock('@/lib/supabase/client',()=>({createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-owner'}}},error:null})}})}));
+vi.mock('@/lib/supabase/server',()=>({createServiceClient:async()=>({from:(table:string)=>{expect(table).toBe('categories');return {select:(field:string)=>{query.select(field);return {eq:(key:string,value:unknown)=>{query.eq(key,value);return {limit:async(n:number)=>{query.limit(n);return {error:state.queryError,data:[{id:'synthetic-category'}]};}};}};}};}})}));
+vi.mock('@/lib/rate-limit',()=>({clientIpFromRequest:()=> 'synthetic-ip',rateLimitAllow:()=>true}));
+import { submitFinancialOperation } from '@/lib/offline-transaction-store';
+import { GET } from '@/app/api/health/route';
+const payload={type:'expense',accountId:'synthetic-account',amount:25,currency:'ARS'};
+let effects:Map<string,string>;
+beforeEach(()=>{effects=new Map();vi.stubGlobal('indexedDB',new IDBFactory());vi.stubGlobal('window',new EventTarget());state.queryError=null;vi.clearAllMocks();vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{const key=new Headers(init.headers).get('Idempotency-Key')!;effects.set(key,effects.get(key)||key);await new Promise(resolve=>setTimeout(resolve,30));return new Response(JSON.stringify({id:effects.get(key)}),{status:201,headers:{"Idempotency-Key":key}});}));});
+afterEach(()=>vi.unstubAllGlobals());
+it('independent newly opened equal intents keep two IDs and two financial effects',async()=>{const outcomes=await Promise.all([submitFinancialOperation('/api/transactions',payload),submitFinancialOperation('/api/transactions',payload)]);expect(outcomes.map(x=>x.state)).toEqual(['confirmed','confirmed']);expect(new Set(outcomes.map(x=>x.item.id)).size).toBe(2);expect(effects.size).toBe(2);});
+it('explicit distinct draft scopes retain two IDs and effects',async()=>{const outcomes=await Promise.all([submitFinancialOperation('/api/transactions',payload,'POST',undefined,'independent-form-a'),submitFinancialOperation('/api/transactions',payload,'POST',undefined,'independent-form-b')]);expect(new Set(outcomes.map(x=>x.item.id)).size).toBe(2);expect(effects.size).toBe(2);});
+it('health uses GET-shaped minimal service query and returns no data or key',async()=>{const response=await GET(new Request('http://localhost/api/health') as any);const result=await response.json();expect(response.status).toBe(200);expect(Object.keys(result).sort()).toEqual(['db','latencyMs','status']);expect(query.select).toHaveBeenCalledWith('id');expect(query.eq).toHaveBeenCalledWith('is_system',true);expect(query.limit).toHaveBeenCalledWith(1);});
+it('health treats actual query errors as degraded without copying backend error detail',async()=>{state.queryError={code:'PGRST205',message:'synthetic private detail'};const response=await GET(new Request('http://localhost/api/health') as any);expect(response.status).toBe(503);const text=await response.text();expect(text).not.toContain('synthetic private detail');expect(text).not.toContain('PGRST205');expect(JSON.parse(text).status).toBe('degraded');});

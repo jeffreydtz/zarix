@@ -1,0 +1,51 @@
+{
+  "status": "EXECUTED",
+  "revision": "730767b1723502b495d371e69c44df31eb230b56",
+  "scope": "Actual Next build/start/HTTP/cookie/Auth/SSR plus readonly integrity; no raw responses, cookies, session JWTs or credential copies",
+  "files": [
+    {
+      "path": "after-sessions-original-integrity.json",
+      "sha256": "be2851d5bbf140528c4d3f7cf22ebb1bc1bf9e2a459daa453ce001f5080b1c2f"
+    },
+    {
+      "path": "app-state.json",
+      "sha256": "e8386c6c97cb87fe90948dd00d7febd6f42498bd12e5209f7ab1c63dad2193a0"
+    },
+    {
+      "path": "build-verification.json",
+      "sha256": "4fd07e7883e94b35c19d47d4b628b17c9497709fac3f5bfa1504bf49932e19b9"
+    },
+    {
+      "path": "clone-readiness.json",
+      "sha256": "dbea560dbc24ca57f189c413c68e2581013b6be0f12f4aea78d315a8b498bfb5"
+    },
+    {
+      "path": "services-metadata.json",
+      "sha256": "42dab77553a9c534aa7eeb442eb0dbb3221d87f037adc9c757a3226a4ab5060b"
+    },
+    {
+      "path": "sources/build-app.py",
+      "sha256": "04c5e4759c358e681a67346e74c9df2d70df459c5e86d5eb7d1333ebfa712f3e"
+    },
+    {
+      "path": "sources/launch-services.py",
+      "sha256": "945cb4a1a0150184d73973aeaaaebdc5f1264eb8eb9b886b96a0dc57a93de614"
+    },
+    {
+      "path": "sources/local-http.mjs",
+      "sha256": "dca2d230c162345be5dd15d0ace1860e2277badb456619711dce05b78c6b4e33"
+    },
+    {
+      "path": "sources/resume-readiness.py",
+      "sha256": "e85e5a4e94fdb024c5df5bce80b633e5ad750adb21c2ff195545ad2d6ed66b15"
+    },
+    {
+      "path": "sources/run-ssr-http.mjs",
+      "sha256": "9f2bcfd497752620ec1f1fdc7e76d168ab627f2ebd6e1bf09cdf10c5f1d234b2"
+    },
+    {
+      "path": "verification.json",
+      "sha256": "32db3165f6a6bc9b75534b9ca7e9f51b66d382aa8f308f0888ceae00b9597bed"
+    }
+  ]
+}

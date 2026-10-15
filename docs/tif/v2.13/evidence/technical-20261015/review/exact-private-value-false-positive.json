@@ -1,0 +1,51 @@
+{
+  "reviewedAt": "2026-10-15T03:24:06.634521+00:00",
+  "status": "ADJUDICATED_FALSE_POSITIVE",
+  "scope": "Independent read-only source/artifact inspection plus in-memory exact comparison of the same existing private input fields. No scanner rerun over repository files, sockets, DB, Auth, browser, source edit or credential generation. No matching value, matching excerpt or hash of any value is emitted.",
+  "rawScan": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-scan-reviewed-032147.json",
+    "sha256": "36ea4b1aae6fe435cb493c6dacd89653956092150d6f91276998782acd163119",
+    "status": "FAIL",
+    "privateValuesCompared": 18,
+    "files": 1669,
+    "candidateCount": 1,
+    "originalMutablePath": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-scan.json"
+  },
+  "reviewedScanner": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/review/check-publication-reviewed-032147.mjs",
+    "sha256": "aff312dcf08314f22256ae99c5f9110bcf9d2fc47d185e34406224ac8c74a65b",
+    "inputScope": "Thirteen optional named runtime environment files and eight optional named synthetic fixture JSON files; only existing files and string fields accepted by secretName, minimum length8. Deduplicated exact UTF-8 values. The scan report wording four named fixture files is stale; actual source lists eight.",
+    "enumeration": "Git cached plus non-ignored untracked files; binary and text bytes checked by Buffer.includes. Ignored builds, external files, absent optional fixtures and unmatched field names are outside scope.",
+    "privacy": "Only candidate path/rule are serialized; values are never serialized or hashed for publication.",
+    "privateSourcePath": "/tmp/zarix-runtime-20261015/check-publication.mjs",
+    "sourcePreservation": "Exact scanner source copied as evidence without executing it; code contains only file/field selection and in-memory comparison logic, no credential values."
+  },
+  "candidate": {
+    "path": "scripts/lib/test-isolated-native-target.mjs",
+    "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+    "matchingUniqueValues": 1,
+    "matchingOriginFields": [
+      {
+        "file": "runtime.env",
+        "field": "ZARIX_LOCAL_DATABASE_URL"
+      },
+      {
+        "file": "source.env",
+        "field": "ZARIX_LOCAL_DATABASE_URL"
+      }
+    ],
+    "entireMatchedValueEqualsExistingFallbackLiteral": true,
+    "literalTargetsLoopback": true,
+    "classification": "Known static default connection template for a disposable local synthetic database, coincidentally identical to an existing private test-stack configuration. It is not a generated random credential, hosted URL, JWT, token, capability or external provider credential.",
+    "history": {
+      "revision": "e65e09c648aaae31bf420bc4b5c044a4dbb8f310",
+      "sameFallbackLiteral": true
+    },
+    "frozenCi4": {
+      "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "entireSourceByteIdentical": true
+    }
+  },
+  "decision": "Retain the exact scanner FAIL and its one candidate; adjudicate this pinned source occurrence as the documented default-template false positive. No source change or CI4 rerun is warranted for this occurrence.",
+  "limits": "This is not a zero-candidate scan and not a universal absence-of-secrets claim. It does not test network exposure or hosted infrastructure. Other heuristic candidates and publication decisions retain their own evidence."
+}

@@ -1,0 +1,13 @@
+{
+  "report": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/core-closure/performance.json",
+  "summary": {
+    "count": 100,
+    "failures": 0,
+    "p50Ms": 2.55012499999998,
+    "p95Ms": 2.826792000000296,
+    "maxMs": 3.290958000000046,
+    "percentileMethod": "Nearest rank, including failed observations in durations"
+  },
+  "coldMs": 5.2445829999999205,
+  "scope": "One PGlite connection, normal PostgreSQL role; no HTTP, browser, network shaping, parallel sessions or provider calls. Does not establish CNF-01 dashboard SLO or monthly availability."
+}

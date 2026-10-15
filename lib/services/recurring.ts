@@ -26,7 +26,7 @@ class RecurringService {
 
     const { data, error } = await supabase
       .from('recurring_rules')
-      .select('*, category:categories(name), account:accounts(name, currency)')
+      .select('*, category:categories(name), account:accounts!recurring_rules_account_id_fkey(name, currency)')
       .eq('user_id', userId)
       .eq('is_active', true)
       .order('created_at', { ascending: false });

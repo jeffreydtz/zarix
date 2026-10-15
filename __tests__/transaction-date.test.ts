@@ -4,6 +4,7 @@ import {
   calendarDateToUtcNoonIso,
   isoToLocalDateInputValue,
   parseBotTransactionDateInput,
+  isCivilYmd,
 } from '@/lib/transaction-date';
 
 describe('todayLocalYmd', () => {
@@ -26,25 +27,20 @@ describe('calendarDateToUtcNoonIso', () => {
     expect(calendarDateToUtcNoonIso('  2026-06-20  ')).toBe('2026-06-20T12:00:00.000Z');
   });
 
-  it('does JS date arithmetic on out-of-range day numbers (no calendar validation)', () => {
-    // Feb 30 rolls over to Mar 2 via Date.UTC
-    expect(calendarDateToUtcNoonIso('2026-02-30')).toBe('2026-03-02T12:00:00.000Z');
-  });
+  it.each(['2026-02-30', '2026-04-31', 'not-a-date', '2026-13-01', '2026-01-32'])(
+    'rejects %s instead of recording another civil day', (input) => {
+      expect(() => calendarDateToUtcNoonIso(input)).toThrow('Fecha calendario inválida');
+    }
+  );
 
-  it('falls back to today for malformed input', () => {
-    const iso = calendarDateToUtcNoonIso('not-a-date');
-    expect(iso).toMatch(/T12:00:00\.000Z$/);
-    expect(iso.slice(0, 10)).toBe(todayLocalYmd());
-  });
-
-  it('falls back to today for out-of-range month', () => {
-    const iso = calendarDateToUtcNoonIso('2026-13-01');
-    expect(iso.slice(0, 10)).toBe(todayLocalYmd());
-  });
-
-  it('falls back to today for out-of-range day (32)', () => {
-    const iso = calendarDateToUtcNoonIso('2026-01-32');
-    expect(iso.slice(0, 10)).toBe(todayLocalYmd());
+  it('accepts leap days only in real leap years', () => {
+    expect(isCivilYmd('2024-02-29')).toBe(true);
+    expect(isCivilYmd('2000-02-29')).toBe(true);
+    expect(isCivilYmd('1900-02-29')).toBe(false);
+    expect(isCivilYmd('2026-02-29')).toBe(false);
+    expect(isCivilYmd('2026-04-31')).toBe(false);
+    expect(isCivilYmd(' 2026-01-01')).toBe(false);
+    expect(calendarDateToUtcNoonIso('0099-02-28')).toBe('0099-02-28T12:00:00.000Z');
   });
 });
 
@@ -85,4 +81,10 @@ describe('parseBotTransactionDateInput', () => {
   it('returns undefined for an unparseable string', () => {
     expect(parseBotTransactionDateInput('yesterday')).toBeUndefined();
   });
+
+  it.each(['2026-02-30', '2026-02-30T08:30:00Z', '1900-02-29T12:00:00Z'])(
+    'does not normalize an impossible bot/OCR date %s', (input) => {
+      expect(parseBotTransactionDateInput(input)).toBeUndefined();
+    }
+  );
 });

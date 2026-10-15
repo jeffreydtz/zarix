@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { transactionsService } from '@/lib/services/transactions';
 
+// Version 1 preserves the existing CSV columns and JSON array for round trips.
+const exportMetadata = {
+  'X-Zarix-Export-Version': '1',
+  'X-Zarix-Export-Timezone': 'UTC',
+};
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -36,6 +42,9 @@ export async function GET(request: NextRequest) {
         currency: tx.currency,
         amountInAccountCurrency: tx.amount_in_account_currency,
         exchangeRate: tx.exchange_rate,
+        destinationAmountInAccountCurrency: tx.destination_amount_in_account_currency,
+        accountCurrency: tx.account?.currency,
+        destinationCurrency: tx.destination_account?.currency,
         account: tx.account?.name || '',
         destinationAccount: tx.destination_account?.name || '',
         category: tx.category?.name || '',
@@ -49,6 +58,7 @@ export async function GET(request: NextRequest) {
 
       return new NextResponse(JSON.stringify(jsonData, null, 2), {
         headers: {
+          ...exportMetadata,
           'Content-Type': 'application/json',
           'Content-Disposition': `attachment; filename="zarix-transactions-${new Date().toISOString().split('T')[0]}.json"`,
         },
@@ -66,10 +76,15 @@ export async function GET(request: NextRequest) {
       'Descripción',
       'Notas',
       'Cuota',
+      'Cuenta Destino',
+      'Moneda Cuenta',
+      'Moneda Destino',
+      'Monto en Destino',
+      'Tasa de Cambio',
     ];
 
     const rows = transactions.map(tx => {
-      const date = new Date(tx.transaction_date).toLocaleDateString('es-AR');
+      const date = new Date(tx.transaction_date).toLocaleDateString('es-AR', { timeZone: 'UTC' });
       const typeLabels: Record<string, string> = {
         expense: 'Gasto',
         income: 'Ingreso',
@@ -89,9 +104,14 @@ export async function GET(request: NextRequest) {
         tx.amount_in_account_currency.toString(),
         tx.account?.name || '',
         tx.category?.name || '',
-        (tx.description || '').replace(/"/g, '""'),
-        (tx.notes || '').replace(/"/g, '""'),
+        tx.description || '',
+        tx.notes || '',
         installment,
+        tx.destination_account?.name || '',
+        tx.account?.currency || '',
+        tx.destination_account?.currency || '',
+        tx.destination_amount_in_account_currency == null ? '' : String(tx.destination_amount_in_account_currency),
+        tx.exchange_rate == null ? '' : String(tx.exchange_rate),
       ];
     });
 
@@ -102,13 +122,14 @@ export async function GET(request: NextRequest) {
 
     const csvContent = [
       headers.join(','),
-      ...rows.map(row => row.map(cell => `"${sanitizeCsvCell(cell)}"`).join(',')),
+      ...rows.map(row => row.map(cell => `"${sanitizeCsvCell(cell).replace(/"/g, '""')}"`).join(',')),
     ].join('\n');
 
     const BOM = '\uFEFF';
 
     return new NextResponse(BOM + csvContent, {
       headers: {
+        ...exportMetadata,
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': `attachment; filename="zarix-transactions-${new Date().toISOString().split('T')[0]}.csv"`,
       },

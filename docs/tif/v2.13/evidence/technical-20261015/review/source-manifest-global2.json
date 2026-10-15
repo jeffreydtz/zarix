@@ -1,0 +1,529 @@
+{
+  "reviewedAt": "2026-10-15T01:26:50.082525+00:00",
+  "baseRevision": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df",
+  "frozenRevision": "0169860016125480c19f1284890e2b578f3236af",
+  "headRevision": "0169860016125480c19f1284890e2b578f3236af",
+  "status": "GLOBAL2_FROZEN_SOURCE_CAPTURE",
+  "sourceWorkingTreeClean": true,
+  "sources": [
+    {
+      "path": "__tests__/account-create-components.test.ts",
+      "sha256": "63f5424a9b9f9be6df00816c3690b34fc7d72a9add736b20138c893afc3de622",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/account-create-handler-outcomes.test.ts",
+      "sha256": "44b055387a94ac0b99eb52f53566ffba24af2bc8dc5f9c4ffb35709c60cea8d3",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/analysis-page-read-failure.test.ts",
+      "sha256": "d44d20db6005aabb8ecbd5887dda8c658f43962f99731c1700a9be75447a2610",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/analytics-pagination.test.ts",
+      "sha256": "4c70b963b8238b80c345c757969b6e8d341046f16811d3d872eaddd4bd6c7b34",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/blue-fx-metadata-components.test.ts",
+      "sha256": "9b7135c3f9ef3b3704e02a67105e0e117fd8116605b89d2604546e163a0bcef5",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/blue-fx-metadata.test.ts",
+      "sha256": "9cd92e57cc0f2bb782cb2e211a33edbf9c1e666ccedbf40c9e1abaa7f890e9b2",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/financial-intent-hooks.test.ts",
+      "sha256": "a3ad6279687ed0f62f2fca21c0284e170adcd76bdeb03cd25345cabf36c58f33",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/financial-summary-pagination.test.ts",
+      "sha256": "fc85480dce28c1b575be3cbf3188aab484c757c75a087fad2f2f73dc9c8958f6",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/financial-validation-http.test.ts",
+      "sha256": "1ead18820e1818438a38238477ea6d5447e0be4212d8628e6c3e14a40c7fa56a",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/health-route.test.ts",
+      "sha256": "4f53445f5b3be156ab2106ba9d16a9230550b8c2e41b8418f54618256d46713e",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/inline-quick-create-owner-isolation.test.ts",
+      "sha256": "b9e8a19fb787570ced72a58f5def45e7778eeaa1350a4adc94682317d66f05bb",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/investment-create-durable-store.test.ts",
+      "sha256": "dc7b189ed862199ad01f3948d1260cb22cbc0fa7978d5ee35f4a8221b99eb77e",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/investment-retry-boundaries.test.ts",
+      "sha256": "68f37bd9e4a74ab37a3265848f0d1c6f76e5bfc4ed1c230eb9d61bd0788b206b",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/investment-simulation-component.test.ts",
+      "sha256": "ef9748d355267f555362e3b408a43b0d1b0d1b55e972aa872a3e007fe5f60f79",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/investment-simulation.test.ts",
+      "sha256": "12fb6e4746d7f71647ad5951e50e5f64d0a20654594e8db4bea77c1a45a4fa37",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/isolated-build-csp.test.ts",
+      "sha256": "113ece4cec436069209a4e90b513a431ae38e29c743ce87065b492202b2a49f5",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/isolated-native-target.test.ts",
+      "sha256": "21d727fc7b113efe25acf19909424119b8bc37efea64817ef7b0d460d331d561",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/offline-durable-store.test.ts",
+      "sha256": "ae4bb86c6a1d1f54be0a56b7ef91618b16e397070a03a7b2a8c048beb4fba20a",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/offline-reference-cache-isolation.test.ts",
+      "sha256": "45f92706935899b6d44df0d8a11669f68bd215dd265aff85a60f3f17e315c517",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/owner-scoped-http-errors.test.ts",
+      "sha256": "21f4679ae2ab39ab9fdee0ae7b1e0eae32391cb2f6f93429485976cb4a310ea8",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "__tests__/recurring-outbox-equivalence.test.ts",
+      "sha256": "2ae50a96cf8ecc09d3b8ba4c5aa6b415d513b92a584a90ffacf29931374189ac",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/(authenticated)/analysis/page.tsx",
+      "sha256": "4e8385c1beca38ca72dc1bffc8a17d579ef9aaa6c9af8f567097588e5182e06d",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/(authenticated)/investments/page.tsx",
+      "sha256": "e61aca78a8fcc06c877ff77c6cd388b6bb9038350323876f63b78d6c3107170f",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/api/accounts/[id]/reconcile-balance/route.ts",
+      "sha256": "3836f3f33c8d4947cdb63e08d562e8950996e45f1dcd37dbfb849630034d7d1b",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/api/categories/route.ts",
+      "sha256": "8e54159c4573379e82d42b06a6f6a862953082a8e200e69c55eb2751565e4dbc",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "sha256": "5d8be446cf8be00277f42bc79cb04a3893ca03754d2c01ca8b4f5663415b8fd5",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "sha256": "97e92a3a07335768ff4c5c0fb6c4576087ed0782cf7b7745feb0f496fbd058c8",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/api/transactions/bulk/route.ts",
+      "sha256": "ae0c1dd8ff51152834999fc7befff14989e42805ad56174b116c06b22e293280",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "app/login/page.tsx",
+      "sha256": "1e091e02173a5a58ce2b6259dc667a37a599a6e4705ba1c74907e21a5319e287",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/OfflineReferenceWarmup.tsx",
+      "sha256": "5d3e118d1b7ac4be5493c3f761ac0fb61bdeb2444bf71da7dc9054bbb6b8b3fc",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/accounts/AccountBalanceEquivalents.tsx",
+      "sha256": "f7540e2e5a121431c69af9e0f4796bbc88c5aa2b36ae088bac15f2e3548956d8",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "sha256": "23411cce4fa26a723ade5ef9e5abf7c78ce37b6f98705cfb35ef0117f419294b",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/expenses/InlineQuickCreate.tsx",
+      "sha256": "c9cd499b693fb3714e7cb855b44570da90b13e96350b9c3ee5704236df2a13bf",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/investments/AddInvestmentPanel.tsx",
+      "sha256": "c38904e65f5efc72aee998b89637cb04942a99ae21a88cc07aa91cca470aea89",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/investments/InvestmentSimulationPanel.tsx",
+      "sha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/investments/InvestmentsWorkspace.tsx",
+      "sha256": "a2c1721c3d60378a1507626b9cb210c5637f03d50dd1f1d9171f8b56f50c770d",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/investments/SellPositionDialog.tsx",
+      "sha256": "2eb8dd1c28248e9eaa54b6178c2aed51bbf58a961e73ff050e74c1a080b596fc",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/offline/QueueReview.tsx",
+      "sha256": "94268e4c1a361cbd2fd46660865dc127fc4478f3232a9e512c702fef4c559fc3",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/settings/LogoutButton.tsx",
+      "sha256": "ad28f46ec5eaf3fe4ad482223fa1514cbfc26078bbbd28c4baddce7e4763760f",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/shared/SharedGroupView.tsx",
+      "sha256": "8f8964b158bab87797515afffa86eaf1764bee6a30dc1761f4cd077344bf7fdc",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "sha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "docs/testing/isolated-browser-load.md",
+      "sha256": "333f2d372d85402e50abddd1a4cf1dc2097a3c4f6a0ed06439f0a541e82b3c0c",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "docs/testing/isolated-database-recovery.md",
+      "sha256": "1308a7eb1f5d4a0061218fc7aa68442b2558745e151c1b9faabe2b7f12df0a3c",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "docs/testing/isolated-e2e.md",
+      "sha256": "ec3416587306b46cef5d43feeb92d8a31d58aaddcb74c9d59a73f042b154d1ff",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/account-create-request.ts",
+      "sha256": "20e2824d536ebbd4687c7d87a647cab7e4cf12868e8bca0f3d97af23be6a8e5c",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/blue-fx-reference.ts",
+      "sha256": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/hooks/useFinancialOperation.ts",
+      "sha256": "85d2156743a9c611b55c4a99d0113e133b7542e01ae164ab2570ca69b7495733",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/hooks/useOfflineQueue.ts",
+      "sha256": "19f9803ce466afde4df59aec3ae9adbda569b1d0cb291d86e832796d8e04a1a1",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/hooks/useServiceWorker.ts",
+      "sha256": "77bb6b9485c26fe9d5b7699e0611add9b25b96b5a56ee23a6876416bef6e6d96",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/investment-simulation.ts",
+      "sha256": "c829f54ac55668b6a792bcd18852dd1a55b5b0903987639011e5a81bd179f2ea",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/offline-queue-sync.ts",
+      "sha256": "31d1955520a8ecfe14deaa68674536c3a22e4d71a2a0f22410f4a2f458eb690d",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/offline-reference-cache.ts",
+      "sha256": "b81df9b2083c904ae20bae46b8424499d35fa407c9120b167f370d1bade374a6",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/offline-transaction-store.ts",
+      "sha256": "f8631cc030db333e7f7bc958a5eb501f6e79ea5c4263cde4ab031603cff0549b",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/services/analytics.ts",
+      "sha256": "0ba095592475031edf3d2d0911250c1f06a6b666527b7bbddd66562b53741d47",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "sha256": "32ff3118923983eb02e1bd79103bbde3461cd6efe1de2ac0302ec53ce831fd3e",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/services/month-flow.ts",
+      "sha256": "5a7a1fdce2b605c442e7461e9d5a4e6a10afe53a3563489892001fe84d897a29",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "6ec3915b5fe655a912133275700cc77a6750a31e732ac94092b162da1d8a54cb",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/supabase-paginated-read.ts",
+      "sha256": "5d7a6811702b18032e465eeb7168636cd140612d8dd2001b9fb9f7583a749795",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "sha256": "09caabac5758f32281e72733a3ad1acbef90e5588c9a551942f36f4fb8429587",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "lib/transaction-idempotency.ts",
+      "sha256": "7335b7e1d226aa1b20ba49c0c251afe9669222f1ef19d3ae3bc9c35a80045fa9",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "next.config.js",
+      "sha256": "eee12dee3e670325ea62ca306ec918610e06203f6d9456ddcea4ffbfab23b242",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "package.json",
+      "sha256": "847259b8435bf13a49ce114795fcd71fc7a7f81322b341c067682447de87772a",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "public/sw.js",
+      "sha256": "b5c363e2e1af1a3d8341787db380f5c8d1602969c200454f4a6162413885c5bc",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/build-technical-traceability.py",
+      "sha256": "9b3b0757441502ec5057586901d495018035aad1e7657b7ba8fd786285113434",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/generate-isolated-database-types.mjs",
+      "sha256": "3fa3219a25b633406d6d53d81c1e899e7e4a9552b4f317aeed47214258cd4cd0",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/lib/test-isolated-browser-profile-controller.mjs",
+      "sha256": "d459129c7aa61210c13888d6d6d1e1726b232c052a1d0df20cc8b4f0d5573342",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/run-technical-verification.mjs",
+      "sha256": "57f0a2935ee1e9dd4586d2256415e5b6b8d55b4b18a4b3cca213cf1752b51244",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/setup-isolated-e2e-users.mjs",
+      "sha256": "3ce4427a82b6ee6fb62a5f6daa101166634213d1fd0e2d44e8b573162bb9e2e4",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/setup-isolated-load.mjs",
+      "sha256": "43ad048fb9888a56ece1531f02b556821a65e5975fd04d14b3f058a182c3c347",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute-advisors.mjs",
+      "sha256": "ab0b4d5547db6c9948da0b1d0fd2dbbd2ee0c78ae849c2a103b6cc73bc583853",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute-native.mjs",
+      "sha256": "63bd3a22f9de9528b3fee1ab87a45842cb3a0aa6e60b260c08d4945f14704792",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute.mjs",
+      "sha256": "bb0723fd45ad9e2ac5795af32b444ebc55a29cc86d8047ee3f01172fae6f3ade",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-isolated-api.mjs",
+      "sha256": "79980da2891870029c46ed9a942c15bda3dd142ae0bcfc369cf1b6bf1bfc9c92",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-isolated-browser-load.mjs",
+      "sha256": "fce8fc4217066f351f2aa185bfb731b3a0b4799bcbceec5b5d1bc9eb79f5eb93",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "sha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-isolated-native-supabase.mjs",
+      "sha256": "877b2b7a29c16752bd726f3d75303a49c5175fef7c4d66e5d0a50ea84c8de71f",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-isolated-offline-durability.mjs",
+      "sha256": "01ff75697b986d44b22e4e212ba57a566ae3867034f7a8ee0652bcac90f569d2",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-public-quote-providers.mjs",
+      "sha256": "a38dc4b27b57dca84e74542095c2025cfbf69cfdc3f35a581c90aa58f78ccb6c",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "scripts/test-technical-traceability.py",
+      "sha256": "a5b545c20c94e41ee3ae68a368704beb99d831f50cd9d280b1c7a1da4c07aede",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "types/database.ts",
+      "sha256": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "types/supabase-generated.ts",
+      "sha256": "81928fe0332c9e6ae14230e978cc607cea5a6f694080e726700c1d0e3a81e679",
+      "matchesFrozenRevision": true
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8",
+      "matchesFrozenRevision": true
+    }
+  ],
+  "sourceManifestSha256": "e9c7cf01edfccdc5b2f050869c93acf33f5855bb03315db7ba94b1288ace7192",
+  "sourceChangesSinceGlobal1": [
+    {
+      "path": "__tests__/owner-scoped-http-errors.test.ts",
+      "beforeSha256": null,
+      "afterSha256": "21f4679ae2ab39ab9fdee0ae7b1e0eae32391cb2f6f93429485976cb4a310ea8"
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "beforeSha256": null,
+      "afterSha256": "97e92a3a07335768ff4c5c0fb6c4576087ed0782cf7b7745feb0f496fbd058c8"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "beforeSha256": null,
+      "afterSha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "beforeSha256": null,
+      "afterSha256": "32ff3118923983eb02e1bd79103bbde3461cd6efe1de2ac0302ec53ce831fd3e"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "beforeSha256": "6088cdae1aa84644a1879bcba57dfd6f9c2c96254904a32b6a3390f9970c0358",
+      "afterSha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7"
+    },
+    {
+      "path": "scripts/build-technical-traceability.py",
+      "beforeSha256": "06ced2caa06fd36e2705682dc5d5060ac919bffa0bb2f0567666ab227fb61550",
+      "afterSha256": "9b3b0757441502ec5057586901d495018035aad1e7657b7ba8fd786285113434"
+    },
+    {
+      "path": "scripts/test-isolated-e2e.mjs",
+      "beforeSha256": "c6d375c83be1088f025eb3eb215eb12368f65668115118ca22e80d1e885ad13a",
+      "afterSha256": "a0976d2cb4a7dccf1bb030601458fc4e2d2f3e8852dac8283690656d030db41b"
+    },
+    {
+      "path": "scripts/test-technical-traceability.py",
+      "beforeSha256": "02ae786b5b7e4d1b32a96640dc04f0efb75b8fa2e31724ec57b36cd7aa138452",
+      "afterSha256": "a5b545c20c94e41ee3ae68a368704beb99d831f50cd9d280b1c7a1da4c07aede"
+    }
+  ],
+  "scope": "Incremental independently inspected source paths and prior stable review context. Captured after root confirmed freeze0169860. Global2 and native HTTP retest are pending. Historical global796 remains bound to b456c4; docs and evidence do not make source capture an execution result."
+}

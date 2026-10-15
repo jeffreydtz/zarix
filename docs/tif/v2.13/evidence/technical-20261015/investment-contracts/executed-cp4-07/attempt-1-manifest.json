@@ -1,0 +1,54 @@
+{
+  "scope": "Preserved failed original experiment, not replaced by future narrower fixture; actual BTC cached response60000 persisted, originalposition fixture110 was06Oct9daysold. Cache-layer cause is not established. Original12rows intact and control restoredexactly.",
+  "files": [
+    {
+      "path": "attempt-1-effective-quote-fail.json",
+      "sha256": "500d50dbec8b0b668fe782cf31f5fe0d5cbdf2c1f557b5cb8b07a72ef84c66f0"
+    },
+    {
+      "path": "attempt-1-readonly-diagnostic.json",
+      "sha256": "f40b57ff3641a3363660dfe1d799aa08f24356c9c6239d3e552f297827f5e03c"
+    },
+    {
+      "path": "phase-1-control-restored.json",
+      "sha256": "e36cfaf27427985edcd958579800117b07ebba8bd4b7c839d9f0bb54f91ccf1e"
+    },
+    {
+      "path": "phase-1-offline-proof.json",
+      "sha256": "9c462787f84572c0074abacde55b8c2369243259864485e5f3df73981138e1ba"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt",
+      "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt",
+      "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd.txt",
+      "sha256": "20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt",
+      "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt",
+      "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf"
+    },
+    {
+      "path": "prepare-quote-proof.mjs.executed.txt",
+      "sha256": "5739e184ad8f5e3b80594205039e88fcc51c9ac29fbf5da6878c38c3afab4d55"
+    },
+    {
+      "path": "run-quote-offline-phase.mjs.executed.txt",
+      "sha256": "4148334b9f2d6e12e488730ab94c43f432a85cebaf20309493c1e24c88503876"
+    }
+  ]
+}

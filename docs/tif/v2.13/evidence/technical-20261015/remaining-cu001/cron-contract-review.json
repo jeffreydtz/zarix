@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-15T03:39:27.708865+00:00",
+  "status": "STATIC_CONTRACT_REVIEW_PENDING_RUNTIME",
+  "newTestsExecuted": 0,
+  "scope": "Read-only preparation for CP1-25; not an observed product failure.",
+  "sources": [
+    {
+      "path": "lib/cron/recurring-job.ts",
+      "sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72"
+    },
+    {
+      "path": "lib/cron/cron-job.ts",
+      "sha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    }
+  ],
+  "observations": [
+    {
+      "source": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "lines": "97-121",
+      "fact": "transaction_recurring_outbox after-insert trigger updates the recurring execution date and inserts an outbox intention in the same transaction as the occurrence."
+    },
+    {
+      "source": "lib/cron/recurring-job.ts",
+      "fact": "processItem also performs a subsequent date update with last_executed_date<today/null filter and has a23505 lookup path. A normal durable replay can return a receipt before INSERT, so it need not traverse that catch."
+    }
+  ],
+  "literalContractRisk": "CP1-25 asks for an INSERT committed while its marker fails, then23505 recovery. An uncommitted trigger failure proves rollback/retry, but does not establish the committed-unmarked branch. A fixture manually made legacy/unmarked is separate scope and cannot be silently substituted.",
+  "nextAllowedWork": "Run only independently valid rollback/retry in released new scratch; retain post-commit/23505 branch as contract review or explicitly labelled legacy fixture. Do not disable production atomicity or delete original durable receipts to manufacture PASS."
+}

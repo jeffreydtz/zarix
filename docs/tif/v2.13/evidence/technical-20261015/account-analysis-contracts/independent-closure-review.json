@@ -1,0 +1,304 @@
+{
+  "status": "PASS_INDEPENDENT_REVIEW_SCOPED",
+  "reviewedAt": "2026-10-15T05:35:18.265383+00:00",
+  "reviewer": "sql_security; independent of the account-analysis harness and execution owner",
+  "method": "Read-only review of exact CSV, JSON, retained executed-source snapshots, frozen Git bytes, physical copied source files and build traces. No tests, imports, app requests, Auth requests or database commands executed by this reviewer.",
+  "manifest": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/manifest.json",
+    "sha256": "799262f41f232d2cd82850de125a6c67c634a9d7baccb4b6b07e6a437b5e2f5a"
+  },
+  "sourceBinding": {
+    "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "profile": "final-core-closure",
+    "mode": "clock",
+    "buildId": "aIWVMIWgvq5sbeEtZAZEh",
+    "nextPid": 39320,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+    "physicalSourcesHashed": 483,
+    "frozenGitBlobsIndependentlyMatched": 482,
+    "metadataOnly": [
+      "supabase/.temp/cli-latest"
+    ],
+    "executedProductSourceHashesMatchFreeze": true,
+    "executedDocsHarnessSnapshotsValidatedSeparately": true,
+    "clockFixedAndObserved": "2026-10-06T12:00:00.000Z",
+    "rootBuildIsDistinct": "BAR1dYoRts_6TgTNSboep is the core gate build; these six requests ran the separate native copy aIWVMIWgvq5sbeEtZAZEh from the same frozen source.",
+    "privateMetadataReadOnly": [
+      {
+        "path": "/tmp/zarix-runtime-20261015/closure-proof-build-proof.json",
+        "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+        "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+      },
+      {
+        "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-app-state.json",
+        "sha256": "ecbbacb798cfde43bb3645840d78dfad5819a42fc4ba7aad9421cdf17e704ac1",
+        "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+      },
+      {
+        "path": "/tmp/zarix-runtime-20261015/closure-proof-clock-observation.json",
+        "sha256": "eaa3c3934ba91cbd754922bbbfbc79de51d10e0632f1d907be407fd9c2084d72",
+        "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+      },
+      {
+        "path": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json",
+        "sha256": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+        "scope": "Credential-free binding or ownership evidence only; no private credentials are reproduced."
+      }
+    ]
+  },
+  "totals": {
+    "originalCases": 6,
+    "pass": 6,
+    "fail": 0,
+    "assertions": 103,
+    "assertionsIndependentlyCompared": 103,
+    "numericTolerance": 1e-08,
+    "protectedOriginalTablesPerCase": 13
+  },
+  "originalCases": [
+    {
+      "id": "CP2-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 19,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp2-05.json",
+      "sha256": "e01d6ebbb1832b2906e697baa3d1d98b48ea2410fb41506c09f313391bdf9cbe",
+      "originalContract": {
+        "precondiciones": "Tarjeta bimoneda, deudaARS10000 yUSD100",
+        "entrada": "consultar ambas y abonarUSD10 mediante operación explícita",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "deudaUSD90,ARS10000; patrimonio resta ambas deudas convertidas; sin aplicarUSD alledgerARS",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "reviewedEvidence": [
+        "Both original debt legs are negative; the normal API payment changes only the USD debt100→90, leaving the ARS debt10000 intact.",
+        "Two actual dashboard server responses carry aggregate totalARSBlue -130000→-118000 and totalUSD -108.33→-98.33. This is the required API/UI response and financial oracle, not a promotion based on per-account conversions alone.",
+        "The two older CI5 decimal-display FAIL assertions remain historical derived findings; this original case does not prescribe that text precision."
+      ]
+    },
+    {
+      "id": "CP3-04",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 11,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-04.json",
+      "sha256": "49868d8804ca930a031233e37ec50c68f5c672328be7af252dc227537819553f",
+      "originalContract": {
+        "precondiciones": "U1 A=120000ARS B=100USD; nocartera; fixture1USD=1200ARS",
+        "entrada": "consultar patrimonioARS/USD",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "líquido=total=240000ARS=200USD; original120000/100 intacto",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "reviewedEvidence": [
+        "Actual dashboard now.liquidUSD=200, investmentsUSD=0, totalUSD=200 and totalARSBlue=240000; independently checked liquid=total from retained server props.",
+        "API and SQL retain original account balances120000ARS/100USD."
+      ]
+    },
+    {
+      "id": "CP3-05",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 15,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-05.json",
+      "sha256": "d7dece8081f63917ed97441e9bfea5d3141b59a31691acde5528585b258b7d80",
+      "originalContract": {
+        "precondiciones": "U1 efectivo inversión100USD y posición6×110USD; sin saldo duplicado",
+        "entrada": "consultar líquido y total con FX1200",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "líquido100USD=120000ARS; total760USD=912000ARS; posición660 incluidauna vez",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "reviewedEvidence": [
+        "CSV specifies cash100USD and one position6×110USD; it does not require that cash to be inside an account with type investment. The approved independent fixture uses bank cash100, broker cash0 and one manual position660.",
+        "Actual portfolio API gives cost600/value660; actual dashboard gives liquid100+investments660=total760USD=912000ARS. Exact active position appears once; original cash and zero broker cash remain unchanged."
+      ]
+    },
+    {
+      "id": "CP3-06",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 19,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-06.json",
+      "sha256": "7f3fcd77c4dc153b97a0b6de17a5a2fd3d94f53e2a0c867991e7197c146ac100",
+      "originalContract": {
+        "precondiciones": "U1 efectivo120000ARS+100USD; tarjeta deuda10000ARS+10USD; FX1200",
+        "entrada": "consultar patrimonio neto",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "240000-10000-12000=218000ARS;181.666666…USD, display181.67; deuda con signo negativo",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "reviewedEvidence": [
+        "Actual dashboard aggregate218000ARS and181.67USD agrees with the independent cash/debt equations.",
+        "Actual server HTML secondary data value181.67 displays ≈ US$ 181,67. This exercises the fixed formatter in the same actual CI6 build; no composite with an older build is needed.",
+        "The previous CI5 server display182 FAIL is retained and is not rewritten."
+      ]
+    },
+    {
+      "id": "CP3-08",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 17,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-08.json",
+      "sha256": "7d64622fa9509900e9c932ed46a3f66fc87624bfac4aa8980246f9f81357ad92",
+      "originalContract": {
+        "precondiciones": "U1 gastos500oct1,700oct3,800oct6; ingreso5000oct2; transfer900oct3; gasto100sept30; U2gasto999oct3",
+        "entrada": "período10-01 a10-06inclusive categoríaAlimentosU1",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "gasto2000; ingreso según filtro categoríalógica; transferencia excluida de ingresos/gastos; U2yseptiembre excluidos",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "reviewedEvidence": [
+        "Normal authenticated GET /analysis?period=custom&startDate=2026-10-01&endDate=2026-10-06 returns the actual compiled AnalysisCharts and AnalysisPeriodPicker props, with inclusive six-day period.",
+        "The owned Alimentos fixture category has three expenses summing2000; transfer900, foreign-owner999 and September100 are excluded. Income5000 follows the existing separate income grouping.",
+        "Actual HTML summary Gastos:$2.000 and Ingresos:$5.000 is retained alongside the independent owner/period SQL oracle. No new category filter or browser interaction is invented."
+      ]
+    },
+    {
+      "id": "CP3-18",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 22,
+      "report": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-18.json",
+      "sha256": "2aea1d830bb475de0810eed706036cd3f00c58e65ce7cfe062d1605fd251426d",
+      "originalContract": {
+        "precondiciones": "SaldosARS120000 y monedaZZZ10 sinrate",
+        "entrada": "calcular total",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "ARS120000 conocido; exclusiónZZZ con causa; totalparcial; no sumar10comoARS",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "reviewedEvidence": [
+        "The normal RLS fixture is consistent: an own zero account is marked legacy currencyZZZ and receives one own adjustment10. Original rows are not mutated.",
+        "Accounts API retains original120000ARS and10ZZZ, reports unsupported_currency, and omits unavailable converted fields instead of fabricating zero or a rate.",
+        "Actual dashboard server props expose known subtotal120000ARS/100USD, excluded10ZZZ with its cause and valuation.status=partial; real server HTML announces the partial subtotal and exclusion.",
+        "This first run protects every existing snapshot, including the complete point from CI5. Full retained row before/after equals the old complete snapshot, and all-snapshot SHA256403ca211500ce4459203c769599d7f71ed621e15fd06ca34567cd1e1fc08ea99 is unchanged. No partial snapshot, point for today or complete delta is substituted."
+      ]
+    }
+  ],
+  "preservation": {
+    "allSixOriginalIntegritySets": true,
+    "sourceAndServedBuildStable": true,
+    "pendingScopes": 0,
+    "cleanupFailures": 0,
+    "oldCi5ReportsPreserved": true,
+    "partialCaseOrder": "CP3-18 runs first, while all existing snapshots are protected.",
+    "completeCaseSnapshotException": "Only the previously proven owned synthetic snapshot125cf6c5-58b2-4bc8-be34-fd4a479eaea0 may be upserted by later complete dashboard reads; its owner/date/ID/created_at are retained. Snapshot upserts complete before fixture archival.",
+    "ownershipProof": "The retained original run56423408-b755-44b5-8045-45e1a6b925ee has SHA2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2, existing snapshot inventory0 and ordinary-dashboard createdBy proof. The later public CP2-05 SSR report reuses that point and is not mislabeled as its initial creator.",
+    "partialSnapshotHashBeforeAndAfter": "403ca211500ce4459203c769599d7f71ed621e15fd06ca34567cd1e1fc08ea99"
+  },
+  "ssrScope": {
+    "proof": "Real normal-authenticated Next HTTP server responses, parsed Flight JSON and real server HTML. Component references bind to each actual compiled client-reference manifest, rather than assumed module numbers.",
+    "parsing": "Flight data is parsed as JSON; reviewed code does not evaluate response JavaScript.",
+    "analysisManifestSha256": "6b1b8a347d6a6658a83b7cb56fdecae85043201781cce6b92b5c4ef6ab8ca154",
+    "dashboardManifestSha256": "e8977f7dcb0044d248772c751556c0e233d7206c9035f779fdc6f75d4b9b23a7",
+    "limits": [
+      "The main animated hero initially SSR-renders $0; the review does not call that a final hydrated wealth value. Financial totals are from the actual component props; the real secondary amount and partial notice HTML are inspected separately.",
+      "No browser, hydration, animation, chart-pixel, selector interaction, visual compatibility or load acceptance is implied. The six literal original CSV contracts do not demand those additional observations.",
+      "FX1200 is the controlled local provider fixture. Product metadata provider=criptoya/origin=provider does not prove a real external CriptoYa request.",
+      "The reviewer checks retained response-derived observations, source logic and hashes. It does not reproduce the live requests or claim that every complete raw HTTP body is publicly retained."
+    ]
+  },
+  "dependencyTraceSupplement": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/closure-copy-build-traces.json",
+    "sha256": "cddf7440bf938b2e017e8644e1505853554dfb201237532fae2363737499f08d",
+    "actualCopyNftFilesIndependentlyHashed": 85,
+    "fileReferenceCountsRecomputed": true,
+    "affectedDevPackageReferences": 0,
+    "scope": "Only static NFT references for the seven affected development package paths in this actual native copy. This does not remove the seven high development findings, prove all transitive/browser/deployed exposure absent, or supersede the preserved original audit-command failure."
+  },
+  "findings": [],
+  "remainingBlockersForTheseSixOriginalContracts": [],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp2-05.json",
+      "sha256": "e01d6ebbb1832b2906e697baa3d1d98b48ea2410fb41506c09f313391bdf9cbe"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-04.json",
+      "sha256": "49868d8804ca930a031233e37ec50c68f5c672328be7af252dc227537819553f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-05.json",
+      "sha256": "d7dece8081f63917ed97441e9bfea5d3141b59a31691acde5528585b258b7d80"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-06.json",
+      "sha256": "7f3fcd77c4dc153b97a0b6de17a5a2fd3d94f53e2a0c867991e7197c146ac100"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-08.json",
+      "sha256": "7d64622fa9509900e9c932ed46a3f66fc87624bfac4aa8980246f9f81357ad92"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/cp3-18.json",
+      "sha256": "2aea1d830bb475de0810eed706036cd3f00c58e65ce7cfe062d1605fd251426d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/manifest.json",
+      "sha256": "799262f41f232d2cd82850de125a6c67c634a9d7baccb4b6b07e6a437b5e2f5a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72.txt",
+      "sha256": "0e942eb6e322428eabaf93662fb8d45c4432a9785731245c5c271112b2c76e72"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796.txt",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8.txt",
+      "sha256": "2cb8c561a0fd3651c4f4f6a7f5312f729f6a56d766ed6f01574db739461f00a8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d.txt",
+      "sha256": "40487194e2280813af119282efd2718393050af913908e995411982af9f7ae0d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/sources/4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d.txt",
+      "sha256": "4b904af5948348c87b5d6aec4f63b06a55f92e4743d2f407e8e14b2f010a4a7d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-closure/system-case-results.json",
+      "sha256": "04607618b4c72099c9cccf79e37550aed738fb4cabc37d234ac83ebcb9096083"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-06-ssr.json",
+      "sha256": "350053178d193a19a6be5b685a0fb335f9a107e78af9d9feab9ea817b9398364"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0.txt",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e.txt",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc.txt",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/independent-review.json",
+      "sha256": "299e4d52df22bd493ae707b4ba3e3c0091e40962729d53b37c7f176c5acc9f71"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/assessment.json",
+      "sha256": "545ddc979611ce45839c058bb36b3c9beafa88f02095213b5d9bbaa6b9372a37"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/closure-copy-build-traces.json",
+      "sha256": "cddf7440bf938b2e017e8644e1505853554dfb201237532fae2363737499f08d"
+    }
+  ]
+}

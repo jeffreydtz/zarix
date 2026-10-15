@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
@@ -12,13 +12,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ status: 'busy' }, { status: 429 });
   }
   try {
-    const supabase = await createClient();
-    // Query mínima contra una tabla del sistema (categorías): confirma que la DB
-    // responde sin leer datos de usuario.
+    const supabase = await createServiceClient();
+    // Backend-only minimal read; anonymous table grants intentionally stay closed.
+    // HEAD can lose an upstream error body/status in an API gateway, so it
+    // must not be the sole evidence that this table is actually queryable.
     const { error } = await supabase
       .from('categories')
-      .select('id', { count: 'exact', head: true })
-      .eq('is_system', true);
+      .select('id')
+      .eq('is_system', true)
+      .limit(1);
 
     if (error) {
       return NextResponse.json(

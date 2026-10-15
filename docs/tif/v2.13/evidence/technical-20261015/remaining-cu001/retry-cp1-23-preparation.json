@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-15T04:37:55.744104+00:00",
+  "status": "PREPARED_NOT_EXECUTED",
+  "caseId": "CP1-23",
+  "sourceFiles": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs",
+      "sha256": "6b9c4edf7e52906ba269bc578d769fb6b846901c713d3e6a405690e981aa6639"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-scenarios.mjs",
+      "sha256": "c580f3956237c0ad29f5aa06665a784a99c6420680e6f76f76a70a43eaadcdfb"
+    }
+  ],
+  "syntaxCheck": {
+    "command": "node --check run-remaining.mjs",
+    "exitCode": 0,
+    "scope": "Parse only; no module execution"
+  },
+  "actor": "Existing PremiumB and category owned byB; no identity creation,plan modification or A-category reuse",
+  "reason": "Parent authorized a separate retry after Free-A403 in preserved attempt3; RF09 is documented Premium and database enforce_recurring_plan rejects Free creation. The literal financial input and expected states remain unchanged.",
+  "writerReleaseRequired": true,
+  "runtimeProfile": "intermediate-core-reliability-clock-retry",
+  "runArguments": [
+    "--profile",
+    "intermediate-core-reliability-clock-retry",
+    "--cases",
+    "CP1-23"
+  ],
+  "databaseWrites": 0,
+  "browserCalls": 0,
+  "originalAttempt": "attempt-3-fourteen-clock/verification.json"
+}

@@ -1,0 +1,122 @@
+{
+  "status": "PASS_SCOPED",
+  "publishedAt": "2026-10-15T09:54:16.639425+00:00",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "sourceCount": 517,
+  "sourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+  "phases": [
+    {
+      "phase": "prepare",
+      "files": [
+        {
+          "path": "executed-prepare-attempt-1/bot-verification.json",
+          "sha256": "5861ee666f829c1587d97d219d8068d297a993b86408548c8d9230c5a43f983a"
+        },
+        {
+          "path": "executed-prepare-attempt-1/execution.json",
+          "sha256": "a047b63255648bb2b62b46ca940dc3ae8920b7d15211805ad207427d708d9af7"
+        },
+        {
+          "path": "executed-prepare-attempt-1/privacy.json",
+          "sha256": "e5b1afa8cef392f291d94c1cef7a87328b99f6ad3bcd21dd6b2f979183a6264b"
+        },
+        {
+          "path": "executed-prepare-attempt-1/replay-fixture.json",
+          "sha256": "d284431c4e108bf8a0e6edb37b4b975a8b69834e910afd60d2e2ae86c5b3ff6e"
+        },
+        {
+          "path": "executed-prepare-attempt-1/sources/bot.test-source.ts",
+          "sha256": "f04705ee962e93309bff428967d22ee0abb528d012948dccc14c4e7b0b9bc740"
+        },
+        {
+          "path": "executed-prepare-attempt-1/sources/manifest.json",
+          "sha256": "4765a3826ba8f19610c9c2c8c1dfeb54529f0c42fcb2a6e8dcc3b5a814c33f1e"
+        },
+        {
+          "path": "executed-prepare-attempt-1/sources/run-bot.py",
+          "sha256": "1f228587979077b29ad2df1738c7a721be4469850fa09502de2ea39448332873"
+        },
+        {
+          "path": "executed-prepare-attempt-1/sources/vitest.config.mjs",
+          "sha256": "982498bca94fab1afe5c15dc106c158fb09b03fc6d4d95f6b56944266ff547bc"
+        },
+        {
+          "path": "executed-prepare-attempt-1/worker-owner.json",
+          "sha256": "d86702ca57bb25c963315f84801aeee60d0020f1c6a7ec3e00fb53a428616d6e"
+        }
+      ]
+    },
+    {
+      "phase": "replay",
+      "files": [
+        {
+          "path": "executed-replay-attempt-1/bot-verification.json",
+          "sha256": "87a3ce96d80963c35c798e7f07df08c3c6f7b1a3fdf1291ded22cd1fbfeabd19"
+        },
+        {
+          "path": "executed-replay-attempt-1/execution.json",
+          "sha256": "ce1c2f6d9053a818aa594d6be7af7587f5b58fe654e2ee211a8861a626c64e83"
+        },
+        {
+          "path": "executed-replay-attempt-1/privacy.json",
+          "sha256": "2db6b585dff0a7b968a301f1948fccf47e68298678bb2486b9042c31a046edfd"
+        },
+        {
+          "path": "executed-replay-attempt-1/sources/bot.test-source.ts",
+          "sha256": "f04705ee962e93309bff428967d22ee0abb528d012948dccc14c4e7b0b9bc740"
+        },
+        {
+          "path": "executed-replay-attempt-1/sources/manifest.json",
+          "sha256": "4765a3826ba8f19610c9c2c8c1dfeb54529f0c42fcb2a6e8dcc3b5a814c33f1e"
+        },
+        {
+          "path": "executed-replay-attempt-1/sources/run-bot.py",
+          "sha256": "1f228587979077b29ad2df1738c7a721be4469850fa09502de2ea39448332873"
+        },
+        {
+          "path": "executed-replay-attempt-1/sources/vitest.config.mjs",
+          "sha256": "982498bca94fab1afe5c15dc106c158fb09b03fc6d4d95f6b56944266ff547bc"
+        },
+        {
+          "path": "executed-replay-attempt-1/worker-owner.json",
+          "sha256": "27738443280af693127831508f8630bb239093be26728be5c1715af61cbec3f1"
+        }
+      ]
+    }
+  ],
+  "checksByPhase": {
+    "prepare": 121,
+    "replay": 113
+  },
+  "casesPerPhase": {
+    "nominal": 3,
+    "derivedAmbiguous": 1
+  },
+  "countsDoNotRepresentUniqueCases": true,
+  "runtimeStopped": {
+    "ownedPrepareLauncherAndVitestAbsent": [
+      9663,
+      9671
+    ],
+    "ownedReplayLauncherAndVitestAbsent": [
+      10816,
+      10825
+    ],
+    "pidAbsenceCheckedWithNativePs": true,
+    "authSessions": 0,
+    "authRefreshTokens": 0,
+    "servicesOwnedByCoordinator": true,
+    "infrastructureStopDelegatedAfterRelease": true
+  },
+  "privateArtifactsNotCopied": [
+    "profile-restore.private.json",
+    "bot-*-cleanup.private.json",
+    "cache/"
+  ],
+  "noCredentialOrSessionValueFilesCreated": true,
+  "rawConsolePersisted": false,
+  "providerMode": "Telegraf/Gemini/media explicit doubles, quota/tools/Auth/PostgREST/PG real",
+  "automaticReservedAckRecoveryClaimed": false,
+  "browserProviderOrOCRInterpretationTested": false,
+  "matrixPromotion": false
+}

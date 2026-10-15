@@ -1,0 +1,815 @@
+{
+  "figures": [
+    {
+      "number": 1,
+      "id": "PT01",
+      "scale": 1,
+      "old_height_in": 7.7668,
+      "height_in": 7.7668,
+      "min_font_pt": null
+    },
+    {
+      "number": 2,
+      "id": "PT02",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": null
+    },
+    {
+      "number": 3,
+      "id": "PT03",
+      "scale": 1,
+      "old_height_in": 6.9712,
+      "height_in": 6.9712,
+      "min_font_pt": null
+    },
+    {
+      "number": 4,
+      "id": "PT04",
+      "scale": 1,
+      "old_height_in": 7.9987,
+      "height_in": 7.9987,
+      "min_font_pt": null
+    },
+    {
+      "number": 5,
+      "id": "PT05",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": null
+    },
+    {
+      "number": 6,
+      "id": "PT06",
+      "scale": 1,
+      "old_height_in": 7.4243,
+      "height_in": 7.4243,
+      "min_font_pt": null
+    },
+    {
+      "number": 7,
+      "id": "PT07",
+      "scale": 1,
+      "old_height_in": 7.6246,
+      "height_in": 7.6246,
+      "min_font_pt": null
+    },
+    {
+      "number": 8,
+      "id": "PT08",
+      "scale": 1,
+      "old_height_in": 6.6708,
+      "height_in": 6.6708,
+      "min_font_pt": null
+    },
+    {
+      "number": 9,
+      "id": "PT09",
+      "scale": 1,
+      "old_height_in": 7.9565,
+      "height_in": 7.9565,
+      "min_font_pt": null
+    },
+    {
+      "number": 10,
+      "id": "PT10",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": null
+    },
+    {
+      "number": 11,
+      "id": "PT11",
+      "scale": 1,
+      "old_height_in": 7.4138,
+      "height_in": 7.4138,
+      "min_font_pt": null
+    },
+    {
+      "number": 12,
+      "id": "PT12",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": null
+    },
+    {
+      "number": 13,
+      "id": "UC-General",
+      "scale": 1,
+      "old_height_in": 5.5656,
+      "height_in": 5.5656,
+      "min_font_pt": null
+    },
+    {
+      "number": 14,
+      "id": "DOM-Finanzas",
+      "scale": 0.80714,
+      "old_height_in": 8.1,
+      "height_in": 6.5378,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 15,
+      "id": "DOM-Automatizacion",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 8.56
+    },
+    {
+      "number": 16,
+      "id": "DOM-Inversiones",
+      "scale": 0.75099,
+      "old_height_in": 8.1,
+      "height_in": 6.083,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 17,
+      "id": "DOM-Personal",
+      "scale": 0.50516,
+      "old_height_in": 7.8193,
+      "height_in": 3.95,
+      "min_font_pt": 9.921
+    },
+    {
+      "number": 18,
+      "id": "DOM-Compartidos",
+      "scale": 0.83333,
+      "old_height_in": 8.1,
+      "height_in": 6.75,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 19,
+      "id": "ER-CU001-Movimientos",
+      "scale": 1,
+      "old_height_in": 4.3429,
+      "height_in": 4.3429,
+      "min_font_pt": 8.85
+    },
+    {
+      "number": 20,
+      "id": "ER-CU002-Cuentas",
+      "scale": 0.66341,
+      "old_height_in": 8.1,
+      "height_in": 5.3736,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 21,
+      "id": "ER-CU002-Usuario",
+      "scale": 0.62747,
+      "old_height_in": 6.2951,
+      "height_in": 3.95,
+      "min_font_pt": 17.243
+    },
+    {
+      "number": 22,
+      "id": "ER-CU004-Inversiones",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 8.25
+    },
+    {
+      "number": 23,
+      "id": "ER-CU003-Snapshots",
+      "scale": 0.66027,
+      "old_height_in": 6.4184,
+      "height_in": 4.2379,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 24,
+      "id": "ER-CU001-Recurrentes",
+      "scale": 0.82609,
+      "old_height_in": 5.0416,
+      "height_in": 4.1648,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 25,
+      "id": "ER-CU001-Presupuestos",
+      "scale": 0.78189,
+      "old_height_in": 8.1,
+      "height_in": 6.3333,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 26,
+      "id": "ER-CU001-Grupos",
+      "scale": 0.86837,
+      "old_height_in": 8.1,
+      "height_in": 7.0338,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 27,
+      "id": "ER-CU001-Reparto",
+      "scale": 0.71161,
+      "old_height_in": 7.8501,
+      "height_in": 5.5862,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 28,
+      "id": "ER-CU002-Integraciones",
+      "scale": 0.70843,
+      "old_height_in": 6.1787,
+      "height_in": 4.3772,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 29,
+      "id": "ARQ-Logica-Impresa",
+      "scale": 0.69041,
+      "old_height_in": 6.9048,
+      "height_in": 4.7671,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 30,
+      "id": "ARQ-Componentes-Datos",
+      "scale": 0.84428,
+      "old_height_in": 4.6785,
+      "height_in": 3.95,
+      "min_font_pt": 10.756
+    },
+    {
+      "number": 31,
+      "id": "ARQ-Componentes-Analisis",
+      "scale": 0.64286,
+      "old_height_in": 6.1444,
+      "height_in": 3.95,
+      "min_font_pt": 12.491
+    },
+    {
+      "number": 32,
+      "id": "ARQ-Componentes-Canales",
+      "scale": 0.76024,
+      "old_height_in": 5.1957,
+      "height_in": 3.95,
+      "min_font_pt": 13.16
+    },
+    {
+      "number": 33,
+      "id": "ARQ-Despliegue-Impresa",
+      "scale": 0.66129,
+      "old_height_in": 5.9732,
+      "height_in": 3.95,
+      "min_font_pt": 10.283
+    },
+    {
+      "number": 34,
+      "id": "ROB-CU001-Registro",
+      "scale": 0.61109,
+      "old_height_in": 7.6891,
+      "height_in": 4.6987,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 35,
+      "id": "ROB-CU001-OCR",
+      "scale": 0.85926,
+      "old_height_in": 6.6376,
+      "height_in": 5.7035,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 36,
+      "id": "ROB-CU001-Importacion",
+      "scale": 0.63711,
+      "old_height_in": 8.1,
+      "height_in": 5.1606,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 37,
+      "id": "ROB-CU001-Telegram",
+      "scale": 0.54298,
+      "old_height_in": 8.1,
+      "height_in": 4.3981,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 38,
+      "id": "ROB-CU001-Reglas",
+      "scale": 0.56021,
+      "old_height_in": 8.1,
+      "height_in": 4.5377,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 39,
+      "id": "ROB-CU001-Cron",
+      "scale": 0.67601,
+      "old_height_in": 8.1,
+      "height_in": 5.4757,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 40,
+      "id": "ROB-CU001-Aviso",
+      "scale": 0.81273,
+      "old_height_in": 8.1,
+      "height_in": 6.5831,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 41,
+      "id": "ROB-CU001-Presupuesto",
+      "scale": 0.55751,
+      "old_height_in": 7.8638,
+      "height_in": 4.3842,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 42,
+      "id": "ROB-CU001-Compartidos",
+      "scale": 0.56024,
+      "old_height_in": 8.1,
+      "height_in": 4.5379,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 43,
+      "id": "ROB-CU002-Cuentas",
+      "scale": 0.6018,
+      "old_height_in": 8.1,
+      "height_in": 4.8746,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 44,
+      "id": "ROB-CU002-Datos",
+      "scale": 0.58189,
+      "old_height_in": 8.1,
+      "height_in": 4.7133,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 45,
+      "id": "ROB-CU002-Preferencias",
+      "scale": 0.58012,
+      "old_height_in": 8.1,
+      "height_in": 4.6989,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 46,
+      "id": "ROB-CU002-Acceso",
+      "scale": 0.56017,
+      "old_height_in": 8.1,
+      "height_in": 4.5374,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 47,
+      "id": "ROB-CU002-Plan",
+      "scale": 0.55002,
+      "old_height_in": 7.97,
+      "height_in": 4.3837,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 48,
+      "id": "ROB-CU003-Patrimonio",
+      "scale": 0.75016,
+      "old_height_in": 6.4013,
+      "height_in": 4.802,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 49,
+      "id": "ROB-CU003-Cotizaciones",
+      "scale": 0.75385,
+      "old_height_in": 8.1,
+      "height_in": 6.1062,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 50,
+      "id": "ROB-CU003-Resumen",
+      "scale": 0.54119,
+      "old_height_in": 8.1,
+      "height_in": 4.3836,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 51,
+      "id": "ROB-CU003-Chat",
+      "scale": 0.77374,
+      "old_height_in": 8.1,
+      "height_in": 6.2673,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 52,
+      "id": "ROB-CU003-RF11",
+      "scale": 0.60001,
+      "old_height_in": 8.1,
+      "height_in": 4.8601,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 53,
+      "id": "ROB-CU004-Operacion",
+      "scale": 0.93957,
+      "old_height_in": 5.2745,
+      "height_in": 4.9558,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 54,
+      "id": "ROB-CU004-Referencias",
+      "scale": 0.839,
+      "old_height_in": 8.1,
+      "height_in": 6.7959,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 55,
+      "id": "ROB-CU004-Simulacion",
+      "scale": 0.68925,
+      "old_height_in": 6.2746,
+      "height_in": 4.3248,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 56,
+      "id": "SEC-CU001-Crear",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 8.12
+    },
+    {
+      "number": 57,
+      "id": "SEC-CU001-EditarEliminar",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 8.783
+    },
+    {
+      "number": 58,
+      "id": "SEC-CU001-OCR",
+      "scale": 1,
+      "old_height_in": 6.7541,
+      "height_in": 6.7541,
+      "min_font_pt": 9.385
+    },
+    {
+      "number": 59,
+      "id": "SEC-CU001-Telegram",
+      "scale": 0.93274,
+      "old_height_in": 8.1,
+      "height_in": 7.5552,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 60,
+      "id": "SEC-CU001-Importar",
+      "scale": 0.99549,
+      "old_height_in": 8.1,
+      "height_in": 8.0635,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 61,
+      "id": "SEC-CU001-ReglasPresupuestos",
+      "scale": 0.79498,
+      "old_height_in": 8.1,
+      "height_in": 6.4393,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 62,
+      "id": "SEC-CU001-CronSeleccion",
+      "scale": 0.89597,
+      "old_height_in": 8.1,
+      "height_in": 7.2574,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 63,
+      "id": "SEC-CU001-CronOcurrencia",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 9.154
+    },
+    {
+      "number": 64,
+      "id": "SEC-CU001-Cuotas",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 9.14
+    },
+    {
+      "number": 65,
+      "id": "SEC-CU001-Cola",
+      "scale": 0.78136,
+      "old_height_in": 5.0553,
+      "height_in": 3.95,
+      "min_font_pt": 10.932
+    },
+    {
+      "number": 66,
+      "id": "SEC-CU001-Sincronizacion",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 9.421
+    },
+    {
+      "number": 67,
+      "id": "SEC-CU002-AccesoPreferencias",
+      "scale": 0.98252,
+      "old_height_in": 8.1,
+      "height_in": 7.9584,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 68,
+      "id": "SEC-CU002-PagoInicio",
+      "scale": 0.75075,
+      "old_height_in": 7.8227,
+      "height_in": 5.8729,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 69,
+      "id": "SEC-CU002-PagoWebhook",
+      "scale": 0.89429,
+      "old_height_in": 8.1,
+      "height_in": 7.2437,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 70,
+      "id": "SEC-CU003-Dashboard",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 9.284
+    },
+    {
+      "number": 71,
+      "id": "SEC-CU003-Cotizaciones",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 8.69
+    },
+    {
+      "number": 72,
+      "id": "SEC-CU003-ChatIntencion",
+      "scale": 0.86387,
+      "old_height_in": 7.6377,
+      "height_in": 6.598,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 73,
+      "id": "SEC-CU003-ChatRespuesta",
+      "scale": 0.8,
+      "old_height_in": 8.1,
+      "height_in": 6.48,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 74,
+      "id": "SEC-CU003-AnomaliasSeleccion",
+      "scale": 0.71268,
+      "old_height_in": 7.7234,
+      "height_in": 5.5043,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 75,
+      "id": "SEC-CU003-AnomaliasCalculo",
+      "scale": 0.89101,
+      "old_height_in": 8.1,
+      "height_in": 7.2172,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 76,
+      "id": "SEC-CU003-Proyeccion",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 8.02
+    },
+    {
+      "number": 77,
+      "id": "SEC-CU004-Compra",
+      "scale": 0.82437,
+      "old_height_in": 8.1,
+      "height_in": 6.6774,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 78,
+      "id": "SEC-CU004-VentaValidar",
+      "scale": 0.81204,
+      "old_height_in": 8.1,
+      "height_in": 6.5775,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 79,
+      "id": "SEC-CU004-VentaRPC",
+      "scale": 0.83326,
+      "old_height_in": 8.1,
+      "height_in": 6.7494,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 80,
+      "id": "SEC-CU004-Valoracion",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 8.354
+    },
+    {
+      "number": 81,
+      "id": "SEC-CU001-CompartidosGrupo",
+      "scale": 0.82602,
+      "old_height_in": 8.1,
+      "height_in": 6.6907,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 82,
+      "id": "SEC-CU001-CompartidosReparto",
+      "scale": 0.94981,
+      "old_height_in": 8.1,
+      "height_in": 7.6935,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 83,
+      "id": "SEC-CU002-CuentasAlta",
+      "scale": 0.84708,
+      "old_height_in": 8.1,
+      "height_in": 6.8613,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 84,
+      "id": "SEC-CU002-CuentasDatos",
+      "scale": 0.88802,
+      "old_height_in": 8.1,
+      "height_in": 7.1929,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 85,
+      "id": "SEC-CU004-Simulacion-Detalle",
+      "scale": 1,
+      "old_height_in": 8.1,
+      "height_in": 8.1,
+      "min_font_pt": 8.366
+    },
+    {
+      "number": 86,
+      "id": "CLASES-Datos-Movimientos",
+      "scale": 0.9555,
+      "old_height_in": 4.134,
+      "height_in": 3.95,
+      "min_font_pt": 9.717
+    },
+    {
+      "number": 87,
+      "id": "CLASES-Datos-Cuentas",
+      "scale": 0.48765,
+      "old_height_in": 8.1,
+      "height_in": 3.95,
+      "min_font_pt": 11.377
+    },
+    {
+      "number": 88,
+      "id": "CLASES-Datos-Inversiones",
+      "scale": 0.83406,
+      "old_height_in": 8.1,
+      "height_in": 6.7559,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 89,
+      "id": "CLASES-Datos-Automatizacion",
+      "scale": 0.65472,
+      "old_height_in": 7.6549,
+      "height_in": 5.0118,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 90,
+      "id": "CLASES-CU001-Movimientos",
+      "scale": 0.66433,
+      "old_height_in": 5.9458,
+      "height_in": 3.95,
+      "min_font_pt": 10.53
+    },
+    {
+      "number": 91,
+      "id": "CLASES-CU001-Automatizacion",
+      "scale": 0.73645,
+      "old_height_in": 5.3635,
+      "height_in": 3.95,
+      "min_font_pt": 15.76
+    },
+    {
+      "number": 92,
+      "id": "CLASES-CU001-Compartidos",
+      "scale": 0.48765,
+      "old_height_in": 8.1,
+      "height_in": 3.95,
+      "min_font_pt": 11.66
+    },
+    {
+      "number": 93,
+      "id": "CLASES-CU002-Cuentas",
+      "scale": 0.60224,
+      "old_height_in": 6.5589,
+      "height_in": 3.95,
+      "min_font_pt": 9.847
+    },
+    {
+      "number": 94,
+      "id": "CLASES-CU003-Analisis",
+      "scale": 0.97078,
+      "old_height_in": 4.0689,
+      "height_in": 3.95,
+      "min_font_pt": 14.632
+    },
+    {
+      "number": 95,
+      "id": "CLASES-CU004-Inversiones",
+      "scale": 0.69643,
+      "old_height_in": 5.6718,
+      "height_in": 3.95,
+      "min_font_pt": 10.53
+    },
+    {
+      "number": 96,
+      "id": "CFG-01-Guardas",
+      "scale": 0.99289,
+      "old_height_in": 8.1,
+      "height_in": 8.0424,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 97,
+      "id": "CFG-01-Frecuencia",
+      "scale": 1,
+      "old_height_in": 3.8086,
+      "height_in": 3.8086,
+      "min_font_pt": 9.642
+    },
+    {
+      "number": 98,
+      "id": "PATRONES-Cotizaciones",
+      "scale": 1,
+      "old_height_in": 3.3257,
+      "height_in": 3.3257,
+      "min_font_pt": 9.681
+    },
+    {
+      "number": 99,
+      "id": "PATRONES-Cron",
+      "scale": 0.59636,
+      "old_height_in": 8.1,
+      "height_in": 4.8305,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 100,
+      "id": "SEC-StrategyAdapter",
+      "scale": 0.73004,
+      "old_height_in": 8.1,
+      "height_in": 5.9133,
+      "min_font_pt": 9.5
+    },
+    {
+      "number": 101,
+      "id": "SEC-TemplateMethod",
+      "scale": 0.87004,
+      "old_height_in": 8.1,
+      "height_in": 7.0473,
+      "min_font_pt": 9.5
+    }
+  ],
+  "manual_breaks_removed": 12,
+  "figure_breaks_removed": 101,
+  "source_sha256": "89708e3b74a71aba560f30cebd0e7290e2c1af8610a147c95bd84616bcfd8ad6"
+}

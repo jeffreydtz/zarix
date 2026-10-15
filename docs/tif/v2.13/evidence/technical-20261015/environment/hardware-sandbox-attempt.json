@@ -1,0 +1,9 @@
+{
+  "hw.model": "Unavailable in current permission scope",
+  "machdep.cpu.brand_string": "Unavailable in current permission scope",
+  "hw.memsize": "Unavailable in current permission scope",
+  "hw.logicalcpu": "Unavailable in current permission scope",
+  "hw.physicalcpu": "Unavailable in current permission scope",
+  "recordedAt": "2026-10-15T01:14:25.374739+00:00",
+  "scope": "Read-only local hardware fields for test-environment identification; no serial number or device UUID; no proof of deployment equivalence"
+}

@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-15T02:57:39.002Z",
+  "status": "IMPLEMENTED_STATIC_CHECKS_PASS_BROWSER_REGRESSION_PENDING",
+  "problem": "Five measured multilinelabels36–47px overlap in28.8pxbands; at375/200 the103.5CSSpxSVG leaves~3.5pxafter100pxYAxis.",
+  "change": "Existingaccountchartonly: minimum280pxinsideownkeyboardfocusablescrollregion; heightmax(192,52*rows+48); wrappinglegendpreservesvalues. No data,query,calculation,Auth or tooltip changes.",
+  "sourceManifest": [
+    {
+      "path": "components/analysis/AccountBreakdownChart.tsx",
+      "sha256": "d0c9e48262dcf967f77b005f7b2a7b72b68d0d4741110b3f43761cabbbd481bc"
+    },
+    {
+      "path": "scripts/test-isolated-visual.mjs",
+      "sha256": "73921be7fb4779db43ab8c4fb2dd168c4a895c17c3aa1e08a2f1edca0bcd362b"
+    }
+  ],
+  "checks": [
+    {
+      "command": "node --check scripts/test-isolated-visual.mjs",
+      "exitCode": 0,
+      "scope": "Harnesssyntax"
+    },
+    {
+      "command": "./node_modules/.bin/eslint components/analysis/AccountBreakdownChart.tsx scripts/test-isolated-visual.mjs",
+      "exitCode": 0,
+      "log": "scoped-lint.log"
+    },
+    {
+      "command": "./node_modules/.bin/tsc --noEmit --incremental false",
+      "exitCode": 0,
+      "log": "typecheck.log"
+    }
+  ],
+  "review": {
+    "independent": "dependency_audit read-only; no materialfinding withinobservedname/fixscope",
+    "limits": "52pxdoesnotguaranteeallpossiblearbitrarynames. Realpostbuildfour-configlayout/keyboard-scroll/tooltip/legendregressionpending."
+  },
+  "browserRegression": {
+    "status": "PENDING",
+    "reason": "RootcoordinatesCI4andnewbuildbeforeanynewE2Eread; existingdiagnosticisbeforefix.",
+    "planned": [
+      "SVGlabelrectangles:noadjacentoverlapandinsideSVGforobservednames",
+      "No globalhorizontaloverflow; onlynamedfocusablechartregionscrollWidth>clientWidthwhenneeded",
+      "KeyboardArrowRightmovesownregionscrollLeft; bothdomainendsreachable",
+      "Normalhovertooltipandallthreelegendname/value/percentgroupspreserved",
+      "Financialfingerprintsunchanged; oneChromecontextclosedafterrun"
+    ]
+  },
+  "paddingFollowup": {
+    "at": "2026-10-15T02:59:38.943Z",
+    "change": "BarChart margin.left 0 to8 within existing chart",
+    "evidence": "BeforefixAPIcronlabel94.375px minusavailable92px left2.375pxoutsideSVG;8pxleftmargin preserveswholeobservedlabelwithout changingfinancialdata.",
+    "validation": {
+      "command": "./node_modules/.bin/eslint components/analysis/AccountBreakdownChart.tsx",
+      "exitCode": 0,
+      "log": "left-padding-lint.log"
+    },
+    "priorTypecheckScope": "Typecheckexit0recordedbeforethisnumericpaddingfollowup; finalglobalCI4pending."
+  }
+}

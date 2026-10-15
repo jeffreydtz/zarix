@@ -1,0 +1,30 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.12",nodesep="0.35",ranksep="0.27",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=diamond,style=filled,fillcolor="#eef2f6",color="#64748b",margin="0.06,0.035"];
+edge [fontname="Arial",fontsize=20,color="#475569",arrowsize=0.8];
+label="CFG 01: selección de frecuencia"; labelloc=t; fontsize=22;
+PREV [shape=box,fillcolor="#fff7ed",label="Desde S6 no o S7 no\n(vista Guardas)"];
+S8 [label="S8 · Frecuencia"];
+S9 [label="S9 · Mismo día\nde semana"];
+S10 [label="S10 · Mismo\ndía ajustado"];
+S11 [label="S11 · Mismo mes"];
+S12 [label="S12 · Mismo\ndía ajustado"];
+SF [shape=oval,label="SF · false"];
+ST [shape=oval,label="ST · true"];
+PREV -> S8;
+S8 -> ST [label="diaria"];
+S8 -> S9 [label="semanal"];
+S9 -> ST [label="sí"];
+S9 -> SF [label="no"];
+S8 -> S10 [label="mensual"];
+S10 -> ST [label="sí"];
+S10 -> SF [label="no"];
+S8 -> S11 [label="anual"];
+S11 -> SF [label="no"];
+S11 -> S12 [label="sí"];
+S12 -> ST [label="sí"];
+S12 -> SF [label="no"];
+S8 -> SF [label="otra"];
+{rank=same;S9;S10;S11;}
+{rank=same;SF;ST;}
+}

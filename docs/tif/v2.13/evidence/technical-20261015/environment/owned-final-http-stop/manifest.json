@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-10-15T06:55:14.954397+00:00",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "6e7e0e1fd4afb8e785c150ff35450279ea7bf8b9ea11e8ed71463fc0aab41974"
+    },
+    {
+      "path": "attempt-1.json",
+      "sha256": "48c1fdede42bee8832657c971560854f0720b9f1ba0fbc788a481e8b3ed9c26b"
+    },
+    {
+      "path": "verification.json",
+      "sha256": "8552f2556894b2381c31920d00a9ee6871e490f83a8e62bb2b901566cb37ec28"
+    }
+  ],
+  "controllerSha256": "edced5d0c7210ed0b930e9a1588ad255be5792bf4faf96217493b94dcce5f6a8",
+  "previousControllerSha256": "6f223de901d7c11e34969f8cf3a6324a8013868b8de4a6d76f8c5c3e3cef7cd3"
+}

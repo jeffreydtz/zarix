@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-15T01:46:59.805Z",
+  "scope": "Read-only unauthenticated GET under default executor sandbox; post-run reproduction of transport restriction, no Auth credentials or product acceptance assertion.",
+  "sandbox": "default",
+  "observations": [
+    {
+      "target": "http://127.0.0.1:57321/auth/v1/health",
+      "errorType": "TypeError",
+      "code": "EPERM"
+    },
+    {
+      "target": "http://127.0.0.1:3000/api/health",
+      "errorType": "TypeError",
+      "code": "EPERM"
+    }
+  ]
+}

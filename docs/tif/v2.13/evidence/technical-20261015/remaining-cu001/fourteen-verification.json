@@ -1,0 +1,238 @@
+{
+  "recordedAt": "2026-10-15T04:47:53.573670+00:00",
+  "status": "PARTIAL",
+  "scope": "Composite of14 CU001 cases with explicitly separate executed revisions: immutable836 intermediate clock plus a targeted final7c3e872/core-acceptance CP1-20 retry. Only CP1-23 selects the authorized existing-PremiumB fixture retry; Free-A403 remains historical. CP1-19 is closed by an explicit accepted semantic review. CP1-20 historical503 remains rawFAIL but the final fresh fixture passes. No fullUI acceptance or claim all14 ran on the final build.",
+  "phases": [
+    {
+      "path": "attempt-3-fourteen-clock/verification.json",
+      "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+      "status": "FAIL",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "sourceStable": true,
+      "servedCopyStable": true,
+      "originalIntegrityAllUnchanged": true
+    },
+    {
+      "path": "attempt-4-cp1-23-premium/verification.json",
+      "sha256": "636fec29a219dc91a35612870b571cf54846c6d00bee4752fa7c1c82f1c4ae24",
+      "status": "PARTIAL",
+      "runtimeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "runtimeBuildId": "aqWYS3F5R_VxiHxD3LpJV",
+      "sourceStable": true,
+      "servedCopyStable": true,
+      "originalIntegrityAllUnchanged": true
+    },
+    {
+      "path": "attempt-5-final-cp1-20-and-replay/verification.json",
+      "sha256": "d181458bca14c0a3d72811b4f28acff4cda3c70dbaf1bab81d050da94080c9d9",
+      "status": "PASS",
+      "runtimeRevision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+      "runtimeBuildId": "vPLjt1QViugJhUWR62DPp",
+      "sourceStable": true,
+      "servedCopyStable": true,
+      "originalIntegrityAllUnchanged": true
+    }
+  ],
+  "selectedCaseResults": [
+    {
+      "id": "CP1-04",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [],
+      "assertions": 10
+    },
+    {
+      "id": "CP1-12",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [],
+      "assertions": 6
+    },
+    {
+      "id": "CP1-19",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [],
+      "assertions": 5,
+      "semanticReview": {
+        "path": "cp1-19-semantic-review.json",
+        "sha256": "72a4f1cc27dbd7b64054876a4a65a59b2505af8ca6a768242306ccc32600a355",
+        "decision": "Parent explicitly accepted SQL-owner semantic review; original raw PARTIAL unchanged. Closed partition matches invalid amount row; adapter labels are not API properties."
+      }
+    },
+    {
+      "id": "CP1-20",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "phase": "attempt-5-final-cp1-20-and-replay",
+      "pendingScopes": [],
+      "assertions": 6
+    },
+    {
+      "id": "CP1-21",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [
+        {
+          "name": "Visible duplicate criteria UI",
+          "status": "BLOCKED",
+          "reason": "API preview/omit choice and SQL invariance are real; actual Arc review screen has not been executed."
+        }
+      ],
+      "assertions": 7
+    },
+    {
+      "id": "CP1-22",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [],
+      "assertions": 24
+    },
+    {
+      "id": "CP1-23",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "phase": "attempt-4-cp1-23-premium",
+      "pendingScopes": [
+        {
+          "name": "Next occurrence presentation",
+          "status": "BLOCKED",
+          "reason": "No nonexistent API next-date field is invented. Actual recurring UI next-occurrence rendering is unexecuted; inclusive-date execution is tested separately by real cron cases."
+        }
+      ],
+      "assertions": 9
+    },
+    {
+      "id": "CP1-24",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [
+        {
+          "name": "Linked Telegram fixture precondition",
+          "status": "BLOCKED",
+          "reason": "No linked bot credential/chat was created. Financial occurrence and outbox are real; no bot identity or provider delivery acceptance is claimed."
+        }
+      ],
+      "assertions": 5
+    },
+    {
+      "id": "CP1-25",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [
+        {
+          "name": "Committed INSERT/unmarked23505 branch",
+          "status": "BLOCKED",
+          "reason": "Current INSERT trigger atomically marks the date/outbox; durable receipts can bypass a later INSERT. This rollback test does not manufacture a committed-unmarked branch by weakening atomicity or deleting receipts. See cron-contract-review.json."
+        }
+      ],
+      "assertions": 8
+    },
+    {
+      "id": "CP1-28",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [
+        {
+          "name": "Observed pre-DB call ordering",
+          "status": "BLOCKED",
+          "reason": "Runtime401 and immutable ledger are observed. Guard-before-client construction is source evidence; no server DB-call counter was instrumented, so before-DB observation is not invented."
+        }
+      ],
+      "assertions": 8
+    },
+    {
+      "id": "CP1-29",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [],
+      "assertions": 4
+    },
+    {
+      "id": "CP1-30",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [
+        {
+          "name": "Real Telegram acceptance",
+          "status": "BLOCKED",
+          "reason": "No authorized bot credential exists and no delivery attempt is made. The real financial operation/outbox are separate from provider delivery; no invented overdraft warning."
+        }
+      ],
+      "assertions": 5
+    },
+    {
+      "id": "CP1-31",
+      "status": "PARTIAL",
+      "complete_original_contract": false,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [
+        {
+          "name": "Visible budget state",
+          "status": "BLOCKED",
+          "reason": "Numeric boundaries, nonblocking operation and transfer exclusion are real API/SQL. UI state labels have not been executed in Arc."
+        }
+      ],
+      "assertions": 39
+    },
+    {
+      "id": "CP1-35",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "phase": "attempt-3-fourteen-clock",
+      "pendingScopes": [],
+      "assertions": 13
+    }
+  ],
+  "counts": {
+    "PASS": 7,
+    "PARTIAL": 7,
+    "FAIL": 0,
+    "BLOCKED": 0
+  },
+  "acceptedAssertions": {
+    "PASS": 149,
+    "FAIL": 0
+  },
+  "historicalFailuresPreserved": [
+    "CP1-23 Free-A403 fixture precondition; retry uses already-PremiumB without plan change",
+    "CP1-20 JSON zero-amount503 on836; final7c3e872 fresh fixture200 and same-original-batch replay PASS, with raw prior report unchanged."
+  ],
+  "stillFailing": [],
+  "postRunReadonlyEffects": "attempt-3-fourteen-clock/cp1-20-post-run-readonly.json",
+  "allExecutedProcessesClosed": true,
+  "browserExecuted": false,
+  "matrixModified": false,
+  "beforeSemanticReviewCounts": {
+    "PASS": 5,
+    "PARTIAL": 8,
+    "FAIL": 1,
+    "BLOCKED": 0
+  },
+  "beforeFinalRetryCounts": {
+    "PASS": 6,
+    "PARTIAL": 7,
+    "FAIL": 1,
+    "BLOCKED": 0
+  },
+  "acceptedDerivedResults": [
+    {
+      "id": "DERIVED-CP1-20-ARCHIVED-BATCH-REPLAY",
+      "status": "PASS",
+      "assertions": 9,
+      "complete_original_contract": false,
+      "phase": "attempt-5-final-cp1-20-and-replay"
+    }
+  ]
+}

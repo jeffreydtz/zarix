@@ -28,68 +28,10 @@ export type InvestmentType =
   | 'real_estate'
   | 'other';
 
-export interface Database {
-  public: {
-    Tables: {
-      users: {
-        Row: User;
-        Insert: Omit<User, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<User, 'id' | 'created_at' | 'updated_at'>>;
-      };
-      accounts: {
-        Row: Account;
-        Insert: Omit<Account, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Account, 'id' | 'created_at' | 'updated_at'>>;
-      };
-      transactions: {
-        Row: Transaction;
-        Insert: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Transaction, 'id' | 'created_at' | 'updated_at'>>;
-      };
-      categories: {
-        Row: Category;
-        Insert: Omit<Category, 'id' | 'created_at'>;
-        Update: Partial<Omit<Category, 'id' | 'created_at'>>;
-      };
-      budgets: {
-        Row: Budget;
-        Insert: Omit<Budget, 'id' | 'created_at'>;
-        Update: Partial<Omit<Budget, 'id' | 'created_at'>>;
-      };
-      investments: {
-        Row: Investment;
-        Insert: Omit<Investment, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Investment, 'id' | 'created_at' | 'updated_at'>>;
-      };
-      portfolio_performance_snapshots: {
-        Row: PortfolioPerformanceSnapshot;
-        Insert: Omit<PortfolioPerformanceSnapshot, 'id' | 'created_at'>;
-        Update: Partial<Omit<PortfolioPerformanceSnapshot, 'id' | 'created_at'>>;
-      };
-      investment_sales: {
-        Row: InvestmentSale;
-        Insert: Omit<InvestmentSale, 'id' | 'created_at'>;
-        Update: Partial<Omit<InvestmentSale, 'id' | 'created_at'>>;
-      };
-      recurring_rules: {
-        Row: RecurringRule;
-        Insert: Omit<RecurringRule, 'id' | 'created_at'>;
-        Update: Partial<Omit<RecurringRule, 'id' | 'created_at'>>;
-      };
-      exchange_rates: {
-        Row: ExchangeRate;
-        Insert: Omit<ExchangeRate, 'id'>;
-        Update: Partial<Omit<ExchangeRate, 'id'>>;
-      };
-      bot_sessions: {
-        Row: BotSession;
-        Insert: Omit<BotSession, 'id' | 'created_at'>;
-        Update: Partial<Omit<BotSession, 'id' | 'created_at'>>;
-      };
-    };
-  };
-}
+// Full public schema contract generated from the isolated migration replay.
+export type { Database } from './supabase-generated';
 
+// Display/service models below intentionally retain their existing app contract.
 export interface User {
   id: string;
   telegram_chat_id: number | null;
@@ -102,6 +44,8 @@ export interface User {
   current_period_end: string | null;
   grace_period_end: string | null;
   default_currency: string;
+  /** Omitted only by older projections; the persisted default is true. */
+  net_worth_widget_visible?: boolean;
   timezone: string;
   notification_time: string;
   daily_summary_enabled: boolean;
@@ -136,6 +80,7 @@ export interface Account {
   secondary_currency: string | null;
   sort_order: number;
   is_active: boolean;
+  /** Separate from archival: a plan downgrade never hides history. */
   created_at: string;
   updated_at: string;
 }
@@ -149,6 +94,8 @@ export interface Transaction {
   amount: number;
   currency: string;
   amount_in_account_currency: number;
+  /** Crédito destino confirmado; null/ausente sólo en movimientos históricos. */
+  destination_amount_in_account_currency?: number | null;
   exchange_rate: number | null;
   category_id: string | null;
   description: string | null;

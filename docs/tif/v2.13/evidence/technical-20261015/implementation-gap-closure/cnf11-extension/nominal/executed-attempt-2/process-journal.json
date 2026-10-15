@@ -1,0 +1,12 @@
+{
+  "purpose": "cnf11-extension-owned-worker-process",
+  "pid": 7533,
+  "processGroupId": 7533,
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "startedAt": "2026-10-15T09:49:57.654043+00:00",
+  "workerSourceSha256": "b965ca960ff66d7507bf2fc642ec0919391ea48d0dbe42310eb0aaaa5cae381d",
+  "deadlineSeconds": 240,
+  "cleanupOwnerIfTimeoutOrResidue": "root",
+  "automaticDatabaseRecovery": false,
+  "containsCredentials": false
+}

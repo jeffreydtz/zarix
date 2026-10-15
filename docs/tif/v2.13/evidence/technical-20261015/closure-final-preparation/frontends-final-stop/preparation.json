@@ -1,0 +1,22 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "controllerSha256": "07a36da5842f5861b6569290bfc8ded9a4dc78f29ab60f8400beae44654dd8f8",
+  "privateController": "/tmp/zarix-runtime-20261015/stop-owned-closure-frontends-final.py",
+  "targets": [
+    {
+      "pid": 39320,
+      "port": 3002
+    },
+    {
+      "pid": 53373,
+      "port": 57910
+    },
+    {
+      "pid": 443,
+      "port": 57912
+    }
+  ],
+  "nativeServicesTouched": false,
+  "arcOrPersonalProcessesTouched": false,
+  "validationPerformed": "AST only; no process inspection, signal, socket or runtime action"
+}

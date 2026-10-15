@@ -13,6 +13,7 @@ import AddInvestmentPanel from '@/components/investments/AddInvestmentPanel';
 import EditInvestmentDialog from '@/components/investments/EditInvestmentDialog';
 import SellPositionDialog from '@/components/investments/SellPositionDialog';
 import PrivacyToggle from '@/components/investments/PrivacyToggle';
+import InvestmentSimulationPanel from '@/components/investments/InvestmentSimulationPanel';
 import ChartSkeleton from '@/components/ui/ChartSkeleton';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 
@@ -25,6 +26,7 @@ const PortfolioPerformanceChart = dynamic(
 interface InvestmentsWorkspaceProps {
   initialPortfolio: PortfolioSummaryPayload;
   investmentAccounts: Account[];
+  canSimulate: boolean;
 }
 
 function formatRelative(date: Date | null): string {
@@ -57,6 +59,7 @@ function LiveUpdatedLabel({ lastLiveAt }: { lastLiveAt: Date | null }) {
 export default function InvestmentsWorkspace({
   initialPortfolio,
   investmentAccounts,
+  canSimulate,
 }: InvestmentsWorkspaceProps) {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion() ?? false;
@@ -184,6 +187,8 @@ export default function InvestmentsWorkspace({
           onSell={(inv) => setSelling(inv)}
         />
       </motion.section>
+
+      <InvestmentSimulationPanel investments={portfolio.investments} canSimulate={canSimulate} />
 
       <EditInvestmentDialog
         investment={editing}

@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-15T04:41:21.521965+00:00",
+  "case": "CP1-20",
+  "actualBefore": {
+    "report": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+    "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+    "caseStatus": "FAIL",
+    "httpStatus": 503,
+    "persistedValidRows": 2,
+    "persistedValidAmounts": [
+      500,
+      700
+    ],
+    "balance": 10200,
+    "durableValidReceipts": 2,
+    "invalidRowReceipt": 0,
+    "independentReadOnlyReport": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/cp1-20-post-run-readonly.json",
+    "independentReadOnlySha256": "a8ca6749d67eb5ae4ee91eb6f72a6688e4686275f37577a21cfe50941fd84ecf",
+    "pendingResponseCounterCaptured": false
+  },
+  "unitBefore": {
+    "numTotalTests": 26,
+    "numPassedTests": 24,
+    "numFailedTests": 2,
+    "success": false
+  },
+  "unitAfter": {
+    "numTotalTests": 26,
+    "numPassedTests": 26,
+    "numFailedTests": 0,
+    "success": true
+  },
+  "commands": [
+    {
+      "command": "npx vitest run __tests__/import-route.test.ts --reporter=json --outputFile=docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/unit-before.json",
+      "exitCode": 1,
+      "output": "unit-before.log"
+    },
+    {
+      "command": "npx vitest run __tests__/import-route.test.ts --reporter=json --outputFile=docs/tif/v2.13/evidence/technical-20261015/import-zero-regression/unit-after.json",
+      "exitCode": 0,
+      "output": "unit-after.log"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "output": "typecheck.log"
+    },
+    {
+      "command": "npx next lint --file app/api/import/transactions/route.ts --file __tests__/import-route.test.ts",
+      "exitCode": 0,
+      "output": "lint.log"
+    }
+  ],
+  "files": [
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6"
+    },
+    {
+      "path": "__tests__/import-route.test.ts",
+      "sha256": "fc49944b5a15b7c0ac01cf1e9465844f1b0b171647795ffb89d679f986b022a6"
+    }
+  ],
+  "scope": "Narrow existing amount-positive validation after replayRow and before account mapping/FX/RPC. Does not filter or reindex parsed rows, change batch/row hashes, rewrite existing receipts, classify uncertain transport/RPC failures as skips or add response counters. Two Auth/RPC unit doubles exercise array and backup JSON [500,0,700], preserve receipt indices0/2 and same-batch retries. Actual final compiled API and globalCI5 remain pending."
+}

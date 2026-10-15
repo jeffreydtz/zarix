@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-15T00:29:20.009Z",
+  "status": "PASS",
+  "scope": "Apply final migration27 definitions/ACL to independently owned load replica, no history DML or recompute call",
+  "target": {
+    "apiOrigin": "http://127.0.0.1:56321",
+    "databasePort": "56322"
+  },
+  "migration": {
+    "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+    "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+  },
+  "financialRows": {
+    "beforeSha256": "5ee606d0eef684cdb16a75aa94c56a47db43a87cc1ae364e598c33f6d66f324f",
+    "afterSha256": "5ee606d0eef684cdb16a75aa94c56a47db43a87cc1ae364e598c33f6d66f324f",
+    "unchanged": true
+  }
+}

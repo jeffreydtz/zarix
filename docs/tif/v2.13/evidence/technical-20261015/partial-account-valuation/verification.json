@@ -1,0 +1,45 @@
+{
+  "createdAt": "2026-10-15T05:11:31.016Z",
+  "status": "PASS",
+  "revision": "739f093d95998a715d6435b48d4e2adafad45f63",
+  "workingTree": "Product changes are reviewed but not yet committed; unrelated documentation changes belong to their owners.",
+  "node": "v22.17.0",
+  "scope": "CP3-18 explicit unsupported-currency partial read plus CP3-06 USD display precision. Unit/service doubles and actual component SSR only. No API/DB/browser/app/build/global CI execution by this phase.",
+  "commands": [
+    {
+      "command": "TZ=Etc/UTC node_modules/.bin/vitest run __tests__/blue-fx-metadata.test.ts __tests__/financial-read-errors.test.ts __tests__/dashboard-read-failures.test.ts __tests__/cp318-account-equivalents.test.ts __tests__/cp318-net-worth-hero.test.ts __tests__/net-worth-usd-formatting.test.ts --reporter=json --outputFile=/tmp/zarix-cp318-proposal-20261015/focused-after-final.json",
+      "exitCode": 0,
+      "total": 51,
+      "passed": 51,
+      "failed": 0,
+      "evidence": "focused-final.json"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "evidence": "typecheck-final.log"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "evidence": "lint-final.log"
+    },
+    {
+      "command": "DEVELOPER_DIR=/Library/Developer/CommandLineTools git diff --check -- lib/services/accounts.ts lib/services/net-worth.ts app/api/accounts/route.ts 'app/(authenticated)/dashboard/page.tsx' 'app/(authenticated)/accounts/page.tsx' 'app/(authenticated)/accounts/[id]/page.tsx' components/accounts/AccountBalanceEquivalents.tsx components/accounts/AccountsList.tsx components/dashboard/NetWorthHero.tsx components/dashboard/StickyNetWorthBar.tsx components/dashboard/AccountCards.tsx components/dashboard/CreditCardsWidget.tsx __tests__/blue-fx-metadata.test.ts __tests__/financial-read-errors.test.ts __tests__/dashboard-read-failures.test.ts",
+      "exitCode": 0
+    }
+  ],
+  "sourceManifest": "manifest.json",
+  "sourceManifestSha256": "556afb703d65bbf502fc4c0008e744151f3c8df3405b147dee1f3eaea48b9bf7",
+  "initialFocal": "focused-initial.json",
+  "finalFocal": "focused-final.json",
+  "countsNotAdditive": true,
+  "limitations": [
+    "The initial and final 51-test executions overlap and are not 102 unique checks.",
+    "Original CP3-18 API500 and CP3-06 incorrect rounded SSR evidence remain owned by their existing phases; this phase does not overwrite them.",
+    "A real authenticated original system-case retest and CI6 global gate/build are still separate pending evidence.",
+    "No schema, catalog, historical ledger, Supabase setting or credential changes.",
+    "Only out-of-catalog legacy account currencies can be excluded in opted-in reads; supported FX and data/Auth failures retain strict unavailable behavior.",
+    "The account pages already had catch-to-empty behavior; this change does not prove universal read-error handling."
+  ]
+}

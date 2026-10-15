@@ -1,0 +1,74 @@
+{
+  "scope": "Derived CU003 analytics read completeness with explicit PostgREST/database and FX doubles; no real DB, Auth, providers or browser acceptance.",
+  "runtime": "Node 22.17.0, Vitest 5.0.3, macOS",
+  "before_analytics_source_sha256": "1349037dfb45cf4142d3cf012f53acb7e96e25dc41c9734165ce425cab376680",
+  "after_file_sha256": {
+    "lib/services/analytics.ts": "3a0c741870b7a9b65e45931d90ab823d6c4e0e553577649fbbd7dfc862be2671",
+    "__tests__/analytics-pagination.test.ts": "218df34d5cc9947fac10634f3d2669c6b4d6f1e04cf3c7c072ece7faffa42ed6",
+    "lib/supabase-paginated-read.ts": "68b3dd7d80a197d7d5d0ec20f7551405d365b84270ccd9b002cb81df71bf5e1f"
+  },
+  "runs": {
+    "before": {
+      "command": "node node_modules/vitest/vitest.mjs run __tests__/analytics-pagination.test.ts --reporter=default --reporter=json --outputFile.json=docs/tif/v2.13/evidence/technical-20261013/documented-gaps/pagination-analytics-before.json > docs/tif/v2.13/evidence/technical-20261013/documented-gaps/pagination-analytics-before.log 2>&1",
+      "exit_code": 1,
+      "started_at_utc": "2026-10-14T01:10:43.973000+00:00",
+      "total": 10,
+      "passed": 2,
+      "failed": 8,
+      "report": "pagination-analytics-before.json",
+      "log": "pagination-analytics-before.log"
+    },
+    "after": {
+      "command": "node node_modules/vitest/vitest.mjs run __tests__/analytics-pagination.test.ts --reporter=default --reporter=json --outputFile.json=docs/tif/v2.13/evidence/technical-20261013/documented-gaps/pagination-analytics-after.json > docs/tif/v2.13/evidence/technical-20261013/documented-gaps/pagination-analytics-after.log 2>&1",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-14T01:11:29.257000+00:00",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "report": "pagination-analytics-after.json",
+      "log": "pagination-analytics-after.log"
+    }
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exit_code": 0,
+    "evidence": "Direct tool execution at completion; parent final verification supplies the complete command log."
+  },
+  "fixture": {
+    "max_rows": 1000,
+    "eligible_expenses": 1400,
+    "eligible_income": 100,
+    "expense_ars": 131500,
+    "income_ars": 500,
+    "balance_ars": -131000,
+    "usd_ars_rate_double": 1300,
+    "excluded": [
+      "other owner",
+      "out of range",
+      "archived account",
+      "transfer",
+      "adjustment"
+    ]
+  },
+  "methods": [
+    "getCategoryBreakdown",
+    "getMonthlyTrend",
+    "getDailyTrend",
+    "getAccountBreakdown"
+  ],
+  "checks": [
+    "all pages included before FX conversion",
+    "same owner/date/type filters on every fresh page",
+    "stable transaction_date/id ordering",
+    "monthly first-day boundary unchanged",
+    "second-page error rejects each method before conversion",
+    "null-account inclusion and archived exclusion unchanged",
+    "legitimate empty data still yields empty/zero buckets"
+  ],
+  "limits": [
+    "Range reads are not a transaction snapshot under concurrent writes.",
+    "Existing analysis page catches still convert rejected reads to empty data; reported to parent and not changed in this subtask.",
+    "Top-expenses RPC and hydration intentionally unchanged.",
+    "These tests do not establish real UI/API/DB acceptance or load latency."
+  ]
+}

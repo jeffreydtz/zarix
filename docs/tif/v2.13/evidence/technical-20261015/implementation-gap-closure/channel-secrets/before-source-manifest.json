@@ -1,0 +1,32 @@
+{
+  "createdAt": "2026-10-15T08:00:52.612435+00:00",
+  "revision": "730767b1723502b495d371e69c44df31eb230b56",
+  "scope": "Local handler and application bot catches with explicit bot/data/provider doubles; no actual Auth/DB/browser/provider calls",
+  "sources": [
+    {
+      "path": "app/api/telegram/webhook/route.ts",
+      "sha256": "b4080d793747f4112655081c2b77175c8dadba82e9b2d4958ede3b3ae5e75afe",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/before-sources/app/api/telegram/webhook/route.ts"
+    },
+    {
+      "path": "app/api/telegram/webhook/u/[secret]/route.ts",
+      "sha256": "4693bd7e623946400aba94ced88df7bbcde11fa540edbd37ee9525fd7a914191",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/before-sources/app/api/telegram/webhook/u/[secret]/route.ts"
+    },
+    {
+      "path": "lib/telegram/bot.ts",
+      "sha256": "7c20ae76b5b9b7f69ba23f7fa16d71794c23d10693e2bb84bfa79895f00f3531",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/before-sources/lib/telegram/bot.ts"
+    },
+    {
+      "path": "__tests__/channel-secrets-routes.test.ts",
+      "sha256": "0bfd4c54d32802082d90aca03756f94d75e829a372858238a32a06ff0ee42c69",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/before-sources/__tests__/channel-secrets-routes.test-source.ts"
+    },
+    {
+      "path": "__tests__/telegram-error-log-privacy.test.ts",
+      "sha256": "07f00b34954177866c4afb256e173a380282e8abcb59aa7c490a25c81e91ecd9",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/before-sources/__tests__/telegram-error-log-privacy.test-source.ts"
+    }
+  ]
+}

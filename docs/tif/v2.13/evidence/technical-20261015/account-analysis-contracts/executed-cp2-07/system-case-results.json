@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "case_id": "CP2-07",
+      "status": "PASS",
+      "evidence": [
+        "account-analysis-contracts/executed-cp2-07/source-export.json",
+        "account-analysis-contracts/executed-cp2-07/source-roundtrip.json",
+        "account-analysis-contracts/executed-cp2-07/target-import.json",
+        "account-analysis-contracts/executed-cp2-07/manifest.json"
+      ],
+      "complete_original_contract": true,
+      "assertion_names": [
+        "SameU1identityroundtrip",
+        "Exactunchangedexportfilehash",
+        "Sourcephaseactualstableandoriginalsintact",
+        "Fixture account API201",
+        "Fixture account API201",
+        "Targetpreview200",
+        "Targetnamemappingresolved",
+        "Targetimport200",
+        "Threeimportedzeroomittedpending",
+        "Semanticexport-importequivalence",
+        "NooriginalaccountIDreused",
+        "Noorphanorforeignrelationship"
+      ],
+      "scope": "Real same-user JSON export\u2192separate-empty-target preview/import\u2192normalized JSON+SQL, synthetic ordinary Auth, served836fd18; no browser/provider acceptance"
+    }
+  ]
+}

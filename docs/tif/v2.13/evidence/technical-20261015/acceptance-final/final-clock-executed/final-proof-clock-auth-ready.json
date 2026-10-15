@@ -1,0 +1,45 @@
+{
+  "status": "PASS_SCOPED_READINESS",
+  "checkedAt": "2026-10-15T04:46:00.871Z",
+  "nextPid": 17292,
+  "buildId": "vPLjt1QViugJhUWR62DPp",
+  "normalAuthControls": [
+    {
+      "label": "A",
+      "status": "PASS",
+      "step": "zarixRead",
+      "jwtLifetimeSeconds": 60,
+      "apiReadHttpStatus": 200,
+      "contentType": "application/json",
+      "redirected": false,
+      "finalOriginPath": "http://127.0.0.1:3002/api/user/notification-preferences",
+      "locationOriginPath": null,
+      "responseBytes": 253,
+      "normalPasswordLogin": true,
+      "userMatches": true,
+      "jwtIssuedAtUsesActualTime": true,
+      "authGetUserSuccess": true,
+      "endpoint": "/api/user/notification-preferences",
+      "onlyOwnTemporarySessionClosed": true
+    },
+    {
+      "label": "B",
+      "status": "PASS",
+      "step": "zarixRead",
+      "jwtLifetimeSeconds": 60,
+      "apiReadHttpStatus": 200,
+      "contentType": "application/json",
+      "redirected": false,
+      "finalOriginPath": "http://127.0.0.1:3002/api/user/notification-preferences",
+      "locationOriginPath": null,
+      "responseBytes": 253,
+      "normalPasswordLogin": true,
+      "userMatches": true,
+      "jwtIssuedAtUsesActualTime": true,
+      "authGetUserSuccess": true,
+      "endpoint": "/api/user/notification-preferences",
+      "onlyOwnTemporarySessionClosed": true
+    }
+  ],
+  "scope": "Two new ordinary local Auth sessions, read-only ZARIX notification-preferences endpoint and own local signOut; no finance/quotes request, original session logout, OS or GoTrue clock change. Actual Auth60s contrasts with fixed Next process6Oct12Z."
+}

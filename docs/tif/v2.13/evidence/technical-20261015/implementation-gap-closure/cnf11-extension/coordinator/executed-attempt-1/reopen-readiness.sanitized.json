@@ -1,0 +1,209 @@
+{
+  "status": "EXISTING_CLONE_REOPEN_READY",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "sourceSha256": "6a15b30f104e997ae7bf7a385a5e346d0a4ca8604f29fff43b28efd53099464f",
+  "commonSha256": "370bc7da27c2d5b1b9a68ac40c54c4d5f6ad6670ecdd69940628f17d54304b28",
+  "privateDirectory": "/tmp/zarix-runtime-20261015/cnf11-extension-27e6af51-dcbd-4498-99ef-aec049bb9cc0",
+  "originalIntegrity": [
+    {
+      "table": "auth.identities",
+      "unchanged": true
+    },
+    {
+      "table": "auth.users",
+      "unchanged": true
+    },
+    {
+      "table": "public.account_creation_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.accounts",
+      "unchanged": true
+    },
+    {
+      "table": "public.bot_sessions",
+      "unchanged": true
+    },
+    {
+      "table": "public.budget_alerts",
+      "unchanged": true
+    },
+    {
+      "table": "public.budgets",
+      "unchanged": true
+    },
+    {
+      "table": "public.categories",
+      "unchanged": true
+    },
+    {
+      "table": "public.exchange_rates",
+      "unchanged": true
+    },
+    {
+      "table": "public.import_batches",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_create_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_sale_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_sales",
+      "unchanged": true
+    },
+    {
+      "table": "public.investments",
+      "unchanged": true
+    },
+    {
+      "table": "public.market_data_cache",
+      "unchanged": true
+    },
+    {
+      "table": "public.net_worth_snapshots",
+      "unchanged": true
+    },
+    {
+      "table": "public.notification_outbox",
+      "unchanged": true
+    },
+    {
+      "table": "public.plan_usage_cycles",
+      "unchanged": true
+    },
+    {
+      "table": "public.plan_usage_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.portfolio_performance_snapshots",
+      "unchanged": true
+    },
+    {
+      "table": "public.recurring_rules",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expense_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expense_splits",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expenses",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_group_members",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_groups",
+      "unchanged": true
+    },
+    {
+      "table": "public.transaction_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.transactions",
+      "unchanged": true
+    },
+    {
+      "table": "public.users",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets_analytics",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets_vectors",
+      "unchanged": true
+    },
+    {
+      "table": "storage.iceberg_namespaces",
+      "unchanged": true
+    },
+    {
+      "table": "storage.iceberg_tables",
+      "unchanged": true
+    },
+    {
+      "table": "storage.migrations",
+      "unchanged": true
+    },
+    {
+      "table": "storage.objects",
+      "unchanged": true
+    },
+    {
+      "table": "storage.s3_multipart_uploads",
+      "unchanged": true
+    },
+    {
+      "table": "storage.s3_multipart_uploads_parts",
+      "unchanged": true
+    },
+    {
+      "table": "storage.vector_indexes",
+      "unchanged": true
+    }
+  ],
+  "authSessionsRemaining": 0,
+  "authRefreshTokensRemaining": 0,
+  "newDatabaseCreated": false,
+  "newUsersCreated": 0,
+  "newCredentialFiles": 0,
+  "sqlWrites": 0,
+  "nativeOwnerPid": 4389,
+  "nativeListeners": [
+    {
+      "pid": 4389,
+      "address": "127.0.0.1:58321"
+    },
+    {
+      "pid": 4389,
+      "address": "127.0.0.1:58322"
+    },
+    {
+      "pid": 4389,
+      "address": "127.0.0.1:63139"
+    },
+    {
+      "pid": 4421,
+      "address": "*:20927"
+    },
+    {
+      "pid": 4437,
+      "address": "127.0.0.1:28336"
+    },
+    {
+      "pid": 4454,
+      "address": "*:30880"
+    }
+  ],
+  "priorArchivesUnchanged": true,
+  "ownerAFixtureCapacity": {
+    "activeAccounts": 18,
+    "activeMovementAccounts": 18,
+    "maximumBaselineMovementAccounts": 18,
+    "temporaryConcurrentAccountSlotsRequired": 2,
+    "passed": true
+  },
+  "workerOrPlanMutationsExecuted": false,
+  "nativeStackStillOwned": true,
+  "observedAt": "2026-10-15T09:41:56.347338+00:00"
+}

@@ -1,0 +1,36 @@
+{
+  "executedAt": "2026-10-15T01:39:15.687Z",
+  "status": "PASS",
+  "scope": "Post-run existing normal Auth checks, independent read-only synthetic financial invariants and deletion of only the task-owned temporary Chrome profile. No fixture/user/DB data deletion.",
+  "checks": [
+    {
+      "userId": "86ac638c-2710-4993-9622-f2e5671ad034",
+      "normalPasswordAuth": true,
+      "getUserVerified": true,
+      "role": "authenticated",
+      "temporarySDKSessionSignedOutScope": "local"
+    },
+    {
+      "userId": "84fcbd70-cd40-48cd-8427-3b2f2d4073c6",
+      "normalPasswordAuth": true,
+      "getUserVerified": true,
+      "role": "authenticated",
+      "temporarySDKSessionSignedOutScope": "local"
+    }
+  ],
+  "financialInvariant": {
+    "financial_rows": 4,
+    "account_balance": 9900.01,
+    "durable_receipts": 4,
+    "scope": "The same four UI-created logical commands remain; no financial replay was repeated by identity-only recovery."
+  },
+  "profileCleanup": {
+    "scope": "Only this runner-created temporary 0700 profile; personal profiles and the private reusable login fixture are preserved.",
+    "profilePathSha256": "75edf88637f9a617dc3462986e12729970d1e9ac3bf9423b211ab4fdb8a97c59",
+    "chromePid": 99822,
+    "chromePidAbsent": true,
+    "closedAt": "2026-10-15T01:37:12.585Z",
+    "permissionsBefore": "0700",
+    "removed": true
+  }
+}

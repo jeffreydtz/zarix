@@ -1,0 +1,13 @@
+# Cierre de compilación tras archivar la evidencia
+
+La revisión `d9501a795b88a0627d01426cb2c45f1cc848fd2b` corrige únicamente `tsconfig.json`: excluye `docs/tif/v2.13/evidence` de la compilación de aplicación. Las copias inmutables de pruebas ejecutadas conservan sus bytes e imports históricos. Las opciones estrictas, los roots de aplicación, Vitest, dependencias, SQL y código funcional no cambian respecto de `84df929ab2f169251a49f3e95d0e0c148dfcb87c`.
+
+El [fallo reproducido antes del cambio](before-change/verification.json) conserva quince errores TypeScript en fuentes archivadas: dos imports relativos y trece accesos de tipo `unknown`. Ese fallo documental no se reescribe como PASS. La [corrida posterior](executed/verification.json) acredita las 458 fuentes del manifiesto, limpias y estables, con una sola diferencia respecto de CI6: la exclusión anterior.
+
+Los seis comandos requeridos pasaron: `npm ci`, `npm run typecheck`, `npm run lint`, `npm run test:coverage`, `npm run test:db` y `npm run build`. Vitest conserva **913/913 pruebas en 92 archivos**. La cobertura de **37 archivos instrumentados** es 1824/2501 líneas (72,93%), 2029/2904 sentencias (69,86%), 283/416 funciones (68,02%) y 1620/2531 ramas (64%). No es cobertura de toda la aplicación. El 63,88% de ramas de CI6 queda en su informe histórico separado; no se atribuye la diferencia de corrida a una mejora funcional.
+
+Las dos consultas npm actuales devolvieron siete entradas altas y cero críticas en la auditoría completa (exit 1), y cero con `--omit=dev` (exit 0). El FAIL completo se conserva. Las comprobaciones de remediación y fuentes primarias previas están en [el informe de dependencias](../dependencies/ci6-current/assessment.json); esta exclusión no cambia el lockfile ni aplica una actualización mayor para silenciar el aviso.
+
+Se ejecutó con Node 22.17.0 y npm 11.4.2, después de detener los nueve servicios HTTP propios. La compilación usa valores Supabase explícitamente ficticios y las siete fuentes locales ya verificadas; no es otra prueba de integración autenticada. El preload restringe `globalThis.fetch` y no constituye un cortafuegos universal. No se iniciaron navegador, Auth, API nativa ni proveedor real, ni se repitieron los recorridos anteriores. Sus revisiones/builds originales siguen separados.
+
+El [ejecutor exacto](run-required-gates.py) conserva ocho comandos, tiempos y códigos de salida, sin sustituir fases anteriores. Su ventana exige `ZARIX_DOCUMENTATION_BUILD_WINDOW=owned-http-stopped`, los nueve procesos propios detenidos y los archivos locales originales de fuentes. No volver a ejecutar sobre esta carpeta: el programa rechaza reemplazar `executed/`.

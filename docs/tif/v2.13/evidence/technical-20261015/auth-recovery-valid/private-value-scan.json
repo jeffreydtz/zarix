@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "checkedFiles": 59,
+  "privateValuesCompared": 20,
+  "findings": [],
+  "valuesOrValueHashesPublished": false,
+  "scope": "Exact strings of12or more characters in the two explicit recovery checkpoints, selected existing env/login/Auth config and private JWK d/k values against only these two public evidence packages, excluding generated node_modules cache. Short local defaults, other repository files and universal absence of secrets are outside this scoped check; parent final scanner is separate."
+}

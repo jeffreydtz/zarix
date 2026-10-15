@@ -1,0 +1,43 @@
+{
+  "recordedAt": "2026-10-15T04:44:01.934501+00:00",
+  "status": "PREPARED_NOT_EXECUTED",
+  "runtimeProfile": "final-core-acceptance",
+  "coreDirectory": "core-acceptance",
+  "fixedTime": "2026-10-06T12:00:00.000Z",
+  "cases": [
+    "CP1-20"
+  ],
+  "derivedScope": "DERIVED-CP1-20-ARCHIVED-BATCH-REPLAY",
+  "arguments": [
+    "--profile",
+    "final-core-acceptance",
+    "--cases",
+    "CP1-20",
+    "--replay-original-cp120"
+  ],
+  "sources": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs",
+      "sha256": "f591971a924db3d5008a8df0b2cb1de41275bfa5ad08b3188361b62af7594510"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-scenarios.mjs",
+      "sha256": "4eb718afb7321acfc87bcf8a2e0e9971be0c5b8a0634db1bb1a1031874941b50"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-cp120-replay.mjs",
+      "sha256": "abff2b790eb3cf8f6b1c7a74a952055be283719dbb779db4019804f0eb10c9d1"
+    }
+  ],
+  "syntaxChecks": {
+    "status": "PASS_PARSE_ONLY",
+    "files": 3,
+    "runtime": false
+  },
+  "originalSourceReportSha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+  "preservation": "Exact old file bytes/batch/owner; archived account, complete account+ledger+receipts+batch snapshots unchanged; no reactivation/deletion. Fresh CP1-20 separately creates exactly two economic effects and one invalid skip.",
+  "semanticAdapter": "cp1-19-semantic-review.json, parent approved analogous CP1-20 only after all actual observations pass. Adapter labels are not fabricated API counters.",
+  "releaseRequired": "CI5/final clock build READY plus explicit parent writer window. No runtime before that.",
+  "databaseWrites": 0,
+  "browserCalls": 0
+}

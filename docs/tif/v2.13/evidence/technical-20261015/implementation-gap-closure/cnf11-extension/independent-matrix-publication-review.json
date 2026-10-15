@@ -1,0 +1,213 @@
+{
+  "schema": "zarix.independent-cnf11-matrix-publication-review.v1",
+  "reviewedAt": "2026-10-15T10:06:58.945668+00:00",
+  "reviewer": "remaining_scope independent matrix and editorial reviewer",
+  "status": "PASS_MATRIX_AND_EDITORIAL_REVIEW",
+  "scope": "Revisión de archivos de la matriz derivada CNF-11 y sus tres puntos editoriales de entrada. Se ejecutó únicamente reconcile-cnf11.py --verify, que compara bytes sin escribir. No se ejecutó producto, SQL, Auth, pruebas de runtime ni scanners. La metadata final de publicación y sus scanners se publicarán por separado y no reciben un PASS anticipado aquí.",
+  "matrix": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/case-traceability-cnf11.csv",
+    "sha256": "5d557b72976b3ac8a9cbf06be592da25916b603fe794fe01121a6426f40e4981",
+    "originalIds": 273,
+    "uniqueIds": 273,
+    "sameOriginalOrder": true,
+    "before": {
+      "PASS": 238,
+      "BLOCKED": 34,
+      "FAIL": 1
+    },
+    "after": {
+      "PASS": 239,
+      "BLOCKED": 33,
+      "FAIL": 1
+    },
+    "statusChanges": [
+      {
+        "case_id": "CNF-11",
+        "before": "BLOCKED",
+        "after": "PASS"
+      }
+    ],
+    "unchangedOtherStatuses": 272,
+    "unchangedOtherRows": {
+      "count": 272,
+      "semanticFieldsUnchanged": true,
+      "qualification": "En las272filas restantes, todos los campos salvo evidence son idénticos; evidence sólo añade el prefijo relativo ../ y resuelve a los mismos destinos, en el mismo orden. No se afirma identidad byte a byte de esos campos reubicados."
+    },
+    "changedCnf11FieldsBeyondPathRebase": [
+      "status",
+      "scope",
+      "assertions",
+      "blocker",
+      "evidence"
+    ],
+    "contractRevisionLabelsPreserved": true,
+    "originalCsvUnmodified": true
+  },
+  "readonlyReconciliation": {
+    "command": "python3 docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/reconcile-cnf11.py --verify",
+    "exitCode": 0,
+    "stdout": {
+      "mode": "verify",
+      "counts": {
+        "PASS": 239,
+        "BLOCKED": 33,
+        "FAIL": 1
+      },
+      "matrixSha256": "5d557b72976b3ac8a9cbf06be592da25916b603fe794fe01121a6426f40e4981"
+    },
+    "scriptInspectedBeforeExecution": true,
+    "filesWrittenByVerifier": 0,
+    "guards": "Comprueba CSV original, baseline exacto del checkpoint23d91,273IDs, reviews/evidencePins, cuatro migraciones originales y reporte histórico09Oct. --verify compara los dos outputs derivados byte a byte."
+  },
+  "references": {
+    "matrixReferencesChecked": 584,
+    "existingFileReferences": 581,
+    "existingDirectoryReferences": [
+      {
+        "case_id": "CP1-14",
+        "target": "lib/telegram"
+      },
+      {
+        "case_id": "CP1-15",
+        "target": "lib/telegram"
+      },
+      {
+        "case_id": "CP1-16",
+        "target": "lib/telegram"
+      }
+    ],
+    "missing": 0,
+    "decisionReviewPinsVerified": 4,
+    "decisionEvidencePinsVerified": 6,
+    "acceptanceReviewNestedPinsVerified": 48,
+    "editorialMarkdownTargetsChecked": 30,
+    "brokenEditorialTargets": 0,
+    "caseDecisionAndStatusFileMatch": true,
+    "composition": "La fila CNF-11 contiene seis referencias: README, revisión de aceptación y cuatro reportes de ejecución/cierre. La decisión fija cuatro revisiones y seis artefactos. La revisión de aceptación conserva su composición SQL/native por alcance. No se aprueba el caso sólo por un índice de cron o un contador."
+  },
+  "editorialAssessment": {
+    "currentState": "README de cnf11-extension, LEEME-entrega y README de v2.13 apuntan a239PASS/1FAIL/33BLOCKED y producto f5. Sólo CNF-11 se declara actualizado; la entrega sigue parcial y el PR se describe en borrador, sin fusión ni despliegue.",
+    "historicalState": "Los encabezados de LEEME/docsREADME distinguen las matrices anteriores238/1/34 y232/1/40 y las secciones académicas históricas. No convierten los gates anteriores, sus dependencias ni las fases previas en ejecuciones nuevas.",
+    "limitsPreserved": [
+      "Acuse retenido y deadline real en límite controlado, sin atribuir caída física de red, navegador/UI ni diez primeros commits concurrentes.",
+      "Gemini/OCR, Telegraf/media y MP/cotizaciones son dobles explícitos; recurso de pago sintético satisface el CSV, sin acreditar proveedor externo.",
+      "reserved/result:null conserva el efecto y su lectura/exportación; no tiene TTL ni recuperación automática de la respuesta.",
+      "Cold replay es un proceso nuevo del worker sobre la misma DB; reinicios previos conservan sus versiones y fixtures.",
+      "Rollback y variantes anteriores se componen por mecanismo y revisión, sin presentarlos como nuevas corridas.",
+      "Fc de65tablas validado por TOC/decodificación; no es una nueva restauración ni prueba de objetosStorage.",
+      "Nominalattempt1 conserva agregadoFAIL; la corrección del arnés y attempt2 son evidencia separada.",
+      "La captura de secretos distingue14valoresRAM nominales y13por fasebot, calibración propia del bot y ausencia de canary propia nominal. No afirma ausencia universal de secretos ni imagen exclusivamenteRAM.",
+      "No se atribuyen aceptación visual, MP real, un mes de disponibilidad o cobertura global nueva. CNF-02 y los demás estados conservan sus límites."
+    ],
+    "publicationBoundary": "Este dictamen no ejecuta ni aprueba los scanners finales. La mención editorial de un dictamen de publicación separado no se toma como resultado de escaneo ni como metadata final ya verificada; raíz publicará esa fase en archivo nuevo."
+  },
+  "preservedCheckpointFiles": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+      "byteIdenticalToCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-traceability-delta.csv",
+      "sha256": "26bef9e0c174e5571a0e13ec24428983d13d08864b88b1476277901b5c9ab227",
+      "byteIdenticalToCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-decisions.json",
+      "sha256": "ec80f51fcd7dce449ece166eb7b95f4a2bc5a587b477a66a25286845059ab546",
+      "byteIdenticalToCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-status-delta.json",
+      "sha256": "26c95ff27f865414e10830d5615cb96b7ee26ce036a5547c2261c1b3d387cbb9",
+      "byteIdenticalToCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-matrix-closure-review.json",
+      "sha256": "e72780a8312205812f3a2d08bf25ad1d1824d15685cf4f8426e1fe4695aa1920",
+      "byteIdenticalToCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/case-traceability.csv",
+      "sha256": "5b9634e7c2668347c2f08bc67d5c2c8f3d8f9edaca819f72e503124f5d8aca92",
+      "byteIdenticalToCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b"
+    }
+  ],
+  "blockingFindings": [],
+  "reviewerWrites": [
+    "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-matrix-publication-review.json"
+  ],
+  "matrixOrEditorialFilesModifiedByReviewer": false,
+  "runtimeSqlOrScannersRunByReviewer": false,
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/case-decision-cnf11.json",
+      "sha256": "c9460f85310172b5420abc354ad8f230b857ed4e937465a3995e8e6c2081f42b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/reconcile-cnf11.py",
+      "sha256": "95c3b63917c622af880f2c33554fbd8b8a14bc6734fa62e96e4470776416b180"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/case-traceability-cnf11.csv",
+      "sha256": "5d557b72976b3ac8a9cbf06be592da25916b603fe794fe01121a6426f40e4981"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/case-status-cnf11.json",
+      "sha256": "4113e5a066f2801eb81c84db7bb5ba3f1b3bba584b6a5e2e7c3b79c2ef98d665"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/README.md",
+      "sha256": "4d534df57f1cf8bd987d43b57270763b0bc8fc39d45f02e7c1c7cd71b078ca76"
+    },
+    {
+      "path": "docs/tif/v2.13/LEEME-entrega.md",
+      "sha256": "5510ae8b4fc97c91120a101a9d9ff8c7fd324135459caf54e81fb8fc5f8ba984"
+    },
+    {
+      "path": "docs/tif/v2.13/README.md",
+      "sha256": "47e6d68ed46ab89356bf668774097f7dd17648ca92b4b25afa7b0e6beb7516f0"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-traceability-delta.csv",
+      "sha256": "26bef9e0c174e5571a0e13ec24428983d13d08864b88b1476277901b5c9ab227"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-decisions.json",
+      "sha256": "ec80f51fcd7dce449ece166eb7b95f4a2bc5a587b477a66a25286845059ab546"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/case-status-delta.json",
+      "sha256": "26c95ff27f865414e10830d5615cb96b7ee26ce036a5547c2261c1b3d387cbb9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-matrix-closure-review.json",
+      "sha256": "e72780a8312205812f3a2d08bf25ad1d1824d15685cf4f8426e1fe4695aa1920"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/case-traceability.csv",
+      "sha256": "5b9634e7c2668347c2f08bc67d5c2c8f3d8f9edaca819f72e503124f5d8aca92"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-acceptance-review.json",
+      "sha256": "efefe5c08da1a14c57e94f5299822e7f6240fcb9175f99e358c9453da3520bfe"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-postruntime-privacy-review.json",
+      "sha256": "31a88701f8bc56c00a500602c5873e30367b96d2964ec19b7c1968641f6aae09"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-source-guard-review.json",
+      "sha256": "383a1c095066ad3aa03181f43ff7688c97434656f4fae24c20e2ba96a5c1e9b6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-harness-boolean-fix-review.json",
+      "sha256": "f73754e59e4155d7cfe28eb8155ba8bb923e1ba6741ee4f878e705fcb65aee3f"
+    }
+  ],
+  "privateValuesPublished": false
+}

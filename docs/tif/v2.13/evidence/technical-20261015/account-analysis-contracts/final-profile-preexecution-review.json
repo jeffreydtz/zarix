@@ -1,0 +1,54 @@
+{
+  "status": "PASS_STATIC_SCOPED_NO_EXECUTION",
+  "reviewedAt": "2026-10-15T04:52:38.195406+00:00",
+  "scope": "Incremental file-only review of final-core-acceptance profile adapter. Historical RF11 snapshots and results are unchanged. No Node imports, tests, runtime process checks, network, APIs or SQL executed by reviewer.",
+  "findings": [],
+  "selectedCases": [
+    "CP2-02",
+    "CP2-03",
+    "CP2-05",
+    "CP2-06",
+    "CP2-20",
+    "CP3-04",
+    "CP3-06",
+    "CP3-08",
+    "CP3-18"
+  ],
+  "checked": [
+    "Final profile requires explicit runtime-mode clock or normal; legacy/intermediate defaults remain distinct.",
+    "Exact native API58321 and Next3002; state paths selected from final-proof-clock-app-state.json or final-proof-app-state.json.",
+    "Final copyRoot /tmp/zarix-app-acceptance-final-20261015 and core-acceptance are mandatory; frozen code revision7c3e8722d8fcdc5d95d205e9a12eb856647e0e06.",
+    "Build/state/proof/env sourceManifest cross-bind buildId/revision/PID/private env; all physical copied sources and immutable Git blobs checked before execution.",
+    "Native target preparation exact project/config/data_directory and existing normal Auth identities/purpose are retained.",
+    "Clock mode requires same-build observed6Oct12Z and pinned clock preload; normal mode requires real-time metadata and does not invent a clock observation.",
+    "Gemini-unavailable artifact paths match final normal/clock profiles; canary scope excludes native Google provider dispatch.",
+    "Final app/lib/components/supabase/types/public/config/package source drift fails rather than accepting unbuilt fixes; doc/harness deltas can be disclosed separately.",
+    "Historical intermediate RF11 build836/aqWYS remains bound to historical source snapshots; the new adapter is not retroactively attributed to those completed reports."
+  ],
+  "limitations": [
+    "Static preparation review is not successful native execution of any selected final case.",
+    "Live listener/cwd, DB data_directory, SDK login, build metadata and preservation checks must pass during the separately authorized run."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "32c1e61918a3457c8ac0e3d9b1570291e5c7cb3acc43f8b3fa2bed3d9164c4ba"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "87d0678b6b7754a83b474a4940907d5fc121003937611cf684fecde75cda54c2"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-acceptance/verification.json",
+      "sha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/independent-rf11-review.json",
+      "sha256": "a6a2a00a03cb7ef0d78f5d44d85c427474c64131ab72831b4249285130e9eea6"
+    }
+  ]
+}

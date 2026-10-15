@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-15T04:16:50.273785+00:00",
+  "status": "PREPARED_NOT_EXECUTED",
+  "prerequisites": [
+    "Parent confirms previous possible window cleanup",
+    "Explicit parent release of new make",
+    "Human Codex-to-Arc authorization remains valid",
+    "App3002 ready"
+  ],
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/run-arc-little-tab.applescript",
+      "sha256": "592cc6a4e809b7b29446e666cb310e34be19a9922c21e1b7df8c92a1fca745b5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/run-arc-little-tab.py",
+      "sha256": "1b4a9aafcec8af06573948dcbc21cab94378d3648f7d52390f9b462e2354c856"
+    }
+  ],
+  "pythonAstSyntax": "PASS_STATIC_ONLY",
+  "appleScriptCompilation": "NOT_INVOKED",
+  "browserCalls": 0,
+  "limitations": [
+    "Installed Arc.sdef documents app-level write-only tabs, but runtime support/ID resolution is unproven.",
+    "UUID capture itself can fail; boolean-owned reference still gets one close attempt. Unknown cleanup blocks any further make.",
+    "Close acknowledgement and no-longer-resolvable ID are separate API observations,not proof of physical window absence.",
+    "No viewport/zoom/screenshot compatibility is established by this route."
+  ],
+  "ownershipCapture": "Immediately after make: log only the returned descriptor to a private0600 stderr file with osascript source-form rendering before any id property lookup. Driver exposes only typed tab/window UUID metadata; no existing enumeration. Runtime serializer support remains unproven.",
+  "ownedReferenceReadiness": "After private descriptor capture,retries only that returned own reference on-1728 for at most40x250ms. No additional make or personal-tab/window lookup. Asynchronous registration is a hypothesis,not the established cause of the first failure."
+}

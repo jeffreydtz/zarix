@@ -1,0 +1,26 @@
+{
+  "status": "BLOCKED",
+  "product": "safari",
+  "report": "/tmp/zarix-browser-compat-guard-20261015/browser-read-verification.json",
+  "cases": [
+    {
+      "cu": "CU001",
+      "status": "BLOCKED"
+    },
+    {
+      "cu": "CU002",
+      "status": "BLOCKED"
+    },
+    {
+      "cu": "CU003",
+      "status": "BLOCKED"
+    },
+    {
+      "cu": "CU004",
+      "status": "BLOCKED"
+    }
+  ],
+  "blockers": [
+    "EXECUTION_WINDOW_NOT_AUTHORIZED"
+  ]
+}

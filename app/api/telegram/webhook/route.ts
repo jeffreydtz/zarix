@@ -20,8 +20,8 @@ export async function POST(req: NextRequest) {
   try {
     const update = await req.json();
     await handleTelegramUpdate(update);
-  } catch (error) {
-    console.error('Telegram webhook error:', error);
+  } catch {
+    console.error('Telegram webhook error:');
   }
 
   return NextResponse.json({ ok: true });

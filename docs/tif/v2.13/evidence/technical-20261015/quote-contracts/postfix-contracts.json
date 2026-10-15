@@ -1,0 +1,98 @@
+{
+  "reconciledAt": "2026-10-15T03:45:54.222404+00:00",
+  "status": "PASS_COMPOSITE",
+  "originalCases": [
+    {
+      "id": "CP3-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": "attempt-1/mapping.json + actual durable SQL oracle in attempt-1/verification.json",
+      "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870"
+    },
+    {
+      "id": "CP3-02",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": "Four independent actual service/DB fixtures from836fd18 + captured-quote actual corrected SSR from5281167",
+      "serviceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "presentationFixRevision": "528116753d2f13c4d705b7e2a3ed0d4808e1d9a9"
+    }
+  ],
+  "scope": "Service integration with explicit loopback provider doubles and actual FX persistence; corrected SSR on the exact actual DB fallback response. No browser, Next HTTP, real-provider or monthly availability acceptance. No service/DB operation was repeated after the original five forks.",
+  "history": {
+    "runtimeAttempt": "attempt-1/verification.json",
+    "runtimeStatus": "FAIL",
+    "runtimeFailure": "Harness classic JSX needed actual React global; four workers fully passed, fallback service9assertions passed.",
+    "visibleTimeReview": "reconciled-contracts.json",
+    "visibleTimeReviewStatus": "FAIL",
+    "originalVisibleHour": "04:00UTC for16:00Z",
+    "allHistoricalArtifactsPreserved": true
+  },
+  "fix": {
+    "commit": "528116753d2f13c4d705b7e2a3ed0d4808e1d9a9",
+    "component": "components/ui/BlueFxReferenceDetails.tsx",
+    "change": "Only explicit hour12:false for the existing UTC locale formatting",
+    "preserves": "Original observedAt/dateTime, stored quote label and unknown original provider",
+    "unitBefore": {
+      "path": "before-visible-time-fix.json",
+      "result": "1FAIL"
+    },
+    "unitAfter": {
+      "path": "after-visible-time-fix.json",
+      "result": "1PASS"
+    },
+    "typecheckExitCode": 0,
+    "targetedLintExitCode": 0,
+    "independentStaticReview": "Native runtime owner reviewed the one-property formatter diff and real SSR regression without blockers."
+  },
+  "postfixSsr": {
+    "path": "ssr-followup-after-fix.json",
+    "sha256": "0eb22989a521e3ae2a4643f8b57f570f9f1e18145dcea68289d7635fe12a8a9d",
+    "assertionsPassed": 5,
+    "visibleHour": "16:00:00UTC",
+    "originalDatetimePreserved": true,
+    "httpRequests": 0,
+    "sqlCalls": 0,
+    "newFxRows": 0
+  },
+  "persistence": {
+    "newFxRowsByScenario": [
+      8,
+      8,
+      16,
+      16,
+      8
+    ],
+    "newFxRows": 56,
+    "baselineFxRows": 0,
+    "finalFxRows": 56,
+    "allOriginalFxRowsPreserved": true,
+    "eachPreviousScenarioFxPreserved": true,
+    "canonical25Unchanged": true,
+    "marketDataCacheUnchanged": true,
+    "hashScope": "PostgreSQL canonical JSONB text before NUMERIC parsing, and exact per-ID row text preservation. Auth is outside canonical25; native Auth-only tests were permitted separately."
+  },
+  "boundaries": "Existing PROOF Next3002/copy remains836fd18. The corrected presentation source is committed and tested by unit/SSR; final globalCI5 and any later compiled UI retest are separate. The original full worker sequence has not been rerun with the later harness React binding.",
+  "artifacts": [
+    {
+      "path": "reconciled-contracts.json",
+      "sha256": "1f6ff5071eacfad92e609b20aedcd46ede4b754e26ffd3f27b9409fe7098cdef"
+    },
+    {
+      "path": "ssr-followup-after-fix.json",
+      "sha256": "0eb22989a521e3ae2a4643f8b57f570f9f1e18145dcea68289d7635fe12a8a9d"
+    },
+    {
+      "path": "before-visible-time-fix.json",
+      "sha256": "85ee8866f7e8fb4ccfd92f787294ccbb89393f17361f6f88aea715f731ff8080"
+    },
+    {
+      "path": "after-visible-time-fix.json",
+      "sha256": "8ec91337201dd89bbaad352d9ad01432a60ec179a4fd86d7bcdfed71fe7a1784"
+    },
+    {
+      "path": "ssr-after-fix.mjs",
+      "sha256": "346d7f427b70b4646d2c6ec54d1a294afb0d7519cedd703a65b533992ce1ed61"
+    }
+  ]
+}

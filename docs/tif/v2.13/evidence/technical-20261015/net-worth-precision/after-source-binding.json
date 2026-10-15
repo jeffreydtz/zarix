@@ -1,0 +1,147 @@
+{
+  "recordedAt": "2026-10-15T05:18:08.096498+00:00",
+  "scope": "Read-only hash extraction after existing focal and CI6 runs; no new test execution.",
+  "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "focalManifest": {
+    "path": "../partial-account-valuation/manifest.json",
+    "sha256": "556afb703d65bbf502fc4c0008e744151f3c8df3405b147dee1f3eaea48b9bf7",
+    "files": [
+      {
+        "path": "lib/services/accounts.ts",
+        "sha256": "8d054941142c18363bac25f027aade6e88e111c38665a3ac1e8f53ce2fa8fdab",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "lib/services/net-worth.ts",
+        "sha256": "4ccb9c3fcd79fb087d23a97e7dd42797b3a66b9439cb31647eb48a4eae142bf9",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "app/api/accounts/route.ts",
+        "sha256": "109cf8c390ab92d611e3485c803275c4692c2d514b546ff14f4d1d5f374912d3",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "app/(authenticated)/dashboard/page.tsx",
+        "sha256": "c5f7dc9c57ac269b6016779db679d78406ec68c67187ac40bf40cb2ed92417c8",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "app/(authenticated)/accounts/page.tsx",
+        "sha256": "49e45f931bce4aefd3b054fbde5c79310dc471f267df3005ca5d3307fee33fb6",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "app/(authenticated)/accounts/[id]/page.tsx",
+        "sha256": "aee251477b6cbec25b59b09478305384c57268140ab562b65eea6615e5368b8d",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "components/accounts/AccountBalanceEquivalents.tsx",
+        "sha256": "d25b2eb092adbc5cbe8813963d9e302668bf49765da433129c4bb1923e9d18c2",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "components/accounts/AccountsList.tsx",
+        "sha256": "431eccb2bd6a9876eccfcdbfd842da09267bdc48982ab309b48d15380180f04e",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "components/dashboard/NetWorthHero.tsx",
+        "sha256": "de22df2cd35af938fdda8123099efa229ce503ad3785cf05229fd8e1e7f40762",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "components/dashboard/StickyNetWorthBar.tsx",
+        "sha256": "776f4787fd7de770de77fa75b4f102fc0b530cfd92fdd3e891bf9864422b3847",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "components/dashboard/AccountCards.tsx",
+        "sha256": "1db7fa58c2d880e560197b1791ecf2569c2ea4d5610b047c3cd53637a6d3efad",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "components/dashboard/CreditCardsWidget.tsx",
+        "sha256": "ae66dc3ad2d3795a310751ec23734a1523f524d612aa4af4ab5e781d5ab59886",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "__tests__/blue-fx-metadata.test.ts",
+        "sha256": "1041264afe9634859514e3db1aeafb95c2d8927ac25850cd8b49468e5b0f52a0",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "__tests__/financial-read-errors.test.ts",
+        "sha256": "c842c11581ef76fd9e9cf45f39d0ca336d40bc65b3a1d7aa83a521fca2b8c4bb",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "__tests__/dashboard-read-failures.test.ts",
+        "sha256": "df7c83bd026608ea36ee4149412b2bc2049fce16f6f9edf4fac5574f47da35dc",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "__tests__/cp318-account-equivalents.test.ts",
+        "sha256": "64b08e2f0821262cd56d1b1ca361004045fde227e957caca260c890dcdd938c8",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "__tests__/cp318-net-worth-hero.test.ts",
+        "sha256": "2b35c6195d3d6f9e06cb56ecb7f26acbf52b455db9e10f8e2f1f7a3d3fea076d",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      },
+      {
+        "path": "__tests__/net-worth-usd-formatting.test.ts",
+        "sha256": "7a05c358b2f9513b229cedc1b8089017bdc48a891619a083036397162c30c629",
+        "workingTreeMatches": true,
+        "gitRevisionMatches": true
+      }
+    ]
+  },
+  "beforeAfterSources": [
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "beforeSha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb",
+      "afterSha256": "de22df2cd35af938fdda8123099efa229ce503ad3785cf05229fd8e1e7f40762",
+      "unchanged": false
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "beforeSha256": "f5eacff2eba0c2e6b96beae73a4ea84849d80966cc034379248cd9d2576b1b4a",
+      "afterSha256": "776f4787fd7de770de77fa75b4f102fc0b530cfd92fdd3e891bf9864422b3847",
+      "unchanged": false
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "beforeSha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520",
+      "afterSha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520",
+      "unchanged": true
+    },
+    {
+      "path": "lib/hooks/use-privacy.ts",
+      "beforeSha256": "1429c9bee887ff5e3816afe9eec6435c1bfdaf6c2ce507865a56ee01e47eb43c",
+      "afterSha256": "1429c9bee887ff5e3816afe9eec6435c1bfdaf6c2ce507865a56ee01e47eb43c",
+      "unchanged": true
+    }
+  ],
+  "rawBeforeReportsPreserved": true,
+  "testSha256": "7a05c358b2f9513b229cedc1b8089017bdc48a891619a083036397162c30c629"
+}

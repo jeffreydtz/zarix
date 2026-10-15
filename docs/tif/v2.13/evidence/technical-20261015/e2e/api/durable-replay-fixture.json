@@ -1,0 +1,18 @@
+{
+  "userId": "86ac638c-2710-4993-9622-f2e5671ad034",
+  "accountId": "0c3f40e0-1c19-4a61-a2d8-5fabdf0003c9",
+  "transactionId": "016dab68-8406-4290-8b47-592aafab7949",
+  "endpoint": "/api/transactions",
+  "requestId": "489f203e-df13-4b06-b014-080dd34374e3",
+  "payload": {
+    "type": "expense",
+    "accountId": "0c3f40e0-1c19-4a61-a2d8-5fabdf0003c9",
+    "amount": 1500,
+    "currency": "ARS",
+    "description": "Replay receipt 966d224c"
+  },
+  "payloadSha256": "d4d79fb687eada6d7881e5cd50feceede5d3ded2402a6dc2c758a1de859396bd",
+  "responseSha256": "4cf088120da566e9b669f261fc382db83cacaade4dad5d580136ad713c5175b0",
+  "expectedBalance": 198500,
+  "scope": "Synthetic replay artifact; no session/capability/provider secret. First response intentionally not treated as observed by logical client; no real network failure induced."
+}

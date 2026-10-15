@@ -1,0 +1,16 @@
+[
+  {
+    "case_id": "RTV-034",
+    "replacement_contract": "historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery",
+    "status": "PASS",
+    "evidence": "focused-vitest.json",
+    "scope": "SQL/outbox regression equivalence in file-backed PostgreSQL WASM with synthetic Auth, query adapter and Telegram double; no full UI/API/provider acceptance."
+  },
+  {
+    "case_id": "RTV-038",
+    "replacement_contract": "historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart",
+    "status": "PASS",
+    "evidence": "focused-vitest.json",
+    "scope": "SQL/outbox regression equivalence in file-backed PostgreSQL WASM with synthetic Auth, query adapter and Telegram double; no full UI/API/provider acceptance."
+  }
+]

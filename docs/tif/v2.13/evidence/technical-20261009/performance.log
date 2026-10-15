@@ -1,0 +1,13 @@
+{
+  "report": "/tmp/zarix-isolated-performance.json",
+  "summary": {
+    "count": 100,
+    "failures": 0,
+    "p50Ms": 4.46907899999951,
+    "p95Ms": 5.558223999999427,
+    "maxMs": 6.270588999999745,
+    "percentileMethod": "Nearest rank, including failed observations in durations"
+  },
+  "coldMs": 8.51862600000004,
+  "scope": "One PGlite connection, normal PostgreSQL role; no HTTP, browser, network shaping, parallel sessions or provider calls. Does not establish CNF-01 dashboard SLO or monthly availability."
+}

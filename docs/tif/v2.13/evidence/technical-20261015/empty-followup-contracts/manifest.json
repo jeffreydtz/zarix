@@ -1,0 +1,274 @@
+{
+  "at": "2026-10-15T06:18:32.439593+00:00",
+  "status": "PASS_SCOPED_PENDING_INDEPENDENT_REVIEW",
+  "productRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "cases": [
+    {
+      "case_id": "CP1-01",
+      "status": "PASS",
+      "assertions": 23,
+      "acceptanceEligible": true,
+      "sourceStable": true,
+      "binding": {
+        "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+        "appBuildProofSha256": "41aec3bdac210c4c7695274fd81104c6cee4f8a02ca6ac1408a497e367f206c8",
+        "clockObservationSha256": "f8ca4295984ad72f1e9c63c1faea0b64d109050fb38dfbc951d4ee4b67fac3ee",
+        "coreVerificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+        "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "buildId": "Yi9bH3FttO71PxvY-EwCH",
+        "copyRoot": "/tmp/zarix-app-empty-account-20261015",
+        "appOrigin": "http://127.0.0.1:3004",
+        "apiOrigin": "http://127.0.0.1:60321",
+        "restOrigin": "http://127.0.0.1:60323",
+        "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+        "databasePort": 55322,
+        "authUpstream": "http://127.0.0.1:60327",
+        "originalAuthUpstream": "http://127.0.0.1:55321",
+        "authIsolation": "separate-cache-binary-on-new-database",
+        "completeAuthRestorationClaimed": false,
+        "storageCoverage": "Explicitly unavailable404; not tested",
+        "physicalSourceCount": 483,
+        "frozenGitSourceCount": 482,
+        "allPhysicalSourcesVerified": true,
+        "allVersionedSourcesMatchFrozenGit": true,
+        "ownedListenerAndCwdVerified": true,
+        "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+        "normalUsers": [
+          {
+            "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "logicalLabel": "A"
+          },
+          {
+            "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "logicalLabel": "B"
+          }
+        ]
+      },
+      "preservation": {
+        "protectedTablesPerDatabase": 13,
+        "originalRestoreAllFullRows": true,
+        "fixtureOwnedSnapshotExcluded": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+        "clonedBAllowedFixtureFields": [],
+        "authorizedClonedBFixtureApplied": false,
+        "allOtherOriginalFieldsUnchanged": true
+      },
+      "localSessionsClosed": true,
+      "verificationSha256": "e197c5a2150194089e1ab731dba0b832d87e1ccb8afd3340fd17bbbb96c8c1fe"
+    },
+    {
+      "case_id": "CP1-24",
+      "status": "PASS",
+      "assertions": 13,
+      "acceptanceEligible": true,
+      "sourceStable": true,
+      "binding": {
+        "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+        "appBuildProofSha256": "41aec3bdac210c4c7695274fd81104c6cee4f8a02ca6ac1408a497e367f206c8",
+        "clockObservationSha256": "f8ca4295984ad72f1e9c63c1faea0b64d109050fb38dfbc951d4ee4b67fac3ee",
+        "coreVerificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+        "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "buildId": "Yi9bH3FttO71PxvY-EwCH",
+        "copyRoot": "/tmp/zarix-app-empty-account-20261015",
+        "appOrigin": "http://127.0.0.1:3004",
+        "apiOrigin": "http://127.0.0.1:60321",
+        "restOrigin": "http://127.0.0.1:60323",
+        "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+        "databasePort": 55322,
+        "authUpstream": "http://127.0.0.1:60327",
+        "originalAuthUpstream": "http://127.0.0.1:55321",
+        "authIsolation": "separate-cache-binary-on-new-database",
+        "completeAuthRestorationClaimed": false,
+        "storageCoverage": "Explicitly unavailable404; not tested",
+        "physicalSourceCount": 483,
+        "frozenGitSourceCount": 482,
+        "allPhysicalSourcesVerified": true,
+        "allVersionedSourcesMatchFrozenGit": true,
+        "ownedListenerAndCwdVerified": true,
+        "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+        "normalUsers": [
+          {
+            "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "logicalLabel": "A"
+          },
+          {
+            "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "logicalLabel": "B"
+          }
+        ]
+      },
+      "preservation": {
+        "protectedTablesPerDatabase": 13,
+        "originalRestoreAllFullRows": true,
+        "fixtureOwnedSnapshotExcluded": null,
+        "clonedBAllowedFixtureFields": [
+          "status",
+          "current_period_end",
+          "grace_period_end",
+          "telegram_chat_id",
+          "updated_at"
+        ],
+        "authorizedClonedBFixtureApplied": true,
+        "allOtherOriginalFieldsUnchanged": true
+      },
+      "localSessionsClosed": true,
+      "verificationSha256": "424bd6d899b9508946c90557eeda23784cda94e0e8856721cddca4c45dd694aa"
+    }
+  ],
+  "mainAssertions": 36,
+  "additionalWorkerFocalTests": 1,
+  "additionalTestsIncludedIn913GlobalCI6": false,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "d3fbf4866aba72718e2fb9b32e36e38e529142b0b632a8542bf1cf43d39ba035"
+    },
+    {
+      "path": "body-capture-preparation-delta.json",
+      "sha256": "679c808f17f4d513d2eb76696f4cd326c3cd2c02860738dea3ef1fefaf7a32dc"
+    },
+    {
+      "path": "executed/cp1-01/dashboard.html",
+      "sha256": "05614ebc13ef0da80ba1b9b13f71ddfb59654094a0680e6560c7038b4e76288b"
+    },
+    {
+      "path": "executed/cp1-01/execution.json",
+      "sha256": "ed5267c40455cb3d82423d528fd1c6a190251f92c0f5ed094215046115a54b6a"
+    },
+    {
+      "path": "executed/cp1-01/runner-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "executed/cp1-01/runner-stdout.log",
+      "sha256": "05da42dc9e8ef796ec6bb8d2a2f16309c04f0a4ed767735f342ceac8d04505ad"
+    },
+    {
+      "path": "executed/cp1-01/verification.json",
+      "sha256": "e197c5a2150194089e1ab731dba0b832d87e1ccb8afd3340fd17bbbb96c8c1fe"
+    },
+    {
+      "path": "executed/cp1-24/execution.json",
+      "sha256": "b7c23a4fb88039ddecf70ee8efa15509cc223775cfcf83ca6d1eeedb56f2f44c"
+    },
+    {
+      "path": "executed/cp1-24/runner-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "executed/cp1-24/runner-stdout.log",
+      "sha256": "456e7d69d221988163bebbb9e98866477ca39a29f55cd213fe418aface14ec6f"
+    },
+    {
+      "path": "executed/cp1-24/verification.json",
+      "sha256": "424bd6d899b9508946c90557eeda23784cda94e0e8856721cddca4c45dd694aa"
+    },
+    {
+      "path": "executed/cp1-24/worker-input.json",
+      "sha256": "392946ec9135f8c923f71c2b53a3df855543924ad410f14d0345b6dd5980f7f4"
+    },
+    {
+      "path": "executed/cp1-24/worker-observation.json",
+      "sha256": "0c42f25656b6abb10e9f2a4afe660293d99045759e2bc925e532cb8f0acb0b55"
+    },
+    {
+      "path": "executed/cp1-24/worker-result.json",
+      "sha256": "0580dfacd25c45c0cb51cbdd8aa4dd887f94861b66afd02642ca5b15d786f146"
+    },
+    {
+      "path": "executed/cp1-24/worker-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "executed/cp1-24/worker-stdout.log",
+      "sha256": "2ff0adfd5c943618dccb10ba8e81944f8682a19e627e38d686da80ba8c511a54"
+    },
+    {
+      "path": "executed/sources/run.mjs",
+      "sha256": "260425690f8c42d2d9b5d9d385089b8ed22ea2809054b0eae5b65fd36afc05ab"
+    },
+    {
+      "path": "executed/sources/ssr-recent.mjs",
+      "sha256": "3c8f69fe65db8fceed84f7956a038d78a2a63b39e93326d173fd8cf60163aeb5"
+    },
+    {
+      "path": "executed/sources/worker-delivery.test-source.ts",
+      "sha256": "0f8131f124cdaca09b2556c44c728a13c8e6660131c9c2ce4bcad6ee24090ce1"
+    },
+    {
+      "path": "executed/sources/worker-delivery.vitest.config.mjs",
+      "sha256": "e7b296fbfa4938a743c8926458adcf508ccc8b65bc3644bae13c8f61c6efaef9"
+    },
+    {
+      "path": "preparation-attempt-1-no-raw-capture/preparation-manifest.json",
+      "sha256": "8993d6d6c7d01f1e37871ec87505d869b06fceece72392109ada4dbcbee2fde1"
+    },
+    {
+      "path": "preparation-attempt-1-no-raw-capture/preparation-static.json",
+      "sha256": "32173c44d9df3d5fdd60116e4e9709a08ea318211b29cfdfb58abd57bcdb79cd"
+    },
+    {
+      "path": "preparation-attempt-1-no-raw-capture/run.mjs",
+      "sha256": "1bb810f8a6e6d5298978c4cae3b755cf00a856b1f7ca366ab58dde3fb3c9ffb9"
+    },
+    {
+      "path": "preparation-attempt-2-raw-body-capture/README.md",
+      "sha256": "8ad73ea920f175c3b8a0eb5d902734accae6a88f1380105cc0396b7491f02c8c"
+    },
+    {
+      "path": "preparation-attempt-2-raw-body-capture/body-capture-preparation-delta.json",
+      "sha256": "679c808f17f4d513d2eb76696f4cd326c3cd2c02860738dea3ef1fefaf7a32dc"
+    },
+    {
+      "path": "preparation-attempt-2-raw-body-capture/preparation-manifest.json",
+      "sha256": "09ab875b371520cf4fb5df932e7941620b205fe0b80f972b6ff454987d570fdf"
+    },
+    {
+      "path": "preparation-attempt-2-raw-body-capture/preparation-static.json",
+      "sha256": "9d1de227f4b58b7471bb523357b0610534c952bbb30e98366000207047d8fe2e"
+    },
+    {
+      "path": "preparation-attempt-2-raw-body-capture/run.mjs",
+      "sha256": "260425690f8c42d2d9b5d9d385089b8ed22ea2809054b0eae5b65fd36afc05ab"
+    },
+    {
+      "path": "preparation-attempt-2-raw-body-capture/ssr-recent.mjs",
+      "sha256": "3c8f69fe65db8fceed84f7956a038d78a2a63b39e93326d173fd8cf60163aeb5"
+    },
+    {
+      "path": "preparation-attempt-2-raw-body-capture/worker-delivery.test-source.ts",
+      "sha256": "0f8131f124cdaca09b2556c44c728a13c8e6660131c9c2ce4bcad6ee24090ce1"
+    },
+    {
+      "path": "preparation-attempt-2-raw-body-capture/worker-delivery.vitest.config.mjs",
+      "sha256": "e7b296fbfa4938a743c8926458adcf508ccc8b65bc3644bae13c8f61c6efaef9"
+    },
+    {
+      "path": "preparation-manifest.json",
+      "sha256": "e2700160e52981c287f28d95238390feb92806569cb024dc44487249b0bcb308"
+    },
+    {
+      "path": "preparation-static.json",
+      "sha256": "1db1292334544449d588c7eb157b163cc0665ec8c0a158d8048d5e71e7dab72f"
+    },
+    {
+      "path": "run.mjs",
+      "sha256": "260425690f8c42d2d9b5d9d385089b8ed22ea2809054b0eae5b65fd36afc05ab"
+    },
+    {
+      "path": "ssr-recent.mjs",
+      "sha256": "3c8f69fe65db8fceed84f7956a038d78a2a63b39e93326d173fd8cf60163aeb5"
+    },
+    {
+      "path": "system-case-results.json",
+      "sha256": "1afda0fd987986516f6bbc13e01e110ae497c12396552c2ca68c2fd289412053"
+    },
+    {
+      "path": "worker-delivery.test-source.ts",
+      "sha256": "0f8131f124cdaca09b2556c44c728a13c8e6660131c9c2ce4bcad6ee24090ce1"
+    },
+    {
+      "path": "worker-delivery.vitest.config.mjs",
+      "sha256": "e7b296fbfa4938a743c8926458adcf508ccc8b65bc3644bae13c8f61c6efaef9"
+    }
+  ]
+}

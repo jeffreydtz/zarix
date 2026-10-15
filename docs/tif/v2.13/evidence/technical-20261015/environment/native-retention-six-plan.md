@@ -1,0 +1,18 @@
+# Retención y parada de seis réplicas nativas
+
+**Preparado; no ejecutado.** Plan separado del anterior de cuatro réplicas; no modifica el controlador privado antiguo. Las seis identidades y comandos están en `native-retention-six-plan.json`: SOURCE54321/54322, RESTORE55321/55322, LOAD56321/56322, E2E57321/57322, PROOF58321/58322, IMPORT-TARGET59321/59322.
+
+`preserve-six-native-stacks.py` no actúa por defecto. Tiene dos fases independientes y confirmaciones operativas exactas documentadas en el JSON. El padre debe revisar el código y liberar todos los escritores, navegadores y harnesses antes del uso. Las confirmaciones no amplían autorizaciones ni crean permisos globales.
+
+1. `retain` valida identidades, proyectos, procesos, puertos y directorios. Crea seis dumps privados `pg_dump -Fc`, globals/roles SQL, TOC/descompresión sin conexión de restore y un checkpoint completo. Conserva configuraciones, estados/credenciales, env/logins, Auth/cookies/recovery anidados y Storage propio, comparando hashes. Destino nuevo fuera de Git: `zarix-private-final-<UTC>` en el padre del repositorio, directorio0700/archivos0600.
+2. `stop --retention-root <directorio>` requiere otra invocación y liberación explícita del padre. Revalida las seis retenciones antes de cualquier parada. Solo usa el CLI oficial `stack stop --workdir <exacto> --stack-id <exacto>`. Verifica salida de procesos/listeners y permanencia de estado/configuración/credenciales, PG data y Storage. No borra ni destruye.
+
+Las seis rutas PG verificadas por archivos terminan en `data/<databaseInstanceId>/data`. PostgreSQL usa puerto interno5432 y socket Unix; cada frontend SQL mantiene su puerto local54322–59322, con listener y propietario propios. El preflight SQL futuro comprueba ambos niveles. Los tiempos de inicio de procesos se leen con UTC y locale C. La retención incluye el archivo `pgsodium_root.key` propio, privado, separado del árbol PG activo; rechaza errores de lectura de cualquier subdirectorio y sincroniza archivos/directorios antes del checkpoint.
+
+Los árboles del runtime con prefijos `proof-`, `import-target-`, `final-proof-` y `closure-proof-` se seleccionan completos, además de los directorios privados/Auth/sesión y los archivos superiores. Esto conserva las fuentes y siete WOFF2 locales de los mocks de fuentes CI5/CI6, y hace que altas o cambios de archivos críticos posteriores a la retención bloqueen la parada.
+
+Se fijan dos copias de aplicación adicionales fuera del runtime: CI5 en `/tmp/zarix-app-acceptance-final-20261015` y CI6 en `/tmp/zarix-app-closure-final-20261015`. Cada una se valida contra su propio `core-acceptance` o `core-closure`: revisión congelada, manifiesto y bytes de todas sus fuentes declaradas, hash del entorno privado y `BUILD_ID`. Se conservan esas fuentes, el build-proof, el informe core y el ID de build como metadata; la validación se repite después de la copia y antes de parar. No se archivan `node_modules` ni los binarios `.next`. Si se pierde `/tmp`, la aplicación tendrá que reinstalar dependencias y recompilar; no se afirma respaldo binario íntegro del entorno.
+
+No se copia PG raw activo como supuesto backup. Los datos PG permanecen in situ; una parada normal puede cambiar WAL y `pg_control`. Dumps, checksums y lectura del TOC/descompresión son retención, **no aceptación de restauración**. Una restauración nueva necesitaría ejecución y oráculos propios.
+
+Se retienen secretos y hashes locales únicamente fuera de Git. La salida pública usa estado y metadata saneada. Los errores parciales se conservan sin reset/destroy, `--all`, señales manuales, `pg_ctl` ni borrado; requieren revisión. No se atribuye a estos archivos ninguna acción ejecutada.

@@ -1,0 +1,83 @@
+{
+  "reviewedAt": "2026-10-15T04:42:08.083803+00:00",
+  "status": "PASS_BY_EXPLICIT_SEMANTIC_RECONCILIATION",
+  "scope": "Read-only originalCSV/executed fixture/normal-Auth API/nativeSQL evidence review. No new requests, DB queries, runtime, counters or raw-artifact edits. This review closes only the nomenclature question in CP1-19.",
+  "originalCases": [
+    {
+      "id": "CP1-19",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 5,
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+        "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-19-de8a454f-dbe7-40e1-a9d7-22867ef0249f.csv",
+        "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs"
+      ],
+      "acceptedScope": "Independent new account starts10000. Exact CSV500expense/700income/0 at06Oct yields HTTP200, exactly two economic rows500/700, balance10200, total3. One invalid amount rejection and no other omission are observed. No browser or literal JSONkey requirement appears in the originalCSV."
+    }
+  ],
+  "semanticMapping": {
+    "observedActualResponse": {
+      "imported": 2,
+      "skipped": 1,
+      "pending": 0,
+      "total": 3,
+      "skipTitles": [
+        "Fila omitida — monto inválido"
+      ]
+    },
+    "closedPartition": {
+      "validImports": 2,
+      "invalidAmountRejections": 1,
+      "otherOmissionsIncludingDuplicates": 0,
+      "unconfirmed": 0,
+      "total": 3
+    },
+    "reason": "The current API groups all skips. Here the complete skipped count is1 and the only observed detail identifies invalid amount, matching the singlezero input. Duplicate omission is disabled by the recorded harness input and both valid rows commit. Thus rejected1/otheromitted0 is a closed semantic partition, not fabricated response fields.",
+    "notApiProperties": [
+      "invalidAmountRejections",
+      "otherOmissionsIncludingDuplicates"
+    ],
+    "noResponseSchemaChange": true
+  },
+  "rawHistory": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+    "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+    "wholeRunStatus": "FAIL",
+    "caseStatusRetained": "PARTIAL",
+    "pendingQuestionRetained": "Import counter nomenclature contract review",
+    "scope": "The original raw report remains unchanged, including other cases’ failures. This separate review reconciles CP1-19 only."
+  },
+  "executionBinding": {
+    "servedRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+    "importRouteSha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444",
+    "importSourceMatchesImmutableGit836": true,
+    "clockFixedTime": "2026-10-06T12:00:00.000Z",
+    "sourceStable": true,
+    "servedCopyStable": true,
+    "originalTablesProtected": 12,
+    "allOriginalRowsIntact": true
+  },
+  "cp1_20Boundary": "Equivalent interpretation applies only after an actually successful new JSON runtime. Its existing503 remainsFAIL; the new unit patch evidence alone does not promote it.",
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-19-de8a454f-dbe7-40e1-a9d7-22867ef0249f.csv",
+      "sha256": "a11b10dad59717047d513a3faaa0c93b89d6fbf71dd09e5d492c9d4d13839203"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs",
+      "sha256": "c580f3956237c0ad29f5aa06665a784a99c6420680e6f76f76a70a43eaadcdfb"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    }
+  ],
+  "findings": [],
+  "blockers": []
+}

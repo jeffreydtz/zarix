@@ -1,3 +1,5 @@
+> **Referencia histórica.** La entrega vigente y sus cuatro CU se encuentran en [v2.13](../tif/v2.13/README.md). Este catálogo y sus resultados conservan el contexto anterior.
+
 # Structural testing evidence (SAP-TFI-2026)
 
 This folder holds **test-1 (CFG)**, **test-2 (coverage criterion)**, **test-3 (suite ↔ criterion mapping)**, and **test-4 (measured coverage)** for the Zarix units referenced in EV-COD (PR#6).

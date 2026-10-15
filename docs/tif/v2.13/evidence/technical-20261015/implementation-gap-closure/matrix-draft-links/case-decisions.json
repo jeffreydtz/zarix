@@ -1,0 +1,176 @@
+{
+  "createdAt": "2026-10-15T08:43:05.210228+00:00",
+  "productRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "nativeRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "decisionOwner": "root",
+  "scope": "Acceptance decisions over the unchanged original contracts, with explicit reviewed compositions. No promotion from implementation alone. Unanswered functional/access questions remain BLOCKED.",
+  "decisions": [
+    {
+      "case_id": "CP1-08",
+      "status": "PASS",
+      "contract_revision": "Original case contract",
+      "scope": "Contrato original ejecutado por API/SQL nativos en COPY730 con sesión normal; auditoría append-only y saldo exacto. Sin navegador ni aceptación universal de DELETE.",
+      "evidence": "../../delta-20261015-cp1-08/README.md; native-delta/runnernative/executed-attempt-1/verification.json; independent-native-delta-review.json",
+      "assertions": "A10000 menos gasto1500 deja8500 | DELETE propio deja10000 y cero filas operativas de ese UUID | Un audit conserva UUID dueño actor autenticado y OLD exacto | Reintento no duplica audit; RLS ajeno denegado",
+      "blocker": "",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-cnf-local-focal-review.json",
+          "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+        }
+      ]
+    },
+    {
+      "case_id": "CP2-11",
+      "status": "PASS",
+      "contract_revision": "Original case contract",
+      "scope": "Composición explícita API/SQL/SSR del mismo COPY730: preferencias propias persistidas y nueva sesión posterior al PUT. El total200USD es un prop Flight del servidor, sin afirmación de texto animado o interacción visual.",
+      "evidence": "../continuation-preferences/README.md; native-delta/runnernative/executed-attempt-1/verification.json; native-delta/ssr-http/attempt-1/verification.json; independent-ssr-http-review.json",
+      "assertions": "ARS120000 y USD100 a1200 producen200USD | GuardarUSD/widgetoculto; logout y nueva sesión conservan estado | Dashboard ocultaHero/Sticky/sentinel | Saldos120000/100 e historial sin cambios; B conserva configuración propia",
+      "blocker": "",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        }
+      ]
+    },
+    {
+      "case_id": "CP2-12",
+      "status": "PASS",
+      "contract_revision": "Original case contract",
+      "scope": "Contrato negativo original compuesto de API/SQL reales COPY730 y HTTP Next: validación estricta, dueño ligado a sesión, RLS y formulario de identidad anterior rechazado. Sin CRUD inventado ni navegador.",
+      "evidence": "../continuation-preferences/README.md; native-delta/runnernative/executed-attempt-1/verification.json; native-delta/ssr-http/attempt-1/verification.json; independent-ssr-http-review.json",
+      "assertions": "BaseZZZ rechazada400 sin cambiar configuración | Payload con selector de usuario no permitido | JWT normal ajeno no lee ni actualiza preferencias de B | Formulario del dueño anterior403 antes de escribir; inventarios intactos",
+      "blocker": "",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        }
+      ]
+    },
+    {
+      "case_id": "CP3-17",
+      "status": "PASS",
+      "contract_revision": "Original case contract",
+      "scope": "Composición SSR38 más suplemento HTTP posterior separado de ambos dashboards en COPY730. HTML y Flight/módulos distinguen A/B; no se afirma hidratación, pixels o interacción de navegador.",
+      "evidence": "native-delta/ssr-http/attempt-1/verification.json; native-delta/ssr-http/dashboard-supplement/verification.json; independent-dashboard-supplement-review.json",
+      "assertions": "A guardaUSD/oculto y BARS/visible con nuevas sesiones propias | GETDashboardA y B200 con módulos/props de su dueño | B muestra totalpropio0 y excluye finanzasA | Siete inventarios financieros e históricos sin cambios; SQLAuth0/refresh0",
+      "blocker": "",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        },
+        {
+          "path": "independent-dashboard-supplement-review.json",
+          "sha256": "c13e23856892300ebceb3b1c349a2bc1a37c18ada3a4d5e99cdd32bae71518e9"
+        }
+      ]
+    },
+    {
+      "case_id": "CNF-10",
+      "status": "PASS",
+      "contract_revision": "Original case contract",
+      "scope": "Contrato local de credenciales compuesto: handlers y bot de HEADb055 con fronteras dobles explícitas y contadores I/O; JWT normal GoTrue contra cron nativo COPY730. Se conservan versiones y fuentes equivalentes del guard. No acredita entrega Telegram real ni toda infraestructura de logs.",
+      "evidence": "channel-secrets/verification.json; channel-secrets/independent-channel-secrets-review.json; native-delta/runnernative/cnf11-final-local/executed-attempt-1/cnf10-user-jwt.json; independent-cnf-local-focal-review.json",
+      "assertions": "SinJWT, JWTGoTrue común y cronsecreterróneo401 sin trabajo protegido | Credencialcron válida ejecuta sólo canal definido | Webhooks compartido y porusuario rechazan inválido/cruzado; válido usa dueño/chat almacenados | Capacidad ausente/revocada permite una lectura de resolución sin dispatch/escrituras | Nueve ramas de error registran sólo etiquetas fijas;26focales y60relacionadas no se suman como casos",
+      "blocker": "",
+      "reviews": [
+        {
+          "path": "channel-secrets/independent-channel-secrets-review.json",
+          "sha256": "b0f907412c997b929009f85856391cef7813a32730289214992b8e47284d2142"
+        },
+        {
+          "path": "independent-cnf-local-focal-review.json",
+          "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+        }
+      ]
+    },
+    {
+      "case_id": "CNF-13",
+      "status": "PASS",
+      "contract_revision": "Original case contract",
+      "scope": "Nueve caminos originales de COPY730 ejecutados con DB/Auth reales y proveedores sintéticos permitidos por CSV. Captura robusta calibrada antes de Auth/SQL; contador por componentes terminales, sin collector externo, UI ni disponibilidad. Fuente relevante coincide con f5 por hash; runtime sigue atribuido a730.",
+      "evidence": "correlation/manifest.json; native-delta/runnernative/cnf13-robust-only/executed-attempt-1/cnf13-nine-robust.json; native-delta/runnernative/cnf13-robust-only/executed-attempt-1/privacy-and-cleanup.json; native-delta/runnernative/cnf13-robust-only/executed-attempt-1/canary-calibration.json; independent-cnf13-robust-review.json",
+      "assertions": "corr-cnf13-01..09 con timestamp canal resultado y referencias mínimas | Manual1500 deja8500; monto-1 y SQLfallida sin fila/recibo | Cron con aviso fallido conserva ocurrencia y enlaza outbox/movimiento sin segundo débito | PagoHMAC válido/falso/MP503 clasificados sin inventar estado | 9grupos42checks54observaciones27muestras;55consolas formateadas | Canary detecta Error.message/stack/cause más3marcadores y4imágenes; clear1a0 antes de requests | Cero coincidencias posteriores contra13valores seleccionados/3señuelos/4representaciones; PNGbase64 sólo en nota sintética privada",
+      "blocker": "",
+      "reviews": [
+        {
+          "path": "independent-cnf-local-focal-review.json",
+          "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+        },
+        {
+          "path": "independent-cnf13-robust-review.json",
+          "sha256": "4deab9df8c3777ef1adefa4c696251f1fb2220ab8e7e6ea4b13bde02985cc5d1"
+        }
+      ]
+    },
+    {
+      "case_id": "CNF-11",
+      "status": "BLOCKED",
+      "contract_revision": "Original case contract",
+      "scope": "Seis protocolos locales de COPY730 completos en su alcance:1commit inicial,2replays y10replays concurrentes posteriores por protocolo;182checks. Conserva incertidumbre de transportes/capturas no ejecutados, sin exigir MP real para el recurso sintético del CSV.",
+      "evidence": "native-delta/runnernative/cnf11-final-local/executed-attempt-1/cnf11-six-local.json; independent-cnf-local-focal-review.json; ../offline-durability/README.md; ../investment-contracts/independent-restart-review.json",
+      "assertions": "Gasto8500; transferencia8500/3500; importación9500; cron9600 | Venta4x120 deja6 y realizado80; preapprovalACTIVE/vigencia estable | UPDATE/DELETEtransferencia exactos y CHECKcrédito revierte ambos impactos/ledger/recibo | Dos comandosventa6+6 sobre10 permitenuno y rechazanotro sinnegativos",
+      "blocker": "Faltan captura OCR/Telegram como canales y las inyecciones de fallo escritura/acuse y transporte exigidas por cada canal. Descartar el cuerpo por el consumidor no es pérdida real de red; diez replays después del primer commit no acreditan contención inicial. Hay evidencia histórica de pérdida de respuesta/reinicio por separado, que no se trasplanta a todos los fixtures. Pago sintético local sí pasó y no requiere MP real.",
+      "reviews": [
+        {
+          "path": "independent-cnf-local-focal-review.json",
+          "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+        }
+      ]
+    },
+    {
+      "case_id": "CP2-19",
+      "status": "BLOCKED",
+      "contract_revision": "Original case contract",
+      "scope": "Aislamiento soportado previamente y nuevos GET inversión/preferencias propios probados en alcances separados. Sin extrapolar una matriz CRUD completa desde endpoints nuevos o HTTP405.",
+      "evidence": "../security-matrix/cp2-19-composite.json; investment-read/verification.json; native-delta/runnernative/executed-attempt-1/verification.json; native-delta/ssr-http/attempt-1/verification.json; DECISIONES-PENDIENTES.md",
+      "assertions": "GET inversión propia/archivada200 y ajena404 | Preferencias estrictas por sesión con RLS ajeno sinfilas y formularioobsoleto403",
+      "blocker": "El GET individual antes ausente ya está implementado y probado; las preferencias tienen GET/PUT propios. DELETE de preferencias por API no existe y falta definir si significa reset de valores o una operación fuera del producto. La matriz histórica42PASS/6BLOCKED no se presenta como un nuevo recuento; tampoco se altera el guard invoker para fabricar un SQLSTATE literal. No se añadió DELETE de perfil.",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        }
+      ]
+    },
+    {
+      "case_id": "CNF-06",
+      "status": "BLOCKED",
+      "contract_revision": "Original case contract",
+      "scope": "Recuperación UI implementada y servida por HTTP;30tests únicos del flujo/callback/páginas. El reset GoTrue/SMTP completo anterior conserva su revisión. Aceptación visual/teclado permanece separada.",
+      "evidence": "reset/verification.json; native-delta/ssr-http/attempt-1/verification.json; ../auth-recovery-valid/README.md; DECISIONES-PENDIENTES.md",
+      "assertions": "Forgot200 con formulario de correo | Update sinAuth no muestraform y conAuth ligaUID | Callbackinválido307 seguro sin reflejarcódigo | Regresiones del SDK validan mismousuario y confirmación",
+      "blocker": "Restan tareas de cuenta/exportación/login/reset con teclado, descarga, errores y viewports/zooms originales. La última instrucción exige Arc; el cierre de su ventana anterior sigue UNKNOWN y no hubo autorización nueva. SSR/Flight no prueba interacción o compatibilidad visual. La UI ya no se describe como ausente.",
+      "reviews": [
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        }
+      ]
+    }
+  ]
+}

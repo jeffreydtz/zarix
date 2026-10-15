@@ -1,0 +1,482 @@
+{
+  "status": "PASS_INDEPENDENT_REQUIRED_GATES_REVIEW_SCOPED",
+  "reviewedAt": "2026-10-15T07:59:24.340623+00:00",
+  "reviewer": "dependency_audit",
+  "findings": [],
+  "codeRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "publishedCheckpoint": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "selectedAttempt": "required-gates-attempt-3",
+  "reviewMethod": "Read-only parsing of existing public JSON/logs and SHA256 comparison with current files and frozen Git blobs. No gate, network query, npm command, package mutation, Native runtime, Auth, API, browser or provider operation was performed by this review.",
+  "gateOutcome": {
+    "commandRecords": [
+      {
+        "name": "npm-ci",
+        "command": [
+          "npm",
+          "ci"
+        ],
+        "startedAt": "2026-10-15T07:53:29.218719+00:00",
+        "finishedAt": "2026-10-15T07:53:38.064837+00:00",
+        "durationMs": 8846,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "typecheck",
+        "command": [
+          "npm",
+          "run",
+          "typecheck"
+        ],
+        "startedAt": "2026-10-15T07:53:38.064942+00:00",
+        "finishedAt": "2026-10-15T07:53:44.191574+00:00",
+        "durationMs": 6127,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "lint",
+        "command": [
+          "npm",
+          "run",
+          "lint"
+        ],
+        "startedAt": "2026-10-15T07:53:44.191671+00:00",
+        "finishedAt": "2026-10-15T07:53:45.162478+00:00",
+        "durationMs": 971,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "coverage",
+        "command": [
+          "npm",
+          "run",
+          "test:coverage",
+          "--",
+          "--reporter=json",
+          "--outputFile=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/final-vitest.json"
+        ],
+        "startedAt": "2026-10-15T07:53:45.162567+00:00",
+        "finishedAt": "2026-10-15T07:53:53.017444+00:00",
+        "durationMs": 7855,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "test-db",
+        "command": [
+          "npm",
+          "run",
+          "test:db"
+        ],
+        "startedAt": "2026-10-15T07:53:53.017555+00:00",
+        "finishedAt": "2026-10-15T07:54:06.242037+00:00",
+        "durationMs": 13225,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "build",
+        "command": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "startedAt": "2026-10-15T07:54:06.242130+00:00",
+        "finishedAt": "2026-10-15T07:54:25.420468+00:00",
+        "durationMs": 19178,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "dependency-audit",
+        "command": [
+          "npm",
+          "audit",
+          "--json"
+        ],
+        "startedAt": "2026-10-15T07:54:25.420550+00:00",
+        "finishedAt": "2026-10-15T07:54:26.338953+00:00",
+        "durationMs": 918,
+        "exitCode": 1,
+        "status": "FAIL"
+      },
+      {
+        "name": "production-audit",
+        "command": [
+          "npm",
+          "audit",
+          "--omit=dev",
+          "--json"
+        ],
+        "startedAt": "2026-10-15T07:54:26.339040+00:00",
+        "finishedAt": "2026-10-15T07:54:26.837149+00:00",
+        "durationMs": 498,
+        "exitCode": 0,
+        "status": "PASS"
+      }
+    ],
+    "recordCount": 8,
+    "requiredNpmGateCount": 6,
+    "requiredNpmGatesPassed": 6,
+    "fullAudit": "FAIL",
+    "fullAuditExitCode": 1,
+    "productionAudit": "PASS",
+    "productionAuditExitCode": 0,
+    "allEightCommandsPassed": false,
+    "node": "v22.17.0",
+    "npm": "11.4.2",
+    "buildId": "GOPamm5e4MX7uIpwLAXZ4"
+  },
+  "sourceProof": {
+    "manifestRows": 478,
+    "gitTrackedRows": 478,
+    "manifestSha256": "2b8efe9805dec55af7486bc3348be959a5a3e3d415fad81be416d2b4dd341976",
+    "compactManifestDigestRecomputed": true,
+    "currentFileHashMismatches": [],
+    "frozenGitBlobHashMismatches": [],
+    "reportedSourceWorkingTreeClean": true,
+    "reportedSourceStable": true,
+    "scope": "The 478 declared tracked application, test, SQL and build inputs, not a claim that all documentation or every filesystem path was unchanged."
+  },
+  "vitest": {
+    "success": true,
+    "passedTests": 1008,
+    "totalTests": 1008,
+    "failedTests": 0,
+    "pendingTests": 0,
+    "passedFiles": 102,
+    "totalFiles": 102,
+    "assertionResultsRecounted": 1008,
+    "fileCountMethod": "testResults.length; numTotalTestSuites 256 is not a file count."
+  },
+  "coverage": {
+    "instrumentedFileCount": 37,
+    "totals": {
+      "lines": {
+        "total": 2549,
+        "covered": 1874,
+        "skipped": 0,
+        "pct": 73.51
+      },
+      "statements": {
+        "total": 2955,
+        "covered": 2082,
+        "skipped": 0,
+        "pct": 70.45
+      },
+      "functions": {
+        "total": 440,
+        "covered": 306,
+        "skipped": 0,
+        "pct": 69.54
+      },
+      "branches": {
+        "total": 2541,
+        "covered": 1632,
+        "skipped": 0,
+        "pct": 64.22
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "scope": "Risk-focused 37-file instrumentation configured in the frozen vitest.config.ts. These are not whole-application percentages, overall coverage-target fulfillment, UI acceptance or cumulative totals from previous attempts."
+  },
+  "audit": {
+    "queryHasActualMetadata": true,
+    "fullVulnerabilityCounts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "productionVulnerabilityCounts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "affectedPackageEntries": 7,
+    "affectedInstalledNodes": 8,
+    "installedNodes": [
+      {
+        "package": "@next/eslint-plugin-next",
+        "node": "node_modules/@next/eslint-plugin-next",
+        "version": "15.5.27",
+        "lockDev": true
+      },
+      {
+        "package": "braces",
+        "node": "node_modules/braces",
+        "version": "3.0.3",
+        "lockDev": true
+      },
+      {
+        "package": "chokidar",
+        "node": "node_modules/chokidar",
+        "version": "3.6.0",
+        "lockDev": true
+      },
+      {
+        "package": "eslint-config-next",
+        "node": "node_modules/eslint-config-next",
+        "version": "15.5.27",
+        "lockDev": true
+      },
+      {
+        "package": "fast-glob",
+        "node": "node_modules/fast-glob",
+        "version": "3.3.1",
+        "lockDev": true
+      },
+      {
+        "package": "fast-glob",
+        "node": "node_modules/tailwindcss/node_modules/fast-glob",
+        "version": "3.3.3",
+        "lockDev": true
+      },
+      {
+        "package": "micromatch",
+        "node": "node_modules/micromatch",
+        "version": "4.0.8",
+        "lockDev": true
+      },
+      {
+        "package": "tailwindcss",
+        "node": "node_modules/tailwindcss",
+        "version": "3.4.19",
+        "lockDev": true
+      }
+    ],
+    "allAffectedNodesDevelopmentDependenciesInFrozenLock": true,
+    "reportedRecommendations": [
+      {
+        "affectedPackage": "@next/eslint-plugin-next",
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      {
+        "affectedPackage": "braces",
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      {
+        "affectedPackage": "chokidar",
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      {
+        "affectedPackage": "eslint-config-next",
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      {
+        "affectedPackage": "fast-glob",
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      {
+        "affectedPackage": "micromatch",
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      {
+        "affectedPackage": "tailwindcss",
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      }
+    ],
+    "compatibleRecommendationDeclaredByThisAudit": false,
+    "advisory": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+    "interpretation": "Seven high package entries propagate the braces development/build dependency chain. Every fixAvailable object in this actual audit is marked isSemVerMajor:true; none is applied or treated as a compatible correction. This review does not requery registry/advisory publication status or infer that no other compatible solution exists."
+  },
+  "preservedEarlierAttempts": [
+    {
+      "attempt": "required-gates-attempt-1",
+      "revision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+      "allEightRecordedExitCodes": 1,
+      "classification": "BOOTSTRAP_FAILED_BEFORE_NPM_OR_APPLICATION",
+      "newSuccessfulAssertions": 0,
+      "staleCoverageAndBuildIdExcludedFromCurrentEvidence": true,
+      "reason": "The scope supplement documents a preload log-path guard failure before npm/application execution. The original report remains preserved; its copied coverage/build artifacts are not promoted."
+    },
+    {
+      "attempt": "required-gates-attempt-2",
+      "revision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+      "testDbExitCode": 1,
+      "classification": "PRESERVED_TEST_FIXTURE_SETUP_FAILURE",
+      "reason": "The retained test-db output records ERR_ASSERTION during fresh-fixture-setup. Commit 730767b changes only scripts/test-atomic-account-recompute.mjs to slice sources before the repair migration, preserving the historical before cut as later migrations are added. Attempt 3 independently reruns test-db with exit0; the old failure is not erased or recast as product acceptance."
+    }
+  ],
+  "scopeLimits": [
+    "The selected gates are bound to 730767b and build GOPamm5e4MX7uIpwLAXZ4, separate from the published 7f71f275 checkpoint and its remote CI45 synthetic merge run.",
+    "npm run test:db passed with its frozen nine-script package scope; it does not newly execute or infer a native Supabase lifecycle, real Auth/RLS session matrix, restore, browser UI journey, load acceptance or real provider integration.",
+    "Dummy Supabase values and local font fixtures are explicit. The global fetch preload is not a universal network firewall.",
+    "The full audit remains FAIL. Production omission reports 0; this does not erase development/build exposure or authorize semver-major changes.",
+    "Lint/build/coverage stderr retain deprecation, dynamic-rendering and future-config-loader diagnostics despite successful exit codes; no empty-stderr claim is made.",
+    "No original case or CNF status is promoted by this gate-only review, and historical failed attempts remain separate immutable evidence."
+  ],
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/build.log",
+      "sha256": "f305d1507ac26916415612f9e498444b3b6fe0d969a24c92b014a6202bebcfe1",
+      "bytes": 7241
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/build.stderr.log",
+      "sha256": "91123218e6fa3869644ff0dbc33489bf1feb503313c71a371b0f7c2016302216",
+      "bytes": 1949
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/coverage-summary.json",
+      "sha256": "9dd5c521e98e49d29fd12eff6cc2cb476d64cd335a33ac8251700f37dea0844b",
+      "bytes": 12626
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/coverage.log",
+      "sha256": "d38ec4bd3dbb573f5eb44791034598df14ded84d57682d8419fcd0ce482e98bf",
+      "bytes": 4992
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/coverage.stderr.log",
+      "sha256": "b4acd4f819050212c4fe3b3ed8416421330f7ff8c72cb9bb667c335f3e24a94e",
+      "bytes": 375
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/dependency-audit.log",
+      "sha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf",
+      "bytes": 3985
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/dependency-audit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/final-vitest.json",
+      "sha256": "d845a543c0ef2f7f10d87cb9ea4a8b2ae4f15206de17c0fa7dea2070981eeef5",
+      "bytes": 1166692
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/lint.log",
+      "sha256": "e961f726b387de7cc537facff218c77151a54d399b56e20dbeee1350973ee70c",
+      "bytes": 66
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/lint.stderr.log",
+      "sha256": "a9e853f86aaa439d80c9c70fc5cb52ed5a20a68e3611a5b826d196cc46d675a2",
+      "bytes": 234
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/npm-ci.log",
+      "sha256": "f9e8e64d953fe864c32cd4a44cc05de9525fefc26c53ca9b555c8f12d5e395ae",
+      "bytes": 264
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/npm-ci.stderr.log",
+      "sha256": "45cf5ebfcae15bdeefc39c21264fb0ea83ecdf4a783d377de8de7083a6ae3fbd",
+      "bytes": 1545
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/production-audit.log",
+      "sha256": "e7a71ea70895f12bb3d991264928cb23b141117439bf1be02bbc7907e4b92910",
+      "bytes": 367
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/production-audit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/test-db.log",
+      "sha256": "b88dd4adaa77a1c7a64c48bba8c6ceb709d7d55f27b87aeb769f2c2557b38cdb",
+      "bytes": 150356
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/test-db.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/typecheck.log",
+      "sha256": "469f7b7deaf0603039d0351d61b584c9c9a9f9e495a3dde5eeb847324a9e7e24",
+      "bytes": 41
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/typecheck.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-3/verification.json",
+      "sha256": "899cbd6038ba338c3986d23a5f7b3bb7b0ee0aa3c03d636657ae99f37474da72",
+      "bytes": 75559
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-1/verification.json",
+      "sha256": "9442cab5006dedaa89f770ea839b13333555293a92663881f183272f3c306143",
+      "bytes": 75544
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-1/scope-supplement.json",
+      "sha256": "c2d6f207ca4df164da38c6e085df146eaca4b84f6770b67b2330d250cf3d48cb",
+      "bytes": 591
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-2/verification.json",
+      "sha256": "c9fea0a17c973e649235b9aebc155323ad17f8e53b871590c4ced02bddc52cef",
+      "bytes": 75559
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-2/test-db.log",
+      "sha256": "7f514c8b5bc5d46bef81a48449a98d44633c31738db0070d23ebba006bfde7c1",
+      "bytes": 22371
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-2/test-db.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "package.json",
+      "sha256": "45b54db3d6cb452127fab13e3b2af39e343394fb91ac26bc32e4c3e1f2c25725",
+      "bytes": 2565
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257",
+      "bytes": 376481
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8",
+      "bytes": 2390
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "c3473d6c9cb56bf4a4126867948d95f67f7f12a7693f4dc7a85fb5732c3d8d80",
+      "bytes": 625
+    },
+    {
+      "path": "scripts/test-atomic-account-recompute.mjs",
+      "sha256": "bb7dec7c6286a5895d1eb61bd01ba88f4cffe5b33532edd5df14d56e62a0bbf2",
+      "bytes": 24748
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "requestedAt": "2026-10-15T03:28:35.256129+00:00",
+  "source": "https://registry.npmjs.org/fast-glob",
+  "httpStatus": 200,
+  "transport": "system curl; TLS verification enabled",
+  "result": {
+    "name": "fast-glob",
+    "dist-tags": {
+      "next": "2.0.2",
+      "beta": "3.2.1-beta.1",
+      "latest": "3.3.3"
+    },
+    "versionCount": 44,
+    "relevantVersions": {
+      "3.3.3": {
+        "version": "3.3.3",
+        "dependencies": {
+          "@nodelib/fs.stat": "^2.0.2",
+          "@nodelib/fs.walk": "^1.2.3",
+          "glob-parent": "^5.1.2",
+          "merge2": "^1.3.0",
+          "micromatch": "^4.0.8"
+        },
+        "engines": {
+          "node": ">=8.6.0"
+        },
+        "deprecated": null,
+        "publishedAt": "2025-01-05T10:38:42.236Z"
+      }
+    }
+  }
+}

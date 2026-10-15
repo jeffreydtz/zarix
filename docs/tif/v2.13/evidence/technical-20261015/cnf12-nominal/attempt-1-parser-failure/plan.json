@@ -1,0 +1,53 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "originalCase": "CNF-12",
+  "originalCsvSha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+  "scope": "Additional nominal SQL restoration in two fresh databases inside the existing local RESTORE stack. Existing original databases, Auth identities, roles, credentials and HTTP services remain unchanged.",
+  "coordination": {
+    "lifecycleOwner": "native_runtime",
+    "fixtureAndOracleOwner": "e2e",
+    "privateTargets": "/tmp/zarix-runtime-20261015/cnf12-private/targets.json",
+    "purpose": "cnf12-nominal-two-database-recovery",
+    "targetPort": 55322,
+    "targetDatabases": "Two new UUID names, never postgres; source schema/ACL and only existing two identities/profiles and one existing group/membership are cloned by the lifecycle owner.",
+    "destructiveOperations": "No DROP, reset, --clean, server reconfiguration, new role, new credential, new identity, or original-table write. Retain both databases and private dumps for the final retention owner."
+  },
+  "nominalFixture": {
+    "owner": "Existing synthetic identity A owns both accounts; existing identity B is the foreign owner for RLS checks.",
+    "accounts": [
+      {"name": "CNF12 A", "type": "investment", "currency": "ARS", "snapshotBalance": "10000.00"},
+      {"name": "CNF12 B", "type": "bank", "currency": "ARS", "snapshotBalance": "2000.00"}
+    ],
+    "openingBalances": "Both accounts start at zero. The twenty ordinary economic ledger rows establish the balances; no hidden opening adjustments are excluded from the count.",
+    "transactions": "Income A10000 + income B2000 + eight income/expense pairs A100 each + transfer A→B100 + transfer B→A100 = exactly20 rows. Two transfers preserve total12000. Income12800, expense800, net12000.",
+    "lots": "Three distinct manual USD lots in investment account A:1×100,2×50,4×25; current units110,55,27.5. Exact cost300, current330, unrealized30USD, realized0. Registration is an external purchase reference and creates no cash-ledger row.",
+    "rule": "One owned inactive daily expense rule1000 with last date05Oct. No cron/provider call is made.",
+    "group": "Exactly one existing cloned synthetic group and its existing members/capability; no new guest or external credential.",
+    "postSnapshotLoss": "After the private dump, insert one owned expense1500 dated06Oct11Z into only the nominal source. Source becomes21rows and A8500/B2000; restored snapshot must retain20rows and A10000/B2000 and omit the exact lost-row UUID. Record its reconciliation separately; do not reapply it."
+  },
+  "timeEvidence": {
+    "modelT0": "2026-10-06T12:00:00.000Z",
+    "modelLastRecoverable": "2026-10-05T13:00:00.000Z",
+    "modelServiceValidated": "2026-10-06T15:30:00.000Z",
+    "modelRpoSeconds": 82800,
+    "modelRtoSeconds": 12600,
+    "boundaries": "RPO86400 and RTO14400 inclusive pass;86401 or14401 fail. These are explicit contract calculations, not observed wall-clock durations or a23-hour-old operational backup.",
+    "actual": "Record real UTC backup/restore/validation timestamps and monotonic durations independently. Never wait or alter the OS clock merely to produce the nominal3h30 number."
+  },
+  "assertions": [
+    "Lifecycle confirms source cloned only permitted metadata and target literally empty before restore; original RESTORE postgres fingerprints stay identical.",
+    "Before dump exact IDs/counts and numeric manifest2accounts/20transactions/3lots/1rule/1group match the independent equations.",
+    "pg_dump custom archive has private0600 path, SHA256 and TOC; source snapshot stays unchanged during dump.",
+    "pg_restore --exit-on-error targets only the new empty database; all public/auth/storage table hashes and schema/functions/grants/RLS/index catalog match the dump snapshot.",
+    "Restored Auth users/identities are the same existing two. SQL SET LOCAL ROLE authenticated with A/B claim fixtures demonstrates row isolation and no privileged-role bypass; this is not normal HTTP Auth login.",
+    "Four CU SQL read oracles agree with the restored ledger/accounts/analysis/lots; transfer UPDATE/DELETE and investment sale can be tested inside rollback-only transactions, followed by identical full data hashes.",
+    "Any Storage metadata/binary fixture is declared explicitly; SQL catalog alone is not Storage API acceptance. Existing independent-stack Auth/Storage/UI evidence is cited separately."
+  ],
+  "completeOriginalContract": false,
+  "remainingBlockers": [
+    "No observed backup entitlement/mechanism of the actual contracted deployment plan.",
+    "The nominal23h/3h30 and boundary times are a fixture model, not an observed end-to-end RPO/RTO service outage.",
+    "GoTrue/PostgREST/Storage HTTP stay bound to the original database; no four-CU UI journey on these additional nominal databases is claimed.",
+    "The unresolved Arc window/JS state remains a separate browser blocker; this plan opens no browser."
+  ]
+}

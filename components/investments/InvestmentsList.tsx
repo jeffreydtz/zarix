@@ -167,6 +167,11 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                         Precio: {formatPrice(Number(inv.current_price), inv.market_price_currency)}
                         {inv.type === 'bond' ? <span className="opacity-70"> / VN 100</span> : null}
                       </span>
+                      <span className="text-muted-foreground">
+                        {inv.valuation_price_source === 'purchase_reference' ? 'Referencia de compra · sin cotización' :
+                          inv.valuation_price_source === 'cache' ? 'Última cotización guardada' :
+                            inv.valuation_price_source === 'manual' ? 'Precio ingresado' : 'Cotización de mercado'}
+                      </span>
                       {inv.is_manual_price ? (
                         <span className="rounded-full bg-warning/20 px-1.5 py-0.5 text-[10px] font-medium text-warning">
                           Manual

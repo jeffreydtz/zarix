@@ -1,0 +1,21 @@
+{
+  "scope": "Readonly diagnostic of the exact own synthetic CP4-07 fixture after failure/normal archive; no mutation",
+  "observed": {
+    "id": "7a0b1953-9656-4502-909a-db84168922fa",
+    "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+    "quantity": 6,
+    "purchase_price": 100,
+    "current_price": 60000,
+    "current_price_updated_at": "2026-10-15T03:38:49.909+00:00",
+    "is_manual_price": false,
+    "is_active": false
+  },
+  "beforeExplicitFixture": {
+    "quantity": 6,
+    "purchasePrice": 100,
+    "currentPrice": 110,
+    "priceTimestamp": "2026-10-06T12:00:00.000Z",
+    "manual": false
+  },
+  "hypothesis": "A valid global provider cache/Next fetch cache may have supplied a different quote; this read alone does not establish cause or original response PnL."
+}

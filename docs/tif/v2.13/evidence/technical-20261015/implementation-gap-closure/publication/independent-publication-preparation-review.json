@@ -1,0 +1,188 @@
+{
+  "preparedAt": "2026-10-15T08:27:37.052Z",
+  "status": "PREPARED_NOT_EXECUTED",
+  "checkoutHeadAtPreparation": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "nodeVersionAtPreparation": "22.17.0",
+  "scannersExecuted": false,
+  "privateFilesRead": false,
+  "applicationOrDatabaseRuntimeStarted": false,
+  "historicalSources": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/scan-evidence-final-publication.mjs",
+      "sha256": "4e4665692657e564cf661d7275967fd40a9a0aea198ea617bdcd88ccec874fe9",
+      "unchanged": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/scan-exact-private-values-final-publication.mjs",
+      "sha256": "7f435ac81141b04252d80c5ed04a737091a53c705ac08e8d7de539f635373b9a",
+      "unchanged": true
+    }
+  ],
+  "newSources": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-evidence-post-implementation.mjs",
+      "sha256": "9ccd3e31d34bb68f2555b7d20c8c06438800303079a123a31951110d677b05ae"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-exact-private-values-post-implementation.mjs",
+      "sha256": "952153e603a0755af04a334da9506c0558ad425a46e6d30ebc12113794e9b5f0"
+    }
+  ],
+  "changesFromHistoricalSources": [
+    "Use new source files and output names inside implementation-gap-closure/publication; historical sources/reports are unchanged.",
+    "Heuristic adds the explicit CP1-08 delta evidence root alongside technical-20261013/14/15 and states four roots.",
+    "Exact comparison retains the historical explicit private inventory and selection rules. Private JSON reader failures are replaced by a generic error without input; outer rejection emits only a generic failure record without raw exceptions, causes or diagnostics.",
+    "Exact reproductionCommand points to the new public scanner. Both scanners keep strict local JSON basenames, preexisting-output refusal and exclusive wx writes."
+  ],
+  "syntaxChecksOnly": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-evidence-post-implementation.mjs"
+      ],
+      "exitCode": 0,
+      "executesScanner": false
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-exact-private-values-post-implementation.mjs"
+      ],
+      "exitCode": 0,
+      "executesScanner": false
+    }
+  ],
+  "coveredNewPackages": [
+    {
+      "path": "docs/tif/v2.13/evidence/delta-20261015-cp1-08",
+      "heuristicCoverage": "Explicit fourth root in new copy",
+      "exactCoverage": "Git tracked plus non-ignored untracked byte enumeration"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/continuation-preferences",
+      "heuristicCoverage": "Within explicit technical-20261015 root",
+      "exactCoverage": "Git tracked plus non-ignored untracked byte enumeration"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure",
+      "heuristicCoverage": "Within explicit technical-20261015 root",
+      "exactCoverage": "Git tracked plus non-ignored untracked byte enumeration"
+    }
+  ],
+  "plannedCommandsAfterParentRelease": [
+    {
+      "order": 1,
+      "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-evidence-post-implementation.mjs",
+        "evidence-secret-scan-post-implementation-20261015.json"
+      ],
+      "output": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/evidence-secret-scan-post-implementation-20261015.json"
+    },
+    {
+      "order": 2,
+      "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-exact-private-values-post-implementation.mjs",
+        "exact-private-value-scan-post-implementation-20261015.json"
+      ],
+      "output": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/exact-private-value-scan-post-implementation-20261015.json"
+    }
+  ],
+  "executionConditions": [
+    "Wait for final documentation and parent release; current preparation is not scanner execution.",
+    "Use the new basenames and exclusive output creation; never replace raw historical reports.",
+    "Inspect JSON candidate arrays/status independently: raw exact FAIL can coexist with process exit0, and heuristic candidate count does not automatically make the process fail.",
+    "Reevaluate every new candidate by exact path/file hash/field and semantics; do not generalize the prior false-positive decisions."
+  ],
+  "previousReview": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/review/publication-privacy-final-publication-review.json",
+    "sha256": "d09fbf70c06c9f279970f4af531e7dee4b0a7c49837ab9e7559e037bc2dffae3"
+  },
+  "historicalReports": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/evidence-secret-scan-before-retention.json",
+      "sha256": "2b8d29283a3cffbd0c675e9eb64964095cf2d913414b57d0869026f5ed7f0663",
+      "unchanged": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-scan-before-retention.json",
+      "sha256": "f9822b5e139b44bfc851cd7aa47362de9147cb06e22856b1953934f7218a5c8b",
+      "unchanged": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/evidence-secret-scan-final-publication.json",
+      "sha256": "6a8ad1d31f5a920dec5bd5f3db3e6e57a7edfb762ee543b16a3ca01f6239acfa",
+      "unchanged": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-scan-final-publication.json",
+      "sha256": "c61e5f8f1653e4276f5b93078ca67a12b055afbf3d11b4982dfbb5485c7b411b",
+      "unchanged": true
+    }
+  ],
+  "priorConcreteCandidates": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/arc-launch-permission-preflight.json",
+      "sha256": "4dcd19833618cbe9d84f1ee2574fe82cc886041712a1830dd8a673574dae9b84",
+      "matchesPreviouslyReviewedHash": true,
+      "valueClassification": "Descriptive user permission and scope metadata in the Arc preflight record"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/e2e-stack-restart.json",
+      "sha256": "8b2267a6d94e77e1ef8d7409924b37f4093fb50005fc8e3d9430e8092969c99b",
+      "matchesPreviouslyReviewedHash": true,
+      "valueClassification": "Descriptive approved isolated restart and scope metadata"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "matchesPreviouslyReviewedHash": true,
+      "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "matchesPreviouslyReviewedHash": true,
+      "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/attempt-1/sources/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "matchesPreviouslyReviewedHash": true,
+      "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/attempt-2/sources/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "matchesPreviouslyReviewedHash": true,
+      "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "matchesPreviouslyReviewedHash": true,
+      "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper"
+    }
+  ],
+  "privateInventoryOwnerConfirmation": {
+    "source": "Direct parent message conveying runtime owner confirmation and public-source inspection",
+    "newCredentialConfigSessionFilesCreated": false,
+    "newCredentialCopyOperationExecuted": false,
+    "newTargetFileUsesMetadataReferences": true,
+    "newRuntimeLoginTokensAndCookies": "RAM/process environment only; not included by the historical exact collector",
+    "rawMemoryCaptures": "Owner reports in-memory review before discard; not independently inspected here",
+    "exactCollectorExpandedForRamTokens": false
+  },
+  "limits": [
+    "Heuristic examines valid UTF-8 bytes without NUL; images/binary/non-UTF-8 files are counted as not inspected. The previous128 count is historical and must not be projected onto a future run.",
+    "Exact comparison searches bytes, including binaries, only for selected private local strings of length>=8 from its explicit inventory, JWT/JWKS fields, selected cookie fixtures and JWK scalars; ignored build assets and external files are excluded.",
+    "The unchanged inventory must not be described as exact comparison against new Native730 tokens/cookies held only in RAM. No private source is read during this preparation.",
+    "No universal absence of secrets, screenshot inspection, real provider call, browser acceptance or acceptance-matrix promotion is established.",
+    "A new executed-result review and independent adjudication are required after the final scanner run."
+  ]
+}

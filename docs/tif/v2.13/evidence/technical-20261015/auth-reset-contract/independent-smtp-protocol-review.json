@@ -1,0 +1,92 @@
+{
+  "reviewedAt": "2026-10-15T05:48:23.567Z",
+  "status": "PASS_WITH_SCOPE_LIMITS",
+  "reviewer": "Independent publication/privacy source and artifact review; no SMTP or Auth execution by reviewer",
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-reset-contract/smtp-sink.mjs",
+      "sha256": "0c1d72411a5204e9f7483b0c494364a920ba0ce25775ac9c749a775afae20342",
+      "bytes": 8143
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-reset-contract/check-smtp-protocol.py",
+      "sha256": "286d572c2233fa4d23e01d539f652220661a1fa85c0df4d30e2759f86a41c3ce",
+      "bytes": 5298
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-reset-contract/smtp-protocol-verification.json",
+      "sha256": "21f7091b89d0efaef395608c9bf14f044c22d9fb5d5dc7b97c65c72c82035eee",
+      "bytes": 502
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-reset-contract/smtp-protocol-verification-attempt-2.json",
+      "sha256": "3096ad161c6ec3738c157678e664e376f66a8e4cb108a80c3a4b04113f6e2f51",
+      "bytes": 3130
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-reset-contract/protocol-attempt-1/smtp-sink.mjs",
+      "sha256": "0c1d72411a5204e9f7483b0c494364a920ba0ce25775ac9c749a775afae20342",
+      "bytes": 8143
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-reset-contract/protocol-attempt-1/check-smtp-protocol.py",
+      "sha256": "617c7ae4c7f1b601eb1e14e2911a0a39577a2356651c515a28687ab40adb5d69",
+      "bytes": 5288
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/auth-reset-contract/protocol-attempt-1/smtp-protocol-verification.json",
+      "sha256": "21f7091b89d0efaef395608c9bf14f044c22d9fb5d5dc7b97c65c72c82035eee",
+      "bytes": 502
+    }
+  ],
+  "firstAttempt": {
+    "status": "FAIL",
+    "checks": 0,
+    "errorType": "JSONDecodeError",
+    "rawResultAndExactExecutedSourcesPreserved": true,
+    "causeIndependentlyEstablishedFromPublicReport": false
+  },
+  "finalAttempt": {
+    "status": "PASS",
+    "checks": 16,
+    "passed": 16,
+    "sourceAndCheckerHashesMatchExecutedReport": true,
+    "onlyReportedLocalEndpoint": {
+      "host": "127.0.0.1",
+      "port": 60325
+    },
+    "ownedChildStoppedNormally": true,
+    "reportedActiveConnectionsAfterStop": 0
+  },
+  "sourceReview": {
+    "loopbackOnlyListener": true,
+    "noOutgoingConnectionOrForwardingCode": true,
+    "directPrivateConfigCanonicalPathGuard": true,
+    "twoDistinctNormalizedSyntheticAllowedRecipients": true,
+    "freshPrivateDirectory0700AndFiles0600": true,
+    "recipientRejectionDoesNotEchoAddress": true,
+    "messageAndReceiptFileSyncBeforeAck": true,
+    "directorySyncAfterStateRenameBeforeAck": true,
+    "stdoutOmitsMessageHeadersBodyRecipientAndTokens": true,
+    "mimeCaptureScope": "UTF-8/CRLF reconstruction with dot unstuffing; not exact arbitrary TCP capture"
+  },
+  "executionScope": {
+    "acceptedRecipientIdentitiesActuallyProbed": 1,
+    "foreignSyntheticRecipientRejected": true,
+    "dataWithoutAcceptedRecipientRejected": true,
+    "synchronizedFilesPresentAfterAck": true,
+    "normalOwnedProcessStopExercised": true,
+    "authRecoveryFlowExercised": false,
+    "passwordsOrRecoveryTokensUsed": false,
+    "externalEmailOrProviderExercised": false,
+    "powerLossOrForcedCrashExercised": false,
+    "doesNotPromoteCP2_10OrBrowserCompatibility": true
+  },
+  "notes": [
+    "The sink config contains two synthetic allowed recipients, but this self-test sends a message to only the first; acceptance of the second is supported by source inspection, not a second protocol delivery.",
+    "The first report establishes a failed setup with zero checks and JSONDecodeError; a particular listener or sandbox cause is not established independently by its public fields.",
+    "File and directory synchronization ordering is reviewed in source and files are inspected after SMTP ACK; no hardware power-loss or operating-system crash experiment was performed.",
+    "The public message digest in this protocol report refers only to the fixed non-secret synthetic probe body. Future Auth emails, tokens and digests must remain private."
+  ],
+  "privacyScope": "This review reads only public SMTP source and public protocol reports. It does not read private env/config values, emit credential values or hashes of credential values, inspect browser binaries, or claim universal absence of secrets."
+}

@@ -1,6 +1,10 @@
+import { randomUUID } from 'node:crypto';
+import { transactionRequestHash, validTransactionRequestId } from '@/lib/transaction-idempotency';
+import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { ApiError } from '@/lib/api-handler';
 import { cotizacionesService } from './cotizaciones';
+import { blueFxReference, uniqueBlueFxReferences, type BlueFxReference } from '@/lib/blue-fx-reference';
 import type { Account } from '@/types/database';
 
 /** Moneda de cuenta normalizada (trim + mayúsculas) para claves de tasas. */
@@ -59,9 +63,12 @@ export function normalizeDebtBalanceForStorage(
 
 /** Stablecoins tratadas como ~1 USD si la API devolvió 0 o no hay tasa. */
 const STABLECOIN_USD = new Set(['USDT', 'USDC', 'DAI', 'BUSD']);
+// Preserve the fiat, crypto and legacy stablecoin currencies already valued here.
+const ACCOUNT_CURRENCIES = new Set(['ARS', 'USD', 'EUR', 'BTC', 'ETH', ...STABLECOIN_USD]);
 
 export interface CreateAccountInput {
   userId: string;
+  requestId?: string;
   name: string;
   type: string;
   currency: string;
@@ -88,6 +95,24 @@ export interface AccountWithBalance extends Account {
   multicurrency_balance_secondary?: number;
   multicurrency_total_usd?: number;
   multicurrency_total_ars_blue?: number;
+  /** USD/ARS leg only; other currency crosses may use separate references. */
+  blueReference?: BlueFxReference;
+  /** Read-only exclusion; original balances/currencies are never replaced. */
+  valuationIssue?: { reason: 'unsupported_currency'; currencies: string[] };
+}
+
+export interface PartialAccountValuation {
+  status: 'partial';
+  excludedAccounts: Array<{
+    accountId: string;
+    name: string;
+    currency: string;
+    balance: number;
+    secondaryCurrency?: string;
+    secondaryBalance?: number;
+    reason: 'unsupported_currency';
+    currencies: string[];
+  }>;
 }
 
 /** Totales derivados de `list()` — misma cotización que cada fila. */
@@ -102,6 +127,9 @@ export interface AccountAggregates {
   totalCreditUsed: number;
   totalCreditLimit: number;
   creditUtilization: number;
+  blueReferences?: BlueFxReference[];
+  /** When present, numeric totals contain only fully valued included accounts. */
+  valuation?: PartialAccountValuation;
 }
 
 function roundMoney(n: number): number {
@@ -156,9 +184,11 @@ class AccountsService {
       dynamicCurrencies.map(async (currency) => {
         try {
           const rate = await cotizacionesService.getExchangeRate(currency, 'USD');
+          if (!Number.isFinite(rate) || rate <= 0) throw new Error('Invalid exchange rate');
           return [currency, rate] as const;
         } catch {
-          return [currency, 0] as const;
+          if (STABLECOIN_USD.has(currency)) return [currency, 1] as const;
+          throw new Error(`Cotización ${currency}/USD no disponible`);
         }
       })
     );
@@ -177,6 +207,10 @@ class AccountsService {
   async create(input: CreateAccountInput): Promise<Account> {
     const supabase = createServiceClientSync();
 
+    if (typeof input.name !== 'string' || !input.name.trim()) {
+      throw new ApiError('El nombre de la cuenta es obligatorio.');
+    }
+
     // Moneda normalizada a mayúsculas (CHECK accounts_currency_upper).
     input = {
       ...input,
@@ -186,14 +220,18 @@ class AccountsService {
         : input.secondaryCurrency,
     };
 
-    const { data: accounts } = await supabase
-      .from('accounts')
-      .select('sort_order')
-      .eq('user_id', input.userId)
-      .order('sort_order', { ascending: false })
-      .limit(1);
-
-    const nextSortOrder = accounts && accounts.length > 0 ? accounts[0].sort_order + 1 : 0;
+    if (!ACCOUNT_CURRENCIES.has(input.currency)) {
+      throw new ApiError('La moneda de la cuenta no está soportada.');
+    }
+    // Match the existing SQL day/digit constraints before optional values become null.
+    for (const day of [input.closingDay, input.dueDay]) {
+      if (day != null && (!Number.isInteger(Number(day)) || Number(day) < 1 || Number(day) > 31)) {
+        throw new ApiError('El día de cierre o vencimiento debe estar entre 1 y 31.');
+      }
+    }
+    if (input.last4Digits && String(input.last4Digits).length !== 4) {
+      throw new ApiError('Los últimos dígitos de la tarjeta deben tener cuatro caracteres.');
+    }
 
     const initial = Number(input.initialBalance ?? 0);
     const balanceStored = normalizeDebtBalanceForStorage(
@@ -202,61 +240,36 @@ class AccountsService {
       initial
     );
 
-    // El saldo inicial se registra como un movimiento `adjustment` (abajo), no
-    // escribiendo balance directo: así el ledger es la única fuente de verdad y
-    // recomputeAccountBalanceFromLedger reproduce el saldo (antes lo borraba).
-    const { data, error } = await supabase
-      .from('accounts')
-      .insert({
-        user_id: input.userId,
-        name: input.name,
-        type: input.type as any,
-        currency: input.currency,
-        balance: 0,
-        icon: input.icon || null,
-        color: input.color || '#3B82F6',
-        is_debt: input.isDebt || false,
-        include_in_total: input.includeInTotal !== undefined ? input.includeInTotal : true,
-        include_in_liquid: input.includeInLiquid !== undefined ? input.includeInLiquid : true,
-        min_balance: input.minBalance || null,
-        credit_limit: input.creditLimit || null,
-        closing_day: input.closingDay || null,
-        due_day: input.dueDay || null,
-        last_4_digits: input.last4Digits || null,
-        is_multicurrency: input.isMulticurrency || false,
-        secondary_currency: input.secondaryCurrency || null,
-        sort_order: nextSortOrder,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Saldo inicial como movimiento de ajuste (fuente única = ledger). El trigger
-    // de saldo lleva accounts.balance de 0 a balanceStored.
-    if (balanceStored !== 0) {
-      const { error: adjErr } = await supabase.from('transactions').insert({
-        user_id: input.userId,
-        type: 'adjustment',
-        account_id: data.id,
-        amount: Math.abs(balanceStored),
-        currency: input.currency,
-        amount_in_account_currency: balanceStored,
-        description: 'Saldo inicial',
-        transaction_date: new Date().toISOString(),
-      });
-      if (adjErr) throw adjErr;
-      return { ...data, balance: balanceStored };
+    if (!Number.isFinite(balanceStored)) throw new ApiError('El saldo inicial debe ser finito.');
+    const requestId = input.requestId ?? nextFinancialRequestId() ?? randomUUID();
+    if (!validTransactionRequestId(requestId)) {
+      throw new ApiError('Identificador de solicitud inválido.');
     }
-
-    return data;
+    const values = {
+      name: input.name, type: input.type, currency: input.currency,
+      icon: input.icon || null, color: input.color || '#3B82F6', is_debt: input.isDebt || false,
+      include_in_total: input.includeInTotal ?? true, include_in_liquid: input.includeInLiquid ?? true,
+      min_balance: input.minBalance || null, credit_limit: input.creditLimit || null,
+      closing_day: input.closingDay || null, due_day: input.dueDay || null,
+      last_4_digits: input.last4Digits || null, is_multicurrency: input.isMulticurrency || false,
+      secondary_currency: input.secondaryCurrency || null,
+    };
+    const { data, error } = await supabase.rpc('create_account_with_opening_balance', {
+      p_user_id: input.userId,
+      p_request_id: requestId,
+      p_request_hash: transactionRequestHash({ account: values, initialBalance: balanceStored }),
+      p_account: values,
+      p_initial_balance: balanceStored,
+    });
+    if (error) throw error;
+    return data as Account;
   }
 
   /**
    * Lista cuentas activas del usuario, incluyendo tipo `investment` (brokers, etc.) por defecto.
    * Pasá `includeInvestments: false` solo si necesitás ocultar esas cuentas.
    */
-  async list(userId: string, options?: { includeInvestments?: boolean }): Promise<AccountWithBalance[]> {
+  async list(userId: string, options?: { includeInvestments?: boolean; allowPartialValuation?: boolean }): Promise<AccountWithBalance[]> {
     const supabase = createServiceClientSync();
 
     let query = supabase
@@ -273,15 +286,18 @@ class AccountsService {
 
     if (error) throw error;
 
-    const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
+    const dolar = await cotizacionesService.getDolarQuotes();
+    const blueRate = dolar.blue.sell;
+    const reference = blueFxReference(dolar.blue);
 
-    if (blueRate === 0) {
+    if (!Number.isFinite(blueRate) || blueRate <= 0) {
       throw new Error('Exchange rate not available');
     }
 
     const [usdRates, multicurrencyBalances] = await Promise.all([
       this.buildUsdRates(
-        accounts.flatMap((a) => [a.currency, a.secondary_currency || '']),
+        accounts.flatMap((a) => [a.currency, a.secondary_currency || ''])
+          .filter(currency => !options?.allowPartialValuation || ACCOUNT_CURRENCIES.has(normalizeAccountCurrency(currency))),
         blueRate
       ),
       this.computeMulticurrencyBalances(userId, accounts as Account[]),
@@ -289,10 +305,24 @@ class AccountsService {
 
     const accountsWithConversion = accounts.map((account) => {
       const balance = Number(account.balance);
+      const multi = multicurrencyBalances.get(account.id);
+      const unsupported = [account.currency,
+        ...(account.is_multicurrency && account.secondary_currency ? [account.secondary_currency] : []),
+      ].map(normalizeAccountCurrency).filter(currency => !ACCOUNT_CURRENCIES.has(currency));
+      if (options?.allowPartialValuation && unsupported.length > 0) {
+        // Exclude the whole account if either currency cannot be valued. Do not
+        // silently treat a secondary debt as zero or request arbitrary FX pairs.
+        return {
+          ...account,
+          balance,
+          multicurrency_balance_primary: multi?.primary,
+          multicurrency_balance_secondary: multi?.secondary,
+          valuationIssue: { reason: 'unsupported_currency' as const, currencies: [...new Set(unsupported)] },
+        };
+      }
       const rateToUSD = this.getRateToUsd(usdRates, account.currency);
       let balanceUSD = 0;
       let balanceARSBlue = 0;
-      const multi = multicurrencyBalances.get(account.id);
       const secondaryRateToUSD = this.getRateToUsd(usdRates, account.secondary_currency);
       if (rateToUSD > 0) {
         balanceUSD = balance * rateToUSD;
@@ -317,6 +347,7 @@ class AccountsService {
         balance,
         balance_usd: balanceUSD,
         balance_ars_blue: balanceARSBlue,
+        blueReference: reference,
         multicurrency_balance_primary: multi?.primary,
         multicurrency_balance_secondary: multi?.secondary,
         multicurrency_total_usd:
@@ -340,6 +371,7 @@ class AccountsService {
    * - Inversiones: `type === 'investment'`.
    */
   aggregateAccountTotals(accounts: AccountWithBalance[]): AccountAggregates {
+    const excludedAccounts: PartialAccountValuation['excludedAccounts'] = [];
     let liquidUSD = 0;
     let liquidARSBlue = 0;
     let nonLiquidUSD = 0;
@@ -351,6 +383,19 @@ class AccountsService {
 
     for (const a of accounts) {
       if (a.include_in_total === false) continue;
+      if (a.valuationIssue) {
+        excludedAccounts.push({
+          accountId: a.id, name: a.name, currency: a.currency,
+          balance: Number(a.type === 'credit_card' && a.is_multicurrency
+            ? a.multicurrency_balance_primary ?? a.balance : a.balance),
+          ...(a.is_multicurrency && a.secondary_currency ? {
+            secondaryCurrency: a.secondary_currency,
+            secondaryBalance: a.multicurrency_balance_secondary,
+          } : {}),
+          ...a.valuationIssue,
+        });
+        continue;
+      }
 
       if (a.type === 'credit_card') {
         const creditUsed = a.is_multicurrency
@@ -389,6 +434,9 @@ class AccountsService {
     const totalARSBlue = liquidARSBlue + nonLiquidARSBlue + investmentsARSBlue;
 
     return {
+      ...(excludedAccounts.length ? { valuation: { status: 'partial' as const, excludedAccounts } } : {}),
+      blueReferences: uniqueBlueFxReferences(accounts.filter(account => account.include_in_total !== false)
+        .map(account => account.blueReference)),
       liquidUSD: roundMoney(liquidUSD),
       liquidARSBlue: roundMoney(liquidARSBlue),
       investmentsUSD: roundMoney(investmentsUSD),

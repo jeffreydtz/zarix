@@ -1,0 +1,25 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as Cuentas (B)
+ participant C as Cuenta (C)
+ participant D as Datos (E)
+ U->>B: Consultar propias
+ B->>C: Sesión y operación
+ C->>D: Cuentas y saldos
+ D-->>C: Propios por moneda
+ C-->>B: Lista / vacío
+ U->>B: Archivo/exportación
+ B->>C: Comando confirmado
+ alt Archivar/restaurar
+  C->>D: Cambiar is_active
+  D-->>C: Resultado
+  Note over C: Conservar historia
+ else Exportar CSV/JSON
+  C->>D: Propios y relaciones
+  D-->>C: Datos del alcance
+  C->>C: Serializar formato
+  Note over C: Exportación propia<br/>política siempreFree
+ end
+ C-->>B: Estado/descarga/error
+ B-->>U: Resultado real

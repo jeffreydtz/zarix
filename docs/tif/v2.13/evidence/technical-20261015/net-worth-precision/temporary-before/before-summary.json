@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-15T05:00:23.083304+00:00",
+  "status": "BEFORE_FAIL_REAL_SSR",
+  "tests": 6,
+  "passed": 3,
+  "failed": 3,
+  "observed": [
+    {
+      "usd": 181.67,
+      "ars": 218000,
+      "actual": "≈ US$ 182",
+      "expected": "≈ US$ 181,67"
+    },
+    {
+      "usd": -181.67,
+      "ars": -218000,
+      "actual": "≈ US$ -182",
+      "expected": "≈ US$ -181,67"
+    },
+    {
+      "usd": 100,
+      "ars": 120000,
+      "actual": "≈ US$ 100",
+      "expected": "≈ US$ 100,00"
+    }
+  ],
+  "originalProductSourcesStable": true,
+  "mockedModules": [],
+  "amountReal": true,
+  "decimalsPropInjectedByTest": false,
+  "stickyVisibleOrClientUsdViewTested": false,
+  "temporaryTestSha256": "c5985f04b1b0064c036f6df09329260efd1bbb32bc85993ccd378a3ede071bcc",
+  "targetedResultSha256": "64ab02a90fb1de79d9fd406a75671fb60186269a3856819d63205f600f9ba72c",
+  "observedValuesSha256": "aff6cf2c93191ad52caf621f5974cfca8404f097c3eeb285ba00ecaa1c8da5c8",
+  "repositoryFilesModified": 0
+}

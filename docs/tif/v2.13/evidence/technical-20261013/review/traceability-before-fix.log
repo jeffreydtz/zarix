@@ -1,0 +1,50 @@
+/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/scripts/test-technical-traceability.py:54: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/p2/sn_zb5q10w75tt2tyc3xmkcr0000gn/T/zarix-traceability-regression-u8cx3z5l/case-traceability.csv' mode='r' encoding='UTF-8'>
+  cls.rows = list(csv.DictReader((fixture / "case-traceability.csv").open()))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+test_mixed_statuses_preserve_failure_then_blocked_precedence (__main__.TraceabilityStatusRegression.test_mixed_statuses_preserve_failure_then_blocked_precedence) ... 
+  test_mixed_statuses_preserve_failure_then_blocked_precedence (__main__.TraceabilityStatusRegression.test_mixed_statuses_preserve_failure_then_blocked_precedence) (case_id='CB-R03') ... FAIL
+  test_mixed_statuses_preserve_failure_then_blocked_precedence (__main__.TraceabilityStatusRegression.test_mixed_statuses_preserve_failure_then_blocked_precedence) (case_id='CB-R05') ... FAIL
+test_system_pass_fail_and_blocked_keep_their_distinct_results (__main__.TraceabilityStatusRegression.test_system_pass_fail_and_blocked_keep_their_distinct_results) ... 
+  test_system_pass_fail_and_blocked_keep_their_distinct_results (__main__.TraceabilityStatusRegression.test_system_pass_fail_and_blocked_keep_their_distinct_results) (case_id='CP1-03') ... FAIL
+test_unmatched_cases_remain_blocked_and_summary_counts_match_matrix (__main__.TraceabilityStatusRegression.test_unmatched_cases_remain_blocked_and_summary_counts_match_matrix) ... /Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/scripts/test-technical-traceability.py:77: ResourceWarning: unclosed file <_io.TextIOWrapper name='/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/casos_prueba.csv' mode='r' encoding='utf-8-sig'>
+  original = list(csv.DictReader((ROOT / "docs/tif/v2.13/casos_prueba.csv").open(encoding="utf-8-sig")))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+
+======================================================================
+FAIL: test_mixed_statuses_preserve_failure_then_blocked_precedence (__main__.TraceabilityStatusRegression.test_mixed_statuses_preserve_failure_then_blocked_precedence) (case_id='CB-R03')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/scripts/test-technical-traceability.py", line 72, in test_mixed_statuses_preserve_failure_then_blocked_precedence
+    self.assertEqual(self.by_id[case_id]["status"], expected)
+AssertionError: 'FAIL' != 'BLOCKED'
+- FAIL
++ BLOCKED
+
+
+======================================================================
+FAIL: test_mixed_statuses_preserve_failure_then_blocked_precedence (__main__.TraceabilityStatusRegression.test_mixed_statuses_preserve_failure_then_blocked_precedence) (case_id='CB-R05')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/scripts/test-technical-traceability.py", line 72, in test_mixed_statuses_preserve_failure_then_blocked_precedence
+    self.assertEqual(self.by_id[case_id]["status"], expected)
+AssertionError: 'FAIL' != 'BLOCKED'
+- FAIL
++ BLOCKED
+
+
+======================================================================
+FAIL: test_system_pass_fail_and_blocked_keep_their_distinct_results (__main__.TraceabilityStatusRegression.test_system_pass_fail_and_blocked_keep_their_distinct_results) (case_id='CP1-03')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/scripts/test-technical-traceability.py", line 65, in test_system_pass_fail_and_blocked_keep_their_distinct_results
+    self.assertEqual(self.by_id[case_id]["status"], expected)
+AssertionError: 'FAIL' != 'BLOCKED'
+- FAIL
++ BLOCKED
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.081s
+
+FAILED (failures=3)

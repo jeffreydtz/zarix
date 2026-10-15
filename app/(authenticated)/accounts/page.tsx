@@ -18,7 +18,7 @@ export default async function AccountsPage() {
     }
 
     const [accounts, archivedAccounts] = await Promise.all([
-      accountsService.list(user.id).catch(() => []),
+      accountsService.list(user.id, { allowPartialValuation: true }).catch(() => []),
       accountsService.listArchived(user.id).catch(() => []),
     ]);
     const aggregates =

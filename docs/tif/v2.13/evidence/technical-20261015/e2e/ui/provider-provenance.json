@@ -1,0 +1,45 @@
+{
+  "recordedAt": "2026-10-15T01:26:58.042Z",
+  "scope": "Correction of provider provenance only; no test, product, runtime, credential or financial data change.",
+  "financialFixture": {
+    "accountsAndLedger": "Synthetic local E2E only",
+    "position": "FOOFIX; manualUSD price100purchase/110current, no real broker/trade",
+    "configuredQuoteService": "CRIPTOYA_API_URL/DOLARAPI_URL/COINGECKO_API_URL point to parent-owned local HTTP503 double; persisted synthetic FX remains separate"
+  },
+  "marketsWidget": {
+    "path": "/api/market-data",
+    "authentication": "Normal UI session",
+    "sourceBehavior": "Cache miss fetches public providers through hardcoded URLs; a recent market_data_cache row bypasses them for3minutes",
+    "providers": [
+      "CoinGecko /api/v3/coins/markets",
+      "YahooFinance quote APIs",
+      "Stooq /q/l publicCSV fallback"
+    ],
+    "observed": "HTTP200 Markets responses and public market prices visible in retained screenshots; setup runner does not seed market_data_cache",
+    "limitation": "No per-provider network trace or independent provider-payload/DB comparison was collected. These incidental public reads and their cache must not be labeled double-only, synthetic prices, or formal integrationPASS."
+  },
+  "historicalReportClarification": "The generated fixture.providerMode describes the controlled financial references, not every widget request. This companion corrects that overly broad phrasing without rewriting the historical run report.",
+  "loadScope": "Future outage profile covers only configurable cotizaciones endpoints with observed HTTP503 counters; it does not simulate all hardcoded market providers.",
+  "sources": [
+    {
+      "path": "app/api/market-data/route.ts",
+      "sha256": "50cab9431afab8536eddb23835ebdee0fd5abe5d543dbee11bf58559cda8dee5"
+    },
+    {
+      "path": "lib/yahoo-finance-quotes.ts",
+      "sha256": "457e88d00ec6322ed7eb6589e65b181e4d4bad97328acf207ff0eb77ae6c64e7"
+    },
+    {
+      "path": "lib/stooq-us-quote.ts",
+      "sha256": "a6b1f9be5d735d24dc607986650641bd457e859fad6570bab49b5f620ff48fbd"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece"
+    },
+    {
+      "path": "scripts/setup-isolated-e2e-users.mjs",
+      "sha256": "3ce4427a82b6ee6fb62a5f6daa101166634213d1fd0e2d44e8b573162bb9e2e4"
+    }
+  ]
+}

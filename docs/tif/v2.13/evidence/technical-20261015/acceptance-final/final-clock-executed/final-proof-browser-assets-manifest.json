@@ -1,0 +1,677 @@
+[
+  {
+    "path": ".next/static/chunks/1179-efb7d52aaeb80b8c.js",
+    "bytes": 12530,
+    "sha256": "4bb6943cd7ba885e6b07ceec8534f68fde12b7dadc69f626f0ede322093529d6"
+  },
+  {
+    "path": ".next/static/chunks/2077-46496adc4c75db5a.js",
+    "bytes": 10842,
+    "sha256": "32552d8deed15f839bd3b099883a86102527035743e9f08950a262739512b1fb"
+  },
+  {
+    "path": ".next/static/chunks/2353.99e94f6e61928a18.js",
+    "bytes": 3252,
+    "sha256": "e3a5576844839ff147bca6ff4fdc365f6ed204f265730c34c3d81dda3fae9e93"
+  },
+  {
+    "path": ".next/static/chunks/2932-befcd48e17252e24.js",
+    "bytes": 12737,
+    "sha256": "a05e0914053889772922baaab4b53f97147a34112f3efb2d024731ccc4b105e8"
+  },
+  {
+    "path": ".next/static/chunks/3180-f63af348c43abad3.js",
+    "bytes": 5460,
+    "sha256": "f9af7b354033f9c2058cf634712a2449a1927d72e00d0ca301bfc32bfd681baa"
+  },
+  {
+    "path": ".next/static/chunks/3225.498a5db0d874f42d.js",
+    "bytes": 12546,
+    "sha256": "fab58d3772c9f9847fd5cd973d8bd577546309bd5c6d05bbdba830e01ea35d6c"
+  },
+  {
+    "path": ".next/static/chunks/3362-437895f894161c55.js",
+    "bytes": 47177,
+    "sha256": "ce482965ab062e3438f3f7e60f4cacab426001ffff5f5ee8090d5275088e843a"
+  },
+  {
+    "path": ".next/static/chunks/3382-80c8ffc8515227e0.js",
+    "bytes": 14344,
+    "sha256": "c84b2f459946abcc7d0f93e8b6c3ea0b93cccc4f75097342055291ebcf2dfcd6"
+  },
+  {
+    "path": ".next/static/chunks/3502.d2e68ec132315dbd.js",
+    "bytes": 3416,
+    "sha256": "1e9a0eb8f3e34f7814c56e283b84c1a323eb279859e1284baa9563fedb38b537"
+  },
+  {
+    "path": ".next/static/chunks/3541.cfd28f4ba573b591.js",
+    "bytes": 29514,
+    "sha256": "efc9aa09d702a3bc93f4d35d71507648c6ee52f90dd1e653d431b525c7acd881"
+  },
+  {
+    "path": ".next/static/chunks/3776.7cedd6cb0060f997.js",
+    "bytes": 12427,
+    "sha256": "fe2254cab2a13a801c264069aae34fe6a83424754bfc618d844f8b40a321a2dd"
+  },
+  {
+    "path": ".next/static/chunks/4039.3dcb144eee8d53b1.js",
+    "bytes": 25794,
+    "sha256": "e27eb14debba8dbedd710ecd4a1a8d4123980495656099661a39e1bf8e3ab71d"
+  },
+  {
+    "path": ".next/static/chunks/418-bf981cd8137a170a.js",
+    "bytes": 8563,
+    "sha256": "6fbd2d1928c7d58556fa0feb50a618f596bc48fa756f24db1b09dc7629756375"
+  },
+  {
+    "path": ".next/static/chunks/4318-c0310bb5882aa67a.js",
+    "bytes": 14473,
+    "sha256": "4feaa1cef9dfe6a56e9cf2e8a1b15c57aafb8ed91082c34c58e159204026657e"
+  },
+  {
+    "path": ".next/static/chunks/4390-3b5cb54eb8a2c748.js",
+    "bytes": 17557,
+    "sha256": "f30f5e064bb472e4061a4fede98f9628728cc9136620fed20435911cdcc7ed9e"
+  },
+  {
+    "path": ".next/static/chunks/4433-d54e1b89122e6cec.js",
+    "bytes": 194003,
+    "sha256": "51b4c77633ee66ae3ee512251c11b6fe99ef88f773c14f01a4a910df1fffc273"
+  },
+  {
+    "path": ".next/static/chunks/4475-9770f15ac76de10a.js",
+    "bytes": 9081,
+    "sha256": "b5fda14337b731fd48910bb07719189507a9d8aceb39b5bf208ef92c13424e7f"
+  },
+  {
+    "path": ".next/static/chunks/4807-1e6a4b514420b7bd.js",
+    "bytes": 9504,
+    "sha256": "bdc3a0067b0d126c58db5d5075b038d947b7a9c8e2e3e1221611693c65735c20"
+  },
+  {
+    "path": ".next/static/chunks/5077.6e8cce32fccfc8bc.js",
+    "bytes": 5799,
+    "sha256": "ec2d1d7a2af76c43ae4d7657686a89d0474fca50fde975ee3d7b365a3ec18cfc"
+  },
+  {
+    "path": ".next/static/chunks/508-aefa69ea3371fc93.js",
+    "bytes": 18624,
+    "sha256": "324c686fda02ee09f95e6eabf72777d1d32a88f8120d9359337ae436e7ba7d09"
+  },
+  {
+    "path": ".next/static/chunks/5740.833e3549991da118.js",
+    "bytes": 10400,
+    "sha256": "560888eb7e01d55ea5abd747da0d099fb3bff07dd7a2434dd22efd872a9be07d"
+  },
+  {
+    "path": ".next/static/chunks/5940-ca7f71b8fb1bf179.js",
+    "bytes": 352550,
+    "sha256": "0145a4de858900d84602eb158adc4c0f047a3cb349f8fe860d66e455fb1f5387"
+  },
+  {
+    "path": ".next/static/chunks/640-82eeea1f82f63315.js",
+    "bytes": 16756,
+    "sha256": "ac788aa86b9f390bd53bfc64b3b772f8c894756e882a5f78184796d3dca3f100"
+  },
+  {
+    "path": ".next/static/chunks/646.2ea2afa707a846e0.js",
+    "bytes": 25956,
+    "sha256": "b28f2f02585f0415c2dd886db9860affba208a3f0ba2fc168093556c2d434564"
+  },
+  {
+    "path": ".next/static/chunks/6977.c5125efa2aadea8c.js",
+    "bytes": 4616,
+    "sha256": "1fffbf18f89c7d38bf7ce224ad682512d23161c8e02486ba815b80a8537b847f"
+  },
+  {
+    "path": ".next/static/chunks/7223.e6ab1f2679b89d5d.js",
+    "bytes": 5638,
+    "sha256": "9c3727bc72d8c45acb1627a4eee293ab5d8a5f9a82de669baae0ca3d53054fda"
+  },
+  {
+    "path": ".next/static/chunks/7929-9e0affc838878b2f.js",
+    "bytes": 10309,
+    "sha256": "ba37eecc8e5cbcb75859970bc08ad07eb7edf5c33d1b9f73f0b714ce0980351b"
+  },
+  {
+    "path": ".next/static/chunks/799-f63af348c43abad3.js",
+    "bytes": 5460,
+    "sha256": "f9af7b354033f9c2058cf634712a2449a1927d72e00d0ca301bfc32bfd681baa"
+  },
+  {
+    "path": ".next/static/chunks/8073-ef8a6bab58255c98.js",
+    "bytes": 5603,
+    "sha256": "75ab2f7397c59011cb6a57b9976cae6d88583020dfb996d888feebc0edb80e43"
+  },
+  {
+    "path": ".next/static/chunks/8276-760c5dacc3e1fd9a.js",
+    "bytes": 6298,
+    "sha256": "280cd5219c676468d08c1d1f240d18a2abf03ad342501c1f2894563989f5fddf"
+  },
+  {
+    "path": ".next/static/chunks/8333-c31a2ed39f1c1a7b.js",
+    "bytes": 132747,
+    "sha256": "8cf1219418d44ea885b123dcbe07203261cd5f57cf73724fa4d1fa44892332e0"
+  },
+  {
+    "path": ".next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+    "bytes": 173025,
+    "sha256": "7b6b1774683300d2d10a8f83a4088787954c0f896583dbbdb5621ccb826fce95"
+  },
+  {
+    "path": ".next/static/chunks/9503-a190351e1a5d1f64.js",
+    "bytes": 8925,
+    "sha256": "d29a829419368debdc0f8764db1131ae0647764fc2bb17fb26027c9999163cac"
+  },
+  {
+    "path": ".next/static/chunks/9768-46aeb931ef534404.js",
+    "bytes": 174466,
+    "sha256": "ada5156e294cb851b56fda1022be22f5c8a43a2f8ffb0b96aea585877083f59a"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/accounts/[id]/page-d00b36e5f55cd413.js",
+    "bytes": 6415,
+    "sha256": "ced3a32ad7c53b7d815edc713b30047f93c1ba8a0cc13cab8c9381380b864549"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/accounts/page-6e8ff779badf4169.js",
+    "bytes": 35652,
+    "sha256": "9026a12afeb2cb2160c1f41a32de18434b34531620ac530871fa9fb34c066fea"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/analysis/page-858e47f679eb5445.js",
+    "bytes": 14149,
+    "sha256": "a3e6c759eb84198e6f47dcf5a7f38ed0c3db458ad82d219361ce28c2ddf8ead5"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/budgets/page-f5f50eb6a31066d9.js",
+    "bytes": 20701,
+    "sha256": "9a5eb3a4737cb5f681a2514b515874034dbd7157ee6b62e7cd1a0f9762999cb0"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/categories/page-f30571e513049f9f.js",
+    "bytes": 16705,
+    "sha256": "aa3bac9a961a6a035da152b041bee0c353ea2871ceb21592d20a837f1d408608"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/dashboard/page-e9cfbddd99873339.js",
+    "bytes": 54303,
+    "sha256": "84c78ef7e3a946f6018c9d7c59c49a315af05653e2a512e78271ff789bbceaec"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/expenses/page-2c15bd614ca1e5d7.js",
+    "bytes": 10535,
+    "sha256": "10e0653524316068eeed0d051f6a789a92ec1924438ddf5a1fa2bd85f9b38d81"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/investments/page-e08bbe20b5dc8447.js",
+    "bytes": 61747,
+    "sha256": "13ada8239032809b02b64e42228f2a60bd325116a519eb9bc7a96a6c97bb01ef"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/layout-89b3d6cfa0e108be.js",
+    "bytes": 22412,
+    "sha256": "c78989546d05a8b9d0f7eac865a961a8487c04a52c5dc7e644d92a16eca26544"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/loading-b92a1d5f1d5039dd.js",
+    "bytes": 7308,
+    "sha256": "6deb44e3c070ae9e248faf7f130b753db851dc66b6dbcfb7a2d10c286d84e090"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/recurring/page-c38a75a5994465f5.js",
+    "bytes": 28716,
+    "sha256": "3769390f9a0cfb3f726f71b2c11cf2560a57336d9e34b1873d3640913d66d1e1"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/settings/page-ead4a3f0268f690e.js",
+    "bytes": 71121,
+    "sha256": "186236d68d1663a996a4d01a63e904f112c889ca7883e22a0ff033440eba3927"
+  },
+  {
+    "path": ".next/static/chunks/app/(authenticated)/shared/page-8e04f69fbaac9036.js",
+    "bytes": 9074,
+    "sha256": "677da5b6ca315668fd3116c9aa224899c7eb42b98f5eccf22c684620c8fbbae4"
+  },
+  {
+    "path": ".next/static/chunks/app/_not-found/page-0f9de82f58e64cfd.js",
+    "bytes": 2682,
+    "sha256": "ac999de4c772d9be1b177cdbd6a93884420f243df321eb6760865703a1b03f5e"
+  },
+  {
+    "path": ".next/static/chunks/app/api/accounts/[id]/adjust-balance/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/accounts/[id]/adjust-secondary-balance/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/accounts/[id]/correct-debt-sign/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/accounts/[id]/reconcile-balance/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/accounts/[id]/repair-currency-range/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/accounts/[id]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/accounts/movement-selection/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/accounts/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/ai/anomalies/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/ai/chat/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/ai/projections/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/auth/dev-login/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/auth/link-telegram/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/auth/telegram-link-code/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/billing/cancel/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/billing/subscription-link/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/budgets/[id]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/budgets/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/budgets/status/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/categories/[id]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/categories/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cotizaciones/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cotizaciones/transactions-fx/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/budget-alerts/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/maturity-alerts/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/monthly-summary/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/net-worth-snapshot/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/notification-outbox/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/recurring/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/subscription-grace/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/update-prices/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/cron/weekly-summary/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/export/backup/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/export/transactions/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/health/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/import/transactions/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/investments/[id]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/investments/[id]/sell/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/investments/performance/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/investments/portfolio/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/investments/quote/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/investments/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/investments/ticker-search/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/market-data/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/recurring/[id]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/recurring/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/shared/[token]/expenses/[expenseId]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/shared/[token]/expenses/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/shared/[token]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/shared-groups/[id]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/shared-groups/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/telegram/webhook/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/telegram/webhook/u/[secret]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/transactions/[id]/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/transactions/bulk/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/transactions/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/transactions/summary/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/user/integrations/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/user/notification-preferences/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/user/onboarding/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/user/subscription/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/api/webhooks/mercado-pago/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/auth/callback/route-73b7d0dd5a18ba4c.js",
+    "bytes": 437,
+    "sha256": "c9bc251f1dfe66a666952151b80c25260d6d30cbf417ae542ffaf7f5f46a8179"
+  },
+  {
+    "path": ".next/static/chunks/app/demo/page-f4a215d8c0af6678.js",
+    "bytes": 10873,
+    "sha256": "26dcf751f5e6da128962be337200f0ef8db1f63cb0b14248dbf74af28926a8e7"
+  },
+  {
+    "path": ".next/static/chunks/app/layout-d82e64289ef42146.js",
+    "bytes": 6696,
+    "sha256": "e1b9bfa1e832183ec0b0557774c536bc0ed889be90e37f77bd2fc6a82ad662dc"
+  },
+  {
+    "path": ".next/static/chunks/app/login/page-d0c8770b9aea7353.js",
+    "bytes": 12475,
+    "sha256": "f171710581b637558d09e5c81b0c44842a5e15471504846cb328808f6dc7670f"
+  },
+  {
+    "path": ".next/static/chunks/app/page-27a5e4ef6d5bc990.js",
+    "bytes": 40800,
+    "sha256": "3ba9182f1318aba12168eca06049726503b0907a37be6eef3284c0c95e174ac0"
+  },
+  {
+    "path": ".next/static/chunks/app/register/page-5a80e64ba16a99f0.js",
+    "bytes": 12137,
+    "sha256": "b7ff7d7f5b4aed33729459f9d0c426d010285cd3450e03dae2276606804efa88"
+  },
+  {
+    "path": ".next/static/chunks/app/shared/[token]/page-76a4ce09193ba34c.js",
+    "bytes": 21074,
+    "sha256": "56bcf8f30d3a627c65fb9f0d784635134b3418106d158bf4a78443a99615bebb"
+  },
+  {
+    "path": ".next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+    "bytes": 67494,
+    "sha256": "adfb460e31046e1b427007c7cd9c244a8b379946dfad104520061e7a597ae0fe"
+  },
+  {
+    "path": ".next/static/chunks/framework-33ba3080a51d946f.js",
+    "bytes": 139848,
+    "sha256": "9b054975c034a3b0639b25665451be2dac454cbc7e208b0601049bc293de4823"
+  },
+  {
+    "path": ".next/static/chunks/main-5c87057318561965.js",
+    "bytes": 136213,
+    "sha256": "468d4c2c197e0afdecf8ee9c81e4d6258b925981589593b6889e8a9da6a93ca1"
+  },
+  {
+    "path": ".next/static/chunks/main-app-a8eda352bc60d222.js",
+    "bytes": 574,
+    "sha256": "17d7355522c798ca49d6783479ad62487834ce36e2fd445f25e75f1eb8dff944"
+  },
+  {
+    "path": ".next/static/chunks/pages/_app-145c97f4947e9411.js",
+    "bytes": 242,
+    "sha256": "e2d6adb45af653cf1fcf9713c6fd937a9974b1544c6eb274075ed1338e0eb6e8"
+  },
+  {
+    "path": ".next/static/chunks/pages/_error-e19524fd119abae7.js",
+    "bytes": 224,
+    "sha256": "3de5e98c5829665913e0dc58258e289eabcf2b6dbb035ecbf5206e28d57b665c"
+  },
+  {
+    "path": ".next/static/chunks/polyfills-42372ed130431b0a.js",
+    "bytes": 112594,
+    "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+  },
+  {
+    "path": ".next/static/chunks/webpack-c5f12e04df40e5fb.js",
+    "bytes": 4100,
+    "sha256": "eb97cd1366b80b0e097a9fd2612c5b7e22d73fef2f1bf14983d88f44d98b3263"
+  },
+  {
+    "path": ".next/static/css/140171a4760a09fd.css",
+    "bytes": 73205,
+    "sha256": "380ce33721a4ee8583403d5c06b20518b97524e7bf9960aac97a7b0fc153d359"
+  },
+  {
+    "path": ".next/static/media/19cfc7226ec3afaa-s.woff2",
+    "bytes": 19044,
+    "sha256": "46dd4cdca58c26ae87cc6927657bf83b2e8abfc39ffd0ab176e301a8d28d22bf"
+  },
+  {
+    "path": ".next/static/media/21350d82a1f187e9-s.woff2",
+    "bytes": 18744,
+    "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+  },
+  {
+    "path": ".next/static/media/8e9860b6e62d6359-s.woff2",
+    "bytes": 85272,
+    "sha256": "a28eb6d3ccb534ae0c94ca999371df024aab60b08c3c8a5720ee9e32fa0faaa2"
+  },
+  {
+    "path": ".next/static/media/ba9851c3c22cd980-s.woff2",
+    "bytes": 25844,
+    "sha256": "fccca918fea40089dacadc7045861314d1a6bc91f1f323cc1eeb22ebcdb321b5"
+  },
+  {
+    "path": ".next/static/media/c5fe6dc8356a8c31-s.woff2",
+    "bytes": 11272,
+    "sha256": "a2e2c783ca6f9c20486e81e72a279203e86730bbf8f01ff6a5ee9dbd09e1c271"
+  },
+  {
+    "path": ".next/static/media/df0a9ae256c0569c-s.woff2",
+    "bytes": 10280,
+    "sha256": "8db00ff46c67b22cda8bed865acf7077651cac8d2841d5b40980556b48961931"
+  },
+  {
+    "path": ".next/static/media/e4af272ccee01ff0-s.p.woff2",
+    "bytes": 48432,
+    "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+  },
+  {
+    "path": ".next/static/vPLjt1QViugJhUWR62DPp/_buildManifest.js",
+    "bytes": 3364,
+    "sha256": "f1508554b362729828b764493608bd5043976505e97db9cf585353e34ef4a3e2"
+  },
+  {
+    "path": ".next/static/vPLjt1QViugJhUWR62DPp/_ssgManifest.js",
+    "bytes": 80,
+    "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+  }
+]

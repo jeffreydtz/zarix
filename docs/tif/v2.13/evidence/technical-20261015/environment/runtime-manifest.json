@@ -1,0 +1,138 @@
+{
+  "prepared_at_utc": "2026-10-15T00:05:23.067041+00:00",
+  "host": {
+    "os": "macOS",
+    "version": "27.0.1",
+    "build": "26A434",
+    "arch": "arm64"
+  },
+  "prior_runtime_check": {
+    "scope": "Escalated host read-only /private/tmp",
+    "tmp_realpath": "/private/tmp",
+    "old_path_exists": false,
+    "matching_zarix_runtime_dirs_before_creation": [],
+    "operation_on_previous_data": "none"
+  },
+  "runtime_root": "/tmp/zarix-runtime-20261015",
+  "cli": {
+    "version": "2.120.0",
+    "path": "/tmp/zarix-runtime-20261015/bin/supabase",
+    "archive_sha256": "3b8546cc61aeabab6fd1f68edc7f664ebdfa96bdd6a9b18d8d612708f430ae28",
+    "release": "https://github.com/supabase/cli/releases/tag/v2.120.0",
+    "checksums": "https://github.com/supabase/cli/releases/download/v2.120.0/checksums.txt",
+    "checksum_matched": true
+  },
+  "versions": {
+    "PostgreSQL": "17.11.0.004-r1; server/tools17.11",
+    "Auth": "v2.197.0-r0",
+    "PostgREST": "v16.4-r0",
+    "Storage": "v1.79.36-r0"
+  },
+  "runtime": "native experimental",
+  "stack_home": "/tmp/zarix-runtime-20261015/home",
+  "activation": "eager",
+  "excluded_services": [
+    "studio",
+    "realtime",
+    "functions",
+    "analytics",
+    "pooler",
+    "mail"
+  ],
+  "private_combined_env": "/tmp/zarix-runtime-20261015/runtime.env",
+  "private_env_mode": "0600",
+  "stacks": {
+    "source": {
+      "prepared_at_utc": "2026-10-15T00:04:19.326071+00:00",
+      "id": "76703b1117a0712bb00c79764637c08b8886ad7851dd9b3306d649e081412dd9",
+      "runtime": "native",
+      "project_dir": "/private/tmp/zarix-runtime-20261015/source",
+      "api_url": "http://127.0.0.1:54321",
+      "db_endpoint": "tcp://127.0.0.1:54322",
+      "env_file": "/private/tmp/zarix-runtime-20261015/source.env",
+      "env_mode": "0600",
+      "pg_bin": "/private/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgres/17.11.0.004-r1/darwin-arm64/bin",
+      "baseline": "17.11|Auth0|Storage0|public tables0",
+      "http": {
+        "Auth": 200,
+        "REST": 200
+      },
+      "scope": "New empty synthetic runtime; prior results are historical, not replayed",
+      "seed": false,
+      "auth_email_confirmations": false,
+      "api_max_rows": 1000
+    },
+    "restore": {
+      "prepared_at_utc": "2026-10-15T00:04:18.717914+00:00",
+      "id": "eba0705e785c32981474ff420bc2da819e603fce4e36d2c4d244f9cbfab7dcb5",
+      "runtime": "native",
+      "project_dir": "/private/tmp/zarix-runtime-20261015/restore",
+      "api_url": "http://127.0.0.1:55321",
+      "db_endpoint": "tcp://127.0.0.1:55322",
+      "env_file": "/private/tmp/zarix-runtime-20261015/restore.env",
+      "env_mode": "0600",
+      "pg_bin": "/private/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgres/17.11.0.004-r1/darwin-arm64/bin",
+      "baseline": "17.11|Auth0|Storage0|public tables0",
+      "http": {
+        "Auth": 200,
+        "REST": 200
+      },
+      "scope": "New empty synthetic runtime; prior results are historical, not replayed",
+      "seed": false,
+      "auth_email_confirmations": false,
+      "api_max_rows": 1000
+    },
+    "load": {
+      "prepared_at_utc": "2026-10-15T00:04:18.717848+00:00",
+      "id": "a45abaa43633f9c7178168b599d5e0d10d64fde22f8c0f9af3d7a11f6e80c5e8",
+      "runtime": "native",
+      "project_dir": "/private/tmp/zarix-runtime-20261015/load",
+      "api_url": "http://127.0.0.1:56321",
+      "db_endpoint": "tcp://127.0.0.1:56322",
+      "env_file": "/private/tmp/zarix-runtime-20261015/load.env",
+      "env_mode": "0600",
+      "pg_bin": "/private/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgres/17.11.0.004-r1/darwin-arm64/bin",
+      "baseline": "17.11|Auth0|Storage0|public tables0",
+      "http": {
+        "Auth": 200,
+        "REST": 200
+      },
+      "scope": "New empty synthetic runtime; prior results are historical, not replayed",
+      "seed": false,
+      "auth_email_confirmations": false,
+      "api_max_rows": 1000
+    },
+    "e2e": {
+      "prepared_at_utc": "2026-10-15T00:03:41.947609+00:00",
+      "id": "c79b2630488b3fa65beb7c0e4e349cefee720ffc64e30aeeeb30ca2fba66f68d",
+      "runtime": "native",
+      "project_dir": "/private/tmp/zarix-runtime-20261015/e2e",
+      "api_url": "http://127.0.0.1:57321",
+      "db_endpoint": "tcp://127.0.0.1:57322",
+      "env_file": "/private/tmp/zarix-runtime-20261015/e2e.env",
+      "env_mode": "0600",
+      "pg_bin": "/private/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgres/17.11.0.004-r1/darwin-arm64/bin",
+      "baseline": "17.11|Auth0|Storage0|public tables0",
+      "http": {
+        "Auth": 200,
+        "REST": 200
+      },
+      "scope": "New empty synthetic runtime; prior results are historical, not replayed",
+      "seed": false,
+      "auth_email_confirmations": false,
+      "api_max_rows": 1000
+    }
+  },
+  "scope": "Prepared new empty isolated stacks only. No application migrations, fixtures/users, acceptance replay, remote/production integration, global install or persistent external access. Prior 19+3 results remain historical.",
+  "limits": [
+    "Loopback HTTP; HTTPS not demonstrated",
+    "Platform schemas initialized; application/Auth/Storage data empty at baseline",
+    "No availability observation or at-rest encryption proof",
+    "No prior runtime/data found; no destroy/reset performed"
+  ],
+  "documentation": [
+    "https://raw.githubusercontent.com/supabase/cli/v2.120.0/apps/cli/docs/stack-commands.md",
+    "https://raw.githubusercontent.com/supabase/cli/v2.120.0/apps/cli/docs/supabase-home.md",
+    "https://raw.githubusercontent.com/supabase/cli/v2.120.0/packages/stack/README.md"
+  ]
+}

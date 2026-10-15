@@ -1,0 +1,11 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.32",ranksep="0.4",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="Clases CU001: reglas y presupuestos"; labelloc=t; fontsize=22;
+RecurringService [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>RecurringService</B></TD></TR><TR><TD ALIGN="LEFT">+create(...)</TD></TR><TR><TD ALIGN="LEFT">+listActive(...)</TD></TR></TABLE>>];
+BudgetsService [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>BudgetsService</B></TD></TR><TR><TD ALIGN="LEFT">+create(...)</TD></TR><TR><TD ALIGN="LEFT">+list(...)</TD></TR><TR><TD ALIGN="LEFT">+getStatus(...)</TD></TR><TR><TD ALIGN="LEFT">+checkAndSendAlerts(...)</TD></TR></TABLE>>];
+SupabaseClient [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#eef2f6"><B>SupabaseClient</B></TD></TR><TR><TD ALIGN="LEFT">«cliente externo»</TD></TR><TR><TD ALIGN="LEFT">consultas y RPC</TD></TR></TABLE>>];
+RecurringService -> SupabaseClient [style=dashed,label=""];
+BudgetsService -> SupabaseClient [style=dashed,label=""];
+}

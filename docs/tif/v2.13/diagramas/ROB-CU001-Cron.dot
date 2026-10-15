@@ -1,0 +1,21 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: A06: ejecución y recuperación"; labelloc=t; fontsize=22;
+c [shape=plaintext,fontcolor="#243b53",label="Programador externo"];
+bc [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nEntrada Cron"];
+v [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+r [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nRecurrencias"];
+er [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nRegla / Vencimiento"];
+m [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nMovimientos"];
+ec [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nCuenta / Saldo"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+c -> bc [label="A06"];
+bc -> v [label="autorizar\nservicio"];
+bc -> r [label="A06 evaluar\ncalendario\nactual"];
+r -> er [label="marca posterior\n/\ndesactivar\nvencidas"];
+r -> m [label="unicidad\nregla/día AR"];
+m -> ec [label="propiedad /\nsaldo"];
+m -> em [label="escritura\natómica"];
+}

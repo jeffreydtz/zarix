@@ -1,0 +1,47 @@
+{
+  "startedAt": "2026-10-15T00:51:31.298Z",
+  "status": "BLOCKED",
+  "product": "safari",
+  "scope": "Exactly four bounded CU reading subcases. No complete original CP, CU, RNF05 or CNF-09 acceptance inferred. UI login creates Auth sessions; dashboard may update snapshots/cache. No financial writes requested.",
+  "environment": {
+    "node": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "kernel": "27.0.0"
+  },
+  "cases": [
+    {
+      "cu": "CU001",
+      "status": "BLOCKED",
+      "scope": "partial reading proof only",
+      "checks": []
+    },
+    {
+      "cu": "CU002",
+      "status": "BLOCKED",
+      "scope": "partial reading proof only",
+      "checks": []
+    },
+    {
+      "cu": "CU003",
+      "status": "BLOCKED",
+      "scope": "partial reading proof only",
+      "checks": []
+    },
+    {
+      "cu": "CU004",
+      "status": "BLOCKED",
+      "scope": "partial reading proof only",
+      "checks": []
+    }
+  ],
+  "screenshots": [],
+  "blockers": [
+    "EXECUTION_WINDOW_NOT_AUTHORIZED"
+  ],
+  "cleanup": {
+    "remoteAutomationPreference": "Not modified by runner; E2E owner activates/restores only the explicitly authorized Safari setting"
+  },
+  "failureLocation": "40",
+  "finishedAt": "2026-10-15T00:51:31.299Z"
+}

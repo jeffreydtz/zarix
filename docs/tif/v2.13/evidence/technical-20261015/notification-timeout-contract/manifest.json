@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-15T05:53:41.209039+00:00",
+  "status": "PASS_SCOPED_PENDING_INDEPENDENT_REVIEW",
+  "case_id": "CP1-27",
+  "productRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "tests": 1,
+  "assertions": {
+    "PASS": 31,
+    "FAIL": 0
+  },
+  "sourceStable": true,
+  "scope": "Real persisted PGlite/PostgreSQL bootstrap, migrations, atomic financial RPC and actual outbox worker; query adapter substitutes PostgREST; synthetic role fixture substitutes Auth; only sendTelegramDm replaced by an accepting-then-timeout provider double. No native stack, GoTrue, browser, credentials or external Telegram.",
+  "limitations": "After a provider accepts a message but loses its acknowledgement, application cannot know physical delivery. This controlled provider model accepts both attempts, illustrating a possible duplicate. No Telegram exactly-once or automatic reconciliation is claimed.",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "146f8be0e07d1b1f2887a3fe83d663a91ddf7c810a5ccab05d63eefd3ec7e274"
+    },
+    {
+      "path": "execution.json",
+      "sha256": "2aec5a7c8b90a966716e5410ab2e1454e26b6fc1b1e27d5b7fcd6bb897ecb649"
+    },
+    {
+      "path": "provider-timeout.test-source.ts",
+      "sha256": "7bbd74a892c5f1340d55a34cd3265da3e7066f9b8cb817b14c4ee0998b52ed30"
+    },
+    {
+      "path": "provider-timeout.vitest.config.mjs",
+      "sha256": "b50102b9fae5542f774689761570f225f54feaf1e52521671f5de13918407628"
+    },
+    {
+      "path": "stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "stdout.log",
+      "sha256": "e15709f0f4cb42b6f5cb1dda1fe4b10e5ccf5d3600be814f39e124dc3901676d"
+    },
+    {
+      "path": "system-case-results.json",
+      "sha256": "2759f7143fac4c41fe1f40fb59c489c9ddd4774440862b7df5c4aae68fab762d"
+    },
+    {
+      "path": "verification.json",
+      "sha256": "90a7d1681ffc89f0d74af08e6eaf0d1d1a5c7281da209115e94bcb25b1a75325"
+    },
+    {
+      "path": "vitest-result.json",
+      "sha256": "31a9331fc1b2b0619ff483e5745bbe29a6f3f59aeae733c29c6a74869fee9916"
+    }
+  ]
+}

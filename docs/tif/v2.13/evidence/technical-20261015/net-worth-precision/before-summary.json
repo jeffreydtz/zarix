@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-15T05:03:38.782351+00:00",
+  "status": "FAIL_BEFORE_FIX",
+  "phase": "Repository focal test; real components, no mock or decimals injected",
+  "tests": 6,
+  "passed": 3,
+  "failed": 3,
+  "componentSourcesUnchanged": true,
+  "mockedModules": [],
+  "beforeReportSha256": "e4c17cd84741e1648da38aa6f8d95b61ae43407348b4e263236ee6782cf151ef",
+  "testSha256": "bc8fe6aa13c5f0d0712024a6e6185dab687c78624c7f7ad9e41eacfd05bec78e",
+  "caseResults": [
+    {
+      "title": "preserves two fractional USD digits for the real Hero equivalent 181.67",
+      "status": "failed"
+    },
+    {
+      "title": "preserves two fractional USD digits for the real Hero equivalent -181.67",
+      "status": "failed"
+    },
+    {
+      "title": "preserves two fractional USD digits for the real Hero equivalent 100",
+      "status": "failed"
+    },
+    {
+      "title": "preserves the existing real Amount ARS default display for 218000",
+      "status": "passed"
+    },
+    {
+      "title": "preserves the existing real Amount ARS default display for 218000.49",
+      "status": "passed"
+    },
+    {
+      "title": "preserves Sticky SSR initially hidden; does not claim its visible USD branch was exercised",
+      "status": "passed"
+    }
+  ],
+  "limits": [
+    "Hero client USD view not exercised by SSR",
+    "Sticky initially hidden in SSR; its visible amounts not exercised"
+  ],
+  "runtimeCalls": {
+    "browser": 0,
+    "api": 0,
+    "database": 0
+  }
+}

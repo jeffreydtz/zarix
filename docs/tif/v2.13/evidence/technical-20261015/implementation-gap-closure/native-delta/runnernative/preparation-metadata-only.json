@@ -1,0 +1,34 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "preparedAt": "2026-10-15T07:55:57.600292+00:00",
+  "supersedes": "preparation.json (pre-privacy-restriction prepared source hashes only; never executed)",
+  "pythonAst": "PASS",
+  "typescriptSyntaxAndTranspile": "PASS; read-only transpileModule zero diagnostics before safe fixture UUID report addition",
+  "configSyntax": "PASS; node --check only",
+  "workerImported": false,
+  "workerExecuted": false,
+  "groupsPrepared": 14,
+  "credentialValuesCopied": false,
+  "sessionsPersisted": false,
+  "envFilesCreated": false,
+  "sourceRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/run-native-cases.py",
+      "sha256": "849be9fee4c44d67b0475d1949a6c0e6c32cc0ac6f8a27c4b62450db37041c95"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/native-cases.vitest.config.mjs",
+      "sha256": "14c295065fb3336d88f3708b0cd13e06d8b0c364312259a01876089638fa51ef"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/native-cases.test-source.ts",
+      "sha256": "cfa43972a904300ed4add0e770b898621a33ee968244dbdadda251c4a9812a5d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/README.md",
+      "sha256": "7b6ecd486d8877d10e184ae0c5d03b0e9d94c1ad2a372400114fd38551a38ba6"
+    }
+  ]
+}

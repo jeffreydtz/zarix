@@ -1,0 +1,51 @@
+{
+  "results": [
+    {
+      "case_id": "CP4-07",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "investment-contracts/executed-cp4-07/attempt-2-unique-fresh-cache-pass.json",
+        "investment-contracts/executed-cp4-07/attempt-2-readonly-receipts-and-positions.json",
+        "investment-contracts/executed-cp4-07/attempt-2-manifest.json",
+        "investment-contracts/executed-cp4-07/phase-2-control-restored.json",
+        "investment-contracts/executed-cp4-07/phase-2-offline-proof.json"
+      ],
+      "assertion_names": [
+        "Fixture account API201",
+        "Actual normal-owner investment create201",
+        "Turn only new position into cached nonmanual fixture200",
+        "Normal JWT own synthetic timestamp fixture accepted",
+        "Synthetic timestamp setup targets only own new position",
+        "Fixed price timestamp is persisted",
+        "Actual owner portfolio200",
+        "fresh unique asset cached110: actual upstream crypto503 observed",
+        "New own position visible exactly once",
+        "Position quantity",
+        "Position current_price",
+        "Position cost_basis_usd",
+        "Position market_value_usd",
+        "Position profit_loss_usd",
+        "Position valuation_price_source",
+        "Unavailable provider preserves actual fresh cache timestamp",
+        "Archive only new own completed valuation fixture200",
+        "Actual normal-owner investment create201",
+        "Actual owner portfolio200",
+        "separate unique asset without current price: actual upstream crypto503 observed",
+        "New own position visible exactly once",
+        "Position quantity",
+        "Position current_price",
+        "Position cost_basis_usd",
+        "Position market_value_usd",
+        "Position profit_loss_usd",
+        "Position valuation_price_source",
+        "Purchase reference does not invent quote timestamp",
+        "Archive only new own completed valuation fixture200",
+        "Actual normal-owner investment create201",
+        "Missing required FX explicitly fails valuation",
+        "Valuation failure never changes own original quantities/cost/price"
+      ],
+      "scope": "Literal integration/system contract: q6/cost600, fresh cache110→660/60/cache/date; separate no-price fixture→600/0/purchase_reference/null; missingFX fails/no change. Existing local provider503 observed; no external integration or UI claim."
+    }
+  ]
+}

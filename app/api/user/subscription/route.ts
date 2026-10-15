@@ -1,3 +1,4 @@
+import { effectivePlan, PLAN_LIMITS } from '@/lib/plans/rules';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { subscriptionsService } from '@/lib/services/subscriptions';
@@ -22,7 +23,9 @@ export async function GET() {
 
     return NextResponse.json({
       ...state,
-      can_use_orchestrator: subscriptionsService.hasOrchestratorAccess(state.status),
+      plan: effectivePlan(state),
+      limits: PLAN_LIMITS[effectivePlan(state)],
+      can_use_orchestrator: subscriptionsService.hasOrchestratorAccess(state),
     });
   } catch (error) {
     console.error('subscription GET error:', error);

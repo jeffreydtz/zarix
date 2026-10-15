@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T05:10:06.465729+00:00",
+  "targets": [
+    {
+      "kind": "next",
+      "state": "final-proof-clock-app-state.json",
+      "pid": 17292,
+      "port": 3002,
+      "cwd": "/tmp/zarix-app-acceptance-final-20261015",
+      "build": "vPLjt1QViugJhUWR62DPp",
+      "status": "STOPPED_OWN_PROCESS",
+      "signalSent": true,
+      "pidStartTimeCwdAndListenerMatch": true
+    }
+  ],
+  "nativeServicesTouched": false,
+  "arcOrPersonalProcessesTouched": false,
+  "priorStateBuildEnvPreserved": true,
+  "finishedAt": "2026-10-15T05:10:06.862628+00:00"
+}

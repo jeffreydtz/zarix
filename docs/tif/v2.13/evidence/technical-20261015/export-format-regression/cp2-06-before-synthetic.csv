@@ -1,0 +1,4 @@
+Fecha,Tipo,Monto,Moneda,Monto en Cuenta,Cuenta,Categoría,Descripción,Notas,Cuota,Cuenta Destino,Moneda Cuenta,Moneda Destino,Monto en Destino,Tasa de Cambio
+"4/10/2026","Transferencia","100","ARS","100","AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63","","AccountAnalysis CP2-06 9a9a5412-d49f-4da8-af64-00cddab0af63","","","AccountAnalysis CP2-06 2 9a9a5412-d49f-4da8-af64-00cddab0af63","ARS","ARS","100",""
+"3/10/2026","Ingreso","700","ARS","700","AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63","","AccountAnalysis CP2-06 9a9a5412-d49f-4da8-af64-00cddab0af63","","","","ARS","","",""
+"2/10/2026","Gasto","500","ARS","500","AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63","Alimentos 9a9a5412-d49f-4da8-af64-00cddab0af63","AccountAnalysis CP2-06 9a9a5412-d49f-4da8-af64-00cddab0af63","","","","ARS","","",""

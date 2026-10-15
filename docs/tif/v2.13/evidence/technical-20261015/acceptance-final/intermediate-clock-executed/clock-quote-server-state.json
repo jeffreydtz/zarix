@@ -1,0 +1,12 @@
+{
+  "purpose": "synthetic-clock-proof-quotes",
+  "status": "LISTENING",
+  "pid": 443,
+  "origin": "http://127.0.0.1:57912",
+  "fixedTime": "2026-10-06T12:00:00.000Z",
+  "sourceSha256": "4b5f1a0df734fb66c89063541d98800724129e0056169c1ceca56a3d3f93b471",
+  "startedAt": "2026-10-15T04:27:53.980Z",
+  "requests": 0,
+  "counts": {},
+  "scope": "Explicit standalone synthetic HTTP double with fixedT0/rates; no database, proxy, external provider, credential generation or OS-clock change. Original57910 service remains untouched."
+}

@@ -1,0 +1,59 @@
+{
+  "executedAt": "2026-10-15T01:36:33.764929+00:00",
+  "phase": "identity-only harness guard verification",
+  "scriptSha256": "6d3e0ce73e0a8cd60c28e52710170c27929f8cd8b0b7b1d052a26afbbc7856b9",
+  "sourceStable": true,
+  "checks": {
+    "syntax": 0,
+    "eslint": 0
+  },
+  "cases": [
+    {
+      "case": "source",
+      "apiPort": 54321,
+      "databasePort": 54322,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "restore",
+      "apiPort": 55321,
+      "databasePort": 55322,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "load",
+      "apiPort": 56321,
+      "databasePort": 56322,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "mixed",
+      "apiPort": 57321,
+      "databasePort": 54322,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "wrong-purpose",
+      "apiPort": 57321,
+      "databasePort": 57322,
+      "actualExit": 1,
+      "browserEvents": 0,
+      "requests": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "scope": "No browser/Auth/SQL execution. Post-CI harness selector/identity-only repair, never attributed to earlier core819 gate."
+}

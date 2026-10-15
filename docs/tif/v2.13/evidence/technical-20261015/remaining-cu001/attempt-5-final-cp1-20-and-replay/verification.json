@@ -1,0 +1,1638 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T04:46:28.002Z",
+  "run": "3df79674-8f48-45ca-bb1c-0b0f125a4de2",
+  "selectedIds": [
+    "CP1-20"
+  ],
+  "scope": "Fourteen declared remaining CU001 cases in the explicitly selected isolated clock profile. The immutable intermediate core-reliability build and future final core-acceptance build remain separate phases. Normal Auth/API, native SQL oracle and narrowly scoped temporary fault hooks. Cron/import are local synthetic only. No browser, delivery/provider acceptance, plan change or new identity.",
+  "results": [
+    {
+      "id": "CP1-20",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Partial valid local import200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly two economic writes and balance10200",
+          "actual": {
+            "rows": 2,
+            "balance": 10200,
+            "amounts": [
+              500,
+              700
+            ]
+          },
+          "expected": {
+            "rows": 2,
+            "balance": 10200,
+            "amounts": [
+              500,
+              700
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Raw current importer counters",
+          "actual": {
+            "imported": 2,
+            "skipped": 1,
+            "pending": 0,
+            "total": 3
+          },
+          "expected": {
+            "imported": 2,
+            "skipped": 1,
+            "pending": 0,
+            "total": 3
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly one documented invalid-amount rejection detail",
+          "actual": [
+            "Fila omitida — monto inválido"
+          ],
+          "expected": [
+            "Fila omitida — monto inválido"
+          ],
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "name": "Literal classification versus current response schema",
+          "literal": {
+            "imported": 2,
+            "rejected": 1,
+            "omittedDuplicates": 0,
+            "total": 3
+          },
+          "observedRaw": {
+            "imported": 2,
+            "skipped": 1,
+            "pending": 0,
+            "total": 3
+          },
+          "skipTitles": [
+            "Fila omitida — monto inválido"
+          ]
+        },
+        {
+          "name": "Explicit reviewed semantic adapter",
+          "review": "cp1-19-semantic-review.json",
+          "reviewSha256": "72a4f1cc27dbd7b64054876a4a65a59b2505af8ca6a768242306ccc32600a355",
+          "parentDecision": "Applied to CP1-20 only after actual HTTP200/two writes/one invalid detail/no pending/total3/balance10200, all asserted above.",
+          "closedPartition": {
+            "validImports": 2,
+            "invalidAmountRejections": 1,
+            "otherOmissionsIncludingDuplicates": 0,
+            "unconfirmed": 0,
+            "total": 3
+          },
+          "notApiProperties": [
+            "invalidAmountRejections",
+            "otherOmissionsIncludingDuplicates"
+          ],
+          "duplicateOmissionSelected": false
+        }
+      ],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T04:46:35.145Z",
+      "physicalOwner": "A",
+      "finishedAt": "2026-10-15T04:46:35.973Z"
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "DERIVED-CP1-20-ARCHIVED-BATCH-REPLAY",
+      "method": "POST",
+      "path": "/api/import/transactions",
+      "requestId": "3520e6ed-c901-4387-99d3-5bee2a0f7872",
+      "startedAt": "2026-10-15T04:46:34.773Z",
+      "status": 200,
+      "responseSha256": "7eabed4305933af0804d9e47ca3f5d0350424d6f4867fde8649b39d6e1d3286e",
+      "endedAt": "2026-10-15T04:46:34.841Z"
+    },
+    {
+      "caseId": "CP1-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "24abe0ac-87be-4b80-8c63-b9b4d3c3a819",
+      "startedAt": "2026-10-15T04:46:35.274Z",
+      "status": 201,
+      "responseSha256": "93bdf96dd629a8613f49fc28a70acb147872ba34178d89fb3b967b1e193f4e21",
+      "endedAt": "2026-10-15T04:46:35.322Z"
+    },
+    {
+      "caseId": "CP1-20",
+      "method": "POST",
+      "path": "/api/import/transactions",
+      "requestId": "094897f0-d727-4d83-9608-1e346421d36c",
+      "startedAt": "2026-10-15T04:46:35.526Z",
+      "status": 200,
+      "responseSha256": "fd7b6006ab8c2bc272d487598b5f12ff476d35785294ae5dea9d30c07d00048c",
+      "endedAt": "2026-10-15T04:46:35.581Z"
+    },
+    {
+      "caseId": "CP1-20",
+      "method": "DELETE",
+      "path": "/api/accounts/c42a1e7a-4415-4881-826f-87fb66fd2868",
+      "requestId": "e1a89138-7cde-4a67-adef-b70d454b005e",
+      "startedAt": "2026-10-15T04:46:35.933Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:46:35.972Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "c42a1e7a-4415-4881-826f-87fb66fd2868",
+      "name": "RemainingCU001 CP1-20 1 3df79674-8f48-45ca-bb1c-0b0f125a4de2",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "747d5223-e12d-453f-9a30-299f98c58eb8",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "c42a1e7a-4415-4881-826f-87fb66fd2868",
+          "category_id": null,
+          "transaction_date": "2026-10-15T04:46:35.310811+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs",
+      "sha256": "f591971a924db3d5008a8df0b2cb1de41275bfa5ad08b3188361b62af7594510"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-scenarios.mjs",
+      "sha256": "4eb718afb7321acfc87bcf8a2e0e9971be0c5b8a0634db1bb1a1031874941b50"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-cp120-replay.mjs",
+      "sha256": "abff2b790eb3cf8f6b1c7a74a952055be283719dbb779db4019804f0eb10c9d1"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6"
+    },
+    {
+      "path": "app/api/recurring/route.ts",
+      "sha256": "f14f7b6ca2a2315f0d44ac2af2a8504f830c9d975ac089a45368e237a3808c6f"
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "sha256": "97e92a3a07335768ff4c5c0fb6c4576087ed0782cf7b7745feb0f496fbd058c8"
+    },
+    {
+      "path": "app/api/cron/recurring/route.ts",
+      "sha256": "ae53c46e23a1cece4a5e0048dca3bbf7385650111922afcf3200517fa4d1e97a"
+    },
+    {
+      "path": "app/api/budgets/route.ts",
+      "sha256": "0eb41dcefd5a142ff3d73c77524673cb48eb0300856085dc55433cfd4e87b6c6"
+    },
+    {
+      "path": "app/api/budgets/[id]/route.ts",
+      "sha256": "973b113a716e99a3b4ceb3fc9ef7e98b62023a352625b575df1f9e4a1580ad08"
+    },
+    {
+      "path": "app/api/budgets/status/route.ts",
+      "sha256": "f6d931c842563afc73563c9ed6ed9c8862e212782d8eacb5bfd8f114c8aaa37d"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "lib/cron/recurring-job.ts",
+      "sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72"
+    },
+    {
+      "path": "lib/cron/cron-job.ts",
+      "sha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9"
+    },
+    {
+      "path": "lib/cron/recurring-schedule.ts",
+      "sha256": "d9725bfd1d8735d24a65d19bb6f462e3a920ef1130df34299bf4dd2790c2547e"
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "sha256": "32ff3118923983eb02e1bd79103bbde3461cd6efe1de2ac0302ec53ce831fd3e"
+    },
+    {
+      "path": "lib/observability/alert.ts",
+      "sha256": "d09bce5d9c248f1bc6d3c29a36464afbf9846ebbd3c1fa9bac2514c7a2c03954"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/categories/route.ts",
+      "sha256": "8e54159c4573379e82d42b06a6f6a862953082a8e200e69c55eb2751565e4dbc"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/transactions/summary/route.ts",
+      "sha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "currentCheckoutDifferences": [],
+  "buildBinding": {
+    "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "buildId": "vPLjt1QViugJhUWR62DPp",
+    "nextPid": 17292,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+    "runtimeProfile": "final-core-acceptance",
+    "buildProfile": "final-core-acceptance",
+    "stateFile": "final-proof-clock-app-state.json",
+    "clockObservationFile": "final-proof-clock-observation.json",
+    "copiedSources": 480,
+    "allCopiedSourcesMatchGitOrDeclaredCliMetadata": true,
+    "ownedListenerAndCwdConfirmed": true,
+    "privateEnvBoundToNative": true,
+    "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
+    "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976"
+  },
+  "identities": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "normalPasswordAuthAndGetUser": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "normalPasswordAuthAndGetUser": true
+    }
+  ],
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "profile": "final-core-acceptance",
+  "derivedResults": [
+    {
+      "id": "DERIVED-CP1-20-ARCHIVED-BATCH-REPLAY",
+      "status": "PASS",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Original fixture remains archived with balance10200",
+          "actual": {
+            "count": 1,
+            "active": false,
+            "balance": 10200
+          },
+          "expected": {
+            "count": 1,
+            "active": false,
+            "balance": 10200
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Only original two economic effects exist",
+          "actual": [
+            {
+              "type": "expense",
+              "amount": 500
+            },
+            {
+              "type": "income",
+              "amount": 700
+            }
+          ],
+          "expected": [
+            {
+              "type": "expense",
+              "amount": 500
+            },
+            {
+              "type": "income",
+              "amount": 700
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Original durable receipt indices remain0/1",
+          "actual": [
+            "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:0",
+            "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:1"
+          ],
+          "expected": [
+            "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:0",
+            "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:1"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Original batch context exists once",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Original pending batch settles via normal-session HTTP200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Two durable acknowledgements and one invalid skip, no pending",
+          "actual": {
+            "imported": 2,
+            "skipped": 1,
+            "pending": 0,
+            "total": 3,
+            "success": true
+          },
+          "expected": {
+            "imported": 2,
+            "skipped": 1,
+            "pending": 0,
+            "total": 3,
+            "success": true
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "The only skipped row is the known invalid zero amount",
+          "actual": [
+            "Fila omitida — monto inválido"
+          ],
+          "expected": [
+            "Fila omitida — monto inválido"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Full original account/ledger/receipts/batch are unchanged after replay",
+          "actual": {
+            "account": [
+              {
+                "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "icon": null,
+                "name": "RemainingCU001 CP1-20 5 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 10200,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": false,
+                "created_at": "2026-10-15T04:35:01.904439+00:00",
+                "sort_order": 32,
+                "updated_at": "2026-10-15T04:35:02.341133+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "ledger": [
+              {
+                "id": "08880996-964e-456c-b1c2-561877918a06",
+                "tags": null,
+                "type": "expense",
+                "notes": "sintético",
+                "amount": 500,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:02.167689+00:00",
+                "updated_at": "2026-10-15T04:35:02.167689+00:00",
+                "category_id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                "description": "CP1-20 expense 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T12:00:00+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 500,
+                "destination_amount_in_account_currency": null
+              },
+              {
+                "id": "81501dd6-d6d1-4dba-99ff-9e4e554e45c1",
+                "tags": null,
+                "type": "adjustment",
+                "notes": null,
+                "amount": 10000,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:01.904439+00:00",
+                "updated_at": "2026-10-15T04:35:01.904439+00:00",
+                "category_id": null,
+                "description": "Saldo inicial",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-15T04:35:01.904439+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 10000,
+                "destination_amount_in_account_currency": null
+              },
+              {
+                "id": "f7f364ac-dd7f-4b5f-a608-03beeaebec41",
+                "tags": null,
+                "type": "income",
+                "notes": "sintético",
+                "amount": 700,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:02.170256+00:00",
+                "updated_at": "2026-10-15T04:35:02.170256+00:00",
+                "category_id": "e4e29883-ffca-42f0-baab-c25929412784",
+                "description": "CP1-20 income 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T12:00:00+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 700,
+                "destination_amount_in_account_currency": null
+              }
+            ],
+            "receipts": [
+              {
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "response": {
+                  "id": "08880996-964e-456c-b1c2-561877918a06",
+                  "tags": null,
+                  "type": "expense",
+                  "notes": "sintético",
+                  "amount": 500,
+                  "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                  "currency": "ARS",
+                  "location": null,
+                  "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                  "created_at": "2026-10-15T04:35:02.167689+00:00",
+                  "updated_at": "2026-10-15T04:35:02.167689+00:00",
+                  "category_id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                  "description": "CP1-20 expense 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                  "receipt_url": null,
+                  "is_recurring": false,
+                  "exchange_rate": null,
+                  "transaction_date": "2026-10-06T12:00:00+00:00",
+                  "installment_total": null,
+                  "recurring_rule_id": null,
+                  "installment_number": null,
+                  "installment_group_id": null,
+                  "destination_account_id": null,
+                  "amount_in_account_currency": 500,
+                  "destination_amount_in_account_currency": null
+                },
+                "created_at": "2026-10-15T04:35:02.167689+00:00",
+                "request_id": "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:0",
+                "request_hash": "70f9a0b72c84ceef08c423de799cb8b99624b1c8a7f0dbfc199b2475f2de38d2"
+              },
+              {
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "response": {
+                  "id": "f7f364ac-dd7f-4b5f-a608-03beeaebec41",
+                  "tags": null,
+                  "type": "income",
+                  "notes": "sintético",
+                  "amount": 700,
+                  "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                  "currency": "ARS",
+                  "location": null,
+                  "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                  "created_at": "2026-10-15T04:35:02.170256+00:00",
+                  "updated_at": "2026-10-15T04:35:02.170256+00:00",
+                  "category_id": "e4e29883-ffca-42f0-baab-c25929412784",
+                  "description": "CP1-20 income 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                  "receipt_url": null,
+                  "is_recurring": false,
+                  "exchange_rate": null,
+                  "transaction_date": "2026-10-06T12:00:00+00:00",
+                  "installment_total": null,
+                  "recurring_rule_id": null,
+                  "installment_number": null,
+                  "installment_group_id": null,
+                  "destination_account_id": null,
+                  "amount_in_account_currency": 700,
+                  "destination_amount_in_account_currency": null
+                },
+                "created_at": "2026-10-15T04:35:02.170256+00:00",
+                "request_id": "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:1",
+                "request_hash": "bea5161a909767b87a641a9dbbf032e4f4371827951cb0607a193ce822ad7dac"
+              }
+            ],
+            "batch": [
+              {
+                "context": {
+                  "accounts": [
+                    {
+                      "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                      "name": "RemainingCU001 CP1-20 5 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                      "currency": "ARS"
+                    }
+                  ],
+                  "categories": [
+                    {
+                      "id": "140cf6e6-b115-4f28-9aab-7dcdf9d2c596",
+                      "name": "Comida"
+                    },
+                    {
+                      "id": "4d28ebee-0179-43c1-a08e-d2bfd0bf800f",
+                      "name": "Transporte"
+                    },
+                    {
+                      "id": "c2d2aa0a-0026-423b-b734-2dc45425877d",
+                      "name": "Hogar"
+                    },
+                    {
+                      "id": "22e83d9b-dae5-4efe-853d-e4f7fbd44cfc",
+                      "name": "Salud"
+                    },
+                    {
+                      "id": "625894a4-764e-4e68-8fa1-80fe021d8d3e",
+                      "name": "Ocio"
+                    },
+                    {
+                      "id": "117252b0-d00f-4dc8-ad54-d6ca882d5ecc",
+                      "name": "Suscripciones"
+                    },
+                    {
+                      "id": "5e4db14b-5871-459d-8484-fc69e40d41e7",
+                      "name": "Ropa"
+                    },
+                    {
+                      "id": "05e4a8d3-ee5d-41e7-9cd2-7e0a174e5586",
+                      "name": "Educación"
+                    },
+                    {
+                      "id": "92ae6cf9-ff7a-42c3-bc2e-273d42fc2d73",
+                      "name": "Trabajo"
+                    },
+                    {
+                      "id": "131d1ed0-0684-458a-b460-813522a3fe9c",
+                      "name": "Viajes"
+                    },
+                    {
+                      "id": "cc9ded00-5388-4a78-87dd-18fb2afb3b50",
+                      "name": "Mascotas"
+                    },
+                    {
+                      "id": "8721cb4b-a3bc-425a-ab10-dc69d984f267",
+                      "name": "Regalos"
+                    },
+                    {
+                      "id": "fffc4c9f-e8fd-443b-bc20-7068fabcf1bf",
+                      "name": "Impuestos"
+                    },
+                    {
+                      "id": "e5259985-94f0-4020-b956-cba65cf17c49",
+                      "name": "Mantenimiento"
+                    },
+                    {
+                      "id": "504059b1-b16b-4ae0-bc71-f1035e5e1dbf",
+                      "name": "Salidas"
+                    },
+                    {
+                      "id": "9481de84-3f6e-4c06-8bb2-da6e5ce74406",
+                      "name": "Deporte"
+                    },
+                    {
+                      "id": "a6de1a66-72c5-41f6-af7f-d93e997ff070",
+                      "name": "Otros"
+                    },
+                    {
+                      "id": "e4e29883-ffca-42f0-baab-c25929412784",
+                      "name": "Sueldo"
+                    },
+                    {
+                      "id": "c68dae64-ae9c-4ecc-92a6-15992d46b249",
+                      "name": "Freelance"
+                    },
+                    {
+                      "id": "c9ff4e00-8d80-4fb2-9c5c-4b9265625900",
+                      "name": "Inversiones"
+                    },
+                    {
+                      "id": "6651e65e-b705-4872-8ad4-41f9e7e99ca2",
+                      "name": "Alquiler"
+                    },
+                    {
+                      "id": "24c7e5d7-2a63-4417-9911-94cbd8e464ea",
+                      "name": "Regalo"
+                    },
+                    {
+                      "id": "592cf655-a875-439f-805a-06aaec5e1ed2",
+                      "name": "Reembolso"
+                    },
+                    {
+                      "id": "f6f5e5f1-0a94-478f-89bd-eecabafcca30",
+                      "name": "Venta"
+                    },
+                    {
+                      "id": "24ab1250-d039-48c0-86f9-e12b85174cee",
+                      "name": "Otros"
+                    },
+                    {
+                      "id": "2b438e8e-ba4e-4ba1-97cf-0cf40c55f7ad",
+                      "name": "Alimentos 9a9a5412-d49f-4da8-af64-00cddab0af63"
+                    },
+                    {
+                      "id": "8f3817f2-54c4-4bcf-8751-b05adfecb43e",
+                      "name": "Alimentos d72e4e3a-75c4-4b57-a96f-964a5e649019"
+                    },
+                    {
+                      "id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                      "name": "Alimentos"
+                    },
+                    {
+                      "id": "62dc6515-f74e-40f3-9941-bec78d2a48c6",
+                      "name": "Sueldo"
+                    }
+                  ]
+                },
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "batch_id": "5862d31a-d757-4b90-bc48-f42b6f77c8d5",
+                "created_at": "2026-10-15T04:35:02.163815+00:00",
+                "intent_hash": "697ea7aa71b0967f4a6aadebacc1eef66d0ecea788a4a8084b6e2bbe54569707"
+              }
+            ]
+          },
+          "expected": {
+            "account": [
+              {
+                "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "icon": null,
+                "name": "RemainingCU001 CP1-20 5 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 10200,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": false,
+                "created_at": "2026-10-15T04:35:01.904439+00:00",
+                "sort_order": 32,
+                "updated_at": "2026-10-15T04:35:02.341133+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "ledger": [
+              {
+                "id": "08880996-964e-456c-b1c2-561877918a06",
+                "tags": null,
+                "type": "expense",
+                "notes": "sintético",
+                "amount": 500,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:02.167689+00:00",
+                "updated_at": "2026-10-15T04:35:02.167689+00:00",
+                "category_id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                "description": "CP1-20 expense 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T12:00:00+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 500,
+                "destination_amount_in_account_currency": null
+              },
+              {
+                "id": "81501dd6-d6d1-4dba-99ff-9e4e554e45c1",
+                "tags": null,
+                "type": "adjustment",
+                "notes": null,
+                "amount": 10000,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:01.904439+00:00",
+                "updated_at": "2026-10-15T04:35:01.904439+00:00",
+                "category_id": null,
+                "description": "Saldo inicial",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-15T04:35:01.904439+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 10000,
+                "destination_amount_in_account_currency": null
+              },
+              {
+                "id": "f7f364ac-dd7f-4b5f-a608-03beeaebec41",
+                "tags": null,
+                "type": "income",
+                "notes": "sintético",
+                "amount": 700,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:02.170256+00:00",
+                "updated_at": "2026-10-15T04:35:02.170256+00:00",
+                "category_id": "e4e29883-ffca-42f0-baab-c25929412784",
+                "description": "CP1-20 income 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T12:00:00+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 700,
+                "destination_amount_in_account_currency": null
+              }
+            ],
+            "receipts": [
+              {
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "response": {
+                  "id": "08880996-964e-456c-b1c2-561877918a06",
+                  "tags": null,
+                  "type": "expense",
+                  "notes": "sintético",
+                  "amount": 500,
+                  "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                  "currency": "ARS",
+                  "location": null,
+                  "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                  "created_at": "2026-10-15T04:35:02.167689+00:00",
+                  "updated_at": "2026-10-15T04:35:02.167689+00:00",
+                  "category_id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                  "description": "CP1-20 expense 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                  "receipt_url": null,
+                  "is_recurring": false,
+                  "exchange_rate": null,
+                  "transaction_date": "2026-10-06T12:00:00+00:00",
+                  "installment_total": null,
+                  "recurring_rule_id": null,
+                  "installment_number": null,
+                  "installment_group_id": null,
+                  "destination_account_id": null,
+                  "amount_in_account_currency": 500,
+                  "destination_amount_in_account_currency": null
+                },
+                "created_at": "2026-10-15T04:35:02.167689+00:00",
+                "request_id": "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:0",
+                "request_hash": "70f9a0b72c84ceef08c423de799cb8b99624b1c8a7f0dbfc199b2475f2de38d2"
+              },
+              {
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "response": {
+                  "id": "f7f364ac-dd7f-4b5f-a608-03beeaebec41",
+                  "tags": null,
+                  "type": "income",
+                  "notes": "sintético",
+                  "amount": 700,
+                  "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                  "currency": "ARS",
+                  "location": null,
+                  "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                  "created_at": "2026-10-15T04:35:02.170256+00:00",
+                  "updated_at": "2026-10-15T04:35:02.170256+00:00",
+                  "category_id": "e4e29883-ffca-42f0-baab-c25929412784",
+                  "description": "CP1-20 income 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                  "receipt_url": null,
+                  "is_recurring": false,
+                  "exchange_rate": null,
+                  "transaction_date": "2026-10-06T12:00:00+00:00",
+                  "installment_total": null,
+                  "recurring_rule_id": null,
+                  "installment_number": null,
+                  "installment_group_id": null,
+                  "destination_account_id": null,
+                  "amount_in_account_currency": 700,
+                  "destination_amount_in_account_currency": null
+                },
+                "created_at": "2026-10-15T04:35:02.170256+00:00",
+                "request_id": "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:1",
+                "request_hash": "bea5161a909767b87a641a9dbbf032e4f4371827951cb0607a193ce822ad7dac"
+              }
+            ],
+            "batch": [
+              {
+                "context": {
+                  "accounts": [
+                    {
+                      "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                      "name": "RemainingCU001 CP1-20 5 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                      "currency": "ARS"
+                    }
+                  ],
+                  "categories": [
+                    {
+                      "id": "140cf6e6-b115-4f28-9aab-7dcdf9d2c596",
+                      "name": "Comida"
+                    },
+                    {
+                      "id": "4d28ebee-0179-43c1-a08e-d2bfd0bf800f",
+                      "name": "Transporte"
+                    },
+                    {
+                      "id": "c2d2aa0a-0026-423b-b734-2dc45425877d",
+                      "name": "Hogar"
+                    },
+                    {
+                      "id": "22e83d9b-dae5-4efe-853d-e4f7fbd44cfc",
+                      "name": "Salud"
+                    },
+                    {
+                      "id": "625894a4-764e-4e68-8fa1-80fe021d8d3e",
+                      "name": "Ocio"
+                    },
+                    {
+                      "id": "117252b0-d00f-4dc8-ad54-d6ca882d5ecc",
+                      "name": "Suscripciones"
+                    },
+                    {
+                      "id": "5e4db14b-5871-459d-8484-fc69e40d41e7",
+                      "name": "Ropa"
+                    },
+                    {
+                      "id": "05e4a8d3-ee5d-41e7-9cd2-7e0a174e5586",
+                      "name": "Educación"
+                    },
+                    {
+                      "id": "92ae6cf9-ff7a-42c3-bc2e-273d42fc2d73",
+                      "name": "Trabajo"
+                    },
+                    {
+                      "id": "131d1ed0-0684-458a-b460-813522a3fe9c",
+                      "name": "Viajes"
+                    },
+                    {
+                      "id": "cc9ded00-5388-4a78-87dd-18fb2afb3b50",
+                      "name": "Mascotas"
+                    },
+                    {
+                      "id": "8721cb4b-a3bc-425a-ab10-dc69d984f267",
+                      "name": "Regalos"
+                    },
+                    {
+                      "id": "fffc4c9f-e8fd-443b-bc20-7068fabcf1bf",
+                      "name": "Impuestos"
+                    },
+                    {
+                      "id": "e5259985-94f0-4020-b956-cba65cf17c49",
+                      "name": "Mantenimiento"
+                    },
+                    {
+                      "id": "504059b1-b16b-4ae0-bc71-f1035e5e1dbf",
+                      "name": "Salidas"
+                    },
+                    {
+                      "id": "9481de84-3f6e-4c06-8bb2-da6e5ce74406",
+                      "name": "Deporte"
+                    },
+                    {
+                      "id": "a6de1a66-72c5-41f6-af7f-d93e997ff070",
+                      "name": "Otros"
+                    },
+                    {
+                      "id": "e4e29883-ffca-42f0-baab-c25929412784",
+                      "name": "Sueldo"
+                    },
+                    {
+                      "id": "c68dae64-ae9c-4ecc-92a6-15992d46b249",
+                      "name": "Freelance"
+                    },
+                    {
+                      "id": "c9ff4e00-8d80-4fb2-9c5c-4b9265625900",
+                      "name": "Inversiones"
+                    },
+                    {
+                      "id": "6651e65e-b705-4872-8ad4-41f9e7e99ca2",
+                      "name": "Alquiler"
+                    },
+                    {
+                      "id": "24c7e5d7-2a63-4417-9911-94cbd8e464ea",
+                      "name": "Regalo"
+                    },
+                    {
+                      "id": "592cf655-a875-439f-805a-06aaec5e1ed2",
+                      "name": "Reembolso"
+                    },
+                    {
+                      "id": "f6f5e5f1-0a94-478f-89bd-eecabafcca30",
+                      "name": "Venta"
+                    },
+                    {
+                      "id": "24ab1250-d039-48c0-86f9-e12b85174cee",
+                      "name": "Otros"
+                    },
+                    {
+                      "id": "2b438e8e-ba4e-4ba1-97cf-0cf40c55f7ad",
+                      "name": "Alimentos 9a9a5412-d49f-4da8-af64-00cddab0af63"
+                    },
+                    {
+                      "id": "8f3817f2-54c4-4bcf-8751-b05adfecb43e",
+                      "name": "Alimentos d72e4e3a-75c4-4b57-a96f-964a5e649019"
+                    },
+                    {
+                      "id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                      "name": "Alimentos"
+                    },
+                    {
+                      "id": "62dc6515-f74e-40f3-9941-bec78d2a48c6",
+                      "name": "Sueldo"
+                    }
+                  ]
+                },
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "batch_id": "5862d31a-d757-4b90-bc48-f42b6f77c8d5",
+                "created_at": "2026-10-15T04:35:02.163815+00:00",
+                "intent_hash": "697ea7aa71b0967f4a6aadebacc1eef66d0ecea788a4a8084b6e2bbe54569707"
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Source input/report bytes remain unchanged",
+          "actual": {
+            "inputSha256": "90d87ac037dd8e1f5009bf30eccd0b5c5056b413ba19b3bb2386c19cb2ff624c",
+            "reportSha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+          },
+          "expected": {
+            "inputSha256": "90d87ac037dd8e1f5009bf30eccd0b5c5056b413ba19b3bb2386c19cb2ff624c",
+            "reportSha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+          },
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "name": "Original batch replay independent full snapshot",
+          "sourceReport": "attempt-3-fourteen-clock/verification.json",
+          "sourceReportSha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f",
+          "inputFile": "inputs/CP1-20-ab41bc3d-eacf-4e0a-ae30-a05c0fe07336.json",
+          "inputSha256": "90d87ac037dd8e1f5009bf30eccd0b5c5056b413ba19b3bb2386c19cb2ff624c",
+          "batchId": "5862d31a-d757-4b90-bc48-f42b6f77c8d5",
+          "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "accountId": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+          "before": {
+            "account": [
+              {
+                "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "icon": null,
+                "name": "RemainingCU001 CP1-20 5 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "type": "bank",
+                "color": "#3B82F6",
+                "balance": 10200,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "is_active": false,
+                "created_at": "2026-10-15T04:35:01.904439+00:00",
+                "sort_order": 32,
+                "updated_at": "2026-10-15T04:35:02.341133+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "ledger": [
+              {
+                "id": "08880996-964e-456c-b1c2-561877918a06",
+                "tags": null,
+                "type": "expense",
+                "notes": "sintético",
+                "amount": 500,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:02.167689+00:00",
+                "updated_at": "2026-10-15T04:35:02.167689+00:00",
+                "category_id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                "description": "CP1-20 expense 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T12:00:00+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 500,
+                "destination_amount_in_account_currency": null
+              },
+              {
+                "id": "81501dd6-d6d1-4dba-99ff-9e4e554e45c1",
+                "tags": null,
+                "type": "adjustment",
+                "notes": null,
+                "amount": 10000,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:01.904439+00:00",
+                "updated_at": "2026-10-15T04:35:01.904439+00:00",
+                "category_id": null,
+                "description": "Saldo inicial",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-15T04:35:01.904439+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 10000,
+                "destination_amount_in_account_currency": null
+              },
+              {
+                "id": "f7f364ac-dd7f-4b5f-a608-03beeaebec41",
+                "tags": null,
+                "type": "income",
+                "notes": "sintético",
+                "amount": 700,
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                "created_at": "2026-10-15T04:35:02.170256+00:00",
+                "updated_at": "2026-10-15T04:35:02.170256+00:00",
+                "category_id": "e4e29883-ffca-42f0-baab-c25929412784",
+                "description": "CP1-20 income 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T12:00:00+00:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 700,
+                "destination_amount_in_account_currency": null
+              }
+            ],
+            "receipts": [
+              {
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "response": {
+                  "id": "08880996-964e-456c-b1c2-561877918a06",
+                  "tags": null,
+                  "type": "expense",
+                  "notes": "sintético",
+                  "amount": 500,
+                  "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                  "currency": "ARS",
+                  "location": null,
+                  "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                  "created_at": "2026-10-15T04:35:02.167689+00:00",
+                  "updated_at": "2026-10-15T04:35:02.167689+00:00",
+                  "category_id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                  "description": "CP1-20 expense 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                  "receipt_url": null,
+                  "is_recurring": false,
+                  "exchange_rate": null,
+                  "transaction_date": "2026-10-06T12:00:00+00:00",
+                  "installment_total": null,
+                  "recurring_rule_id": null,
+                  "installment_number": null,
+                  "installment_group_id": null,
+                  "destination_account_id": null,
+                  "amount_in_account_currency": 500,
+                  "destination_amount_in_account_currency": null
+                },
+                "created_at": "2026-10-15T04:35:02.167689+00:00",
+                "request_id": "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:0",
+                "request_hash": "70f9a0b72c84ceef08c423de799cb8b99624b1c8a7f0dbfc199b2475f2de38d2"
+              },
+              {
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "response": {
+                  "id": "f7f364ac-dd7f-4b5f-a608-03beeaebec41",
+                  "tags": null,
+                  "type": "income",
+                  "notes": "sintético",
+                  "amount": 700,
+                  "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                  "currency": "ARS",
+                  "location": null,
+                  "account_id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                  "created_at": "2026-10-15T04:35:02.170256+00:00",
+                  "updated_at": "2026-10-15T04:35:02.170256+00:00",
+                  "category_id": "e4e29883-ffca-42f0-baab-c25929412784",
+                  "description": "CP1-20 income 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                  "receipt_url": null,
+                  "is_recurring": false,
+                  "exchange_rate": null,
+                  "transaction_date": "2026-10-06T12:00:00+00:00",
+                  "installment_total": null,
+                  "recurring_rule_id": null,
+                  "installment_number": null,
+                  "installment_group_id": null,
+                  "destination_account_id": null,
+                  "amount_in_account_currency": 700,
+                  "destination_amount_in_account_currency": null
+                },
+                "created_at": "2026-10-15T04:35:02.170256+00:00",
+                "request_id": "import:5862d31a-d757-4b90-bc48-f42b6f77c8d5:transaction:1",
+                "request_hash": "bea5161a909767b87a641a9dbbf032e4f4371827951cb0607a193ce822ad7dac"
+              }
+            ],
+            "batch": [
+              {
+                "context": {
+                  "accounts": [
+                    {
+                      "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b",
+                      "name": "RemainingCU001 CP1-20 5 41855ad7-0bed-4504-b9e3-673c428bc39d",
+                      "currency": "ARS"
+                    }
+                  ],
+                  "categories": [
+                    {
+                      "id": "140cf6e6-b115-4f28-9aab-7dcdf9d2c596",
+                      "name": "Comida"
+                    },
+                    {
+                      "id": "4d28ebee-0179-43c1-a08e-d2bfd0bf800f",
+                      "name": "Transporte"
+                    },
+                    {
+                      "id": "c2d2aa0a-0026-423b-b734-2dc45425877d",
+                      "name": "Hogar"
+                    },
+                    {
+                      "id": "22e83d9b-dae5-4efe-853d-e4f7fbd44cfc",
+                      "name": "Salud"
+                    },
+                    {
+                      "id": "625894a4-764e-4e68-8fa1-80fe021d8d3e",
+                      "name": "Ocio"
+                    },
+                    {
+                      "id": "117252b0-d00f-4dc8-ad54-d6ca882d5ecc",
+                      "name": "Suscripciones"
+                    },
+                    {
+                      "id": "5e4db14b-5871-459d-8484-fc69e40d41e7",
+                      "name": "Ropa"
+                    },
+                    {
+                      "id": "05e4a8d3-ee5d-41e7-9cd2-7e0a174e5586",
+                      "name": "Educación"
+                    },
+                    {
+                      "id": "92ae6cf9-ff7a-42c3-bc2e-273d42fc2d73",
+                      "name": "Trabajo"
+                    },
+                    {
+                      "id": "131d1ed0-0684-458a-b460-813522a3fe9c",
+                      "name": "Viajes"
+                    },
+                    {
+                      "id": "cc9ded00-5388-4a78-87dd-18fb2afb3b50",
+                      "name": "Mascotas"
+                    },
+                    {
+                      "id": "8721cb4b-a3bc-425a-ab10-dc69d984f267",
+                      "name": "Regalos"
+                    },
+                    {
+                      "id": "fffc4c9f-e8fd-443b-bc20-7068fabcf1bf",
+                      "name": "Impuestos"
+                    },
+                    {
+                      "id": "e5259985-94f0-4020-b956-cba65cf17c49",
+                      "name": "Mantenimiento"
+                    },
+                    {
+                      "id": "504059b1-b16b-4ae0-bc71-f1035e5e1dbf",
+                      "name": "Salidas"
+                    },
+                    {
+                      "id": "9481de84-3f6e-4c06-8bb2-da6e5ce74406",
+                      "name": "Deporte"
+                    },
+                    {
+                      "id": "a6de1a66-72c5-41f6-af7f-d93e997ff070",
+                      "name": "Otros"
+                    },
+                    {
+                      "id": "e4e29883-ffca-42f0-baab-c25929412784",
+                      "name": "Sueldo"
+                    },
+                    {
+                      "id": "c68dae64-ae9c-4ecc-92a6-15992d46b249",
+                      "name": "Freelance"
+                    },
+                    {
+                      "id": "c9ff4e00-8d80-4fb2-9c5c-4b9265625900",
+                      "name": "Inversiones"
+                    },
+                    {
+                      "id": "6651e65e-b705-4872-8ad4-41f9e7e99ca2",
+                      "name": "Alquiler"
+                    },
+                    {
+                      "id": "24c7e5d7-2a63-4417-9911-94cbd8e464ea",
+                      "name": "Regalo"
+                    },
+                    {
+                      "id": "592cf655-a875-439f-805a-06aaec5e1ed2",
+                      "name": "Reembolso"
+                    },
+                    {
+                      "id": "f6f5e5f1-0a94-478f-89bd-eecabafcca30",
+                      "name": "Venta"
+                    },
+                    {
+                      "id": "24ab1250-d039-48c0-86f9-e12b85174cee",
+                      "name": "Otros"
+                    },
+                    {
+                      "id": "2b438e8e-ba4e-4ba1-97cf-0cf40c55f7ad",
+                      "name": "Alimentos 9a9a5412-d49f-4da8-af64-00cddab0af63"
+                    },
+                    {
+                      "id": "8f3817f2-54c4-4bcf-8751-b05adfecb43e",
+                      "name": "Alimentos d72e4e3a-75c4-4b57-a96f-964a5e649019"
+                    },
+                    {
+                      "id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+                      "name": "Alimentos"
+                    },
+                    {
+                      "id": "62dc6515-f74e-40f3-9941-bec78d2a48c6",
+                      "name": "Sueldo"
+                    }
+                  ]
+                },
+                "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+                "batch_id": "5862d31a-d757-4b90-bc48-f42b6f77c8d5",
+                "created_at": "2026-10-15T04:35:02.163815+00:00",
+                "intent_hash": "697ea7aa71b0967f4a6aadebacc1eef66d0ecea788a4a8084b6e2bbe54569707"
+              }
+            ]
+          },
+          "beforeSha256": "0f137fc5ea080fb80c267744e0fbc10b27b251740d311df921a8a51f889de39c",
+          "scope": "Same file bytes, owner, batchId, format, dateFormat, resolutions and duplicate choice. No account reactivation, history edit or receipt deletion."
+        },
+        {
+          "name": "Observed settled response and full snapshot parity",
+          "rawResponse": {
+            "success": true,
+            "status": "completed",
+            "batchId": "5862d31a-d757-4b90-bc48-f42b6f77c8d5",
+            "imported": 2,
+            "skipped": 1,
+            "pending": 0,
+            "total": 3,
+            "importKind": "standard",
+            "errors": [
+              "Fila omitida — monto inválido: El monto debe ser numérico y mayor a 0."
+            ],
+            "skippedDetails": [
+              {
+                "title": "Fila omitida — monto inválido",
+                "reason": "El monto debe ser numérico y mayor a 0.",
+                "suggestion": "Corregí el monto de esta fila en el archivo y reintentá.",
+                "context": "Fecha: 2026-10-06 · Monto: 0 ARS · Desc.: CP1-20 zero 41855ad7-0bed-4504-b9e3-673c428bc39d"
+              }
+            ],
+            "skippedDetailsTruncated": false
+          },
+          "afterSha256": "0f137fc5ea080fb80c267744e0fbc10b27b251740d311df921a8a51f889de39c",
+          "beforeSha256": "0f137fc5ea080fb80c267744e0fbc10b27b251740d311df921a8a51f889de39c",
+          "newFinancialEffects": 0,
+          "newReceipts": 0,
+          "accountStillArchived": true
+        }
+      ],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T04:46:34.418Z",
+      "finishedAt": "2026-10-15T04:46:35.144Z"
+    }
+  ],
+  "clockProof": {
+    "path": "final-proof-clock-observation.json",
+    "sha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118",
+    "fixedTime": "2026-10-06T12:00:00.000Z",
+    "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+  },
+  "inputs": [
+    {
+      "caseId": "CP1-20",
+      "file": "inputs/CP1-20-bd9ddb1b-7b36-4afa-902a-5924ac9499c7.json",
+      "sha256": "d3b4e53ddcf0b33c09488e7d48871c9ab37fa0e92c5793ca199f111ca71ae7f7",
+      "batchId": "9ca39a1b-0136-4745-8dba-c197fa147c2c",
+      "mode": "import",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de"
+    }
+  ],
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 79,
+      "beforeMd5": "fbd6d4d4402b1c56e59c3d69e0368a56",
+      "afterMd5": "fbd6d4d4402b1c56e59c3d69e0368a56",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 111,
+      "beforeMd5": "63bf93eadd3d05b82e05ab345f6d319d",
+      "afterMd5": "63bf93eadd3d05b82e05ab345f6d319d",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 19,
+      "beforeMd5": "09167c8a67ba0766607832e91b8a587c",
+      "afterMd5": "09167c8a67ba0766607832e91b8a587c",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 8,
+      "beforeMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "afterMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 35,
+      "beforeMd5": "59208ed22e9325850a70077fb96911ee",
+      "afterMd5": "59208ed22e9325850a70077fb96911ee",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 10,
+      "beforeMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "afterMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "servedCopyStable": true,
+  "finishedAt": "2026-10-15T04:46:37.060Z"
+}

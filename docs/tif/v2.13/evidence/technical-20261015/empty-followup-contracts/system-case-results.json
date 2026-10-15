@@ -1,0 +1,69 @@
+{
+  "results": [
+    {
+      "case_id": "CP1-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "empty-followup-contracts/executed/cp1-01/verification.json",
+        "empty-followup-contracts/executed/cp1-01/execution.json",
+        "empty-followup-contracts/manifest.json",
+        "empty-followup-contracts/executed/cp1-01/dashboard.html"
+      ],
+      "assertion_names": [
+        "Actual normal account API201",
+        "Normal category list200",
+        "Own literal Alimentos category201",
+        "New account has exactly its opening adjustment",
+        "Normal literal expense API201",
+        "Exactly one economic row persists",
+        "Literal expense leaves8500",
+        "Actual list API contains same1500 identity",
+        "Actual normal dashboard SSR200",
+        "Actual server global top5 contains the exact own1500 row",
+        "Actual global recent payload has only the three known own rows",
+        "Actual dashboard aggregate includes original50000 plus new8500",
+        "Actual server HTML formats the expense1500 ARS",
+        "Actual server HTML includes recent movements",
+        "Only the exact prior harness-owned snapshot is updated",
+        "Observed own snapshot completion liquid_usd",
+        "Observed own snapshot completion investments_usd",
+        "Observed own snapshot completion total_usd",
+        "Observed own snapshot completion total_ars_blue",
+        "Owned snapshot preserves identity id",
+        "Owned snapshot preserves identity user_id",
+        "Owned snapshot preserves identity snapshot_date",
+        "Owned snapshot preserves identity created_at"
+      ],
+      "scope": "Actual new-fixture normalAuth API/SQL and compiledSSRDashboard top5/HTML, not a composition that assumes historical membership."
+    },
+    {
+      "case_id": "CP1-24",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "empty-followup-contracts/executed/cp1-24/verification.json",
+        "empty-followup-contracts/executed/cp1-24/execution.json",
+        "empty-followup-contracts/manifest.json",
+        "empty-followup-contracts/executed/cp1-24/worker-observation.json",
+        "empty-followup-contracts/executed/cp1-24/worker-result.json"
+      ],
+      "assertion_names": [
+        "Synthetic cloned B has no external Telegram credential or existing link",
+        "Only exact authorized synthetic B profile fixture updated",
+        "Actual normal account API201",
+        "Normal owned recurring rule201",
+        "Normal RLS initializes only owned new rule last5Oct",
+        "Literal active daily rule precondition",
+        "Both actual HTTP calls started before first response",
+        "Two concurrent cron calls plus same-date retry200",
+        "No hidden cron item error",
+        "One exact recurring expense, marker, balance and outbox",
+        "Outbox identity matches one own committed occurrence",
+        "Actual worker focal with same real service-role DB exits0",
+        "Provider double accepts one notice without new financial effect"
+      ],
+      "scope": "Actual normalAuth/cron/API/nativeSQL plus currentworker/realserviceclient/localTelegramcaptor; not realTelegram or a user-RLS delivery test."
+    }
+  ]
+}

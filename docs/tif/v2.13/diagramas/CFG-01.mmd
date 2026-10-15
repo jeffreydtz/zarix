@@ -1,0 +1,29 @@
+flowchart TD
+  S0([Fecha civil Argentina]) --> S1{Inicio válido}
+  S1 -->|no| SF([false])
+  S1 -->|sí| S2{Hoy anterior al inicio}
+  S2 -->|sí| SF
+  S2 -->|no| S3{Fin presente}
+  S3 -->|sí| S4{Fin inválido o anterior a inicio}
+  S4 -->|sí| SF
+  S4 -->|no| S5{Hoy posterior a fin}
+  S5 -->|sí| SF
+  S5 -->|no| S6{Última ejecución presente}
+  S3 -->|no| S6
+  S6 -->|sí| S7{Última inválida o igual o posterior a hoy}
+  S7 -->|sí| SF
+  S7 -->|no| S8{Frecuencia}
+  S6 -->|no| S8
+  S8 -->|diaria| ST([true])
+  S8 -->|semanal| S9{Mismo día de semana}
+  S9 -->|sí| ST
+  S9 -->|no| SF
+  S8 -->|mensual| S10{Mismo día ajustado}
+  S10 -->|sí| ST
+  S10 -->|no| SF
+  S8 -->|anual| S11{Mismo mes}
+  S11 -->|no| SF
+  S11 -->|sí| S12{Mismo día ajustado}
+  S12 -->|sí| ST
+  S12 -->|no| SF
+  S8 -->|otra| SF

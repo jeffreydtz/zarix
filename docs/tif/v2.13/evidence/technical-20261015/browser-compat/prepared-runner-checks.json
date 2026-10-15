@@ -1,0 +1,48 @@
+[
+  {
+    "name": "runner-syntax",
+    "command": [
+      "node",
+      "--check",
+      "docs/tif/v2.13/evidence/technical-20261015/browser-compat/run-browser-read.mjs"
+    ],
+    "exitCode": 0,
+    "expectedExitCode": 0,
+    "status": "PASS",
+    "scope": "Runner syntax/guard/metadata only; no compatibility acceptance"
+  },
+  {
+    "name": "preflight-syntax",
+    "command": [
+      "node",
+      "--check",
+      "docs/tif/v2.13/evidence/technical-20261015/browser-compat/preflight.mjs"
+    ],
+    "exitCode": 0,
+    "expectedExitCode": 0,
+    "status": "PASS",
+    "scope": "Runner syntax/guard/metadata only; no compatibility acceptance"
+  },
+  {
+    "name": "preflight-metadata-only",
+    "command": [
+      "node",
+      "docs/tif/v2.13/evidence/technical-20261015/browser-compat/preflight.mjs"
+    ],
+    "exitCode": 0,
+    "expectedExitCode": 0,
+    "status": "PASS",
+    "scope": "Runner syntax/guard/metadata only; no compatibility acceptance"
+  },
+  {
+    "name": "unauthorized-window-guard",
+    "command": [
+      "node",
+      "docs/tif/v2.13/evidence/technical-20261015/browser-compat/run-browser-read.mjs"
+    ],
+    "exitCode": 2,
+    "expectedExitCode": 2,
+    "status": "PASS",
+    "scope": "Runner syntax/guard/metadata only; no compatibility acceptance"
+  }
+]

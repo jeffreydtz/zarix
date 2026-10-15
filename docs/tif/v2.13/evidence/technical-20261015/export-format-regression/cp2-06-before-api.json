@@ -1,0 +1,722 @@
+{
+  "status": "FAIL",
+  "startedAt": "2026-10-15T03:46:20.897Z",
+  "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD.",
+  "results": [
+    {
+      "case_id": "CP2-06",
+      "status": "FAIL",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "OwnCSVexport200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Complete documented15column format",
+          "actual": [
+            "Fecha",
+            "Tipo",
+            "Monto",
+            "Moneda",
+            "Monto en Cuenta",
+            "Cuenta",
+            "Categoría",
+            "Descripción",
+            "Notas",
+            "Cuota",
+            "Cuenta Destino",
+            "Moneda Cuenta",
+            "Moneda Destino",
+            "Monto en Destino",
+            "Tasa de Cambio"
+          ],
+          "expected": [
+            "Fecha",
+            "Tipo",
+            "Monto",
+            "Moneda",
+            "Monto en Cuenta",
+            "Cuenta",
+            "Categoría",
+            "Descripción",
+            "Notas",
+            "Cuota",
+            "Cuenta Destino",
+            "Moneda Cuenta",
+            "Moneda Destino",
+            "Monto en Destino",
+            "Tasa de Cambio"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly three own period records",
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        },
+        {
+          "name": "CSV preserves exact dates/types/amounts/currencies/relations",
+          "actual": [
+            {
+              "date": "2/10/2026",
+              "type": "Gasto",
+              "amount": 500,
+              "currency": "ARS",
+              "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+              "destination": "",
+              "destinationAmount": null
+            },
+            {
+              "date": "3/10/2026",
+              "type": "Ingreso",
+              "amount": 700,
+              "currency": "ARS",
+              "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+              "destination": "",
+              "destinationAmount": null
+            },
+            {
+              "date": "4/10/2026",
+              "type": "Transferencia",
+              "amount": 100,
+              "currency": "ARS",
+              "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+              "destination": "AccountAnalysis CP2-06 2 9a9a5412-d49f-4da8-af64-00cddab0af63",
+              "destinationAmount": 100
+            }
+          ],
+          "expected": [
+            {
+              "date": "2/10/2026",
+              "type": "Gasto",
+              "amount": 500,
+              "currency": "ARS",
+              "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+              "destination": "",
+              "destinationAmount": null
+            },
+            {
+              "date": "3/10/2026",
+              "type": "Ingreso",
+              "amount": 700,
+              "currency": "ARS",
+              "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+              "destination": "",
+              "destinationAmount": null
+            },
+            {
+              "date": "4/10/2026",
+              "type": "Transferencia",
+              "amount": 100,
+              "currency": "ARS",
+              "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+              "destination": "AccountAnalysis CP2-06 2 9a9a5412-d49f-4da8-af64-00cddab0af63",
+              "destinationAmount": 100
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Export explicitly informs version and timezone",
+          "actual": false,
+          "expected": true,
+          "status": "FAIL"
+        }
+      ],
+      "original_contract": {
+        "precondiciones": "U1 dos movimientos gasto500/ingreso700 y transferencia propia; U2 posee otras filas",
+        "entrada": "exportCSV períodooctubre2026",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "sóloU1; amounts/currencies/types/dates/categories/accounts/transferrelationships preserved; formato/version/zona informados",
+        "evidencia_requerida": "Archivo exportado/hash, comparación fila a fila con snapshot propietario"
+      },
+      "startedAt": "2026-10-15T03:46:23.336Z",
+      "failure": {
+        "type": "AssertionError",
+        "location": "run.mjs:98:16",
+        "context": "Named assertion or technical prerequisite failed; raw error and secrets withheld"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP2-06",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "d819cb5e-b62b-4d22-82a8-67f9510b2958",
+      "startedAt": "2026-10-15T03:46:23.791Z",
+      "status": 201,
+      "responseSha256": "3bd9e47a6b2913e6312699dce23619eec802c43f53bb509cbd25c1f706e64972",
+      "endedAt": "2026-10-15T03:46:23.946Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "3d225b12-9621-42a1-9b82-2f899e8dc3f6",
+      "startedAt": "2026-10-15T03:46:24.101Z",
+      "status": 201,
+      "responseSha256": "d45a6dbddc9c318bab0d3f0165857f05083f166c9f85f1206f55bf6d05eed758",
+      "endedAt": "2026-10-15T03:46:24.255Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "d9ab9257-52e3-49e9-b5eb-f2f201a51afa",
+      "startedAt": "2026-10-15T03:46:24.407Z",
+      "status": 201,
+      "responseSha256": "30fc4571ddcb4923a78f668bda4c1300f6a50135fdcedb3e741bf64567278198",
+      "endedAt": "2026-10-15T03:46:24.546Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "c66f3fa3-00b7-433e-bb31-37f79aac68ef",
+      "startedAt": "2026-10-15T03:46:24.679Z",
+      "status": 201,
+      "responseSha256": "86842124dd5106f1924447c2792a978902fb8a32829c0d74703aee7412e36655",
+      "endedAt": "2026-10-15T03:46:24.823Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "8707f576-8f21-4cde-bdc3-4f9500921304",
+      "startedAt": "2026-10-15T03:46:24.823Z",
+      "status": 201,
+      "responseSha256": "d6d00db1d488ee745d4696abfca22646a801ba884ab2d95f76eed36822964a8c",
+      "endedAt": "2026-10-15T03:46:24.967Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "5d71244f-9623-4bf6-b046-bf09b7735259",
+      "startedAt": "2026-10-15T03:46:24.968Z",
+      "status": 201,
+      "responseSha256": "419b0cafca5f6d010dccf4da9d42638c336b2d82b58fe12dfcdfcd43cc95c9ac",
+      "endedAt": "2026-10-15T03:46:25.115Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "574916e3-eb89-499b-9692-6831467adcd3",
+      "startedAt": "2026-10-15T03:46:25.115Z",
+      "status": 201,
+      "responseSha256": "6196e28631a7af50957c3f2c41432cda0224690e95fb267b5d5bacebd19ff2ee",
+      "endedAt": "2026-10-15T03:46:25.256Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "57b2ef20-3975-49d0-98c8-8a576457c72d",
+      "startedAt": "2026-10-15T03:46:25.257Z",
+      "status": 200,
+      "responseSha256": "34eba3e7eb49fe903b39cd1f1f8c2760e934e2cb5d8ca9ed8d1ded9c64fae95b",
+      "endedAt": "2026-10-15T03:46:25.394Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "DELETE",
+      "path": "/api/accounts/210a1d9f-650e-4b87-8235-c11c6806ed2f",
+      "requestId": "6f9bc969-69ce-4c31-8ecd-61cdfef042d5",
+      "startedAt": "2026-10-15T03:46:25.477Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:46:25.619Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "DELETE",
+      "path": "/api/accounts/95af1729-80ee-4ebe-be81-5534d388a59b",
+      "requestId": "05c00779-3d42-442e-be24-8557555a6e44",
+      "startedAt": "2026-10-15T03:46:25.696Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:46:25.829Z"
+    },
+    {
+      "caseId": "CP2-06",
+      "method": "DELETE",
+      "path": "/api/accounts/dba3b170-9203-441e-b540-64bff5a9cf7f",
+      "requestId": "c347af2b-b862-425d-aefc-ed51915c86d4",
+      "startedAt": "2026-10-15T03:46:25.904Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:46:26.038Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "210a1d9f-650e-4b87-8235-c11c6806ed2f",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP2-06"
+    },
+    {
+      "kind": "account",
+      "id": "95af1729-80ee-4ebe-be81-5534d388a59b",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP2-06"
+    },
+    {
+      "kind": "account",
+      "id": "dba3b170-9203-441e-b540-64bff5a9cf7f",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "CP2-06"
+    }
+  ],
+  "executionCount": 1,
+  "case": {
+    "case_id": "CP2-06",
+    "status": "FAIL",
+    "complete_original_contract": false,
+    "assertions": [
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "OwnCSVexport200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Complete documented15column format",
+        "actual": [
+          "Fecha",
+          "Tipo",
+          "Monto",
+          "Moneda",
+          "Monto en Cuenta",
+          "Cuenta",
+          "Categoría",
+          "Descripción",
+          "Notas",
+          "Cuota",
+          "Cuenta Destino",
+          "Moneda Cuenta",
+          "Moneda Destino",
+          "Monto en Destino",
+          "Tasa de Cambio"
+        ],
+        "expected": [
+          "Fecha",
+          "Tipo",
+          "Monto",
+          "Moneda",
+          "Monto en Cuenta",
+          "Cuenta",
+          "Categoría",
+          "Descripción",
+          "Notas",
+          "Cuota",
+          "Cuenta Destino",
+          "Moneda Cuenta",
+          "Moneda Destino",
+          "Monto en Destino",
+          "Tasa de Cambio"
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Exactly three own period records",
+        "actual": 3,
+        "expected": 3,
+        "status": "PASS"
+      },
+      {
+        "name": "CSV preserves exact dates/types/amounts/currencies/relations",
+        "actual": [
+          {
+            "date": "2/10/2026",
+            "type": "Gasto",
+            "amount": 500,
+            "currency": "ARS",
+            "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+            "destination": "",
+            "destinationAmount": null
+          },
+          {
+            "date": "3/10/2026",
+            "type": "Ingreso",
+            "amount": 700,
+            "currency": "ARS",
+            "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+            "destination": "",
+            "destinationAmount": null
+          },
+          {
+            "date": "4/10/2026",
+            "type": "Transferencia",
+            "amount": 100,
+            "currency": "ARS",
+            "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+            "destination": "AccountAnalysis CP2-06 2 9a9a5412-d49f-4da8-af64-00cddab0af63",
+            "destinationAmount": 100
+          }
+        ],
+        "expected": [
+          {
+            "date": "2/10/2026",
+            "type": "Gasto",
+            "amount": 500,
+            "currency": "ARS",
+            "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+            "destination": "",
+            "destinationAmount": null
+          },
+          {
+            "date": "3/10/2026",
+            "type": "Ingreso",
+            "amount": 700,
+            "currency": "ARS",
+            "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+            "destination": "",
+            "destinationAmount": null
+          },
+          {
+            "date": "4/10/2026",
+            "type": "Transferencia",
+            "amount": 100,
+            "currency": "ARS",
+            "account": "AccountAnalysis CP2-06 1 9a9a5412-d49f-4da8-af64-00cddab0af63",
+            "destination": "AccountAnalysis CP2-06 2 9a9a5412-d49f-4da8-af64-00cddab0af63",
+            "destinationAmount": 100
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Export explicitly informs version and timezone",
+        "actual": false,
+        "expected": true,
+        "status": "FAIL"
+      }
+    ],
+    "original_contract": {
+      "precondiciones": "U1 dos movimientos gasto500/ingreso700 y transferencia propia; U2 posee otras filas",
+      "entrada": "exportCSV períodooctubre2026",
+      "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+      "resultado_esperado": "sóloU1; amounts/currencies/types/dates/categories/accounts/transferrelationships preserved; formato/version/zona informados",
+      "evidencia_requerida": "Archivo exportado/hash, comparación fila a fila con snapshot propietario"
+    },
+    "startedAt": "2026-10-15T03:46:23.336Z",
+    "failure": {
+      "type": "AssertionError",
+      "location": "run.mjs:98:16",
+      "context": "Named assertion or technical prerequisite failed; raw error and secrets withheld"
+    }
+  },
+  "executionMode": "api-sql-only",
+  "logicalOwner": "A",
+  "pendingScopes": [],
+  "run": "9a9a5412-d49f-4da8-af64-00cddab0af63",
+  "nativePreparation": {
+    "sha256": "b94b67366b193af018f973d7e3689a32b9f59b0e7436d5e762ea72db1cd31bc4",
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "normalAuthIdsBound": true
+  },
+  "buildBinding": {
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "nextPid": 52579
+  },
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "aea20df6dfcb2301cdbff5a52bfdc049cb07866a348c7a798ff1b50465b64512"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "c11ae53515a9b604f7b65bef274bb9db5e182293bbf3ed81ac645fe65365d1e9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "users": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "logicalRole": "selected-owner",
+      "physicalLabel": "A",
+      "normalAuth": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "logicalRole": "other-owner",
+      "physicalLabel": "B",
+      "normalAuth": true
+    }
+  ],
+  "exportSha256": "34eba3e7eb49fe903b39cd1f1f8c2760e934e2cb5d8ca9ed8d1ded9c64fae95b",
+  "exportMetadataObserved": {},
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 3,
+      "beforeMd5": "b139cdc8693c2148843389b66b91debc",
+      "afterMd5": "b139cdc8693c2148843389b66b91debc",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 3,
+      "beforeMd5": "78678d49cbbd6c03b97c74f361a3f72c",
+      "afterMd5": "78678d49cbbd6c03b97c74f361a3f72c",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 25,
+      "beforeMd5": "140fe7c4307bfb29a14d0d4c408f9562",
+      "afterMd5": "140fe7c4307bfb29a14d0d4c408f9562",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T03:46:27.119Z"
+}

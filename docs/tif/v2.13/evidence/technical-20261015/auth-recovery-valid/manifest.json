@@ -1,0 +1,185 @@
+{
+  "case_id": "CP2-10",
+  "status": "PASS",
+  "scope": "Original API Auth case completed by one real recover/localSMTP input plus guarded same-token continuation; no UI/email-link routing/external mail claim.",
+  "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+  "commands": [
+    {
+      "phase": "preflight-failures",
+      "command": "ZARIX_VALID_RECOVERY_WINDOW=parent-released-after-native-ready ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only node docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/run.mjs",
+      "evidence": [
+        "preflight-attempt-1/verification.json",
+        "preflight-attempt-2/verification.json"
+      ],
+      "result": "Both preconditions fail before password/Auth/SMTP, exact sources retained."
+    },
+    {
+      "phase": "initial-all-guards",
+      "command": "ZARIX_VALID_RECOVERY_WINDOW=parent-released-after-native-ready ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only ZARIX_VALID_RECOVERY_PREFLIGHT_ONLY=no-auth-no-password node docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/run.mjs",
+      "evidence": "preflight-pass.json",
+      "result": "PASS_PREFLIGHT_ONLY"
+    },
+    {
+      "phase": "original-recovery-input",
+      "command": "ZARIX_VALID_RECOVERY_WINDOW=parent-released-after-native-ready ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only node docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/run.mjs",
+      "evidence": "recovery-attempt-1/verification.json",
+      "result": "Originalpassword200, recover200, oneSMTP, parserFAIL beforeverify/passwordupdate."
+    },
+    {
+      "phase": "retained-resume-preflight",
+      "command": "ZARIX_VALID_RECOVERY_WINDOW=parent-released-after-native-ready ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only ZARIX_VALID_RECOVERY_PREFLIGHT_ONLY=no-auth-no-password ZARIX_VALID_RECOVERY_RESUME_CHECKPOINT=/tmp/zarix-runtime-20261015/auth-valid-recovery-7f219369-42f2-4224-86d7-d0b32349aaf8/password-restoration.private.json node docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/run.mjs",
+      "evidence": "resume-preflight-pass.json",
+      "result": "PASS_PREFLIGHT_ONLY, same current unconsumed token/private checkpoint validated."
+    },
+    {
+      "phase": "retained-resume",
+      "command": "ZARIX_VALID_RECOVERY_WINDOW=parent-released-after-native-ready ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only ZARIX_VALID_RECOVERY_RESUME_CHECKPOINT=/tmp/zarix-runtime-20261015/auth-valid-recovery-7f219369-42f2-4224-86d7-d0b32349aaf8/password-restoration.private.json node docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/run.mjs",
+      "evidence": "resume/verification.json",
+      "result": "18PASS, no new recover or password; original restored and4own sessions/refreshgrants0."
+    },
+    {
+      "phase": "scoped-private-scan",
+      "command": "node docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/scan-private-values.mjs",
+      "evidence": "private-value-scan.json",
+      "result": "20selectedprivatevalues, zero findings; separate parent final scan."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "PRIVATE-ARTIFACTS.md",
+      "sha256": "b86368f8925685fff774c6ddb6df73defa2b7f9a39f5922b8a852d1cc9d6a0b0"
+    },
+    {
+      "path": "README.md",
+      "sha256": "8fa795d0338c3d2c3c44a924ab731853472357e423e7799cd593f1720412a646"
+    },
+    {
+      "path": "contract.mjs",
+      "sha256": "4bd5d264b60369334c5802562d3ad49554e85acec6aa0e50bf8fff972fa7b06a"
+    },
+    {
+      "path": "independent-executed-review.json",
+      "sha256": "1cd5b17c09ddf293be5dac6d1421e2b6b7011897a2ab97335d8ac49c2d608d4b"
+    },
+    {
+      "path": "independent-preparation-review.json",
+      "sha256": "82be9881581fd34321e8e13d124cec9826cdf9a3ced0e4e274f1dd967661ecce"
+    },
+    {
+      "path": "preflight-attempt-1/contract.mjs",
+      "sha256": "c558b79986164be8ca24813b65504685a296c4b3ba646c8308e70b17d5797f5c"
+    },
+    {
+      "path": "preflight-attempt-1/run.mjs",
+      "sha256": "27225897b3c370735d6d1cbbae08bec6b4c2c2a1c28d485d8b306b61cd649b11"
+    },
+    {
+      "path": "preflight-attempt-1/smtp-message.mjs",
+      "sha256": "adfe2ce69186df6fbef6ffbc90c2e3a48c2293e77a798aecc35378ffd0687d70"
+    },
+    {
+      "path": "preflight-attempt-1/verification.json",
+      "sha256": "e1f9c2b94bae068b5234d6449c0f52f632d5e38b861260b2b5117865de4867c7"
+    },
+    {
+      "path": "preflight-attempt-2/contract.mjs",
+      "sha256": "c558b79986164be8ca24813b65504685a296c4b3ba646c8308e70b17d5797f5c"
+    },
+    {
+      "path": "preflight-attempt-2/failure.json",
+      "sha256": "9b81780bf483156f9af09a800acf714851c9b35a97fdf84d2caf6d2197a719e1"
+    },
+    {
+      "path": "preflight-attempt-2/run.mjs",
+      "sha256": "f8a3bce8f22afa943d25031d323cda0f395705e1f37f400ba72d073927b06272"
+    },
+    {
+      "path": "preflight-attempt-2/smtp-message.mjs",
+      "sha256": "adfe2ce69186df6fbef6ffbc90c2e3a48c2293e77a798aecc35378ffd0687d70"
+    },
+    {
+      "path": "preflight-attempt-2/verification.json",
+      "sha256": "c1d9cc62dcf9ee84cd2ced05ea9f500f991ad34500dd3fa2629c01a9eeb625b3"
+    },
+    {
+      "path": "preflight-pass.json",
+      "sha256": "59afec1b1cc0deef1370fec02327d28651c2c58cdfa5a320cef01be62916d68e"
+    },
+    {
+      "path": "private-value-scan.json",
+      "sha256": "195321ee6e92baba3adab242ab06a1112215647c01786edeefda768411b6055c"
+    },
+    {
+      "path": "recovery-attempt-1/contract.mjs",
+      "sha256": "c558b79986164be8ca24813b65504685a296c4b3ba646c8308e70b17d5797f5c"
+    },
+    {
+      "path": "recovery-attempt-1/manifest.json",
+      "sha256": "bbb72c92a53f6ee3c11b486fa07861362d942274e37c3f9baaaf22cb3e1e7aba"
+    },
+    {
+      "path": "recovery-attempt-1/run.mjs",
+      "sha256": "5a4f51d3dc37009b16176b2ae417225fb756b38c38720ef296f17e78cd85d626"
+    },
+    {
+      "path": "recovery-attempt-1/smtp-message.mjs",
+      "sha256": "adfe2ce69186df6fbef6ffbc90c2e3a48c2293e77a798aecc35378ffd0687d70"
+    },
+    {
+      "path": "recovery-attempt-1/verification.json",
+      "sha256": "379ca988b15d592a4ce70bfd2686f5639fabf9f002f323c926f79b79616dc78b"
+    },
+    {
+      "path": "resume-preflight-pass.json",
+      "sha256": "c7f69b464efe56f9634ef38ee171fd2cf445731f4247d8a47a758924d367d61b"
+    },
+    {
+      "path": "resume-source-peer-review.json",
+      "sha256": "f3c47662bde9fbfeb75b0aec8510c77bdd691820f972d49662252fdece588963"
+    },
+    {
+      "path": "resume/contract.mjs",
+      "sha256": "4bd5d264b60369334c5802562d3ad49554e85acec6aa0e50bf8fff972fa7b06a"
+    },
+    {
+      "path": "resume/manifest.json",
+      "sha256": "fdacf1228849536c9328cd22b1e915f5a34351834b6b493aba76aa632b90a6a8"
+    },
+    {
+      "path": "resume/run.mjs",
+      "sha256": "39deb5aad522efc548dbb21acb06552fbe06e75c1421f45f625c65f307548b28"
+    },
+    {
+      "path": "resume/smtp-closure-observation.json",
+      "sha256": "0237072a38e2935a97c5b23775c080d5ad032c85bf896cbaf8c06cf4a6720982"
+    },
+    {
+      "path": "resume/smtp-message.mjs",
+      "sha256": "a85f050b258b6482624e317bae12cf2bb8b106bb4ae5ee1dfcca58c4630b38c3"
+    },
+    {
+      "path": "resume/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "resume/verification.json",
+      "sha256": "ae3c4747fd9da45af01ce9cb7000e95aa027fec906931451730230c866402b9e"
+    },
+    {
+      "path": "run.mjs",
+      "sha256": "39deb5aad522efc548dbb21acb06552fbe06e75c1421f45f625c65f307548b28"
+    },
+    {
+      "path": "scan-private-values.mjs",
+      "sha256": "e52a0ef5679f327087e875ac1aef62abb41b429f431d025ee3d2f12d3413673f"
+    },
+    {
+      "path": "smtp-message.mjs",
+      "sha256": "a85f050b258b6482624e317bae12cf2bb8b106bb4ae5ee1dfcca58c4630b38c3"
+    },
+    {
+      "path": "verified-system-case-result.json",
+      "sha256": "24944198b4df1f834613fd12ed28cc70efbcbd79909f2899c556f037d32d0665"
+    }
+  ]
+}

@@ -1,0 +1,809 @@
+{
+  "run": "e87c54b9-6455-4c38-ab51-6fdbd34f7d0f",
+  "startedAt": "2026-10-15T06:14:25.033Z",
+  "status": "PASS",
+  "scope": "One released followup CP101 or CP124 on the exact new UUID database after three independently completed empty contracts. Actual normalAuth/API/SQL/SSR or recurring cron/worker scope as recorded; no browser, external Telegram, completeAuthrestore or Storage claim.",
+  "cases": [
+    {
+      "case_id": "CP1-24",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Synthetic cloned B has no external Telegram credential or existing link",
+          "actual": {
+            "noBot": true,
+            "chat": null
+          },
+          "expected": {
+            "noBot": true,
+            "chat": null
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Only exact authorized synthetic B profile fixture updated",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal owned recurring rule201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Normal RLS initializes only owned new rule last5Oct",
+          "actual": {
+            "error": null,
+            "id": "b2be44b3-1cd6-410e-b3cc-7395eb9c0843",
+            "date": "2026-10-05"
+          },
+          "expected": {
+            "error": null,
+            "id": "b2be44b3-1cd6-410e-b3cc-7395eb9c0843",
+            "date": "2026-10-05"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Literal active daily rule precondition",
+          "actual": {
+            "active": true,
+            "frequency": "daily",
+            "start": "2026-10-01",
+            "last": "2026-10-05",
+            "amount": 1000,
+            "notification": true
+          },
+          "expected": {
+            "active": true,
+            "frequency": "daily",
+            "start": "2026-10-01",
+            "last": "2026-10-05",
+            "amount": 1000,
+            "notification": true
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Both actual HTTP calls started before first response",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Two concurrent cron calls plus same-date retry200",
+          "actual": [
+            200,
+            200,
+            200
+          ],
+          "expected": [
+            200,
+            200,
+            200
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "No hidden cron item error",
+          "actual": [
+            0,
+            0,
+            0
+          ],
+          "expected": [
+            0,
+            0,
+            0
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "One exact recurring expense, marker, balance and outbox",
+          "actual": {
+            "rows": 1,
+            "type": "expense",
+            "amount": 1000,
+            "date": "2026-10-06",
+            "balance": 9000,
+            "marker": "2026-10-06",
+            "outbox": 1
+          },
+          "expected": {
+            "rows": 1,
+            "type": "expense",
+            "amount": 1000,
+            "date": "2026-10-06",
+            "balance": 9000,
+            "marker": "2026-10-06",
+            "outbox": 1
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Outbox identity matches one own committed occurrence",
+          "actual": {
+            "key": "recurring:b2be44b3-1cd6-410e-b3cc-7395eb9c0843:2026-10-06",
+            "user": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "transactionId": "39dce20a-c45e-4637-b2b0-ce8b5caeb752",
+            "delivered": null
+          },
+          "expected": {
+            "key": "recurring:b2be44b3-1cd6-410e-b3cc-7395eb9c0843:2026-10-06",
+            "user": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "transactionId": "39dce20a-c45e-4637-b2b0-ce8b5caeb752",
+            "delivered": null
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Actual worker focal with same real service-role DB exits0",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "Provider double accepts one notice without new financial effect",
+          "actual": {
+            "status": "PASS",
+            "count": 1,
+            "sameFinancial": true
+          },
+          "expected": {
+            "status": "PASS",
+            "count": 1,
+            "sameFinancial": true
+          },
+          "status": "PASS"
+        }
+      ],
+      "startedAt": "2026-10-15T06:14:30.497Z",
+      "evidence": {
+        "accountId": "609e756b-8e5f-4284-8109-1c9dc56e2551",
+        "ruleId": "b2be44b3-1cd6-410e-b3cc-7395eb9c0843",
+        "requestId": "recurring:b2be44b3-1cd6-410e-b3cc-7395eb9c0843:2026-10-06",
+        "transactionId": "39dce20a-c45e-4637-b2b0-ce8b5caeb752",
+        "concurrentResponses": [
+          {
+            "status": 200,
+            "body": {
+              "success": true,
+              "job": "recurring",
+              "total": 1,
+              "processed": 1,
+              "errors": 0
+            },
+            "startedAt": "2026-10-15T06:14:31.224Z",
+            "endedAt": "2026-10-15T06:14:31.249Z"
+          },
+          {
+            "status": 200,
+            "body": {
+              "success": true,
+              "job": "recurring",
+              "total": 1,
+              "processed": 1,
+              "errors": 0
+            },
+            "startedAt": "2026-10-15T06:14:31.225Z",
+            "endedAt": "2026-10-15T06:14:31.250Z"
+          }
+        ],
+        "retryResponse": {
+          "status": 200,
+          "body": {
+            "success": true,
+            "job": "recurring",
+            "total": 1,
+            "processed": 0,
+            "errors": 0
+          }
+        },
+        "worker": {
+          "case_id": "CP1-24",
+          "status": "PASS",
+          "scope": "Actual current worker and Supabase service-role client against the same new native DB via realPostgREST. Only sendTelegramDm replaced by local capturing provider double. Backend delivery role; no RLS/Authuser or realTelegram acceptance claim.",
+          "accepted": [
+            {
+              "syntheticChatId": -8600000124,
+              "text": "🔄 *Transacción recurrente ejecutada*\n\n💸 Gasto diario: *EmptyFollowup124 e87c54b9-6455-4c38-ab51-6fdbd34f7d0f*\n💰 $1.000 ARS",
+              "accepted": true
+            }
+          ],
+          "delivered": {
+            "delivered": 1,
+            "failed": 0
+          },
+          "replay": {
+            "delivered": 0,
+            "failed": 0
+          },
+          "financialSha256Before": "f9ec1c5710b4ad2b33dd3dc9f13dae873bc37ae6cfcfa0374673df5553a1c29f",
+          "financialSha256After": "f9ec1c5710b4ad2b33dd3dc9f13dae873bc37ae6cfcfa0374673df5553a1c29f",
+          "sameFinancialRows": true,
+          "outbox": {
+            "id": "06b5b454-6f72-40bd-9fe8-5bc955785619",
+            "event_key": "recurring:b2be44b3-1cd6-410e-b3cc-7395eb9c0843:2026-10-06",
+            "attempts": 1,
+            "delivered_at": "2026-10-15T06:14:31.935+00:00"
+          }
+        }
+      },
+      "endedAt": "2026-10-15T06:14:31.968Z"
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "ROUTING_PRECONDITION",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "4bbf8d01-1a10-4e91-a33f-f7940665f193",
+      "startedAt": "2026-10-15T06:14:30.040Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "46a4e98fb179358389305cc13932aa89c11da505f7e59b96cd2c79c7e1411530",
+      "endedAt": "2026-10-15T06:14:30.079Z"
+    },
+    {
+      "caseId": "ROUTING_PRECONDITION",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "86a5ad06-8cf6-42ad-8a6d-981429bf5243",
+      "startedAt": "2026-10-15T06:14:30.318Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "df5fb14754a1f4353cba97f4e3ca0d5170db3f78a575fed1e2ba31cc8f110dee",
+      "endedAt": "2026-10-15T06:14:30.347Z"
+    },
+    {
+      "caseId": "CP1-24",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "ffa04a55-76a9-4506-8c64-c69ae7689bb0",
+      "startedAt": "2026-10-15T06:14:30.981Z",
+      "state": "COMPLETED",
+      "status": 201,
+      "responseSha256": "3c63dd8730bb11df2f20c2bab78d02dc744ea8d728666eea32da540edb86418b",
+      "endedAt": "2026-10-15T06:14:31.018Z"
+    },
+    {
+      "caseId": "CP1-24",
+      "method": "POST",
+      "path": "/api/recurring",
+      "requestId": "3bf8da99-e2dc-4919-b747-be700dba33d4",
+      "startedAt": "2026-10-15T06:14:31.062Z",
+      "state": "COMPLETED",
+      "status": 201,
+      "responseSha256": "b74c4334a02324b333e3745eaa46cba7af81861dca6f05ad8f5788830b20a3c0",
+      "endedAt": "2026-10-15T06:14:31.099Z"
+    },
+    {
+      "caseId": "CP1-24",
+      "method": "GET",
+      "path": "/api/cron/recurring",
+      "label": "concurrent1",
+      "startedAt": "2026-10-15T06:14:31.224Z",
+      "startedMonotonic": 6231.542167,
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "69de4aad8f2eb11b1e2ec71e0e19ae3970acef7386d5a2eac323261fdd054425",
+      "endedAt": "2026-10-15T06:14:31.249Z",
+      "endedMonotonic": 6256.610959
+    },
+    {
+      "caseId": "CP1-24",
+      "method": "GET",
+      "path": "/api/cron/recurring",
+      "label": "concurrent2",
+      "startedAt": "2026-10-15T06:14:31.225Z",
+      "startedMonotonic": 6231.777875,
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "69de4aad8f2eb11b1e2ec71e0e19ae3970acef7386d5a2eac323261fdd054425",
+      "endedAt": "2026-10-15T06:14:31.250Z",
+      "endedMonotonic": 6256.876834
+    },
+    {
+      "caseId": "CP1-24",
+      "method": "GET",
+      "path": "/api/cron/recurring",
+      "label": "sameDayRetry",
+      "startedAt": "2026-10-15T06:14:31.250Z",
+      "startedMonotonic": 6257.170084,
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "15c76a4e271d567cdf2444f5451cbca95654e538d8afd1656a46f458a2793e37",
+      "endedAt": "2026-10-15T06:14:31.255Z",
+      "endedMonotonic": 6261.990417
+    },
+    {
+      "caseId": "CP1-24",
+      "method": "PUT",
+      "path": "/api/recurring/b2be44b3-1cd6-410e-b3cc-7395eb9c0843",
+      "requestId": "e3d5b2ff-6748-4f53-9a40-6d12f5a7422a",
+      "startedAt": "2026-10-15T06:14:32.093Z",
+      "state": "COMPLETED",
+      "status": 200,
+      "responseSha256": "584f0ef2f5935d7cec782aa7bb432e3748c62bd726ba1bf88ee46b372cea72ca",
+      "endedAt": "2026-10-15T06:14:32.127Z"
+    },
+    {
+      "caseId": "CP1-24",
+      "method": "DELETE",
+      "path": "/api/accounts/609e756b-8e5f-4284-8109-1c9dc56e2551",
+      "requestId": "204f9da2-4ed5-43cf-97f8-064c7bc8a596",
+      "startedAt": "2026-10-15T06:14:32.169Z",
+      "state": "COMPLETED",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T06:14:32.200Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "609e756b-8e5f-4284-8109-1c9dc56e2551",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "currency": "ARS",
+      "initialBalance": 10000,
+      "createdByNormalApi": true,
+      "run": "e87c54b9-6455-4c38-ab51-6fdbd34f7d0f"
+    },
+    {
+      "kind": "recurring_rule",
+      "id": "b2be44b3-1cd6-410e-b3cc-7395eb9c0843",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "accountId": "609e756b-8e5f-4284-8109-1c9dc56e2551"
+    }
+  ],
+  "priorHarnessFailurePreserved": {
+    "case_id": "CP3-07",
+    "status": "FAIL",
+    "phase": "Actual empty Hero/history/snapshot preconditions passed; AccountCards RSC parser failed before original completion. Parent authorized independent followups using preserved actual state. No CP3-07 PASS claimed here.",
+    "sha256": "6c07f7acfd23f1832b650288edbe8cb745a79e87956074d8f2e2244d9e5514a8"
+  },
+  "priorThreeCaseEvidence": {
+    "sha256": "6c07f7acfd23f1832b650288edbe8cb745a79e87956074d8f2e2244d9e5514a8",
+    "run": "57d4f74e-3dcb-487c-821d-569363972055",
+    "caseIds": [
+      "CP3-03",
+      "CP3-07",
+      "CP2-01"
+    ],
+    "acceptanceEligible": false,
+    "ownedSnapshotId": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+    "originalAccountId": "cbc90531-5097-4309-912b-eb1e703e6787",
+    "scope": "Exact same new DB/build and prior accepted normalAuth fixture. SnapshotB is harness-created ownership, not a restored original."
+  },
+  "ownedSnapshotBefore": {
+    "id": "4f8abad4-1c2d-49a2-8bab-032bc71a288d",
+    "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+    "total_usd": 48.75,
+    "created_at": "2026-10-15T06:04:49.689148+00:00",
+    "liquid_usd": 48.75,
+    "snapshot_date": "2026-10-06",
+    "total_ars_blue": 58500,
+    "investments_usd": 0,
+    "blue_ars_per_usd": 1200
+  },
+  "binding": {
+    "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+    "appBuildProofSha256": "41aec3bdac210c4c7695274fd81104c6cee4f8a02ca6ac1408a497e367f206c8",
+    "clockObservationSha256": "f8ca4295984ad72f1e9c63c1faea0b64d109050fb38dfbc951d4ee4b67fac3ee",
+    "coreVerificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+    "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "buildId": "Yi9bH3FttO71PxvY-EwCH",
+    "copyRoot": "/tmp/zarix-app-empty-account-20261015",
+    "appOrigin": "http://127.0.0.1:3004",
+    "apiOrigin": "http://127.0.0.1:60321",
+    "restOrigin": "http://127.0.0.1:60323",
+    "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+    "databasePort": 55322,
+    "authUpstream": "http://127.0.0.1:60327",
+    "originalAuthUpstream": "http://127.0.0.1:55321",
+    "authIsolation": "separate-cache-binary-on-new-database",
+    "completeAuthRestorationClaimed": false,
+    "storageCoverage": "Explicitly unavailable404; not tested",
+    "physicalSourceCount": 483,
+    "frozenGitSourceCount": 482,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "ownedListenerAndCwdVerified": true,
+    "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+    "normalUsers": [
+      {
+        "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "logicalLabel": "A"
+      },
+      {
+        "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "logicalLabel": "B"
+      }
+    ]
+  },
+  "harnessManifest": [
+    {
+      "path": "run.mjs",
+      "sha256": "260425690f8c42d2d9b5d9d385089b8ed22ea2809054b0eae5b65fd36afc05ab"
+    },
+    {
+      "path": "ssr-recent.mjs",
+      "sha256": "3c8f69fe65db8fceed84f7956a038d78a2a63b39e93326d173fd8cf60163aeb5"
+    },
+    {
+      "path": "worker-delivery.test-source.ts",
+      "sha256": "0f8131f124cdaca09b2556c44c728a13c8e6660131c9c2ce4bcad6ee24090ce1"
+    },
+    {
+      "path": "worker-delivery.vitest.config.mjs",
+      "sha256": "e7b296fbfa4938a743c8926458adcf508ccc8b65bc3644bae13c8f61c6efaef9"
+    },
+    {
+      "path": "../account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "../../../../../../scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    }
+  ],
+  "routingPreflight": [
+    {
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "normalJwtRestMatchesTarget": true,
+      "actualNextReferencesMatchTarget": true
+    },
+    {
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "normalJwtRestMatchesTarget": true,
+      "actualNextReferencesMatchTarget": true
+    }
+  ],
+  "adminClonedProfileFixture": {
+    "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+    "before": {
+      "status": "ACTIVE",
+      "updated_at": "2026-10-15T00:40:49.75559+00:00",
+      "grace_period_end": null,
+      "telegram_chat_id": null,
+      "bot_token_is_null": true,
+      "current_period_end": "2099-01-01T00:00:00+00:00"
+    },
+    "after": {
+      "status": "ACTIVE",
+      "updated_at": "2026-10-15T06:14:30.71648+00:00",
+      "grace_period_end": null,
+      "telegram_chat_id": -8600000124,
+      "bot_token_is_null": true,
+      "current_period_end": "2026-11-06T12:00:00+00:00"
+    },
+    "beforeFullProfileHash": "b81f1a061b9e2c96ffcf08d77b341016",
+    "afterFullProfileHash": "8fc6fe4c665820e0d894bd73aa636c50",
+    "allowedFields": [
+      "status",
+      "current_period_end",
+      "grace_period_end",
+      "telegram_chat_id",
+      "updated_at"
+    ],
+    "scope": "Only this new UUID database cloned B profile; parent-authorized Premium and fictional chat fixture, retained intentionally. No original user, bot token, real link, payment or persistent external access change."
+  },
+  "workerExecution": {
+    "command": [
+      "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--config",
+      "docs/tif/v2.13/evidence/technical-20261015/empty-followup-contracts/worker-delivery.vitest.config.mjs",
+      "--reporter=json",
+      "--outputFile=/tmp/zarix-runtime-20261015/empty-followup-contracts-e87c54b9-6455-4c38-ab51-6fdbd34f7d0f/worker-result.json"
+    ],
+    "exitCode": 0,
+    "observation": {
+      "case_id": "CP1-24",
+      "status": "PASS",
+      "scope": "Actual current worker and Supabase service-role client against the same new native DB via realPostgREST. Only sendTelegramDm replaced by local capturing provider double. Backend delivery role; no RLS/Authuser or realTelegram acceptance claim.",
+      "accepted": [
+        {
+          "syntheticChatId": -8600000124,
+          "text": "🔄 *Transacción recurrente ejecutada*\n\n💸 Gasto diario: *EmptyFollowup124 e87c54b9-6455-4c38-ab51-6fdbd34f7d0f*\n💰 $1.000 ARS",
+          "accepted": true
+        }
+      ],
+      "delivered": {
+        "delivered": 1,
+        "failed": 0
+      },
+      "replay": {
+        "delivered": 0,
+        "failed": 0
+      },
+      "financialSha256Before": "f9ec1c5710b4ad2b33dd3dc9f13dae873bc37ae6cfcfa0374673df5553a1c29f",
+      "financialSha256After": "f9ec1c5710b4ad2b33dd3dc9f13dae873bc37ae6cfcfa0374673df5553a1c29f",
+      "sameFinancialRows": true,
+      "outbox": {
+        "id": "06b5b454-6f72-40bd-9fe8-5bc955785619",
+        "event_key": "recurring:b2be44b3-1cd6-410e-b3cc-7395eb9c0843:2026-10-06",
+        "attempts": 1,
+        "delivered_at": "2026-10-15T06:14:31.935+00:00"
+      }
+    },
+    "scope": "Additional isolated focal using real service-role Supabase client to the same new DB; only Telegram sender is doubled. Not part of913 global CI6."
+  },
+  "sourceStable": true,
+  "fixtureCleanup": [
+    {
+      "kind": "deactivateOwnNewRule",
+      "id": "b2be44b3-1cd6-410e-b3cc-7395eb9c0843",
+      "status": 200
+    },
+    {
+      "kind": "archiveOwnNewAccount",
+      "id": "609e756b-8e5f-4284-8109-1c9dc56e2551",
+      "status": 204
+    }
+  ],
+  "fixtureOriginalIntegrity": [
+    {
+      "table": "users",
+      "originalRows": 2,
+      "beforeMd5": "141173696f49e02e76e2014a3c442224",
+      "afterMd5": "141173696f49e02e76e2014a3c442224",
+      "unchanged": true,
+      "scope": "All original rows; exact cloned B fields status/current_period_end/grace_period_end/telegram_chat_id/updated_at excluded only for parent-authorized synthetic fixture; all other B fields and all other users preserved"
+    },
+    {
+      "table": "accounts",
+      "originalRows": 4,
+      "beforeMd5": "d54d78234e0f526ed18b264a530e764f",
+      "afterMd5": "d54d78234e0f526ed18b264a530e764f",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "transactions",
+      "originalRows": 5,
+      "beforeMd5": "f215771e4f5a22b5c36794a412a59dfe",
+      "afterMd5": "f215771e4f5a22b5c36794a412a59dfe",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "investments",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "investment_sales",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "shared_groups",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "shared_group_members",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "shared_expenses",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "shared_expense_splits",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "categories",
+      "originalRows": 1,
+      "beforeMd5": "6e93627ca7866f461b2690674b2fd9b2",
+      "afterMd5": "6e93627ca7866f461b2690674b2fd9b2",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "budgets",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "recurring_rules",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true,
+      "scope": "All full original rows"
+    },
+    {
+      "table": "net_worth_snapshots",
+      "originalRows": 1,
+      "beforeMd5": "e91175c3cdff4699c85404fd04933ce2",
+      "afterMd5": "e91175c3cdff4699c85404fd04933ce2",
+      "unchanged": true,
+      "scope": "All full original rows"
+    }
+  ],
+  "restoreOriginalIntegrity": [
+    {
+      "table": "users",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "afterMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "05f20fcbb1448779155f1694cfc5f776",
+      "afterMd5": "05f20fcbb1448779155f1694cfc5f776",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "e6edd04b9342ecd6094b08295f689ea5",
+      "afterMd5": "e6edd04b9342ecd6094b08295f689ea5",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "7ca48f59bd91dfe7ea7b2927795bd057",
+      "afterMd5": "7ca48f59bd91dfe7ea7b2927795bd057",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "a3c33f23f367d04be93c5e329e0b2c95",
+      "afterMd5": "a3c33f23f367d04be93c5e329e0b2c95",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "3196215a431950e33c0fa4280880d926",
+      "afterMd5": "3196215a431950e33c0fa4280880d926",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "b5f150791b6b3ae585518117ad73ee99",
+      "afterMd5": "b5f150791b6b3ae585518117ad73ee99",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "5d2d7875b6378b5d6fff97b66c5b4760",
+      "afterMd5": "5d2d7875b6378b5d6fff97b66c5b4760",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 4,
+      "afterRows": 4,
+      "beforeMd5": "65c1961b4887b94ec1ca7dbf264fa13c",
+      "afterMd5": "65c1961b4887b94ec1ca7dbf264fa13c",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 26,
+      "afterRows": 26,
+      "beforeMd5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+      "afterMd5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "b429e1dccdff7b869652c393c48f233d",
+      "afterMd5": "b429e1dccdff7b869652c393c48f233d",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "cdcf2a6929cbb5882797587a3eb5aaca",
+      "afterMd5": "cdcf2a6929cbb5882797587a3eb5aaca",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "1502ff1ff671e5bce7be044cc2d2df2c",
+      "afterMd5": "1502ff1ff671e5bce7be044cc2d2df2c",
+      "unchanged": true
+    }
+  ],
+  "sessions": [
+    {
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "localSignOutError": null,
+      "closed": true
+    },
+    {
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "localSignOutError": null,
+      "closed": true
+    }
+  ],
+  "finishedAt": "2026-10-15T06:14:34.389Z",
+  "preservationScope": {
+    "protectedTablesPerDatabase": 13,
+    "originalRestoreAllFullRows": true,
+    "fixtureOwnedSnapshotExcluded": null,
+    "clonedBAllowedFixtureFields": [
+      "status",
+      "current_period_end",
+      "grace_period_end",
+      "telegram_chat_id",
+      "updated_at"
+    ],
+    "authorizedClonedBFixtureApplied": true,
+    "allOtherOriginalFieldsUnchanged": true
+  },
+  "acceptanceGuardsSatisfied": true,
+  "acceptanceEligible": true
+}

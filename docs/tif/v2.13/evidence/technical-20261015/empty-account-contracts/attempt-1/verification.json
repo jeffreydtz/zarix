@@ -1,0 +1,343 @@
+{
+  "run": "d3513346-1696-4f8d-944a-ce679bc36e80",
+  "startedAt": "2026-10-15T06:03:16.154Z",
+  "status": "FAIL",
+  "scope": "Three exact original API/SSR contracts on the new UUID fixture database. Separate cached GoTrue uses only the same two cloned identities/keys; this is not full Auth-restoration evidence. No browser, Storage or original-service mutation.",
+  "cases": [
+    {
+      "case_id": "CP3-03",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "assertions": []
+    },
+    {
+      "case_id": "CP3-07",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "assertions": []
+    },
+    {
+      "case_id": "CP2-01",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "assertions": []
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "ROUTING_PRECONDITION",
+      "method": "GET",
+      "path": "/api/accounts",
+      "requestId": "2796cf21-5192-4158-881e-ce53ee836fa2",
+      "startedAt": "2026-10-15T06:03:21.472Z",
+      "state": "COMPLETED",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5",
+      "endedAt": "2026-10-15T06:03:21.532Z"
+    }
+  ],
+  "fixtures": [],
+  "binding": {
+    "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+    "appBuildProofSha256": "41aec3bdac210c4c7695274fd81104c6cee4f8a02ca6ac1408a497e367f206c8",
+    "clockObservationSha256": "f8ca4295984ad72f1e9c63c1faea0b64d109050fb38dfbc951d4ee4b67fac3ee",
+    "coreVerificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+    "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "buildId": "Yi9bH3FttO71PxvY-EwCH",
+    "copyRoot": "/tmp/zarix-app-empty-account-20261015",
+    "appOrigin": "http://127.0.0.1:3004",
+    "apiOrigin": "http://127.0.0.1:60321",
+    "restOrigin": "http://127.0.0.1:60323",
+    "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+    "databasePort": 55322,
+    "authUpstream": "http://127.0.0.1:60327",
+    "originalAuthUpstream": "http://127.0.0.1:55321",
+    "authIsolation": "separate-cache-binary-on-new-database",
+    "completeAuthRestorationClaimed": false,
+    "storageCoverage": "Explicitly unavailable404; not tested",
+    "physicalSourceCount": 483,
+    "frozenGitSourceCount": 482,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "ownedListenerAndCwdVerified": true,
+    "sourceManifestSha256": "836f59ecd5cd4d4fed53c78623015575c1abd85819d6aa1422a66bd48ff2d7ae",
+    "normalUsers": [
+      {
+        "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "logicalLabel": "A"
+      },
+      {
+        "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "logicalLabel": "B"
+      }
+    ]
+  },
+  "harnessManifest": [
+    {
+      "path": "run.mjs",
+      "sha256": "c423d87ebfe1faae81bcff499fd52ebd1553b2a40881a86014748edeeef0f162"
+    },
+    {
+      "path": "ssr-contracts.mjs",
+      "sha256": "b7700e6d25ace41d404fdb4c4e68e270ce915b4fb3d8390298815d74e9516c38"
+    },
+    {
+      "path": "../account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796"
+    },
+    {
+      "path": "../../../../../../scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    }
+  ],
+  "routingPreflight": [],
+  "fatal": {
+    "type": "AssertionError",
+    "location": "run.mjs:183:12",
+    "context": "Native/app/source/fixture precondition or preservation failed; private diagnostics withheld"
+  },
+  "fixtureOriginalIntegrity": [
+    {
+      "table": "users",
+      "originalRows": 2,
+      "beforeMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "afterMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "originalRows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "restoreOriginalIntegrity": [
+    {
+      "table": "users",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "afterMd5": "26477effc17090c62a9aaec9d3b2a3b4",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "05f20fcbb1448779155f1694cfc5f776",
+      "afterMd5": "05f20fcbb1448779155f1694cfc5f776",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "e6edd04b9342ecd6094b08295f689ea5",
+      "afterMd5": "e6edd04b9342ecd6094b08295f689ea5",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "7ca48f59bd91dfe7ea7b2927795bd057",
+      "afterMd5": "7ca48f59bd91dfe7ea7b2927795bd057",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "a3c33f23f367d04be93c5e329e0b2c95",
+      "afterMd5": "a3c33f23f367d04be93c5e329e0b2c95",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "3196215a431950e33c0fa4280880d926",
+      "afterMd5": "3196215a431950e33c0fa4280880d926",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 3,
+      "afterRows": 3,
+      "beforeMd5": "b5f150791b6b3ae585518117ad73ee99",
+      "afterMd5": "b5f150791b6b3ae585518117ad73ee99",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 2,
+      "afterRows": 2,
+      "beforeMd5": "5d2d7875b6378b5d6fff97b66c5b4760",
+      "afterMd5": "5d2d7875b6378b5d6fff97b66c5b4760",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 4,
+      "afterRows": 4,
+      "beforeMd5": "65c1961b4887b94ec1ca7dbf264fa13c",
+      "afterMd5": "65c1961b4887b94ec1ca7dbf264fa13c",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 26,
+      "afterRows": 26,
+      "beforeMd5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+      "afterMd5": "77d1779dc0f7c1ce7b7891c757a9cea2",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "b429e1dccdff7b869652c393c48f233d",
+      "afterMd5": "b429e1dccdff7b869652c393c48f233d",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "cdcf2a6929cbb5882797587a3eb5aaca",
+      "afterMd5": "cdcf2a6929cbb5882797587a3eb5aaca",
+      "unchanged": true
+    },
+    {
+      "table": "net_worth_snapshots",
+      "comparison": "complete-table-no-new-rows-permitted",
+      "originalRows": 1,
+      "afterRows": 1,
+      "beforeMd5": "1502ff1ff671e5bce7be044cc2d2df2c",
+      "afterMd5": "1502ff1ff671e5bce7be044cc2d2df2c",
+      "unchanged": true
+    }
+  ],
+  "localSessionCleanup": {
+    "sessionsCreated": 2,
+    "localLogout": [
+      {
+        "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "ownSessionOnly": true,
+        "confirmed": true
+      },
+      {
+        "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "ownSessionOnly": true,
+        "confirmed": true
+      }
+    ],
+    "allOwnSessionsClosed": true,
+    "globalSignOut": false
+  },
+  "endedAt": "2026-10-15T06:03:23.643Z",
+  "counts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "BLOCKED": 3
+  },
+  "cleanup": {
+    "originalPublicRowsUnchanged": true,
+    "preservationScope": "Thirteen public tables in each database; normal sessions exist only in the isolated Auth clone, not a full Auth-restoration claim",
+    "newFinancialFixturesRetained": [],
+    "ownedSnapshotId": null,
+    "processesOrDatabasesStopped": false
+  },
+  "acceptanceGuardsSatisfied": false,
+  "acceptanceEligible": false
+}

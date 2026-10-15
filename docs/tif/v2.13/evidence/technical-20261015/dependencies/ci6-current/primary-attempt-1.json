@@ -1,0 +1,6 @@
+{
+  "at": "2026-10-15T05:17:44.248626+00:00",
+  "status": "FAIL_TOOL_CERTIFICATE_VALIDATION",
+  "client": "Python3.12 urllib HTTPS default verification",
+  "reason": "Local Python CA issuer unavailable; no TLS bypass used; no advisory/version result inferred. A separately verified system curl retrieval follows."
+}

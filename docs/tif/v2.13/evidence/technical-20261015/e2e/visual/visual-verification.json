@@ -1,0 +1,1633 @@
+{
+  "startedAt": "2026-10-15T02:06:32.255Z",
+  "status": "PARTIAL",
+  "scope": "Exactly four CU; installed Chrome responsive read/unsaved form keyboard probes and ordinary JSON download. Partial visual scope; no OCR, budget, reset, AI chat or completed purchase/sale across each viewport.",
+  "cells": [
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 283
+      },
+      "metrics": {
+        "innerWidth": 320,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 320,
+        "visualViewportScale": 1,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 279
+      },
+      "metrics": {
+        "innerWidth": 320,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 320,
+        "visualViewportScale": 1,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 133.15625
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained"
+      ],
+      "scroll": {
+        "before": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 0,
+              "clientHeight": 454,
+              "scrollHeight": 4921
+            }
+          ]
+        },
+        "after": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 4319,
+              "clientHeight": 454,
+              "scrollHeight": 4921
+            }
+          ]
+        },
+        "target": "Análisis rápido",
+        "moved": true
+      },
+      "metrics": {
+        "innerWidth": 320,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 320,
+        "visualViewportScale": 1,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 320,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 320,
+        "visualViewportScale": 1,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 123
+      },
+      "metrics": {
+        "innerWidth": 160,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 160,
+        "visualViewportScale": 1,
+        "scrollWidth": 160,
+        "clientWidth": 160,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 119
+      },
+      "metrics": {
+        "innerWidth": 160,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 160,
+        "visualViewportScale": 1,
+        "scrollWidth": 160,
+        "clientWidth": 160,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 127
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained"
+      ],
+      "scroll": {
+        "before": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 0,
+              "clientHeight": 170,
+              "scrollHeight": 6741
+            }
+          ]
+        },
+        "after": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 6027.5,
+              "clientHeight": 170,
+              "scrollHeight": 6741
+            }
+          ]
+        },
+        "target": "Análisis rápido",
+        "moved": true
+      },
+      "metrics": {
+        "innerWidth": 160,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 160,
+        "visualViewportScale": 1,
+        "scrollWidth": 160,
+        "clientWidth": 160,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 160,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 160,
+        "visualViewportScale": 1,
+        "scrollWidth": 160,
+        "clientWidth": 160,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 338
+      },
+      "metrics": {
+        "innerWidth": 375,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 375,
+        "visualViewportScale": 1,
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 334
+      },
+      "metrics": {
+        "innerWidth": 375,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 375,
+        "visualViewportScale": 1,
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 192.25,
+        "right": 292.40625
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained"
+      ],
+      "scroll": {
+        "before": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 0,
+              "clientHeight": 698,
+              "scrollHeight": 4664
+            }
+          ]
+        },
+        "after": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 3966,
+              "clientHeight": 698,
+              "scrollHeight": 4664
+            }
+          ]
+        },
+        "target": "Análisis rápido",
+        "moved": true
+      },
+      "metrics": {
+        "innerWidth": 375,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 375,
+        "visualViewportScale": 1,
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 375,
+        "outerWidth": 500,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 375,
+        "visualViewportScale": 1,
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 150.5
+      },
+      "metrics": {
+        "innerWidth": 187,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 187.5,
+        "visualViewportScale": 1,
+        "scrollWidth": 187,
+        "clientWidth": 187,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 146.5
+      },
+      "metrics": {
+        "innerWidth": 187,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 187.5,
+        "visualViewportScale": 1,
+        "scrollWidth": 187,
+        "clientWidth": 187,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 129.15625
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained"
+      ],
+      "scroll": {
+        "before": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 0,
+              "clientHeight": 292,
+              "scrollHeight": 6311
+            }
+          ]
+        },
+        "after": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 5636,
+              "clientHeight": 292,
+              "scrollHeight": 6311
+            }
+          ]
+        },
+        "target": "Análisis rápido",
+        "moved": true
+      },
+      "metrics": {
+        "innerWidth": 187,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 187.5,
+        "visualViewportScale": 1,
+        "scrollWidth": 187,
+        "clientWidth": 187,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 187,
+        "outerWidth": 500,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 187.5,
+        "visualViewportScale": 1,
+        "scrollWidth": 187,
+        "clientWidth": 187,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 185,
+        "right": 583
+      },
+      "metrics": {
+        "innerWidth": 768,
+        "outerWidth": 768,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 768,
+        "visualViewportScale": 1,
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 185,
+        "right": 583
+      },
+      "metrics": {
+        "innerWidth": 768,
+        "outerWidth": 768,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 768,
+        "visualViewportScale": 1,
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 186.34375,
+        "right": 278.484375
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained"
+      ],
+      "scroll": {
+        "before": {
+          "document": 0,
+          "ancestors": []
+        },
+        "after": {
+          "document": 3074,
+          "ancestors": []
+        },
+        "target": "Análisis rápido",
+        "moved": true
+      },
+      "metrics": {
+        "innerWidth": 768,
+        "outerWidth": 768,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 768,
+        "visualViewportScale": 1,
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 131.515625
+      },
+      "metrics": {
+        "innerWidth": 768,
+        "outerWidth": 768,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 768,
+        "visualViewportScale": 1,
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 37,
+        "right": 347
+      },
+      "metrics": {
+        "innerWidth": 384,
+        "outerWidth": 768,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 384,
+        "visualViewportScale": 1,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 41,
+        "right": 343
+      },
+      "metrics": {
+        "innerWidth": 384,
+        "outerWidth": 768,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 384,
+        "visualViewportScale": 1,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 188.25,
+        "right": 284.40625
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained"
+      ],
+      "scroll": {
+        "before": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 0,
+              "clientHeight": 398,
+              "scrollHeight": 4645
+            }
+          ]
+        },
+        "after": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 4110.5,
+              "clientHeight": 398,
+              "scrollHeight": 4645
+            }
+          ]
+        },
+        "target": "Análisis rápido",
+        "moved": true
+      },
+      "metrics": {
+        "innerWidth": 384,
+        "outerWidth": 768,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 384,
+        "visualViewportScale": 1,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 384,
+        "outerWidth": 768,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 384,
+        "visualViewportScale": 1,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 521,
+        "right": 919
+      },
+      "metrics": {
+        "innerWidth": 1440,
+        "outerWidth": 1440,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 1440,
+        "visualViewportScale": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 521,
+        "right": 919
+      },
+      "metrics": {
+        "innerWidth": 1440,
+        "outerWidth": 1440,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 1440,
+        "visualViewportScale": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 458.34375,
+        "right": 550.484375
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained"
+      ],
+      "scroll": {
+        "before": {
+          "document": 0,
+          "ancestors": []
+        },
+        "after": {
+          "document": 2172,
+          "ancestors": []
+        },
+        "target": "Análisis rápido",
+        "moved": true
+      },
+      "metrics": {
+        "innerWidth": 1440,
+        "outerWidth": 1440,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 1440,
+        "visualViewportScale": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 100,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 165,
+        "right": 255.515625
+      },
+      "metrics": {
+        "innerWidth": 1440,
+        "outerWidth": 1440,
+        "devicePixelRatio": 1,
+        "visualViewportWidth": 1440,
+        "visualViewportScale": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU001",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill expense; Tab; no submit"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 161,
+        "right": 559
+      },
+      "metrics": {
+        "innerWidth": 720,
+        "outerWidth": 1440,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 720,
+        "visualViewportScale": 1,
+        "scrollWidth": 720,
+        "clientWidth": 720,
+        "focusedTag": "BUTTON"
+      }
+    },
+    {
+      "cu": "CU002",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "open/fill account; Tab; no submit",
+        "JSON download through settingsUI normal session"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 161,
+        "right": 559
+      },
+      "metrics": {
+        "innerWidth": 720,
+        "outerWidth": 1440,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 720,
+        "visualViewportScale": 1,
+        "scrollWidth": 720,
+        "clientWidth": 720,
+        "focusedTag": "BUTTON"
+      },
+      "downloadControl": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 182.34375,
+        "right": 270.484375
+      },
+      "download": {
+        "status": "PASS",
+        "sha256": "adeb8cd55df7be2cbbf79f72d0e7b492e420d86e1e5befea4cad7e54768bd8a5"
+      }
+    },
+    {
+      "cu": "CU003",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "analysis loaded; keyboard Tab; actual document/scrollable-ancestor movement to lower analysis section; viewport before/after retained"
+      ],
+      "scroll": {
+        "before": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 0,
+              "clientHeight": 336,
+              "scrollHeight": 4076
+            }
+          ]
+        },
+        "after": {
+          "document": 0,
+          "ancestors": [
+            {
+              "index": 3,
+              "tag": "DIV",
+              "scrollTop": 3609.5,
+              "clientHeight": 336,
+              "scrollHeight": 4076
+            }
+          ]
+        },
+        "target": "Análisis rápido",
+        "moved": true
+      },
+      "metrics": {
+        "innerWidth": 720,
+        "outerWidth": 1440,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 720,
+        "visualViewportScale": 1,
+        "scrollWidth": 720,
+        "clientWidth": 720,
+        "focusedTag": "A"
+      }
+    },
+    {
+      "cu": "CU004",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "zoomPercent": 200,
+      "status": "PASS",
+      "actions": [
+        "actual pure simulation10%; keyboard focus; no financial write"
+      ],
+      "control": {
+        "visible": true,
+        "horizontalBounds": true,
+        "centerReachable": true,
+        "left": 33,
+        "right": 123.515625
+      },
+      "metrics": {
+        "innerWidth": 720,
+        "outerWidth": 1440,
+        "devicePixelRatio": 2,
+        "visualViewportWidth": 720,
+        "visualViewportScale": 1,
+        "scrollWidth": 720,
+        "clientWidth": 720,
+        "focusedTag": "BUTTON"
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "CU001-320x568-zoom100.png",
+      "sha256": "5aea80ded4cd98dfd367d35ed5572a00a1d6940cee21030dfa5d37ea0111a3bc",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-320x568-zoom100.png",
+      "sha256": "6a1504a841f5330f829fb4892d4a52b1205be9bdf2122d4900669bde710bf346",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-320x568-zoom100-before-scroll.png",
+      "sha256": "9fc9938737b0cf6a3259f9da8ea6d0f244a5f272b3f5e74300a6c916b3bf058d",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-320x568-zoom100.png",
+      "sha256": "f11374d6321aa93b288c3dca62f56d57d8ed1c715ef28c21cc9e965f4d5d8d6d",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-320x568-zoom100.png",
+      "sha256": "add9b6b194ec5b552f32aa522574698a5c7ff09d0a89457e09562da140a345ce",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-320x568-zoom200.png",
+      "sha256": "29f9df07f80a121ddc357baf8224cac6ef9f383886fcf7fd6b91d585a87ceb12",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-320x568-zoom200.png",
+      "sha256": "86132b54c0b9f54a07e493ed75d9aa7fc4291b438f60bfa7886ec49099773eed",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-320x568-zoom200-before-scroll.png",
+      "sha256": "b215d02af14556ba8e4b1d666e899ce741c771ab076b187baf859bbf8bb120e2",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-320x568-zoom200.png",
+      "sha256": "7ab89911390cdb17290f88c9fbfff61df9b15c0647e9510ace6dd82edf2b785e",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-320x568-zoom200.png",
+      "sha256": "1d812fa38c5d3e652250be48da0be7e73f64ce7c32f3b74efdb06f7adca3aa9a",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 320,
+        "height": 568
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-375x812-zoom100.png",
+      "sha256": "1363a1fc5a2f8f8df4519f985ba7f9f2cbb26f82136d407091ce1c16cb7e4409",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-375x812-zoom100.png",
+      "sha256": "7674ccd37b1690c9c375e799aa141154f75bc1ec39534498f16799c9ec9b8070",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-375x812-zoom100-before-scroll.png",
+      "sha256": "b5b2ed6b8a6a88e10e85ef1356c8582421e0ba60aca6615dcd0a00c3668ce521",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-375x812-zoom100.png",
+      "sha256": "8acc50ba940f0b09c0516e646d2e2a94c2ccba592ca922e632ffe00114984338",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-375x812-zoom100.png",
+      "sha256": "676665f7256353e5dbfdea3083a6a49c3498fa886b79c997058a8a368e3e043a",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-375x812-zoom200.png",
+      "sha256": "e28ea174d0c93d23c398dac74c385e593865da9a84c5da917aa7b4386d442cf6",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-375x812-zoom200.png",
+      "sha256": "cc4871bbb521e06dd795dda203c3ed1756f37cba98bc04ba9b5f65f009ab9fff",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-375x812-zoom200-before-scroll.png",
+      "sha256": "3be38b33dbb670953f252fdfe6c21f9bd473b09d8ffbf17b97409a01410d364c",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-375x812-zoom200.png",
+      "sha256": "f9cb6996d46a7c9d8db6608cd473db372fa246310d2b9dfd21fbcf75e53df1f0",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-375x812-zoom200.png",
+      "sha256": "dcf7d02d15e83c480fa8d8f03c2a277ed54cdd70a5ee6182d4fd8e87f78a8915",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 375,
+        "height": 812
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-768x1024-zoom100.png",
+      "sha256": "337b74dc764d641d4099f81979cbdaba548a42a57caa2ab54575d033cad031a6",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-768x1024-zoom100.png",
+      "sha256": "a4ef14290bd8069854d9f8e28ec5cfee8bd69d855094804f16b3c54d50c318e2",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-768x1024-zoom100-before-scroll.png",
+      "sha256": "23472541c82056a94cc052ee586feea5c3ba5c406d3662e8f1460876f308806f",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-768x1024-zoom100.png",
+      "sha256": "2c6fa82d849cf9a5de6d834c9a87ac0f205713d246a162ccbe35f0ee12b2c878",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-768x1024-zoom100.png",
+      "sha256": "02102b57588bf7e7b0e61f236d830b28a4aab33d9bab606ed9f09d5a148a705c",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-768x1024-zoom200.png",
+      "sha256": "c1ac6e494182035347a58752f58b10dfc7e6e55e6487e18accf47cfff8810d9d",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-768x1024-zoom200.png",
+      "sha256": "602ba6365dadf9d66ed958e7b4f386697cc842f6f38e827f2887f87e7150ec70",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-768x1024-zoom200-before-scroll.png",
+      "sha256": "b2a6ea64ec7d7dbea05b548a882275d2d052d8e32786b7bfe12919bf2ea0a127",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-768x1024-zoom200.png",
+      "sha256": "80df24a5684407f3967d90a558938f652d9a250feabbca8ded3cb8b35d8f8f6d",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-768x1024-zoom200.png",
+      "sha256": "201f85d29bb2e1d884b7c121fc379bf6acf78d8096fa8a9e9dc1bafe207d1eb4",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 768,
+        "height": 1024
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-1440x900-zoom100.png",
+      "sha256": "4fe1d01b6298f83532682cb65880f93251fa29d387579980b1563dedadb59a95",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-1440x900-zoom100.png",
+      "sha256": "f7c0f4321b161a6e3d24c8a905c287b512ff4410ae8e4026f3a0f5579ca817d1",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-1440x900-zoom100-before-scroll.png",
+      "sha256": "ea617b58f89b50dd5377071f4acc4c0746796b9260622c1e055168d3cb6496d6",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-1440x900-zoom100.png",
+      "sha256": "17cc52ef755e441b1f7737427f96378453bc1cfd64da617e32090ec861417856",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-1440x900-zoom100.png",
+      "sha256": "a8269fed5066d0504eb88d165dd8c0d3f8fe699803d7cb628a5e238df075e233",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU001-1440x900-zoom200.png",
+      "sha256": "93fdc881b51e3aebfcd2b91abedac9c570a485b5b8126924c8b897a7154a6067",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU002-1440x900-zoom200.png",
+      "sha256": "f49a3a5ec3c8ee10214bce4b0058ad9a6abe02045975ecd7d671c68d7f140871",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-1440x900-zoom200-before-scroll.png",
+      "sha256": "9ed30b2c3cb04eb33a08f72d718400a219252266a216c6bc6844c50a53db48d7",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU003-1440x900-zoom200.png",
+      "sha256": "870331be88c065f6ab00ae4c0fc195456f328f37c61e574814e1cb4617b43428",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    },
+    {
+      "path": "CU004-1440x900-zoom200.png",
+      "sha256": "f02c97fb5185eefc181af62f7c32ebf661091f3ce6b131ff7f6f2ca506de3d5c",
+      "mode": "native viewport; no fullPage resize at either actual browser zoom",
+      "png": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureReadiness": "Fonts ready; semantic heading/result present; ancestor opacity>=0.99 and bounds/text stable for6frames; analysis chart skeletons absent"
+    }
+  ],
+  "blockers": [
+    {
+      "ids": [
+        "CNF-05",
+        "CNF-06",
+        "CNF-07",
+        "CNF-08"
+      ],
+      "reason": "This submatrix proves only listed visible/read/unsaved-form/simulation/download actions. OCRpreview, budget rules, login/reset, AI chat/anomalies and actual buy/sell completion per viewport remain separate."
+    },
+    {
+      "id": "CNF-09",
+      "reason": "Only installed Chrome executed; real Safari, Firefox and Edge have separate cells and are never inferred."
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "scripts/test-isolated-visual.mjs",
+      "sha256": "45f70570ff9ee680713bf498798fc91359ffdc967500c71f749a1e9b1534685c"
+    },
+    {
+      "path": "docs/testing/isolated-e2e.md",
+      "sha256": "542ddc787ce86807b6cb9459896cafb66b0be1a6df1fe1c847e1978255d478bc"
+    },
+    {
+      "path": "components/accounts/CreateAccountButton.tsx",
+      "sha256": "1615cfbbbc2643e2faf687d72cdbebee0d644187bda7b9fef73a64b41dc1be34"
+    },
+    {
+      "path": "components/settings/ExportImport.tsx",
+      "sha256": "e9aebda0ec4b2feffa2a13d431d1cfbd2def81af2c9515227e7cd5061f238d9d"
+    },
+    {
+      "path": "components/investments/AddInvestmentPanel.tsx",
+      "sha256": "c38904e65f5efc72aee998b89637cb04942a99ae21a88cc07aa91cca470aea89"
+    },
+    {
+      "path": "components/investments/InvestmentSimulationPanel.tsx",
+      "sha256": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb"
+    },
+    {
+      "path": "app/globals.css",
+      "sha256": "40291f3821cf43f34241e0cd3628dff06b73d63d963df480dc01106a12e2f4d2"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "revision": "3308625d5ff88484b99a0e910e4dbb09ae778efd",
+  "browser": {
+    "product": "Installed Google Chrome",
+    "version": "146.0.7680.165",
+    "headless": true,
+    "profile": "New ephemeral dedicated profile; removed after run",
+    "node": "v22.17.0"
+  },
+  "financeIntegrity": {
+    "beforeSha256": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+    "afterSha256": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+    "status": "PASS"
+  },
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T02:07:18.369Z"
+}

@@ -1,0 +1,15 @@
+{
+  "empty-core-closure": {
+    "copyRoot": "/tmp/zarix-app-empty-account-20261015",
+    "artifactPrefix": "empty-proof",
+    "coreDirectory": "core-closure",
+    "fixedRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "allowCurrentProductDeltas": false,
+    "clockOnly": true,
+    "normalState": "empty-proof-app-state.json",
+    "clockState": "empty-proof-clock-app-state.json",
+    "clockObservation": "empty-proof-clock-observation.json",
+    "normalGeminiPrefix": "empty-proof",
+    "clockGeminiPrefix": "empty-proof-clock"
+  }
+}

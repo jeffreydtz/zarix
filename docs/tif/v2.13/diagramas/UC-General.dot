@@ -1,0 +1,30 @@
+digraph G {
+graph [rankdir=LR, bgcolor="white", fontname="Arial", pad=0.25, nodesep=0.3, ranksep=0.65];
+node [fontname="Arial", fontsize=11]; edge [fontname="Arial", fontsize=9,color="#64748b",dir=none];
+label="ZARIX — exactamente cuatro casos de uso"; labelloc=t; fontsize=16;
+u [shape=plaintext,fontcolor="#243b53",label="«actor»\nUsuario"];
+t [shape=plaintext,fontcolor="#243b53",label="«actor»\nTelegram"];
+c [shape=plaintext,fontcolor="#243b53",label="«actor»\nProgramador externo"];
+g [shape=plaintext,fontcolor="#243b53",label="«actor»\nGemini"];
+p [shape=plaintext,fontcolor="#243b53",label="«actor»\nMercado Pago"];
+x [shape=plaintext,fontcolor="#243b53",label="«actor»\nProveedores de cotizaciones"];
+i [shape=plaintext,fontcolor="#243b53",label="«actor»\nInvitado con enlace"];
+cu1 [shape=ellipse,style=filled,fillcolor="#e0f2fe",label="CU-001\nGestionar movimientos financieros"];
+cu2 [shape=ellipse,style=filled,fillcolor="#e0f2fe",label="CU-002\nAdministrar cuentas y datos personales"];
+cu3 [shape=ellipse,style=filled,fillcolor="#e0f2fe",label="CU-003\nConsultar y analizar situación financiera"];
+cu4 [shape=ellipse,style=filled,fillcolor="#e0f2fe",label="CU-004\nSeguir portafolio de inversiones"];
+subgraph cluster_z { label="Límite de ZARIX"; color="#94a3b8"; cu1;cu2;cu3;cu4; }
+u -> cu1 [label=""];
+u -> cu2 [label=""];
+u -> cu3 [label=""];
+u -> cu4 [label=""];
+t -> cu1 [label=""];
+t -> cu3 [label=""];
+c -> cu1 [label=""];
+g -> cu1 [label=""];
+g -> cu3 [label=""];
+p -> cu2 [label=""];
+x -> cu3 [label=""];
+x -> cu4 [label=""];
+i -> cu1 [label=""];
+}

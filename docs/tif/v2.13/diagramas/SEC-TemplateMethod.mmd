@@ -1,0 +1,25 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ participant R as Ruta cron
+ participant B as CronJob
+ participant I as Iterativo
+ participant J as ReglaJob
+ R->>J: new job.run(request)
+ J->>B: Esqueleto heredado
+ B->>B: Bearer y cliente de<br/>servicio
+ alt No autorizado
+  B-->>R: 401
+ else Autorizado
+  B->>I: execute(client)
+  I->>J: fetchItems(client)
+  J-->>I: Reglas
+  loop Cada regla
+   I->>J: shouldProcess(rule)
+   opt Procesable
+    I->>J: processItem(client,<br/>rule)
+    J-->>I: Resultado / error ítem
+   end
+  end
+  I-->>B: Contadores
+  B-->>R: Respuesta / error<br/>general
+ end

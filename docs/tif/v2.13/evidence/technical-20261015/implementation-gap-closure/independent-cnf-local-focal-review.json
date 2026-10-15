@@ -1,0 +1,522 @@
+{
+  "schema": "zarix.independent-local-channel-focal-review.v1",
+  "reviewedAt": "2026-10-15T08:29:24.165881+00:00",
+  "reviewer": "e2e",
+  "status": "PASS_NATIVE_EFFECTS_AND_BINDINGS_WITH_PRIVACY_ORACLE_LIMIT",
+  "reviewMethod": "Read public source snapshots and reports, compare recorded hashes with Git blobs/archive, inspect actual code paths and recount checks. No test, Auth,HTTP,SQL,provider,browser,privatecredential read or process operation performed by reviewer.",
+  "sourceProof": {
+    "revision": "730767b1723502b495d371e69c44df31eb230b56",
+    "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+    "sourceRowsVerifiedAgainstExactGit": 514,
+    "sourceMismatches": [],
+    "workerSources": [
+      {
+        "path": "run-focal.py",
+        "sha256": "d47d5a28d1a0e27d1ff8085d13cd7582dec8c52d18d7cce05f6a70aa994d5e44",
+        "matchesExecutionPin": true
+      },
+      {
+        "path": "vitest.config.mjs",
+        "sha256": "833ec707d6e5bc2a0d14512bce6baa3bac88317ebd6a1f64cfb76aa87c66455f",
+        "matchesExecutionPin": true
+      },
+      {
+        "path": "focal.test-source.ts",
+        "sha256": "60911deccf76819b168bbac35bf48bd79357c8ec91097a4b226ab97ca5c20b4e",
+        "matchesExecutionPin": true
+      }
+    ],
+    "publicationPinsVerified": 9,
+    "copyStableReported": true,
+    "workerStableReported": true,
+    "checkoutChangesExecuted": false,
+    "schemaDifferencePaths": [
+      "scripts/test-atomic-account-recompute.mjs"
+    ],
+    "nextCookieAdapter": "Replaced only by actual normally authenticated clients; listening NextHTTP/browser not claimed."
+  },
+  "verifiedResults": {
+    "cnf11ProtocolGroups": 6,
+    "cnf11Checks": 182,
+    "cnf13CorrelationGroups": 9,
+    "cnf13Checks": 41,
+    "cnf13Observations": 54,
+    "cnf10RealUserJwtChecks": 3,
+    "countsAreNotAdditionalGlobalVitestTests": true,
+    "allRecordedChecksPassed": true
+  },
+  "cnf11": {
+    "channels": [
+      {
+        "id": "manual-expense-1500",
+        "checks": 31,
+        "oracle": {
+          "transactionRows": 1,
+          "receiptRows": 1,
+          "amount": 1500,
+          "balance": 8500
+        },
+        "initialInvocation": 1,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "afterCommitReplayPhase": true,
+        "sameSnapshotHashAfterReplays": true
+      },
+      {
+        "id": "transfer-1500",
+        "checks": 39,
+        "oracle": {
+          "source": 8500,
+          "destination": 3500,
+          "total": 12000,
+          "transferRows": 1,
+          "receiptRows": 1
+        },
+        "initialInvocation": 1,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "afterCommitReplayPhase": true,
+        "sameSnapshotHashAfterReplays": true
+      },
+      {
+        "id": "import-200-plus-300",
+        "checks": 31,
+        "oracle": {
+          "rows": 2,
+          "amount": 500,
+          "balance": 9500,
+          "batchRows": 1,
+          "perRowReceipts": 2
+        },
+        "initialInvocation": 1,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "afterCommitReplayPhase": true,
+        "sameSnapshotHashAfterReplays": true
+      },
+      {
+        "id": "cron-400",
+        "checks": 17,
+        "oracle": {
+          "rows": 1,
+          "balance": 9600,
+          "receipts": 1,
+          "outbox": 1,
+          "recurringFinancialIdentity": "recurring:39271283-aff5-4ea6-8dba-70b6e466522d:2026-10-15"
+        },
+        "initialInvocation": 1,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "afterCommitReplayPhase": true,
+        "sameSnapshotHashAfterReplays": true
+      },
+      {
+        "id": "investment-sale-4x120-from10x100",
+        "checks": 33,
+        "oracle": {
+          "saleRows": 1,
+          "sold": 4,
+          "realizedUSD": 80,
+          "remaining": 6,
+          "receiptRows": 1,
+          "cashBalance": 0
+        },
+        "initialInvocation": 1,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "afterCommitReplayPhase": true,
+        "sameSnapshotHashAfterReplays": true
+      },
+      {
+        "id": "payment-same-active-preapproval-fixed-period",
+        "checks": 31,
+        "oracle": {
+          "status": "ACTIVE",
+          "preexistingCurrentPeriodEnd": "2026-11-06T12:00:00+00:00",
+          "nextPaymentDateOnlyDidNotExtendPeriod": true,
+          "externalMercadoPagoAccepted": false,
+          "syntheticHttpFixturePort": 61339
+        },
+        "initialInvocation": 1,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "afterCommitReplayPhase": true,
+        "sameSnapshotHashAfterReplays": true
+      }
+    ],
+    "creditRollback": "A live accounts CHECK on the destination credit aborts the real transfer transaction; both balances,ledger,receipt equal before. No disabled trigger.",
+    "oversellRace": "Two distinct6-unit commands against10units both reach the realRPC scheduling barrier, one201/one400;4remaining/1sale/1receipt.",
+    "acknowledgementScope": "Only initial manual response body is deliberately discarded. No actual networkloss or restart in this focal.",
+    "payment": "Actual HMAC handler + local synthetic HTTPpreapproval authorized at61339; unchangedACTIVE/preexisting period fulfills the literal payment subchannel, without claiming a paid event or MPintegration.",
+    "fullOriginalCase": "BLOCKED_UNCOVERED_CAPTURE_FAILURE_PATHS",
+    "notAValidBlocker": "RealMercadoPago delivery/sandbox absent is not a blocker imposed by thisCSV, which explicitly uses a synthetic payment resource."
+  },
+  "cnf13": {
+    "manual1500Corrected": true,
+    "literalSensitiveMarkersAndSyntheticPngGeneratedInMemory": true,
+    "terminalRequests": [
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:00.785Z",
+        "correlationId": "corr-cnf13-01",
+        "channel": "manual",
+        "operation": "transaction.create",
+        "component": "request",
+        "action": "execute",
+        "outcome": "success",
+        "status": 201,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:01.194Z",
+        "correlationId": "corr-cnf13-02",
+        "channel": "manual",
+        "operation": "transaction.create",
+        "component": "request",
+        "action": "execute",
+        "outcome": "rejected",
+        "failureClass": "validation",
+        "status": 400,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:01.788Z",
+        "correlationId": "corr-cnf13-03",
+        "channel": "manual",
+        "operation": "transaction.create",
+        "component": "request",
+        "action": "execute",
+        "outcome": "error",
+        "failureClass": "consistency",
+        "status": 500,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:02.177Z",
+        "correlationId": "corr-cnf13-04",
+        "channel": "cron",
+        "operation": "cron.run",
+        "job": "recurring",
+        "component": "request",
+        "action": "execute",
+        "outcome": "success",
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:02.478Z",
+        "correlationId": "corr-cnf13-05",
+        "channel": "cron",
+        "operation": "cron.run",
+        "job": "recurring",
+        "component": "request",
+        "action": "execute",
+        "outcome": "rejected",
+        "failureClass": "authentication",
+        "status": 401,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:02.738Z",
+        "correlationId": "corr-cnf13-06",
+        "channel": "cron",
+        "operation": "cron.run",
+        "job": "notification-outbox",
+        "component": "request",
+        "action": "execute",
+        "outcome": "error",
+        "failureClass": "provider",
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:02.919Z",
+        "correlationId": "corr-cnf13-07",
+        "channel": "payment",
+        "operation": "payment.webhook",
+        "component": "request",
+        "action": "execute",
+        "outcome": "success",
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:03.073Z",
+        "correlationId": "corr-cnf13-08",
+        "channel": "payment",
+        "operation": "payment.webhook",
+        "component": "request",
+        "action": "execute",
+        "outcome": "rejected",
+        "failureClass": "authentication",
+        "status": 401,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "schema": "zarix.observation.v1",
+        "timestamp": "2026-10-15T08:18:03.248Z",
+        "correlationId": "corr-cnf13-09",
+        "channel": "payment",
+        "operation": "payment.webhook",
+        "component": "request",
+        "action": "execute",
+        "outcome": "error",
+        "failureClass": "provider",
+        "status": 500,
+        "metric": "zarix_operation_total",
+        "value": 1
+      }
+    ],
+    "outboxLinksCommit": "Same transactionId and outboxId, onefailedattempt,stillcommitted,no deliveryack; providerclassification remains distinct from consistency.",
+    "payment": "Loopback provider validates resource and owner; the valid cancellation scenario is permitted by CNF13, which does not require ACTIVE for its success case. CNF11 separately proves ACTIVE/noextension.",
+    "originalFullStatus": "BLOCKED_PRIVACY_CAPTURE_PROOF_PENDING",
+    "externalProviderRequiredByCsv": false
+  },
+  "privacyCoverageFinding": {
+    "id": "CNF13-ERROR-NONENUMERABLE-CAPTURE",
+    "severity": "P1_EVIDENCE_LIMIT",
+    "source": "sources/focal.test-source.ts:475",
+    "expression": "const captured = JSON.stringify(rawConsole);",
+    "structuredStrings": 354,
+    "allConsoleCalls": 357,
+    "unstructuredCalls": 3,
+    "whatIsProven": "The354observations are already JSONstrings with allowlisted fields. Published54correlation rows are directly inspectable and content-free. Reported zero matches applies to JSONserialization of captured arguments.",
+    "whatIsNotProven": "Serialization does not inspect non-enumerable Error.message/stack/cause. Public rawlogs were not retained, so the reviewer cannot directly classify all3remainingcalls or claim a robustscan ofErrorfields.",
+    "sourcePathAccounting": [
+      {
+        "path": "lib/api-handler.ts",
+        "call": "console.error('[api] unhandled error')",
+        "scope": "Both controlled unknownSQLfailures necessarily reach this fixed-string catch."
+      },
+      {
+        "path": "app/api/investments/[id]/sell/route.ts:77",
+        "call": "console.error('investments sell error:', error)",
+        "scope": "The observedoversell400 goes through this raw-ApiError catch before errorResponse. It is outside the9CNF13correlations but inside the combined357calls. This was a true logging defect and is corrected in a separately tested later delta."
+      }
+    ],
+    "minimalAdditionalProof": "A boundednew nine-path native supplement can format all captured arguments inRAM with formatWithOptions({showHidden:true,depth:8}), retain only safe type/countclassification and zero-matchcounts, and include a canary in non-enumerable Errorproperties. Preserve the current rawreports and do not relabel them as that latercapture.",
+    "newSourceDeltaReference": "implementation-gap-closure/investment-sell-privacy/verification.json",
+    "noRuntimeRecommendedOrStartedDuringReview": true
+  },
+  "cleanupInterpretation": {
+    "authSessions": 0,
+    "authRefreshTokens": 0,
+    "historyUnchangedReported": true,
+    "constraintsRemovedReported": true,
+    "profileAndDeferredOutboxRestored": "Selected-column write responses succeeded; this is not an independent fullrowcomparison of users/outbox, nor a captured HTTP204logout."
+  },
+  "literalAcceptanceCriteria": [
+    {
+      "case": "CP1-08",
+      "literal": {
+        "preconditions": "Fixture fresco: A inicial10000; gasto1500→A8500",
+        "input": "DELETE movimiento gasto",
+        "steps": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "expected": "A=10000; sin fila operativa; auditoría mantiene identidad/actor/valor previo",
+        "evidenceRequired": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "acceptanceBoundary": "Integration/API/SQL; no explicit browser interaction required by this case.",
+      "requiredProof": [
+        "Fresh opening10000 and an identified expense1500 produce8500.",
+        "Owner DELETE response plus SQL prove10000, no operational row for that UUID and one audit retaining exact OLD identity/owner/value and authenticated actor."
+      ],
+      "currentComposition": "Native73017 checks supply the exact API/SQL fixture and audit; do not add them to other-case assertion totals.",
+      "uiClaimAllowed": false
+    },
+    {
+      "case": "CP2-11",
+      "literal": {
+        "preconditions": "U1 baseARS, panelPatrimonio habilitado; A=120000ARS B=100USD rate1200",
+        "input": "cambiar baseUSD y ocultarwidget; recargar nueva sesiónU1",
+        "steps": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "expected": "preferencias persisten; total200USD; saldos originales120000/100 intactos; otro usuario no cambia",
+        "evidenceRequired": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "acceptanceBoundary": "API/SQL plus actual compiled SSR/Flight may satisfy the literal API/UI evidence option; hydrated pixels/clicks are outside that composition.",
+      "requiredProof": [
+        "Start ownerA baseARS/widget visible with included120000ARS+100USD, fixture rate1200.",
+        "SaveUSD/hidden, end first session and open a new verified normal session for the same owner; retained preferences must be read from persistence.",
+        "Aggregate is exactly200USD; original120000/100 balances/history and other owner settings stay unchanged.",
+        "Actual owner-bound Dashboard response removes Hero/Sticky/sentinel when hidden."
+      ],
+      "currentComposition": "Native73013-group checks plus SSR38 supply persistence/economics, actual Next cookie API, post-save newlogin and hidden Dashboard. USD200 is a server-produced Flight prop, not an asserted animated HTML number.",
+      "uiClaimAllowed": false
+    },
+    {
+      "case": "CP2-12",
+      "literal": {
+        "preconditions": "U1; catálogoMonedasfixtureARS/USD",
+        "input": "baseZZZ; preferencia otroUsuario",
+        "steps": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "expected": "rechazo sin cambiar configuración actual ni exposición ajena",
+        "evidenceRequired": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "acceptanceBoundary": "API/SQL negative cases; browser not required by original evidence API/UI option.",
+      "requiredProof": [
+        "ZZZ outside fixtureARS/USD is rejected without changing current settings.",
+        "Manipulated/foreign-owner preference cannot read or change another user.",
+        "Compare both profiles and financial inventories before/after; distinguish RLS zero rows from a transport4xx."
+      ],
+      "currentComposition": "Native73014 checks plus SSR stale-owner403 and distinct SettingsForm owner props cover the allowed branches; no additional CRUD or new validation is required.",
+      "uiClaimAllowed": false
+    },
+    {
+      "case": "CP3-17",
+      "literal": {
+        "preconditions": "PreferenciasU1 guardadasCU002A06",
+        "input": "recargardashboardU1 yU2",
+        "steps": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "expected": "U1 widgets/basepreferidos; U2propios; saldos/historial no mutan",
+        "evidenceRequired": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "acceptanceBoundary": "Actual authenticated Dashboard HTTP/SSR for BOTH users plus SQL inventory comparison may compose the case; SettingsB alone cannot replace DashboardB.",
+      "requiredProof": [
+        "ReloadA and reloadB after saved preferences.",
+        "A has its chosen base/widget state; B has its own base/widget and noA finance.",
+        "SQL balances/history remain unchanged across presentation reloads."
+      ],
+      "currentComposition": "SSR38 alone lacked DashboardB. Separate Dashboard supplement26 now provides both actual responses, owner/module bindings and seven unchanged inventories; independent supplement review is recorded separately.",
+      "uiClaimAllowed": false
+    },
+    {
+      "case": "CNF-10",
+      "literal": {
+        "preconditions": "JWTusuariocomún,noJWT ycronsecretincorrecto; headerbotsecreterror",
+        "input": "llamarcron y webhookbot sincredencial válida; compararconvalidacióncorrecta enfixture",
+        "steps": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "expected": "sincredencialdenegadoantes deDBefectos; credencialválidapasa sóloloscanalesdefinidos; secretosnologueados",
+        "evidenceRequired": "Respuestas/contadorI/Oylogsredactados; nodivulgarsecrets reales"
+      },
+      "acceptanceBoundary": "Local real handlers/native cron plus explicit bot/DB doubles can compose the credential gate contract; no liveTelegram delivery or MP is required by this row.",
+      "requiredProof": [
+        "NoJWT, normal-userJWT and wrongcronsecret are rejected before protected financial work; a valid cron secret reaches only its channel.",
+        "Both webhook channels reject wrong/missing/cross-channel credentials before dispatch; valid credentials dispatch only their defined channel and stored owner.",
+        "A matched custom header with absent/revoked capability may do one read-only resolution, then zero dispatch/writes; do not label it zeroDBI/O.",
+        "Search captured logs for credentials and sentinels, including non-enumerable Error fields when rawError is possible."
+      ],
+      "currentComposition": "Channel60 supplies26 matching route/bot privacy tests with spies, native current focal adds3 checks with a genuinely issued normal-userJWT. Preserve their distinct source versions and replace no realJWT claim in the unit fixture.",
+      "uiClaimAllowed": false
+    },
+    {
+      "case": "CNF-11",
+      "literal": {
+        "preconditions": "Restaurar fixture por canal: U-A, cuenta A=10000 ARS y B=2000 ARS; lote 10×100 USD; blue válido; regla gasto 400; recurso de pago sintético. Comando lógico identificado por el protocolo que ofrezca cada canal. Idempotencia general manual/bot/importación/venta no se presume implementada.",
+        "input": "Repetir 2 veces y disparar 10 intentos concurrentes del MISMO comando por canal: gasto 1500 ARS; transferencia 1500 ARS A→B; lote importado gastos 200+300; regla 400 mismo díaAR; venta 4×120 USD del lote 10×100; webhook del mismo preapproval ACTIVE y mismo next_payment_date. Inyectar fallo entre escritura y acuse, y entre débito/crédito.",
+        "steps": "1.Restaurar estado. 2.Repetir el mismo comando y provocar reintento tras timeout. 3.Ejecutar 10 intentos concurrentes. 4.Consultar filas/saldos/ventas/estado por dueño y referencia. 5.Comparar NUMERIC exacto y efectuar UPDATE/DELETE de la transferencia. 6.Conservar por canal correlación, número de filas y evidencia de rollback.",
+        "expected": "Meta RNF06 por fixture: gasto único y A: 8500; transferencia única A: 8500/B: 3500 y total 12000; importación 2 filas y A: 9500; cron 1 fila y A: 9600; venta 1 fila, cantidad 6 y realizado 80 USD; pago conserva estado ACTIVE/vigencia del recurso sin efecto adicional. Fallo de escritura revierte registro y todos sus impactos; UPDATE/DELETE conserva equivalencias exactas. Una sobreventa concurrente nunca deja cantidad negativa. Si no existe protocolo persistente que identifique el comando manual/bot/import/venta, registrar la brecha y NO aprobar idempotencia general por el índice del cron.",
+        "evidenceRequired": "Payloads y IDs lógicos por canal, versión, barrera de concurrencia, logs/consultas antes-después, centavos/equivalentes exactos, errores y resultado individual. Pruebas locales cron/SQL existentes se enlazan con su alcance y no sustituyen esta aceptación."
+      },
+      "acceptanceBoundary": "Synthetic payment resource is explicitly allowed. API/SQL can establish monetary protocols; it does not automatically establish the manual/OCR/Telegram capture channel intent protocol.",
+      "requiredProof": [
+        "Identify the same logical command by a persistent protocol for every claimed channel, run two replays and ten concurrent attempts with individual outcomes.",
+        "Independent exact monetary oracles:expense8500;transfer8500/3500,total12000;import2rows/9500;cron1row/9600;sale1row,6remaining,80USDrealized;paymentACTIVE and same period.",
+        "Controlled failures must not leave partial record/effect/receipt; prove transferUPDATE/DELETE equivalent legs and no negative quantity under concurrent oversell.",
+        "Failure between committed write and acknowledgement/retry must be evidenced with its exact simulation level; a discarded consumer body is not a realnetworktimeout or restart."
+      ],
+      "currentComposition": "Six local protocol subscopes pass182 assertions, including a real destination-credit rollback and distinct-command oversell barrier. Integral remainsBLOCKED for unproved literal capture/failure coverage; not because payment lacked a liveprovider. Ten after-commit replays are realconcurrent attempts, but do not prove first-commit contention. First-commit contention is a scope limit, not silently added as a newCSVrequirement.",
+      "uiClaimAllowed": false
+    },
+    {
+      "case": "CNF-13",
+      "literal": {
+        "preconditions": "Fixture aislado A: 10000 ARS; regla recurrente y preapproval sintéticos. Usar sólo señuelos: token=SECRETO_CNF13, texto financiero=SUELDO_PRIVADO_CNF13 e imagen con marcadorIMAGEN_CNF13. Instrumentación/correlación requeridas son meta por verificar, no se dan por implementadas.",
+        "input": "Por cada canal manual/cron/pago producir éxito, rechazo y falla controlada. Manual:gasto 1500 válido, monto−1 rechazado, SQL falla. Cron:regla válida, Bearer inválido, proveedor Telegram falla tras commit. Pago:HMAC/recurso válidos, firma falsa, consulta MP falla. Asignar correlaciones corr-cnf13-01..09 y registrar timestamps.",
+        "steps": "1.Capturar 9 intentos con respuesta/ID. 2.Reconstruir desde logs cada resultado y escritura. 3.Buscar los tres marcadores sensibles, API keys, cookies, Authorization e imagen/base 64. 4.Revisar métricas con falla de proveedor separada de inconsistencia. 5.Verificar que un aviso fallido se enlaza a la ocurrencia confirmada sin otro débito.",
+        "expected": "Cada intento tiene correlación válida, canal, timestamp, resultado y referencia mínima; se puede unir request→servicio→efecto o rechazo/error. Éxito manual deja A: 8500; rechazo/fallaSQL no agrega fila. Cron con aviso caído conserva 1 ocurrencia y registra error de proveedor sin declararlo rollback financiero. Pago inválido no activa; fallaMP registra fallo sin estado inventado. Cero apariciones de SECRETO_CNF13, SUELDO_PRIVADO_CNF13 e IMAGEN_CNF13 o credenciales reales. Métricas permiten distinguir proveedor de consistencia y no silencian errores. Si faltan IDs/estados o se filtra contenido, RNF08 no cumple.",
+        "evidenceRequired": "Muestra sanitizada de 9 correlaciones, respuestas, IDs de filas/eventos/ocurrencias y métricas antes/después; consulta de consistencia y búsqueda de señuelos. Resultado real pendiente."
+      },
+      "acceptanceBoundary": "Nine local real handler/service/nativeDB paths with synthetic preapproval/HTTP fixtures and an explicit failing Telegram transport are allowed; no liveprovider/browser/collector account is required by this row.",
+      "requiredProof": [
+        "Exactly corr-cnf13-01..09 cover manualsuccess1500→8500/negative−1/realSQLfailure; cronvalid/invalidBearer/failingnoticeaftercommit; paymentvalidHMACresource/forgedsignature/providerlookupfailure.",
+        "Every request has valid ID/channel/timestamp/terminalresult and minimum linkage to effect/rejection/error; all3sensitive literal markers plus image/credentials are absent from capturedlogs.",
+        "Providerfailure stays distinct from consistency; failedcronnotice links the same committed occurrence/outbox and causes no additional debit.",
+        "Invalidpayment cannot activate; MPfailure cannot invent subscription state."
+      ],
+      "currentComposition": "New41checks/54observations close prior manualamount/literalmarker gaps. DB/effect/correlation scope is supported. Fullprivacy/acceptance remainsBLOCKED pending a robust capture supplement because JSON.stringify(rawConsole) cannot inspect non-enumerable Error fields from one rawError branch in the combined run.",
+      "uiClaimAllowed": false
+    }
+  ],
+  "noMatrixPromotion": true,
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/cnf11-six-local.json",
+      "sha256": "ce40204725db46665b667b1e45f6b4a32d6050dc126b9830f25c0ed1813e13f6",
+      "bytes": 36766
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/cnf13-nine-literal.json",
+      "sha256": "9ecb1620fa8ef12f820c9d55360a48acaae18c1156862ecba148c326d5fe9a02",
+      "bytes": 25482
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/cnf10-user-jwt.json",
+      "sha256": "a1bbbd54b21773719a4316c362bdb15dddb5d35365a3f0fbf847cfdadd0a93c3",
+      "bytes": 1439
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/privacy-and-cleanup.json",
+      "sha256": "12aab0f40211b31295ac30ecae6d3d8d80a1b4b8469ef00adbe839a107d444f6",
+      "bytes": 1519
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/execution.json",
+      "sha256": "d52b804c723a3f70193008358e1fc730e9545d41774b1fdd0aa9bc00e2de3cf9",
+      "bytes": 78830
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/sources/manifest.json",
+      "sha256": "0907541db6e29b1387632a5475b0593147733a0d0f95653eca006ef10f7dd176",
+      "bytes": 544
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/sources/run-focal.py",
+      "sha256": "d47d5a28d1a0e27d1ff8085d13cd7582dec8c52d18d7cce05f6a70aa994d5e44",
+      "bytes": 7203
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/sources/vitest.config.mjs",
+      "sha256": "833ec707d6e5bc2a0d14512bce6baa3bac88317ebd6a1f64cfb76aa87c66455f",
+      "bytes": 490
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/sources/focal.test-source.ts",
+      "sha256": "60911deccf76819b168bbac35bf48bd79357c8ec91097a4b226ab97ca5c20b4e",
+      "bytes": 50394
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/publication-check.json",
+      "sha256": "a6f0763d798d5a4b76b541b23178e4bc503b00f01d1d35f13199b18b3720a82b",
+      "bytes": 1708
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+      "bytes": 231190
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/verification.json",
+      "sha256": "e40340aac1d2c6e072d050a55d6e77834bad68dc6c06039b5b13f8befd37f4e0",
+      "bytes": 9171
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/independent-channel-secrets-review.json",
+      "sha256": "b0f907412c997b929009f85856391cef7813a32730289214992b8e47284d2142",
+      "bytes": 11123
+    }
+  ]
+}

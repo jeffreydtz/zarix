@@ -1,0 +1,94 @@
+{
+  "tests": 304,
+  "test_files": 32,
+  "failed": 0,
+  "start_utc": "2026-10-07T00:45:34.693000+00:00",
+  "runtime": "Node22.17.0",
+  "runner": "Vitest5.0.3",
+  "coverage": {
+    "lines": {
+      "total": 958,
+      "covered": 601,
+      "skipped": 0,
+      "pct": 62.73
+    },
+    "statements": {
+      "total": 1081,
+      "covered": 659,
+      "skipped": 0,
+      "pct": 60.96
+    },
+    "functions": {
+      "total": 112,
+      "covered": 71,
+      "skipped": 0,
+      "pct": 63.39
+    },
+    "branches": {
+      "total": 973,
+      "covered": 549,
+      "skipped": 0,
+      "pct": 56.42
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "calendar_coverage": {
+    "lines": {
+      "total": 30,
+      "covered": 30,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 37,
+      "covered": 37,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 30,
+      "covered": 30,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "offline_coverage": {
+    "lines": {
+      "total": 11,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 12,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "base_commit": "5cbd7ac984782b5f50e19f72ba7e0c3c8b5304fd",
+  "verified_code_commit": "98250f5dfb83bb88eeed241f80807a5770e4caaf"
+}

@@ -1,0 +1,10 @@
+{
+  "code_commit": "e65e09c648aaae31bf420bc4b5c044a4dbb8f310",
+  "code_tree": "b9d747e41556b337a4e330871d17a1d86ef49a8d",
+  "baseline_commit": "ed894431968775dba1d9ba01df99d9a442407865",
+  "tested_source_manifest_sha256": "060b8b3ef1570b179c42c6e28a87cde54cb20ca8b5bf850c85468f547aabdb44",
+  "source_files_rechecked_unchanged": true,
+  "prepared_at": "2026-10-09T04:52:41.642751+00:00",
+  "publication_model": "Code commit followed by evidence-only commit. Final PR head and its CI are recorded in the PR description; this file does not claim a self-referential final evidence commit hash.",
+  "scope": "Draft technical partial delivery; no merge or production deployment. Native Auth/API/UI, provider sandbox and full Auth/Storage recovery remain blocked."
+}

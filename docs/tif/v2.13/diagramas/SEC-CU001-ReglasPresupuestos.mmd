@@ -1,0 +1,20 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as P04 (B)
+ participant C as Config. (C)
+ participant D as Datos (E)
+ U->>B: Configurar con sesión
+ B->>C: Validar datos y<br/>pertenencia
+ alt Regla recurrente A05
+  C->>D: Crear/editar/suspender<br/>regla
+  D-->>C: Regla y próxima fecha
+  Note over C: Fin inclusivo, fechas<br/>válidas calendario en<br/>shouldExecuteToday
+ else Presupuesto A07
+  C->>D: Guardar<br/>categoría/límite/período
+  C->>D: Leer gastos del<br/>período
+  D-->>C: Consumo y límite
+  C->>C: Comparar misma moneda
+ end
+ C-->>B: Confirmación / error
+ B-->>U: Estado actualizado

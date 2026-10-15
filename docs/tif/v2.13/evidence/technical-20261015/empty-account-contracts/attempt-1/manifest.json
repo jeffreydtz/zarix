@@ -1,0 +1,27 @@
+{
+  "scope": "Exact executed harness/import bytes; attempt1 preflight source reconstructed by the single subsequent route replacement and verified against its executed manifest, not re-executed.",
+  "reportSha256": "6ee0657f6e7b0dcb02cf9055837b7fca61c95ca209a02e5e427ab5315a46f682",
+  "run": "d3513346-1696-4f8d-944a-ce679bc36e80",
+  "sources": [
+    {
+      "path": "run.mjs",
+      "sha256": "c423d87ebfe1faae81bcff499fd52ebd1553b2a40881a86014748edeeef0f162",
+      "snapshot": "sources/run.mjs"
+    },
+    {
+      "path": "ssr-contracts.mjs",
+      "sha256": "b7700e6d25ace41d404fdb4c4e68e270ce915b4fb3d8390298815d74e9516c38",
+      "snapshot": "sources/ssr-contracts.mjs"
+    },
+    {
+      "path": "../account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+      "snapshot": "sources/ssr-financial-read.mjs"
+    },
+    {
+      "path": "../../../../../../scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+      "snapshot": "sources/test-isolated-native-target.mjs"
+    }
+  ]
+}

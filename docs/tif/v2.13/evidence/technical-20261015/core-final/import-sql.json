@@ -1,0 +1,45 @@
+{
+  "suite": "durable-import",
+  "results": [
+    {
+      "name": "batch binds immutable file/options hash and freezes original mapping",
+      "status": "PASS"
+    },
+    {
+      "name": "partial row failure and retry preserve one effect per original row",
+      "status": "PASS"
+    },
+    {
+      "name": "same batch replay and simultaneous submissions keep exact receipts (single-session scheduling)",
+      "status": "PASS"
+    },
+    {
+      "name": "equal legitimate rows and explicit new batches remain separate operations",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit duplicate skip matches existing content and survives deletion of the match",
+      "status": "PASS"
+    },
+    {
+      "name": "historical equivalents and durable replay ignore changed computed FX",
+      "status": "PASS"
+    },
+    {
+      "name": "imported transfer debits and credits historical equivalents exactly once",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt failure rolls back the imported row and its balance impact",
+      "status": "PASS"
+    },
+    {
+      "name": "batch and receipt payload conflicts cannot add new financial effects",
+      "status": "PASS"
+    },
+    {
+      "name": "anon and authenticated roles cannot access import ledger or RPCs",
+      "status": "PASS"
+    }
+  ]
+}

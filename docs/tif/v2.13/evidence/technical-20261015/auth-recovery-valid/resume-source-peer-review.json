@@ -1,0 +1,34 @@
+{
+  "reviewer": "independent e2e peer",
+  "reviewedAt": "2026-10-15T06:31:31.155227+00:00",
+  "status": "NO_MATERIAL_SOURCE_FINDING",
+  "method": "Read-only exact source/delta review; no Node/import, Auth, SMTP, DB query, browser or process action by reviewer. Runtime release remains coordinator responsibility.",
+  "sources": [
+    {
+      "path": "run.mjs",
+      "sha256": "39deb5aad522efc548dbb21acb06552fbe06e75c1421f45f625c65f307548b28"
+    },
+    {
+      "path": "contract.mjs",
+      "sha256": "4bd5d264b60369334c5802562d3ad49554e85acec6aa0e50bf8fff972fa7b06a"
+    },
+    {
+      "path": "smtp-message.mjs",
+      "sha256": "a85f050b258b6482624e317bae12cf2bb8b106bb4ae5ee1dfcca58c4630b38c3"
+    }
+  ],
+  "observations": [
+    "Existing exact launcher/config/native-target pins remain; wrapped MachO executable and runtime profile are rehashed, PID/listener/executable ownership is checked before/after. DSN remains pinned to the new UUID database on127.0.0.1:55322, with only exact sslmode=disable permitted.",
+    "Continuation requires a private0600 checkpoint belonging to the same controlled identity, unchanged original password, no previous dispatched password update, prior real recovery200, failed report/sourceStable/preserved protected rows and exact Native target binding. Current unconsumed Auth recovery token must equal the retained checkpoint token.",
+    "The original private MIME/receipt is reused with recipient/byte-count/SHA verification; SMTP accepted count remains exactly1 at continuation. No second recovery request or new replacement password is created in resume branch.",
+    "MIME parser accepts only the frozen Native-configured known path /verify or /auth/v1/verify, exact loopback origin and recovery type. The flow POSTs the recovered hash to actual Auth API; it does not claim email-link clicking, frontend routing or a browser password-reset form.",
+    "Real password change/old denial/new acceptance/token reuse denial are still independent runtime assertions. Finally restores original password even after uncertain update dispatch; administrative repair is isolated cleanup only and cannot prove normal recovery succeeded.",
+    "New read-only closure checks count only known newly owned Auth session IDs and their unrevoked refresh grants;0/0 is required. No global logout or unrelated-session revocation.",
+    "Issued passwords/tokens and MIME remain in deliberate private files; ordinary-log exact-value scan is in memory and publishes no values. Protected original Auth/public data and fixture public data are compared at closure."
+  ],
+  "limits": [
+    "Static approval is not proof of runtime recovery completion.",
+    "The retained earlier preflight/parser failures must remain unchanged.",
+    "Local SMTP is an explicit transport double; no real external email delivery, password-reset UI, complete Auth restoration or browser acceptance."
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-15T04:40:55.032164+00:00",
+  "status": "BLOCKED_CNF09_ORIGINAL_MATRIX_NOT_COMPLETED",
+  "scope": "Installed application metadata and reconciliation of human browser decisions; no browser launched,window/tab enumerated,permission asked,download or app request by this update.",
+  "installed": {
+    "Chrome": {
+      "present": true,
+      "version": "146.0.7680.165",
+      "build": "7680.165",
+      "plistSha256": "2b5ae0d5e49ec501011424ecfc65bc9fdd4527060fd74c0bf19f1ee6b5e8a88d",
+      "method": "Read-only installed Info.plist; no executable invocation"
+    },
+    "Safari": {
+      "present": true,
+      "version": "27.0.1",
+      "build": "22625.1.29.11.28",
+      "plistSha256": "c7a2287bf108c42ed733c53dfa337f520da4ebb52a905216f8703da225750bbd",
+      "method": "Read-only installed Info.plist; no executable invocation"
+    },
+    "Arc": {
+      "present": true,
+      "version": "1.168.0",
+      "build": "88413",
+      "plistSha256": "623c906df0d4c55c2d5cf3a3690c202c4a589eba022f6ce9f656d69c8f26e2c3",
+      "method": "Read-only installed Info.plist; no executable invocation"
+    },
+    "Firefox": {
+      "present": false,
+      "version": null,
+      "checkedPath": "/Applications/Firefox.app/Contents/Info.plist"
+    },
+    "Edge": {
+      "present": false,
+      "version": null,
+      "checkedPath": "/Applications/Microsoft Edge.app/Contents/Info.plist"
+    }
+  },
+  "humanScopeEvidence": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/user-browser-scope.json",
+    "sha256": "3026105e2f76656c9d4b87a0fc8cc00bdf39336c9f43acdbc1b719bb07ef13ab"
+  },
+  "currentDecisions": {
+    "Firefox": "DECLINED_INSTALL; no download/use",
+    "Edge": "DECLINED_INSTALL; no download/use",
+    "Safari": "WEBDRIVER_DISABLED; no RemoteAutomation setting was changed",
+    "Arc": "Human Codex-to-Arc Automation authorized and native result0; initial owned window reference failed(-1728),close unconfirmed; waiting human reconciliation; no new window/tab action",
+    "Chrome": "Historical four-CU/visual tests use actual existing Chrome dedicated profiles; no equivalence to Arc/Safari/Firefox/Edge"
+  },
+  "pendingArcRegression": [
+    "375x812@100%",
+    "320x568@100%",
+    "375x812@200%",
+    "1440x900@100%"
+  ],
+  "arcTests": "BLOCKED_NO_ACCEPTANCE_RESULT",
+  "runtimeUserAgentArcObserved": false,
+  "previousStableVersionsTested": false,
+  "browserCompatibilityMatrixModified": false,
+  "historicalPreflight": "preflight.json",
+  "historicalPreparedManifest": "manifest-prepared-20261015T0051.json",
+  "historicalPreparedReadme": "README-prepared-20261015T0051.md",
+  "historicalManifestReadmeMapping": {
+    "originalPath": "README.md",
+    "preservedPath": "README-prepared-20261015T0051.md"
+  }
+}

@@ -1,0 +1,29 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ actor U as Usuario
+ participant B as UI (B)
+ participant C as Movim. (C)
+ participant D as BD (E)
+ participant T as Trigger
+ U->>B: Cambiar o eliminar<br/>propio
+ B->>C: PATCH / DELETE
+ C->>D: Buscar por dueño e ID
+ D-->>C: Movimiento / rechazo
+ alt No pertenece al usuario
+  C-->>B: Rechazo sin cambios
+ else Propio
+  alt Edición
+   C->>C: Validar nueva<br/>intención
+   Note over C: Sólo texto/categoría<br/>conserva FX cambio<br/>monetario recalcula<br/>importes
+   C->>D: UPDATE
+   D->>T: OLD y NEW
+   T->>D: Revertir OLD, aplicar<br/>NEW
+  else Eliminación
+   C->>D: DELETE
+   D->>T: OLD
+   T->>D: Revertir ambos efectos
+  end
+  D-->>C: Commit o rollback
+  C-->>B: Resultado
+  B-->>U: Nuevo saldo / error
+ end

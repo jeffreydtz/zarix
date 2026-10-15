@@ -1,0 +1,144 @@
+{
+  "observedAt": "2026-10-15T01:01:55.483Z",
+  "codeRevision": "b456c4220ee524406670f65837fcd4fd6c4b8275",
+  "node": "v22.17.0",
+  "npm": "11.4.2",
+  "fullAudit": {
+    "path": "../core/dependency-audit.json",
+    "status": "FAIL",
+    "exitCode": 1,
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "rootAdvisory": "GHSA-vfj7-8cjw-p6xm",
+    "scope": "Seven affected packages in one transitive braces toolchain advisory, not seven distinct advisory identifiers."
+  },
+  "productionAudit": {
+    "command": "npm audit --omit=dev --json --registry=https://registry.npmjs.org",
+    "exitCode": 0,
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "registry": {
+    "registry-braces-latest": "3.0.3",
+    "registry-micromatch-latest": {
+      "version": "4.0.8",
+      "dependencies": {
+        "braces": "^3.0.3",
+        "picomatch": "^2.3.1"
+      }
+    },
+    "registry-fast-glob-latest": {
+      "version": "3.3.3",
+      "dependencies": {
+        "@nodelib/fs.stat": "^2.0.2",
+        "@nodelib/fs.walk": "^1.2.3",
+        "glob-parent": "^5.1.2",
+        "merge2": "^1.3.0",
+        "micromatch": "^4.0.8"
+      }
+    },
+    "registry-next15-plugin": {
+      "fast-glob": "3.3.1"
+    },
+    "tailwind3Latest": "3.4.19"
+  },
+  "advisory": {
+    "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+    "observedCurrentPage": true,
+    "affectedVersions": "<= 3.0.3",
+    "patchedVersions": "None",
+    "pageLastUpdated": "2026-10-02",
+    "observationMethod": "Official GitHub Advisory Database opened again on 2026-10-15, independent of the 13 October report."
+  },
+  "installed": [
+    {
+      "name": "braces",
+      "version": "3.0.3",
+      "dev": true
+    },
+    {
+      "name": "micromatch",
+      "version": "4.0.8",
+      "dev": true
+    },
+    {
+      "name": "fast-glob",
+      "version": "3.3.1",
+      "dev": true
+    },
+    {
+      "name": "chokidar",
+      "version": "3.6.0",
+      "dev": true
+    },
+    {
+      "name": "tailwindcss",
+      "version": "3.4.19",
+      "dev": true
+    },
+    {
+      "name": "eslint-config-next",
+      "version": "15.5.27",
+      "dev": true
+    },
+    {
+      "name": "@next/eslint-plugin-next",
+      "version": "15.5.27",
+      "dev": true
+    }
+  ],
+  "fixesOffered": [
+    {
+      "name": "eslint-config-next",
+      "fix": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "name": "tailwindcss",
+      "fix": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      }
+    }
+  ],
+  "decision": {
+    "packageMutations": false,
+    "nodeModulesMutations": false,
+    "compatiblePublishedRemediationFound": false,
+    "reason": "Published braces latest remains3.0.3 and GitHub lists no patched release; current micromatch and fast-glob still depend on this chain. npm proposes Tailwind4 or Next ESLint14 major changes, not a validated compatible fix. No audit fix --force, unverified override or toolchain migration applied."
+  },
+  "buildTrace": {
+    "buildId": "zJ3D7exVtqZ7JLNFuTSZ1",
+    "traceCount": 85,
+    "affectedMatches": 0,
+    "scope": "Static Next build trace inspection; does not prove absence of dynamic or vendored code or an exploit path."
+  },
+  "sources": [
+    {
+      "path": "package.json",
+      "sha256": "847259b8435bf13a49ce114795fcd71fc7a7f81322b341c067682447de87772a",
+      "unchangedSinceFrozenCore": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257",
+      "unchangedSinceFrozenCore": true
+    }
+  ]
+}

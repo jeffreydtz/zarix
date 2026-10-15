@@ -12,8 +12,8 @@ export async function alertAdmin(message: string): Promise<void> {
 
   try {
     await sendTelegramDm(chatId, `🚨 Zarix alerta\n\n${message}`);
-  } catch (err) {
+  } catch {
     // Nunca dejar que la alerta tumbe el flujo que la disparó.
-    console.error('[alert] no se pudo notificar al admin:', err);
+    console.error('[alert] no se pudo notificar al admin');
   }
 }

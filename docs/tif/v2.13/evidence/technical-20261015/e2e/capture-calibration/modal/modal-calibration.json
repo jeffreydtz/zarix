@@ -1,0 +1,73 @@
+{
+  "scope": "Normal synthetic login; unsaved expense form; actualDOM rect/hit-tests and viewport/fullPage PNG comparison. No financial submit or product change.",
+  "startedAt": "2026-10-15T01:51:42.940Z",
+  "geometry": {
+    "innerWidth": 1440,
+    "innerHeight": 900,
+    "dpr": 1,
+    "button": {
+      "top": 815,
+      "bottom": 863,
+      "left": 521,
+      "right": 919,
+      "width": 398,
+      "height": 48
+    },
+    "hit": {
+      "center": true,
+      "topLeft": false,
+      "topRight": false,
+      "bottomLeft": false,
+      "bottomRight": false
+    },
+    "scrollAncestors": [
+      {
+        "tag": "DIV",
+        "class": "bg-card rounded-t-3xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 max-h-[min(92dvh,900px)] overflow-y-auto overscroll-contain shadow-2xl border border-border pb-[env(safe-area-inset-bottom,0px)]",
+        "rect": {
+          "top": 36,
+          "bottom": 864,
+          "left": 496,
+          "right": 944,
+          "width": 448,
+          "height": 828
+        },
+        "clientHeight": 826,
+        "scrollHeight": 870,
+        "scrollTop": 20,
+        "overflowY": "auto"
+      },
+      {
+        "tag": "BODY",
+        "class": "__className_d8ebd1 antialiased",
+        "rect": {
+          "top": -6,
+          "bottom": 4492.390625,
+          "left": 0,
+          "right": 1440,
+          "width": 1440,
+          "height": 4498.390625
+        },
+        "clientHeight": 4498,
+        "scrollHeight": 4498,
+        "scrollTop": 0,
+        "overflowY": "hidden"
+      }
+    ]
+  },
+  "png": [
+    {
+      "file": "viewport.png",
+      "fullPage": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "full-page.png",
+      "fullPage": true,
+      "width": 1440,
+      "height": 4498
+    }
+  ],
+  "finishedAt": "2026-10-15T01:51:45.441Z"
+}

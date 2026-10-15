@@ -1,5 +1,8 @@
 'use client';
 
+import { submitAccountCreation, type AccountCreationAttempt } from '@/lib/account-create-request';
+import { getOfflineReferenceOwner, REFERENCE_OWNER_CHANGED } from '@/lib/offline-reference-cache';
+
 import { useEffect, useRef, useState } from 'react';
 import {
   ACCOUNT_FORM_CURRENCIES,
@@ -38,6 +41,39 @@ const inputClass =
 const cancelClass =
   'px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-secondary';
 
+type CompletionTicket = { ownerId: string | null; epoch: number };
+
+/** A completed request still belongs to its original form/session. Invalidate
+ * UI callbacks synchronously on identity change, cancel or unmount, including
+ * A -> B -> A. The underlying durable account request is left intact. */
+function useQuickCreateCompletion() {
+  const lifecycle = useRef({ mounted: false, epoch: 0 });
+  const invalidate = () => { lifecycle.current.epoch++; };
+  useEffect(() => {
+    const ownedLifecycle = lifecycle.current;
+    ownedLifecycle.mounted = true;
+    const changed = () => { ownedLifecycle.epoch++; };
+    window.addEventListener(REFERENCE_OWNER_CHANGED, changed);
+    return () => {
+      ownedLifecycle.mounted = false;
+      ownedLifecycle.epoch++;
+      window.removeEventListener(REFERENCE_OWNER_CHANGED, changed);
+    };
+  }, []);
+  const active = (ticket: CompletionTicket | null) =>
+    Boolean(ticket && lifecycle.current.mounted && ticket.epoch === lifecycle.current.epoch);
+  const begin = async (): Promise<CompletionTicket> => {
+    const startedEpoch = lifecycle.current.epoch;
+    const ownerId = await getOfflineReferenceOwner();
+    return { ownerId, epoch: startedEpoch };
+  };
+  const current = async (ticket: CompletionTicket) => {
+    const ownerId = await getOfflineReferenceOwner();
+    return Boolean(ticket.ownerId && active(ticket) && ownerId === ticket.ownerId);
+  };
+  return { begin, current, active, invalidate };
+}
+
 export function QuickCreateCategoryPanel({
   type,
   onCreated,
@@ -52,6 +88,8 @@ export function QuickCreateCategoryPanel({
   const [icon, setIcon] = useState('🎯');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const completion = useQuickCreateCompletion();
+  const cancel = () => { completion.invalidate(); onCancel(); };
 
   useEffect(() => {
     nameRef.current?.focus();
@@ -61,13 +99,17 @@ export function QuickCreateCategoryPanel({
     if (!name.trim() || loading) return;
     setError('');
     setLoading(true);
+    let ticket: CompletionTicket | null = null;
     try {
+      ticket = await completion.begin();
+      if (!ticket.ownerId || !completion.active(ticket)) return;
       const res = await fetch('/api/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name.trim(), icon, type }),
       });
       const data = await res.json().catch(() => null);
+      if (!await completion.current(ticket) || !completion.active(ticket)) return;
       if (!res.ok || !data?.id) {
         throw new Error(data?.error || 'Error al crear la categoría');
       }
@@ -78,9 +120,9 @@ export function QuickCreateCategoryPanel({
         type: data.type ?? type,
       });
     } catch (e: any) {
-      setError(e.message || 'Error al crear la categoría');
+      if (completion.active(ticket)) setError(e.message || 'Error al crear la categoría');
     } finally {
-      setLoading(false);
+      if (completion.active(ticket)) setLoading(false);
     }
   };
 
@@ -99,7 +141,7 @@ export function QuickCreateCategoryPanel({
             e.preventDefault();
             handleCreate();
           }
-          if (e.key === 'Escape') onCancel();
+          if (e.key === 'Escape') cancel();
         }}
         placeholder="ej: Mascotas"
         className={inputClass}
@@ -131,7 +173,7 @@ export function QuickCreateCategoryPanel({
         >
           {loading ? 'Creando…' : 'Crear y usar'}
         </button>
-        <button type="button" onClick={onCancel} className={cancelClass}>
+        <button type="button" onClick={cancel} className={cancelClass}>
           Cancelar
         </button>
       </div>
@@ -153,9 +195,24 @@ export function QuickCreateAccountPanel({
   const [initialBalance, setInitialBalance] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const attempt = useRef<AccountCreationAttempt>({});
+  const [pending, setPending] = useState(false);
+  const completion = useQuickCreateCompletion();
+  const cancel = () => { completion.invalidate(); onCancel(); };
 
   useEffect(() => {
     nameRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const discarded = (event: Event) => {
+      if ((event as CustomEvent<string>).detail !== attempt.current.pending?.id) return;
+      attempt.current.pending = undefined;
+      setPending(false);
+      setError('Solicitud pendiente descartada. Podés editar los datos antes de crear otra.');
+    };
+    window.addEventListener('zarix-operation-discarded', discarded);
+    return () => window.removeEventListener('zarix-operation-discarded', discarded);
   }, []);
 
   const handleCreate = async () => {
@@ -164,26 +221,30 @@ export function QuickCreateAccountPanel({
     setLoading(true);
     const typeData = ACCOUNT_FORM_TYPES.find((t) => t.value === typeValue);
     const balanceParsed = parseFloat(initialBalance.replace(',', '.'));
+    let ticket: CompletionTicket | null = null;
     try {
-      const res = await fetch('/api/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          type: typeValue,
-          currency,
-          icon: typeData?.icon || '💳',
-          color: typeData?.color || '#3B82F6',
-          isDebt: false,
-          initialBalance: Number.isFinite(balanceParsed) ? balanceParsed : 0,
-          includeInTotal: true,
-          includeInLiquid: true,
-        }),
+      ticket = await completion.begin();
+      if (!ticket.ownerId || !completion.active(ticket)) return;
+      const payload = {
+        name: name.trim(), type: typeValue, currency,
+        icon: typeData?.icon || '💳', color: typeData?.color || '#3B82F6', isDebt: false,
+        initialBalance: Number.isFinite(balanceParsed) ? balanceParsed : 0,
+        includeInTotal: true, includeInLiquid: true,
+      };
+      const outcome = await submitAccountCreation(attempt.current, payload, {
+        online: navigator.onLine, onPending: original => {
+          if (!completion.active(ticket)) return;
+          setPending(true);
+          setName(String(original.name || ''));
+          setTypeValue(String(original.type || 'bank'));
+          setCurrency(String(original.currency || 'ARS'));
+          setInitialBalance(String(original.initialBalance ?? ''));
+        },
       });
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.id) {
-        throw new Error(data?.error || 'Error al crear la cuenta');
-      }
+      if (!await completion.current(ticket) || !completion.active(ticket)) return;
+      if (outcome.state !== 'confirmed') { setError(outcome.message); return; }
+      setPending(false);
+      const data = outcome.account;
       onCreated({
         id: data.id,
         name: data.name ?? name.trim(),
@@ -192,9 +253,9 @@ export function QuickCreateAccountPanel({
         type: (data.type ?? typeValue) as AccountType,
       });
     } catch (e: any) {
-      setError(e.message || 'Error al crear la cuenta');
+      if (completion.active(ticket)) setError(e.message || 'Error al crear la cuenta');
     } finally {
-      setLoading(false);
+      if (completion.active(ticket)) setLoading(false);
     }
   };
 
@@ -203,13 +264,14 @@ export function QuickCreateAccountPanel({
       e.preventDefault();
       handleCreate();
     }
-    if (e.key === 'Escape') onCancel();
+    if (e.key === 'Escape') cancel();
   };
 
   return (
     <div className={panelClass}>
       <p className="text-xs font-semibold text-primary">Nueva cuenta</p>
       <input
+        disabled={pending || loading}
         ref={nameRef}
         type="text"
         value={name}
@@ -220,6 +282,7 @@ export function QuickCreateAccountPanel({
       />
       <div className="grid grid-cols-2 gap-2">
         <select
+          disabled={pending || loading}
           value={typeValue}
           onChange={(e) => setTypeValue(e.target.value)}
           className={inputClass}
@@ -232,6 +295,7 @@ export function QuickCreateAccountPanel({
           ))}
         </select>
         <select
+          disabled={pending || loading}
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
           className={inputClass}
@@ -245,6 +309,7 @@ export function QuickCreateAccountPanel({
         </select>
       </div>
       <input
+        disabled={pending || loading}
         type="text"
         inputMode="decimal"
         value={initialBalance}
@@ -264,10 +329,10 @@ export function QuickCreateAccountPanel({
           disabled={loading || !name.trim()}
           className="btn btn-primary text-sm px-3 py-1.5 disabled:opacity-50"
         >
-          {loading ? 'Creando…' : 'Crear y usar'}
+          {loading ? 'Creando…' : pending ? 'Reintentar la misma solicitud' : 'Crear y usar'}
         </button>
-        <button type="button" onClick={onCancel} className={cancelClass}>
-          Cancelar
+        <button type="button" onClick={cancel} className={cancelClass}>
+          {pending ? 'Cerrar (queda pendiente)' : 'Cancelar'}
         </button>
       </div>
     </div>

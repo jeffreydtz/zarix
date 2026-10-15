@@ -1,0 +1,41 @@
+{
+  "scope": "Read-only inspection of the concrete native test instance volume; no system settings changed",
+  "platform": {
+    "product": "macOS",
+    "version": "27.0.1",
+    "build": "26A434",
+    "filesystem": "APFS"
+  },
+  "runtimePath": "/tmp/zarix-runtime",
+  "volumeMapping": {
+    "command": "df /tmp/zarix-runtime",
+    "exitCode": 0,
+    "filesystem": "/dev/disk3s5",
+    "mountedOn": "/System/Volumes/Data"
+  },
+  "observations": [
+    {
+      "command": "fdesetup status",
+      "exitCode": 0,
+      "result": "FileVault is On."
+    },
+    {
+      "command": "diskutil info /System/Volumes/Data",
+      "exitCode": 0,
+      "result": {
+        "FileVault": "Yes",
+        "FileSystem": "APFS",
+        "HardwareAESSupport": "Yes"
+      }
+    }
+  ],
+  "status": "PASS",
+  "officialSource": "https://support.apple.com/guide/security/volume-encryption-with-filevault-sec4c6dc1b6e/web",
+  "limitations": [
+    "Volume encryption evidence is separate from RLS and does not alone accept the entire CNF-04 authorization fixture.",
+    "Applies to this Mac's test volume, not an external hosted deployment or production.",
+    "Default sandbox initially prevented DiskManagement access; reviewed read-only inspection succeeded. No FileVault enablement, recovery-key access or key export was performed."
+  ],
+  "recordedAt": "2026-10-14T01:21:54.841Z",
+  "observationTimeScope": "Recorded immediately after the read-only commands in this session; no exact per-command timestamp was captured."
+}

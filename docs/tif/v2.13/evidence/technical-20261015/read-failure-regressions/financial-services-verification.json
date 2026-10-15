@@ -1,0 +1,45 @@
+{
+  "verifiedAt": "2026-10-15T03:08:54.208947+00:00",
+  "scope": "Four unit regressions with mocked services and Supabase fluent query objects. No database, network, browser or UI execution. Two service errors plus positive null-category budget preservation.",
+  "sourceManifest": [
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "44f9f28d9ad95e7b56e7514a02329693d2bc448295b6a41a6164dd7f31eb869a"
+    },
+    {
+      "path": "lib/services/budget-summary.ts",
+      "sha256": "849907c34b6f87078222ed2079038a9b839c85362e2bc2f95e27b22da27587f7"
+    },
+    {
+      "path": "__tests__/financial-read-errors.test.ts",
+      "sha256": "b5a82cf4d224ebcf0dc4e1899f15ad93ea055cf6143d35e085920856229fb000"
+    }
+  ],
+  "commands": [
+    {
+      "command": "node node_modules/vitest/vitest.mjs run --config /tmp/zarix-runtime-20261015/financial-read-regression-baseline/vitest.baseline.config.mjs --reporter=json --outputFile=docs/tif/v2.13/evidence/technical-20261015/read-failure-regressions/before-financial-services.json",
+      "exitCode": 1,
+      "result": "4 expected FAIL on isolated pre-fix source aliases; application checkout never reverted."
+    },
+    {
+      "command": "node node_modules/vitest/vitest.mjs run __tests__/financial-read-errors.test.ts --reporter=json --outputFile=docs/tif/v2.13/evidence/technical-20261015/read-failure-regressions/after-financial-services.json",
+      "exitCode": 0,
+      "result": "4 PASS"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "scope": "Shared current checkout at verification time; no claim of frozen global CI4."
+    },
+    {
+      "command": "node node_modules/next/dist/bin/next lint --file lib/services/net-worth.ts --file lib/services/budget-summary.ts --file __tests__/financial-read-errors.test.ts",
+      "exitCode": 0,
+      "result": "No ESLint warnings or errors"
+    }
+  ],
+  "baselineSetupAttempt": {
+    "path": "before-financial-services-setup-failed.json",
+    "result": "0 tests; temporary relative-import resolution failed. Diagnostic preserved separately, then alias fixed."
+  },
+  "review": "Independent static child review found no blocking defect. Four tests exercise independently failing account/portfolio dependencies, unavailable budget status, and positive status with null category."
+}

@@ -1,0 +1,78 @@
+{
+  "capturedAt": "2026-10-15T05:11:31.002Z",
+  "scope": "Exact twelve product sources and six test files after final focal execution; captured after checks, not a claim of a measured before/after global freeze.",
+  "files": [
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "8d054941142c18363bac25f027aade6e88e111c38665a3ac1e8f53ce2fa8fdab"
+    },
+    {
+      "path": "lib/services/net-worth.ts",
+      "sha256": "4ccb9c3fcd79fb087d23a97e7dd42797b3a66b9439cb31647eb48a4eae142bf9"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "109cf8c390ab92d611e3485c803275c4692c2d514b546ff14f4d1d5f374912d3"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "c5f7dc9c57ac269b6016779db679d78406ec68c67187ac40bf40cb2ed92417c8"
+    },
+    {
+      "path": "app/(authenticated)/accounts/page.tsx",
+      "sha256": "49e45f931bce4aefd3b054fbde5c79310dc471f267df3005ca5d3307fee33fb6"
+    },
+    {
+      "path": "app/(authenticated)/accounts/[id]/page.tsx",
+      "sha256": "aee251477b6cbec25b59b09478305384c57268140ab562b65eea6615e5368b8d"
+    },
+    {
+      "path": "components/accounts/AccountBalanceEquivalents.tsx",
+      "sha256": "d25b2eb092adbc5cbe8813963d9e302668bf49765da433129c4bb1923e9d18c2"
+    },
+    {
+      "path": "components/accounts/AccountsList.tsx",
+      "sha256": "431eccb2bd6a9876eccfcdbfd842da09267bdc48982ab309b48d15380180f04e"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "de22df2cd35af938fdda8123099efa229ce503ad3785cf05229fd8e1e7f40762"
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "sha256": "776f4787fd7de770de77fa75b4f102fc0b530cfd92fdd3e891bf9864422b3847"
+    },
+    {
+      "path": "components/dashboard/AccountCards.tsx",
+      "sha256": "1db7fa58c2d880e560197b1791ecf2569c2ea4d5610b047c3cd53637a6d3efad"
+    },
+    {
+      "path": "components/dashboard/CreditCardsWidget.tsx",
+      "sha256": "ae66dc3ad2d3795a310751ec23734a1523f524d612aa4af4ab5e781d5ab59886"
+    },
+    {
+      "path": "__tests__/blue-fx-metadata.test.ts",
+      "sha256": "1041264afe9634859514e3db1aeafb95c2d8927ac25850cd8b49468e5b0f52a0"
+    },
+    {
+      "path": "__tests__/financial-read-errors.test.ts",
+      "sha256": "c842c11581ef76fd9e9cf45f39d0ca336d40bc65b3a1d7aa83a521fca2b8c4bb"
+    },
+    {
+      "path": "__tests__/dashboard-read-failures.test.ts",
+      "sha256": "df7c83bd026608ea36ee4149412b2bc2049fce16f6f9edf4fac5574f47da35dc"
+    },
+    {
+      "path": "__tests__/cp318-account-equivalents.test.ts",
+      "sha256": "64b08e2f0821262cd56d1b1ca361004045fde227e957caca260c890dcdd938c8"
+    },
+    {
+      "path": "__tests__/cp318-net-worth-hero.test.ts",
+      "sha256": "2b35c6195d3d6f9e06cb56ecb7f26acbf52b455db9e10f8e2f1f7a3d3fea076d"
+    },
+    {
+      "path": "__tests__/net-worth-usd-formatting.test.ts",
+      "sha256": "7a05c358b2f9513b229cedc1b8089017bdc48a891619a083036397162c30c629"
+    }
+  ]
+}

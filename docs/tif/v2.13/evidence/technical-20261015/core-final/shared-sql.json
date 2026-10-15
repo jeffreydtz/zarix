@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-15T01:26:48.025Z",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "scope": "Real PL/pgSQL, minimum isolated schema, RPC access privileges, group scopes and rollback. No hosted deployment, RLS environment or multi-connection load test.",
+  "passed": 11,
+  "total": 11,
+  "results": [
+    {
+      "id": "SH-SQL-01 RPC is executable only by backend role",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-02 create and remainder cents conserve total",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-03 update replaces amount and splits atomically",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-04 actor from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-05 payer from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-06 split from another group",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-07 sub-cent amount",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-08 another group cannot edit an existing expense",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-09 invalid/revoked capabilities do not mutate",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-10 split insert failure rolls back UPDATE and removed old splits",
+      "status": "PASS"
+    },
+    {
+      "id": "SH-SQL-11 split insert failure leaves no orphan new expense",
+      "status": "PASS"
+    }
+  ]
+}

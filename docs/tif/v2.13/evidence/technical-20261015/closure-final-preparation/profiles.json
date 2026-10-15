@@ -1,0 +1,15 @@
+{
+  "final-core-closure": {
+    "copyRoot": "/tmp/zarix-app-closure-final-20261015",
+    "artifactPrefix": "closure-proof",
+    "coreDirectory": "core-closure",
+    "fixedRevision": null,
+    "allowCurrentProductDeltas": false,
+    "clockOnly": false,
+    "normalState": "closure-proof-app-state.json",
+    "clockState": "closure-proof-clock-app-state.json",
+    "clockObservation": "closure-proof-clock-observation.json",
+    "normalGeminiPrefix": "closure-proof",
+    "clockGeminiPrefix": "closure-proof-clock"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "startedAt": "2026-10-15T01:29:53.926Z",
+  "phase": "prepare",
+  "status": "FAIL",
+  "scope": "CU001 scoped offline/response-loss/explicit-intent journey and related CU002 ordinary same-profile identity isolation. Partial acceptance; no fifth CU, provider or monthly availability claim.",
+  "cases": [],
+  "browserEvents": [],
+  "requests": [],
+  "screenshots": [],
+  "blockedRoutes": [],
+  "injections": [],
+  "environment": {
+    "node": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0"
+  },
+  "failure": {
+    "type": "Error",
+    "code": null,
+    "context": "target guards"
+  },
+  "failureLocation": "49",
+  "reason": "Guard, browser action or independent SQL assertion failed. Raw exception, headers and bodies are omitted to protect credentials.",
+  "finishedAt": "2026-10-15T01:29:53.941Z"
+}

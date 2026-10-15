@@ -1,0 +1,497 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T03:49:46.326Z",
+  "run": "cc658a3b-b1f6-45ef-a3d8-13f0a9eb9ea9",
+  "selectedIds": [
+    "CP1-33"
+  ],
+  "scope": "Selected declared original CU001 cases, API/SQL scope only. No browser, cron, import, shared group, external provider acceptance, plan change or new identity.",
+  "results": [
+    {
+      "id": "CP1-33",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Own normal-session fixture account201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Initial native balance",
+          "actual": 10000,
+          "expected": 10000,
+          "status": "PASS"
+        },
+        {
+          "name": "Archive own new account204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "inactive-own rejected with an error response",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "inactive-own no account or full-ledger change",
+          "actual": "660cc4b88e6e55d2f5fd0bddd3297546905ea0641c7bcf77276ec032b06424fb",
+          "expected": "660cc4b88e6e55d2f5fd0bddd3297546905ea0641c7bcf77276ec032b06424fb",
+          "status": "PASS"
+        },
+        {
+          "name": "inactive-own response excludes account/balance data",
+          "actual": [
+            "error"
+          ],
+          "expected": [
+            "error"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "foreign-owner rejected with an error response",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "foreign-owner no account or full-ledger change",
+          "actual": "660cc4b88e6e55d2f5fd0bddd3297546905ea0641c7bcf77276ec032b06424fb",
+          "expected": "660cc4b88e6e55d2f5fd0bddd3297546905ea0641c7bcf77276ec032b06424fb",
+          "status": "PASS"
+        },
+        {
+          "name": "foreign-owner response excludes account/balance data",
+          "actual": [
+            "error"
+          ],
+          "expected": [
+            "error"
+          ],
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "name": "inactive-own HTTP error status",
+          "status": 500,
+          "interpretation": "Observed transport status only; the CSV requires state/access rejection without naming an HTTP code. A500 is not declared the expected API contract."
+        },
+        {
+          "name": "foreign-owner HTTP error status",
+          "status": 500,
+          "interpretation": "Observed transport status only; the CSV requires state/access rejection without naming an HTTP code. A500 is not declared the expected API contract."
+        }
+      ],
+      "pendingScopes": [],
+      "startedAt": "2026-10-15T03:49:52.796Z",
+      "finishedAt": "2026-10-15T03:49:55.158Z"
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP1-33",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "917bfdab-5347-4d89-87c2-7879b9727dab",
+      "startedAt": "2026-10-15T03:49:52.928Z",
+      "status": 201,
+      "responseSha256": "4465d87e24cc85c029609a63a7c7eb9f19738904a90035aba68d56eb19e8a7d5",
+      "endedAt": "2026-10-15T03:49:53.040Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "f84e24d6-e691-4b49-81b2-b611bde6dd25",
+      "startedAt": "2026-10-15T03:49:53.330Z",
+      "status": 201,
+      "responseSha256": "3671e7474709869896b28fe03150d2f43de89e5cc336efde92643ccea0f5b27d",
+      "endedAt": "2026-10-15T03:49:53.435Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "DELETE",
+      "path": "/api/accounts/7e1299f2-dfa5-4cd4-9719-7bf3e811726f",
+      "requestId": "85e8da6b-0783-4d16-83b3-d7eb32e7cc39",
+      "startedAt": "2026-10-15T03:49:53.643Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:49:53.729Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "31f9bbef-b6f6-4a01-b877-85f40bd30ecf",
+      "startedAt": "2026-10-15T03:49:53.936Z",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5",
+      "endedAt": "2026-10-15T03:49:54.023Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "3acf128a-78fc-4247-a59d-83a5029c5850",
+      "startedAt": "2026-10-15T03:49:54.398Z",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5",
+      "endedAt": "2026-10-15T03:49:54.504Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "DELETE",
+      "path": "/api/accounts/7e1299f2-dfa5-4cd4-9719-7bf3e811726f",
+      "requestId": "4ea2a299-ba86-409b-a984-a8e10a9d7bc2",
+      "startedAt": "2026-10-15T03:49:54.854Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:49:54.942Z"
+    },
+    {
+      "caseId": "CP1-33",
+      "method": "DELETE",
+      "path": "/api/accounts/cc9d7926-0185-43e3-bd73-14a4f1f7e7a8",
+      "requestId": "ef40aaec-68ea-4a81-a2ec-81f0be6c6473",
+      "startedAt": "2026-10-15T03:49:55.072Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T03:49:55.158Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "7e1299f2-dfa5-4cd4-9719-7bf3e811726f",
+      "name": "RemainingCU001 CP1-33 1 cc658a3b-b1f6-45ef-a3d8-13f0a9eb9ea9",
+      "owner": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "6d59877f-e812-40b0-a97d-f7097d78740b",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+          "currency": "ARS",
+          "account_id": "7e1299f2-dfa5-4cd4-9719-7bf3e811726f",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:49:53.029204+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    },
+    {
+      "id": "cc9d7926-0185-43e3-bd73-14a4f1f7e7a8",
+      "name": "RemainingCU001 CP1-33 2 cc658a3b-b1f6-45ef-a3d8-13f0a9eb9ea9",
+      "owner": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "initialBalance": 10000,
+      "openingLedgerRows": [
+        {
+          "id": "96f299cb-22c9-4959-b694-c958cd7042bc",
+          "type": "adjustment",
+          "amount": "10000.00000000",
+          "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "currency": "ARS",
+          "account_id": "cc9d7926-0185-43e3-bd73-14a4f1f7e7a8",
+          "category_id": null,
+          "transaction_date": "2026-10-15T03:49:53.425161+00:00",
+          "destination_account_id": null,
+          "amount_in_account_currency": "10000.00000000",
+          "destination_amount_in_account_currency": null
+        }
+      ]
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-basic.mjs",
+      "sha256": "c13e7013a9770491eec6ec9d9143f3e83296ca09cd87d87bc4a7f09799d2b4b1"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/categories/route.ts",
+      "sha256": "8e54159c4573379e82d42b06a6f6a862953082a8e200e69c55eb2751565e4dbc"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/transactions/summary/route.ts",
+      "sha256": "01fc1630371c5554c1be4923f64915eaa18d03bf281348cf3a6b249cabe5782d"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "buildBinding": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "nextPid": 52579,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "copyRoot": "/tmp/zarix-app-account-analysis-20261015",
+    "copiedSources": 477,
+    "allCopiedSourcesMatchGitOrDeclaredCliMetadata": true,
+    "ownedListenerAndCwdConfirmed": true,
+    "privateEnvBoundToNative": true,
+    "coreVerificationSha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
+    "buildProofSha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201"
+  },
+  "identities": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "normalPasswordAuthAndGetUser": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "normalPasswordAuthAndGetUser": true
+    }
+  ],
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 24,
+      "beforeMd5": "09ed19fc6e987d1bde9166d507d05ab4",
+      "afterMd5": "09ed19fc6e987d1bde9166d507d05ab4",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 31,
+      "beforeMd5": "fae84c56c8044414375187e1cdd0ee7f",
+      "afterMd5": "fae84c56c8044414375187e1cdd0ee7f",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 29,
+      "beforeMd5": "0081d31f5bf9f83807d261220eabdd36",
+      "afterMd5": "0081d31f5bf9f83807d261220eabdd36",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T03:49:56.289Z"
+}

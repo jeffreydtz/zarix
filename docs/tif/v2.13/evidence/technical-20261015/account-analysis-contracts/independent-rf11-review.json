@@ -1,0 +1,136 @@
+{
+  "reviewedAt": "2026-10-15T04:44:56.599213+00:00",
+  "status": "PASS_SCOPED_RF11",
+  "scope": "Independent read-only originalCSV/report/executed-source/immutableGit/copy-source review. No imports/tests/API/SQL/Auth/browser/runtime action by reviewer. Four original integration/system RF11 contracts, not CI5 or browser/provider acceptance.",
+  "originalCases": [
+    {
+      "id": "CP3-13",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 12,
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/cp3-13.json",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/manifest.json"
+      ],
+      "reportSha256": "5727abcbc67e5c518866b9ee22e5b4331641ca92a6cfc1202eb2e22d793f062f"
+    },
+    {
+      "id": "CP3-14",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 12,
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/cp3-14.json",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/manifest.json"
+      ],
+      "reportSha256": "73af9f3051c592f1ce3458165f309702a34bc46d8095d258126cd779eea20074"
+    },
+    {
+      "id": "CP3-15",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 11,
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/cp3-15.json",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/manifest.json"
+      ],
+      "reportSha256": "b6f7366a3da1264634fdaa06b06afa13e9b585e15b36ef971e245b39969efcde"
+    },
+    {
+      "id": "CP3-16",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 21,
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/cp3-16.json",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/manifest.json"
+      ],
+      "reportSha256": "f211265601d6f556fefa04f4698ae488961f18ae4a722f0aa7861d81744930f9"
+    }
+  ],
+  "originalOracleChecks": {
+    "CP3-13": "Jul/Aug/Sep1000each→mean1000;1999noalert, independent2000→ratio2/extra1000/current2000. Only new1999row deleted; full baselinehistory+balance confirmed before distinctvariant. Deterministic anomaly route/model has no Gemini dependency.",
+    "CP3-14": "Independent newcategory5000noalert;5000.01alert/ratioNULL. Only ownnewvariantrows removed and emptybaseline/balance rechecked; thirdemptyfixture→[]anomalies and hasDatafalse. No invented minimumdays/count.",
+    "CP3-15": "Three complete months30000/33000/36000 income and10000/12000/14000 expense→33000/12000/21000meanSavings. Explicit owncash50000;3m113000/6m176000/12m302000;monthsAnalyzed3, notrolling90d.",
+    "CP3-16": "Same projection numbers after transfer99999/U2income/currentOctober/futureNovember, with explicit ownfixturecash adjustments retaining50000base and transferdestination0. Successful ordinaryAuthGET has no additional Gemini-hostfetch attempts."
+  },
+  "checks": {
+    "all56AssertionsActualExpectedEqual": true,
+    "countsByCase": [
+      12,
+      12,
+      11,
+      21
+    ],
+    "allRequestsCompleted": true,
+    "everyCaseOriginal12TablesUnchangedIncludingActiveFlags": true,
+    "everyCaseSourceStableAndServedBuildStable": true,
+    "noCleanupFailure": true,
+    "exactExecutedSnapshotHashesVerified": true,
+    "servedResponsibleGitFilesPerCase": 19,
+    "fullPhysicalSourceFilesIndependentlyReadAndVerified": 477,
+    "fullVersionedSourceFilesIndependentlyMatchedToGit": 476,
+    "numericToleranceUnchanged": 1e-08
+  },
+  "executionBinding": {
+    "servedRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+    "nextPidDuringRuns": 1822,
+    "profile": "intermediate-core-reliability-clock-retry",
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "clockInstallationObservedAt": "2026-10-06T12:00:00.000Z",
+    "clockProofRawSha256": "ce9af30f4e005a9a10c7c4039b6f16576b9ac064ee408f0b463637eeaf8754e5",
+    "clockObservationMeaning": "Actual selected Next installation observation, same file hash before/aftercases. No fabricated repeated runtime time reading. OS/GoTrue/runner clocks remain real.",
+    "sourceBoundary": "Frozen836 copy with own retry clock/Gemini preloads; current checkout product deltas are declared unexecuted. This is not finalCI5."
+  },
+  "geminiBoundary": {
+    "mode": "Configured unavailable through reviewed local loopback guard and absent environment/ownstoredcredential.",
+    "actualProjectionGetSuccess": true,
+    "journalCounts": [
+      1,
+      1
+    ],
+    "additionalGeminiFetchAttempts": 0,
+    "journalBeforeAfterHashesIdentical": true,
+    "canary": "No credentials/headers; rejected before native dispatch by reviewed guard. Canarypreload alone does not prove financial calculation.",
+    "scope": "The measured unchangedjournal bracket is CP3-16 actual endpoint; no real Google outage/request or paid Gemini integration is inferred. Anomaly/projection route/model sources are deterministic and have no Gemini provider calls."
+  },
+  "history": "Earlier clock preload/launch failures remain separate. New retry profilebinding and executed-source snapshots apply only to these four runs, not older account-analysis results.",
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/cp3-13.json",
+      "sha256": "5727abcbc67e5c518866b9ee22e5b4331641ca92a6cfc1202eb2e22d793f062f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/cp3-14.json",
+      "sha256": "73af9f3051c592f1ce3458165f309702a34bc46d8095d258126cd779eea20074"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/cp3-15.json",
+      "sha256": "b6f7366a3da1264634fdaa06b06afa13e9b585e15b36ef971e245b39969efcde"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/cp3-16.json",
+      "sha256": "f211265601d6f556fefa04f4698ae488961f18ae4a722f0aa7861d81744930f9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/manifest.json",
+      "sha256": "27ae86099bd6157bda6ba0c9744f17720a8ae444b613dacfb4beae12b86f2634"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/system-case-results.json",
+      "sha256": "5ee767f5b09769ada44f5ef1b1340a81e1e5adfa7e197d66c182d3ca070a8632"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/clock-observation-public.json",
+      "sha256": "67038db95c48b054a63e8eb87b0e0790396d9a3a0a2b0de68639cf7769e15180"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-rf11/gemini-guard-public.json",
+      "sha256": "3b77a1bf519bf8ffef111a4aa683ebf3804874007c4188785ea53c60228bc094"
+    }
+  ],
+  "findings": [],
+  "blockers": []
+}

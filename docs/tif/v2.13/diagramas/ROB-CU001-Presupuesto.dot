@@ -1,0 +1,18 @@
+digraph G {
+graph [rankdir=TB,bgcolor="white",fontname="Arial",pad="0.15",nodesep="0.55",ranksep="0.5",splines=polyline];
+node [fontname="Arial",fontsize=20,shape=plain];
+edge [fontname="Arial",fontsize=18,color="#475569",arrowsize=0.75];
+label="ROB-CU001: A07: presupuesto y consumo"; labelloc=t; fontsize=22;
+u [shape=plaintext,fontcolor="#243b53",label="Usuario"];
+b4 [shape=box,style="rounded,filled",fillcolor="#e0f2fe",label="«boundary»\nP04 Regla / Presupuesto"];
+v [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nAcceso"];
+pr [shape=hexagon,style=filled,fillcolor="#fef3c7",label="«control»\nPresupuestos"];
+ep [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nPresupuesto"];
+em [shape=box,style=filled,fillcolor="#dcfce7",label="«entity»\nMovimiento"];
+u -> b4 [label="A05 / A07"];
+b4 -> v [label="identidad y plan"];
+b4 -> pr [dir=both,label="A07 límite /\nperíodo\n↔\nconsumido /\ndisponible /\nexceso"];
+pr -> ep [label="guardar /\nconsultar"];
+pr -> em [label="gastos netos del\nperíodo"];
+
+}

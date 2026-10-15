@@ -1,0 +1,13 @@
+{
+  "purpose": "import-target-proof",
+  "nextPid": 56597,
+  "appOrigin": "http://127.0.0.1:3003",
+  "apiOrigin": "http://127.0.0.1:59321",
+  "copyRoot": "/tmp/zarix-app-import-target-20261015",
+  "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "buildId": "-zDTe86_KX6NVCcsRaWOj",
+  "sourceManifestSha256": "837127b25fdb1cb2a0f8ae03a09fd65b73bdb239026427b6ad38b882380905e8",
+  "startedAt": "2026-10-15T03:38:42.513850+00:00",
+  "fetchGuardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+  "guardInstalledBeforeNext": true
+}

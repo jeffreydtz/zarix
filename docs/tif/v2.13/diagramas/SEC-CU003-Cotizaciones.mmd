@@ -1,0 +1,34 @@
+%%{init: {"fontSize": 20, "sequence": {"fontSize": 20, "actorMargin": 8, "diagramMarginX": 5, "diagramMarginY": 5, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 8, "messageMargin": 14, "width": 70, "height": 36, "mirrorActors": false, "useMaxWidth": false, "actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 20, "noteFontFamily": "Arial"}, "themeVariables": {"fontSize": "20px"}, "themeCSS": ".labelText, .loopText { font-size:20px !important; }"}}%%
+sequenceDiagram
+ participant C as Consulta (C)
+ participant Q as Precios (C)
+ participant A as Fuente (B)
+ participant X as Proveedor
+ participant D as Caché (E)
+ C->>Q: Pedir referencia
+ alt Memoria vigente
+  Q-->>C: Valor y timestamp
+ else Buscar referencia válida
+  opt Preferir respaldo de<br/>carga
+   Q->>D: Leer referencia<br/>persistida
+   D-->>Q: Referencia / ausencia
+  end
+  opt Respaldo no utilizable
+   loop Fuente ordenada hasta<br/>válida
+    Q->>A: Obtener referencia
+    A->>X: HTTP
+    X-->>A: Datos / error
+    A-->>Q: Normalizar y validar
+   end
+  end
+  alt Fuente válida
+   Q->>D: Conservar referencia
+   Q-->>C: Referencia y origen
+  else Sólo respaldo persistido
+   Q->>D: Leer último dato
+   D-->>Q: Respaldo con fecha
+   Q-->>C: Respaldo identificado
+  else Sin referencia
+   Q-->>C: No disponible
+  end
+ end

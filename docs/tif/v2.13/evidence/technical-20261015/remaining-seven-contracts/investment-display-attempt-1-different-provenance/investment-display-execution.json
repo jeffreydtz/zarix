@@ -1,0 +1,49 @@
+{
+  "startedAt": "2026-10-15T05:33:54.612298+00:00",
+  "finishedAt": "2026-10-15T05:33:55.359013+00:00",
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display.vitest.config.mjs",
+    "--reporter=json",
+    "--outputFile=docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display-result.json"
+  ],
+  "exitCode": 0,
+  "node": "v22.17.0",
+  "checkoutRevision": "94e9af810f3bb4febbab5572fc515b2921cf48e7",
+  "productSourceRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "sources": [
+    {
+      "path": "components/investments/InvestmentsList.tsx",
+      "sha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5"
+    },
+    {
+      "path": "components/ui/ConfirmDialog.tsx",
+      "sha256": "83e898aa9c91a25f23b3dc52d8561050bb8f447a631e4b5e243bd1213edb803f"
+    },
+    {
+      "path": "lib/hooks/use-investments-privacy.ts",
+      "sha256": "d76c3b7d27b8059cbfa18c4f5c8b65ed1d6fc3e91819dd6f5ea686c1edc9d850"
+    },
+    {
+      "path": "lib/hooks/useBodyScrollLock.ts",
+      "sha256": "2e1c25d9e396e2c3a28f84ea49094a9eae7597a62b412ff5ec70827ee3dd40fd"
+    },
+    {
+      "path": "lib/motion.ts",
+      "sha256": "94d37324bc30960dd664136dc468b72db76b594076edfa433f4bfbd785f85f5d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display.test-source.ts",
+      "sha256": "59246318ed950be316d20cb730a6e0f84c401e252dc5aeb6131c632f1f18c78c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/investment-display.vitest.config.mjs",
+      "sha256": "04571699b16ced1f3fafe73ab0e45a882a84e4635294b871ae0133bf2e55fb15"
+    }
+  ],
+  "sourceStable": true,
+  "scope": "Two actual React SSR renders with real InvestmentsList, ConfirmProvider, motion/privacy hooks and independently specified fixture props; no Next/browser/financial service call."
+}
