@@ -1,8 +1,8 @@
-# Retención y cierre final preparados
+# Retención y cierre final
 
-Estado: PREPARADO, NO EJECUTADO. El controlador histórico `preserve-six-native-stacks.py` permanece byte idéntico a ec952cec…; su snapshot ejecutado está en `cnf12-nominal/native-executed-sources/`. La extensión nueva es `preserve-six-native-stacks-final.py`, con plan cerrado `native-retention-final-plan.json`.
+Estado actual: RETAIN_PASS y STOP_PASS; [resultados y comandos](final-native-retention/README.md). La preparación histórica se conserva. El controlador histórico `preserve-six-native-stacks.py` permanece byte idéntico a ec952cec…; su snapshot ejecutado está en `cnf12-nominal/native-executed-sources/`. La extensión nueva es `preserve-six-native-stacks-final.py`, con plan cerrado `native-retention-final-plan.json`.
 
-La extensión exige cerrar primero nueve procesos HTTP propios con `stop-owned-final-http-services.py`: dos Next, tres proveedores sintéticos, gateway, GoTrue, PostgREST y SMTP. Valida PID/start/UID/cwd/listener y fuentes/build/env antes de enviar SIGTERM sólo a esos procesos. No controla PostgreSQL, stacks ni Arc. Una ventana final expresa del padre sigue siendo necesaria.
+La extensión exige cerrar primero nueve procesos HTTP propios con `stop-owned-final-http-services.py`: dos Next, tres proveedores sintéticos, gateway, GoTrue, PostgREST y SMTP. Valida PID/start/UID/cwd/listener y fuentes/build/env antes de enviar SIGTERM sólo a esos procesos. No controla PostgreSQL, stacks ni Arc. Se ejecutó bajo la ventana final expresa del padre.
 
 Después conserva seis dumps de las DB postgres de los stacks y tres dumps adicionales (CNF12source, CNF12target y emptyUUID), completos en formato Fc, con Auth/esquema/datos/Storage metadata. Compara 64 tablas y catálogo por DB adicional, TOC y decodificación del payload; no ejecuta otro restore. Globals usan el rol supabase_admin ya existente, sin roles/grants nuevos. Los dos árboles binarios nominales y todo `cnf12-private`, `empty-account-private`, `auth-reset-private` y directorios `auth-valid-recovery-*` se retienen recursivamente; la selección incluye cualquier nombre con auth/private/session y fuentes/fonts `empty-proof-*`. También retiene recursivamente el directorio exacto `full-native-evidence/`, con el dump original Native22 y su material histórico Auth/Storage; los bytes y hashes originales se preservan.
 
@@ -12,4 +12,4 @@ El checkpoint completo liga todos los archivos y hashes antes del cierre Native.
 
 Todas las pruebas, scanners y checkpoints de runtime deben terminar antes de retener. Después sólo se publican informes saneados y se ejecutan los stops oficiales autorizados. Los checks de retención por sí solos no prueban restauración ni plan de respaldo contratado.
 
-El cierre HTTP previo [ya se ejecutó con resultado PASS](owned-final-http-stop/verification.json): nueve procesos propios y sus listeners ausentes, sin PostgreSQL ni datos borrados. El primer intento abortó sin señales y se preservó; el reintento usó el delta exacto de argumento Node relativo revisado. La retención y los seis stops Native todavía no se ejecutaron.
+El cierre HTTP previo [ya se ejecutó con resultado PASS](owned-final-http-stop/verification.json): nueve procesos propios y sus listeners ausentes, sin PostgreSQL ni datos borrados. El primer intento abortó sin señales y se preservó; el reintento usó el delta exacto de argumento Node relativo revisado. La retención y los seis stops Native posteriores también terminaron PASS; no se borraron datos.

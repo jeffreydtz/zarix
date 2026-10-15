@@ -1,0 +1,11 @@
+# Retención privada y cierre Native final
+
+**RETAIN_PASS y STOP_PASS.** Se conservaron nueve archivos PostgreSQL completos en formato custom: seis bases principales y tres DB UUID adicionales. Los seis stacks se detuvieron mediante sus comandos oficiales CLI 2.120, con IDs/workdirs exactos. Se revalidaron el checkpoint íntegro, identidades, datos, configuración y Storage antes de actuar. Los procesos/listeners propios anteriores quedaron ausentes; PG_VERSION, directorios originales, configuración, claves y bytes Storage permanecieron. No se usó DROP, reset, destroy ni fuerza. Arc y caffeinate no se tocaron.
+
+Los [comandos y códigos de salida](commands.json) conservan las dos invocaciones y los seis argv oficiales. El [reporte saneado](verification.json) enlaza hashes, tamaños, TOC/decodificación, globals, permisos y fuentes. La retención contiene 2134 archivos y 620 artefactos fuente seleccionados; son inventarios que se solapan, no casos de prueba. Después de las paradas se recalcularon los hashes de los 2134 archivos retenidos. El dump histórico Native22 de 560313 bytes permanece incluido y crítico antes del stop. Los datos originales en `/tmp` se conservaron.
+
+Destino privado autorizado: `/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix-private-final-20261015T070553Z`, fuera de Git, con directorios 0700 y archivos 0600. Contiene dumps, globals/roles, Auth, metadatos y bytes Storage, entornos, material local de firma, mensajes SMTP privados y los checkpoints necesarios para reanudar. No publicar esos archivos ni copiarlos a un servicio externo.
+
+Se archivaron las fuentes declaradas de las tres copias de aplicación y sus manifests/env/BUILD_ID, conservando sus revisiones CI5/CI6. No se conservaron node_modules ni los binarios de `.next`; si se pierde `/tmp`, se deberán reinstalar dependencias y recompilar. No es una imagen íntegra de máquina.
+
+Este resultado acredita conservación y cierre controlado. La lectura de TOC, decodificación y checksums **no es una nueva restauración ejecutada**. Native22 y CNF12 nominal conservan sus pruebas de restore separadas; CNF12 integral sigue BLOCKED por el plan real, sus cuatro UI nominales y el RTO observado. No se afirma igualdad byte a byte de WAL/pg_control tras detener PostgreSQL.

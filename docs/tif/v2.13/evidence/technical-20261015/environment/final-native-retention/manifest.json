@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-10-15T07:11:02.724295+00:00",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "60019dedc732170597a8ba5d28e60601f6be7ef413cf6577913ed4484df8ecc6"
+    },
+    {
+      "path": "commands.json",
+      "sha256": "68103cd4316cbcd18842caaec6e5b1df99946222de7f10f148cf38f18a4f2cdf"
+    },
+    {
+      "path": "verification.json",
+      "sha256": "a0097f1ae98236a52df0df6b8f64a978a7adc86435c599d908e3067c6771fb5a"
+    }
+  ],
+  "checkpointSha256": "f378869280ad473b096630ed45ac839fcf822a6735f9dea1598dffaf3ca41a24",
+  "controllerSha256": "bab8ac98200fde1eea5bbce532ef28e97348e7976c02adf434bef0d42db48688",
+  "planSha256": "a1c79c47a8853dc33d6f553b07c3112fe16821f929faae08b06d1c7ded29bbbb"
+}
