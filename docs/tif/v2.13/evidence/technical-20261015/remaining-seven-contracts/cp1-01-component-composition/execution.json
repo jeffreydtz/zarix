@@ -1,0 +1,63 @@
+{
+  "startedAt": "2026-10-15T05:56:22.628337+00:00",
+  "finishedAt": "2026-10-15T05:56:23.206225+00:00",
+  "command": [
+    "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/cp1-01-component-composition/recent-transactions.vitest.config.mjs",
+    "--reporter=json",
+    "--outputFile=docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/cp1-01-component-composition/vitest-result.json"
+  ],
+  "exitCode": 0,
+  "node": "v22.17.0",
+  "productSourceRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "historicalNativeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "sources": [
+    {
+      "path": "components/dashboard/RecentTransactions.tsx",
+      "sha256": "f8c496b836e91d1cd9dee662083f3f93c49ffdc69216bc63f377b26366ab1882",
+      "equalsProductRevision84df929": true,
+      "equalsNativeHistoricalRevision836fd18": true
+    },
+    {
+      "path": "lib/motion.ts",
+      "sha256": "94d37324bc30960dd664136dc468b72db76b594076edfa433f4bfbd785f85f5d",
+      "equalsProductRevision84df929": true,
+      "equalsNativeHistoricalRevision836fd18": true
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "c5f7dc9c57ac269b6016779db679d78406ec68c67187ac40bf40cb2ed92417c8",
+      "equalsProductRevision84df929": true,
+      "equalsNativeHistoricalRevision836fd18": false
+    },
+    {
+      "path": "components/dashboard/DashboardMore.tsx",
+      "sha256": "abf37892ae325a52dac45fa3f6f68ff3270957bbe2c489461a19611602fc95d1",
+      "equalsProductRevision84df929": true,
+      "equalsNativeHistoricalRevision836fd18": true
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "equalsProductRevision84df929": true,
+      "equalsNativeHistoricalRevision836fd18": true
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/cp1-01-component-composition/recent-transactions.test-source.ts",
+      "sha256": "053bb5799659fa1ceeba0439c8c4da3dea96fba73d826bc01354f68aaabdc783"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-seven-contracts/cp1-01-component-composition/recent-transactions.vitest.config.mjs",
+      "sha256": "ee5c8508ca239f98f565c340e41d693afea93206e8f52658c951f2b58c8d6319"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251"
+    }
+  ],
+  "sourceStable": true,
+  "scope": "One additional realReact component SSR focal. No mocks, Next request, native stack, network, browser, hydration, mobile expansion or animation acceptance. Not included in913 global CI6. Historical/current global dashboard top5 membership was not recorded."
+}

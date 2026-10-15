@@ -1,0 +1,1394 @@
+{
+  "case_id": "CP1-27",
+  "startedAt": "2026-10-15T05:52:40.843Z",
+  "status": "PASS",
+  "complete_original_contract": true,
+  "productSourceRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "scope": "Real persisted PGlite/PostgreSQL bootstrap, migrations, atomic financial RPC and actual outbox worker; query adapter substitutes PostgREST; synthetic role fixture substitutes Auth; only sendTelegramDm replaced by an accepting-then-timeout provider double. No native stack, GoTrue, browser, credentials or external Telegram.",
+  "financialExactlyOnceScope": "One durable request, one expense and one balance change under the same request ID; does not guarantee exactly-once physical notification.",
+  "providerLimitation": "After a provider accepts a message but loses its acknowledgement, application cannot know physical delivery. This controlled provider model accepts both attempts, illustrating a possible duplicate. No Telegram exactly-once or automatic reconciliation is claimed.",
+  "assertions": [
+    {
+      "name": "one committed expense debits account 10000 to9000",
+      "actual": 9000,
+      "expected": 9000,
+      "status": "PASS"
+    },
+    {
+      "name": "one occurrence row",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "occurrence amount1000",
+      "actual": 1000,
+      "expected": 1000,
+      "status": "PASS"
+    },
+    {
+      "name": "recurring marker advances inclusively to6Oct",
+      "actual": "2026-10-06",
+      "expected": "2026-10-06",
+      "status": "PASS"
+    },
+    {
+      "name": "one durable financial receipt",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "receipt owns exact occurrence request",
+      "actual": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+      "expected": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+      "status": "PASS"
+    },
+    {
+      "name": "one durable notification intention",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "outbox refers to committed movement",
+      "actual": "d31d7c02-7e56-4455-98ad-d1660f055116",
+      "expected": "d31d7c02-7e56-4455-98ad-d1660f055116",
+      "status": "PASS"
+    },
+    {
+      "name": "outbox key exact recurring occurrence",
+      "actual": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+      "expected": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+      "status": "PASS"
+    },
+    {
+      "name": "first provider ACK timeout counted as unconfirmed delivery",
+      "actual": {
+        "delivered": 0,
+        "failed": 1
+      },
+      "expected": {
+        "delivered": 0,
+        "failed": 1
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "provider accepted before timeout",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "timeout does not change financial rows",
+      "actual": {
+        "rule": {
+          "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+          "type": "expense",
+          "amount": 1000,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "end_date": null,
+          "frequency": "daily",
+          "is_active": true,
+          "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "created_at": "2026-10-15T02:52:41.969-03:00",
+          "start_date": "2026-10-01",
+          "category_id": null,
+          "description": "CP1-27 aviso sintético",
+          "is_subscription": false,
+          "subscription_name": null,
+          "subscription_plan": null,
+          "last_executed_date": "2026-10-06",
+          "notification_enabled": true
+        },
+        "account": {
+          "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "icon": null,
+          "name": "Cuenta sintética A",
+          "type": "bank",
+          "color": "#3B82F6",
+          "balance": 9000,
+          "due_day": null,
+          "is_debt": false,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "is_active": true,
+          "created_at": "2026-10-15T02:52:41.962-03:00",
+          "sort_order": 0,
+          "updated_at": "2026-10-15T02:52:41.97-03:00",
+          "closing_day": null,
+          "min_balance": null,
+          "credit_limit": null,
+          "last_4_digits": null,
+          "include_in_total": true,
+          "is_multicurrency": false,
+          "movement_enabled": true,
+          "include_in_liquid": true,
+          "secondary_currency": null
+        },
+        "receipts": [
+          {
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "response": {
+              "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1000,
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+              "created_at": "2026-10-15T02:52:41.97-03:00",
+              "updated_at": "2026-10-15T02:52:41.97-03:00",
+              "category_id": null,
+              "description": "CP1-27 aviso sintético",
+              "receipt_url": null,
+              "is_recurring": true,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T09:00:00-03:00",
+              "installment_total": null,
+              "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1000,
+              "destination_amount_in_account_currency": null
+            },
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "request_id": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+            "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "transactions": [
+          {
+            "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1000,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "updated_at": "2026-10-15T02:52:41.97-03:00",
+            "category_id": null,
+            "description": "CP1-27 aviso sintético",
+            "receipt_url": null,
+            "is_recurring": true,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1000,
+            "destination_amount_in_account_currency": null
+          }
+        ]
+      },
+      "expected": {
+        "rule": {
+          "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+          "type": "expense",
+          "amount": 1000,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "end_date": null,
+          "frequency": "daily",
+          "is_active": true,
+          "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "created_at": "2026-10-15T02:52:41.969-03:00",
+          "start_date": "2026-10-01",
+          "category_id": null,
+          "description": "CP1-27 aviso sintético",
+          "is_subscription": false,
+          "subscription_name": null,
+          "subscription_plan": null,
+          "last_executed_date": "2026-10-06",
+          "notification_enabled": true
+        },
+        "account": {
+          "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "icon": null,
+          "name": "Cuenta sintética A",
+          "type": "bank",
+          "color": "#3B82F6",
+          "balance": 9000,
+          "due_day": null,
+          "is_debt": false,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "is_active": true,
+          "created_at": "2026-10-15T02:52:41.962-03:00",
+          "sort_order": 0,
+          "updated_at": "2026-10-15T02:52:41.97-03:00",
+          "closing_day": null,
+          "min_balance": null,
+          "credit_limit": null,
+          "last_4_digits": null,
+          "include_in_total": true,
+          "is_multicurrency": false,
+          "movement_enabled": true,
+          "include_in_liquid": true,
+          "secondary_currency": null
+        },
+        "receipts": [
+          {
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "response": {
+              "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1000,
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+              "created_at": "2026-10-15T02:52:41.97-03:00",
+              "updated_at": "2026-10-15T02:52:41.97-03:00",
+              "category_id": null,
+              "description": "CP1-27 aviso sintético",
+              "receipt_url": null,
+              "is_recurring": true,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T09:00:00-03:00",
+              "installment_total": null,
+              "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1000,
+              "destination_amount_in_account_currency": null
+            },
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "request_id": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+            "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "transactions": [
+          {
+            "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1000,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "updated_at": "2026-10-15T02:52:41.97-03:00",
+            "category_id": null,
+            "description": "CP1-27 aviso sintético",
+            "receipt_url": null,
+            "is_recurring": true,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1000,
+            "destination_amount_in_account_currency": null
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "timeout leaves durable undelivered intention",
+      "actual": null,
+      "expected": null,
+      "status": "PASS"
+    },
+    {
+      "name": "provider raw timeout is replaced with safe uncertainty text",
+      "actual": "Entrega no confirmada",
+      "expected": "Entrega no confirmada",
+      "status": "PASS"
+    },
+    {
+      "name": "failed lease released",
+      "actual": false,
+      "expected": false,
+      "status": "PASS"
+    },
+    {
+      "name": "first lease attempt recorded",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "retry is scheduled after current wall time",
+      "actual": true,
+      "expected": true,
+      "status": "PASS"
+    },
+    {
+      "name": "financial request survives DB close/reopen",
+      "actual": {
+        "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+        "tags": null,
+        "type": "expense",
+        "notes": null,
+        "amount": 1000,
+        "user_id": "11111111-1111-4111-8111-111111111111",
+        "currency": "ARS",
+        "location": null,
+        "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+        "created_at": "2026-10-15T02:52:41.97-03:00",
+        "updated_at": "2026-10-15T02:52:41.97-03:00",
+        "category_id": null,
+        "description": "CP1-27 aviso sintético",
+        "receipt_url": null,
+        "is_recurring": true,
+        "exchange_rate": null,
+        "transaction_date": "2026-10-06T09:00:00-03:00",
+        "installment_total": null,
+        "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+        "installment_number": null,
+        "installment_group_id": null,
+        "destination_account_id": null,
+        "amount_in_account_currency": 1000,
+        "destination_amount_in_account_currency": null
+      },
+      "expected": {
+        "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+        "tags": null,
+        "type": "expense",
+        "notes": null,
+        "amount": 1000,
+        "user_id": "11111111-1111-4111-8111-111111111111",
+        "currency": "ARS",
+        "location": null,
+        "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+        "created_at": "2026-10-15T02:52:41.97-03:00",
+        "updated_at": "2026-10-15T02:52:41.97-03:00",
+        "category_id": null,
+        "description": "CP1-27 aviso sintético",
+        "receipt_url": null,
+        "is_recurring": true,
+        "exchange_rate": null,
+        "transaction_date": "2026-10-06T09:00:00-03:00",
+        "installment_total": null,
+        "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+        "installment_number": null,
+        "installment_group_id": null,
+        "destination_account_id": null,
+        "amount_in_account_currency": 1000,
+        "destination_amount_in_account_currency": null
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "replay after reopen preserves full financial rows",
+      "actual": {
+        "rule": {
+          "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+          "type": "expense",
+          "amount": 1000,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "end_date": null,
+          "frequency": "daily",
+          "is_active": true,
+          "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "created_at": "2026-10-15T02:52:41.969-03:00",
+          "start_date": "2026-10-01",
+          "category_id": null,
+          "description": "CP1-27 aviso sintético",
+          "is_subscription": false,
+          "subscription_name": null,
+          "subscription_plan": null,
+          "last_executed_date": "2026-10-06",
+          "notification_enabled": true
+        },
+        "account": {
+          "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "icon": null,
+          "name": "Cuenta sintética A",
+          "type": "bank",
+          "color": "#3B82F6",
+          "balance": 9000,
+          "due_day": null,
+          "is_debt": false,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "is_active": true,
+          "created_at": "2026-10-15T02:52:41.962-03:00",
+          "sort_order": 0,
+          "updated_at": "2026-10-15T02:52:41.97-03:00",
+          "closing_day": null,
+          "min_balance": null,
+          "credit_limit": null,
+          "last_4_digits": null,
+          "include_in_total": true,
+          "is_multicurrency": false,
+          "movement_enabled": true,
+          "include_in_liquid": true,
+          "secondary_currency": null
+        },
+        "receipts": [
+          {
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "response": {
+              "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1000,
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+              "created_at": "2026-10-15T02:52:41.97-03:00",
+              "updated_at": "2026-10-15T02:52:41.97-03:00",
+              "category_id": null,
+              "description": "CP1-27 aviso sintético",
+              "receipt_url": null,
+              "is_recurring": true,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T09:00:00-03:00",
+              "installment_total": null,
+              "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1000,
+              "destination_amount_in_account_currency": null
+            },
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "request_id": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+            "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "transactions": [
+          {
+            "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1000,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "updated_at": "2026-10-15T02:52:41.97-03:00",
+            "category_id": null,
+            "description": "CP1-27 aviso sintético",
+            "receipt_url": null,
+            "is_recurring": true,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1000,
+            "destination_amount_in_account_currency": null
+          }
+        ]
+      },
+      "expected": {
+        "rule": {
+          "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+          "type": "expense",
+          "amount": 1000,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "end_date": null,
+          "frequency": "daily",
+          "is_active": true,
+          "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "created_at": "2026-10-15T02:52:41.969-03:00",
+          "start_date": "2026-10-01",
+          "category_id": null,
+          "description": "CP1-27 aviso sintético",
+          "is_subscription": false,
+          "subscription_name": null,
+          "subscription_plan": null,
+          "last_executed_date": "2026-10-06",
+          "notification_enabled": true
+        },
+        "account": {
+          "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "icon": null,
+          "name": "Cuenta sintética A",
+          "type": "bank",
+          "color": "#3B82F6",
+          "balance": 9000,
+          "due_day": null,
+          "is_debt": false,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "is_active": true,
+          "created_at": "2026-10-15T02:52:41.962-03:00",
+          "sort_order": 0,
+          "updated_at": "2026-10-15T02:52:41.97-03:00",
+          "closing_day": null,
+          "min_balance": null,
+          "credit_limit": null,
+          "last_4_digits": null,
+          "include_in_total": true,
+          "is_multicurrency": false,
+          "movement_enabled": true,
+          "include_in_liquid": true,
+          "secondary_currency": null
+        },
+        "receipts": [
+          {
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "response": {
+              "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1000,
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+              "created_at": "2026-10-15T02:52:41.97-03:00",
+              "updated_at": "2026-10-15T02:52:41.97-03:00",
+              "category_id": null,
+              "description": "CP1-27 aviso sintético",
+              "receipt_url": null,
+              "is_recurring": true,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T09:00:00-03:00",
+              "installment_total": null,
+              "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1000,
+              "destination_amount_in_account_currency": null
+            },
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "request_id": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+            "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "transactions": [
+          {
+            "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1000,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "updated_at": "2026-10-15T02:52:41.97-03:00",
+            "category_id": null,
+            "description": "CP1-27 aviso sintético",
+            "receipt_url": null,
+            "is_recurring": true,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1000,
+            "destination_amount_in_account_currency": null
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "pending outbox survives DB close/reopen",
+      "actual": [
+        {
+          "id": "14d58554-3731-4930-9c9f-c0b872505a42",
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "event_key": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+          "payload": {
+            "kind": "recurring",
+            "type": "expense",
+            "amount": 1000,
+            "currency": "ARS",
+            "frequency": "daily",
+            "description": "CP1-27 aviso sintético",
+            "transactionId": "d31d7c02-7e56-4455-98ad-d1660f055116"
+          },
+          "attempts": 1,
+          "delivered_at": null,
+          "last_error": "Entrega no confirmada",
+          "available_at": "2026-10-15T05:53:41.997Z",
+          "lease_until": null,
+          "has_lease_token": false
+        }
+      ],
+      "expected": [
+        {
+          "id": "14d58554-3731-4930-9c9f-c0b872505a42",
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "event_key": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+          "payload": {
+            "kind": "recurring",
+            "type": "expense",
+            "amount": 1000,
+            "currency": "ARS",
+            "frequency": "daily",
+            "description": "CP1-27 aviso sintético",
+            "transactionId": "d31d7c02-7e56-4455-98ad-d1660f055116"
+          },
+          "attempts": 1,
+          "delivered_at": null,
+          "last_error": "Entrega no confirmada",
+          "available_at": "2026-10-15T05:53:41.997Z",
+          "lease_until": null,
+          "has_lease_token": false
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "retry confirms same durable notification",
+      "actual": {
+        "delivered": 1,
+        "failed": 0
+      },
+      "expected": {
+        "delivered": 1,
+        "failed": 0
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "full financial snapshot identical after second provider acceptance",
+      "actual": {
+        "rule": {
+          "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+          "type": "expense",
+          "amount": 1000,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "end_date": null,
+          "frequency": "daily",
+          "is_active": true,
+          "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "created_at": "2026-10-15T02:52:41.969-03:00",
+          "start_date": "2026-10-01",
+          "category_id": null,
+          "description": "CP1-27 aviso sintético",
+          "is_subscription": false,
+          "subscription_name": null,
+          "subscription_plan": null,
+          "last_executed_date": "2026-10-06",
+          "notification_enabled": true
+        },
+        "account": {
+          "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "icon": null,
+          "name": "Cuenta sintética A",
+          "type": "bank",
+          "color": "#3B82F6",
+          "balance": 9000,
+          "due_day": null,
+          "is_debt": false,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "is_active": true,
+          "created_at": "2026-10-15T02:52:41.962-03:00",
+          "sort_order": 0,
+          "updated_at": "2026-10-15T02:52:41.97-03:00",
+          "closing_day": null,
+          "min_balance": null,
+          "credit_limit": null,
+          "last_4_digits": null,
+          "include_in_total": true,
+          "is_multicurrency": false,
+          "movement_enabled": true,
+          "include_in_liquid": true,
+          "secondary_currency": null
+        },
+        "receipts": [
+          {
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "response": {
+              "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1000,
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+              "created_at": "2026-10-15T02:52:41.97-03:00",
+              "updated_at": "2026-10-15T02:52:41.97-03:00",
+              "category_id": null,
+              "description": "CP1-27 aviso sintético",
+              "receipt_url": null,
+              "is_recurring": true,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T09:00:00-03:00",
+              "installment_total": null,
+              "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1000,
+              "destination_amount_in_account_currency": null
+            },
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "request_id": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+            "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "transactions": [
+          {
+            "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1000,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "updated_at": "2026-10-15T02:52:41.97-03:00",
+            "category_id": null,
+            "description": "CP1-27 aviso sintético",
+            "receipt_url": null,
+            "is_recurring": true,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1000,
+            "destination_amount_in_account_currency": null
+          }
+        ]
+      },
+      "expected": {
+        "rule": {
+          "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+          "type": "expense",
+          "amount": 1000,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "end_date": null,
+          "frequency": "daily",
+          "is_active": true,
+          "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "created_at": "2026-10-15T02:52:41.969-03:00",
+          "start_date": "2026-10-01",
+          "category_id": null,
+          "description": "CP1-27 aviso sintético",
+          "is_subscription": false,
+          "subscription_name": null,
+          "subscription_plan": null,
+          "last_executed_date": "2026-10-06",
+          "notification_enabled": true
+        },
+        "account": {
+          "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "icon": null,
+          "name": "Cuenta sintética A",
+          "type": "bank",
+          "color": "#3B82F6",
+          "balance": 9000,
+          "due_day": null,
+          "is_debt": false,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "is_active": true,
+          "created_at": "2026-10-15T02:52:41.962-03:00",
+          "sort_order": 0,
+          "updated_at": "2026-10-15T02:52:41.97-03:00",
+          "closing_day": null,
+          "min_balance": null,
+          "credit_limit": null,
+          "last_4_digits": null,
+          "include_in_total": true,
+          "is_multicurrency": false,
+          "movement_enabled": true,
+          "include_in_liquid": true,
+          "secondary_currency": null
+        },
+        "receipts": [
+          {
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "response": {
+              "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1000,
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+              "created_at": "2026-10-15T02:52:41.97-03:00",
+              "updated_at": "2026-10-15T02:52:41.97-03:00",
+              "category_id": null,
+              "description": "CP1-27 aviso sintético",
+              "receipt_url": null,
+              "is_recurring": true,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T09:00:00-03:00",
+              "installment_total": null,
+              "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1000,
+              "destination_amount_in_account_currency": null
+            },
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "request_id": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+            "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "transactions": [
+          {
+            "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1000,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T02:52:41.97-03:00",
+            "updated_at": "2026-10-15T02:52:41.97-03:00",
+            "category_id": null,
+            "description": "CP1-27 aviso sintético",
+            "receipt_url": null,
+            "is_recurring": true,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1000,
+            "destination_amount_in_account_currency": null
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "same unique outbox row remains",
+      "actual": 1,
+      "expected": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "same outbox ID retained",
+      "actual": "14d58554-3731-4930-9c9f-c0b872505a42",
+      "expected": "14d58554-3731-4930-9c9f-c0b872505a42",
+      "status": "PASS"
+    },
+    {
+      "name": "second attempt recorded durably",
+      "actual": 2,
+      "expected": 2,
+      "status": "PASS"
+    },
+    {
+      "name": "delivered timestamp confirmed",
+      "actual": true,
+      "expected": true,
+      "status": "PASS"
+    },
+    {
+      "name": "safe error cleared after confirmed acknowledgement",
+      "actual": null,
+      "expected": null,
+      "status": "PASS"
+    },
+    {
+      "name": "no more claimable event after acknowledgement",
+      "actual": {
+        "delivered": 0,
+        "failed": 0
+      },
+      "expected": {
+        "delivered": 0,
+        "failed": 0
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "double observed two possible physical acceptances",
+      "actual": 2,
+      "expected": 2,
+      "status": "PASS"
+    },
+    {
+      "name": "same message on both provider acceptances",
+      "actual": "🔄 *Transacción recurrente ejecutada*\n\n💸 Gasto diario: *CP1-27 aviso sintético*\n💰 $1.000 ARS",
+      "expected": "🔄 *Transacción recurrente ejecutada*\n\n💸 Gasto diario: *CP1-27 aviso sintético*\n💰 $1.000 ARS",
+      "status": "PASS"
+    },
+    {
+      "name": "no hidden additional provider call",
+      "actual": 2,
+      "expected": 2,
+      "status": "PASS"
+    }
+  ],
+  "providerEvents": [
+    {
+      "attempt": 1,
+      "syntheticChatId": 12345,
+      "text": "🔄 *Transacción recurrente ejecutada*\n\n💸 Gasto diario: *CP1-27 aviso sintético*\n💰 $1.000 ARS",
+      "accepted": true,
+      "acknowledgement": "lost; timeout thrown after acceptance"
+    },
+    {
+      "attempt": 2,
+      "syntheticChatId": 12345,
+      "text": "🔄 *Transacción recurrente ejecutada*\n\n💸 Gasto diario: *CP1-27 aviso sintético*\n💰 $1.000 ARS",
+      "accepted": true,
+      "acknowledgement": "confirmed"
+    }
+  ],
+  "sqlSources": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "postgresVersion": {
+    "version": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit"
+  },
+  "financialBefore": {
+    "rule": {
+      "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+      "type": "expense",
+      "amount": 1000,
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "currency": "ARS",
+      "end_date": null,
+      "frequency": "daily",
+      "is_active": true,
+      "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+      "created_at": "2026-10-15T02:52:41.969-03:00",
+      "start_date": "2026-10-01",
+      "category_id": null,
+      "description": "CP1-27 aviso sintético",
+      "is_subscription": false,
+      "subscription_name": null,
+      "subscription_plan": null,
+      "last_executed_date": "2026-10-06",
+      "notification_enabled": true
+    },
+    "account": {
+      "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+      "icon": null,
+      "name": "Cuenta sintética A",
+      "type": "bank",
+      "color": "#3B82F6",
+      "balance": 9000,
+      "due_day": null,
+      "is_debt": false,
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "currency": "ARS",
+      "is_active": true,
+      "created_at": "2026-10-15T02:52:41.962-03:00",
+      "sort_order": 0,
+      "updated_at": "2026-10-15T02:52:41.97-03:00",
+      "closing_day": null,
+      "min_balance": null,
+      "credit_limit": null,
+      "last_4_digits": null,
+      "include_in_total": true,
+      "is_multicurrency": false,
+      "movement_enabled": true,
+      "include_in_liquid": true,
+      "secondary_currency": null
+    },
+    "receipts": [
+      {
+        "user_id": "11111111-1111-4111-8111-111111111111",
+        "response": {
+          "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+          "tags": null,
+          "type": "expense",
+          "notes": null,
+          "amount": 1000,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "location": null,
+          "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "created_at": "2026-10-15T02:52:41.97-03:00",
+          "updated_at": "2026-10-15T02:52:41.97-03:00",
+          "category_id": null,
+          "description": "CP1-27 aviso sintético",
+          "receipt_url": null,
+          "is_recurring": true,
+          "exchange_rate": null,
+          "transaction_date": "2026-10-06T09:00:00-03:00",
+          "installment_total": null,
+          "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+          "installment_number": null,
+          "installment_group_id": null,
+          "destination_account_id": null,
+          "amount_in_account_currency": 1000,
+          "destination_amount_in_account_currency": null
+        },
+        "created_at": "2026-10-15T02:52:41.97-03:00",
+        "request_id": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+        "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "transactions": [
+      {
+        "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+        "tags": null,
+        "type": "expense",
+        "notes": null,
+        "amount": 1000,
+        "user_id": "11111111-1111-4111-8111-111111111111",
+        "currency": "ARS",
+        "location": null,
+        "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+        "created_at": "2026-10-15T02:52:41.97-03:00",
+        "updated_at": "2026-10-15T02:52:41.97-03:00",
+        "category_id": null,
+        "description": "CP1-27 aviso sintético",
+        "receipt_url": null,
+        "is_recurring": true,
+        "exchange_rate": null,
+        "transaction_date": "2026-10-06T09:00:00-03:00",
+        "installment_total": null,
+        "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+        "installment_number": null,
+        "installment_group_id": null,
+        "destination_account_id": null,
+        "amount_in_account_currency": 1000,
+        "destination_amount_in_account_currency": null
+      }
+    ]
+  },
+  "outboxInitial": [
+    {
+      "id": "14d58554-3731-4930-9c9f-c0b872505a42",
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "event_key": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+      "payload": {
+        "kind": "recurring",
+        "type": "expense",
+        "amount": 1000,
+        "currency": "ARS",
+        "frequency": "daily",
+        "description": "CP1-27 aviso sintético",
+        "transactionId": "d31d7c02-7e56-4455-98ad-d1660f055116"
+      },
+      "attempts": 0,
+      "delivered_at": null,
+      "last_error": null,
+      "available_at": "2026-10-15T05:52:41.970Z",
+      "lease_until": null,
+      "has_lease_token": false
+    }
+  ],
+  "outboxAfterTimeout": [
+    {
+      "id": "14d58554-3731-4930-9c9f-c0b872505a42",
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "event_key": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+      "payload": {
+        "kind": "recurring",
+        "type": "expense",
+        "amount": 1000,
+        "currency": "ARS",
+        "frequency": "daily",
+        "description": "CP1-27 aviso sintético",
+        "transactionId": "d31d7c02-7e56-4455-98ad-d1660f055116"
+      },
+      "attempts": 1,
+      "delivered_at": null,
+      "last_error": "Entrega no confirmada",
+      "available_at": "2026-10-15T05:53:41.997Z",
+      "lease_until": null,
+      "has_lease_token": false
+    }
+  ],
+  "databaseReopened": true,
+  "schedulingFixture": "Only this newly created event available_at advanced to now−1second to exercise retry without waiting60seconds; lease/attempt/financial rows untouched.",
+  "financialAfter": {
+    "rule": {
+      "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+      "type": "expense",
+      "amount": 1000,
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "currency": "ARS",
+      "end_date": null,
+      "frequency": "daily",
+      "is_active": true,
+      "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+      "created_at": "2026-10-15T02:52:41.969-03:00",
+      "start_date": "2026-10-01",
+      "category_id": null,
+      "description": "CP1-27 aviso sintético",
+      "is_subscription": false,
+      "subscription_name": null,
+      "subscription_plan": null,
+      "last_executed_date": "2026-10-06",
+      "notification_enabled": true
+    },
+    "account": {
+      "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+      "icon": null,
+      "name": "Cuenta sintética A",
+      "type": "bank",
+      "color": "#3B82F6",
+      "balance": 9000,
+      "due_day": null,
+      "is_debt": false,
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "currency": "ARS",
+      "is_active": true,
+      "created_at": "2026-10-15T02:52:41.962-03:00",
+      "sort_order": 0,
+      "updated_at": "2026-10-15T02:52:41.97-03:00",
+      "closing_day": null,
+      "min_balance": null,
+      "credit_limit": null,
+      "last_4_digits": null,
+      "include_in_total": true,
+      "is_multicurrency": false,
+      "movement_enabled": true,
+      "include_in_liquid": true,
+      "secondary_currency": null
+    },
+    "receipts": [
+      {
+        "user_id": "11111111-1111-4111-8111-111111111111",
+        "response": {
+          "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+          "tags": null,
+          "type": "expense",
+          "notes": null,
+          "amount": 1000,
+          "user_id": "11111111-1111-4111-8111-111111111111",
+          "currency": "ARS",
+          "location": null,
+          "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          "created_at": "2026-10-15T02:52:41.97-03:00",
+          "updated_at": "2026-10-15T02:52:41.97-03:00",
+          "category_id": null,
+          "description": "CP1-27 aviso sintético",
+          "receipt_url": null,
+          "is_recurring": true,
+          "exchange_rate": null,
+          "transaction_date": "2026-10-06T09:00:00-03:00",
+          "installment_total": null,
+          "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+          "installment_number": null,
+          "installment_group_id": null,
+          "destination_account_id": null,
+          "amount_in_account_currency": 1000,
+          "destination_amount_in_account_currency": null
+        },
+        "created_at": "2026-10-15T02:52:41.97-03:00",
+        "request_id": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+        "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "transactions": [
+      {
+        "id": "d31d7c02-7e56-4455-98ad-d1660f055116",
+        "tags": null,
+        "type": "expense",
+        "notes": null,
+        "amount": 1000,
+        "user_id": "11111111-1111-4111-8111-111111111111",
+        "currency": "ARS",
+        "location": null,
+        "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+        "created_at": "2026-10-15T02:52:41.97-03:00",
+        "updated_at": "2026-10-15T02:52:41.97-03:00",
+        "category_id": null,
+        "description": "CP1-27 aviso sintético",
+        "receipt_url": null,
+        "is_recurring": true,
+        "exchange_rate": null,
+        "transaction_date": "2026-10-06T09:00:00-03:00",
+        "installment_total": null,
+        "recurring_rule_id": "cccccccc-cccc-4ccc-8ccc-cccccccccc27",
+        "installment_number": null,
+        "installment_group_id": null,
+        "destination_account_id": null,
+        "amount_in_account_currency": 1000,
+        "destination_amount_in_account_currency": null
+      }
+    ]
+  },
+  "outboxAfterRetry": [
+    {
+      "id": "14d58554-3731-4930-9c9f-c0b872505a42",
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "event_key": "recurring:cccccccc-cccc-4ccc-8ccc-cccccccccc27:2026-10-06",
+      "payload": {
+        "kind": "recurring",
+        "type": "expense",
+        "amount": 1000,
+        "currency": "ARS",
+        "frequency": "daily",
+        "description": "CP1-27 aviso sintético",
+        "transactionId": "d31d7c02-7e56-4455-98ad-d1660f055116"
+      },
+      "attempts": 2,
+      "delivered_at": "2026-10-15T05:52:42.084Z",
+      "last_error": null,
+      "available_at": "2026-10-15T05:52:41.079Z",
+      "lease_until": null,
+      "has_lease_token": false
+    }
+  ],
+  "financialSha256Before": "c34caa142fc3ab39684711e8cc482203167ff09706584580dd796e7dc0c38f48",
+  "financialSha256After": "c34caa142fc3ab39684711e8cc482203167ff09706584580dd796e7dc0c38f48",
+  "observed": {
+    "financialEffects": 1,
+    "financialReceipts": 1,
+    "balance": 9000,
+    "occurrenceDate": "2026-10-06",
+    "outboxIntentions": 1,
+    "workerAttempts": 2,
+    "modeledProviderAcceptances": 2,
+    "physicalTelegramDeliveries": "unknown; no external call",
+    "automaticProviderReconciliation": false
+  },
+  "ownTemporaryDatabaseClosedAndRemoved": true,
+  "finishedAt": "2026-10-15T05:52:42.135Z",
+  "assertionCounts": {
+    "PASS": 31,
+    "FAIL": 0
+  }
+}

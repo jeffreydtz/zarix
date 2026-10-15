@@ -1,0 +1,7 @@
+# CP1-01: suplemento de presentación de importe1500
+
+Prueba focal adicional autorizada: **1/1PASS**, usando React, `renderToStaticMarkup` y `RecentTransactions` reales, sin mocks. La fila de entrada conserva id, propietario, cuenta, categoríaAlimentos, fecha6Oct e importe1500 respaldados por las9 aserciones API/SQL del intento nativo histórico `remaining-cu001/attempt-1-eight-cases/verification.json` (revisión836fd18/builda2WB). La descripción y el icono provienen del payload literal del arnés histórico, sin afirmar una captura completa del cuerpo de respuesta.
+
+El componente real, idéntico byte por byte entre836fd18 y84df929, recibe esa identidad exacta en props y produce `-$1.500,00 ARS`. Su wiring actual en Dashboard recibe directamente `transactionsService.list(user.id,{limit:5})`. El render focal no ejecuta esa consulta de Dashboard. El GET histórico usa filtro por la cuenta propia y tipoexpense, sin guardar membresía en los cinco últimos globales. **No se afirma que la fila estuviese en el top5 histórico o actual del Dashboard**, ni que se haya ejecutado un GET/dashboard, navegador, hidratación, expansión móvil o animación.
+
+Este suplemento por sí solo **no completa CP1-01**. El padre prepara una aceptación posterior en otra base vacía, con normalAuth/API/DB y SSRDashboard real, conservando este intento y su alcance. No hubo requests, escrituras o snapshots en ninguna base de aplicación durante este render. Esta prueba no forma parte de las913 de CI6.

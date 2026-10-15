@@ -1,0 +1,66 @@
+{
+  "case_id": "CP1-01",
+  "status": "PASS_COMPONENT_SUPPLEMENT_ONLY",
+  "complete_original_contract": false,
+  "tests": 1,
+  "passed": 1,
+  "failed": 0,
+  "productRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "historicalNativeRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "sourceStable": true,
+  "historicalOriginalResultUnchanged": "PARTIAL; dashboard global top5 membership was not observed",
+  "scope": "One additional realReact component SSR focal. No mocks, Next request, native stack, network, browser, hydration, mobile expansion or animation acceptance. Not included in913 global CI6. Historical/current global dashboard top5 membership was not recorded.",
+  "inputIdentityAndText": {
+    "case_id": "CP1-01",
+    "identity": {
+      "id": "2a3beea0-efe9-465b-a54f-d8adf04de9da",
+      "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "account_id": "fcc34447-22d1-4b48-aec5-c03f8a0123f0",
+      "category_id": "438e9f9a-8736-4879-b0fc-16c2fa26f306",
+      "amount": 1500,
+      "currency": "ARS",
+      "type": "expense",
+      "date": "2026-10-06"
+    },
+    "text": "Ultimos Movimientos Ver todo 🔁 RemainingCU001 CP1-01 5c27607b-6fd5-411f-a8cc-2e78e23e002c RemainingCU001 CP1-01 1 5c27607b-6fd5-411f-a8cc-2e78e23e002c • hace 9 días -$1.500,00 ARS",
+    "scope": "Actual RecentTransactions SSR component with matching independently recorded native input. Historical and current global dashboard top5 membership were not observed; no Next request/browser/hydration/mobile expansion/animation acceptance."
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "844f6d1c7422daffc8eb1dbd2926a9577874c2296de498f0b3ae20ec3b007b08"
+    },
+    {
+      "path": "execution.json",
+      "sha256": "809ba885f42c6e0af7111c996ec62c3a1462867e22454ec43d2798a6868ec519"
+    },
+    {
+      "path": "recent-transactions.html",
+      "sha256": "2bca97ad2fb48a56e48276c629cb076e013e8b0370ca44885e52a048edb0067f"
+    },
+    {
+      "path": "recent-transactions.test-source.ts",
+      "sha256": "053bb5799659fa1ceeba0439c8c4da3dea96fba73d826bc01354f68aaabdc783"
+    },
+    {
+      "path": "recent-transactions.vitest.config.mjs",
+      "sha256": "ee5c8508ca239f98f565c340e41d693afea93206e8f52658c951f2b58c8d6319"
+    },
+    {
+      "path": "render-observation.json",
+      "sha256": "ee7f0cd3ed99b34af74a5fe64d77897d3457354a73bcc5be414c8d1e6a49b111"
+    },
+    {
+      "path": "stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "stdout.log",
+      "sha256": "83399f934fb13304e7a0b163015af7a440550c5e23e416553ed9cca108c0c371"
+    },
+    {
+      "path": "vitest-result.json",
+      "sha256": "14a1a9a45e473f77ca26e500baa9aff698153017a2370e3331cd155215fa2677"
+    }
+  ]
+}
