@@ -110,7 +110,8 @@ try {
       assert.equal((await request(a, 'GET', '/api/accounts')).status, 200);
       assert.equal((await request(a, 'GET', '/api/export/transactions?format=json')).status, 200);
       sql(`UPDATE users SET status='ACTIVE',current_period_end=now()+interval '30 days' WHERE id=${literal(a.id)}`);
-      return { ids: ['CP2-19', 'CP2-20', 'CP2-09', 'CP2-15'], privateAccountRowsUnchanged: beforeB.length, anonymousStatuses: [401, 401], normalProfileSecretFieldAndPaidStatusDenied: true, activeAccountsAtDowngrade: before, historyAndExportAvailable: true, exactThreeAccountFixture: false };
+      const activeAccountsAtDowngrade = Number(sql(`SELECT count(*) FROM accounts WHERE user_id=${literal(a.id)} AND is_active AND movement_enabled`));
+      return { ids: ['CP2-19', 'CP2-20', 'CP2-09', 'CP2-15'], privateAccountRowsUnchanged: beforeB.length, anonymousStatuses: [401, 401], normalProfileSecretFieldAndPaidStatusDenied: true, activeAccountsAtDowngrade, historyAndExportAvailable: true, exactThreeAccountFixture: false };
     });
     await test('CU001', 'different-currency transfer, edit/delete, rounding, ten retries and controlled lost acknowledgment', async () => {
       const payload = { type: 'transfer', accountId: accountA, destinationAccountId: usdA, amount: 120000, currency: 'ARS', exchangeRateOverride: 1 / 1200, description: `API FX ${run}` };
