@@ -1,0 +1,169 @@
+// Documentary runner: real normal Auth/API/PostgREST only; no application edits.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+import { randomUUID, createHash } from 'node:crypto';
+import dotenv from 'dotenv';
+import { createServerClient } from '@supabase/ssr';
+import { isolatedNativeTargets, isolatedPgEnvironment, isolatedApiFetch, safeNativeFailure } from '../../../../../../scripts/lib/test-isolated-native-target.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../../..');
+const sha = value => createHash('sha256').update(value).digest('hex');
+const literal = value => `'${String(value).replaceAll("'", "''")}'`;
+const runtime = dotenv.parse(await fs.readFile('/tmp/zarix-runtime-20261015/e2e.env'));
+const { apiUrl, databaseUrl } = isolatedNativeTargets({ ZARIX_ISOLATED_DATABASE_CONFIRM: 'synthetic-only', ZARIX_LOCAL_SUPABASE_URL: runtime.ZARIX_E2E_SUPABASE_URL, ZARIX_LOCAL_DATABASE_URL: runtime.ZARIX_E2E_DATABASE_URL });
+assert.equal(`${apiUrl.origin}:${databaseUrl.hostname}:${databaseUrl.port}`, 'http://127.0.0.1:57321:127.0.0.1:57322');
+const app = new URL('http://127.0.0.1:3000');
+const output = process.env.ZARIX_SECURITY_OUTPUT || '/tmp/zarix-runtime-20261015/security-matrix';
+await fs.mkdir(output, { recursive: true, mode: 0o700 });
+assert.ok(!await fs.access(path.join(output, 'cp2-19.json')).then(() => true, () => false), 'Never overwrite an earlier attempt');
+const loginFile = '/tmp/zarix-runtime-20261015/e2e-logins.json';
+assert.equal((await fs.stat(loginFile)).mode & 0o077, 0);
+const fixture = JSON.parse(await fs.readFile(loginFile, 'utf8'));
+assert.equal(fixture.purpose, 'isolated-api-e2e-replica'); assert.equal(fixture.users.length, 2);
+const pgEnv = isolatedPgEnvironment(databaseUrl, { ...process.env, ...runtime });
+const psql = path.join(runtime.ZARIX_PG_BIN, 'psql');
+const report = { startedAt: new Date().toISOString(), status: 'RUNNING', caseId: 'CP2-19', scope: 'Six original resources, existing two normal actors, real Next API and signed-JWT PostgREST; own new A/B fixtures only. No SOURCE/RESTORE/LOAD, new users, provider calls or changed application validations.', results: [], requests: [], snapshotPolicy: 'All columns of owned B fixture rows and its existing public preference row are read only for hashes. No raw rows/secrets are copied to evidence.' };
+const users = [], ownA = [], ownB = [];
+let resources, before;
+function readSql(statement) {
+  const r = spawnSync(psql, ['-X', '-q', '-A', '-t', '-v', 'ON_ERROR_STOP=1', '-c', `BEGIN READ ONLY; SET LOCAL ROLE service_role; ${statement}; COMMIT;`], { env: pgEnv, encoding: 'utf8' });
+  assert.equal(r.status, 0, 'Read-only snapshot/catalog failed; diagnostics omitted'); return r.stdout.trim();
+}
+function snapshot() {
+  const entries = resources.map(resource => {
+    const condition = resource.table === 'transactions' ? `account_id=${literal(resources[0].id)}` : `id=${literal(resource.id)}`;
+    return `${literal(resource.table)},(SELECT COALESCE(jsonb_agg(to_jsonb(t) ORDER BY t.id),'[]'::jsonb) FROM public.${resource.table} t WHERE ${condition})`;
+  });
+  const rows = JSON.parse(readSql(`SELECT jsonb_build_object(${entries.join(',')})`));
+  return { sha256: sha(JSON.stringify(rows)), tables: Object.fromEntries(Object.entries(rows).map(([name, values]) => [name, { rows: values.length, sha256: sha(JSON.stringify(values)), columns: values[0] ? Object.keys(values[0]).sort() : [] }])) };
+}
+const localFetch = (input, init = {}) => { const headers = new Headers(init.headers); headers.set('Connection', 'close'); return isolatedApiFetch(input, { ...init, headers }); };
+async function api(user, method, endpoint, body) {
+  const target = new URL(endpoint, app); assert.equal(target.origin, app.origin);
+  const headers = { Connection: 'close', ...(user ? { Cookie: [...user.jar].map(([name, value]) => `${name}=${value}`).join('; ') } : {}), 'Idempotency-Key': randomUUID() };
+  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  const response = await isolatedApiFetch(target, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(20000) });
+  const text = await response.text(); let data; try { data = text ? JSON.parse(text) : null; } catch { data = null; }
+  report.requests.push({ method, path: target.pathname, status: response.status, responseSha256: sha(text) });
+  return { status: response.status, data, text };
+}
+async function test(resource, layer, operation, run) {
+  const entry = { resource, layer, operation, status: 'RUNNING' }; report.results.push(entry);
+  const baseline = snapshot();
+  try { entry.observation = await run(); entry.status = entry.observation.blocked ? 'BLOCKED' : 'PASS'; }
+  catch (error) { entry.status = 'FAIL'; entry.failure = safeNativeFailure(error, `${resource}/${layer}/${operation}`); }
+  const after = snapshot(); entry.bSnapshotUnchanged = baseline.sha256 === after.sha256;
+  if (!entry.bSnapshotUnchanged) { entry.status = 'FAIL'; throw new Error('Owned B fixture changed during a negative operation; stop and preserve'); }
+}
+async function create(user, endpoint, body, table, list) {
+  const response = await api(user, 'POST', endpoint, body);
+  assert.equal(response.status, 201, `Own ${table} fixture creation failed; no negative authorization inferred`);
+  const row = Array.isArray(response.data) ? response.data[0] : response.data;
+  assert.match(row.id, /^[0-9a-f-]{36}$/i); assert.equal(row.user_id, user.id);
+  list.push({ table, id: row.id }); return row;
+}
+try {
+  for (const credential of fixture.users) {
+    assert.match(credential.email, /^zarix-e2e-.+@example\.invalid$/i);
+    const jar = new Map();
+    const client = createServerClient(apiUrl.href, runtime.ZARIX_E2E_ANON_KEY, { cookies: { getAll: () => [...jar].map(([name, value]) => ({ name, value })), setAll: values => values.forEach(({ name, value }) => jar.set(name, value)) }, global: { fetch: localFetch } });
+    const signed = await client.auth.signInWithPassword({ email: credential.email, password: credential.password });
+    assert.equal(signed.error, null); assert.equal((await client.auth.getUser()).data.user.id, credential.id);
+    const claims = JSON.parse(Buffer.from(signed.data.session.access_token.split('.')[1], 'base64url'));
+    assert.equal(claims.role, 'authenticated'); assert.equal(claims.sub, credential.id);
+    users.push({ id: credential.id, client, jar });
+  }
+  const [a, b] = users, run = randomUUID().slice(0, 8), marker = `Security ${run}`;
+  report.auth = { normalVerifiedUsers: 2, role: 'authenticated', fixturesReused: true, newIdentities: 0, credentials: 'Private 0600, in-memory normal sessions only; no service key supplied to normal clients' };
+  report.target = { app: app.origin, api: apiUrl.origin, postgresPort: databaseUrl.port };
+  report.revision = spawnSync('git', ['rev-parse', 'HEAD'], { env: { ...process.env, DEVELOPER_DIR: '/Library/Developer/CommandLineTools' }, encoding: 'utf8' }).stdout.trim();
+  const paths = ['app/api/accounts/route.ts','app/api/accounts/[id]/route.ts','app/api/transactions/route.ts','app/api/transactions/[id]/route.ts','app/api/investments/route.ts','app/api/investments/[id]/route.ts','app/api/recurring/route.ts','app/api/recurring/[id]/route.ts','app/api/budgets/route.ts','app/api/budgets/[id]/route.ts','app/api/user/notification-preferences/route.ts','lib/api-handler.ts','supabase/schema.sql','package-lock.json'];
+  report.sourceManifest = await Promise.all(paths.map(async file => ({ path: file, sha256: sha(await fs.readFile(path.join(root, file))) })));
+  report.runnerSha256 = sha(await fs.readFile(fileURLToPath(import.meta.url)));
+  const account = await create(b, '/api/accounts', { name: marker, type: 'bank', currency: 'ARS', initialBalance: 100 }, 'accounts', ownB);
+  const tx = await create(b, '/api/transactions', { accountId: account.id, type: 'expense', amount: 1, currency: 'ARS', description: marker, transactionDate: '2099-01-01T12:00:00Z' }, 'transactions', ownB);
+  const position = await create(b, '/api/investments', { accountId: account.id, type: 'other', name: marker, quantity: 1, purchasePrice: 1, purchaseCurrency: 'ARS', purchaseDate: '2099-01-01', isManualPrice: true, currentPrice: 1 }, 'investments', ownB);
+  const rule = await create(b, '/api/recurring', { accountId: account.id, type: 'expense', amount: 1, currency: 'ARS', description: marker, frequency: 'yearly', startDate: '2099-01-01', notificationEnabled: false }, 'recurring_rules', ownB);
+  const budget = await create(b, '/api/budgets', { amount: 1, currency: 'ARS', month: '2099-01' }, 'budgets', ownB);
+  resources = [
+    { table: 'accounts', id: account.id, list: '/api/accounts?lite=1', updateMethod: 'PATCH', update: { name: `${marker} changed` }, dbUpdate: { name: `${marker} changed` }, insert: { id: randomUUID(), user_id: b.id, name: marker, type: 'bank', currency: 'ARS', balance: 0, is_active: false, movement_enabled: false } },
+    { table: 'transactions', id: tx.id, list: '/api/transactions?accountId='+account.id, updateMethod: 'PATCH', update: { amount: 2, currency: 'ARS', account_id: account.id, description: marker }, dbUpdate: { description: `${marker} changed` }, insert: { user_id: b.id, account_id: account.id, type: 'expense', amount: 1, currency: 'ARS', amount_in_account_currency: 1, description: marker } },
+    { table: 'investments', id: position.id, list: '/api/investments', updateMethod: 'PATCH', update: { name: `${marker} changed` }, dbUpdate: { name: `${marker} changed` }, insert: { user_id: b.id, account_id: account.id, type: 'other', name: marker, quantity: 1, purchase_price: 1, purchase_currency: 'ARS', purchase_date: '2099-01-01', is_manual_price: true, current_price: 1 } },
+    { table: 'recurring_rules', id: rule.id, list: '/api/recurring', updateMethod: 'PUT', update: { description: `${marker} changed` }, dbUpdate: { description: `${marker} changed` }, insert: { user_id: b.id, account_id: account.id, type: 'expense', amount: 1, currency: 'ARS', description: marker, frequency: 'yearly', start_date: '2099-01-01', category_id: null, is_active: false } },
+    { table: 'budgets', id: budget.id, list: '/api/budgets?month=2099-01', updateMethod: 'PUT', update: { amount: 2 }, dbUpdate: { amount: 2 }, insert: { user_id: b.id, category_id: null, month: '2099-02-01', amount: 1, currency: 'ARS' } },
+    { table: 'users', id: b.id, list: '/api/user/notification-preferences?user_id='+b.id, columns: 'id,timezone,weekly_summary_enabled,monthly_summary_enabled', dbUpdate: { weekly_summary_enabled: false }, insert: { id: b.id, timezone: 'Etc/UTC' } },
+  ];
+  before = snapshot(); report.before = before;
+  report.policiesAndGrants = JSON.parse(readSql(`SELECT jsonb_build_object('policies',(SELECT jsonb_agg(to_jsonb(p)) FROM pg_policies p WHERE schemaname='public' AND tablename IN ('accounts','transactions','investments','recurring_rules','budgets','users')),'tables',(SELECT jsonb_agg(jsonb_build_object('name',c.relname,'rls',c.relrowsecurity,'select',has_table_privilege('authenticated',c.oid,'SELECT'),'insert',has_table_privilege('authenticated',c.oid,'INSERT'),'update',has_table_privilege('authenticated',c.oid,'UPDATE'),'delete',has_table_privilege('authenticated',c.oid,'DELETE'))) FROM pg_class c WHERE c.relnamespace='public'::regnamespace AND c.relname IN ('accounts','transactions','investments','recurring_rules','budgets','users'))) `));
+  let shadow;
+  await test('accounts', 'API', 'INSERTasU2', async () => { shadow = await create(a, '/api/accounts', { name: `${marker} A shadow`, type: 'bank', currency: 'ARS', initialBalance: 0, user_id: b.id, userId: b.id }, 'accounts', ownA); return { status: 201, actualOwner: 'A', requestedOwnerIgnored: true, ownershipContract: 'Owner comes from the authenticated session; only a new own A row was created' }; });
+  for (const resource of resources) {
+    const { table, id } = resource, columns = resource.columns || '*';
+    // No artificial user_id=A filter: the real signed JWT must enforce isolation.
+    const positive = await b.client.from(table).select(columns).eq('id', id).abortSignal(AbortSignal.timeout(15000)); assert.equal(positive.error, null); assert.equal(positive.data.length, 1);
+    await test(table, 'JWT_DB', 'SELECT_U2', async () => { const r = await a.client.from(table).select(columns).eq('id', id); assert.equal(r.error, null); assert.deepEqual(r.data, []); return { rows: 0, role: 'authenticated', sqlShape: `SELECT ${columns} FROM public.${table} WHERE id=[owned B fixture]`, mechanism: 'RLS USING, signed JWT A' }; });
+    await test(table, 'JWT_DB', 'INSERTasU2', async () => { const r = await a.client.from(table).insert(resource.insert); if (r.error?.code === 'P0001' && table === 'transactions') return { blocked: true, code: 'P0001', reason: 'Plan trigger rejects before table WITH CHECK; integrity preserved, not counted as direct RLS INSERT proof' }; assert.equal(r.error?.code, '42501'); return { code: '42501', mechanism: table === 'users' ? 'Profile INSERT grant denied; no duplicate/FK inference' : 'RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards' }; });
+    await test(table, 'JWT_DB', 'UPDATE_U2', async () => { const r = await a.client.from(table).update(resource.dbUpdate).eq('id', id).select(columns); assert.equal(r.error, null); assert.deepEqual(r.data, []); return { rows: 0, mechanism: 'RLS USING, permitted update fields', updatedFields: Object.keys(resource.dbUpdate) }; });
+    await test(table, 'JWT_DB', 'DELETE_U2', async () => { const r = await a.client.from(table).delete().eq('id', id); if (table === 'users') { assert.equal(r.error?.code, '42501'); return { code: '42501', mechanism: 'Profile DELETE grant denied' }; } assert.equal(r.error, null); return { mechanism: 'RLS USING, no affected B fixture', rowsAfter: 1 }; });
+    await test(table, 'API', 'SELECT_U2', async () => {
+      if (table === 'investments') return { blocked: true, reason: 'Only collection GET exists; it refreshes quotations and can update original A positions. This isolated matrix must preserve original UI fixtures and avoid provider calls' };
+      const r = await api(a, 'GET', resource.list); assert.equal(r.status, 200);
+      if (table !== 'users') { assert.ok(Array.isArray(r.data)); assert.ok(!r.data.some(row => row.id === id)); }
+      else {
+        const own = await a.client.from('users').select('weekly_summary_enabled,monthly_summary_enabled').eq('id',a.id).single(); assert.equal(own.error,null);
+        for (const field of ['weekly_summary_enabled','monthly_summary_enabled']) assert.equal(r.data[field],own.data[field]);
+      }
+      return { status: 200, contract: table === 'users' ? 'Flags equal session A own row; supplied user_id=B query is not an identity selector' : 'Collection contains no B fixture', boundedRead: resource.list.split('?')[0] };
+    });
+    if (table !== 'accounts') await test(table, 'API', 'INSERTasU2', async () => {
+      if (table === 'users') return { blocked: true, reason: 'No profile INSERT endpoint; POST only updates session A preferences, which this task must preserve' };
+      assert.ok(shadow, 'Own A shadow account unavailable');
+      const bodies = {
+        transactions: { accountId: shadow.id, type: 'expense', amount: 1, currency: 'ARS', description: marker, transactionDate: '2099-01-01T12:00:00Z' },
+        investments: { accountId: shadow.id, type: 'other', name: marker, quantity: 1, purchasePrice: 1, purchaseCurrency: 'ARS', purchaseDate: '2099-01-01', isManualPrice: true, currentPrice: 1 },
+        recurring_rules: { accountId: shadow.id, type: 'expense', amount: 1, currency: 'ARS', description: marker, frequency: 'yearly', startDate: '2099-01-01', notificationEnabled: false },
+        budgets: { month: '2099-03', amount: 1, currency: 'ARS' },
+      };
+      const endpoint = table === 'recurring_rules' ? '/api/recurring' : `/api/${table}`;
+      await create(a, endpoint, { ...bodies[table], userId: b.id, user_id: b.id }, table, ownA);
+      return { status: 201, actualOwner: 'A', requestedOwnerIgnored: true, contract: 'Session-bound creation; own new A fixture only' };
+    });
+    await test(table, 'API', 'UPDATE_U2', async () => {
+      if (table === 'users') return { blocked: true, reason: 'Preference endpoint has no foreign-ID UPDATE. POST would update A singleton; original A/B preferences deliberately preserved' };
+      const endpoint = (table === 'recurring_rules' ? '/api/recurring' : `/api/${table}`)+`/${id}`;
+      const r = await api(a, resource.updateMethod, endpoint, resource.update);
+      if (r.status >= 500) return { blocked: true, status: r.status, reason: 'Generic server error alone is not accepted as proof of authorization; B snapshot unchanged' };
+      assert.ok([403,404].includes(r.status)); return { status: r.status, mechanism: 'Existing owner-scoped API contract, valid payload' };
+    });
+    await test(table, 'API', 'DELETE_U2', async () => {
+      if (table === 'users') return { blocked: true, reason: 'No profile/preference DELETE endpoint; unsupported methods do not prove authorization' };
+      const endpoint = (table === 'recurring_rules' ? '/api/recurring' : `/api/${table}`)+`/${id}`;
+      const r = await api(a, 'DELETE', endpoint); assert.ok([200,204].includes(r.status)); return { status: r.status, contract: 'Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement' };
+    });
+  }
+  const secretGrant = await a.client.from('users').select('gemini_api_key').eq('id', a.id); assert.equal(secretGrant.error?.code, '42501'); report.protectedColumnRead = { code: '42501', role: 'authenticated', column: 'gemini_api_key', valuesNeverRead: true };
+  const login = await api(null, 'GET', '/login'); assert.equal(login.status, 200);
+  const chunks = [...login.text.matchAll(/<script[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]); let scanned = 0;
+  assert.ok(!login.text.includes(runtime.ZARIX_E2E_SERVICE_ROLE_KEY));
+  for (const chunk of new Set(chunks)) { const url = new URL(chunk, app); assert.equal(url.origin, app.origin); const r = await isolatedApiFetch(url, { headers: { Connection: 'close' } }); assert.equal(r.status, 200); assert.ok(!(await r.text()).includes(runtime.ZARIX_E2E_SERVICE_ROLE_KEY)); scanned++; }
+  report.clientKeyExposure = { serviceKeyFound: false, loginHtml: true, referencedClientChunksScanned: scanned, scope: 'Exact private local service key absent from sampled public HTML/chunks; does not claim exhaustive bundle analysis' };
+  report.after = snapshot(); assert.equal(report.after.sha256, before.sha256);
+  const current = await Promise.all(report.sourceManifest.map(async ({ path: file }) => ({ path: file, sha256: sha(await fs.readFile(path.join(root,file))) }))); report.sourceStable = JSON.stringify(current) === JSON.stringify(report.sourceManifest);
+  report.status = report.results.some(r => r.status === 'FAIL') ? 'FAIL' : report.results.some(r => r.status === 'BLOCKED') ? 'PARTIAL' : 'PASS';
+} catch (error) { report.status = 'FAIL'; report.failure = safeNativeFailure(error, 'CP2-19 real matrix'); }
+finally {
+  // Preserve ledger/history. Only the new fixtures are archived/deactivated.
+  for (const [user, rows] of [[users[0],ownA],[users[1],ownB]]) if (user) for (const row of rows) {
+    if (!['accounts','investments','recurring_rules'].includes(row.table)) continue;
+    const response = await user.client.from(row.table).update(row.table === 'accounts' ? { is_active:false, movement_enabled:false } : { is_active:false }).eq('id',row.id).select('id');
+    if (response.error || response.data?.length !== 1) { report.cleanupFailure = 'Only own fixture deactivation failed; preserved without reset'; report.status = 'FAIL'; }
+  }
+  report.finishedAt = new Date().toISOString(); report.counts = report.results.reduce((sum,r)=>(sum[r.status]=(sum[r.status]||0)+1,sum),{});
+  report.ownFixtures = { A: ownA, B: ownB, preferencesExistingUntouched:true, historyPreserved:true, cleanup:'Only own accounts/investments/rules deactivated; own movements/budgets retained' };
+  await fs.writeFile(path.join(output,'cp2-19.json'),JSON.stringify(report,null,2)+'\n',{mode:0o600});
+  console.log(JSON.stringify({status:report.status,counts:report.counts,report:path.join(output,'cp2-19.json')}));
+  if (report.status === 'FAIL') process.exitCode=1;
+}

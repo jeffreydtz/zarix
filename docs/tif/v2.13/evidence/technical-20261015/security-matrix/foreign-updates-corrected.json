@@ -1,0 +1,659 @@
+{
+  "startedAt": "2026-10-15T01:28:56.844Z",
+  "caseId": "CP2-19",
+  "status": "PASS",
+  "scope": "Only three valid foreign-ID UPDATE requests after the HTTP mapping correction; reuse archived B rows, which remain readable by their normal owner. No fixture creation, new identities, preference changes, SOURCE/RESTORE/LOAD or quotation reads.",
+  "target": {
+    "app": "http://127.0.0.1:3000",
+    "api": "http://127.0.0.1:57321",
+    "postgresPort": "57322"
+  },
+  "results": [
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "method": "PATCH",
+      "path": "/api/investments/8ba5ae68-ceea-4a03-ad9e-e04f078d190e",
+      "status": "PASS",
+      "before": {
+        "sha256": "4826e9240693202ea255280ce5a2ca893810db0bd6de0104e20141a1331caf6c",
+        "tables": {
+          "investments": {
+            "rows": 1,
+            "sha256": "e05bb3677bc202774542417d022336f908d6bf5ad4f0fa320c76c0ffdbc637b7",
+            "columns": [
+              "account_id",
+              "created_at",
+              "current_price",
+              "current_price_change_pct",
+              "current_price_updated_at",
+              "id",
+              "interest_rate",
+              "is_active",
+              "is_manual_price",
+              "market_currency",
+              "maturity_date",
+              "name",
+              "notes",
+              "purchase_currency",
+              "purchase_date",
+              "purchase_price",
+              "quantity",
+              "ticker",
+              "type",
+              "updated_at",
+              "user_id"
+            ]
+          },
+          "recurring_rules": {
+            "rows": 1,
+            "sha256": "dcd6dd89889c2267c38f35a95e5645b53c407ed82e6ad39775ae0b37b16200c6",
+            "columns": [
+              "account_id",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "description",
+              "end_date",
+              "frequency",
+              "id",
+              "is_active",
+              "is_subscription",
+              "last_executed_date",
+              "notification_enabled",
+              "start_date",
+              "subscription_name",
+              "subscription_plan",
+              "type",
+              "user_id"
+            ]
+          },
+          "budgets": {
+            "rows": 1,
+            "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+            "columns": [
+              "alert_at_percent",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "id",
+              "month",
+              "rollover_amount",
+              "rollover_enabled",
+              "user_id"
+            ]
+          }
+        }
+      },
+      "httpStatus": 404,
+      "responseSha256": "b6d65f812c28ddcfa3ac5626a8c9c9b3f908fe12b1016da3c08186f62a959a2c",
+      "observation": "Valid foreign-ID UPDATE maps the owner-scoped missing row to404",
+      "after": {
+        "sha256": "4826e9240693202ea255280ce5a2ca893810db0bd6de0104e20141a1331caf6c",
+        "tables": {
+          "investments": {
+            "rows": 1,
+            "sha256": "e05bb3677bc202774542417d022336f908d6bf5ad4f0fa320c76c0ffdbc637b7",
+            "columns": [
+              "account_id",
+              "created_at",
+              "current_price",
+              "current_price_change_pct",
+              "current_price_updated_at",
+              "id",
+              "interest_rate",
+              "is_active",
+              "is_manual_price",
+              "market_currency",
+              "maturity_date",
+              "name",
+              "notes",
+              "purchase_currency",
+              "purchase_date",
+              "purchase_price",
+              "quantity",
+              "ticker",
+              "type",
+              "updated_at",
+              "user_id"
+            ]
+          },
+          "recurring_rules": {
+            "rows": 1,
+            "sha256": "dcd6dd89889c2267c38f35a95e5645b53c407ed82e6ad39775ae0b37b16200c6",
+            "columns": [
+              "account_id",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "description",
+              "end_date",
+              "frequency",
+              "id",
+              "is_active",
+              "is_subscription",
+              "last_executed_date",
+              "notification_enabled",
+              "start_date",
+              "subscription_name",
+              "subscription_plan",
+              "type",
+              "user_id"
+            ]
+          },
+          "budgets": {
+            "rows": 1,
+            "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+            "columns": [
+              "alert_at_percent",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "id",
+              "month",
+              "rollover_amount",
+              "rollover_enabled",
+              "user_id"
+            ]
+          }
+        }
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "method": "PUT",
+      "path": "/api/recurring/a608ab4d-d56a-44cc-9cc1-a4d3aa1ab2a3",
+      "status": "PASS",
+      "before": {
+        "sha256": "4826e9240693202ea255280ce5a2ca893810db0bd6de0104e20141a1331caf6c",
+        "tables": {
+          "investments": {
+            "rows": 1,
+            "sha256": "e05bb3677bc202774542417d022336f908d6bf5ad4f0fa320c76c0ffdbc637b7",
+            "columns": [
+              "account_id",
+              "created_at",
+              "current_price",
+              "current_price_change_pct",
+              "current_price_updated_at",
+              "id",
+              "interest_rate",
+              "is_active",
+              "is_manual_price",
+              "market_currency",
+              "maturity_date",
+              "name",
+              "notes",
+              "purchase_currency",
+              "purchase_date",
+              "purchase_price",
+              "quantity",
+              "ticker",
+              "type",
+              "updated_at",
+              "user_id"
+            ]
+          },
+          "recurring_rules": {
+            "rows": 1,
+            "sha256": "dcd6dd89889c2267c38f35a95e5645b53c407ed82e6ad39775ae0b37b16200c6",
+            "columns": [
+              "account_id",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "description",
+              "end_date",
+              "frequency",
+              "id",
+              "is_active",
+              "is_subscription",
+              "last_executed_date",
+              "notification_enabled",
+              "start_date",
+              "subscription_name",
+              "subscription_plan",
+              "type",
+              "user_id"
+            ]
+          },
+          "budgets": {
+            "rows": 1,
+            "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+            "columns": [
+              "alert_at_percent",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "id",
+              "month",
+              "rollover_amount",
+              "rollover_enabled",
+              "user_id"
+            ]
+          }
+        }
+      },
+      "httpStatus": 404,
+      "responseSha256": "04277fbe124513e2f7ae8cde8d3f92121e77c0c5d3e751b192b86f733a7da0ff",
+      "observation": "Valid foreign-ID UPDATE maps the owner-scoped missing row to404",
+      "after": {
+        "sha256": "4826e9240693202ea255280ce5a2ca893810db0bd6de0104e20141a1331caf6c",
+        "tables": {
+          "investments": {
+            "rows": 1,
+            "sha256": "e05bb3677bc202774542417d022336f908d6bf5ad4f0fa320c76c0ffdbc637b7",
+            "columns": [
+              "account_id",
+              "created_at",
+              "current_price",
+              "current_price_change_pct",
+              "current_price_updated_at",
+              "id",
+              "interest_rate",
+              "is_active",
+              "is_manual_price",
+              "market_currency",
+              "maturity_date",
+              "name",
+              "notes",
+              "purchase_currency",
+              "purchase_date",
+              "purchase_price",
+              "quantity",
+              "ticker",
+              "type",
+              "updated_at",
+              "user_id"
+            ]
+          },
+          "recurring_rules": {
+            "rows": 1,
+            "sha256": "dcd6dd89889c2267c38f35a95e5645b53c407ed82e6ad39775ae0b37b16200c6",
+            "columns": [
+              "account_id",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "description",
+              "end_date",
+              "frequency",
+              "id",
+              "is_active",
+              "is_subscription",
+              "last_executed_date",
+              "notification_enabled",
+              "start_date",
+              "subscription_name",
+              "subscription_plan",
+              "type",
+              "user_id"
+            ]
+          },
+          "budgets": {
+            "rows": 1,
+            "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+            "columns": [
+              "alert_at_percent",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "id",
+              "month",
+              "rollover_amount",
+              "rollover_enabled",
+              "user_id"
+            ]
+          }
+        }
+      },
+      "bSnapshotUnchanged": true
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "method": "PUT",
+      "path": "/api/budgets/94126d77-cba8-44aa-959c-b10839c96861",
+      "status": "PASS",
+      "before": {
+        "sha256": "4826e9240693202ea255280ce5a2ca893810db0bd6de0104e20141a1331caf6c",
+        "tables": {
+          "investments": {
+            "rows": 1,
+            "sha256": "e05bb3677bc202774542417d022336f908d6bf5ad4f0fa320c76c0ffdbc637b7",
+            "columns": [
+              "account_id",
+              "created_at",
+              "current_price",
+              "current_price_change_pct",
+              "current_price_updated_at",
+              "id",
+              "interest_rate",
+              "is_active",
+              "is_manual_price",
+              "market_currency",
+              "maturity_date",
+              "name",
+              "notes",
+              "purchase_currency",
+              "purchase_date",
+              "purchase_price",
+              "quantity",
+              "ticker",
+              "type",
+              "updated_at",
+              "user_id"
+            ]
+          },
+          "recurring_rules": {
+            "rows": 1,
+            "sha256": "dcd6dd89889c2267c38f35a95e5645b53c407ed82e6ad39775ae0b37b16200c6",
+            "columns": [
+              "account_id",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "description",
+              "end_date",
+              "frequency",
+              "id",
+              "is_active",
+              "is_subscription",
+              "last_executed_date",
+              "notification_enabled",
+              "start_date",
+              "subscription_name",
+              "subscription_plan",
+              "type",
+              "user_id"
+            ]
+          },
+          "budgets": {
+            "rows": 1,
+            "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+            "columns": [
+              "alert_at_percent",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "id",
+              "month",
+              "rollover_amount",
+              "rollover_enabled",
+              "user_id"
+            ]
+          }
+        }
+      },
+      "httpStatus": 404,
+      "responseSha256": "27a1baab3db6394e1a6e1edde0501b4cbfaa86a42161a6dcfbb6bbf4af3b8f8e",
+      "observation": "Valid foreign-ID UPDATE maps the owner-scoped missing row to404",
+      "after": {
+        "sha256": "4826e9240693202ea255280ce5a2ca893810db0bd6de0104e20141a1331caf6c",
+        "tables": {
+          "investments": {
+            "rows": 1,
+            "sha256": "e05bb3677bc202774542417d022336f908d6bf5ad4f0fa320c76c0ffdbc637b7",
+            "columns": [
+              "account_id",
+              "created_at",
+              "current_price",
+              "current_price_change_pct",
+              "current_price_updated_at",
+              "id",
+              "interest_rate",
+              "is_active",
+              "is_manual_price",
+              "market_currency",
+              "maturity_date",
+              "name",
+              "notes",
+              "purchase_currency",
+              "purchase_date",
+              "purchase_price",
+              "quantity",
+              "ticker",
+              "type",
+              "updated_at",
+              "user_id"
+            ]
+          },
+          "recurring_rules": {
+            "rows": 1,
+            "sha256": "dcd6dd89889c2267c38f35a95e5645b53c407ed82e6ad39775ae0b37b16200c6",
+            "columns": [
+              "account_id",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "description",
+              "end_date",
+              "frequency",
+              "id",
+              "is_active",
+              "is_subscription",
+              "last_executed_date",
+              "notification_enabled",
+              "start_date",
+              "subscription_name",
+              "subscription_plan",
+              "type",
+              "user_id"
+            ]
+          },
+          "budgets": {
+            "rows": 1,
+            "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+            "columns": [
+              "alert_at_percent",
+              "amount",
+              "category_id",
+              "created_at",
+              "currency",
+              "id",
+              "month",
+              "rollover_amount",
+              "rollover_enabled",
+              "user_id"
+            ]
+          }
+        }
+      },
+      "bSnapshotUnchanged": true
+    }
+  ],
+  "normalVerifiedUsers": 2,
+  "sourceManifest": [
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "sha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7"
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "sha256": "97e92a3a07335768ff4c5c0fb6c4576087ed0782cf7b7745feb0f496fbd058c8"
+    },
+    {
+      "path": "app/api/budgets/[id]/route.ts",
+      "sha256": "973b113a716e99a3b4ceb3fc9ef7e98b62023a352625b575df1f9e4a1580ad08"
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "sha256": "32ff3118923983eb02e1bd79103bbde3461cd6efe1de2ac0302ec53ce831fd3e"
+    },
+    {
+      "path": "lib/api-handler.ts",
+      "sha256": "a44bd8a18078edd9569197e18e4025ea68bcfcf7d9f322498f75336fa0537159"
+    }
+  ],
+  "revision": "0169860016125480c19f1284890e2b578f3236af",
+  "runnerSha256": "51a0792b565262e619cd6d7b06debe534b23ed8fb9c5823bfcdd06b472c80813",
+  "before": {
+    "sha256": "4826e9240693202ea255280ce5a2ca893810db0bd6de0104e20141a1331caf6c",
+    "tables": {
+      "investments": {
+        "rows": 1,
+        "sha256": "e05bb3677bc202774542417d022336f908d6bf5ad4f0fa320c76c0ffdbc637b7",
+        "columns": [
+          "account_id",
+          "created_at",
+          "current_price",
+          "current_price_change_pct",
+          "current_price_updated_at",
+          "id",
+          "interest_rate",
+          "is_active",
+          "is_manual_price",
+          "market_currency",
+          "maturity_date",
+          "name",
+          "notes",
+          "purchase_currency",
+          "purchase_date",
+          "purchase_price",
+          "quantity",
+          "ticker",
+          "type",
+          "updated_at",
+          "user_id"
+        ]
+      },
+      "recurring_rules": {
+        "rows": 1,
+        "sha256": "dcd6dd89889c2267c38f35a95e5645b53c407ed82e6ad39775ae0b37b16200c6",
+        "columns": [
+          "account_id",
+          "amount",
+          "category_id",
+          "created_at",
+          "currency",
+          "description",
+          "end_date",
+          "frequency",
+          "id",
+          "is_active",
+          "is_subscription",
+          "last_executed_date",
+          "notification_enabled",
+          "start_date",
+          "subscription_name",
+          "subscription_plan",
+          "type",
+          "user_id"
+        ]
+      },
+      "budgets": {
+        "rows": 1,
+        "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+        "columns": [
+          "alert_at_percent",
+          "amount",
+          "category_id",
+          "created_at",
+          "currency",
+          "id",
+          "month",
+          "rollover_amount",
+          "rollover_enabled",
+          "user_id"
+        ]
+      }
+    }
+  },
+  "after": {
+    "sha256": "4826e9240693202ea255280ce5a2ca893810db0bd6de0104e20141a1331caf6c",
+    "tables": {
+      "investments": {
+        "rows": 1,
+        "sha256": "e05bb3677bc202774542417d022336f908d6bf5ad4f0fa320c76c0ffdbc637b7",
+        "columns": [
+          "account_id",
+          "created_at",
+          "current_price",
+          "current_price_change_pct",
+          "current_price_updated_at",
+          "id",
+          "interest_rate",
+          "is_active",
+          "is_manual_price",
+          "market_currency",
+          "maturity_date",
+          "name",
+          "notes",
+          "purchase_currency",
+          "purchase_date",
+          "purchase_price",
+          "quantity",
+          "ticker",
+          "type",
+          "updated_at",
+          "user_id"
+        ]
+      },
+      "recurring_rules": {
+        "rows": 1,
+        "sha256": "dcd6dd89889c2267c38f35a95e5645b53c407ed82e6ad39775ae0b37b16200c6",
+        "columns": [
+          "account_id",
+          "amount",
+          "category_id",
+          "created_at",
+          "currency",
+          "description",
+          "end_date",
+          "frequency",
+          "id",
+          "is_active",
+          "is_subscription",
+          "last_executed_date",
+          "notification_enabled",
+          "start_date",
+          "subscription_name",
+          "subscription_plan",
+          "type",
+          "user_id"
+        ]
+      },
+      "budgets": {
+        "rows": 1,
+        "sha256": "0db36607f9b87f3a67220333d4eb1ff053009024d23605152d7b2a403c1aad44",
+        "columns": [
+          "alert_at_percent",
+          "amount",
+          "category_id",
+          "created_at",
+          "currency",
+          "id",
+          "month",
+          "rollover_amount",
+          "rollover_enabled",
+          "user_id"
+        ]
+      }
+    }
+  },
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T01:28:57.357Z",
+  "counts": {
+    "PASS": 3
+  }
+}

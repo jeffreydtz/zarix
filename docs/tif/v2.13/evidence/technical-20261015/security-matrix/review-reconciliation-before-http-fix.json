@@ -1,0 +1,741 @@
+{
+  "generatedAt": "2026-10-15T01:19:51.918Z",
+  "caseId": "CP2-19",
+  "status": "FAIL",
+  "counts": {
+    "PASS": 39,
+    "BLOCKED": 6,
+    "FAIL": 3
+  },
+  "uniqueCells": 48,
+  "scope": "Review reconciliation, not an additional48-cell run or replacement of historical evidence",
+  "snapshotIntegrity": true,
+  "sourceStable": true,
+  "serviceKeyExposurePreconditionVerified": true,
+  "providerScopeCorrection": "Historical scope text No provider calls was too broad. The runner contacted only loopback, but accounts?lite=1 invokes the application quotation service. Public quotation requests/cache were not measured; this run is not provider evidence. Investment collection GET was skipped to avoid refresh writes on original positions.",
+  "runnerArchive": "Attempt runner source texts restored to exact bytes and verified against their recorded SHA256; retained as.mjs.txt to prevent casual execution of the historical setup/oracle mistakes",
+  "changes": [
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "FAIL",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json",
+      "originalStatus": "BLOCKED",
+      "reason": "Valid foreign-ID UPDATE produced generic HTTP500; integrity PASS is distinct from the executed HTTP denial contract failure"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "FAIL",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json",
+      "originalStatus": "BLOCKED",
+      "reason": "Valid foreign-ID UPDATE produced generic HTTP500; integrity PASS is distinct from the executed HTTP denial contract failure"
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "failure": {
+        "type": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "context": "budgets/API/SELECT_U2"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "budget-select-corrected.json",
+      "originalStatus": "FAIL",
+      "observation": {
+        "status": 200,
+        "foreignRows": 0,
+        "contract": "The collection is scoped to session A; a valid DATE month does not expose B rows"
+      },
+      "reason": "Only DATE month corrected to2099-01-01 and this read repeated; attempt2 original malformed month/500 remains preserved"
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "FAIL",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json",
+      "originalStatus": "BLOCKED",
+      "reason": "Valid foreign-ID UPDATE produced generic HTTP500; integrity PASS is distinct from the executed HTTP denial contract failure"
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "status": 200,
+        "contract": "Flags equal session A own row; supplied user_id=B query is not an identity selector",
+        "boundedRead": "/api/user/notification-preferences"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json",
+      "originalStatus": "PASS",
+      "reason": "Observed flags equal A, but no discriminating A/B singleton preference oracle was preserved; source ownership filter and JWT isolation are separate proof"
+    }
+  ],
+  "matrix": [
+    {
+      "resource": "accounts",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "ownershipContract": "Owner comes from the authenticated session; only a new own A row was created"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "accounts",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.accounts WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "accounts",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "accounts",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "name"
+        ]
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "accounts",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "accounts",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Collection contains no B fixture",
+        "boundedRead": "/api/accounts"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "accounts",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 404,
+        "mechanism": "Existing owner-scoped API contract, valid payload"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "accounts",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 204,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "transactions",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.transactions WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "transactions",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "code": "P0001",
+        "reason": "Plan trigger rejects before table WITH CHECK; integrity preserved, not counted as direct RLS INSERT proof"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "transactions",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "description"
+        ]
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "transactions",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "transactions",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Collection contains no B fixture",
+        "boundedRead": "/api/transactions"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "transactions",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "contract": "Session-bound creation; own new A fixture only"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "transactions",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 404,
+        "mechanism": "Existing owner-scoped API contract, valid payload"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "transactions",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 204,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "investments",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.investments WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "investments",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "investments",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "name"
+        ]
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "investments",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "reason": "Only collection GET exists; it refreshes quotations and can update original A positions. This isolated matrix must preserve original UI fixtures and avoid provider calls"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "contract": "Session-bound creation; own new A fixture only"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "FAIL",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json",
+      "originalStatus": "BLOCKED",
+      "reason": "Valid foreign-ID UPDATE produced generic HTTP500; integrity PASS is distinct from the executed HTTP denial contract failure"
+    },
+    {
+      "resource": "investments",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.recurring_rules WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "description"
+        ]
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Collection contains no B fixture",
+        "boundedRead": "/api/recurring"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "contract": "Session-bound creation; own new A fixture only"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "FAIL",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json",
+      "originalStatus": "BLOCKED",
+      "reason": "Valid foreign-ID UPDATE produced generic HTTP500; integrity PASS is distinct from the executed HTTP denial contract failure"
+    },
+    {
+      "resource": "recurring_rules",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "budgets",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT * FROM public.budgets WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "budgets",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "RLS WITH CHECK; valid references and disabled account/rule avoid pre-policy plan guards"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "budgets",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "amount"
+        ]
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "budgets",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "mechanism": "RLS USING, no affected B fixture",
+        "rowsAfter": 1
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "failure": {
+        "type": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "context": "budgets/API/SELECT_U2"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "budget-select-corrected.json",
+      "originalStatus": "FAIL",
+      "observation": {
+        "status": 200,
+        "foreignRows": 0,
+        "contract": "The collection is scoped to session A; a valid DATE month does not expose B rows"
+      },
+      "reason": "Only DATE month corrected to2099-01-01 and this read repeated; attempt2 original malformed month/500 remains preserved"
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "status": 201,
+        "actualOwner": "A",
+        "requestedOwnerIgnored": true,
+        "contract": "Session-bound creation; own new A fixture only"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "FAIL",
+      "observation": {
+        "blocked": true,
+        "status": 500,
+        "reason": "Generic server error alone is not accepted as proof of authorization; B snapshot unchanged"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json",
+      "originalStatus": "BLOCKED",
+      "reason": "Valid foreign-ID UPDATE produced generic HTTP500; integrity PASS is distinct from the executed HTTP denial contract failure"
+    },
+    {
+      "resource": "budgets",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "status": 200,
+        "contract": "Existing idempotent owner-filtered no-op; all B columns preserved, no invented 404 requirement"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "users",
+      "layer": "JWT_DB",
+      "operation": "SELECT_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "role": "authenticated",
+        "sqlShape": "SELECT id,timezone,weekly_summary_enabled,monthly_summary_enabled FROM public.users WHERE id=[owned B fixture]",
+        "mechanism": "RLS USING, signed JWT A"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "users",
+      "layer": "JWT_DB",
+      "operation": "INSERTasU2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "Profile INSERT grant denied; no duplicate/FK inference"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "users",
+      "layer": "JWT_DB",
+      "operation": "UPDATE_U2",
+      "status": "PASS",
+      "observation": {
+        "rows": 0,
+        "mechanism": "RLS USING, permitted update fields",
+        "updatedFields": [
+          "weekly_summary_enabled"
+        ]
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "users",
+      "layer": "JWT_DB",
+      "operation": "DELETE_U2",
+      "status": "PASS",
+      "observation": {
+        "code": "42501",
+        "mechanism": "Profile DELETE grant denied"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "SELECT_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "status": 200,
+        "contract": "Flags equal session A own row; supplied user_id=B query is not an identity selector",
+        "boundedRead": "/api/user/notification-preferences"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json",
+      "originalStatus": "PASS",
+      "reason": "Observed flags equal A, but no discriminating A/B singleton preference oracle was preserved; source ownership filter and JWT isolation are separate proof"
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "INSERTasU2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "reason": "No profile INSERT endpoint; POST only updates session A preferences, which this task must preserve"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "UPDATE_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "reason": "Preference endpoint has no foreign-ID UPDATE. POST would update A singleton; original A/B preferences deliberately preserved"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    },
+    {
+      "resource": "users",
+      "layer": "API",
+      "operation": "DELETE_U2",
+      "status": "BLOCKED",
+      "observation": {
+        "blocked": true,
+        "reason": "No profile/preference DELETE endpoint; unsupported methods do not prove authorization"
+      },
+      "bSnapshotUnchanged": true,
+      "evidence": "attempt2-cp2-19.json"
+    }
+  ]
+}
