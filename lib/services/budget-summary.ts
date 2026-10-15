@@ -38,13 +38,12 @@ export async function getTopBudgets(userId: string, limit = 4): Promise<TopBudge
   if (error) throw error;
   if (!budgets || budgets.length === 0) return [];
 
-  // `get_budget_status` hace INNER JOIN contra categories, así que presupuestos
-  // sin categoría (category_id null) no aparecen ahí: se listan con gastado = 0.
-  const status = await budgetsService.getStatus(userId, new Date(month)).catch(() => []);
+  // La RPC incluye presupuestos sin categoría; null también identifica su estado.
+  const status = await budgetsService.getStatus(userId, new Date(month));
   const statusByCategory = new Map(status.map((s) => [s.category_id, s]));
 
   const items: TopBudgetItem[] = budgets.map((b: any) => {
-    const s = b.category_id ? statusByCategory.get(b.category_id) : undefined;
+    const s = statusByCategory.get(b.category_id);
     const limitAmount = Number(b.amount);
     const spentAmount = s ? Number(s.spent_amount) : 0;
     const remainingAmount = s ? Number(s.remaining_amount) : limitAmount;

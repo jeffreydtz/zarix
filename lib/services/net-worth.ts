@@ -30,10 +30,9 @@ export interface NetWorthNow {
  */
 export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
   const [accounts, portfolio, dolar] = await Promise.all([
-    accountsService.list(userId).catch(() => []),
+    accountsService.list(userId),
     investmentsService
-      .getPortfolioSummary(userId, { skipQuoteRefresh: true, skipDailySnapshot: true })
-      .catch(() => null),
+      .getPortfolioSummary(userId, { skipQuoteRefresh: true, skipDailySnapshot: true }),
     cotizacionesService.getDolarQuotes({ preferCache: true }).catch(() => null),
   ]);
 

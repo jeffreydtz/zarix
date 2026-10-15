@@ -1,0 +1,5 @@
+# Lecturas financieras: errores y presupuesto sin categoría
+
+`computeNetWorth` propaga fallos de cuentas o cartera; el guardado exterior conserva su contrato best-effort y no ejecuta UPSERT con un total parcial. `getTopBudgets` propaga el fallo de estado y reconoce `category_id: null`, soportado por la última definición SQL de `get_budget_status` (`supabase/schema.sql:2955`). Se conservan gasto30, restante70 y consumo30% del estado calculado para un presupuesto100 sin categoría.
+
+Cuatro regresiones unitarias fallan con los dos servicios anteriores y pasan con el ajuste; usan sólo dobles, sin DB/red/UI. La referencia anterior se carga mediante aliases temporales privados, sin revertir archivos del checkout compartido. El primer intento de preparación no ejecutó pruebas por un import relativo; se conserva como diagnóstico separado. `typecheck` y lint focal terminan con código0. Ver `financial-services-verification.json` y el manifiesto de referencia para comandos, alcance y hashes. La validación global y los recorridos de UI corresponden a fases posteriores.
