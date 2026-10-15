@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-15T01:03:57.757Z",
+  "scope": "Observed Playwright selector ambiguity only; no product source changes, failed attempt retained under ui-evidence",
+  "failedAttempt": "ui-evidence/e2e-verification.json",
+  "harness": {
+    "path": "scripts/test-isolated-e2e.mjs",
+    "beforeSha256": "c6d375c83be1088f025eb3eb215eb12368f65668115118ca22e80d1e885ad13a",
+    "afterSha256": "fb6bd181f1d8b7985be105c0d219f312f115871fe7dd954320d86cac7fb28714"
+  },
+  "observedFailures": [
+    {
+      "line": 141,
+      "reason": "USD regex also matches USDT",
+      "fix": "currency token word boundaries"
+    },
+    {
+      "line": 179,
+      "reason": "account selects in page filters and movement panel share option ID",
+      "fix": "scope controls to existing Nuevo movimiento panel"
+    }
+  ],
+  "productManifest": [
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "efcda8eb87f3b7d790239166a9c1c4dadf1300dc8610bb0b24364d89900e494d"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "6088cdae1aa84644a1879bcba57dfd6f9c2c96254904a32b6a3390f9970c0358"
+    },
+    {
+      "path": "components/add-transaction/AddTransactionProvider.tsx",
+      "sha256": "23411cce4fa26a723ade5ef9e5abf7c78ce37b6f98705cfb35ef0117f419294b"
+    },
+    {
+      "path": "components/accounts/CreateAccountButton.tsx",
+      "sha256": "1615cfbbbc2643e2faf687d72cdbebee0d644187bda7b9fef73a64b41dc1be34"
+    }
+  ]
+}

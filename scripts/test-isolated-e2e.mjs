@@ -138,7 +138,7 @@ try {
     const panel = page.locator('div.bg-card.rounded-3xl').filter({ has: page.getByRole('heading', { name: 'Nueva Cuenta', exact: true }) });
     await panel.getByPlaceholder('Ej: Banco Galicia, Mercado Pago', { exact: true }).fill(name);
     await panel.getByRole('button', { name: type, exact: false }).click();
-    if (currency !== 'ARS') await panel.getByRole('button', { name: new RegExp(currency) }).click();
+    if (currency !== 'ARS') await panel.getByRole('button', { name: new RegExp(`\\b${currency}\\b`) }).click();
     await panel.getByPlaceholder('0.00', { exact: true }).fill(String(initial));
     const response = page.waitForResponse(r => new URL(r.url()).pathname === '/api/accounts' && r.request().method() === 'POST');
     await panel.getByRole('button', { name: 'Crear Cuenta', exact: true }).click();
@@ -175,11 +175,12 @@ try {
     accountA = await createAccount(pageA, `Movimientos sintéticos ${run}`, 10000);
     await pageA.goto(new URL('/expenses', appUrl).href);
     await pageA.getByRole('button', { name: 'Nuevo', exact: true }).click();
-    await pageA.getByPlaceholder('0', { exact: true }).fill('1500');
-    await pageA.locator('select').filter({ has: pageA.locator(`option[value="${accountA}"]`) }).selectOption(accountA);
-    await pageA.getByPlaceholder('ej: Compra en el súper').fill(`Gasto UI ${run}`);
+    const movementPanel = pageA.locator('div.bg-card.rounded-t-3xl').filter({ has: pageA.getByRole('heading', { name: 'Nuevo movimiento', exact: true }) });
+    await movementPanel.getByPlaceholder('0', { exact: true }).fill('1500');
+    await movementPanel.locator('select').filter({ has: pageA.locator(`option[value="${accountA}"]`) }).selectOption(accountA);
+    await movementPanel.getByPlaceholder('ej: Compra en el súper').fill(`Gasto UI ${run}`);
     const pending = pageA.waitForResponse(r => new URL(r.url()).pathname === '/api/transactions' && r.request().method() === 'POST');
-    await pageA.getByRole('button', { name: 'Guardar', exact: true }).click();
+    await movementPanel.getByRole('button', { name: 'Guardar', exact: true }).click();
     const created = await pending; assert.equal(created.status(), 201);
     const transaction = await created.json(); assert.equal(balance(accountA), 8500);
     const edited = await request(pageA, 'PATCH', `/api/transactions/${transaction.id}`, { amount: 2000, account_id: accountA, currency: 'ARS' });

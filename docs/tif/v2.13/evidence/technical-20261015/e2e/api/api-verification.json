@@ -1,0 +1,598 @@
+{
+  "startedAt": "2026-10-15T00:59:31.750Z",
+  "status": "PASS",
+  "scope": "Normal GoTrue password sessions -> Next HTTP API -> separate native SQL assertions. No browser/UI acceptance. All identities and ledger data are synthetic loopback fixtures.",
+  "results": [
+    {
+      "cu": "CU002",
+      "name": "normal session API isolation, invalid auth, grants and downgrade reading/export",
+      "status": "PASS",
+      "scope": "API -> DB only; does not close original UI/system case",
+      "evidence": {
+        "ids": [
+          "CP2-19",
+          "CP2-20",
+          "CP2-09",
+          "CP2-15"
+        ],
+        "privateAccountRowsUnchanged": 1,
+        "foreignDelete": {
+          "status": 204,
+          "ownerScopedNoop": true,
+          "allForeignAccountColumnsUnchanged": true,
+          "beforeSha256": "729ea3bcfd4b1eade16037685038d5eab4fee4dcc1ece73addb127c55873958a"
+        },
+        "anonymousStatuses": [
+          401,
+          401
+        ],
+        "normalProfileSecretFieldAndPaidStatusDenied": true,
+        "normalProfileDenialCodes": [
+          "42501",
+          "42501"
+        ],
+        "activeAccountsAtDowngrade": 3,
+        "historyAndExportAvailable": true,
+        "exactThreeAccountFixture": false
+      }
+    },
+    {
+      "cu": "CU001",
+      "name": "different-currency transfer, edit/delete, rounding, ten retries and controlled lost acknowledgment",
+      "status": "PASS",
+      "scope": "API -> DB only; does not close original UI/system case",
+      "evidence": {
+        "ids": [
+          "CP1-03",
+          "CP1-10",
+          "CP1-11",
+          "CNF-11"
+        ],
+        "transfer": {
+          "attempts": 10,
+          "effects": 1,
+          "sourceAmount": 120000,
+          "destinationAmount": 100,
+          "balances": [
+            80000,
+            150
+          ]
+        },
+        "afterEdit": [
+          140000,
+          100
+        ],
+        "afterDelete": [
+          200000,
+          50
+        ],
+        "subcentRejected": true,
+        "acknowledgmentSimulation": "response consumed by test transport but deliberately withheld from logical client state",
+        "retryEffects": 1,
+        "replayArtifact": "durable-replay-fixture.json"
+      }
+    },
+    {
+      "cu": "CU003",
+      "name": "financial summary API agrees with independent SQL and excludes transfers/other tenant",
+      "status": "PASS",
+      "scope": "API -> DB only; does not close original UI/system case",
+      "evidence": {
+        "ids": [
+          "CP3-08"
+        ],
+        "responseSha256": "e009b6118e4f9345c55699d31aea0b7558c389993337462747243b87832aebe8",
+        "independentOwnerARSRows": [
+          {
+            "type": "expense",
+            "total": 1500
+          },
+          {
+            "type": "adjustment",
+            "total": 200000
+          }
+        ],
+        "expectedExpense": 1500,
+        "expectedIncome": 0,
+        "observedExpense": 1500,
+        "observedIncome": 0,
+        "scope": "summary API and ARS SQL dataset/month UTC; no browser presentation or Gemini semantic acceptance"
+      }
+    },
+    {
+      "cu": "CU004",
+      "name": "manual-price investment API, durable partial sale and excessive sale refusal",
+      "status": "PASS",
+      "scope": "API -> DB only; does not close original UI/system case",
+      "evidence": {
+        "ids": [
+          "CP4-02",
+          "CP4-04",
+          "CP4-06",
+          "CP4-12",
+          "CNF-11"
+        ],
+        "remainingQuantity": 6,
+        "realizedUSD": 80,
+        "saleAttempts": 10,
+        "effects": 1,
+        "brokerCashUnchanged": 0
+      }
+    },
+    {
+      "cu": "CU001",
+      "name": "cron invalid authentication denied before financial effects",
+      "status": "PASS",
+      "scope": "API -> DB only; does not close original UI/system case",
+      "evidence": {
+        "id": "CNF-10",
+        "statuses": [
+          401,
+          401
+        ],
+        "financialEffect": 0,
+        "scope": "denial path only; successful cron and injected provider failure remain separate"
+      }
+    },
+    {
+      "cu": "CU001",
+      "name": "three-member shared expense capability, retry, manipulated IDs and revocation",
+      "status": "PASS",
+      "scope": "API -> DB only; does not close original UI/system case",
+      "evidence": {
+        "ids": [
+          "CP1-36",
+          "CP1-38"
+        ],
+        "expenseId": "4d1e5748-bd1d-42e0-b2de-f822af79f27f",
+        "splitAmounts": [
+          33.34,
+          33.33,
+          33.33
+        ],
+        "effects": 1,
+        "crossGroupActorDenied": true,
+        "invalidAndRevokedCapabilityStatuses": [
+          404,
+          404
+        ],
+        "scope": "API capability author, not proof of individual Auth identity for a guest; one new E2E-owned guest; source/recovery fixtures unchanged"
+      }
+    },
+    {
+      "cu": "CU001",
+      "name": "successful concurrent cron retries retain one occurrence and one durable outbox intent",
+      "status": "PASS",
+      "scope": "API -> DB only; does not close original UI/system case",
+      "evidence": {
+        "ids": [
+          "CP1-24",
+          "CNF-10",
+          "CNF-11"
+        ],
+        "ruleId": "d3fd6b21-b051-404b-a8c8-71c4c46bcdfd",
+        "submissions": 2,
+        "occurrences": 1,
+        "outboxIntents": 1,
+        "balance": 9600,
+        "scope": "Actual cron API and durable DB outbox; no provider delivery or provider failure executed"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-15T00:59:32.499Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201,
+      "responseSha256": "1da343bd81f51679bb744ca2c46a88ee749c86173bdaf169365c7ec1349f8ebd"
+    },
+    {
+      "at": "2026-10-15T00:59:32.626Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201,
+      "responseSha256": "43511191dc070f8e254a7df9ec3f1e9b50a2b4d6687d0a4e329be18d61486d67"
+    },
+    {
+      "at": "2026-10-15T00:59:32.749Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201,
+      "responseSha256": "dc8504501f63a2dd99bb712b7a020272a6b7fb9967db824a1e9437fad386a868"
+    },
+    {
+      "at": "2026-10-15T00:59:32.876Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201,
+      "responseSha256": "320e50f4dc14c3b9722eac379acaaa663e8de63bab514371eb7669cbdb4be55f"
+    },
+    {
+      "at": "2026-10-15T00:59:32.967Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 401,
+      "responseSha256": "3be5b8e53fdc8b0a2996590589456db33504977f3d1ce9bb75016c8a707e1a71"
+    },
+    {
+      "at": "2026-10-15T00:59:32.969Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 401,
+      "responseSha256": "3be5b8e53fdc8b0a2996590589456db33504977f3d1ce9bb75016c8a707e1a71"
+    },
+    {
+      "at": "2026-10-15T00:59:33.032Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200,
+      "responseSha256": "a93aca55710074d83b154cc441ecdc04426078b3801569be1059c65853d27e1f"
+    },
+    {
+      "at": "2026-10-15T00:59:33.075Z",
+      "method": "GET",
+      "path": "/api/accounts/870d87a0-fc7b-4636-8a14-4443927e2b76",
+      "status": 404,
+      "responseSha256": "c8ec5451e5d9deb176de19ed4cf80739d21f2378c090a3f7dde2eef3b7c4cb48"
+    },
+    {
+      "at": "2026-10-15T00:59:33.120Z",
+      "method": "PATCH",
+      "path": "/api/accounts/870d87a0-fc7b-4636-8a14-4443927e2b76",
+      "status": 404,
+      "responseSha256": "c8ec5451e5d9deb176de19ed4cf80739d21f2378c090a3f7dde2eef3b7c4cb48"
+    },
+    {
+      "at": "2026-10-15T00:59:33.161Z",
+      "method": "DELETE",
+      "path": "/api/accounts/870d87a0-fc7b-4636-8a14-4443927e2b76",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "at": "2026-10-15T00:59:33.454Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 403,
+      "responseSha256": "183e589af5f3c9e01b0337a7951d7cd479dbf874b5282ad7809fd61d4f5a1202"
+    },
+    {
+      "at": "2026-10-15T00:59:33.583Z",
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200,
+      "responseSha256": "a93aca55710074d83b154cc441ecdc04426078b3801569be1059c65853d27e1f"
+    },
+    {
+      "at": "2026-10-15T00:59:33.632Z",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "status": 200,
+      "responseSha256": "2f53d8c7e78f7937dec25d04f608d30542512f253f4c7fdbab43c29598c5bfb1"
+    },
+    {
+      "at": "2026-10-15T00:59:33.847Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.847Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.848Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.849Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.850Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.850Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.851Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.851Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.852Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:33.852Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "676563cd379ac0c4bc0f94637231a18afba5610e7794977fbdff6798393fbcdf"
+    },
+    {
+      "at": "2026-10-15T00:59:34.152Z",
+      "method": "PATCH",
+      "path": "/api/transactions/fda2b09a-7b0d-4c28-b9a4-71465bfba27c",
+      "status": 200,
+      "responseSha256": "c0682e9dcb1c93d839e18051da0aca0f1c9b3ec34ab2aac4f8a9c7fd703161bd"
+    },
+    {
+      "at": "2026-10-15T00:59:34.352Z",
+      "method": "DELETE",
+      "path": "/api/transactions/fda2b09a-7b0d-4c28-b9a4-71465bfba27c",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "at": "2026-10-15T00:59:34.562Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 400,
+      "responseSha256": "fc72bddc493b15d9706df02a3f7e462460ca18aeeee7093c62e47537b9f70d4c"
+    },
+    {
+      "at": "2026-10-15T00:59:34.720Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "4cf088120da566e9b669f261fc382db83cacaade4dad5d580136ad713c5175b0"
+    },
+    {
+      "at": "2026-10-15T00:59:34.852Z",
+      "method": "POST",
+      "path": "/api/transactions",
+      "status": 201,
+      "responseSha256": "4cf088120da566e9b669f261fc382db83cacaade4dad5d580136ad713c5175b0"
+    },
+    {
+      "at": "2026-10-15T00:59:34.991Z",
+      "method": "GET",
+      "path": "/api/transactions/summary",
+      "status": 200,
+      "responseSha256": "e009b6118e4f9345c55699d31aea0b7558c389993337462747243b87832aebe8"
+    },
+    {
+      "at": "2026-10-15T00:59:35.121Z",
+      "method": "POST",
+      "path": "/api/investments",
+      "status": 201,
+      "responseSha256": "065f89617fdf5df6ba70790d6fbad4100ac9a734095e9ca772cde48607a9d6ff"
+    },
+    {
+      "at": "2026-10-15T00:59:35.232Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.241Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.256Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.266Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.267Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.267Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.268Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.268Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.268Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.269Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 201,
+      "responseSha256": "cff215dfac5a5f65914e7fb1d357716b8947a618ed28e41409c31e3bb9b8ae95"
+    },
+    {
+      "at": "2026-10-15T00:59:35.491Z",
+      "method": "POST",
+      "path": "/api/investments/07ea1f76-7a6e-46f5-b5cd-0b245d6bf934/sell",
+      "status": 400,
+      "responseSha256": "8a177810f4da80df6e1f80d6fbaebac326ecd08211fd4e40e90e87b612f46ce1"
+    },
+    {
+      "at": "2026-10-15T00:59:35.788Z",
+      "method": "GET",
+      "path": "/api/cron/recurring",
+      "status": 401,
+      "responseSha256": "3be5b8e53fdc8b0a2996590589456db33504977f3d1ce9bb75016c8a707e1a71"
+    },
+    {
+      "at": "2026-10-15T00:59:35.789Z",
+      "method": "GET",
+      "path": "/api/cron/recurring",
+      "status": 401,
+      "responseSha256": "3be5b8e53fdc8b0a2996590589456db33504977f3d1ce9bb75016c8a707e1a71"
+    },
+    {
+      "at": "2026-10-15T00:59:36.162Z",
+      "method": "POST",
+      "path": "/api/shared/[capability-redacted]/expenses",
+      "status": 201,
+      "responseSha256": "ad227d6876a7f4ae34d88e61ade6385f6c7f570871d40f8af99d73abe45c42fc"
+    },
+    {
+      "at": "2026-10-15T00:59:36.166Z",
+      "method": "POST",
+      "path": "/api/shared/[capability-redacted]/expenses",
+      "status": 201,
+      "responseSha256": "ad227d6876a7f4ae34d88e61ade6385f6c7f570871d40f8af99d73abe45c42fc"
+    },
+    {
+      "at": "2026-10-15T00:59:36.257Z",
+      "method": "POST",
+      "path": "/api/shared/[capability-redacted]/expenses",
+      "status": 403,
+      "responseSha256": "fdd3aa8460f1ee295fd15a13c2709990f4dfa1ed56f6fdb5e008f6806ed5bf41"
+    },
+    {
+      "at": "2026-10-15T00:59:36.346Z",
+      "method": "POST",
+      "path": "/api/shared/[capability-redacted]/expenses",
+      "status": 404,
+      "responseSha256": "2b642190baa0eced9bac3dbb2a4317edde0a74fb5ff16914649597886897de0f"
+    },
+    {
+      "at": "2026-10-15T00:59:36.434Z",
+      "method": "POST",
+      "path": "/api/shared/[capability-redacted]/expenses",
+      "status": 404,
+      "responseSha256": "2b642190baa0eced9bac3dbb2a4317edde0a74fb5ff16914649597886897de0f"
+    },
+    {
+      "at": "2026-10-15T00:59:36.555Z",
+      "method": "POST",
+      "path": "/api/accounts",
+      "status": 201,
+      "responseSha256": "4c697ce7bef32f79da279eca0498aa00e32aa3f2456c9ada35abc6ff84a2eff7"
+    },
+    {
+      "at": "2026-10-15T00:59:36.702Z",
+      "method": "POST",
+      "path": "/api/recurring",
+      "status": 201,
+      "responseSha256": "e6fa8a8d8619b5ec9ec08b65eec3add399a4f253728e7620a1845cc764ca6de1"
+    },
+    {
+      "at": "2026-10-15T00:59:36.742Z",
+      "method": "GET",
+      "path": "/api/cron/recurring",
+      "status": 200,
+      "responseSha256": "69de4aad8f2eb11b1e2ec71e0e19ae3970acef7386d5a2eac323261fdd054425"
+    },
+    {
+      "at": "2026-10-15T00:59:36.742Z",
+      "method": "GET",
+      "path": "/api/cron/recurring",
+      "status": 200,
+      "responseSha256": "69de4aad8f2eb11b1e2ec71e0e19ae3970acef7386d5a2eac323261fdd054425"
+    }
+  ],
+  "blockers": [
+    {
+      "ids": [
+        "CU001",
+        "CU002",
+        "CU003",
+        "CU004"
+      ],
+      "reason": "API-only checks never establish the full UI -> API -> DB journey."
+    }
+  ],
+  "fixture": {
+    "users": [
+      "86ac638c-2710-4993-9622-f2e5671ad034",
+      "84fcbd70-cd40-48cd-8427-3b2f2d4073c6"
+    ],
+    "credentials": "private fixture read into memory only",
+    "instances": {
+      "app": "http://127.0.0.1:3000",
+      "auth": "http://127.0.0.1:57321",
+      "databaseHost": "127.0.0.1",
+      "databasePort": "57322"
+    },
+    "run": "966d224c"
+  },
+  "sourceManifest": [
+    {
+      "path": "scripts/test-isolated-api.mjs",
+      "sha256": "79980da2891870029c46ed9a942c15bda3dd142ae0bcfc369cf1b6bf1bfc9c92"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "f81cf24ac7eaded301b329e8b67c7917ba0690d60ce9434517698709df36681a"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    }
+  ],
+  "revision": "ad52b5f8b8de3740d3ed6612dc38836c227273f8",
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T00:59:37.187Z"
+}
