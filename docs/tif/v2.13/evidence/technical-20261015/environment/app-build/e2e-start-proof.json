@@ -1,0 +1,24 @@
+{
+  "purpose": "isolated-e2e-app-supervisor",
+  "supervisorPid": 78212,
+  "appOrigin": "http://127.0.0.1:3000",
+  "apiOrigin": "http://127.0.0.1:57321",
+  "buildId": "zJ3D7exVtqZ7JLNFuTSZ1",
+  "nextPid": 78214,
+  "providerDouble": {
+    "port": 57910,
+    "response": 503,
+    "realIntegration": false
+  },
+  "events": [
+    {
+      "type": "start",
+      "pid": 78214,
+      "buildId": "zJ3D7exVtqZ7JLNFuTSZ1",
+      "startedAt": "2026-10-15T00:58:24.558946Z",
+      "readyAt": "2026-10-15T00:58:25.098259Z",
+      "startConfirmed": true,
+      "listenerOwned": true
+    }
+  ]
+}
