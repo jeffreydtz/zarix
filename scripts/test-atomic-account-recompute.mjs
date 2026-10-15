@@ -84,7 +84,11 @@ const roundingOrderFixture = async (credits, expenseFirst) => {
   return { source, destination };
 };
 const proveOriginalRoundingOrder = async sourceFiles => {
-  const beforeSources = sourceFiles.filter(file => file.path !== repairMigration);
+  // Reproduce the historical pre-repair schema. Later migrations belong only
+  // to the current fixture, rather than leaking into this immutable before cut.
+  const repairIndex = sourceFiles.findIndex(file => file.path === repairMigration);
+  assert.ok(repairIndex > 0);
+  const beforeSources = sourceFiles.slice(0, repairIndex);
   assert.equal(beforeSources.length, 27); // Fresh baseline plus 26 original migrations.
   const { db: beforeDb, manifest } = await bootDatabase({ legacyGrants: true, sourceFiles: beforeSources });
   report.beforeProof = {
