@@ -11,7 +11,8 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[6]
 HERE = Path(__file__).resolve().parent
-FREEZE = '84df929ab2f169251a49f3e95d0e0c148dfcb87c'
+FREEZE = 'd9501a795b88a0627d01426cb2c45f1cc848fd2b'
+RUNTIME_BASELINE = '84df929ab2f169251a49f3e95d0e0c148dfcb87c'
 ORIGINAL = 'b40feeed28d6e9ea6e8b0b2f112119e2435de1df'
 CSV_HASH = '887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d'
 MIGRATIONS = [
@@ -40,9 +41,10 @@ def git(*args, optional=False):
 def main():
     output = HERE / 'final-source-and-case-integrity.json'
     assert not output.exists(), 'Preserve this checkpoint; use a new filename for another phase'
-    core_path = HERE.parent / 'core-closure/verification.json'
+    core_path = HERE.parent / 'documentation-build-closure/executed/verification.json'
     core = json.loads(core_path.read_text())
     assert core['codeRevision'] == FREEZE and core['sourceStable'] and core['sourceWorkingTreeClean']
+    assert core['runtimeCodeBaseline'] == RUNTIME_BASELINE and core['onlyBaselineDifference'] == ['tsconfig.json']
     checked = []
     for item in core['sourceManifest']:
         file = ROOT / item['path']
@@ -75,6 +77,8 @@ def main():
     report = {
         'checkedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'status': 'PASS', 'sourceRevisionExecuted': FREEZE,
+        'runtimeCodeBaseline': RUNTIME_BASELINE,
+        'onlyBaselineDifference': ['tsconfig.json: exclude archived evidence; application roots/options unchanged'],
         'checkoutHeadBeforeThisDocumentationCheckpoint': git('rev-parse', 'HEAD').decode().strip(),
         'coreReportSha256': sha(core_path.read_bytes()),
         'coreSourceManifestSha256': core['sourceManifestSha256'],
@@ -85,7 +89,7 @@ def main():
         'postFreezeDocumentationPathCount': len(changed),
         'originalCases': {'count': len(rows), 'sha256': CSV_HASH, 'unchanged': True},
         'fourRequestedOriginalMigrations': migrations,
-        'scope': 'Source and case integrity only. This read-only checkpoint does not rerun CI6, browsers, providers or the acceptance matrix. Later documentation commits require the same source comparison before publication.',
+        'scope': 'Source and case integrity only. This read-only checkpoint compares the final required npm-gate freeze and records its sole compiler exclusion relative to runtime proofs at CI6. It does not rerun browsers, providers or the acceptance matrix. Later documentation commits require the same source comparison before publication.',
     }
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps({k: report[k] for k in ['status', 'sourceRevisionExecuted', 'sourcesCompared', 'gitSourcesCompared', 'allCurrentSourceBytesMatchExecutedFreeze']}))

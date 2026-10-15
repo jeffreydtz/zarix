@@ -1,0 +1,438 @@
+{
+  "status": "PASS_INDEPENDENT_PACKAGING_REVIEW_SCOPED",
+  "reviewedAt": "2026-10-15T06:59:43.112545+00:00",
+  "reviewer": "dependency_audit",
+  "reviewMethod": "Read-only Python/JSON/hash and Git comparison of existing public artifacts. No npm commands, dependency installation, network/advisory query, browser, Auth, API or database operation was executed by this review.",
+  "codeRevision": "d9501a795b88a0627d01426cb2c45f1cc848fd2b",
+  "runtimeCodeBaseline": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "findings": [],
+  "compilerChange": {
+    "onlyChangedTopLevelKey": "exclude",
+    "addedExactPath": "docs/tif/v2.13/evidence",
+    "compilerOptionsUnchanged": true,
+    "includeUnchanged": true,
+    "applicationImportsFromEvidenceFound": false,
+    "archivedSourcesPreserved": true,
+    "priorDiagnosticCount": 15,
+    "priorDiagnosticCodes": {
+      "TS2307": 2,
+      "TS2571": 13
+    },
+    "priorDiagnosticsAllUnderExcludedEvidenceRoot": true,
+    "meaning": "Archive copies cease to be application TypeScript roots. Strictness, application roots, Vitest configuration, SQL and dependency bytes are preserved; imported modules would still be typechecked."
+  },
+  "sourceProof": {
+    "reportedCleanAndStable": true,
+    "physicalManifestRows": 458,
+    "gitTrackedRows": 457,
+    "untrackedPhysicalPaths": [
+      "supabase/.temp/cli-latest"
+    ],
+    "currentHashMismatches": [],
+    "compactManifestSha256": "448ac26f8d5badbf0112b1320515374bd5eaa81eb65ac98af5139dc7114b664e",
+    "onlyManifestDifferenceFromCI6": [
+      "tsconfig.json"
+    ],
+    "allVersionedChangesOutsideEvidenceFromBaseline": [
+      "docs/tif/v2.13/LEEME-entrega.md",
+      "tsconfig.json"
+    ],
+    "scope": "458 physical core manifest rows, including one ignored Supabase CLI cache metadata file; no claim that all458 are Git-tracked or that this is the runtime copy483-file manifest."
+  },
+  "gateOutcome": {
+    "commandRecordCount": 8,
+    "requiredNpmCommandsPassed": [
+      "npm-ci",
+      "typecheck",
+      "lint",
+      "coverage",
+      "test-db",
+      "build"
+    ],
+    "fullAuditStatus": "FAIL",
+    "fullAuditExitCode": 1,
+    "productionAuditStatus": "PASS",
+    "productionAuditExitCode": 0,
+    "allCommandsPassed": false,
+    "buildId": "p5H0d2CK0o-gkwlwP-MBa",
+    "node": "v22.17.0",
+    "npm": "11.4.2",
+    "commandRecords": [
+      {
+        "name": "npm-ci",
+        "command": [
+          "npm",
+          "ci"
+        ],
+        "startedAt": "2026-10-15T06:55:32.087233+00:00",
+        "finishedAt": "2026-10-15T06:55:40.696396+00:00",
+        "durationMs": 8609,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "typecheck",
+        "command": [
+          "npm",
+          "run",
+          "typecheck"
+        ],
+        "startedAt": "2026-10-15T06:55:40.696626+00:00",
+        "finishedAt": "2026-10-15T06:55:42.276027+00:00",
+        "durationMs": 1579,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "lint",
+        "command": [
+          "npm",
+          "run",
+          "lint"
+        ],
+        "startedAt": "2026-10-15T06:55:42.276107+00:00",
+        "finishedAt": "2026-10-15T06:55:43.210205+00:00",
+        "durationMs": 934,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "coverage",
+        "command": [
+          "npm",
+          "run",
+          "test:coverage",
+          "--",
+          "--reporter=json",
+          "--outputFile=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/final-vitest.json"
+        ],
+        "startedAt": "2026-10-15T06:55:43.210290+00:00",
+        "finishedAt": "2026-10-15T06:55:50.501537+00:00",
+        "durationMs": 7291,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "test-db",
+        "command": [
+          "npm",
+          "run",
+          "test:db"
+        ],
+        "startedAt": "2026-10-15T06:55:50.501683+00:00",
+        "finishedAt": "2026-10-15T06:56:01.846290+00:00",
+        "durationMs": 11345,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "build",
+        "command": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "startedAt": "2026-10-15T06:56:01.846382+00:00",
+        "finishedAt": "2026-10-15T06:56:23.266514+00:00",
+        "durationMs": 21420,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "dependency-audit",
+        "command": [
+          "npm",
+          "audit",
+          "--json"
+        ],
+        "startedAt": "2026-10-15T06:56:23.266601+00:00",
+        "finishedAt": "2026-10-15T06:56:24.836404+00:00",
+        "durationMs": 1570,
+        "exitCode": 1,
+        "status": "FAIL"
+      },
+      {
+        "name": "production-audit",
+        "command": [
+          "npm",
+          "audit",
+          "--omit=dev",
+          "--json"
+        ],
+        "startedAt": "2026-10-15T06:56:24.836490+00:00",
+        "finishedAt": "2026-10-15T06:56:25.409062+00:00",
+        "durationMs": 573,
+        "exitCode": 0,
+        "status": "PASS"
+      }
+    ]
+  },
+  "unitAndCoverage": {
+    "testsPassed": 913,
+    "testsFailed": 0,
+    "testFiles": 92,
+    "fileCountMethod": "testResults.length; numTotalTestSuites235 is not a file count",
+    "instrumentedFiles": 37,
+    "coverageTotals": {
+      "lines": {
+        "total": 2501,
+        "covered": 1824,
+        "skipped": 0,
+        "pct": 72.93
+      },
+      "statements": {
+        "total": 2904,
+        "covered": 2029,
+        "skipped": 0,
+        "pct": 69.86
+      },
+      "functions": {
+        "total": 416,
+        "covered": 283,
+        "skipped": 0,
+        "pct": 68.02
+      },
+      "branches": {
+        "total": 2531,
+        "covered": 1620,
+        "skipped": 0,
+        "pct": 64
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "scope": "Risk-focused Vitest instrumentation configured in unchanged vitest.config.ts,37 files; these percentages are not whole-application coverage or fulfillment of an overall coverage target."
+  },
+  "dependencyAudit": {
+    "querySucceededWithMetadata": true,
+    "fullVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "productionVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "affectedPackageEntries": 7,
+    "affectedInstalledNodes": 8,
+    "allAffectedNodesDevInCurrentLock": true,
+    "lockNodes": [
+      {
+        "package": "@next/eslint-plugin-next",
+        "path": "node_modules/@next/eslint-plugin-next",
+        "version": "15.5.27",
+        "lockDev": true
+      },
+      {
+        "package": "braces",
+        "path": "node_modules/braces",
+        "version": "3.0.3",
+        "lockDev": true
+      },
+      {
+        "package": "chokidar",
+        "path": "node_modules/chokidar",
+        "version": "3.6.0",
+        "lockDev": true
+      },
+      {
+        "package": "eslint-config-next",
+        "path": "node_modules/eslint-config-next",
+        "version": "15.5.27",
+        "lockDev": true
+      },
+      {
+        "package": "fast-glob",
+        "path": "node_modules/fast-glob",
+        "version": "3.3.1",
+        "lockDev": true
+      },
+      {
+        "package": "fast-glob",
+        "path": "node_modules/tailwindcss/node_modules/fast-glob",
+        "version": "3.3.3",
+        "lockDev": true
+      },
+      {
+        "package": "micromatch",
+        "path": "node_modules/micromatch",
+        "version": "4.0.8",
+        "lockDev": true
+      },
+      {
+        "package": "tailwindcss",
+        "path": "node_modules/tailwindcss",
+        "version": "3.4.19",
+        "lockDev": true
+      }
+    ],
+    "directAdvisory": "GHSA-vfj7-8cjw-p6xm",
+    "interpretation": "Seven high package entries propagate the braces development/build-tool chain; they are not seven independent advisories. The fresh full audit remains FAIL. Production omission reports0; no package/lock change or new publication-status/advisory-registry assessment was performed by this review."
+  },
+  "scopeLimits": [
+    "The six required npm commands were rerun at d9501a7 after the compiler exclusion; their results are separate from original CI6 at84df929.",
+    "npm run test:db is accepted only with its existing package-script scope; this phase does not rerun or newly validate native database/API/Auth/restore/browser/provider evidence.",
+    "Build uses explicit dummy Supabase values and existing local font fixtures. The inspected preload constrains global fetch, not every network client or a universal firewall.",
+    "Build stderr retains dynamic-rendering and webpack-cache diagnostics despite exit0; no claim of empty stderr.",
+    "No previously blocked matrix case is promoted by this packaging review. Native/API/UI historical evidence remains bound to its recorded application revision and build."
+  ],
+  "evidencePins": [
+    {
+      "path": "tsconfig.json",
+      "sha256": "c3473d6c9cb56bf4a4126867948d95f67f7f12a7693f4dc7a85fb5732c3d8d80",
+      "bytes": 625
+    },
+    {
+      "path": "package.json",
+      "sha256": "847259b8435bf13a49ce114795fcd71fc7a7f81322b341c067682447de87772a",
+      "bytes": 2513
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257",
+      "bytes": 376481
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8",
+      "bytes": 2390
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/run-required-gates.py",
+      "sha256": "83e3cf7e5106b9f95ab45f2d77bfa023e4c143ce016791d693c8a73c8396f322",
+      "bytes": 6586
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/verification.json",
+      "sha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+      "bytes": 74793
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/before-change/tsconfig.json",
+      "sha256": "ed2bc19510589ae5c0940b5e4504c6c0413ba285ae35a3d4ad9db5f5d3a8eb51",
+      "bytes": 598
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/before-change/typecheck.log",
+      "sha256": "d2448f1aad588f3f0727a81ace6238e1b028a33f0895a1a986fb37daa71002b2",
+      "bytes": 2625
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/before-change/typecheck.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/before-change/verification.json",
+      "sha256": "acd49f1b6c92f7512a7a01e2713c379110d98c8a0c2d7fb2ec466a82cbec9aec",
+      "bytes": 496
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/build.log",
+      "sha256": "8799a78284f34d3af469a29399f6c8ea5c1209e2ff5352844744cda5aeea4b50",
+      "bytes": 7016
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/build.stderr.log",
+      "sha256": "c23ed7867cf2453bdde1f21801824fe915b4f31ed186fd60a53d1e08f0a98178",
+      "bytes": 2312
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/coverage-summary.json",
+      "sha256": "ea9a2319be58ca7d8d0c0e0ace9b736ba56f581fa53184f264151533c64707d3",
+      "bytes": 12627
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/coverage.log",
+      "sha256": "a5261d7e9491b99bb174a7023d2f828d5f9dbc7f5d1d70da3f6c3716e6cc107a",
+      "bytes": 4959
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/coverage.stderr.log",
+      "sha256": "b4acd4f819050212c4fe3b3ed8416421330f7ff8c72cb9bb667c335f3e24a94e",
+      "bytes": 375
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/dependency-audit.log",
+      "sha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf",
+      "bytes": 3985
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/dependency-audit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/final-vitest.json",
+      "sha256": "14a7400e3f73ff8ea4666ec05d9ba8b3586093db8a226e74b17fb1b35ce4573e",
+      "bytes": 1114136
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/lint.log",
+      "sha256": "e961f726b387de7cc537facff218c77151a54d399b56e20dbeee1350973ee70c",
+      "bytes": 66
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/lint.stderr.log",
+      "sha256": "a9e853f86aaa439d80c9c70fc5cb52ed5a20a68e3611a5b826d196cc46d675a2",
+      "bytes": 234
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/npm-ci.log",
+      "sha256": "86f0ba07b574ec55ccd0002895928f90db63f4a6b73562b942776a3a93822e89",
+      "bytes": 264
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/npm-ci.stderr.log",
+      "sha256": "45cf5ebfcae15bdeefc39c21264fb0ea83ecdf4a783d377de8de7083a6ae3fbd",
+      "bytes": 1545
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/production-audit.log",
+      "sha256": "e7a71ea70895f12bb3d991264928cb23b141117439bf1be02bbc7907e4b92910",
+      "bytes": 367
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/production-audit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/test-db.log",
+      "sha256": "efeca65e363b440acaed11dba8c0f673e55860fa41af41e959ce09c808952a94",
+      "bytes": 77709
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/test-db.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/typecheck.log",
+      "sha256": "469f7b7deaf0603039d0351d61b584c9c9a9f9e495a3dde5eeb847324a9e7e24",
+      "bytes": 41
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/typecheck.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/documentation-build-closure/executed/verification.json",
+      "sha256": "3d72c60735e4faea38a8c0bd5970557d8164808845fb92077e51b1974ec24216",
+      "bytes": 72530
+    }
+  ]
+}
