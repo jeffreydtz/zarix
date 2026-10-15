@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-10-15T03:49:03.182259+00:00",
+  "scope": "Published preparation/build/Auth artifacts only; parent-owned local quote fixture server excluded. No new runtime execution inferred.",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "65e0a234f7ba5c31dad3442b7bae8ef5e205ed7b4435586c3826d2042c2ad3b8",
+      "bytes": 7245
+    },
+    {
+      "path": "app-state.json",
+      "sha256": "fef29e6f4bd7a1afc0d8f646a449d3b8c74eea61699e840937aaad5f128a7402",
+      "bytes": 568
+    },
+    {
+      "path": "auth-expiry-attempt-1/harness.mjs",
+      "sha256": "66ebe9c64ace9e68c24ae656eee136f54a367224f2744c2be09abc80dbac1d2a",
+      "bytes": 8109
+    },
+    {
+      "path": "auth-expiry-attempt-1/verification.json",
+      "sha256": "11fe67671a346ca092b03f7d80bc5c281dd90f6cf9d890b4fba2d8e9015dfbba",
+      "bytes": 500
+    },
+    {
+      "path": "auth-expiry-attempt-2/harness.mjs",
+      "sha256": "e0e05a0047a20f23aafb03774ec5e6694923e49563716501a3897c1990fc34a4",
+      "bytes": 9046
+    },
+    {
+      "path": "auth-expiry-attempt-2/verification.json",
+      "sha256": "7c1f7ef77fa38077521942df3517ce674cff85d999a66878d07e97d39270dde3",
+      "bytes": 1329
+    },
+    {
+      "path": "auth-expiry.json",
+      "sha256": "741bbf38d5c866f0eb9acdf5e6ad556ab15edbd8d8f95bb1a8114d9808a74505",
+      "bytes": 2983
+    },
+    {
+      "path": "auth-negative-contract/independent-review.json",
+      "sha256": "ccc9f82887cc80e47ea9ad0a45252ec86b77c2df035e5559dfe93b2b6a3abf59",
+      "bytes": 12374
+    },
+    {
+      "path": "auth-negative-contract/verification.json",
+      "sha256": "6cb427b06c75ad73bb5ce426953a5be8346c3cb22ce89afa1291100905c24156",
+      "bytes": 8622
+    },
+    {
+      "path": "auth-negative-contract/verified-system-case-result.json",
+      "sha256": "b8ae184002d75e7e720d7a360e29402225710aef55196fead3f58a27b0c2f573",
+      "bytes": 2457
+    },
+    {
+      "path": "auth-recovery.json",
+      "sha256": "d7d17f5e94ac51efb9ca59cdc59091fee3b7256912318682355bcea22838e7d4",
+      "bytes": 5731
+    },
+    {
+      "path": "build-app.py",
+      "sha256": "8927f87df8d9722ef573f81587c8ad6d4338bc533e4c7d1e70960dfc8db34c71",
+      "bytes": 13169
+    },
+    {
+      "path": "build-proof.json",
+      "sha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201",
+      "bytes": 74235
+    },
+    {
+      "path": "preparation.json",
+      "sha256": "c9c282a60a55718ee673cc9f8aedb05dd8140859a980b74938e24ec65a11d2b2",
+      "bytes": 18765
+    },
+    {
+      "path": "prepare-recovery-fixture.mjs",
+      "sha256": "09a8cdde6a9a6889c1bc160520d16ff4f1637fbf084690a058547ccb2ff18f51",
+      "bytes": 9705
+    },
+    {
+      "path": "prepare.mjs",
+      "sha256": "d6444583de21697a42beba33f1b870d3efa2fb6bdc45b61c41cac6ae4aeba8b2",
+      "bytes": 15904
+    },
+    {
+      "path": "prepared-source-checks.json",
+      "sha256": "e979b2acd449fdafc5f82ec1934a8f375ebf08e67c8f833e097b51ff5d575d2e",
+      "bytes": 1543
+    },
+    {
+      "path": "publication-secret-scan-attempt-1.json",
+      "sha256": "24769bf52da63add0b6b6e55bc9e286e26318fa088a25d22ae1080cbd797ff7c",
+      "bytes": 881
+    },
+    {
+      "path": "publication-secret-scan.json",
+      "sha256": "ddc7fd99e3125598c4b499886f7f758ef87f536187059f3a35f62f856ce9bde3",
+      "bytes": 958
+    },
+    {
+      "path": "resume-auth-expiry.mjs",
+      "sha256": "14e0b826d4d654ce751ef868142eddadee6fcb8de5ca69401c59d945ee9a6bff",
+      "bytes": 5850
+    },
+    {
+      "path": "seed-quotes.mjs",
+      "sha256": "2ad51152e4959bf07180bf4c52644b54aeea7ea8b381a8243246e402aeb14d9e",
+      "bytes": 4215
+    },
+    {
+      "path": "verify-auth-expiry.mjs",
+      "sha256": "e0e05a0047a20f23aafb03774ec5e6694923e49563716501a3897c1990fc34a4",
+      "bytes": 9046
+    },
+    {
+      "path": "verify-auth-negative-contract.mjs",
+      "sha256": "5a3fec27906f6e683fa23f50982343fc7449fe83bb6758346fdb058a4744f1dc",
+      "bytes": 14456
+    }
+  ]
+}

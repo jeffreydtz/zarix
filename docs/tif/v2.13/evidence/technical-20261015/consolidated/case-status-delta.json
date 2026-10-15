@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T02:41:31.644044+00:00",
+  "generated_at_utc": "2026-10-15T03:47:29.735824+00:00",
   "original_case_count": 273,
   "historical": {
     "path": "../../technical-20261009/case-traceability.csv",
@@ -22,17 +22,26 @@
   },
   "current": {
     "path": "../case-traceability.csv",
-    "core_directory": "core-responsive",
-    "source_revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
-    "sha256": "44d5d5c2e372dbe0a36107ae66fa727792f1823f6de6b5ccf48ae42b664f4c3a",
+    "core_directory": "core-reliability",
+    "source_revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "sha256": "52f42275fc219cc8fe27e3e308845a94f6f685420008af251368661b1421446b",
     "counts": {
       "PASS": 172,
-      "FAIL": 0,
-      "BLOCKED": 101
+      "FAIL": 1,
+      "BLOCKED": 100
     },
-    "artifact_line_endings": "LF normalized for Git;273rows with statuses derived by exact contracts"
+    "artifact_line_endings": "LF normalized for Git;273rows exact named contracts/independent semantic review"
   },
   "changed_statuses": [
+    {
+      "case_id": "CP2-09",
+      "historical_status": "BLOCKED",
+      "current_status": "FAIL",
+      "current_assertions": "Wrong password literal HTTP401/403 | No sensitive existence enumeration | Normal Auth/API control A | Normal Auth/API control B | Altered current ordinary JWT literal HTTP401/403 | Expired original ordinary JWT literal HTTP401/403 | Expired recovery hash literal HTTP401/403 | Reused recovery hash literal HTTP401/403 | ZARIX API401 for actual expired access plus its own revoked refresh | Financial12 state unchanged and two prior normal controls preserved",
+      "contract_revision": "Original case contract",
+      "evidence": "fresh-proof/auth-negative-contract/verification.json; fresh-proof/auth-negative-contract/independent-review.json; fresh-proof/verify-auth-negative-contract.mjs; fresh-proof/auth-recovery.json; fresh-proof/auth-expiry.json",
+      "scope": "Original integration negative contract executed over five input classes: wrong password, altered current normal JWT, genuinely expired JWT, expired recovery, reused recovery. Ten named checks include anti-enumeration, A/B ordinary Auth/API controls, expired-access+revoked-refresh ZARIX401, and unchanged12financialtables/two previous normal sessions. complete_original_contract denotes execution coverage; FAIL retains GoTrue400 invalid_credentials versus required401/403. No browser, SMTP, whole-Auth-zero-writes or full-CU acceptance."
+    },
     {
       "case_id": "CP4-08",
       "historical_status": "BLOCKED",
@@ -57,7 +66,7 @@
       "current_status": "PASS",
       "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery",
       "contract_revision": "Explicit reconciliation: marks after creation and sends one notice to the winner -> historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery. Original inline mechanism was replaced, not silently reexecuted.",
-      "evidence": "core-responsive/final-vitest.json; durability/reconciled-contracts.json",
+      "evidence": "core-reliability/final-vitest.json; durability/reconciled-contracts.json",
       "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
     },
     {
@@ -66,12 +75,12 @@
       "current_status": "PASS",
       "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart",
       "contract_revision": "Explicit reconciliation: does not undo a confirmed movement when Telegram is unavailable -> historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart. Original inline mechanism was replaced, not silently reexecuted.",
-      "evidence": "core-responsive/final-vitest.json; durability/reconciled-contracts.json",
+      "evidence": "core-reliability/final-vitest.json; durability/reconciled-contracts.json",
       "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
     }
   ],
-  "unchanged_statuses": 269,
-  "rule": "Four exact changes from historical168: two explicitly reconciled outbox regressions reexecuted by current819, plus two complete original simulation contracts independently attested from historical b456 UI/build. No new CI3 browser rerun or neighboring contract acceptance is inferred.",
+  "unchanged_statuses": 268,
+  "rule": "Five exact changes from historical168: two outbox-equivalence PASS and two historical simulation PASS retained, plus CP2-09 executed literal FAIL400versus401/403 after independent review. No vendor/status remapping or full-CU promotion.",
   "phase2_prior": {
     "path": "../case-traceability.csv",
     "core_directory": "core-final",
@@ -97,5 +106,19 @@
     },
     "artifact_line_endings": "LF normalized for Git; CSV semantics and273statuses unchanged",
     "preserved_scope": "Before independent CP4-08/09 historical UI reconciliation; no source or test rerun"
+  },
+  "phase3_pre_cp209": {
+    "path": "phases/core-responsive-case-traceability.csv",
+    "core_directory": "core-responsive",
+    "source_revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+    "sha256": "44d5d5c2e372dbe0a36107ae66fa727792f1823f6de6b5ccf48ae42b664f4c3a",
+    "counts": {
+      "PASS": 172,
+      "FAIL": 0,
+      "BLOCKED": 101
+    },
+    "artifact_line_endings": "LF normalized for Git;273rows with statuses derived by exact contracts",
+    "summary": "phases/core-responsive-traceability-summary.json",
+    "preserved_before": "CP2-09 reviewed literal FAIL"
   }
 }

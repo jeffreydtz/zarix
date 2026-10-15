@@ -1,0 +1,517 @@
+{
+  "status": "PASS_PREPARED",
+  "scope": "New sixth disposable native local stack only. Two existing synthetic Auth identities cloned without sessions; application finance empty. Administrative Free/Premium fixture only, no billing/provider acceptance. Empty destination for a future JSON U1 import; no import, Next build or server starts here.",
+  "startedAt": "2026-10-15T03:18:42.384Z",
+  "finishedAt": "2026-10-15T03:18:50.136Z",
+  "target": {
+    "projectId": "d9c6a4f6-9881-4790-adce-f052ccf391ca",
+    "stackId": "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+    "runtime": "native",
+    "project": "/tmp/zarix-runtime-20261015/import-target",
+    "apiOrigin": "http://127.0.0.1:59321",
+    "postgresEndpoint": "127.0.0.1:59322/postgres",
+    "jwtExpiryConfiguration": 3600,
+    "privateEnv": "/tmp/zarix-runtime-20261015/import-target.env",
+    "privateLogins": "/tmp/zarix-runtime-20261015/import-target-logins.json",
+    "privateArchiveSha256": "9242f0e70e3448c41bbfe12b6a02b283292db801b904faef452a1f5d8025cbcd",
+    "configSha256": "0ba27bbf59b7c483e534cadb00b3c44d4ace2bd90be9f9d29e7bba92d04a7eb0",
+    "localSessionCleanup": "Own temporary sessions sign out locally in finally"
+  },
+  "results": [
+    {
+      "name": "sixth platform initialized with Auth0/Storage0/public0",
+      "status": "PASS"
+    },
+    {
+      "name": "baseline and migrations only in fresh target; Auth clone has no source sessions",
+      "status": "PASS",
+      "applicationTables": 27,
+      "financeTablesVerifiedEmpty": [
+        "accounts",
+        "transactions",
+        "investments",
+        "investment_sales",
+        "recurring_rules",
+        "budgets",
+        "shared_groups",
+        "shared_group_members",
+        "shared_expenses",
+        "shared_expense_splits",
+        "net_worth_snapshots",
+        "portfolio_performance_snapshots"
+      ],
+      "rowCounts": {
+        "users": 2,
+        "budgets": 0,
+        "accounts": 0,
+        "categories": 25,
+        "investments": 0,
+        "bot_sessions": 0,
+        "transactions": 0,
+        "budget_alerts": 0,
+        "shared_groups": 0,
+        "exchange_rates": 0,
+        "import_batches": 0,
+        "recurring_rules": 0,
+        "shared_expenses": 0,
+        "investment_sales": 0,
+        "market_data_cache": 0,
+        "plan_usage_cycles": 0,
+        "net_worth_snapshots": 0,
+        "notification_outbox": 0,
+        "plan_usage_requests": 0,
+        "shared_group_members": 0,
+        "transaction_requests": 0,
+        "shared_expense_splits": 0,
+        "shared_expense_requests": 0,
+        "investment_sale_requests": 0,
+        "account_creation_requests": 0,
+        "investment_create_requests": 0,
+        "portfolio_performance_snapshots": 0
+      },
+      "catalog": {
+        "tables": 27,
+        "rlsTables": 27,
+        "backendRpcs": [
+          {
+            "anon": false,
+            "name": "recompute_account_balance",
+            "serviceRole": true,
+            "authenticated": false
+          },
+          {
+            "anon": false,
+            "name": "save_shared_expense",
+            "serviceRole": true,
+            "authenticated": false
+          },
+          {
+            "anon": false,
+            "name": "sell_investment_position",
+            "serviceRole": true,
+            "authenticated": false
+          }
+        ],
+        "ordinaryRoles": [
+          {
+            "role": "authenticated",
+            "bypassRls": false,
+            "superuser": false
+          },
+          {
+            "role": "anon",
+            "bypassRls": false,
+            "superuser": false
+          }
+        ]
+      }
+    }
+  ],
+  "auth": [
+    {
+      "identity": "A",
+      "normalPasswordLogin": true,
+      "normalGetUser": true,
+      "visibleAccounts": 0,
+      "jwtIssuedAt": 1792034329,
+      "jwtExpiresAt": 1792037929,
+      "jwtLifetimeSeconds": 3600,
+      "tokenPublished": false
+    },
+    {
+      "identity": "B",
+      "normalPasswordLogin": true,
+      "normalGetUser": true,
+      "visibleAccounts": 0,
+      "jwtIssuedAt": 1792034329,
+      "jwtExpiresAt": 1792037929,
+      "jwtLifetimeSeconds": 3600,
+      "tokenPublished": false
+    }
+  ],
+  "originalPreservation": {
+    "sourceConnectionReadOnly": true,
+    "all27PublicTablesPlusAuthUsersIdentitiesBefore": {
+      "public": {
+        "users": {
+          "hash": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d",
+          "rows": 2
+        },
+        "budgets": {
+          "hash": "b9b6afcda70aea3f059f5c180bf389b3759693e4df4a97f82a6e0aa919a86aa0",
+          "rows": 1
+        },
+        "accounts": {
+          "hash": "5e83ec445dbb4900b8a34ccf8f6c717fb372d083322abdac206ff1884294668c",
+          "rows": 3
+        },
+        "categories": {
+          "hash": "752dc2b9e57c727da02496aeb20e875b41f0e31b042f71f29dae4516c33d09ae",
+          "rows": 26
+        },
+        "investments": {
+          "hash": "0ea4607f0f3d7cb9cc8cd5aee2c265328e6217d8c1cf59a626d17f4981235aa4",
+          "rows": 2
+        },
+        "bot_sessions": {
+          "hash": "c7889f86295f624926a93eb0d39e4643eed4cae0e2e6aa2928e5064a8e62d42e",
+          "rows": 1
+        },
+        "transactions": {
+          "hash": "87961a6efc9c5e188cb8d3d5107992840aa8a82eec992997539129d1ab075619",
+          "rows": 3
+        },
+        "budget_alerts": {
+          "hash": "10a06b9a9af8954c2ca3acbb8cbf745ea633a1f2615d3252a868eb76b0dd8bd0",
+          "rows": 1
+        },
+        "shared_groups": {
+          "hash": "d92436c93db665dee8dbdecfe8768fcf9b3ee64d28be7982a185769342c95540",
+          "rows": 2
+        },
+        "exchange_rates": {
+          "hash": "578743415a7fc0f9d935689e6a07e2e2dab1d5c960e8ed8025ee046375f5bb6f",
+          "rows": 1
+        },
+        "import_batches": {
+          "hash": "3256d1ae30fa923b40a45edf013c1895b61ca59765385d465dba996618a6b43b",
+          "rows": 1
+        },
+        "recurring_rules": {
+          "hash": "5cfba72d16be9e069494d9038ddb97c85daae887aca7b479400c20281e3dd81e",
+          "rows": 1
+        },
+        "shared_expenses": {
+          "hash": "2b2c2e0eb216db457885306cb69a58c74c3195c8323e36aa7c424ef2acb97253",
+          "rows": 1
+        },
+        "investment_sales": {
+          "hash": "d563ef06268ba75875d3db7c59efd15004fe8510b53d0189dcaf0a2614c2e68d",
+          "rows": 2
+        },
+        "market_data_cache": {
+          "hash": "2fe5cc4dee4e0282f2bf0675c3dfd83a242de9e5fbe55ee5f80f7a75b3cda35c",
+          "rows": 1
+        },
+        "plan_usage_cycles": {
+          "hash": "08ab86d668fb751b27cbf2731a9e63426a62ee256ef761ab16e6190a6b927be0",
+          "rows": 1
+        },
+        "net_worth_snapshots": {
+          "hash": "244c54a4abc2e1d91b560f33cad7d39fe08c9dbdf32f6fc242bbb3858dd04456",
+          "rows": 1
+        },
+        "notification_outbox": {
+          "hash": "4bceb82e35ad0c42a110e12226a53587ec0e7fccabb5f94590e560463eb6acd7",
+          "rows": 1
+        },
+        "plan_usage_requests": {
+          "hash": "9b1869d6863375a5f7dd4408aa4a5c586838bc35ac9396c9a9681619b93178bb",
+          "rows": 1
+        },
+        "shared_group_members": {
+          "hash": "1eb6b3eef9b5970211f69aa2996ebf4c8e49f2f0e55580f7634035d23c675845",
+          "rows": 3
+        },
+        "transaction_requests": {
+          "hash": "19e84f71848480fb1e155d7ac6937c6553a8c39a277c73be91082562d3832776",
+          "rows": 2
+        },
+        "shared_expense_splits": {
+          "hash": "f8d6b4d878e0259d2ccf9d5a82362149c5387e268d3f727b51613a06f4251245",
+          "rows": 2
+        },
+        "shared_expense_requests": {
+          "hash": "782d78f9a36ad031818f6e099f8168d2922fb7d418aa0d9fe0d1ff18597255c4",
+          "rows": 1
+        },
+        "investment_sale_requests": {
+          "hash": "a2e08db8a2a26449a6408e6569f4b4311a64ab232f5e1d19a9410fa11ad2121b",
+          "rows": 1
+        },
+        "account_creation_requests": {
+          "hash": "75038e3bd69198ed25ba43c9b10c0ebae4bc726be8f86deb6648e21c2dc9d8f9",
+          "rows": 1
+        },
+        "investment_create_requests": {
+          "hash": "15908b52260281820dc6e041804d3c3080a513a62be4e6c1710cbfc605145e27",
+          "rows": 1
+        },
+        "portfolio_performance_snapshots": {
+          "hash": "42bf7df9677221aa96205ca37835b70f1e0a0d29f29cd72dc8f5cc6118dd3bb1",
+          "rows": 1
+        }
+      },
+      "authUsers": "615e0a0595cc939d4208c9368361ecd347efa06fcd58122fa354af194dd47bf4",
+      "authIdentities": "cb7815c785809b3110f1f57b90e1da13909a9e9edf08b2071166b120f7312ab9"
+    },
+    "after": {
+      "public": {
+        "users": {
+          "hash": "205b70689a7b5581ed814817e73f590f012a792daf8f40e2db0ebced3db03f8d",
+          "rows": 2
+        },
+        "budgets": {
+          "hash": "b9b6afcda70aea3f059f5c180bf389b3759693e4df4a97f82a6e0aa919a86aa0",
+          "rows": 1
+        },
+        "accounts": {
+          "hash": "5e83ec445dbb4900b8a34ccf8f6c717fb372d083322abdac206ff1884294668c",
+          "rows": 3
+        },
+        "categories": {
+          "hash": "752dc2b9e57c727da02496aeb20e875b41f0e31b042f71f29dae4516c33d09ae",
+          "rows": 26
+        },
+        "investments": {
+          "hash": "0ea4607f0f3d7cb9cc8cd5aee2c265328e6217d8c1cf59a626d17f4981235aa4",
+          "rows": 2
+        },
+        "bot_sessions": {
+          "hash": "c7889f86295f624926a93eb0d39e4643eed4cae0e2e6aa2928e5064a8e62d42e",
+          "rows": 1
+        },
+        "transactions": {
+          "hash": "87961a6efc9c5e188cb8d3d5107992840aa8a82eec992997539129d1ab075619",
+          "rows": 3
+        },
+        "budget_alerts": {
+          "hash": "10a06b9a9af8954c2ca3acbb8cbf745ea633a1f2615d3252a868eb76b0dd8bd0",
+          "rows": 1
+        },
+        "shared_groups": {
+          "hash": "d92436c93db665dee8dbdecfe8768fcf9b3ee64d28be7982a185769342c95540",
+          "rows": 2
+        },
+        "exchange_rates": {
+          "hash": "578743415a7fc0f9d935689e6a07e2e2dab1d5c960e8ed8025ee046375f5bb6f",
+          "rows": 1
+        },
+        "import_batches": {
+          "hash": "3256d1ae30fa923b40a45edf013c1895b61ca59765385d465dba996618a6b43b",
+          "rows": 1
+        },
+        "recurring_rules": {
+          "hash": "5cfba72d16be9e069494d9038ddb97c85daae887aca7b479400c20281e3dd81e",
+          "rows": 1
+        },
+        "shared_expenses": {
+          "hash": "2b2c2e0eb216db457885306cb69a58c74c3195c8323e36aa7c424ef2acb97253",
+          "rows": 1
+        },
+        "investment_sales": {
+          "hash": "d563ef06268ba75875d3db7c59efd15004fe8510b53d0189dcaf0a2614c2e68d",
+          "rows": 2
+        },
+        "market_data_cache": {
+          "hash": "2fe5cc4dee4e0282f2bf0675c3dfd83a242de9e5fbe55ee5f80f7a75b3cda35c",
+          "rows": 1
+        },
+        "plan_usage_cycles": {
+          "hash": "08ab86d668fb751b27cbf2731a9e63426a62ee256ef761ab16e6190a6b927be0",
+          "rows": 1
+        },
+        "net_worth_snapshots": {
+          "hash": "244c54a4abc2e1d91b560f33cad7d39fe08c9dbdf32f6fc242bbb3858dd04456",
+          "rows": 1
+        },
+        "notification_outbox": {
+          "hash": "4bceb82e35ad0c42a110e12226a53587ec0e7fccabb5f94590e560463eb6acd7",
+          "rows": 1
+        },
+        "plan_usage_requests": {
+          "hash": "9b1869d6863375a5f7dd4408aa4a5c586838bc35ac9396c9a9681619b93178bb",
+          "rows": 1
+        },
+        "shared_group_members": {
+          "hash": "1eb6b3eef9b5970211f69aa2996ebf4c8e49f2f0e55580f7634035d23c675845",
+          "rows": 3
+        },
+        "transaction_requests": {
+          "hash": "19e84f71848480fb1e155d7ac6937c6553a8c39a277c73be91082562d3832776",
+          "rows": 2
+        },
+        "shared_expense_splits": {
+          "hash": "f8d6b4d878e0259d2ccf9d5a82362149c5387e268d3f727b51613a06f4251245",
+          "rows": 2
+        },
+        "shared_expense_requests": {
+          "hash": "782d78f9a36ad031818f6e099f8168d2922fb7d418aa0d9fe0d1ff18597255c4",
+          "rows": 1
+        },
+        "investment_sale_requests": {
+          "hash": "a2e08db8a2a26449a6408e6569f4b4311a64ab232f5e1d19a9410fa11ad2121b",
+          "rows": 1
+        },
+        "account_creation_requests": {
+          "hash": "75038e3bd69198ed25ba43c9b10c0ebae4bc726be8f86deb6648e21c2dc9d8f9",
+          "rows": 1
+        },
+        "investment_create_requests": {
+          "hash": "15908b52260281820dc6e041804d3c3080a513a62be4e6c1710cbfc605145e27",
+          "rows": 1
+        },
+        "portfolio_performance_snapshots": {
+          "hash": "42bf7df9677221aa96205ca37835b70f1e0a0d29f29cd72dc8f5cc6118dd3bb1",
+          "rows": 1
+        }
+      },
+      "authUsers": "615e0a0595cc939d4208c9368361ecd347efa06fcd58122fa354af194dd47bf4",
+      "authIdentities": "cb7815c785809b3110f1f57b90e1da13909a9e9edf08b2071166b120f7312ab9"
+    },
+    "exactMatch": true,
+    "otherPriorStacksConnected": false
+  },
+  "sqlSources": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "harnessSources": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/import-target/prepare.mjs",
+      "sha256": "e584762a7fbfc21b60a674da3b24b05a97aeb3a7967ba6dc50166900c14ed8d2"
+    },
+    {
+      "path": "scripts/lib/test-isolated-database.mjs",
+      "sha256": "395514d590d118c4b7b40a6ceca974db36fc2684a68447c857600be40e22da9b"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    }
+  ],
+  "planFixture": {
+    "A": "Free: CANCELED without paid period",
+    "B": "Premium: ACTIVE for30days",
+    "authority": "Administrative setup only in sixth replica; no MercadoPago operation or entitlement-provider acceptance"
+  },
+  "cleanup": [
+    {
+      "ownLocalSession": true,
+      "status": "PASS"
+    },
+    {
+      "ownLocalSession": true,
+      "status": "PASS"
+    }
+  ],
+  "cleanupPlan": {
+    "operation": "Official CLI2.120 stack stop only after parent releases sixth fixture and retains private dump",
+    "workdir": "/tmp/zarix-runtime-20261015/import-target",
+    "stackId": "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+    "destructiveCommands": false,
+    "scope": "Preserve native data/config/identity; no stop executed now; internal REST wildcard limitation applies to native runtime"
+  },
+  "privatePreparationReport": "/tmp/zarix-runtime-20261015/import-target-private/preparation.json",
+  "privateReportSha256": "cce5dd1d50cbfafcb4de3ff11da8d3fae640433064f644c8f63d724be5cc703b"
+}

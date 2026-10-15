@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-10-15T03:49:03.183694+00:00",
+  "scope": "Published preparation/build/Auth artifacts only; parent-owned local quote fixture server excluded. No new runtime execution inferred.",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "fd65aeb82b8776b8cd85c70accd93cc9b756d4d4fedc0da23bd344a552c0502a",
+      "bytes": 2889
+    },
+    {
+      "path": "app-binding.json",
+      "sha256": "ba8b3d536584572470bbdac34214fa75d4c2d87e4e5b15455515400701f23a30",
+      "bytes": 438
+    },
+    {
+      "path": "app-state.json",
+      "sha256": "1c128d4367e13ad1596feec5746b634ed2d9725121bfc099571dd05405b59b14",
+      "bytes": 562
+    },
+    {
+      "path": "build-app.py",
+      "sha256": "607a040cc29ea1864066b6ed5e25bea92cc9023da6a5395b53f2850918f7f6ba",
+      "bytes": 13256
+    },
+    {
+      "path": "build-proof.json",
+      "sha256": "edf1664050e20c16b1dd1804b75c511449f561c968c3aded0b26e8b6b9d1a757",
+      "bytes": 74240
+    },
+    {
+      "path": "preparation.json",
+      "sha256": "53825f5ed6f0f4b3611025d67041956706221cbb88eee59d8b96e4fbf3077727",
+      "bytes": 19400
+    },
+    {
+      "path": "prepare.mjs",
+      "sha256": "e584762a7fbfc21b60a674da3b24b05a97aeb3a7967ba6dc50166900c14ed8d2",
+      "bytes": 17506
+    }
+  ]
+}

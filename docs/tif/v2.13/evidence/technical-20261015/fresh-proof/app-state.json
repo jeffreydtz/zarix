@@ -1,0 +1,13 @@
+{
+  "purpose": "account-analysis-proof",
+  "nextPid": 52579,
+  "appOrigin": "http://127.0.0.1:3002",
+  "apiOrigin": "http://127.0.0.1:58321",
+  "copyRoot": "/tmp/zarix-app-account-analysis-20261015",
+  "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "buildId": "a2WBtszbvrpoT9GHwToED",
+  "sourceManifestSha256": "837127b25fdb1cb2a0f8ae03a09fd65b73bdb239026427b6ad38b882380905e8",
+  "startedAt": "2026-10-15T03:23:06.711816+00:00",
+  "fetchGuardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+  "guardInstalledBeforeNext": true
+}

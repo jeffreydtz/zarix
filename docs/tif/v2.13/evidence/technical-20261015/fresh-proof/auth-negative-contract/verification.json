@@ -1,0 +1,259 @@
+{
+  "caseId": "CP2-09",
+  "status": "FAIL",
+  "complete_original_contract": false,
+  "startedAt": "2026-10-15T03:38:03.881Z",
+  "checks": [
+    {
+      "name": "Wrong password literal HTTP401/403",
+      "status": "FAIL",
+      "provider": "GoTrue",
+      "observed": {
+        "httpStatus": 400,
+        "errorCode": "invalid_credentials",
+        "responseSha256": "5bb4a959091d991de70d803c01d2417f90cb24ac196e7e56c137f4bc1dc5caf9"
+      },
+      "credentialRejected": true,
+      "expectedHttp": [
+        401,
+        403
+      ]
+    },
+    {
+      "name": "No sensitive existence enumeration",
+      "status": "PASS",
+      "existing": {
+        "httpStatus": 400,
+        "errorCode": "invalid_credentials",
+        "responseSha256": "5bb4a959091d991de70d803c01d2417f90cb24ac196e7e56c137f4bc1dc5caf9"
+      },
+      "absent": {
+        "httpStatus": 400,
+        "errorCode": "invalid_credentials",
+        "responseSha256": "5bb4a959091d991de70d803c01d2417f90cb24ac196e7e56c137f4bc1dc5caf9"
+      },
+      "sameStatusAndMessage": true,
+      "sameErrorCode": true,
+      "rawMessagesPublished": false
+    },
+    {
+      "name": "Normal Auth/API control A",
+      "status": "PASS",
+      "ordinaryPasswordLogin": true,
+      "ownUserMatched": true,
+      "authHttp": 200,
+      "zarixApiHttp": 200,
+      "endpoint": "/api/user/notification-preferences",
+      "scope": "Notification-preferences SELECT only; no FX, financial aggregate, provider, or financial mutation"
+    },
+    {
+      "name": "Normal Auth/API control B",
+      "status": "PASS",
+      "ordinaryPasswordLogin": true,
+      "ownUserMatched": true,
+      "authHttp": 200,
+      "zarixApiHttp": 200,
+      "endpoint": "/api/user/notification-preferences",
+      "scope": "Notification-preferences SELECT only; no FX, financial aggregate, provider, or financial mutation"
+    },
+    {
+      "name": "Altered current ordinary JWT literal HTTP401/403",
+      "status": "PASS",
+      "observed": {
+        "httpStatus": 403,
+        "errorCode": "bad_jwt",
+        "responseSha256": "11dcc2155fc8fcce0cdde5ef315a13f901cfcc6001c787d46333c5f7dc42c39b"
+      },
+      "signatureBitChanged": true,
+      "issuedByNormalAuth": true,
+      "newJwtSigned": false
+    },
+    {
+      "name": "Expired original ordinary JWT literal HTTP401/403",
+      "status": "PASS",
+      "observed": {
+        "httpStatus": 403,
+        "errorCode": "bad_jwt",
+        "responseSha256": "dcdcdeef91fc4e33b01f81de35254b02d0695d195730c829c262dd39d53a4857"
+      },
+      "actualLifetimeSeconds": 60,
+      "secondsAfterExp": 973,
+      "clockOverride": false
+    },
+    {
+      "name": "Expired recovery hash literal HTTP401/403",
+      "status": "PASS",
+      "observed": {
+        "httpStatus": 403,
+        "errorCode": "otp_expired",
+        "responseSha256": "22c43994fce6e85271b94c790d5782983c3f73ef3157a39a9de3f47e39424d0a"
+      },
+      "authRecoverySetup": "auth-recovery.json",
+      "tokenValuesPublished": false
+    },
+    {
+      "name": "Reused recovery hash literal HTTP401/403",
+      "status": "PASS",
+      "observed": {
+        "httpStatus": 403,
+        "errorCode": "otp_expired",
+        "responseSha256": "22c43994fce6e85271b94c790d5782983c3f73ef3157a39a9de3f47e39424d0a"
+      },
+      "authRecoverySetup": "auth-recovery.json",
+      "tokenValuesPublished": false
+    },
+    {
+      "name": "ZARIX API401 for actual expired access plus its own revoked refresh",
+      "status": "PASS",
+      "observed": {
+        "httpStatus": 401,
+        "errorCode": null,
+        "responseSha256": "3be5b8e53fdc8b0a2996590589456db33504977f3d1ce9bb75016c8a707e1a71"
+      },
+      "ownRefreshPreviouslyLocallyRevoked": true,
+      "endpoint": "/api/user/notification-preferences",
+      "scope": "No claim that expired access with a valid refresh must be rejected"
+    },
+    {
+      "name": "Financial12 state unchanged and two prior normal controls preserved",
+      "status": "PASS",
+      "exactMatch": true,
+      "previousNormalControlsPresent": 2
+    }
+  ],
+  "target": {
+    "apiOrigin": "http://127.0.0.1:58321",
+    "appOrigin": "http://127.0.0.1:3002",
+    "databaseHost": "127.0.0.1",
+    "databasePort": 58322
+  },
+  "buildBinding": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "nextPid": 52579,
+    "copyRoot": "/tmp/zarix-app-account-analysis-20261015"
+  },
+  "scope": "All five Auth-negative input classes and anti-enumeration are evaluated independently; 400 is retained as a literal 401/403 contract failure. Normal A/B ZARIX API GET controls and unchanged financial state are separate assertions. No browser, SMTP, payment, source-stack, provider, or full-CU acceptance is inferred.",
+  "integrity": {
+    "financialTables": 12,
+    "before": {
+      "budgets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "accounts": {
+        "rows": 2,
+        "sha256": "d1ad67ca513768cfa46a7d4194ca4abc4c5cbbd6fedce2b36dd605972b2dc1b7"
+      },
+      "investments": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "transactions": {
+        "rows": 2,
+        "sha256": "30c7c258f05e8bf3be2795da3bb23c80caadb54df075c790fd5dc0167c3b5256"
+      },
+      "shared_groups": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "recurring_rules": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_expenses": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "investment_sales": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "net_worth_snapshots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_group_members": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_expense_splits": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "portfolio_performance_snapshots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    "after": {
+      "budgets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "accounts": {
+        "rows": 2,
+        "sha256": "d1ad67ca513768cfa46a7d4194ca4abc4c5cbbd6fedce2b36dd605972b2dc1b7"
+      },
+      "investments": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "transactions": {
+        "rows": 2,
+        "sha256": "30c7c258f05e8bf3be2795da3bb23c80caadb54df075c790fd5dc0167c3b5256"
+      },
+      "shared_groups": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "recurring_rules": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_expenses": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "investment_sales": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "net_worth_snapshots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_group_members": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "shared_expense_splits": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "portfolio_performance_snapshots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    "exactMatch": true,
+    "previousNormalControlsPresent": 2,
+    "sourceOrOtherStacksConnected": false
+  },
+  "localCleanup": {
+    "newOwnSessions": 2,
+    "localLogout": [
+      {
+        "httpStatus": 204,
+        "onlyOwnSession": true
+      },
+      {
+        "httpStatus": 204,
+        "onlyOwnSession": true
+      }
+    ],
+    "globalSignOut": false,
+    "allOwnClosed": true
+  },
+  "finishedAt": "2026-10-15T03:38:05.025Z"
+}

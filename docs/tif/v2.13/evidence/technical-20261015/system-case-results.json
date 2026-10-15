@@ -1,5 +1,39 @@
 [
   {
+    "case_id": "CP2-09",
+    "status": "FAIL",
+    "complete_original_contract": true,
+    "executed_original_contract": true,
+    "accepted_original_contract": false,
+    "assertions": [
+      "Wrong password literal HTTP401/403",
+      "No sensitive existence enumeration",
+      "Normal Auth/API control A",
+      "Normal Auth/API control B",
+      "Altered current ordinary JWT literal HTTP401/403",
+      "Expired original ordinary JWT literal HTTP401/403",
+      "Expired recovery hash literal HTTP401/403",
+      "Reused recovery hash literal HTTP401/403",
+      "ZARIX API401 for actual expired access plus its own revoked refresh",
+      "Financial12 state unchanged and two prior normal controls preserved"
+    ],
+    "evidence": "fresh-proof/auth-negative-contract/verification.json; fresh-proof/auth-negative-contract/independent-review.json; fresh-proof/verify-auth-negative-contract.mjs; fresh-proof/auth-recovery.json; fresh-proof/auth-expiry.json",
+    "scope": "Original integration negative contract executed over five input classes: wrong password, altered current normal JWT, genuinely expired JWT, expired recovery, reused recovery. Ten named checks include anti-enumeration, A/B ordinary Auth/API controls, expired-access+revoked-refresh ZARIX401, and unchanged12financialtables/two previous normal sessions. complete_original_contract denotes execution coverage; FAIL retains GoTrue400 invalid_credentials versus required401/403. No browser, SMTP, whole-Auth-zero-writes or full-CU acceptance.",
+    "failure": "Wrong password returned GoTrue HTTP400 invalid_credentials without user/token; original requires401/403. Other9checksPASS; no vendor remapping or acceptance promotion.",
+    "executed_revision": {
+      "product": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "buildId": "a2WBtszbvrpoT9GHwToED",
+      "appOrigin": "http://127.0.0.1:3002",
+      "apiOrigin": "http://127.0.0.1:58321"
+    },
+    "report_sha256": "6cb427b06c75ad73bb5ce426953a5be8346c3cb22ce89afa1291100905c24156",
+    "harness_sha256": "5a3fec27906f6e683fa23f50982343fc7449fe83bb6758346fdb058a4744f1dc",
+    "independent_review_required_before_reconciliation": false,
+    "independent_review_sha256": "ccc9f82887cc80e47ea9ad0a45252ec86b77c2df035e5559dfe93b2b6a3abf59",
+    "review_scope": "Independent original CSV/read-only integration comparison; all five classes executed; complete flag denotes execution coverage only; FAIL preserved.",
+    "adapter_scope": "Original recorded FAIL and independent complete negative execution preserved. No HTTP remapping, vendor change, browser claim or acceptance PASS."
+  },
+  {
     "status": "PASS",
     "complete_original_contract": true,
     "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",

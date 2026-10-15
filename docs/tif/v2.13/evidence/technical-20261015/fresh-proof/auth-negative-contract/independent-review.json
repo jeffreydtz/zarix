@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "caseId": "CP2-09",
+  "reviewedAt": "2026-10-15T03:44:44.605274+00:00",
+  "reviewer": "/root/native_runtime/restore_fetch_guard",
+  "reviewMethod": "Independent static comparison of the original CSV, exact harness bytes, recorded integration results, real Auth fixture reports, frozen product endpoint, response digests, financial snapshots and session-cleanup assertions. No application, SQL, browser, runtime service or network request executed by this review.",
+  "reviewVerdict": "SUFFICIENT_INTEGRATION_COVERAGE_TO_RECORD_LITERAL_FAIL",
+  "status": "FAIL",
+  "complete_original_contract": true,
+  "completeOriginalContractMeaning": "Execution coverage: all five original negative-input classes and the applicable integration oracles were evaluated. This flag does not mean the case passed, every possible UI journey ran, or the whole CU was accepted.",
+  "acceptancePassed": false,
+  "sourceReportPreserved": {
+    "status": "FAIL",
+    "complete_original_contract": false,
+    "explanation": "The original run report is preserved byte-for-byte. Its false flag was conservative scope metadata; this independent review records complete five-input integration execution while retaining the literal case failure."
+  },
+  "originalContract": {
+    "id": "CP2-09",
+    "requisitos": "RF13;RNF03",
+    "cu": "CU-002",
+    "escenario": "A05",
+    "nivel": "Integración / sistema",
+    "tipo": "Falla",
+    "unidad_o_componente": "Cuentas / datos / acceso / plan",
+    "precondiciones": "Fixture usuario existente",
+    "entrada": "password erróneo; JWTalterado; JWTexpirado; reset tokenexpirado/reutilizado",
+    "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+    "resultado_esperado": "401/403 consistente; sin datos ni cambios; tokenreset no reutilizable; no enumeración sensible de existencia",
+    "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+  },
+  "originalCaseCsvLine": 91,
+  "evidence": {
+    "originalCaseCsv": {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    "contractReport": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/auth-negative-contract/verification.json",
+      "sha256": "6cb427b06c75ad73bb5ce426953a5be8346c3cb22ce89afa1291100905c24156"
+    },
+    "contractHarness": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/verify-auth-negative-contract.mjs",
+      "sha256": "5a3fec27906f6e683fa23f50982343fc7449fe83bb6758346fdb058a4744f1dc"
+    },
+    "realRecoveryReport": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/auth-recovery.json",
+      "sha256": "d7d17f5e94ac51efb9ca59cdc59091fee3b7256912318682355bcea22838e7d4"
+    },
+    "realRecoveryHarness": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/prepare-recovery-fixture.mjs",
+      "sha256": "09a8cdde6a9a6889c1bc160520d16ff4f1637fbf084690a058547ccb2ff18f51"
+    },
+    "realExpiryReport": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/auth-expiry.json",
+      "sha256": "741bbf38d5c866f0eb9acdf5e6ad556ab15edbd8d8f95bb1a8114d9808a74505"
+    },
+    "expiryHarness": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/verify-auth-expiry.mjs",
+      "sha256": "e0e05a0047a20f23aafb03774ec5e6694923e49563716501a3897c1990fc34a4"
+    },
+    "expiryResumeHarness": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/resume-auth-expiry.mjs",
+      "sha256": "14e0b826d4d654ce751ef868142eddadee6fcb8de5ca69401c59d945ee9a6bff"
+    },
+    "productReadOnlyEndpoint": {
+      "path": "app/api/user/notification-preferences/route.ts",
+      "sha256": "1a82f095b2f02d52029ba28deb69e515078be3a35eaa0b7ab5ff9ec765aaf166"
+    }
+  },
+  "buildBinding": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "nextPid": 52579,
+    "copyRoot": "/tmp/zarix-app-account-analysis-20261015"
+  },
+  "fiveInputMapping": [
+    {
+      "originalInput": "password erróneo",
+      "executedCheckName": "Wrong password literal HTTP401/403",
+      "status": "FAIL",
+      "httpStatus": 400,
+      "errorCode": "invalid_credentials",
+      "responseSha256": "5bb4a959091d991de70d803c01d2417f90cb24ac196e7e56c137f4bc1dc5caf9",
+      "literal401Or403Satisfied": false,
+      "fixtureAndOracle": "Existing cloned identity; ordinary password grant rejects the deliberately wrong password. Actual400 is a failure against literal401/403."
+    },
+    {
+      "originalInput": "JWTalterado",
+      "executedCheckName": "Altered current ordinary JWT literal HTTP401/403",
+      "status": "PASS",
+      "httpStatus": 403,
+      "errorCode": "bad_jwt",
+      "responseSha256": "11dcc2155fc8fcce0cdde5ef315a13f901cfcc6001c787d46333c5f7dc42c39b",
+      "literal401Or403Satisfied": true,
+      "fixtureAndOracle": "A normally issued current ordinary JWT has its first signature character changed; no replacement JWT is signed."
+    },
+    {
+      "originalInput": "JWTexpirado",
+      "executedCheckName": "Expired original ordinary JWT literal HTTP401/403",
+      "status": "PASS",
+      "httpStatus": 403,
+      "errorCode": "bad_jwt",
+      "responseSha256": "dcdcdeef91fc4e33b01f81de35254b02d0695d195730c829c262dd39d53a4857",
+      "literal401Or403Satisfied": true,
+      "fixtureAndOracle": "Same original ordinary60-second access JWT was valid before expiry, then rejected after real elapsed expiry; no clock override."
+    },
+    {
+      "originalInput": "reset tokenexpirado",
+      "executedCheckName": "Expired recovery hash literal HTTP401/403",
+      "status": "PASS",
+      "httpStatus": 403,
+      "errorCode": "otp_expired",
+      "responseSha256": "22c43994fce6e85271b94c790d5782983c3f73ef3157a39a9de3f47e39424d0a",
+      "literal401Or403Satisfied": true,
+      "fixtureAndOracle": "Real admin.generateLink recovery hash remains current; only the local fixture recovery_sent_at was aged3605s beyond effective3600s TTL."
+    },
+    {
+      "originalInput": "reset tokenreutilizado",
+      "executedCheckName": "Reused recovery hash literal HTTP401/403",
+      "status": "PASS",
+      "httpStatus": 403,
+      "errorCode": "otp_expired",
+      "responseSha256": "22c43994fce6e85271b94c790d5782983c3f73ef3157a39a9de3f47e39424d0a",
+      "literal401Or403Satisfied": true,
+      "fixtureAndOracle": "Real recovery hash first verified successfully; only its new session was locally closed; reuse was rejected before a replacement recovery hash was generated. Contract run explicitly retries that consumed hash."
+    }
+  ],
+  "recordedTotals": {
+    "checks": 10,
+    "passed": 9,
+    "failed": 1,
+    "soleFailure": "Wrong password returned400 invalid_credentials rather than the literal401/403; credentials were rejected."
+  },
+  "oracleMapping": {
+    "literal401Or403": {
+      "evaluated": true,
+      "satisfied": false,
+      "failureInput": "password erróneo",
+      "observedHttp": 400,
+      "observedCode": "invalid_credentials",
+      "expectedHttp": [
+        401,
+        403
+      ],
+      "noStatusNormalization": true
+    },
+    "noProtectedData": {
+      "evaluated": true,
+      "satisfiedForObservedResponses": true,
+      "authenticationSuccessFieldsRejectedByHarness": [
+        "user",
+        "id",
+        "access_token"
+      ],
+      "independentExactErrorOnlyResponseChecks": [
+        {
+          "name": "credentialErrorOnly",
+          "canonicalErrorBody": {
+            "code": 400,
+            "error_code": "invalid_credentials",
+            "msg": "Invalid login credentials"
+          },
+          "responseSha256": "5bb4a959091d991de70d803c01d2417f90cb24ac196e7e56c137f4bc1dc5caf9",
+          "matchedCheckNames": [
+            "Wrong password literal HTTP401/403"
+          ],
+          "exactBytesMatch": true,
+          "containsUserOrFinancialData": false
+        },
+        {
+          "name": "recoveryErrorOnly",
+          "canonicalErrorBody": {
+            "code": 403,
+            "error_code": "otp_expired",
+            "msg": "Email link is invalid or has expired"
+          },
+          "responseSha256": "22c43994fce6e85271b94c790d5782983c3f73ef3157a39a9de3f47e39424d0a",
+          "matchedCheckNames": [
+            "Expired recovery hash literal HTTP401/403",
+            "Reused recovery hash literal HTTP401/403"
+          ],
+          "exactBytesMatch": true,
+          "containsUserOrFinancialData": false
+        },
+        {
+          "name": "protectedAppErrorOnly",
+          "canonicalErrorBody": {
+            "error": "Unauthorized"
+          },
+          "responseSha256": "3be5b8e53fdc8b0a2996590589456db33504977f3d1ce9bb75016c8a707e1a71",
+          "matchedCheckNames": [
+            "ZARIX API401 for actual expired access plus its own revoked refresh"
+          ],
+          "exactBytesMatch": true,
+          "containsUserOrFinancialData": false
+        }
+      ],
+      "protectedApplicationEndpoint": "GET /api/user/notification-preferences",
+      "protectedApplicationHttp": 401,
+      "frozenEndpointSourceHashMatchesRepository": true
+    },
+    "financialStateUnchanged": {
+      "evaluated": true,
+      "satisfied": true,
+      "financialTables": 12,
+      "tableNames": [
+        "accounts",
+        "budgets",
+        "investment_sales",
+        "investments",
+        "net_worth_snapshots",
+        "portfolio_performance_snapshots",
+        "recurring_rules",
+        "shared_expense_splits",
+        "shared_expenses",
+        "shared_group_members",
+        "shared_groups",
+        "transactions"
+      ],
+      "allBeforeAfterRowCountsAndFullRowHashesEqual": true,
+      "writeAllowedByHarnessSql": false
+    },
+    "resetTokenNotReusable": {
+      "evaluated": true,
+      "satisfied": true,
+      "firstRealRecoveryVerificationSucceeded": true,
+      "replayRejectedBeforeNextRecoveryHashGeneration": true,
+      "replayHttp": 403,
+      "replayCode": "otp_expired",
+      "onlyNewRecoverySessionLocallyClosedHttp": 204
+    },
+    "noSensitiveExistenceEnumeration": {
+      "evaluated": true,
+      "satisfiedForObservedStatusAndBody": true,
+      "existingHttp": 400,
+      "absentHttp": 400,
+      "errorCode": "invalid_credentials",
+      "identicalEntireResponseBodySha256": "5bb4a959091d991de70d803c01d2417f90cb24ac196e7e56c137f4bc1dc5caf9",
+      "sameNonemptyMessageAndCode": true,
+      "timingSideChannelNotEvaluated": true
+    }
+  },
+  "normalControlsAndCleanup": {
+    "normalAAndBPasswordLogin": true,
+    "normalAAndBAuthUserHttp": 200,
+    "normalAAndBProtectedAppGetHttp": 200,
+    "priorNormalSessionIdsPreservedCount": 2,
+    "newOwnNormalSessions": 2,
+    "newOwnLocalLogoutHttp": [
+      204,
+      204
+    ],
+    "globalSignOut": false,
+    "sourceOrOtherStacksConnectedByHarness": false
+  },
+  "scopeLimits": [
+    "API integration evidence is sufficient to record this case as FAIL because a required401/403 response was observed as400. This review makes no browser/UI, full-CU or passing-acceptance claim.",
+    "Financial preservation covers the12 named financial tables. It does not claim every Auth, audit, session, refresh-token or other database table was immutable.",
+    "Normal local Auth logins, new sessions, refresh/session cleanup, last-sign-in metadata and Auth audit entries are expected authentication side effects. These are distinct from forbidden financial mutations.",
+    "Recovery expiry was created by aging recovery_sent_at in the isolated local fixture beyond the resolved3600-second TTL. This is not a one-hour real-wait test; the access-JWT expiry proof did use actual elapsed time.",
+    "Expired access plus its own revoked refresh is rejected. An expired access token with a valid refresh token may legitimately renew its session.",
+    "Anti-enumeration compares the actual status and complete error-response bytes for one existing identity and one random absent identity. Timing, broader population and production behavior are not established.",
+    "Recovery links were generated locally without email delivery. SMTP, external provider, payment, deployment and production behavior are outside this evidence."
+  ],
+  "materialMissingEvidenceForRecordedFail": [],
+  "unmodifiedArtifacts": true
+}

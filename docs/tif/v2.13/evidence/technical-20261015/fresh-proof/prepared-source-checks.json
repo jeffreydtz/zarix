@@ -1,0 +1,66 @@
+{
+  "checkedAt": "2026-10-15T03:41:40.624712+00:00",
+  "scope": "Syntax only; these checks do not rerun runtime or acceptance",
+  "checks": [
+    {
+      "file": "fresh-proof/auth-expiry-attempt-1/harness.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/auth-expiry-attempt-2/harness.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/build-app.py",
+      "check": "Python ast.parse",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/prepare-recovery-fixture.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/prepare.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/quote-fixture-server.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/resume-auth-expiry.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/seed-quotes.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/verify-auth-expiry.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "fresh-proof/verify-auth-negative-contract.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    },
+    {
+      "file": "import-target/build-app.py",
+      "check": "Python ast.parse",
+      "exitCode": 0
+    },
+    {
+      "file": "import-target/prepare.mjs",
+      "check": "node --check",
+      "exitCode": 0
+    }
+  ]
+}

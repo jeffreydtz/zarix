@@ -1,0 +1,37 @@
+{
+  "status": "FAIL",
+  "startedAt": "2026-10-15T03:20:51.043Z",
+  "target": "http://127.0.0.1:58321",
+  "checks": [
+    {
+      "name": "ordinary temporary access JWT initially valid; own refresh locally revoked without global signout",
+      "status": "PASS",
+      "iat": 1792034451,
+      "exp": 1792034511,
+      "lifetimeSeconds": 60,
+      "before": {
+        "httpStatus": 200,
+        "errorCode": null
+      },
+      "refreshRejectedHttp": 400,
+      "refreshErrorCode": "refresh_token_not_found",
+      "authAfterLocalSignoutBeforeExpiry": {
+        "httpStatus": 403,
+        "errorCode": "session_not_found"
+      },
+      "restBeforeExpiry": {
+        "httpStatus": 200,
+        "errorCode": null
+      },
+      "revocationMethod": "Direct ordinary Auth logout scope=local with the exact original access JWT; no SDK getSession/refresh of temporary C before revocation",
+      "tokensPublished": false
+    }
+  ],
+  "scope": "Real short-lived JWT of a new ordinary temporary session; only that session locally revoked. Two other ordinary control sessions preserved with legitimate refresh. Not browser/API-app CP2-21 acceptance or an SMTP/recovery delivery test.",
+  "failure": {
+    "type": "AssertionError",
+    "location": "39",
+    "rawExceptionPublished": false
+  },
+  "finishedAt": "2026-10-15T03:21:53.053Z"
+}

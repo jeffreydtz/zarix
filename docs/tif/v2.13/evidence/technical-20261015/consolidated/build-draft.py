@@ -47,13 +47,14 @@ for item in quotes['checks']:
 core=read('core/verification.json')
 core_final=read('core-final/verification.json')
 core_responsive=read('core-responsive/verification.json')
-for prefix in ['core','core-final','core-responsive']:
+core_reliability=read('core-reliability/verification.json')
+for prefix in ['core','core-final','core-responsive','core-reliability']:
     for name in ['final-vitest','coverage-summary','dependency-audit','balance-sql','shared-sql',
                  'plan-sql','durable-sql','import-sql','account-recompute-sql','database-verification']:
         read(prefix+'/'+name+'.json')
 for rel in ['dependencies/metadata.json','review/source-manifest-final.json','review/source-manifest-global2.json']:
     read(rel)
-for label, report, prefix in [('PHASE1',core,'core'),('PHASE2',core_final,'core-final'),('PHASE3',core_responsive,'core-responsive')]:
+for label, report, prefix in [('PHASE1',core,'core'),('PHASE2',core_final,'core-final'),('PHASE3',core_responsive,'core-responsive'),('PHASE4',core_reliability,'core-reliability')]:
     if report:
         for command in report['commands']:
             scope=report['buildEnvironment'] if command['name']=='build' else 'Comando global de fase identificada; no sustituye aceptación UI/proveedor'
@@ -117,10 +118,10 @@ if accepted_system:
     for item in accepted_system:
         assert item.get('complete_original_contract') is True and item.get('assertions')
         add('ORIGINAL-'+item['case_id'],item['status'],'Contrato original completo reconciliado con evidencia ejecutada',
-            item['scope'],'../system-case-results.json; ../review/verified-system-case-results.json',
+            item['scope'],'../system-case-results.json; '+('../fresh-proof/auth-negative-contract/independent-review.json' if item['case_id']=='CP2-09' else '../review/verified-system-case-results.json'),
             ' | '.join(item['assertions']),json.dumps(item.get('executed_revision',{}),ensure_ascii=False),
             cu={'CP1':'CU001','CP2':'CU002','CP3':'CU003','CP4':'CU004'}.get(item['case_id'].split('-')[0],'CU001–CU004'))
-        rows[-1]['original_contract_promotion']='EXPLICIT: complete_original_contract=true and independent semantic review; see exact historical run binding'
+        rows[-1]['original_contract_promotion']='EXPLICIT: original execution coverage and independently reviewed status; no acceptance PASS inferred from the complete flag'
 security=read('security-matrix/review-reconciliation-before-http-fix.json')
 if security:
     add('SECURITY-MATRIX-BEFORE-HTTP-FIX',security['status'],json.dumps(security['counts']),
@@ -223,6 +224,51 @@ if loads:
                     'Interrupción del perfil separada de las observaciones FAIL ya conservadas','../'+rel,blocker='Sin datos; no imputar PASS ni FAIL a las observaciones ausentes')
 else:
     for name in ['WARM','COLD','OUTAGE']: add('LOAD-'+name,'BLOCKED','Perfil final pendiente','100observaciones/20contextos/CDP20Mbps50ms por target; freshNode solamente en cold; proveedoresdobles en outage',blocker='No informe final de perfil')
+# Scoped restore functioning is executed; it does not replace nominal CNF12.
+restored=read('restored-ui/restored-ui-read.json')
+if restored:
+    for item in restored.get('cases',[]):
+        add('RESTORED-UI-'+item['cu'],item['status'],'Lectura normal UI→API→SQL restaurados',
+            item['scope']+'; ocho FX auxiliares sintéticas posteriores al restore declaradas, sin mutación financiera',
+            '../restored-ui/restored-ui-read.json',json.dumps(item.get('evidence',{}),ensure_ascii=False),
+            restored.get('buildBinding',{}).get('revision',''),cu=item['cu'])
+    for rel in ['restored-ui/manifest.json','restored-ui/screenshot-review.json','restored-ui/next-cleanup.json']:
+        read(rel)
+for folder in ['fresh-proof','import-target']:
+    prep=read(folder+'/preparation.json')
+    if prep:
+        add(folder.upper()+'-PREPARATION','PASS' if prep.get('status')=='PASS_PREPARED' else 'FAIL',
+            'Dos grupos de preparación; dos identidades clonadas sin sesiones; 12tablas financieras vacías inicialmente',
+            prep['scope']+'; Free/Premium administrativos de prueba, sin proveedor de cobro',
+            '../'+folder+'/preparation.json')
+    build=read(folder+'/build-proof.json')
+    if build:
+        add(folder.upper()+'-BUILD','PASS' if build.get('exitCode')==0 else 'FAIL',
+            str(build.get('sourceCount'))+'fuentes; build'+str(build.get('buildId')),
+            'Copia CI4 independiente, dependencias existentes/Inter7offline/guardglobalfetchloopback; no firewall ni todoTCP',
+            '../'+folder+'/build-proof.json',revision=build.get('revision',''))
+for rel,key in [('fresh-proof/auth-expiry.json','PROOF-AUTH-EXPIRY'),('fresh-proof/auth-recovery.json','PROOF-AUTH-RECOVERY'),
+                ('fresh-proof/auth-negative-contract/verification.json','PROOF-CP2-09-NEGATIVE')]:
+    report=read(rel)
+    if report:
+        status='FAIL' if report.get('status')=='FAIL' else 'PASS' if report.get('status','').startswith('PASS_SCOPED_') else 'BLOCKED'
+        for number,item in enumerate(report.get('checks',[]),1):
+            add(key+'-'+str(number),item['status'],'Comprobación Auth de alcance declarado',report['scope'],
+                '../'+rel,item['name'],cu='CU002')
+        add(key,status,'Resultado general '+report['status'],report['scope'],'../'+rel,cu='CU002')
+for rel in ['fresh-proof/auth-expiry-attempt-1/verification.json','fresh-proof/auth-expiry-attempt-2/verification.json']:
+    prior=read(rel)
+    if prior:
+        add('HISTORICAL-'+rel.split('/')[1].upper(),'FAIL','FAIL original del arnés preservado',
+            'Oráculo incorrecto anterior: Auth/session revocada o ventana exp+2dentro skew30s; no convertir en fallo de producto',
+            '../'+rel,cu='CU002')
+for profile in ['real','fallback-real']:
+    rel='public-quotes/'+profile+'/public-quotes.json';quotes=read(rel)
+    if quotes:
+        add('PUBLIC-QUOTES-APP-'+profile.upper(),quotes['status'],'HTTP'+str(quotes.get('httpStatus'))+'; FXnuevas'+str(quotes.get('newPublicFxRows')),
+            quotes['scope']+'; posible NextDataCache, no socket externo nuevo garantizado por respuesta ni SLO proveedor',
+            '../'+rel,revision=quotes.get('revision',''))
+
 for key,cu,scope,blocker in [
  ('CNF-01-INTEGRAL','CU001–CU004','Carga canónica equivalente al despliegue','No equivalencia hardware/topología/dispositivo; tres perfiles localesPASS no cierran original'),
  ('CNF-02','CU001–CU004','Disponibilidad mensual≥99,5%; sonda autenticada5min','Sin serie real mensual; las muestras ausentes no cuentan satisfactorias'),
@@ -232,10 +278,10 @@ for key,cu,scope,blocker in [
  ('CNF-06','CU002','Contrato visual original cuentas/perfil/exportación','Falta suite exacta completa con controles y descarga operables; lecturas no la sustituyen'),
  ('CNF-07','CU003','Contrato visual original análisis/chat/números/fechas','Falta suite exacta completa de análisis y chat, incluidos proveedores necesarios'),
  ('CNF-08','CU004','Contrato visual original inversiones/operaciones/simulación','Falta suite exacta completa en los viewports/acciones originales'),
- ('CNF-09','CU001–CU004','Chrome/Firefox/Safari/Edge reales versionados, actual/anterior','Matriz crítica completa no ejecutada; permisos/términos Firefox/Edge pendientes; WebKit no es Safari'),
+ ('CNF-09','CU001–CU004','Chrome/Firefox/Safari/Edge reales versionados, actual/anterior','Matriz crítica completa no ejecutada; usuario rechazó instalarFirefox/Edge; SafariWebDriverdisabled; Arc autorizado pero AutomationCodex→Arc denegada -1744 sin nueva autorización; WebKit no es Safari'),
  ('CNF-10','CU001–CU004','Credenciales en todos los canales originales, sin efectos no autorizados','Auth/grants y guards parciales tienen evidencia separada; faltan todos los canales/proveedores y fixture original exacto'),
  ('CNF-11','CU001–CU004','Idempotencia/rollback/concurrencia manual/bot/importación/cron/venta/pago originales','Recibos/locks/rollback nativos y dobles tienen evidencia separada; no todos los canales originales incluidos pago/proveedor real'),
- ('CNF-12-ORIGINAL','CU001–CU004','Fixture2cuentas/20movimientos/3lotes/1regla/1grupo; snapshot y gasto1500 posterior; RPO23h/RTO3h30/fronteras24h/4h/+1s y lectura4CU restaurados','Recuperación64tablas/Auth/Storage probada aparte. Fixture/timing/fronteras/UI exactos todavía no ejecutados; pasos locales permitidos no requieren TLS ni credenciales externas. Backup del plan realmente contratado tampoco está acreditado por el mecanismo manual local'),
+ ('CNF-12-ORIGINAL','CU001–CU004','Fixture2cuentas/20movimientos/3lotes/1regla/1grupo; snapshot y gasto1500 posterior; RPO23h/RTO3h30/fronteras24h/4h/+1s y lectura4CU restaurados','Recuperación64tablas/Auth/Storage y cuatro lecturas UI restauradas acotadas probadas aparte, con ocho FX auxiliares posteriores declaradas. Fixture nominal/timing/fronteras originales todavía no ejecutados; backup del plan realmente contratado no acreditado por el mecanismo manual local'),
  ('CNF-13','CU001–CU004','Correlación request→servicio→efecto/rechazo y ausencia de marcadores secretos originales','Scan heurístico no prueba fixture completo de correlación, errores de proveedores y ausencia de los marcadores de datos privados originales'),
  ('CP3-19-ORIGINAL','CU003','MEP seleccionable original','ContradiceRN08blue.sell; evidencia derivada blue no aprueba fixtureMEP'),
  ('PROVIDER-GEMINI','CU001;CU003','OCR y IA reales','GEMINI_API_KEY ausente; dobles no validan proveedor/cuota real. CP3-09 requiere proveedor'),
