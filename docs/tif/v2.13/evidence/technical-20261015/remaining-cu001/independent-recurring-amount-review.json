@@ -1,0 +1,185 @@
+{
+  "status": "PASS_TWO_SCOPED_COMPOSITES_THREE_EXPLICIT_BLOCKERS",
+  "reviewedAt": "2026-10-15T05:45:51.140469+00:00",
+  "reviewer": "sql_security",
+  "method": "Read-only review of original CSV, retained native reports and exact executed harness bytes, plus symbolic source-control-flow proof. No app/API/Auth/DB calls, test execution, helper imports or matrix edits.",
+  "originalCases": [
+    {
+      "id": "CP1-23",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "type": "EXPLICIT_NATIVE_PLUS_SOURCE_CONTROL_FLOW_COMPOSITE",
+      "originalContract": {
+        "precondiciones": "U1 A activa; categoríaAlimentos",
+        "entrada": "crear diaria gasto1000 inicio2026-10-01 fin2026-10-06; suspender/reactivar/editar",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "regla propiedadU1 refleja estados/datos; fin inclusiva; próxima ejecución coherente; sin movimientos al guardar regla",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "runtimeEvidence": {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-4-cp1-23-premium/verification.json",
+        "sha256": "636fec29a219dc91a35612870b571cf54846c6d00bee4752fa7c1c82f1c4ae24",
+        "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+        "buildId": "aqWYS3F5R_VxiHxD3LpJV",
+        "passedAssertions": 9,
+        "sourceAndServedCopyStable": true,
+        "protectedOriginalTables": 12,
+        "allOriginalsUnchanged": true,
+        "physicalOwner": "B is the ordinary synthetic Premium actor for this independent logical-owner fixture."
+      },
+      "provedRuntime": "NormalAPI creation201, owned daily start01Oct/end06Oct/amount1000; suspend/reactivate/edit1200 preserve owner/date; exact full ledger unchanged across every save operation.",
+      "nextOccurrenceSourceProof": {
+        "path": "app/(authenticated)/recurring/page.tsx",
+        "sha256": "dbf1b2a7452118269d85bbb60cb188fb00dc66427f5658d57ae80365a3aadf05",
+        "identicalGit836And84": true,
+        "functions": "getNextRenewalDate lines148–181; getStatusTag lines184–193",
+        "fixture": "Daily start2026-10-01/end2026-10-06 and today06Oct at the documented fixed clock; no occurrence is created by rule saving.",
+        "derivation": [
+          "For the daily rule, local calendar-day difference from01Oct to06Oct is5, so next=start+5days=06Oct. The while loop does not advance a date equal to today.",
+          "The end comparison is next>end, so equality on06Oct is admitted. This establishes the inclusive end for this exact fixture.",
+          "Inactive state returns Pausada before date formatting; reactivation on06Oct returns Se renueva hoy. Editing only amount1000→1200 does not change the schedule.",
+          "With today07Oct, next07Oct>end06Oct returns null and the active status is Finalizada."
+        ],
+        "evaluation": "Symbolic reading of the exact existing product function; no new execution or rendered UI asserted."
+      },
+      "limits": [
+        "The earlier Free-actor403 attempt remains preserved; this successful independent retry uses the already existing Premium actor without changing original profiles.",
+        "No nonexistent next-date API field, rendered recurring page, browser or click is asserted. Source control flow is explicitly composed with native state/SQL evidence; this is not a claim of one served UI journey."
+      ]
+    },
+    {
+      "id": "CP1-34",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "type": "EXPLICIT_NATIVE_API_TRANSPORT_SEMANTIC_REVIEW",
+      "originalContract": {
+        "precondiciones": "U1 A=1.00 ARS; no descubierto",
+        "entrada": "gasto0.01; después fixture fresco monto0, -1,0.001 yNaN",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "0.01 acepta y A=0.99; demásrechazan sin cambio; precisión2decimales propuesta",
+        "evidencia_requerida": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "runtimeEvidence": {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+        "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251",
+        "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+        "buildId": "a2WBtszbvrpoT9GHwToED",
+        "passedAssertions": 29,
+        "sourceStable": true,
+        "protectedOriginalTables": 12,
+        "allOriginalsUnchanged": true
+      },
+      "provedRuntime": "Own initial1.00 account accepts0.01 exactly once and reaches0.99. Four fresh independent accounts reject0,-1,0.001 and a wire string whose actual Number conversion is NaN, each400 with unchanged full account/ledger and zero economic rows.",
+      "nanTransport": "JSON cannot transport a numeric NaN literal. The actual wire string NaN reaches the existing Number(body.amount) conversion, becomes the actual nonfinite NaN value and is rejected by Number.isFinite. The recorded observation and exact executed harness preserve that distinction.",
+      "limits": [
+        "CSV does not require a browser numeric-input observation. That extra raw pending scope remains in the immutable report and is not presented as executed.",
+        "No claim that JSON numeric NaN, null or a particular browser input is equivalent to the observed string-to-number API path.",
+        "The retained report contains29 assertions, not31; no checks were added retrospectively."
+      ]
+    },
+    {
+      "id": "CP1-24",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "originalContract": {
+        "precondiciones": "U1 A=10000; diaria1000 activa inicio10-01 ultima10-05; bot vinculado",
+        "entrada": "dos disparos concurrentes reloj2026-10-06T12:00:00Z y retry misma fecha",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "una ocurrencia clave(regla,2026-10-06); un gasto; A=9000; ultima10-06; una intención de notificación",
+        "evidencia_requerida": "Logs claim/SQL/clave única, movimiento, saldo, ultima, outbox lógico y proveedor simulado"
+      },
+      "observed": "Historical two concurrentcron calls+same-dayretry200, one occurrence/one debit9000/marker06Oct/outbox1, all five assertionsPASS.",
+      "blockerKind": "UNSATISFIED_LITERAL_FIXTURE_AND_UNEXECUTED_SIMULATED_PROVIDER",
+      "blocker": "CSV says bot vinculado and requires proveedor simulado. The executed fixture explicitly has chatLinked=false and no provider delivery observation. Existing durable intention alone does not establish either missing precondition.",
+      "permittedNextProof": "On the newly authorized isolated database only, use existing cloned synthetic identity and a served linked-chat fixture routed exclusively to a loopback provider double. Re-execute the concurrent+retry case and record one logical outbox plus simulated-provider observation; preserve originals and distinguish actual local simulation from realTelegram.",
+      "promotion": "Do not promote until that matching served fixture and required observation are actually executed."
+    },
+    {
+      "id": "CP1-25",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "originalContract": {
+        "precondiciones": "Mismo fixtureCP1-24",
+        "entrada": "Fallo SQL al crear movimiento antes de INSERT; reintentar; segunda variante falla al marcar después de INSERT",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Fallo antes de crear no marca last_executed_date. Tras INSERT confirmado y fallo de marca, retry23505 recupera ocurrencia y repara marca sin segundo débito.",
+        "evidencia_requerida": "Logs estados claim/rollback/retry y snapshot SQL"
+      },
+      "observed": "BeforeINSERT error/rollback/retry is already nativePASS8; count0/marker05/outbox0/balance10000 then retry count1/marker06/outbox1/balance9000. Temporary DDL and exact catalogue parity are retained.",
+      "blockerKind": "LITERAL_CONTRACT_BRANCH_INCOMPATIBLE_WITH_CURRENT_ATOMIC_ARCHITECTURE",
+      "blocker": "The current occurrence INSERT transaction atomically updates the marker and enqueues outbox in its trigger. A marker failure inside that transaction rolls back the occurrence too. The requested committedINSERT/unmarked then23505 branch is not established by that stronger atomic rollback/retry proof; durable request replay can also bypass a later INSERT. This is a design/contract gap, not missing database access or credentials.",
+      "limits": [
+        "Do not disable trigger atomicity, delete durable receipts, erase original history or silently substitute a manually unmarked legacy row to manufacture literalPASS.",
+        "A marked legacy-fixture recovery test could be separate derived coverage, but it does not execute the literal requested failure path. Same bot-linked precondition fromCP1-24 is also unobserved historically."
+      ]
+    },
+    {
+      "id": "CP1-27",
+      "status": "BLOCKED",
+      "complete_original_contract": false,
+      "originalContract": {
+        "precondiciones": "FixtureCP1-24; proveedor acepta mensaje pero conexión pierde acuse",
+        "entrada": "timeout de envío y recuperación",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Movimiento único; la entrega física tras timeout es incierta. Registrar esa limitación; el código no garantiza exactly-once de Telegram ni conciliación automática.",
+        "evidencia_requerida": "Proveedor doble registra recepción y timeout; logs política de recuperación"
+      },
+      "blockerKind": "MISSING_REQUIRED_ACCEPTED_THEN_CONNECTION_TIMEOUT_OBSERVATION",
+      "blocker": "No retained case yet proves the provider double durably recorded acceptance before the sending connection timed out. A provider503, no chat, or a subsequent DB acknowledgement failure are distinct failures and cannot replace this precondition.",
+      "permittedNextProof": "Run the already authorized minimum local double: record the exact request as accepted before withholding/disconnecting its HTTP acknowledgement; observe sender timeout, one financial movement and its recovery policy. Keep provider receipt logs separate from the database sent/ack marker and record physical delivery uncertainty.",
+      "limits": [
+        "Do not assert exactly-onceTelegram, that timeout means no delivery, or automatic provider reconciliation.",
+        "No real bot, external credential or external message is needed for the specified provider double; this is permitted local test work still awaiting execution."
+      ]
+    }
+  ],
+  "findings": [],
+  "matrixEdited": false,
+  "newRuntimeExecuted": false,
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-4-cp1-23-premium/verification.json",
+      "sha256": "636fec29a219dc91a35612870b571cf54846c6d00bee4752fa7c1c82f1c4ae24"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/verification.json",
+      "sha256": "7ee8df3185f1535af4f922e2203aa72418cfd350037853242d524dd418f5f251"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-3-fourteen-clock/verification.json",
+      "sha256": "15a19de84971bab4cf3cb1a268fa9fab3e5efff6590d01a67cf974c1a87e2e0f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/cron-contract-review.json",
+      "sha256": "ef8c5449db566b71b596826e654fd4defa3e2ea25d187ad15e0f0b7802961a90"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "lib/cron/recurring-job.ts",
+      "sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72"
+    },
+    {
+      "path": "app/(authenticated)/recurring/page.tsx",
+      "sha256": "dbf1b2a7452118269d85bbb60cb188fb00dc66427f5658d57ae80365a3aadf05"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-4-cp1-23-premium/executed-harness/run-remaining.mjs",
+      "sha256": "6b9c4edf7e52906ba269bc578d769fb6b846901c713d3e6a405690e981aa6639"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-4-cp1-23-premium/executed-harness/remaining-scenarios.mjs",
+      "sha256": "c580f3956237c0ad29f5aa06665a784a99c6420680e6f76f76a70a43eaadcdfb"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/attempt-1-eight-cases/executed-harness/run-basic.mjs",
+      "sha256": "7a7da5eeedab6f5e0096758f80d84b7b607154842fae52219c220305744f1620"
+    }
+  ]
+}
