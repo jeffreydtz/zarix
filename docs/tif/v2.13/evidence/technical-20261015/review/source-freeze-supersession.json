@@ -1,0 +1,7 @@
+{
+  "recordedAt": "2026-10-15T00:54:34.068Z",
+  "sourceCapture": "source-manifest-cc6a681-pre-final.json",
+  "headRevision": "cc6a6810b22ff44be138dd45b34e8d375f60e1d5",
+  "reason": "Capture followed root instruction to seal after mapping commit; a newly discovered traceability native-full path fix revoked the freeze before global completion. Preserved historical capture is not the final source manifest.",
+  "status": "FINAL_SOURCE_FREEZE_PENDING"
+}

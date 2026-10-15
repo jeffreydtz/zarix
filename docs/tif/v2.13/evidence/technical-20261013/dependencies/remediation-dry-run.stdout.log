@@ -1,0 +1,820 @@
+add lightningcss-win32-x64-msvc 1.33.0
+add lightningcss-win32-arm64-msvc 1.33.0
+add lightningcss-linux-x64-musl 1.33.0
+add lightningcss-linux-x64-gnu 1.33.0
+add lightningcss-linux-arm64-musl 1.33.0
+add lightningcss-linux-arm64-gnu 1.33.0
+add lightningcss-linux-arm-gnueabihf 1.33.0
+add lightningcss-freebsd-x64 1.33.0
+add lightningcss-darwin-x64 1.33.0
+add lightningcss-android-arm64 1.33.0
+add @unrs/resolver-binding-win32-x64-msvc 1.12.2
+add @unrs/resolver-binding-win32-ia32-msvc 1.12.2
+add @unrs/resolver-binding-win32-arm64-msvc 1.12.2
+add @unrs/resolver-binding-wasm32-wasi 1.12.2
+add @emnapi/runtime 1.10.0
+add @unrs/resolver-binding-openharmony-arm64 1.12.2
+add @unrs/resolver-binding-linux-x64-musl 1.12.2
+add @unrs/resolver-binding-linux-x64-gnu 1.12.2
+add @unrs/resolver-binding-linux-s390x-gnu 1.12.2
+add @unrs/resolver-binding-linux-riscv64-musl 1.12.2
+add @unrs/resolver-binding-linux-riscv64-gnu 1.12.2
+add @unrs/resolver-binding-linux-ppc64-gnu 1.12.2
+add @unrs/resolver-binding-linux-loong64-musl 1.12.2
+add @unrs/resolver-binding-linux-loong64-gnu 1.12.2
+add @unrs/resolver-binding-linux-arm64-musl 1.12.2
+add @unrs/resolver-binding-linux-arm64-gnu 1.12.2
+add @unrs/resolver-binding-linux-arm-musleabihf 1.12.2
+add @unrs/resolver-binding-linux-arm-gnueabihf 1.12.2
+add @unrs/resolver-binding-freebsd-x64 1.12.2
+add @unrs/resolver-binding-darwin-x64 1.12.2
+add @unrs/resolver-binding-android-arm64 1.12.2
+add @unrs/resolver-binding-android-arm-eabi 1.12.2
+add @tybys/wasm-util 0.10.4
+add @rolldown/binding-win32-x64-msvc 1.2.12
+add @rolldown/binding-win32-arm64-msvc 1.2.12
+add @rolldown/binding-openharmony-arm64 1.2.12
+add @rolldown/binding-linux-x64-musl 1.2.12
+add @rolldown/binding-linux-x64-gnu 1.2.12
+add @rolldown/binding-linux-s390x-gnu 1.2.12
+add @rolldown/binding-linux-ppc64-gnu 1.2.12
+add @rolldown/binding-linux-arm64-musl 1.2.12
+add @rolldown/binding-linux-arm64-gnu 1.2.12
+add @rolldown/binding-linux-arm-gnueabihf 1.2.12
+add @rolldown/binding-freebsd-x64 1.2.12
+add @rolldown/binding-darwin-x64 1.2.12
+add @rolldown/binding-android-arm64 1.2.12
+add @rolldown/binding-android-arm-eabi 1.2.12
+add @next/swc-win32-x64-msvc 15.5.27
+add @next/swc-win32-arm64-msvc 15.5.27
+add @next/swc-linux-x64-musl 15.5.27
+add @next/swc-linux-x64-gnu 15.5.27
+add @next/swc-linux-arm64-musl 15.5.27
+add @next/swc-linux-arm64-gnu 15.5.27
+add @next/swc-darwin-x64 15.5.27
+add @napi-rs/wasm-runtime 1.2.5
+add @img/sharp-win32-x64 0.35.5
+add @img/sharp-win32-ia32 0.35.5
+add @img/sharp-win32-arm64 0.35.5
+add @img/sharp-webcontainers-wasm32 0.35.5
+add @img/sharp-linuxmusl-x64 0.35.5
+add @img/sharp-linuxmusl-arm64 0.35.5
+add @img/sharp-linux-x64 0.35.5
+add @img/sharp-linux-s390x 0.35.5
+add @img/sharp-linux-riscv64 0.35.5
+add @img/sharp-linux-ppc64 0.35.5
+add @img/sharp-linux-arm64 0.35.5
+add @img/sharp-linux-arm 0.35.5
+add @img/sharp-libvips-linuxmusl-x64 1.3.4
+add @img/sharp-libvips-linuxmusl-arm64 1.3.4
+add @img/sharp-libvips-linux-x64 1.3.4
+add @img/sharp-libvips-linux-s390x 1.3.4
+add @img/sharp-libvips-linux-riscv64 1.3.4
+add @img/sharp-libvips-linux-ppc64 1.3.4
+add @img/sharp-libvips-linux-arm64 1.3.4
+add @img/sharp-libvips-linux-arm 1.3.4
+add @img/sharp-libvips-darwin-x64 1.3.4
+add @img/sharp-freebsd-wasm32 0.35.5
+add @img/sharp-darwin-x64 0.35.5
+add @esbuild/win32-x64 0.28.2
+add @esbuild/win32-ia32 0.28.2
+add @esbuild/win32-arm64 0.28.2
+add @esbuild/sunos-x64 0.28.2
+add @esbuild/openharmony-arm64 0.28.2
+add @esbuild/openbsd-x64 0.28.2
+add @esbuild/openbsd-arm64 0.28.2
+add @esbuild/netbsd-x64 0.28.2
+add @esbuild/netbsd-arm64 0.28.2
+add @esbuild/linux-x64 0.28.2
+add @esbuild/linux-s390x 0.28.2
+add @esbuild/linux-riscv64 0.28.2
+add @esbuild/linux-ppc64 0.28.2
+add @esbuild/linux-mips64el 0.28.2
+add @esbuild/linux-loong64 0.28.2
+add @esbuild/linux-ia32 0.28.2
+add @esbuild/linux-arm64 0.28.2
+add @esbuild/linux-arm 0.28.2
+add @esbuild/freebsd-x64 0.28.2
+add @esbuild/freebsd-arm64 0.28.2
+add @esbuild/darwin-x64 0.28.2
+add @esbuild/android-x64 0.28.2
+add @esbuild/android-arm64 0.28.2
+add @esbuild/android-arm 0.28.2
+add @esbuild/aix-ppc64 0.28.2
+add @emnapi/wasi-threads 1.2.1
+add @emnapi/core 1.10.0
+{
+  "add": [
+    {
+      "name": "lightningcss-win32-x64-msvc",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-win32-x64-msvc"
+    },
+    {
+      "name": "lightningcss-win32-arm64-msvc",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-win32-arm64-msvc"
+    },
+    {
+      "name": "lightningcss-linux-x64-musl",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-linux-x64-musl"
+    },
+    {
+      "name": "lightningcss-linux-x64-gnu",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-linux-x64-gnu"
+    },
+    {
+      "name": "lightningcss-linux-arm64-musl",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-linux-arm64-musl"
+    },
+    {
+      "name": "lightningcss-linux-arm64-gnu",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-linux-arm64-gnu"
+    },
+    {
+      "name": "lightningcss-linux-arm-gnueabihf",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-linux-arm-gnueabihf"
+    },
+    {
+      "name": "lightningcss-freebsd-x64",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-freebsd-x64"
+    },
+    {
+      "name": "lightningcss-darwin-x64",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-darwin-x64"
+    },
+    {
+      "name": "lightningcss-android-arm64",
+      "version": "1.33.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/lightningcss-android-arm64"
+    },
+    {
+      "name": "@unrs/resolver-binding-win32-x64-msvc",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-win32-x64-msvc"
+    },
+    {
+      "name": "@unrs/resolver-binding-win32-ia32-msvc",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-win32-ia32-msvc"
+    },
+    {
+      "name": "@unrs/resolver-binding-win32-arm64-msvc",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-win32-arm64-msvc"
+    },
+    {
+      "name": "@unrs/resolver-binding-wasm32-wasi",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-wasm32-wasi"
+    },
+    {
+      "name": "@emnapi/runtime",
+      "version": "1.10.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-wasm32-wasi/node_modules/@emnapi/runtime"
+    },
+    {
+      "name": "@unrs/resolver-binding-openharmony-arm64",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-openharmony-arm64"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-x64-musl",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-x64-musl"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-x64-gnu",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-x64-gnu"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-s390x-gnu",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-s390x-gnu"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-riscv64-musl",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-riscv64-musl"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-riscv64-gnu",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-riscv64-gnu"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-ppc64-gnu",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-ppc64-gnu"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-loong64-musl",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-loong64-musl"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-loong64-gnu",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-loong64-gnu"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-arm64-musl",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-arm64-musl"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-arm64-gnu",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-arm64-gnu"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-arm-musleabihf",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-arm-musleabihf"
+    },
+    {
+      "name": "@unrs/resolver-binding-linux-arm-gnueabihf",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-linux-arm-gnueabihf"
+    },
+    {
+      "name": "@unrs/resolver-binding-freebsd-x64",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-freebsd-x64"
+    },
+    {
+      "name": "@unrs/resolver-binding-darwin-x64",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-darwin-x64"
+    },
+    {
+      "name": "@unrs/resolver-binding-android-arm64",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-android-arm64"
+    },
+    {
+      "name": "@unrs/resolver-binding-android-arm-eabi",
+      "version": "1.12.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@unrs/resolver-binding-android-arm-eabi"
+    },
+    {
+      "name": "@tybys/wasm-util",
+      "version": "0.10.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@tybys/wasm-util"
+    },
+    {
+      "name": "@rolldown/binding-win32-x64-msvc",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-win32-x64-msvc"
+    },
+    {
+      "name": "@rolldown/binding-win32-arm64-msvc",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-win32-arm64-msvc"
+    },
+    {
+      "name": "@rolldown/binding-openharmony-arm64",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-openharmony-arm64"
+    },
+    {
+      "name": "@rolldown/binding-linux-x64-musl",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-linux-x64-musl"
+    },
+    {
+      "name": "@rolldown/binding-linux-x64-gnu",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-linux-x64-gnu"
+    },
+    {
+      "name": "@rolldown/binding-linux-s390x-gnu",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-linux-s390x-gnu"
+    },
+    {
+      "name": "@rolldown/binding-linux-ppc64-gnu",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-linux-ppc64-gnu"
+    },
+    {
+      "name": "@rolldown/binding-linux-arm64-musl",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-linux-arm64-musl"
+    },
+    {
+      "name": "@rolldown/binding-linux-arm64-gnu",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-linux-arm64-gnu"
+    },
+    {
+      "name": "@rolldown/binding-linux-arm-gnueabihf",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-linux-arm-gnueabihf"
+    },
+    {
+      "name": "@rolldown/binding-freebsd-x64",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-freebsd-x64"
+    },
+    {
+      "name": "@rolldown/binding-darwin-x64",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-darwin-x64"
+    },
+    {
+      "name": "@rolldown/binding-android-arm64",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-android-arm64"
+    },
+    {
+      "name": "@rolldown/binding-android-arm-eabi",
+      "version": "1.2.12",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@rolldown/binding-android-arm-eabi"
+    },
+    {
+      "name": "@next/swc-win32-x64-msvc",
+      "version": "15.5.27",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@next/swc-win32-x64-msvc"
+    },
+    {
+      "name": "@next/swc-win32-arm64-msvc",
+      "version": "15.5.27",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@next/swc-win32-arm64-msvc"
+    },
+    {
+      "name": "@next/swc-linux-x64-musl",
+      "version": "15.5.27",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@next/swc-linux-x64-musl"
+    },
+    {
+      "name": "@next/swc-linux-x64-gnu",
+      "version": "15.5.27",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@next/swc-linux-x64-gnu"
+    },
+    {
+      "name": "@next/swc-linux-arm64-musl",
+      "version": "15.5.27",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@next/swc-linux-arm64-musl"
+    },
+    {
+      "name": "@next/swc-linux-arm64-gnu",
+      "version": "15.5.27",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@next/swc-linux-arm64-gnu"
+    },
+    {
+      "name": "@next/swc-darwin-x64",
+      "version": "15.5.27",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@next/swc-darwin-x64"
+    },
+    {
+      "name": "@napi-rs/wasm-runtime",
+      "version": "1.2.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@napi-rs/wasm-runtime"
+    },
+    {
+      "name": "@img/sharp-win32-x64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-win32-x64"
+    },
+    {
+      "name": "@img/sharp-win32-ia32",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-win32-ia32"
+    },
+    {
+      "name": "@img/sharp-win32-arm64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-win32-arm64"
+    },
+    {
+      "name": "@img/sharp-webcontainers-wasm32",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-webcontainers-wasm32"
+    },
+    {
+      "name": "@img/sharp-linuxmusl-x64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-linuxmusl-x64"
+    },
+    {
+      "name": "@img/sharp-linuxmusl-arm64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-linuxmusl-arm64"
+    },
+    {
+      "name": "@img/sharp-linux-x64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-linux-x64"
+    },
+    {
+      "name": "@img/sharp-linux-s390x",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-linux-s390x"
+    },
+    {
+      "name": "@img/sharp-linux-riscv64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-linux-riscv64"
+    },
+    {
+      "name": "@img/sharp-linux-ppc64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-linux-ppc64"
+    },
+    {
+      "name": "@img/sharp-linux-arm64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-linux-arm64"
+    },
+    {
+      "name": "@img/sharp-linux-arm",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-linux-arm"
+    },
+    {
+      "name": "@img/sharp-libvips-linuxmusl-x64",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-linuxmusl-x64"
+    },
+    {
+      "name": "@img/sharp-libvips-linuxmusl-arm64",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-linuxmusl-arm64"
+    },
+    {
+      "name": "@img/sharp-libvips-linux-x64",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-linux-x64"
+    },
+    {
+      "name": "@img/sharp-libvips-linux-s390x",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-linux-s390x"
+    },
+    {
+      "name": "@img/sharp-libvips-linux-riscv64",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-linux-riscv64"
+    },
+    {
+      "name": "@img/sharp-libvips-linux-ppc64",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-linux-ppc64"
+    },
+    {
+      "name": "@img/sharp-libvips-linux-arm64",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-linux-arm64"
+    },
+    {
+      "name": "@img/sharp-libvips-linux-arm",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-linux-arm"
+    },
+    {
+      "name": "@img/sharp-libvips-darwin-x64",
+      "version": "1.3.4",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-libvips-darwin-x64"
+    },
+    {
+      "name": "@img/sharp-freebsd-wasm32",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-freebsd-wasm32"
+    },
+    {
+      "name": "@img/sharp-darwin-x64",
+      "version": "0.35.5",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@img/sharp-darwin-x64"
+    },
+    {
+      "name": "@esbuild/win32-x64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/win32-x64"
+    },
+    {
+      "name": "@esbuild/win32-ia32",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/win32-ia32"
+    },
+    {
+      "name": "@esbuild/win32-arm64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/win32-arm64"
+    },
+    {
+      "name": "@esbuild/sunos-x64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/sunos-x64"
+    },
+    {
+      "name": "@esbuild/openharmony-arm64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/openharmony-arm64"
+    },
+    {
+      "name": "@esbuild/openbsd-x64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/openbsd-x64"
+    },
+    {
+      "name": "@esbuild/openbsd-arm64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/openbsd-arm64"
+    },
+    {
+      "name": "@esbuild/netbsd-x64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/netbsd-x64"
+    },
+    {
+      "name": "@esbuild/netbsd-arm64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/netbsd-arm64"
+    },
+    {
+      "name": "@esbuild/linux-x64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-x64"
+    },
+    {
+      "name": "@esbuild/linux-s390x",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-s390x"
+    },
+    {
+      "name": "@esbuild/linux-riscv64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-riscv64"
+    },
+    {
+      "name": "@esbuild/linux-ppc64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-ppc64"
+    },
+    {
+      "name": "@esbuild/linux-mips64el",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-mips64el"
+    },
+    {
+      "name": "@esbuild/linux-loong64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-loong64"
+    },
+    {
+      "name": "@esbuild/linux-ia32",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-ia32"
+    },
+    {
+      "name": "@esbuild/linux-arm64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-arm64"
+    },
+    {
+      "name": "@esbuild/linux-arm",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/linux-arm"
+    },
+    {
+      "name": "@esbuild/freebsd-x64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/freebsd-x64"
+    },
+    {
+      "name": "@esbuild/freebsd-arm64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/freebsd-arm64"
+    },
+    {
+      "name": "@esbuild/darwin-x64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/darwin-x64"
+    },
+    {
+      "name": "@esbuild/android-x64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/android-x64"
+    },
+    {
+      "name": "@esbuild/android-arm64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/android-arm64"
+    },
+    {
+      "name": "@esbuild/android-arm",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/android-arm"
+    },
+    {
+      "name": "@esbuild/aix-ppc64",
+      "version": "0.28.2",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@esbuild/aix-ppc64"
+    },
+    {
+      "name": "@emnapi/wasi-threads",
+      "version": "1.2.1",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@emnapi/wasi-threads"
+    },
+    {
+      "name": "@emnapi/core",
+      "version": "1.10.0",
+      "path": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/node_modules/@emnapi/core"
+    }
+  ],
+  "added": 105,
+  "audited": 757,
+  "change": [],
+  "changed": 0,
+  "funding": 227,
+  "remove": [],
+  "removed": 0,
+  "audit": {
+    "auditReportVersion": 2,
+    "vulnerabilities": {
+      "@next/eslint-plugin-next": {
+        "name": "@next/eslint-plugin-next",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          "fast-glob"
+        ],
+        "effects": [
+          "eslint-config-next"
+        ],
+        "range": ">=14.3.0-canary.0",
+        "nodes": [
+          "node_modules/@next/eslint-plugin-next"
+        ],
+        "fixAvailable": {
+          "name": "eslint-config-next",
+          "version": "14.2.35",
+          "isSemVerMajor": true
+        }
+      },
+      "braces": {
+        "name": "braces",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1240992,
+            "name": "braces",
+            "dependency": "braces",
+            "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+            "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+            "severity": "high",
+            "cwe": [
+              "CWE-674"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": "<=3.0.3"
+          }
+        ],
+        "effects": [
+          "chokidar",
+          "micromatch"
+        ],
+        "range": "*",
+        "nodes": [
+          "node_modules/braces"
+        ],
+        "fixAvailable": {
+          "name": "tailwindcss",
+          "version": "4.3.3",
+          "isSemVerMajor": true
+        }
+      },
+      "chokidar": {
+        "name": "chokidar",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          "braces"
+        ],
+        "effects": [
+          "tailwindcss"
+        ],
+        "range": "2.0.0 - 3.6.0",
+        "nodes": [
+          "node_modules/chokidar"
+        ],
+        "fixAvailable": {
+          "name": "tailwindcss",
+          "version": "4.3.3",
+          "isSemVerMajor": true
+        }
+      },
+      "eslint-config-next": {
+        "name": "eslint-config-next",
+        "severity": "high",
+        "isDirect": true,
+        "via": [
+          "@next/eslint-plugin-next"
+        ],
+        "effects": [],
+        "range": ">=14.3.0-canary.0",
+        "nodes": [
+          "node_modules/eslint-config-next"
+        ],
+        "fixAvailable": {
+          "name": "eslint-config-next",
+          "version": "14.2.35",
+          "isSemVerMajor": true
+        }
+      },
+      "fast-glob": {
+        "name": "fast-glob",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          "micromatch"
+        ],
+        "effects": [
+          "@next/eslint-plugin-next"
+        ],
+        "range": "*",
+        "nodes": [
+          "node_modules/fast-glob",
+          "node_modules/tailwindcss/node_modules/fast-glob"
+        ],
+        "fixAvailable": {
+          "name": "eslint-config-next",
+          "version": "14.2.35",
+          "isSemVerMajor": true
+        }
+      },
+      "micromatch": {
+        "name": "micromatch",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          "braces"
+        ],
+        "effects": [
+          "fast-glob",
+          "tailwindcss"
+        ],
+        "range": ">=0.2.0",
+        "nodes": [
+          "node_modules/micromatch"
+        ],
+        "fixAvailable": {
+          "name": "tailwindcss",
+          "version": "4.3.3",
+          "isSemVerMajor": true
+        }
+      },
+      "tailwindcss": {
+        "name": "tailwindcss",
+        "severity": "high",
+        "isDirect": true,
+        "via": [
+          "chokidar",
+          "fast-glob",
+          "micromatch"
+        ],
+        "effects": [],
+        "range": "<=0.0.0-oxide-insiders.ff2c25f || 2.1.0-canary.1 - 3.4.19",
+        "nodes": [
+          "node_modules/tailwindcss"
+        ],
+        "fixAvailable": {
+          "name": "tailwindcss",
+          "version": "4.3.3",
+          "isSemVerMajor": true
+        }
+      }
+    },
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 7,
+        "critical": 0,
+        "total": 7
+      },
+      "dependencies": {
+        "prod": 310,
+        "dev": 410,
+        "optional": 117,
+        "peer": 32,
+        "peerOptional": 0,
+        "total": 756
+      }
+    }
+  }
+}

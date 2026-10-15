@@ -1,0 +1,434 @@
+{
+  "inspectedAt": "2026-10-15T00:59:38.632Z",
+  "buildId": "zJ3D7exVtqZ7JLNFuTSZ1",
+  "traceCount": 85,
+  "affectedMatches": [],
+  "traces": [
+    {
+      "path": "next-minimal-server.js.nft.json",
+      "sha256": "9017e154a49f6b8a109b3799a955495567987af2c2172bce875e5cda8e71e58a",
+      "fileCount": 114
+    },
+    {
+      "path": "next-server.js.nft.json",
+      "sha256": "b7bc44a2224367cca6060ee49c6f365afd88dc4abcc6abc32aba946bfc66b5d2",
+      "fileCount": 672
+    },
+    {
+      "path": "server/app/(authenticated)/accounts/[id]/page.js.nft.json",
+      "sha256": "f48363bd378c85006de7dbf3274b27f19d23021660f39efbdcc311574cbb65ed",
+      "fileCount": 84
+    },
+    {
+      "path": "server/app/(authenticated)/accounts/page.js.nft.json",
+      "sha256": "8e4cbd548f375dc7a7959f3af46191ec6a2e8a36ccb7a73b00179f43bb354cf6",
+      "fileCount": 82
+    },
+    {
+      "path": "server/app/(authenticated)/analysis/page.js.nft.json",
+      "sha256": "53198502d243fda6937360b73b2a8ba808436052a787059a8767b7a5d0db9e4c",
+      "fileCount": 82
+    },
+    {
+      "path": "server/app/(authenticated)/budgets/page.js.nft.json",
+      "sha256": "7df835ae48368ce95b5090b7ba9a6585c69711f246a1a72bbf34ca9fe7277932",
+      "fileCount": 76
+    },
+    {
+      "path": "server/app/(authenticated)/categories/page.js.nft.json",
+      "sha256": "0630e38a384e2858160a13862f8051b740dbb67306bf077f60bd3b4b5f183273",
+      "fileCount": 77
+    },
+    {
+      "path": "server/app/(authenticated)/dashboard/page.js.nft.json",
+      "sha256": "4961da722a667840fadabdb7321dc8943220521a346b3a921ade431f41ff1827",
+      "fileCount": 90
+    },
+    {
+      "path": "server/app/(authenticated)/expenses/page.js.nft.json",
+      "sha256": "9944320e114835df0104fc8ff784bb4a5c9e25173e34c25797ca5b207b794177",
+      "fileCount": 83
+    },
+    {
+      "path": "server/app/(authenticated)/investments/page.js.nft.json",
+      "sha256": "1be911ac15e64df2bb32f2e17da10e3ed2abe3f0d29e9813131d8da871e5e6f4",
+      "fileCount": 83
+    },
+    {
+      "path": "server/app/(authenticated)/recurring/page.js.nft.json",
+      "sha256": "7df835ae48368ce95b5090b7ba9a6585c69711f246a1a72bbf34ca9fe7277932",
+      "fileCount": 76
+    },
+    {
+      "path": "server/app/(authenticated)/settings/page.js.nft.json",
+      "sha256": "0630e38a384e2858160a13862f8051b740dbb67306bf077f60bd3b4b5f183273",
+      "fileCount": 77
+    },
+    {
+      "path": "server/app/(authenticated)/shared/page.js.nft.json",
+      "sha256": "7df835ae48368ce95b5090b7ba9a6585c69711f246a1a72bbf34ca9fe7277932",
+      "fileCount": 76
+    },
+    {
+      "path": "server/app/_not-found/page.js.nft.json",
+      "sha256": "8c13083348bd33684d354b1f6405da6c9acda6e46d44417548a0aa86b27e5f09",
+      "fileCount": 68
+    },
+    {
+      "path": "server/app/api/accounts/[id]/adjust-balance/route.js.nft.json",
+      "sha256": "b6befe4219698f61cb1e46ff5cdd90a3337d14d988a7926988b0fb7d5a21aacd",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/accounts/[id]/adjust-secondary-balance/route.js.nft.json",
+      "sha256": "e826f73fc150ab1f85915ac9fe8b00e8ad9a0e68880ff6fba56a6c503adaebfe",
+      "fileCount": 71
+    },
+    {
+      "path": "server/app/api/accounts/[id]/correct-debt-sign/route.js.nft.json",
+      "sha256": "e826f73fc150ab1f85915ac9fe8b00e8ad9a0e68880ff6fba56a6c503adaebfe",
+      "fileCount": 71
+    },
+    {
+      "path": "server/app/api/accounts/[id]/reconcile-balance/route.js.nft.json",
+      "sha256": "b6befe4219698f61cb1e46ff5cdd90a3337d14d988a7926988b0fb7d5a21aacd",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/accounts/[id]/repair-currency-range/route.js.nft.json",
+      "sha256": "b6befe4219698f61cb1e46ff5cdd90a3337d14d988a7926988b0fb7d5a21aacd",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/accounts/[id]/route.js.nft.json",
+      "sha256": "6e56bcbf8b14fb50c1d66bc2fa05938b18c7e68cf49cf12fc9c6f7ff94b24c1b",
+      "fileCount": 71
+    },
+    {
+      "path": "server/app/api/accounts/movement-selection/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/accounts/route.js.nft.json",
+      "sha256": "c2747737c66bfc38587e9a8515f579519674dc851cbbad025a7ef2d5d6f048c6",
+      "fileCount": 71
+    },
+    {
+      "path": "server/app/api/ai/anomalies/route.js.nft.json",
+      "sha256": "63110d9eea2a4133648872214b030115429a2c253166f9b972fecb892fb3cb5c",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/ai/chat/route.js.nft.json",
+      "sha256": "673bf477c5c82dfa9d8af14df090ddf01983e4906449fe969c562b7f7d21f6ff",
+      "fileCount": 77
+    },
+    {
+      "path": "server/app/api/ai/projections/route.js.nft.json",
+      "sha256": "63110d9eea2a4133648872214b030115429a2c253166f9b972fecb892fb3cb5c",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/auth/dev-login/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/auth/link-telegram/route.js.nft.json",
+      "sha256": "2f7b1017aa2e125e7e5e6bfdc6eba568ea84d7beec75e83549a7c781dfcc33c9",
+      "fileCount": 68
+    },
+    {
+      "path": "server/app/api/auth/telegram-link-code/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/billing/cancel/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/billing/subscription-link/route.js.nft.json",
+      "sha256": "0a77afad81fd7f0146162ad133e3569729909edbc541aa0e7a99229f1ac396a7",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/budgets/[id]/route.js.nft.json",
+      "sha256": "dae1129c8cb443a1119c66e0b959c40142aea233c1626a90f17bd911880b9886",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/budgets/route.js.nft.json",
+      "sha256": "d7584b31a7cc23ddcb67d3cc7a5844f749c4a0cdc9162ab77eca1861d93892f7",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/budgets/status/route.js.nft.json",
+      "sha256": "dae1129c8cb443a1119c66e0b959c40142aea233c1626a90f17bd911880b9886",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/categories/[id]/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/categories/route.js.nft.json",
+      "sha256": "d19ca5f6104c8851d86a5269a992a308ca58487c6b66e7e8fdccc53a62f81edd",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/cotizaciones/route.js.nft.json",
+      "sha256": "a90c7bea39fafe405ee0fb386865e2cae154db0bd26704e776a64f25f4ac878e",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/cotizaciones/transactions-fx/route.js.nft.json",
+      "sha256": "35e2e2cbfa6e404c430faee385808f9ae64c7547f69d7b74429273823933e90e",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/cron/budget-alerts/route.js.nft.json",
+      "sha256": "dae1129c8cb443a1119c66e0b959c40142aea233c1626a90f17bd911880b9886",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/cron/maturity-alerts/route.js.nft.json",
+      "sha256": "dae1129c8cb443a1119c66e0b959c40142aea233c1626a90f17bd911880b9886",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/cron/monthly-summary/route.js.nft.json",
+      "sha256": "733e6c12c81e3b9e0ddabc1f89e782424d1e9396e0d9f2bf22fc435330a5a16f",
+      "fileCount": 74
+    },
+    {
+      "path": "server/app/api/cron/net-worth-snapshot/route.js.nft.json",
+      "sha256": "b7adaa7f3a2b5a192bda95cf9b52f66d77009703b871137003f13f7cef59196e",
+      "fileCount": 74
+    },
+    {
+      "path": "server/app/api/cron/notification-outbox/route.js.nft.json",
+      "sha256": "dae1129c8cb443a1119c66e0b959c40142aea233c1626a90f17bd911880b9886",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/cron/recurring/route.js.nft.json",
+      "sha256": "66ce5d5165a283ce5b4b5f7c4d61c632fe1b5c7d69a9a5c8ac990cf4da96fc02",
+      "fileCount": 73
+    },
+    {
+      "path": "server/app/api/cron/subscription-grace/route.js.nft.json",
+      "sha256": "dae1129c8cb443a1119c66e0b959c40142aea233c1626a90f17bd911880b9886",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/cron/update-prices/route.js.nft.json",
+      "sha256": "6b31861683fe60e53143329ae09ab38b3f1b8e0f710441c67220d009d482bcdc",
+      "fileCount": 71
+    },
+    {
+      "path": "server/app/api/cron/weekly-summary/route.js.nft.json",
+      "sha256": "733e6c12c81e3b9e0ddabc1f89e782424d1e9396e0d9f2bf22fc435330a5a16f",
+      "fileCount": 74
+    },
+    {
+      "path": "server/app/api/export/backup/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/export/transactions/route.js.nft.json",
+      "sha256": "63110d9eea2a4133648872214b030115429a2c253166f9b972fecb892fb3cb5c",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/health/route.js.nft.json",
+      "sha256": "d19ca5f6104c8851d86a5269a992a308ca58487c6b66e7e8fdccc53a62f81edd",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/import/transactions/route.js.nft.json",
+      "sha256": "63110d9eea2a4133648872214b030115429a2c253166f9b972fecb892fb3cb5c",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/investments/[id]/route.js.nft.json",
+      "sha256": "4f547fd225acbfe3fa5f64ec63e964b511e3c19f6b2142c72ee094004aa5934b",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/investments/[id]/sell/route.js.nft.json",
+      "sha256": "56605937dce9213aa85caed03f882201404316502ae8326d22079a3c124f8add",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/investments/performance/route.js.nft.json",
+      "sha256": "4f547fd225acbfe3fa5f64ec63e964b511e3c19f6b2142c72ee094004aa5934b",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/investments/portfolio/route.js.nft.json",
+      "sha256": "4f547fd225acbfe3fa5f64ec63e964b511e3c19f6b2142c72ee094004aa5934b",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/investments/quote/route.js.nft.json",
+      "sha256": "35e2e2cbfa6e404c430faee385808f9ae64c7547f69d7b74429273823933e90e",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/investments/route.js.nft.json",
+      "sha256": "c17ea328ee4c8fd95d6d3e15ea39de1288f8ce84bcbec7239f8dc7c7e867ea87",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/investments/ticker-search/route.js.nft.json",
+      "sha256": "8b2dd0e28ef7db50f2f14dd4024581ee66ba54f8081976cba140194ba427716b",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/market-data/route.js.nft.json",
+      "sha256": "dc1f675eaaa2897167c5b1bf9a790ad39c65555a8c62f1fec537b8bbd32662f9",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/recurring/[id]/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/recurring/route.js.nft.json",
+      "sha256": "d19ca5f6104c8851d86a5269a992a308ca58487c6b66e7e8fdccc53a62f81edd",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/shared-groups/[id]/route.js.nft.json",
+      "sha256": "e672de101d10ffd0075f6990caf8a4d9a65329406fa40dfc85414d8bb37b5893",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/shared-groups/route.js.nft.json",
+      "sha256": "3fdb9d3ced47997ecfb33b4e09d170e6e676635a7d1a5bc1f94b948f72e9dc57",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/shared/[token]/expenses/[expenseId]/route.js.nft.json",
+      "sha256": "abfec0fceab9d0dd1d94a450bc938c5c90c658faf95799e365090fb104612473",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/shared/[token]/expenses/route.js.nft.json",
+      "sha256": "1dfbeb3611721e7b8bff64bd00076ba24f423d26e2f9bf83eddbfe80942f70f4",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/shared/[token]/route.js.nft.json",
+      "sha256": "e672de101d10ffd0075f6990caf8a4d9a65329406fa40dfc85414d8bb37b5893",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/api/telegram/webhook/route.js.nft.json",
+      "sha256": "637f508af1c755db5ba28275cd4f6d5ae44541eac844106d8805e07969a287c4",
+      "fileCount": 78
+    },
+    {
+      "path": "server/app/api/telegram/webhook/u/[secret]/route.js.nft.json",
+      "sha256": "3ab5891b1acf979cfff6625f2ae0646650408b823778202ab0995c258f38bb96",
+      "fileCount": 78
+    },
+    {
+      "path": "server/app/api/transactions/[id]/route.js.nft.json",
+      "sha256": "63110d9eea2a4133648872214b030115429a2c253166f9b972fecb892fb3cb5c",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/transactions/bulk/route.js.nft.json",
+      "sha256": "63110d9eea2a4133648872214b030115429a2c253166f9b972fecb892fb3cb5c",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/transactions/route.js.nft.json",
+      "sha256": "192f2b09d912881205db6f2523295fce926f4f3a76bcdb0501c78c852933c5e7",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/transactions/summary/route.js.nft.json",
+      "sha256": "63110d9eea2a4133648872214b030115429a2c253166f9b972fecb892fb3cb5c",
+      "fileCount": 72
+    },
+    {
+      "path": "server/app/api/user/integrations/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/user/notification-preferences/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/user/onboarding/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/user/subscription/route.js.nft.json",
+      "sha256": "6b4270d4b7c4792877e97429cd57ddb1cbe81578ccb512ea4dc07ddd68aa7367",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/api/webhooks/mercado-pago/route.js.nft.json",
+      "sha256": "0a77afad81fd7f0146162ad133e3569729909edbc541aa0e7a99229f1ac396a7",
+      "fileCount": 70
+    },
+    {
+      "path": "server/app/auth/callback/route.js.nft.json",
+      "sha256": "d19ca5f6104c8851d86a5269a992a308ca58487c6b66e7e8fdccc53a62f81edd",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/demo/page.js.nft.json",
+      "sha256": "91b98b1918648de4cae1ce9b7ed7bd540747ceca9f13938b1f67407bec083bd6",
+      "fileCount": 69
+    },
+    {
+      "path": "server/app/login/page.js.nft.json",
+      "sha256": "03481e7f1b5d4168e7d17ecc01c91de54512af5206e87bf11294ca117a55b633",
+      "fileCount": 71
+    },
+    {
+      "path": "server/app/page.js.nft.json",
+      "sha256": "14d65a973c3386903ad75495160cc2783eab4d44e957cdc8819e998eb1229e01",
+      "fileCount": 73
+    },
+    {
+      "path": "server/app/register/page.js.nft.json",
+      "sha256": "03481e7f1b5d4168e7d17ecc01c91de54512af5206e87bf11294ca117a55b633",
+      "fileCount": 71
+    },
+    {
+      "path": "server/app/shared/[token]/page.js.nft.json",
+      "sha256": "1a964e323eb01faa27fe0b68cfe59a217d79b7cf850e14f544f302de1288f9cf",
+      "fileCount": 76
+    },
+    {
+      "path": "server/pages/_app.js.nft.json",
+      "sha256": "e03334f487c5ebfc2cfa1d78515aeba15ab4462f2d35e0c4c30676736e389ca3",
+      "fileCount": 11
+    },
+    {
+      "path": "server/pages/_document.js.nft.json",
+      "sha256": "515684522b621e27d0d433e7ba3994f3c07b7678a27c927b235b4518a8d3c9a3",
+      "fileCount": 74
+    },
+    {
+      "path": "server/pages/_error.js.nft.json",
+      "sha256": "5202c1278bbea4455c660d2fa06c8de203cb3ee1db183f994051fdc9cb41aeff",
+      "fileCount": 73
+    }
+  ],
+  "scope": "Static Next build trace inspection; does not prove absence of dynamic or vendored code or an exploit path."
+}

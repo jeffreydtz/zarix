@@ -1,0 +1,209 @@
+{
+  "startedAt": "2026-10-15T00:18:34.490Z",
+  "command": "node scripts/test-atomic-account-recompute.mjs",
+  "runtime": {
+    "node": "v22.17.0"
+  },
+  "scope": "Fresh baseline and migrations in PGlite; synthetic ledger and role claims. No GoTrue, PostgREST, UI, provider, or native multi-session concurrency verification.",
+  "concurrency": {
+    "verified": false,
+    "legacyInterleaving": "Sequential replay of independently committed commands; not simultaneous WASM sessions."
+  },
+  "results": [
+    {
+      "id": "RECOMPUTE-01",
+      "name": "RPC is SECURITY INVOKER, JSONB, and executable only by service_role",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-02",
+      "name": "anon and authenticated owners A/B cannot invoke RPC or change balances",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-03",
+      "name": "wrong owner and missing account fail without modifying either tenant",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-04",
+      "name": "an empty ledger recomputes to zero rather than preserving a corrupt baseline",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-05",
+      "name": "initial and signed adjustments plus income, expense, and source transfer retain eight decimals",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-06",
+      "name": "the authoritative SQL sum includes more than 1000 ledger rows",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-07",
+      "name": "destination credit uses the stored amount through edit, replay, and deletion",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-08",
+      "name": "reverse FX transfer retains its independently stored destination credit",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-09",
+      "name": "historical destination fallback rounds each credit to eight decimals and null rate defaults to one",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-10",
+      "name": "secondary USD card adjustments are excluded without excluding USD income or expense",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-11",
+      "name": "secondary exclusion applies only to enabled multicurrency cards with a secondary currency",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-12",
+      "name": "editing source account and transaction type follows the current committed ledger",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-13",
+      "name": "a fault after UPDATE rolls back the new balance and side effects",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-14",
+      "name": "old read then committed income then stale UPDATE loses an effect; RPC repairs the ledger",
+      "status": "PASS"
+    },
+    {
+      "id": "RECOMPUTE-15",
+      "name": "a service-role call carrying another user claim is rejected without a write",
+      "status": "PASS"
+    }
+  ],
+  "sqlSourceManifest": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "293cb064833e3e2b8fbd37d5e3f47586f78b6728b0ebda08d908219d8cd4da1e"
+    }
+  ],
+  "scriptSha256": "8149ef0d869cdb4d55d52c86c62de11a253b3ba056c8eb6075ba5c10db1834ea",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "finishedAt": "2026-10-15T00:18:35.873Z",
+  "passed": 15,
+  "total": 15,
+  "status": "PASS"
+}

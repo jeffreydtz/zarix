@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-15T01:09:11.554Z",
+  "reviewer": "root",
+  "verificationMethod": "Manual view_image inspection confirmed to this independent reviewer by parent message; this reviewer did not perform pixel inspection or an automatic PNG scan.",
+  "scope": "Four preserved ui-attempt-1 PNG captures contain only application UI and own synthetic financial fixtures/random names. Parent confirmed no visible JWT, cookies, keys or capability paths. CU004 capture is the analysis page reached when broker selection was missing, not evidence of the investment UI acceptance.",
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-1/CU001-failed.png",
+      "sha256": "c3aa7f0757c2d7576ca7a391ba2e44cc2ada4f484d0bd5b6d932254488d6e019"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-1/CU002-failed.png",
+      "sha256": "0f3a025942fb5144336774c1d32f6bd5b52b5334ddd22fe475aeafc5cf5534af"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-1/CU003-analysis.png",
+      "sha256": "fdccb5e8bf9d410e3c336d0a584672c42e3ec69523d7f59406631d380442362a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/ui-attempt-1/CU004-failed.png",
+      "sha256": "b0daef8551e4428c9d158ea8c5edd42800d2dc7d97e2f8e601d125ee7725af23"
+    }
+  ],
+  "result": "PARENT_MANUAL_INSPECTION_CONFIRMED",
+  "notCovered": "Future visual matrix captures require their own manual inspection; UTF-8 scanning and binary hashes do not examine pixels."
+}

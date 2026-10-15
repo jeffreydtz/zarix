@@ -1,0 +1,10 @@
+{
+  "observedOn": "2026-10-13",
+  "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+  "advisory": "GHSA-vfj7-8cjw-p6xm",
+  "cve": "CVE-2026-93687",
+  "lastUpdated": "2026-10-02",
+  "affectedVersions": "<= 3.0.3",
+  "patchedVersions": "None",
+  "source": "Fresh web open of official GitHub Advisory Database; facts observed on page, not copied from the October 9 report."
+}
