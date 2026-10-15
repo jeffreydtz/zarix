@@ -1,0 +1,1343 @@
+{
+  "snapshot": {
+    "recorded_at": "2026-10-15T02:31:37.595745+00:00",
+    "original_csv_sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+    "derived_csv_sha256": "0cfa0a07f337699a96474f29716a496b9953383d0f8f800a3d88ddac79ddcedd",
+    "original_cases": 273,
+    "derived_blocked": 103
+  },
+  "method": "Read-only semantic triage of all103BLOCKED rows against literal original cases, current source and existing15Oct evidence. Primary categories are disjoint for the COMPLETE original contract. Local permitted subscopes of mixed cases are explicit. This is not test execution or a CSV status update.",
+  "groups": {
+    "1_LOCAL_ACTIONABLE": {
+      "count": 64,
+      "case_ids": [
+        "CP1-01",
+        "CP1-02",
+        "CP1-03",
+        "CP1-04",
+        "CP1-05",
+        "CP1-06",
+        "CP1-09",
+        "CP1-10",
+        "CP1-11",
+        "CP1-12",
+        "CP1-13",
+        "CP1-19",
+        "CP1-20",
+        "CP1-21",
+        "CP1-22",
+        "CP1-23",
+        "CP1-24",
+        "CP1-25",
+        "CP1-28",
+        "CP1-29",
+        "CP1-30",
+        "CP1-31",
+        "CP1-33",
+        "CP1-34",
+        "CP1-35",
+        "CP1-36",
+        "CP1-37",
+        "CP1-38",
+        "CP2-01",
+        "CP2-02",
+        "CP2-03",
+        "CP2-05",
+        "CP2-06",
+        "CP2-07",
+        "CP2-08",
+        "CP2-09",
+        "CP2-20",
+        "CP2-21",
+        "CP3-01",
+        "CP3-02",
+        "CP3-03",
+        "CP3-04",
+        "CP3-05",
+        "CP3-06",
+        "CP3-07",
+        "CP3-08",
+        "CP3-13",
+        "CP3-14",
+        "CP3-15",
+        "CP3-16",
+        "CP3-18",
+        "CP4-01",
+        "CP4-02",
+        "CP4-03",
+        "CP4-04",
+        "CP4-05",
+        "CP4-06",
+        "CP4-07",
+        "CP4-08",
+        "CP4-09",
+        "CP4-10",
+        "CP4-11",
+        "CP4-12",
+        "CNF-10"
+      ]
+    },
+    "2_PROVIDER_OR_MAIL_PREREQUISITE": {
+      "count": 21,
+      "case_ids": [
+        "CP1-14",
+        "CP1-15",
+        "CP1-16",
+        "CP1-17",
+        "CP1-18",
+        "CP1-27",
+        "CP2-10",
+        "CP2-13",
+        "CP2-14",
+        "CP2-15",
+        "CP2-16",
+        "CP2-17",
+        "CP2-18",
+        "CP3-09",
+        "CP3-10",
+        "CP3-11",
+        "CP3-12",
+        "CNF-05",
+        "CNF-06",
+        "CNF-07",
+        "CNF-11"
+      ]
+    },
+    "3_BROWSER_OS_AUTHORIZATION": {
+      "count": 1,
+      "case_ids": [
+        "CNF-09"
+      ]
+    },
+    "4_REAL_MONTH_OBSERVATION": {
+      "count": 1,
+      "case_ids": [
+        "CNF-02"
+      ]
+    },
+    "5_DEPLOYMENT_TLS_PROVIDER_BACKUP": {
+      "count": 4,
+      "case_ids": [
+        "CNF-01",
+        "CNF-03",
+        "CNF-04",
+        "CNF-12"
+      ]
+    },
+    "6_CONTRACT_DISCREPANCY_OR_ABSENT_SURFACE": {
+      "count": 11,
+      "case_ids": [
+        "CP1-07",
+        "CP1-08",
+        "CP1-26",
+        "CP1-32",
+        "CP2-04",
+        "CP2-11",
+        "CP2-12",
+        "CP2-19",
+        "CP3-17",
+        "CP3-19",
+        "CNF-13"
+      ]
+    },
+    "7_HUMAN_STUDY_CONSENT": {
+      "count": 1,
+      "case_ids": [
+        "CNF-08"
+      ]
+    }
+  },
+  "local_minimum_actions": [
+    {
+      "case_id": "CP1-01",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-02",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-03",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-04",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-05",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-06",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-09",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-10",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-11",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-13",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-33",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-34",
+      "minimum_action": "Execute the exact fresh-account amounts/dates from the original case through the existing transaction API using ordinary Auth. Assert complete source/destination ledger and account state, counts and reports; use an isolated temporary failure trigger for the documented rollback case. Never reset existing original fixtures.",
+      "existing_contract_references": "app/api/transactions/route.ts; app/api/transactions/[id]/route.ts; lib/services/transactions.ts; lib/transaction-account-impact.ts; supabase/migrations/20261015000402_atomic_account_balance_recompute.sql"
+    },
+    {
+      "case_id": "CP1-12",
+      "minimum_action": "Use existing secondary-balance adjustment with the exact ARS/USD debt fixture; prove only the secondary ledger changes and both totals remain coherent.",
+      "existing_contract_references": "app/api/accounts/[id]/adjust-secondary-balance/route.ts; lib/services/accounts.ts:492; create_secondary_balance_adjustment RPC"
+    },
+    {
+      "case_id": "CP1-19",
+      "minimum_action": "Upload separate synthetic CSV/JSON fixtures to existing import endpoint, including invalid row, duplicate omission and foreign-account mapping; assert per-row totals, persisted counts and exact closing balance.",
+      "existing_contract_references": "app/api/import/transactions/route.ts:876; lib/import/batch-journal.ts; lib/import/csv.ts"
+    },
+    {
+      "case_id": "CP1-20",
+      "minimum_action": "Upload separate synthetic CSV/JSON fixtures to existing import endpoint, including invalid row, duplicate omission and foreign-account mapping; assert per-row totals, persisted counts and exact closing balance.",
+      "existing_contract_references": "app/api/import/transactions/route.ts:876; lib/import/batch-journal.ts; lib/import/csv.ts"
+    },
+    {
+      "case_id": "CP1-21",
+      "minimum_action": "Upload separate synthetic CSV/JSON fixtures to existing import endpoint, including invalid row, duplicate omission and foreign-account mapping; assert per-row totals, persisted counts and exact closing balance.",
+      "existing_contract_references": "app/api/import/transactions/route.ts:876; lib/import/batch-journal.ts; lib/import/csv.ts"
+    },
+    {
+      "case_id": "CP1-22",
+      "minimum_action": "Upload separate synthetic CSV/JSON fixtures to existing import endpoint, including invalid row, duplicate omission and foreign-account mapping; assert per-row totals, persisted counts and exact closing balance.",
+      "existing_contract_references": "app/api/import/transactions/route.ts:876; lib/import/batch-journal.ts; lib/import/csv.ts"
+    },
+    {
+      "case_id": "CP1-23",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-24",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-25",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-28",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-29",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-30",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-35",
+      "minimum_action": "Use exact owned rule fixtures and existing cron credential/route. Observe CRUD, inclusive dates, inactive/expired branches, independent versus same-command concurrency, negative allowed balance and rollback/recovery. Assert financial rows and outbox intent separately from physical notification delivery; provider success remains conditional, not claimed.",
+      "existing_contract_references": "app/api/recurring/route.ts; app/api/recurring/[id]/route.ts; app/api/cron/recurring/route.ts; lib/cron/recurring-job.ts; lib/services/notification-outbox.ts; supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+    },
+    {
+      "case_id": "CP1-31",
+      "minimum_action": "Create the exact monthly category budget and boundary expense totals; query existing budget status and prove transfers and other periods/owners are excluded.",
+      "existing_contract_references": "app/api/budgets/route.ts; app/api/budgets/status/route.ts; lib/services/budget-summary.ts"
+    },
+    {
+      "case_id": "CP1-36",
+      "minimum_action": "Use existing shared-expense route/RPC with the current owned guest capability; test exact cent allocation/order/dedup/date, foreign actor/payer/member, invalid/revoked capability and split-write rollback. Distinguish capability author from individual Auth identity.",
+      "existing_contract_references": "app/api/shared/[token]/expenses/route.ts; supabase/migrations/20261006235955_atomic_shared_expense.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP1-37",
+      "minimum_action": "Use existing shared-expense route/RPC with the current owned guest capability; test exact cent allocation/order/dedup/date, foreign actor/payer/member, invalid/revoked capability and split-write rollback. Distinguish capability author from individual Auth identity.",
+      "existing_contract_references": "app/api/shared/[token]/expenses/route.ts; supabase/migrations/20261006235955_atomic_shared_expense.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP1-38",
+      "minimum_action": "Use existing shared-expense route/RPC with the current owned guest capability; test exact cent allocation/order/dedup/date, foreign actor/payer/member, invalid/revoked capability and split-write rollback. Distinguish capability author from individual Auth identity.",
+      "existing_contract_references": "app/api/shared/[token]/expenses/route.ts; supabase/migrations/20261006235955_atomic_shared_expense.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP2-01",
+      "minimum_action": "Use exact account creation/invalid-field/archive and multicurrency debt fixtures through existing APIs; inspect opening adjustment plus all history. Validation expectations may FAIL: current schema has NOT NULL name and uppercase-only currency, not a nonempty-name/ISO allowlist. Report observed behavior without inventing validation.",
+      "existing_contract_references": "app/api/accounts/route.ts; app/api/accounts/[id]/route.ts; lib/services/accounts.ts:185; lib/services/accounts.ts:492; supabase/schema.sql:82; create_account_with_opening_balance RPC"
+    },
+    {
+      "case_id": "CP2-02",
+      "minimum_action": "Use exact account creation/invalid-field/archive and multicurrency debt fixtures through existing APIs; inspect opening adjustment plus all history. Validation expectations may FAIL: current schema has NOT NULL name and uppercase-only currency, not a nonempty-name/ISO allowlist. Report observed behavior without inventing validation.",
+      "existing_contract_references": "app/api/accounts/route.ts; app/api/accounts/[id]/route.ts; lib/services/accounts.ts:185; lib/services/accounts.ts:492; supabase/schema.sql:82; create_account_with_opening_balance RPC"
+    },
+    {
+      "case_id": "CP2-03",
+      "minimum_action": "Use exact account creation/invalid-field/archive and multicurrency debt fixtures through existing APIs; inspect opening adjustment plus all history. Validation expectations may FAIL: current schema has NOT NULL name and uppercase-only currency, not a nonempty-name/ISO allowlist. Report observed behavior without inventing validation.",
+      "existing_contract_references": "app/api/accounts/route.ts; app/api/accounts/[id]/route.ts; lib/services/accounts.ts:185; lib/services/accounts.ts:492; supabase/schema.sql:82; create_account_with_opening_balance RPC"
+    },
+    {
+      "case_id": "CP2-05",
+      "minimum_action": "Use exact account creation/invalid-field/archive and multicurrency debt fixtures through existing APIs; inspect opening adjustment plus all history. Validation expectations may FAIL: current schema has NOT NULL name and uppercase-only currency, not a nonempty-name/ISO allowlist. Report observed behavior without inventing validation.",
+      "existing_contract_references": "app/api/accounts/route.ts; app/api/accounts/[id]/route.ts; lib/services/accounts.ts:185; lib/services/accounts.ts:492; supabase/schema.sql:82; create_account_with_opening_balance RPC"
+    },
+    {
+      "case_id": "CP2-06",
+      "minimum_action": "Export the exact controlled period as CSV/JSON. For roundtrip use separate empty synthetic destination context with declared account/name mapping, preserving original data; compare dates, precision, source/destination relationships and owner scope. Check format/timezone/version metadata explicitly.",
+      "existing_contract_references": "app/api/export/transactions/route.ts; app/api/export/backup/route.ts; app/api/import/transactions/route.ts:955"
+    },
+    {
+      "case_id": "CP2-07",
+      "minimum_action": "Export the exact controlled period as CSV/JSON. For roundtrip use separate empty synthetic destination context with declared account/name mapping, preserving original data; compare dates, precision, source/destination relationships and owner scope. Check format/timezone/version metadata explicitly.",
+      "existing_contract_references": "app/api/export/transactions/route.ts; app/api/export/backup/route.ts; app/api/import/transactions/route.ts:955"
+    },
+    {
+      "case_id": "CP2-08",
+      "minimum_action": "Exercise existing local GoTrue registration/login/logout and invalid-password/JWT/recovery-token paths with the existing controlled identities. Recovery-token negative fixtures may be minted locally without sending external mail; do not claim email delivery. Confirmation-enabled registration has a mail dependency if the existing runtime requires it.",
+      "existing_contract_references": "app/register/page.tsx; app/login/page.tsx; lib/supabase/server.ts; existing local GoTrue endpoints; environment/runtime-preparation.md"
+    },
+    {
+      "case_id": "CP2-09",
+      "minimum_action": "Exercise existing local GoTrue registration/login/logout and invalid-password/JWT/recovery-token paths with the existing controlled identities. Recovery-token negative fixtures may be minted locally without sending external mail; do not claim email delivery. Confirmation-enabled registration has a mail dependency if the existing runtime requires it.",
+      "existing_contract_references": "app/register/page.tsx; app/login/page.tsx; lib/supabase/server.ts; existing local GoTrue endpoints; environment/runtime-preparation.md"
+    },
+    {
+      "case_id": "CP2-20",
+      "minimum_action": "Use an isolated exact three-active-account Free fixture: reject fourth, deactivate one and allow replacement, enable documented Premium allowance and create fourth; downgrade then read/export/history without deletion. Existing API/UI evidence uses18 active accounts and does not substitute this exact boundary.",
+      "existing_contract_references": "lib/billing/plans.ts; app/api/accounts/route.ts; app/api/accounts/movement-selection/route.ts; supabase/migrations/20261009034943_enforce_plan_allowances.sql; app/api/export/transactions/route.ts"
+    },
+    {
+      "case_id": "CP2-21",
+      "minimum_action": "Expire/revoke ordinary JWT while a synthetic draft is unsaved; confirm401 with zero financial rows, reauthenticate, recover selected original draft/intent ID and confirm exactly once. Existing response-loss/restart and owner-switch browser evidence is separate.",
+      "existing_contract_references": "lib/hooks/useFinancialOperation.ts; lib/offline-transaction-store.ts; components/add-transaction/AddTransactionProvider.tsx; scripts/test-isolated-offline-durability.mjs"
+    },
+    {
+      "case_id": "CP3-01",
+      "minimum_action": "Use configured local HTTP quote doubles, exact rates/time and controlled clock; inspect source/time/cache/missing-rate labels. CP3-02 specifically requires cache refresh at+300s and+301s with TTL300: current getFromCache uses >TTL, a concrete potential exact-boundary failure to observe. No provider credentials are needed for explicitly synthetic integration.",
+      "existing_contract_references": "lib/services/cotizaciones.ts:39; lib/services/cotizaciones.ts:281; app/api/cotizaciones/route.ts; __tests__/blue-fx-metadata.test.ts"
+    },
+    {
+      "case_id": "CP3-02",
+      "minimum_action": "Use configured local HTTP quote doubles, exact rates/time and controlled clock; inspect source/time/cache/missing-rate labels. CP3-02 specifically requires cache refresh at+300s and+301s with TTL300: current getFromCache uses >TTL, a concrete potential exact-boundary failure to observe. No provider credentials are needed for explicitly synthetic integration.",
+      "existing_contract_references": "lib/services/cotizaciones.ts:39; lib/services/cotizaciones.ts:281; app/api/cotizaciones/route.ts; __tests__/blue-fx-metadata.test.ts"
+    },
+    {
+      "case_id": "CP3-03",
+      "minimum_action": "Use configured local HTTP quote doubles, exact rates/time and controlled clock; inspect source/time/cache/missing-rate labels. CP3-02 specifically requires cache refresh at+300s and+301s with TTL300: current getFromCache uses >TTL, a concrete potential exact-boundary failure to observe. No provider credentials are needed for explicitly synthetic integration.",
+      "existing_contract_references": "lib/services/cotizaciones.ts:39; lib/services/cotizaciones.ts:281; app/api/cotizaciones/route.ts; __tests__/blue-fx-metadata.test.ts"
+    },
+    {
+      "case_id": "CP3-04",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-05",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-06",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-07",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-08",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-18",
+      "minimum_action": "Create exact independent account/position/period fixtures; compare existing aggregate/summary API and permitted UI with complete owner SQL, including investment cash/positions once, debt, empty state, transfer exclusion and missing-currency partial result. Current CP3-08UI visible expense8000 with category subtotal2000 is not the original all-total2000 fixture.",
+      "existing_contract_references": "lib/services/accounts.ts:727; app/api/transactions/summary/route.ts; app/(authenticated)/analysis/page.tsx; components/dashboard/NetWorthHero.tsx; lib/services/investments.ts"
+    },
+    {
+      "case_id": "CP3-13",
+      "minimum_action": "Seed exact month/category/time-window fixtures then call existing authenticated anomaly/projection APIs. Verify threshold boundaries, deterministic complete-month arithmetic, other-owner/current/future exclusion and no Gemini dependency.",
+      "existing_contract_references": "app/api/ai/anomalies/route.ts; app/api/ai/projections/route.ts; lib/financial-anomalies.ts; lib/financial-projections.ts"
+    },
+    {
+      "case_id": "CP3-14",
+      "minimum_action": "Seed exact month/category/time-window fixtures then call existing authenticated anomaly/projection APIs. Verify threshold boundaries, deterministic complete-month arithmetic, other-owner/current/future exclusion and no Gemini dependency.",
+      "existing_contract_references": "app/api/ai/anomalies/route.ts; app/api/ai/projections/route.ts; lib/financial-anomalies.ts; lib/financial-projections.ts"
+    },
+    {
+      "case_id": "CP3-15",
+      "minimum_action": "Seed exact month/category/time-window fixtures then call existing authenticated anomaly/projection APIs. Verify threshold boundaries, deterministic complete-month arithmetic, other-owner/current/future exclusion and no Gemini dependency.",
+      "existing_contract_references": "app/api/ai/anomalies/route.ts; app/api/ai/projections/route.ts; lib/financial-anomalies.ts; lib/financial-projections.ts"
+    },
+    {
+      "case_id": "CP3-16",
+      "minimum_action": "Seed exact month/category/time-window fixtures then call existing authenticated anomaly/projection APIs. Verify threshold boundaries, deterministic complete-month arithmetic, other-owner/current/future exclusion and no Gemini dependency.",
+      "existing_contract_references": "app/api/ai/anomalies/route.ts; app/api/ai/projections/route.ts; lib/financial-anomalies.ts; lib/financial-projections.ts"
+    },
+    {
+      "case_id": "CP4-01",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-02",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-03",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-04",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-05",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-06",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-07",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-10",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-11",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-12",
+      "minimum_action": "Use exact independent manual-price lots, sale quantities/cost/history, cash and dates from the original case through existing investment APIs; add only the documented local rollback fault/quote outage. Snapshot cost as well as quantity/sale rows before and after oversale. Do not add an individual GET endpoint; the existing collection/portfolio and normal JWT SQL are available.",
+      "existing_contract_references": "app/api/investments/route.ts; app/api/investments/[id]/sell/route.ts; app/api/investments/portfolio/route.ts; lib/services/investments.ts; supabase/migrations/20260702120000_atomic_investment_sell.sql; supabase/migrations/20261009035715_durable_sales_shared_expenses.sql"
+    },
+    {
+      "case_id": "CP4-08",
+      "minimum_action": "Reconcile the existing exact successful UI simulation assertions and unchanged four-table financial SQL hash. No new runtime execution is needed.",
+      "existing_contract_references": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+      "resolution": "Complete original contract independently matched; proposed PASS is in the separate supplied JSON, not a CSV edit."
+    },
+    {
+      "case_id": "CP4-09",
+      "minimum_action": "Reconcile the existing exact successful UI simulation assertions and unchanged four-table financial SQL hash. No new runtime execution is needed.",
+      "existing_contract_references": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+      "resolution": "Complete original contract independently matched; proposed PASS is in the separate supplied JSON, not a CSV edit."
+    },
+    {
+      "case_id": "CNF-10",
+      "minimum_action": "Exercise ordinary JWT/noJWT plus incorrect cron/bot channel credentials before effects and valid existing local routes; assert no data/effects and sanitized logs. Successful real Telegram physical delivery is not part of auth-denial proof and remains provider-dependent.",
+      "existing_contract_references": "app/api/cron/recurring/route.ts; app/api/telegram/webhook/route.ts; lib/telegram/webhook-auth.ts; e2e/api/api-verification.json"
+    }
+  ],
+  "already_assigned_local": [
+    "CP1-06",
+    "CP1-10",
+    "CP1-13",
+    "CP1-36",
+    "CP4-03"
+  ],
+  "other_assigned_subscopes": {
+    "CNF-01": "Parent/E2E three local load profiles in progress, not deployment-equivalence claim",
+    "CNF-12": "Native four post-restore UI read journeys planned; not the nominal2accounts/20transactions fixture, timedRPO/RTO or remote planbackup mechanism",
+    "CP3-01/02": "Quote work was announced by parent; coordinate rather than duplicate, including TTL exact-boundary observation"
+  },
+  "provider_prerequisites": {
+    "Gemini/OCR": [
+      "GEMINI_API_KEY"
+    ],
+    "Telegram": [
+      "TELEGRAM_BOT_TOKEN",
+      "TELEGRAM_WEBHOOK_SECRET",
+      "controlled bot/chat and test HTTPS callback"
+    ],
+    "Mercado Pago": [
+      "MP_ACCESS_TOKEN sandbox",
+      "MP_WEBHOOK_SECRET",
+      "controlled sandbox resource with explicit amount,currency,period"
+    ],
+    "Password recovery": [
+      "Current native runtime excludes Mail and has no external SMTP configured; inspect existing authorized local mail availability before declaring an external credential mandatory. No exact missing SMTP secret name is asserted."
+    ]
+  },
+  "locally_actionable_parts_of_provider_cases": {
+    "CP1-16": "Unlinked/revoked ownership and old callback denial can be exercised with local route/session/link doubles; real Telegram callback acceptance remains missing.",
+    "CP1-18": "Invalid MIME/bytes/size and cancel-without-mutation paths are local. Illegible genuine-image extraction/correction requires OCR/Gemini acceptance.",
+    "CP1-27": "Inject accepted-but-lost-ack transport double and prove one movement/uncertain physical delivery. Do not claim real Telegram delivery or exactly-once.",
+    "CP2-10": "Local token consumption and password replacement can be tested separately; requesting and receiving the actual reset email lacks mail transport in the current runtime.",
+    "CP2-14": "Bad HMAC/no activation is local; real resource status/amount/currency verification requires MP sandbox.",
+    "CP2-15": "Plan expiry/downgrade read/history/export and deterministic time boundary are local; real cancellation/no-renewal requires MP.",
+    "CP2-16": "Free premium-gate and owner binding denial are local; real provider resource replay still requires MP.",
+    "CP2-17": "Local link-token ownership/consumption state can be exercised separately from physical bot/chat confirmation.",
+    "CP2-18": "Expired/reused/tampered local link tokens and foreign owner/chat mappings can be exercised; no real Telegram handoff acceptance claimed.",
+    "CP3-11": "Readonly tool allowlist, own context and attempted write/cross-owner denial can be tested with explicit AI doubles; semantic real model injection resistance is not proved.",
+    "CP3-12": "503 fallback and empty conventional analysis are locally injectable; semantic ambiguous real-AI reply requires Gemini.",
+    "CNF-05": "Complete manual registration/expense/budget/rule/keyboard tasks locally; genuine OCR preview depends on Gemini.",
+    "CNF-06": "Account/export/login keyboard/task flows are local. Mail delivery/reset journey is unavailable until authorized local mail transport or controlled existing SMTP is available.",
+    "CNF-07": "Dashboard/detail/anomaly long-data/negative-state accessibility is local; real AI chat acceptance remains unavailable.",
+    "CNF-11": "All financial transaction/import/cron/sale same-command2/10concurrency, durable replay/rollback and outbox intent portions are local. MP acceptance and physical external delivery are distinct missing provider portions."
+  },
+  "browser_os_blocker": "CNF-09 needs real current AND prior browser versions. Current installed Chrome alone is insufficient; Firefox/Edge installation authorization pending and Safari Remote Automation disabled. WebKit is not Safari.",
+  "month_blocker": "CNF-02 requires the actual identified month and8640scheduled5min observations; short test or43/44failure arithmetic never establishes actual monthly availability.",
+  "deployment_blockers": {
+    "CNF-01": "Original canonical performance acceptance also requires deployment-equivalent environment. Local shaped three-profile measurements remain valid with their exact scope.",
+    "CNF-03": "Existing test stack is HTTP loopback; no authorized real HTTPS financial endpoint/certificate+redirect acceptance.",
+    "CNF-04": "Local FileVault evidence does not assert encryption-at-rest configuration of an unseen deployed provider; CP2-19 remains compoundpartial.",
+    "CNF-12": "No actual remote hosting-plan backup mechanism/access demonstrated; existing independent native schema/data/Auth/Storage restore and plannedUIreads are separate valid local evidence, not nominal2/20fixture nor24h/4h observation."
+  },
+  "contract_discrepancies": {
+    "CP1-07": {
+      "detail": "API expressly rejects changing transaction type; original expects expense->income. Existing normal-JWT SQL UPDATE can test the trigger separately, without inventing API support.",
+      "references": "app/api/transactions/[id]/route.ts:87"
+    },
+    "CP1-08": {
+      "detail": "Original additionally requires actor/old-value audit after physical DELETE; no matching application audit trail was identified. Exact balance reversal is locally testable, but it is not the full contract.",
+      "references": "lib/services/transactions.ts; app/api/transactions/[id]/route.ts"
+    },
+    "CP1-26": {
+      "detail": "Original literally says durable outbox/redelivery is not implemented. The current implementation has both; an explicit contract reconciliation is needed instead of passing the contradictory literal assertion.",
+      "references": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql; durability/reconciled-contracts.json"
+    },
+    "CP1-32": {
+      "detail": "Original end-before-start budget input is not represented by the monthly month-only API/model. Zero limit, category owner and period exclusion remain locally executable.",
+      "references": "app/api/budgets/route.ts; lib/services/budgets.ts"
+    },
+    "CP2-04": {
+      "detail": "Original requests empty-account hard delete and dependency rejection. Existing delete operation always archives, preserving history. Do not add deletion behavior merely to satisfy the old fixture.",
+      "references": "lib/services/accounts.ts:715"
+    },
+    "CP2-11": {
+      "detail": "Existing SettingsForm currency select has no save/onChange and no widget persistence surface; global localStorage networth view is not owner-scoped saved base/widget preferences.",
+      "references": "components/settings/SettingsForm.tsx:774; components/dashboard/NetWorthHero.tsx:25"
+    },
+    "CP2-12": {
+      "detail": "Invalid/foreign preference update relies on the same absent saved base/widget preference surface. Existing notification-preference API is a different contract.",
+      "references": "components/settings/SettingsForm.tsx:774; app/api/user/notification-preferences/route.ts"
+    },
+    "CP2-19": {
+      "detail": "Exact compound matrix currently42PASS/6BLOCKED; absent individual investment GET and unsupported private-profile CRUD cannot be covered by creating endpoints. Existing supported operations were tested; no inference across missing operations.",
+      "references": "security-matrix/cp2-19-composite.json; app/api/investments/[id]/route.ts; app/api/user/notification-preferences/route.ts"
+    },
+    "CP3-17": {
+      "detail": "Same absent per-owner saved base/widget preference surface as CP2-11/12.",
+      "references": "components/settings/SettingsForm.tsx:774; components/dashboard/NetWorthHero.tsx:25"
+    },
+    "CP3-19": {
+      "detail": "Original selectable MEP conflicts with documented RN08/current blue-sell policy; separate blue correctness does not approve MEP.",
+      "references": "case-traceability.csv; plan.md RN08; lib/blue-fx-reference.ts"
+    },
+    "CNF-13": {
+      "detail": "RNF08 explicitly defines a target, not an implemented assumption. No universal request->service->effect correlation for all9manual/cron/payment outcomes was identified. Local canary/error logging can be executed and may fail; provider credential gaps are secondary, not justification for claiming observability.",
+      "references": "plan.md:725; lib/api-handler.ts:58; lib/cron/cron-job.ts; app/api/webhooks/mercado-pago/route.ts"
+    }
+  },
+  "rnf_and_coverage": {
+    "RNF04": "plan.md:721 additionally requires5consentingparticipants, at least4complete registration/account/query unaided. Automated40PNG/32cells and own review do not establish that user study; allowed local task/keyboard/label/focus/error states should still be completed separately.",
+    "RNF05": "Current and prior stable real Chrome/Edge/Firefox/Safari; no substitution of PlaywrightWebKit or one currentChrome version.",
+    "coverage_target": "docs/testing/coverage-criterion.md:5 historical>=90%branch target applies only scopedCFGcorefunctions; plan.md:1378 selects calendar full instrumented branches and says historicalgate does not replace final measurement. Neither document imposes90%globalcoverage of37files.",
+    "core_responsive_coverage": {
+      "source_revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+      "instrumented_files": 37,
+      "lines": "1783/2480=71.89%",
+      "statements": "1988/2881=69%",
+      "functions": "279/414=67.39%",
+      "branches": "1556/2485=62.61%",
+      "calendar_branches": "30/30=100%",
+      "cron_job_branches": "13/14=92.85%",
+      "transactions_full_file_branches": "160/277=57.76%; does not isolate the3historicalCFGhelperfunctions"
+    },
+    "limitation": "Do not claim old96.82%selectedbranch result as current, overall90%, full-app instrumentation, entiretransactioncreatecoverage or formalpath/conditioncoverage from these aggregate metrics."
+  },
+  "execution_count_during_review": 0,
+  "runtime_mutations": 0,
+  "matrix_edited": false,
+  "sources_edited": false,
+  "note": "The64LOCAL group includes5alreadyassignedcases and2exact existing simulation cases supplied for semantic reconciliation; it does not mean64newtestexecutions. Other57require exact remaining contract checks or evidence-level match, plus local subscopes from externally blocked groups and CNF08technicalflows. Current rejected validation expectations may produceFAIL, which must not be hidden as accessBLOCKED.",
+  "human_study": {
+    "case_id": "CNF-08",
+    "complete_original_acceptance": "RNF04 additionally requires five consenting participants; at least four complete each registration/account/query task unaided. No recruiting/contact or consent collection is authorized by this technical run.",
+    "authorized_local_subscope": {
+      "case_id": "CNF-08",
+      "minimum_action": "Complete actual keyboard/task flows for purchase, sale and simulation at all documented widths/zoom and states; the current40 static captures/32cells are scoped and do not prove completed purchase/sale tasks.",
+      "existing_contract_references": "components/investments/AddInvestmentPanel.tsx; components/investments/SellPositionDialog.tsx; components/investments/InvestmentSimulationPanel.tsx; e2e/visual/visual-verification.json; plan.md RNF04"
+    },
+    "rule": "Complete automated/manual technical four-CU viewport/task helper evidence remains local; do not equate it to the human study. Other RNF04 cases may share this secondary acceptance dependency."
+  },
+  "updated_at": "2026-10-15T04:39:38.155511+00:00",
+  "current_reconciliation": {
+    "recorded_at": "2026-10-15T04:51:10.664496+00:00",
+    "source_matrix": "../case-traceability.csv",
+    "source_matrix_sha256": "9123162c847a88e8f9e71548c68442a7239eead99aaaf3e0395f21b203909e65",
+    "scope": "Original disjoint103-case triage snapshot remains unchanged. This is only metadata reconciliation against currently reviewed complete contracts; no new execution or claim that all locally actionable original scopes are complete.",
+    "initially_triaged_cases": 103,
+    "current_status_counts": {
+      "BLOCKED": 78,
+      "PASS": 24,
+      "FAIL": 1
+    },
+    "cases": [
+      {
+        "case_id": "CP1-01",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-02",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-03",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-04",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-05",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-06",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+        "assertions": "CP1-06 initial expense succeeds | CP1-06 exact pre-edit balances | CP1-06 origin-account update succeeds | CP1-06 exact post-edit balances | CP1-06 one original movement preserves identity owner amount and points to B | CP1-06 historical API relation is consistent",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-09",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-10",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+        "assertions": "CP1-10 initial summary is available | CP1-10 initial transfer succeeds | CP1-10 original transfer balances | CP1-10 destination-and-amount update succeeds | CP1-10 exact final balances and total | CP1-10 one transfer preserves identity and both authoritative amounts | CP1-10 transfer does not increment API income expense or economic flow | CP1-10 independent SQL finds no income or expense for this transfer",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-13",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+        "assertions": "CP1-13 two independent database connections overlap behind own-row barrier | CP1-13 neither blocked request committed before barrier release | CP1-13 two distinct logical keys | CP1-13 both distinct expense commands commit | CP1-13 exactly two distinct 6000 expense effects | CP1-13 final balance is -2000 without lost updates | CP1-13 two durable receipts exist for the two commands",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-19",
+        "status": "PASS",
+        "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-19-de8a454f-dbe7-40e1-a9d7-22867ef0249f.csv; remaining-cu001/attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs; remaining-cu001/cp1-19-semantic-review.json",
+        "assertions": "Own normal-session fixture account201 | Initial native balance | Partial valid local import200 | Exactly two economic writes and balance10200 | Raw current importer counters",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-20",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-21",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-22",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-23",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-24",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-25",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-28",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-29",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-30",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-31",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-33",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-34",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-35",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-36",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-1-existing-full-plan/verification.json; focal-contracts/cp1-36-review.json; e2e/api/api-verification.json",
+        "assertions": "CP1-36 original API assertion passed on this exact expense ID | CP1-36 owned archived group remains inactive | CP1-36 original group currency is ARS | CP1-36 exact original group has three members | CP1-36 original expense is exactly 100 ARS | CP1-36 exactly three distinct same-group split members | CP1-36 split amounts are 33.34 33.33 33.33 | CP1-36 exact expense split sum equals its 100 amount | CP1-36 payer belongs to exact original group | CP1-36 original 100 expense net total is exact numeric zero | CP1-36 every existing expense in the same group independently reconciles and has same-group members | CP1-36 same original group net total is independently exact numeric zero",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-37",
+        "status": "PASS",
+        "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
+        "assertions": "SH-SQL-02 create and remainder cents conserve total | SH-SQL-03 update replaces amount and splits atomically",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP1-38",
+        "status": "PASS",
+        "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
+        "assertions": "SH-SQL-04 actor from another group | SH-SQL-05 payer from another group | SH-SQL-06 split from another group | SH-SQL-08 another group cannot edit an existing expense | SH-SQL-09 invalid/revoked capabilities do not mutate | SH-SQL-10 split insert failure rolls back UPDATE and removed old splits | SH-SQL-11 split insert failure leaves no orphan new expense",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-01",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-02",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-03",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-05",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-06",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-07",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-cp2-07/source-export.json; account-analysis-contracts/executed-cp2-07/source-roundtrip.json; account-analysis-contracts/executed-cp2-07/target-import.json; account-analysis-contracts/executed-cp2-07/manifest.json",
+        "assertions": "SameU1identityroundtrip | Exactunchangedexportfilehash | Sourcephaseactualstableandoriginalsintact | Fixture account API201 | Fixture account API201 | Targetpreview200 | Targetnamemappingresolved | Targetimport200 | Threeimportedzeroomittedpending | Semanticexport-importequivalence | NooriginalaccountIDreused | Noorphanorforeignrelationship",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-08",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-09",
+        "status": "FAIL",
+        "evidence": "fresh-proof/auth-negative-contract/verification.json; fresh-proof/auth-negative-contract/independent-review.json; fresh-proof/verify-auth-negative-contract.mjs; fresh-proof/auth-recovery.json; fresh-proof/auth-expiry.json",
+        "assertions": "Wrong password literal HTTP401/403 | No sensitive existence enumeration | Normal Auth/API control A | Normal Auth/API control B | Altered current ordinary JWT literal HTTP401/403 | Expired original ordinary JWT literal HTTP401/403 | Expired recovery hash literal HTTP401/403 | Reused recovery hash literal HTTP401/403 | ZARIX API401 for actual expired access plus its own revoked refresh | Financial12 state unchanged and two prior normal controls preserved",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP2-20",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-21",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-01",
+        "status": "PASS",
+        "evidence": "quote-contracts/attempt-1/mapping.json; quote-contracts/attempt-1/verification.json; quote-contracts/independent-composite-review.json; quote-contracts/postfix-contracts.json",
+        "assertions": "CP3-01 blue value/source/time | CP3-01 oficial value/source/time | CP3-01 mep value/source/time | CP3-01 ccl value/source/time | CP3-01 BTC USD/source time | CP3-01 ETH USD/source time | CP3-01 USDT USD/source time | CP3-01 aggregate timestamp | CP3-01 actual HTTP double requests",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-02",
+        "status": "PASS",
+        "evidence": "quote-contracts/attempt-1/hit299.json; quote-contracts/attempt-1/refresh300.json; quote-contracts/attempt-1/refresh301.json; quote-contracts/attempt-1/failure300.json; quote-contracts/ssr-followup-after-fix.json; quote-contracts/independent-composite-review.json; quote-contracts/postfix-contracts.json",
+        "assertions": "hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 returned quote | hit299 returned quote | hit299 returned quote | hit299 returned quote | hit299 provider request counters | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 returned quote | refresh300 returned quote | refresh300 returned quote | refresh300 returned quote | refresh300 provider request counters | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 returned quote | refresh301 returned quote | refresh301 returned quote | refresh301 returned quote | refresh301 provider request counters | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 returned quote | failure300 returned quote | failure300 returned quote | failure300 returned quote | failure300 provider request counters | Actual persisted BlueFxReference keeps1200/T0/null provider | Actual component labels saved quote | Actual component does not fabricate provider | Actual component time attribute preservesT0 | Visible UTC clock shows original16:00 instead of04:00",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-03",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-04",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-05",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-06",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-07",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-08",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-13",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-rf11/cp3-13.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+        "assertions": "Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | 1999/1000noalert | Removeonlynew1999fixture204 | Independentsecondfixturestartsfromidenticalhistory | Independentsecondfixtureidenticalbalance | Fixture transaction API201 | IndependentvariantusesdistinctmovementID | At2000exactalert",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-14",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-rf11/cp3-14.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+        "assertions": "Fixture account API201 | Fixture transaction API201 | Newcategory5000noalert | Removeonlynew5000variant204 | Independentvariantrestoresemptyfixture | Independentvariantbalance0 | Fixture transaction API201 | Newcategory5000.01alert | Removeonlynew5000.01variant204 | Thirdindependentfixtureisempty | Noeligiblemovementsmeansnoanomaly | NoeligiblecompletedmonthmeanshasDatafalse",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-15",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-rf11/cp3-15.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+        "assertions": "Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Set own new cash base through existing adjustment200 | Projection cash fixture exactly50000 | Projection endpoint200 | Exact observed-three-month arithmetic",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-16",
+        "status": "PASS",
+        "evidence": "account-analysis-contracts/executed-rf11/cp3-16.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+        "assertions": "Selected synthetic user has no stored Gemini credential | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Set own new cash base through existing adjustment200 | Projection cash fixture exactly50000 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Maintain exact own cash base50000 | Destination transfercash normalized through explicit adjustment | Projection endpoint200 | Exact observed-three-month arithmetic | Projection succeeds without any additional Gemini-host fetch attempt",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP3-18",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP4-01",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP4-02",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-02-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Actual partial sale201 | Persisted exact quantity | Persisted exact remaining cost | Original purchase durable history retained | Purchase original quantity retained in creation receipt | Purchase original unit retained in creation receipt | Exactly one separate sale-history row | Sold quantity exact | Original cost unit retained at sale | Own visible sale history200 | Sale API history equals persisted row | Actual owner portfolio200 | New own position visible exactly once | Position quantity | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position realized_pnl_usd | Position sales_count | External purchase/sale does not silently debit cash ledger",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-03",
+        "status": "PASS",
+        "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+        "assertions": "CP4-03 exact manual lot purchase succeeds | CP4-03 exact pre-sale quantity and cost | CP4-03 entire lot sale succeeds and closes position | CP4-03 independent closed quantity and remaining cost are zero | CP4-03 exactly one sale has realized profit 80 USD | CP4-03 sale history remains visible through authenticated API after closure | CP4-03 visible sale history preserves exact quantities price and realized profit | CP4-03 zero-quantity closure and visible history contain finite financial outputs",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-04",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-04-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Persisted exact quantity | Persisted exact remaining cost | Literal7greaterthan6 rejects known client error | Full position/cost/sales/cash/receipts unchanged after rejected7 | Persisted exact quantity | Persisted exact remaining cost",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-05",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-05-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Injected position transaction returns500 | Actualpositionfaultmarkerobservedinboundprivatelog | Rollback position: zero own positions | Rollback position: zero durable purchase operation | Rollback position: original own cash ledger unchanged | Temporary position DDL removed with exact catalog parity | Injected receipt transaction returns500 | Actualreceiptfaultmarkerobservedinboundprivatelog | Rollback receipt: zero own positions | Rollback receipt: zero durable purchase operation | Rollback receipt: original own cash ledger unchanged | Temporary receipt DDL removed with exact catalog parity | Same-key original purchase retry201 after real rollback | Persisted exact quantity | Persisted exact remaining cost | Durable replay returns original position ID | Replay no position drift | Exactly one committed creation operation | Exactly one final new position | Final catalog matches before injection",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-06",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP4-07",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed-cp4-07/attempt-2-unique-fresh-cache-pass.json; investment-contracts/independent-cp4-07-concurrent-http-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Turn only new position into cached nonmanual fixture200 | Normal JWT own synthetic timestamp fixture accepted | Synthetic timestamp setup targets only own new position | Fixed price timestamp is persisted | Actual owner portfolio200 | fresh unique asset cached110: actual upstream crypto503 observed | New own position visible exactly once | Position quantity | Position current_price | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position valuation_price_source | Unavailable provider preserves actual fresh cache timestamp | Archive only new own completed valuation fixture200 | Actual normal-owner investment create201 | Actual owner portfolio200 | separate unique asset without current price: actual upstream crypto503 observed | New own position visible exactly once | Position quantity | Position current_price | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position valuation_price_source | Purchase reference does not invent quote timestamp | Archive only new own completed valuation fixture200 | Actual normal-owner investment create201 | Missing required FX explicitly fails valuation | Valuation failure never changes own original quantities/cost/price",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-08",
+        "status": "PASS",
+        "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+        "assertions": "CU004 investments: UI manual purchase and sale, excessive quantity has no effect / persisted remaining quantity = 6 and manual current unit price = 110 USD | UI simulation +10%: simulation-hypothetical-value = USD 726,00; simulation-current-value = USD 660,00 | Cerrar simulación followed by identical SHA256 of accounts + transactions + investments + investment_sales",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-09",
+        "status": "PASS",
+        "evidence": "e2e/ui/e2e-verification.json; e2e/ui/build-binding.json; ../../../../../scripts/test-isolated-e2e.mjs; review/verified-system-case-results.json",
+        "assertions": "UI simulation -100%: simulation-hypothetical-value = USD 0,00 | Separate -100.01 and NaN submissions: role alert visible and investment-simulation-result count = 0 | Original current value = USD 660,00 and identical final four-table financial SQL SHA256 after all submissions and closing",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-10",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-10-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Fixture account API201 | Deactivate only new own account204 | Foreign/inactive own account purchase rejected404 | Rejected purchase creates no own position | Rejected purchase creates no durable success receipt | Foreign/inactive own account purchase rejected404 | Rejected purchase creates no own position | Rejected purchase creates no durable success receipt | Actual owner portfolio200 | Foreign position not visible in existing safe owner collection | Ordinary Auth RLS excludes foreign position | Foreign newly created full rows unchanged",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-11",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-11-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | Actual normal-owner investment create201 | Actual sale4of10 returns201 | Actual normal-owner investment create201 | Second purchase creates distinct lot | Persisted exact quantity | Persisted exact remaining cost | Persisted exact quantity | Persisted exact remaining cost | Original lot unit stays100, never averaged140 | New lot unit remains200 | Original purchase durable history retained | Purchase original quantity retained in creation receipt | Purchase original unit retained in creation receipt | Exactly one separate sale-history row | Sold quantity exact | Original cost unit retained at sale | Actual owner portfolio200 | Aggregated quantity10 | Exact two-lot totalPurchaseValue | Exact two-lot totalRealizedPnLUsd | Exact two-lot totalCurrentValue | Exact two-lot totalPnL | Both original lots retained",
+        "blocker": ""
+      },
+      {
+        "case_id": "CP4-12",
+        "status": "PASS",
+        "evidence": "investment-contracts/executed/cp4-12-pass.json; investment-contracts/independent-review.json",
+        "assertions": "Fixture account API201 | External cash already reconciled0USD | Actual normal-owner investment create201 | Persisted exact quantity | Persisted exact remaining cost | Registering external purchase does not debit cash ledger | Actual owner portfolio200 | New own position visible exactly once | Position market_value_usd | Position cost_basis_usd | Position profit_loss_usd | Actual converted own accounts200 | Original external cash remains0 | Independent cash plus portfolio equals networth1000USD",
+        "blocker": ""
+      },
+      {
+        "case_id": "CNF-10",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-14",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-15",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-16",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-17",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP1-18",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-27",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-10",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-13",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-14",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-15",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-16",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-17",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP2-18",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP3-09",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP3-10",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CP3-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CNF-05",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CNF-06",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CNF-07",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CNF-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CNF-09",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Required real versioned Chrome/Firefox/Safari/Edge matrix has not been completed; WebKit is not Safari."
+      },
+      {
+        "case_id": "CNF-02",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "No identified month-long authenticated observation series; a short synthetic run cannot establish monthly availability. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CNF-01",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Canonical 100 authenticated UI navigations with 20 sessions at 20Mbps/50ms in an equivalent deployment environment have no complete executed observation series. SQL/API measurements are separate."
+      },
+      {
+        "case_id": "CNF-03",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native test stack uses HTTP loopback; no authorized HTTPS test endpoint/certificate and redirect verification for financial requests."
+      },
+      {
+        "case_id": "CNF-04",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json; environment/at-rest.json",
+        "assertions": "",
+        "blocker": "Current local FileVault volume-encryption evidence exists separately; the complete original provider/configuration and CP2-19 API/JWT isolation fixture have no exact executed acceptance assertion."
+      },
+      {
+        "case_id": "CNF-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native schema/data/Auth/Storage restore has separate evidence; this original timed snapshot fixture and complete post-restore browser journey have no exact executed assertion."
+      },
+      {
+        "case_id": "CP1-07",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-08",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-26",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP1-32",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-04",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-11",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-12",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP2-19",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-17",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      },
+      {
+        "case_id": "CP3-19",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Documented conflict: case requires selectable MEP whereas RN08 and implementation fix blue sell. Derived blue consistency evidence does not approve the original MEP fixture."
+      },
+      {
+        "case_id": "CNF-13",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately. Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately."
+      },
+      {
+        "case_id": "CNF-08",
+        "status": "BLOCKED",
+        "evidence": "environment/runtime-manifest.json; core-acceptance/final-vitest.json; native-full/native-verification.json",
+        "assertions": "",
+        "blocker": "Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately."
+      }
+    ]
+  }
+}

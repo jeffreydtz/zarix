@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T03:47:29.846005+00:00",
+  "generated_at_utc": "2026-10-15T04:50:29.519725+00:00",
   "draft": true,
   "original_cases": {
     "path": "../../../casos_prueba.csv",
@@ -71,6 +71,10 @@
     "core-reliability/verification.json": {
       "sha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
       "bytes": 73870
+    },
+    "core-acceptance/verification.json": {
+      "sha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
+      "bytes": 74331
     },
     "core/final-vitest.json": {
       "sha256": "c8af13220a9f22f571161271d98ee82be98fe24770d932fe2f8a26a6a19752dd",
@@ -232,6 +236,46 @@
       "sha256": "abee866903eb1c6cacd71d30b9cbdfaee9b6e512606960f473a62873187f9163",
       "bytes": 41976
     },
+    "core-acceptance/final-vitest.json": {
+      "sha256": "19c44b2bd9f919c3cf9ab83fe879f968410dc8ddea132bb0130bf4ce764cfac7",
+      "bytes": 1099280
+    },
+    "core-acceptance/coverage-summary.json": {
+      "sha256": "3a35c17423ad24696c1450ed6d2526f5c65494c32fedc6a48f987b92514c4d36",
+      "bytes": 12626
+    },
+    "core-acceptance/dependency-audit.json": {
+      "sha256": "abcf9a393d63fc0f7562b87bb163684d54549d4b96c7775e2ebc24f8633e15d6",
+      "bytes": 202
+    },
+    "core-acceptance/balance-sql.json": {
+      "sha256": "59963482657d529e9aad9b5f24d6943c26478d00f10c939482e7b593e8752647",
+      "bytes": 7358
+    },
+    "core-acceptance/shared-sql.json": {
+      "sha256": "48b925f9d7c6515230abe80bd80a2dd8ad9469f8df22e96ce029d74438a27209",
+      "bytes": 1570
+    },
+    "core-acceptance/plan-sql.json": {
+      "sha256": "d3340ba93cc00957e91614249261279490e90f3b169ef51d1c277ba069952a6a",
+      "bytes": 2123
+    },
+    "core-acceptance/durable-sql.json": {
+      "sha256": "68715328ca39864fdbb7aa248aa24a29163fa9c3081fd7920f939d682a9e6790",
+      "bytes": 8413
+    },
+    "core-acceptance/import-sql.json": {
+      "sha256": "b7f5dbe2fcaa7d8834c26669be3c7dc69598b2c1d4ba6b0520f14bf24c39c650",
+      "bytes": 1313
+    },
+    "core-acceptance/account-recompute-sql.json": {
+      "sha256": "d38715d8cd69433ecf095d51cd583adc9840523a3463b45cb7b82a6d62ae3b37",
+      "bytes": 14532
+    },
+    "core-acceptance/database-verification.json": {
+      "sha256": "9d4afc32bdbfc90b4c772941600ba20005f3554d48c9458bb5193d5e86bb1b7f",
+      "bytes": 41976
+    },
     "dependencies/metadata.json": {
       "sha256": "46302540e73d8d67726a0c0e8907e68af966c7f51e3680061e2c08827177c1fd",
       "bytes": 3777
@@ -305,8 +349,8 @@
       "bytes": 5749
     },
     "system-case-results.json": {
-      "sha256": "27a5aab3368d509a4588190c6b4037684a41c8e4256f6a3bdc26027b1e7ed246",
-      "bytes": 9041
+      "sha256": "83d945f72e9ca55d170640ac081f798d7b16f23409eaf605367d361e9f4f5bf3",
+      "bytes": 55645
     },
     "security-matrix/review-reconciliation-before-http-fix.json": {
       "sha256": "032d73b3535150fe3d279dedbd0170d30eba5ed5e791c1ea0361b6d973f2e53f",
@@ -428,15 +472,47 @@
       "sha256": "0c55f57e9b36c77531ce624570b7af65aff56143db00c3852ef8f705b2bce326",
       "bytes": 16830
     },
+    "environment/proof-stack-restart.json": {
+      "sha256": "2bf6bd06bb94085ee80ec5a9ea886aa7399b9469cfe6572130ba37cc6b007105",
+      "bytes": 29814
+    },
+    "acceptance-final/intermediate-clock-executed/verification.json": {
+      "sha256": "21213f9eafe0d11acf4c47891982077286a479dcdfeb981f815f9ec9c7d340bf",
+      "bytes": 1435
+    },
+    "acceptance-final/attempt-1-clock-preload-failure/sanitized-diagnosis.json": {
+      "sha256": "4c30516636984a6a3788769bf4faf523a201022e9ad224afff6a2819d67734f0",
+      "bytes": 771
+    },
+    "investment-contracts/independent-restart-review.json": {
+      "sha256": "84ffdb345c5460395bc879474412a69cc76f106602aa9a7dc5a18d0cd8dbb0b0",
+      "bytes": 4832
+    },
+    "acceptance-final/final-clock-executed/final-proof-build-proof.json": {
+      "sha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
+      "bytes": 75616
+    },
+    "acceptance-final/final-clock-executed/final-proof-clock-auth-ready.json": {
+      "sha256": "9f03835bf42f87b6dcc28d83c0fc3a658babba925ffe85b030c277ad0c688b31",
+      "bytes": 1630
+    },
+    "dependencies/ci5-current/audit-full.json": {
+      "sha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf",
+      "bytes": 3985
+    },
+    "dependencies/ci5-current/audit-production.json": {
+      "sha256": "e7a71ea70895f12bb3d991264928cb23b141117439bf1be02bbc7907e4b92910",
+      "bytes": 367
+    },
     "traceability-summary.json": {
-      "sha256": "5268708df85c888251fcab18aded0fc19c2435f958eb6b6d30e5f52fcebce1df",
-      "bytes": 412
+      "sha256": "881eb816d1574019022d1d23649c9f89723244632025cb7ed06ed95238d73dfe",
+      "bytes": 410
     }
   },
-  "technical_rows": 258,
+  "technical_rows": 304,
   "original_derived_summary": {
-    "generated_at": "2026-10-15T03:46:25.142605+00:00",
-    "core_directory": "core-reliability",
+    "generated_at": "2026-10-15T04:47:44.137769+00:00",
+    "core_directory": "core-acceptance",
     "original_cases": 273,
     "use_cases": [
       "CU001",
@@ -445,9 +521,9 @@
       "CU004"
     ],
     "counts": {
-      "PASS": 172,
+      "PASS": 194,
       "FAIL": 1,
-      "BLOCKED": 100
+      "BLOCKED": 78
     },
     "rule": "PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence."
   },

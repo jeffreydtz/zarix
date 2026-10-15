@@ -48,16 +48,18 @@ core=read('core/verification.json')
 core_final=read('core-final/verification.json')
 core_responsive=read('core-responsive/verification.json')
 core_reliability=read('core-reliability/verification.json')
-for prefix in ['core','core-final','core-responsive','core-reliability']:
+core_acceptance=read('core-acceptance/verification.json')
+for prefix in ['core','core-final','core-responsive','core-reliability','core-acceptance']:
     for name in ['final-vitest','coverage-summary','dependency-audit','balance-sql','shared-sql',
                  'plan-sql','durable-sql','import-sql','account-recompute-sql','database-verification']:
         read(prefix+'/'+name+'.json')
 for rel in ['dependencies/metadata.json','review/source-manifest-final.json','review/source-manifest-global2.json']:
     read(rel)
-for label, report, prefix in [('PHASE1',core,'core'),('PHASE2',core_final,'core-final'),('PHASE3',core_responsive,'core-responsive'),('PHASE4',core_reliability,'core-reliability')]:
+for label, report, prefix in [('PHASE1',core,'core'),('PHASE2',core_final,'core-final'),('PHASE3',core_responsive,'core-responsive'),('PHASE4',core_reliability,'core-reliability'),('PHASE5',core_acceptance,'core-acceptance')]:
     if report:
         for command in report['commands']:
             scope=report['buildEnvironment'] if command['name']=='build' else 'Comando global de fase identificada; no sustituye aceptación UI/proveedor'
+            if label=='PHASE5' and command['name']=='dependency-audit':scope='Consulta audit inicial falló sinmetadata; no trasplantar conteos previos. Reconsultaactual en dependencies/ci5-current separada. '+scope
             if label=='PHASE1':scope='Fase b456 anterior al defecto HTTP derivado; preservada. '+scope
             add('CORE-'+label+'-'+command['name'].upper(),command['status'],'exitCode='+str(command.get('exitCode')),scope,'../'+prefix+'/verification.json',' '.join(command.get('command',[])),report.get('codeRevision',''),blocker='' if command['status']=='PASS' else 'Ver comando/log de esta fase')
 if not core_final:
@@ -118,7 +120,7 @@ if accepted_system:
     for item in accepted_system:
         assert item.get('complete_original_contract') is True and item.get('assertions')
         add('ORIGINAL-'+item['case_id'],item['status'],'Contrato original completo reconciliado con evidencia ejecutada',
-            item['scope'],'../system-case-results.json; '+('../fresh-proof/auth-negative-contract/independent-review.json' if item['case_id']=='CP2-09' else '../review/verified-system-case-results.json'),
+            item['scope'],'; '.join('../'+reference.strip() for reference in item['evidence'].split(';'))+'; ../system-case-results.json',
             ' | '.join(item['assertions']),json.dumps(item.get('executed_revision',{}),ensure_ascii=False),
             cu={'CP1':'CU001','CP2':'CU002','CP3':'CU003','CP4':'CU004'}.get(item['case_id'].split('-')[0],'CU001–CU004'))
         rows[-1]['original_contract_promotion']='EXPLICIT: original execution coverage and independently reviewed status; no acceptance PASS inferred from the complete flag'
@@ -269,8 +271,52 @@ for profile in ['real','fallback-real']:
             quotes['scope']+'; posible NextDataCache, no socket externo nuevo garantizado por respuesta ni SLO proveedor',
             '../'+rel,revision=quotes.get('revision',''))
 
+
+fifth_restart=read('environment/proof-stack-restart.json')
+if fifth_restart:
+    ok=(len(fifth_restart['comparisons'])==11 and all(fifth_restart['comparisons'].values()) and len(fifth_restart['after']['tableRows'])==64)
+    add('PROOF-STACK-RESTART','PASS' if ok else 'FAIL','11comparaciones;64tablas; PostgreSQL48287→98670; Next52579→99286',
+        fifth_restart['scope']+' Otros5statefiles únicamente; dump privadoTOClegible no nueva restauración; replayAuth en informe separado.',
+        '../environment/proof-stack-restart.json',revision='836fd18b310a51cced9074b372a80ce5d7e1a870')
+clock=read('acceptance-final/intermediate-clock-executed/verification.json')
+if clock:
+    add('CLOCK-INTERMEDIATE-READINESS','PASS' if clock['status']=='PASS_PREPARATION_AND_SCOPED_RUNTIME_READINESS' else 'FAIL',
+        'BuildaqWYS/copia836;Next1822;2controlesAuthreal+API200;135assetsservice/cron0matches',
+        clock['scope']+' SóloDateNext06Oct12Z; GoTrue/OS/runner reales.21modelo+11fixture no se suman862Vitest; Gemini cálculo aún no ejecutado por estecontrolador.',
+        '../acceptance-final/intermediate-clock-executed/verification.json',revision='836fd18b310a51cced9074b372a80ce5d7e1a870')
+clock_fail=read('acceptance-final/attempt-1-clock-preload-failure/sanitized-diagnosis.json')
+if clock_fail:
+    add('CLOCK-SHIM-ATTEMPT1','FAIL','HTTP500HTML en dos controles; Date.parse no es función',
+        'Fallo del shim del arnés: Next15 copia descriptores propios y heredados parse/UTC se perdían. Preload corregido+misma copia/build; código original preservado porSHA, no defecto de producto.',
+        '../acceptance-final/attempt-1-clock-preload-failure/sanitized-diagnosis.json')
+restart_review=read('investment-contracts/independent-restart-review.json')
+if restart_review:
+    add('INVESTMENT-REAL-RESTART-REPLAY','PASS' if restart_review['status']=='PASS_FOR_DERIVED_RESTART_REPLAY' else 'BLOCKED',
+        'Replaydurable40aserciones; comparación11nativa revisada aparte',
+        restart_review['scope']+' Derivado separado de originales y de carga: mismo recibo/efecto/posición tras reinicio realPG+Next, mismoBUILD836.',
+        '../investment-contracts/independent-restart-review.json',revision='836fd18b310a51cced9074b372a80ce5d7e1a870',cu='CU004')
+
+
+final_copy=read('acceptance-final/final-clock-executed/final-proof-build-proof.json')
+final_auth=read('acceptance-final/final-clock-executed/final-proof-clock-auth-ready.json')
+if final_copy and final_auth:
+    scan=final_copy['browserAssetSecretScan'];ok=final_copy['exitCode']==0 and scan['status']=='PASS' and final_auth['status']=='PASS_SCOPED_READINESS'
+    add('CI5-FINAL-COPY-READINESS','PASS' if ok else 'FAIL','480fuentes/build'+final_copy['buildId']+';2Authnormal/API200;135assetsservice/cron0',
+        final_auth['scope']+' CopyGit7c3/core-acceptance; financialrequests posteriores tienen informes propios. No aceptación porreadiness.',
+        '../acceptance-final/final-clock-executed/README.md',revision=final_copy['revision'])
+full_retry=read('dependencies/ci5-current/audit-full.json')
+prod_retry=read('dependencies/ci5-current/audit-production.json')
+if full_retry and prod_retry and 'metadata' in full_retry and 'metadata' in prod_retry:
+    full=full_retry['metadata']['vulnerabilities'];prod=prod_retry['metadata']['vulnerabilities']
+    add('CI5-AUDIT-RETRY-FULL','FAIL' if full['total'] else 'PASS',json.dumps(full),
+        'Reconsulta actual independiente del error de consulta preservado en core-acceptance/dependency-audit.json; mismo package/lock. No remediación compatible inventada.',
+        '../dependencies/ci5-current/audit-full.json',revision='7c3e8722d8fcdc5d95d205e9a12eb856647e0e06')
+    add('CI5-AUDIT-RETRY-PRODUCTION','FAIL' if prod['total'] else 'PASS',json.dumps(prod),
+        'npm audit --omit=dev solamente; no cambiaFAILcompleto ni prueba ausencia universal de código vulnerable.',
+        '../dependencies/ci5-current/audit-production.json',revision='7c3e8722d8fcdc5d95d205e9a12eb856647e0e06')
+
 for key,cu,scope,blocker in [
- ('CNF-01-INTEGRAL','CU001–CU004','Carga canónica equivalente al despliegue','No equivalencia hardware/topología/dispositivo; tres perfiles localesPASS no cierran original'),
+ ('CNF-01-INTEGRAL','CU001–CU004','Carga canónica equivalente al despliegue','No equivalencia hardware/topología/dispositivo; intento localwarm100FAIL/cold60FAIL preservado,40celdasCold+outage sinobservar. No perfilesPASS integrales ni repetición masiva autorizada'),
  ('CNF-02','CU001–CU004','Disponibilidad mensual≥99,5%; sonda autenticada5min','Sin serie real mensual; las muestras ausentes no cuentan satisfactorias'),
  ('CNF-03','CU001–CU004','HTTPS/TLS/certificado/redirect en solicitudes financieras','EntornoHTTPloopback; no endpointHTTPS de prueba identificado/verificado'),
  ('CNF-04','CU001–CU004','Contrato original cifrado/aislamiento integral','FileVault local observado aparte; falta aceptación exacta del contrato provider/config y CP2-19 API/JWT completo' if at_rest else 'Sin evidencia del cifrado de esta instancia; RLS es control separado'),

@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T04:40:49.089797+00:00",
+  "targets": [
+    {
+      "state": "contract-clock-retry-app-state.json",
+      "proof": "contract-clock-build-proof.json",
+      "pid": 1822,
+      "port": 3002,
+      "copy": "/tmp/zarix-app-contract-clock-20261015",
+      "build": "aqWYS3F5R_VxiHxD3LpJV",
+      "api": "http://127.0.0.1:58321",
+      "status": "STOPPED_OWN_NEXT",
+      "signalSent": true,
+      "startTimeMatchesState": true,
+      "exactCwdAndListener": true,
+      "sourcesVerified": 477
+    },
+    {
+      "state": "import-target-app-state.json",
+      "proof": "import-target-build-proof.json",
+      "pid": 56597,
+      "port": 3003,
+      "copy": "/tmp/zarix-app-import-target-20261015",
+      "build": "-zDTe86_KX6NVCcsRaWOj",
+      "api": "http://127.0.0.1:59321",
+      "status": "STOPPED_OWN_NEXT",
+      "signalSent": true,
+      "startTimeMatchesState": true,
+      "exactCwdAndListener": true,
+      "sourcesVerified": 477
+    }
+  ],
+  "nativeServicesTouched": false,
+  "finishedAt": "2026-10-15T04:40:49.931816+00:00",
+  "dataBuildEnvAndPriorStatesPreserved": true
+}

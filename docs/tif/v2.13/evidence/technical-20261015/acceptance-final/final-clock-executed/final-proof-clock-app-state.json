@@ -1,0 +1,33 @@
+{
+  "purpose": "account-analysis-proof",
+  "nextPid": 17292,
+  "appOrigin": "http://127.0.0.1:3002",
+  "apiOrigin": "http://127.0.0.1:58321",
+  "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+  "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+  "buildId": "vPLjt1QViugJhUWR62DPp",
+  "sourceManifestSha256": "cc31fad1e5cc8a2c2e6396479ca1d0a3619fb078429bf10526ab2e7be41106bc",
+  "startedAt": "2026-10-15T04:45:37.391784+00:00",
+  "fetchGuardSha256": "4128acdb32ec4e13804184b8eaa96951231d0b010629c22bcb078b27d25d7ec5",
+  "guardInstalledBeforeNext": true,
+  "geminiUnavailableProofFile": "/tmp/zarix-runtime-20261015/final-proof-clock-gemini-unavailable.json",
+  "geminiInstrumentationSha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0",
+  "runtimeProfile": "final-core-acceptance",
+  "currentProductDeltasNotExecuted": [],
+  "adminAlertsDisabled": true,
+  "runtimeProviderOrigins": {
+    "CRIPTOYA_API_URL": "http://127.0.0.1:57912",
+    "DOLARAPI_URL": "http://127.0.0.1:57912",
+    "COINGECKO_API_URL": "http://127.0.0.1:57912"
+  },
+  "coreDirectory": "core-acceptance",
+  "privateEnvSha256": "7c0aa2740d032d36c64b1fda4b80170ddbf602e1dc136e7d6a17745b540fc99f",
+  "exactOwnListenerAndCwd": true,
+  "clockProfile": "fixed-20261006T120000Z",
+  "fixedTime": "2026-10-06T12:00:00.000Z",
+  "clockPreloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc",
+  "clockObservationSha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118",
+  "clockProofFile": "/tmp/zarix-runtime-20261015/final-proof-clock-observation.json",
+  "realAuthControlRequiredBeforeAcceptance": true,
+  "geminiUnavailableProofSha256": "b342350c3534c099e85a259be94a65c8a54235e007c13a3af648a8e2b1af2ae1"
+}

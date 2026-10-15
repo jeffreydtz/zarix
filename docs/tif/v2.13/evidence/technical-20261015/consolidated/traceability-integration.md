@@ -14,7 +14,7 @@ cp docs/tif/v2.13/evidence/technical-20261015/consolidated/reconciled-contracts.
   docs/tif/v2.13/evidence/technical-20261015/durability/reconciled-contracts.json
 DEVELOPER_DIR=/Library/Developer/CommandLineTools python3 scripts/build-technical-traceability.py \
   --evidence-dir docs/tif/v2.13/evidence/technical-20261015 \
-  --core-dir core-reliability
+  --core-dir core-acceptance
 ```
 
 No se copian informes viejos para aprobar una ejecución actual. El CLI sólo acepta esta reconciliación si el nombre completo de la aserción sustituta existe en el `final-vitest.json` de la fase seleccionada; su estado ejecutado decide PASS/FAIL/BLOCKED. Sin esa coincidencia, el caso sigue BLOCKED. Las tres antiguas aserciones de conciliación paginada son suplementarias posteriores al diseño original, sin IDs en las 273 filas: su reemplazo está documentado en `recompute-contract-reconciliation.json`, y no se inventan tres aprobaciones originales.
@@ -29,10 +29,10 @@ Actualmente contiene CP4-08 y CP4-09: la revisión independiente verificó sus c
 python3 docs/tif/v2.13/evidence/technical-20261015/consolidated/reconcile-reviewed-contracts.py
 python3 scripts/build-technical-traceability.py \
   --evidence-dir docs/tif/v2.13/evidence/technical-20261015 \
-  --core-dir core-reliability
+  --core-dir core-acceptance
 ```
 
-Resultado derivado actual:172PASS/1FAIL/100BLOCKED. CP2-09 fue ejecutado en integración y revisado: cinco clases/10checks, nuevePASS y unFAILliteral400GoTruefrente401/403, sin datos ni cambios financieros. complete_original_contract=true indica ejecución completa, no aceptaciónPASS; el reporte rawconfalse se conserva sin editar. El adaptador verifica hashes del dictamen/harness/reportes y retieneFAIL, sin cambiar el proveedor. La fase previa172/0/101está preservada en consolidated/phases/. El [delta](case-status-delta.json) separa estos dos CP de las dos equivalencias RTV, sin aprobar compras/ventas vecinas o el CU004 integral. Los futuros contratos sólo se incorporarán después de ejecución y revisión explícita; los fixtures preparados no cambian conteos.
+Resultado derivado actual:194PASS/1FAIL/78BLOCKED. Los siete PASS nuevos provienen sólo de paquetes revisados focal-contracts/fresh-proof-review.json (CP1-06/10/13,CP4-03),shared-contract-review/acceptance.json (CP1-37/38SQLliteral) yexecuted-cp2-07/manifest.json (roundtripJSONcompleto entre réplicas). El adaptador fija sus hashes, valida todas las aserciones/grants/revisiones aplicables y no infiere los casos vecinos. CP2-09 fue ejecutado en integración y revisado: cinco clases/10checks, nuevePASS y unFAILliteral400GoTruefrente401/403, sin datos ni cambios financieros. complete_original_contract=true indica ejecución completa, no aceptaciónPASS; el reporte rawconfalse se conserva sin editar. El adaptador verifica hashes del dictamen/harness/reportes y retieneFAIL, sin cambiar el proveedor. La fase previa172/0/101está preservada en consolidated/phases/. El [delta](case-status-delta.json) separa estos dos CP de las dos equivalencias RTV, sin aprobar compras/ventas vecinas o el CU004 integral. Los futuros contratos sólo se incorporarán después de ejecución y revisión explícita; los fixtures preparados no cambian conteos.
 
 Los informes de API y E2E declaran cobertura parcial. CP2-19 exige aislamiento SELECT/INSERT como U2 y UPDATE/DELETE mediante API y JWT/DB sobre cuentas, movimientos, posiciones, reglas, presupuestos y preferencias; los subconjuntos actuales no cierran esa matriz completa. CNF-01 carece de equivalencia del entorno de despliegue; CNF-02 no tiene observación mensual; CNF-03 carece de TLS verificado. CNF-04 conserva FileVault local observado por separado, pero falta aceptación exacta de proveedor/configuración y CP2-19 completo; no se presenta como ausencia de evidencia local de cifrado. CNF-09 no tiene la suite crítica en los cuatro navegadores y versiones actual/anterior. CNF-12 conserva los pasos originales no ejecutados de fixture2/20/3/1/1, snapshot/gasto posterior, relojes y fronterasRPO/RTO ; cuatro lecturas UI restauradas acotadas ya están probadas con FXauxiliarposterior declarada. Sus pasos nominales locales no se atribuyen a bloqueo de TLS/acceso, y no se presume backup del plan contratado. No registrar esas filas como PASS por evidencia vecina.
 

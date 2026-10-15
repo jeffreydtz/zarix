@@ -1,9 +1,9 @@
 {
-  "status": "SCOPED_RUNTIME_READY_OR_PREPARED",
+  "status": "INTERMEDIATE_AND_FINAL_SCOPED_READINESS_PRESERVED",
   "files": [
     {
       "path": "README.md",
-      "sha256": "f4eb7830f268ba3b17a9bc0e0ca196682331b42bb847ff69e141dd57d5bbd1b4"
+      "sha256": "02e79b49b929cd6254b587fde3730fae03f7da9dece18d61001fced4c7326833"
     },
     {
       "path": "attempt-1-clock-preload-failure/contract-clock-app-state.json",
@@ -40,6 +40,42 @@
     {
       "path": "clock-quote-fixture.mjs",
       "sha256": "4b5f1a0df734fb66c89063541d98800724129e0056169c1ceca56a3d3f93b471"
+    },
+    {
+      "path": "final-clock-executed/README.md",
+      "sha256": "1d4f12b43619d9128046669f90bdec091420d562f4ff7b0da70fe792ef1395f7"
+    },
+    {
+      "path": "final-clock-executed/auth-readiness-harness.mjs",
+      "sha256": "f53215c544273a53c9e0804692492504bd41aa301480e18bcc2141df99da8c01"
+    },
+    {
+      "path": "final-clock-executed/final-proof-browser-assets-manifest.json",
+      "sha256": "949ca2b6c8323ab6c74a13e70bee00a1b29f0e3f274785d524e4e347308fa7e9"
+    },
+    {
+      "path": "final-clock-executed/final-proof-build-proof.json",
+      "sha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976"
+    },
+    {
+      "path": "final-clock-executed/final-proof-clock-app-state.json",
+      "sha256": "d7bde38eea6cf42a09e7f4ac4392a7b085e987608407875b53b44d1f279bbb2b"
+    },
+    {
+      "path": "final-clock-executed/final-proof-clock-auth-ready.json",
+      "sha256": "9f03835bf42f87b6dcc28d83c0fc3a658babba925ffe85b030c277ad0c688b31"
+    },
+    {
+      "path": "final-clock-executed/final-proof-clock-gemini-unavailable.json",
+      "sha256": "b342350c3534c099e85a259be94a65c8a54235e007c13a3af648a8e2b1af2ae1"
+    },
+    {
+      "path": "final-clock-executed/final-proof-clock-observation.json",
+      "sha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118"
+    },
+    {
+      "path": "final-clock-executed/independent-review.json",
+      "sha256": "817fffe99c35c44fe127f262c0ae7458b14e613cfe52088ce7d6994be3b09ae9"
     },
     {
       "path": "gemini-unavailable-preload.mjs",
@@ -114,5 +150,5 @@
       "sha256": "c41525d3c9e3284bb1572e2d4409429ae81db725b76d962df08c98173d377a4e"
     }
   ],
-  "scope": "Original failed shim/exact build source are preserved; retry/future final controller and actual readiness separate from frozen product836 copy."
+  "scope": "Both frozen copies, original shim failure and independently reviewed final readiness. Financial original contracts have separate reports; no bundles/env/dumps included."
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T03:47:29.735824+00:00",
+  "generated_at_utc": "2026-10-15T04:47:44.176209+00:00",
   "original_case_count": 273,
   "historical": {
     "path": "../../technical-20261009/case-traceability.csv",
@@ -22,17 +22,62 @@
   },
   "current": {
     "path": "../case-traceability.csv",
-    "core_directory": "core-reliability",
-    "source_revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
-    "sha256": "52f42275fc219cc8fe27e3e308845a94f6f685420008af251368661b1421446b",
+    "core_directory": "core-acceptance",
+    "source_revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "sha256": "9123162c847a88e8f9e71548c68442a7239eead99aaaf3e0395f21b203909e65",
     "counts": {
-      "PASS": 172,
-      "FAIL": 1,
-      "BLOCKED": 100
+      "PASS": 194,
+      "BLOCKED": 78,
+      "FAIL": 1
     },
     "artifact_line_endings": "LF normalized for Git;273rows exact named contracts/independent semantic review"
   },
   "changed_statuses": [
+    {
+      "case_id": "CP1-06",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CP1-06 initial expense succeeds | CP1-06 exact pre-edit balances | CP1-06 origin-account update succeeds | CP1-06 exact post-edit balances | CP1-06 one original movement preserves identity owner amount and points to B | CP1-06 historical API relation is consistent",
+      "contract_revision": "Original case contract",
+      "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+      "scope": "Selected exact original integration contracts. Normal password Auth -> SSR cookies -> actual Next HTTP APIs -> independent native PostgreSQL. No browser/UI-suite, provider-acceptance or new-identity claim; no product edits. Existing pricing paths may consult configured providers/doubles or database cache. Independent exact-contract review and protected original rows preserved; no later formatter/export-fix acceptance."
+    },
+    {
+      "case_id": "CP1-10",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CP1-10 initial summary is available | CP1-10 initial transfer succeeds | CP1-10 original transfer balances | CP1-10 destination-and-amount update succeeds | CP1-10 exact final balances and total | CP1-10 one transfer preserves identity and both authoritative amounts | CP1-10 transfer does not increment API income expense or economic flow | CP1-10 independent SQL finds no income or expense for this transfer",
+      "contract_revision": "Original case contract",
+      "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+      "scope": "Selected exact original integration contracts. Normal password Auth -> SSR cookies -> actual Next HTTP APIs -> independent native PostgreSQL. No browser/UI-suite, provider-acceptance or new-identity claim; no product edits. Existing pricing paths may consult configured providers/doubles or database cache. Independent exact-contract review and protected original rows preserved; no later formatter/export-fix acceptance."
+    },
+    {
+      "case_id": "CP1-13",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CP1-13 two independent database connections overlap behind own-row barrier | CP1-13 neither blocked request committed before barrier release | CP1-13 two distinct logical keys | CP1-13 both distinct expense commands commit | CP1-13 exactly two distinct 6000 expense effects | CP1-13 final balance is -2000 without lost updates | CP1-13 two durable receipts exist for the two commands",
+      "contract_revision": "Original case contract",
+      "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+      "scope": "Selected exact original integration contracts. Normal password Auth -> SSR cookies -> actual Next HTTP APIs -> independent native PostgreSQL. No browser/UI-suite, provider-acceptance or new-identity claim; no product edits. Existing pricing paths may consult configured providers/doubles or database cache. Independent exact-contract review and protected original rows preserved; no later formatter/export-fix acceptance."
+    },
+    {
+      "case_id": "CP1-19",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Own normal-session fixture account201 | Initial native balance | Partial valid local import200 | Exactly two economic writes and balance10200 | Raw current importer counters",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/attempt-3-fourteen-clock/verification.json; remaining-cu001/attempt-3-fourteen-clock/inputs/CP1-19-de8a454f-dbe7-40e1-a9d7-22867ef0249f.csv; remaining-cu001/attempt-3-fourteen-clock/executed-harness/remaining-scenarios.mjs; remaining-cu001/cp1-19-semantic-review.json",
+      "scope": "Independent new account starts10000. Exact CSV500expense/700income/0 at06Oct yields HTTP200, exactly two economic rows500/700, balance10200, total3. One invalid amount rejection and no other omission are observed. No browser or literal JSONkey requirement appears in the originalCSV. Read-only originalCSV/executed fixture/normal-Auth API/nativeSQL evidence review. No new requests, DB queries, runtime, counters or raw-artifact edits. This review closes only the nomenclature question in CP1-19. Literal original does not require invented response keys. RawPARTIAL nomenclature and other whole-run failures remain unchanged."
+    },
+    {
+      "case_id": "CP2-07",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "SameU1identityroundtrip | Exactunchangedexportfilehash | Sourcephaseactualstableandoriginalsintact | Fixture account API201 | Fixture account API201 | Targetpreview200 | Targetnamemappingresolved | Targetimport200 | Threeimportedzeroomittedpending | Semanticexport-importequivalence | NooriginalaccountIDreused | Noorphanorforeignrelationship",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-cp2-07/source-export.json; account-analysis-contracts/executed-cp2-07/source-roundtrip.json; account-analysis-contracts/executed-cp2-07/target-import.json; account-analysis-contracts/executed-cp2-07/manifest.json",
+      "scope": "Real same-user JSON export→separate-empty-target preview/import→normalized JSON+SQL, synthetic ordinary Auth, served836fd18; no browser/provider acceptance"
+    },
     {
       "case_id": "CP2-09",
       "historical_status": "BLOCKED",
@@ -41,6 +86,105 @@
       "contract_revision": "Original case contract",
       "evidence": "fresh-proof/auth-negative-contract/verification.json; fresh-proof/auth-negative-contract/independent-review.json; fresh-proof/verify-auth-negative-contract.mjs; fresh-proof/auth-recovery.json; fresh-proof/auth-expiry.json",
       "scope": "Original integration negative contract executed over five input classes: wrong password, altered current normal JWT, genuinely expired JWT, expired recovery, reused recovery. Ten named checks include anti-enumeration, A/B ordinary Auth/API controls, expired-access+revoked-refresh ZARIX401, and unchanged12financialtables/two previous normal sessions. complete_original_contract denotes execution coverage; FAIL retains GoTrue400 invalid_credentials versus required401/403. No browser, SMTP, whole-Auth-zero-writes or full-CU acceptance."
+    },
+    {
+      "case_id": "CP3-01",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CP3-01 blue value/source/time | CP3-01 oficial value/source/time | CP3-01 mep value/source/time | CP3-01 ccl value/source/time | CP3-01 BTC USD/source time | CP3-01 ETH USD/source time | CP3-01 USDT USD/source time | CP3-01 aggregate timestamp | CP3-01 actual HTTP double requests",
+      "contract_revision": "Original case contract",
+      "evidence": "quote-contracts/attempt-1/mapping.json; quote-contracts/attempt-1/verification.json; quote-contracts/independent-composite-review.json; quote-contracts/postfix-contracts.json",
+      "scope": "Actual service at mocked06Oct12Z keeps official1000/blue1300/MEP1250/CCL1280ARS perUSD, BTC60000/ETH2500/USDT1USD and source timestamps; eight real auxiliaryFX rows match source/unit/rate/time. Crypto provenance is fixture HTTP binding, not an invented provider field. Read-only review of exact original CP3-01/02 CSV contracts, executed service/DB evidence and later captured-quote SSR. No API/SQL/Auth/browser/process/test execution by reviewer. The CSV does not require a browser for these two cases; no browser or single compiled Next build acceptance is inferred. Service836 and presentation528 are explicitly separate. This does not assert that old PROOF Next836 contained528, that one compiled Next executed both, or that finalCI5/currentcompiledUI was verified here."
+    },
+    {
+      "case_id": "CP3-02",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 initial persisted provider sample | hit299 returned quote | hit299 returned quote | hit299 returned quote | hit299 returned quote | hit299 provider request counters | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 initial persisted provider sample | refresh300 returned quote | refresh300 returned quote | refresh300 returned quote | refresh300 returned quote | refresh300 provider request counters | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 initial persisted provider sample | refresh301 returned quote | refresh301 returned quote | refresh301 returned quote | refresh301 returned quote | refresh301 provider request counters | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 initial persisted provider sample | failure300 returned quote | failure300 returned quote | failure300 returned quote | failure300 returned quote | failure300 provider request counters | Actual persisted BlueFxReference keeps1200/T0/null provider | Actual component labels saved quote | Actual component does not fabricate provider | Actual component time attribute preservesT0 | Visible UTC clock shows original16:00 instead of04:00",
+      "contract_revision": "Original case contract",
+      "evidence": "quote-contracts/attempt-1/hit299.json; quote-contracts/attempt-1/refresh300.json; quote-contracts/attempt-1/refresh301.json; quote-contracts/attempt-1/failure300.json; quote-contracts/ssr-followup-after-fix.json; quote-contracts/independent-composite-review.json; quote-contracts/postfix-contracts.json",
+      "scope": "Independent processes establish299hit/300refresh/301refresh and300failure with retained1200/T0. Same actual captured fallback quote passes through real helper and corrected component: savedquote/unknownoriginalprovider/dateTimeT0/visible16:00UTC. Read-only review of exact original CP3-01/02 CSV contracts, executed service/DB evidence and later captured-quote SSR. No API/SQL/Auth/browser/process/test execution by reviewer. The CSV does not require a browser for these two cases; no browser or single compiled Next build acceptance is inferred. Service836 and presentation528 are explicitly separate. This does not assert that old PROOF Next836 contained528, that one compiled Next executed both, or that finalCI5/currentcompiledUI was verified here."
+    },
+    {
+      "case_id": "CP3-13",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | 1999/1000noalert | Removeonlynew1999fixture204 | Independentsecondfixturestartsfromidenticalhistory | Independentsecondfixtureidenticalbalance | Fixture transaction API201 | IndependentvariantusesdistinctmovementID | At2000exactalert",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-rf11/cp3-13.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+      "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD. Independent read-only originalCSV/report/executed-source/immutableGit/copy-source review. No imports/tests/API/SQL/Auth/browser/runtime action by reviewer. Four original integration/system RF11 contracts, not CI5 or browser/provider acceptance. Normal real-time Auth60s, only Nextfixed6Oct; real Google outage/integration and final compiled7c3 are not asserted by this historical836 run."
+    },
+    {
+      "case_id": "CP3-14",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture transaction API201 | Newcategory5000noalert | Removeonlynew5000variant204 | Independentvariantrestoresemptyfixture | Independentvariantbalance0 | Fixture transaction API201 | Newcategory5000.01alert | Removeonlynew5000.01variant204 | Thirdindependentfixtureisempty | Noeligiblemovementsmeansnoanomaly | NoeligiblecompletedmonthmeanshasDatafalse",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-rf11/cp3-14.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+      "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD. Independent read-only originalCSV/report/executed-source/immutableGit/copy-source review. No imports/tests/API/SQL/Auth/browser/runtime action by reviewer. Four original integration/system RF11 contracts, not CI5 or browser/provider acceptance. Normal real-time Auth60s, only Nextfixed6Oct; real Google outage/integration and final compiled7c3 are not asserted by this historical836 run."
+    },
+    {
+      "case_id": "CP3-15",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Set own new cash base through existing adjustment200 | Projection cash fixture exactly50000 | Projection endpoint200 | Exact observed-three-month arithmetic",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-rf11/cp3-15.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+      "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD. Independent read-only originalCSV/report/executed-source/immutableGit/copy-source review. No imports/tests/API/SQL/Auth/browser/runtime action by reviewer. Four original integration/system RF11 contracts, not CI5 or browser/provider acceptance. Normal real-time Auth60s, only Nextfixed6Oct; real Google outage/integration and final compiled7c3 are not asserted by this historical836 run."
+    },
+    {
+      "case_id": "CP3-16",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Selected synthetic user has no stored Gemini credential | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Set own new cash base through existing adjustment200 | Projection cash fixture exactly50000 | Fixture account API201 | Fixture account API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Fixture transaction API201 | Maintain exact own cash base50000 | Destination transfercash normalized through explicit adjustment | Projection endpoint200 | Exact observed-three-month arithmetic | Projection succeeds without any additional Gemini-host fetch attempt",
+      "contract_revision": "Original case contract",
+      "evidence": "account-analysis-contracts/executed-rf11/cp3-16.json; account-analysis-contracts/executed-rf11/manifest.json; account-analysis-contracts/independent-rf11-review.json",
+      "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD. Independent read-only originalCSV/report/executed-source/immutableGit/copy-source review. No imports/tests/API/SQL/Auth/browser/runtime action by reviewer. Four original integration/system RF11 contracts, not CI5 or browser/provider acceptance. Normal real-time Auth60s, only Nextfixed6Oct; real Google outage/integration and final compiled7c3 are not asserted by this historical836 run."
+    },
+    {
+      "case_id": "CP4-02",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Actual normal-owner investment create201 | Actual partial sale201 | Persisted exact quantity | Persisted exact remaining cost | Original purchase durable history retained | Purchase original quantity retained in creation receipt | Purchase original unit retained in creation receipt | Exactly one separate sale-history row | Sold quantity exact | Original cost unit retained at sale | Own visible sale history200 | Sale API history equals persisted row | Actual owner portfolio200 | New own position visible exactly once | Position quantity | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position realized_pnl_usd | Position sales_count | External purchase/sale does not silently debit cash ledger",
+      "contract_revision": "Original case contract",
+      "evidence": "investment-contracts/executed/cp4-02-pass.json; investment-contracts/independent-review.json",
+      "scope": "Exact sale4 of10 at120 leaves6/cost600; realized80/unrealized60/value660; durable creation receipt and separate sale history preserved, cash ledger unchanged. One selected original investment contract or separately labeled derived concurrency probe. Existing normal AuthB is logicalU1Premium; A is logicalU2. Fresh authorized58321replica only; no original plans/identities modified. Protected originals cover exactly twelve public tables; no full grants/Auth/Storage or later CI5 attribution."
+    },
+    {
+      "case_id": "CP4-03",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CP4-03 exact manual lot purchase succeeds | CP4-03 exact pre-sale quantity and cost | CP4-03 entire lot sale succeeds and closes position | CP4-03 independent closed quantity and remaining cost are zero | CP4-03 exactly one sale has realized profit 80 USD | CP4-03 sale history remains visible through authenticated API after closure | CP4-03 visible sale history preserves exact quantities price and realized profit | CP4-03 zero-quantity closure and visible history contain finite financial outputs",
+      "contract_revision": "Original case contract",
+      "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+      "scope": "Selected exact original integration contracts. Normal password Auth -> SSR cookies -> actual Next HTTP APIs -> independent native PostgreSQL. No browser/UI-suite, provider-acceptance or new-identity claim; no product edits. Existing pricing paths may consult configured providers/doubles or database cache. Independent exact-contract review and protected original rows preserved; no later formatter/export-fix acceptance."
+    },
+    {
+      "case_id": "CP4-04",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Actual normal-owner investment create201 | Persisted exact quantity | Persisted exact remaining cost | Literal7greaterthan6 rejects known client error | Full position/cost/sales/cash/receipts unchanged after rejected7 | Persisted exact quantity | Persisted exact remaining cost",
+      "contract_revision": "Original case contract",
+      "evidence": "investment-contracts/executed/cp4-04-pass.json; investment-contracts/independent-review.json",
+      "scope": "Exact attempted7 from6 is rejected400/409 without full position/sales/receipts/cash changes. One selected original investment contract or separately labeled derived concurrency probe. Existing normal AuthB is logicalU1Premium; A is logicalU2. Fresh authorized58321replica only; no original plans/identities modified. Protected originals cover exactly twelve public tables; no full grants/Auth/Storage or later CI5 attribution."
+    },
+    {
+      "case_id": "CP4-05",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Injected position transaction returns500 | Actualpositionfaultmarkerobservedinboundprivatelog | Rollback position: zero own positions | Rollback position: zero durable purchase operation | Rollback position: original own cash ledger unchanged | Temporary position DDL removed with exact catalog parity | Injected receipt transaction returns500 | Actualreceiptfaultmarkerobservedinboundprivatelog | Rollback receipt: zero own positions | Rollback receipt: zero durable purchase operation | Rollback receipt: original own cash ledger unchanged | Temporary receipt DDL removed with exact catalog parity | Same-key original purchase retry201 after real rollback | Persisted exact quantity | Persisted exact remaining cost | Durable replay returns original position ID | Replay no position drift | Exactly one committed creation operation | Exactly one final new position | Final catalog matches before injection",
+      "contract_revision": "Original case contract",
+      "evidence": "investment-contracts/executed/cp4-05-pass.json; investment-contracts/independent-review.json",
+      "scope": "Both real temporary fault points roll back position and durable creation receipt; same command retries once to10/cost1000 and durable replay leaves one receipt/position. Original operation order is reconciled explicitly to the implemented position-then-receipt transaction. One selected original investment contract or separately labeled derived concurrency probe. Existing normal AuthB is logicalU1Premium; A is logicalU2. Fresh authorized58321replica only; no original plans/identities modified. Protected originals cover exactly twelve public tables; no full grants/Auth/Storage or later CI5 attribution."
+    },
+    {
+      "case_id": "CP4-07",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Actual normal-owner investment create201 | Turn only new position into cached nonmanual fixture200 | Normal JWT own synthetic timestamp fixture accepted | Synthetic timestamp setup targets only own new position | Fixed price timestamp is persisted | Actual owner portfolio200 | fresh unique asset cached110: actual upstream crypto503 observed | New own position visible exactly once | Position quantity | Position current_price | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position valuation_price_source | Unavailable provider preserves actual fresh cache timestamp | Archive only new own completed valuation fixture200 | Actual normal-owner investment create201 | Actual owner portfolio200 | separate unique asset without current price: actual upstream crypto503 observed | New own position visible exactly once | Position quantity | Position current_price | Position cost_basis_usd | Position market_value_usd | Position profit_loss_usd | Position valuation_price_source | Purchase reference does not invent quote timestamp | Archive only new own completed valuation fixture200 | Actual normal-owner investment create201 | Missing required FX explicitly fails valuation | Valuation failure never changes own original quantities/cost/price",
+      "contract_revision": "Original case contract",
+      "evidence": "investment-contracts/executed-cp4-07/attempt-2-unique-fresh-cache-pass.json; investment-contracts/independent-cp4-07-concurrent-http-review.json",
+      "scope": "Fresh unique cached assetq6/cost600 with110 retains value660/PnL60/cache/originalfresh timestamp under one observed local503. Separate new asset withoutcurrentprice values600/PnL0/purchase_reference/timestampnull under another observed503. Third new own position withZZZ/noFX receives HTTP500 valuation unavailability and full position row remains unchanged. One selected original investment contract or separately labeled derived concurrency probe. Existing normal AuthB is logicalU1Premium; A is logicalU2. Fresh authorized58321replica only; no original plans/identities modified. Protected originals cover exactly twelve public tables; no full grants/Auth/Storage or later CI5 attribution."
     },
     {
       "case_id": "CP4-08",
@@ -61,12 +205,66 @@
       "scope": "Independent semantic reconciliation of the complete original simulation case against an already executed Chrome UI -> persisted native SQL fixture. No new execution, provider acceptance, global compatibility claim, or CI3 rerun is attributed."
     },
     {
+      "case_id": "CP4-10",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Actual normal-owner investment create201 | Fixture account API201 | Deactivate only new own account204 | Foreign/inactive own account purchase rejected404 | Rejected purchase creates no own position | Rejected purchase creates no durable success receipt | Foreign/inactive own account purchase rejected404 | Rejected purchase creates no own position | Rejected purchase creates no durable success receipt | Actual owner portfolio200 | Foreign position not visible in existing safe owner collection | Ordinary Auth RLS excludes foreign position | Foreign newly created full rows unchanged",
+      "contract_revision": "Original case contract",
+      "evidence": "investment-contracts/executed/cp4-10-pass.json; investment-contracts/independent-review.json",
+      "scope": "Foreign and inactive owned account purchases return404; normal owner portfolio200 excludes U2 position, ordinary JWT SELECT returns[], and all foreign fixture columns/cash/sales are unchanged. This does not prove INSERT grants/RLS for a backend service request. One selected original investment contract or separately labeled derived concurrency probe. Existing normal AuthB is logicalU1Premium; A is logicalU2. Fresh authorized58321replica only; no original plans/identities modified. Protected originals cover exactly twelve public tables; no full grants/Auth/Storage or later CI5 attribution."
+    },
+    {
+      "case_id": "CP4-11",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | Actual normal-owner investment create201 | Actual sale4of10 returns201 | Actual normal-owner investment create201 | Second purchase creates distinct lot | Persisted exact quantity | Persisted exact remaining cost | Persisted exact quantity | Persisted exact remaining cost | Original lot unit stays100, never averaged140 | New lot unit remains200 | Original purchase durable history retained | Purchase original quantity retained in creation receipt | Purchase original unit retained in creation receipt | Exactly one separate sale-history row | Sold quantity exact | Original cost unit retained at sale | Actual owner portfolio200 | Aggregated quantity10 | Exact two-lot totalPurchaseValue | Exact two-lot totalRealizedPnLUsd | Exact two-lot totalCurrentValue | Exact two-lot totalPnL | Both original lots retained",
+      "contract_revision": "Original case contract",
+      "evidence": "investment-contracts/executed/cp4-11-pass.json; investment-contracts/independent-review.json",
+      "scope": "Original lot6×100 and new lot4×200 remain distinct; totalquantity10/cost1400/current1500/unrealized100/realized80; original unit100 is retained. One selected original investment contract or separately labeled derived concurrency probe. Existing normal AuthB is logicalU1Premium; A is logicalU2. Fresh authorized58321replica only; no original plans/identities modified. Protected originals cover exactly twelve public tables; no full grants/Auth/Storage or later CI5 attribution."
+    },
+    {
+      "case_id": "CP4-12",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Fixture account API201 | External cash already reconciled0USD | Actual normal-owner investment create201 | Persisted exact quantity | Persisted exact remaining cost | Registering external purchase does not debit cash ledger | Actual owner portfolio200 | New own position visible exactly once | Position market_value_usd | Position cost_basis_usd | Position profit_loss_usd | Actual converted own accounts200 | Original external cash remains0 | Independent cash plus portfolio equals networth1000USD",
+      "contract_revision": "Original case contract",
+      "evidence": "investment-contracts/executed/cp4-12-pass.json; investment-contracts/independent-review.json",
+      "scope": "External reconciled cash0 stays0 with unchanged cash ledger, position1000, independent own account balances plus portfolio1000USD. One selected original investment contract or separately labeled derived concurrency probe. Existing normal AuthB is logicalU1Premium; A is logicalU2. Fresh authorized58321replica only; no original plans/identities modified. Protected originals cover exactly twelve public tables; no full grants/Auth/Storage or later CI5 attribution."
+    },
+    {
+      "case_id": "CP1-36",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CP1-36 original API assertion passed on this exact expense ID | CP1-36 owned archived group remains inactive | CP1-36 original group currency is ARS | CP1-36 exact original group has three members | CP1-36 original expense is exactly 100 ARS | CP1-36 exactly three distinct same-group split members | CP1-36 split amounts are 33.34 33.33 33.33 | CP1-36 exact expense split sum equals its 100 amount | CP1-36 payer belongs to exact original group | CP1-36 original 100 expense net total is exact numeric zero | CP1-36 every existing expense in the same group independently reconciles and has same-group members | CP1-36 same original group net total is independently exact numeric zero",
+      "contract_revision": "Original case contract",
+      "evidence": "focal-contracts/attempt-1-existing-full-plan/verification.json; focal-contracts/cp1-36-review.json; e2e/api/api-verification.json",
+      "scope": "Exact original expense linked to prior passing authenticated API creation plus current independent SQL read oracle. No new API command or browser was executed for this case. Exact100/3/netzero original contract; archived group remains preserved. The four independent capacity-blocked cases from that attempt do not constrain this case."
+    },
+    {
+      "case_id": "CP1-37",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "SH-SQL-02 create and remainder cents conserve total | SH-SQL-03 update replaces amount and splits atomically",
+      "contract_revision": "Original case contract",
+      "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
+      "scope": "Literal isolated SQL acceptance expressly declared by the CSV. No UI/HTTP/hosted assertion. Real PL/pgSQL, minimum isolated schema, RPC access privileges, group scopes and rollback. No hosted deployment, RLS environment or multi-connection load test."
+    },
+    {
+      "case_id": "CP1-38",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "SH-SQL-04 actor from another group | SH-SQL-05 payer from another group | SH-SQL-06 split from another group | SH-SQL-08 another group cannot edit an existing expense | SH-SQL-09 invalid/revoked capabilities do not mutate | SH-SQL-10 split insert failure rolls back UPDATE and removed old splits | SH-SQL-11 split insert failure leaves no orphan new expense",
+      "contract_revision": "Original case contract",
+      "evidence": "core-reliability/shared-sql.json; shared-contract-review/acceptance.json",
+      "scope": "Literal isolated SQL acceptance for capability/group boundaries and transactional rollback, with financial-state before/after comparisons. Capability is declared authorship, not Auth identity proof. Real PL/pgSQL, minimum isolated schema, RPC access privileges, group scopes and rollback. No hosted deployment, RLS environment or multi-connection load test."
+    },
+    {
       "case_id": "RTV-034",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
       "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery",
       "contract_revision": "Explicit reconciliation: marks after creation and sends one notice to the winner -> historical recurring contracts reconciled with durable outbox RTV-034 equivalent: one committed movement, marker and notification intention; one confirmed delivery. Original inline mechanism was replaced, not silently reexecuted.",
-      "evidence": "core-reliability/final-vitest.json; durability/reconciled-contracts.json",
+      "evidence": "core-acceptance/final-vitest.json; durability/reconciled-contracts.json",
       "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
     },
     {
@@ -75,12 +273,12 @@
       "current_status": "PASS",
       "current_assertions": "historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart",
       "contract_revision": "Explicit reconciliation: does not undo a confirmed movement when Telegram is unavailable -> historical recurring contracts reconciled with durable outbox RTV-038 equivalent: unavailable Telegram preserves the confirmed movement and durable retry across database restart. Original inline mechanism was replaced, not silently reexecuted.",
-      "evidence": "core-reliability/final-vitest.json; durability/reconciled-contracts.json",
+      "evidence": "core-acceptance/final-vitest.json; durability/reconciled-contracts.json",
       "scope": "Explicitly reconciled regression equivalence: actual PL/pgSQL/schema and file-backed PostgreSQL WASM, query adapter in place of PostgREST, synthetic Auth and Telegram double. Not complete UI/API/provider acceptance."
     }
   ],
-  "unchanged_statuses": 268,
-  "rule": "Five exact changes from historical168: two outbox-equivalence PASS and two historical simulation PASS retained, plus CP2-09 executed literal FAIL400versus401/403 after independent review. No vendor/status remapping or full-CU promotion.",
+  "unchanged_statuses": 261,
+  "rule": "Exact historical168 comparison: two outbox equivalences and two historical simulations retained; explicit complete negative CP2-09FAIL; four current native API contracts, two exact shared SQL contracts, one same-identity separate-target JSON roundtrip PASS. Preserve distinct revisions/scopes and never promote neighboring original cases.",
   "phase2_prior": {
     "path": "../case-traceability.csv",
     "core_directory": "core-final",
@@ -120,5 +318,31 @@
     "artifact_line_endings": "LF normalized for Git;273rows with statuses derived by exact contracts",
     "summary": "phases/core-responsive-traceability-summary.json",
     "preserved_before": "CP2-09 reviewed literal FAIL"
+  },
+  "phase4_pre_local_contracts": {
+    "path": "phases/core-reliability-pre-local-contracts.csv",
+    "core_directory": "core-reliability",
+    "source_revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "sha256": "52f42275fc219cc8fe27e3e308845a94f6f685420008af251368661b1421446b",
+    "counts": {
+      "PASS": 172,
+      "FAIL": 1,
+      "BLOCKED": 100
+    },
+    "artifact_line_endings": "LF normalized for Git;273rows exact named contracts/independent semantic review",
+    "summary": "phases/core-reliability-pre-local-contracts-summary.json"
+  },
+  "number_of_changed_cases": 27,
+  "number_of_unchanged_cases": 246,
+  "phase4_reviewed_before_ci5": {
+    "path": "phases/core-reliability-reviewed-189-1-83.csv",
+    "summary": "phases/core-reliability-reviewed-189-1-83-summary.json",
+    "counts": {
+      "PASS": 189,
+      "FAIL": 1,
+      "BLOCKED": 83
+    },
+    "core_directory": "core-reliability",
+    "source_revision": "836fd18b310a51cced9074b372a80ce5d7e1a870"
   }
 }
