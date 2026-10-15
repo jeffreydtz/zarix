@@ -52,10 +52,13 @@ Para los tres perfiles, usar una copia física construida contra la réplica de 
 export ZARIX_E2E_APP_URL=http://127.0.0.1:3101
 export ZARIX_LOAD_MANAGED_APP=/tmp/zarix-app-load-20261015
 export ZARIX_LOAD_APP_ENV=/tmp/zarix-runtime-20261015/load-app.env
+export ZARIX_LOAD_FROZEN_MANIFEST=/tmp/zarix-runtime-20261015/frozen-source-manifest.json
 export ZARIX_LOAD_FIXTURE_FILE=/tmp/zarix-runtime-20261015/load-fixture.json
 export ZARIX_PLAYWRIGHT_MODULE=/tmp/zarix-e2e-20261015/node_modules/playwright/index.mjs
 node scripts/test-isolated-browser-load.mjs
 ```
+
+La copia debe incluir `copy-source-manifest.json` con `revision` y `sources: [{ path, sha256 }]`, idénticos al manifiesto congelado indicado. El controlador recalcula cada hash sobre la copia física y registra `.next/BUILD_ID`; una discrepancia bloquea el ensayo. Antes de cada proceso verifica que 3101 está libre y, después de health200, exige que `lsof` atribuya el listener al PID recién creado. Una respuesta de otro servidor no acredita readiness.
 
 `ZARIX_CHROME_EXECUTABLE` permite elegir otra instalación real de Chrome; por defecto `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`. `ZARIX_E2E_HEADED=1` permite observarlo. No se puede atribuir esta corrida a Safari ni a otros navegadores.
 

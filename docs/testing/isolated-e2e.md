@@ -42,4 +42,15 @@ Ese runner conserva `durable-replay-fixture.json` sin sesiones ni capacidades: p
 
 Las cuatro capturas de escritorio no prueban CNF-05–08. Esos casos exigen 320×568, 375×812, 768×1024 y 1440×900, zoom 200%, teclado, scroll, modales, importación/exportación, OCR y demás acciones documentadas. CNF-09 exige Chrome, Firefox, **Safari real** y Edge, cada uno versionado y con perfil nuevo. Playwright WebKit no constituye evidencia de Safari. [Documentación oficial de navegadores Playwright](https://playwright.dev/docs/browsers).
 
+`scripts/test-isolated-visual.mjs` complementa con una submatriz de exactamente esos cuatro CU en los cuatro viewports, a 100% y 200%, después de los recorridos principales. Utiliza el mismo usuario A con login UI normal en un perfil Chrome nuevo y temporal. El zoom se configura mediante la opción real `chrome://settings/appearance` → `#zoomLevel`, no por CSS ni `Emulation.setPageScaleFactor`. Exige el cambio de `devicePixelRatio` de 1 a 2 y ancho CSS de layout a la mitad; conserva escala visual 1. El perfil propio se elimina al finalizar.
+
+Las 32 celdas ejercitan sólo las acciones registradas: gasto/cuenta sin guardar y teclado Tab, alcance del botón mediante hit-test después de scroll, lectura de análisis, simulación 10% y descarga JSON por UI. Verifica desborde global y una huella monetaria antes/después; no introduce operaciones nuevas ni copia cuerpos de página, sesiones o descargas a evidencia. Conserva captura y hash por celda, incluida la fallida. Si todas pasan, el estado general sigue `PARTIAL`: preview de OCR, presupuestos, login/reset, chat de IA/anomalías y compra/venta completa en cada viewport requieren sus propios pasos ejecutados. El ensayo no completa CNF-05–08 por inferencia.
+
+```sh
+export ZARIX_VISUAL_OUTPUT=/tmp/zarix-runtime-20261015/visual-evidence
+node scripts/test-isolated-visual.mjs
+```
+
+La retoma del 15/10 identificó Google Chrome 146.0.7680.165 y Safari 27.0.1 instalados. La sonda de SafariDriver con permisos existentes devolvió HTTP500, `session not created`, por Remote Automation deshabilitado. No se llamó `--enable` ni se cambió TCC/permisos persistentes. Firefox/Edge no estaban instalados; esas celdas permanecen bloqueadas hasta contar con el navegador/acceso autorizado.
+
 CNF-01 requiere fixture 10 cuentas/5000 movimientos/100 posiciones, 20 sesiones concurrentes, 20 Mbps/50 ms y al menos 100 navegaciones, incluyendo fallas en el denominador; medir arranque frío y proveedor caído por separado. CNF-02 requiere observación mensual real. HTTPS/cifrado de instancia, proveedores sandbox y recuperación Auth/Storage se verifican por evidencia específica. Ninguno de esos requisitos se aprueba por este smoke test.

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-15T00:24:39.751Z",
+  "browser": "Safari27.0.1",
+  "scope": "Installed SafariDriver ordinary existing-permission session preflight; no --enable, no TCC or persistent settings changed",
+  "status": "BLOCKED",
+  "httpStatus": 500,
+  "remoteAutomationDisabled": true,
+  "errorCode": "session not created"
+}

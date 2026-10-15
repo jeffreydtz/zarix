@@ -126,7 +126,7 @@ try {
   controller = await createProfileController({ appUrl, output, fx });
   if (controller) {
     await controller.start('normal');
-    report.environment.managedProfiles = { appPort: appUrl.port, scope: controller.scope, providerMode: 'Explicit loopback HTTP provider double; no real integration' };
+    report.environment.managedProfiles = { appPort: appUrl.port, scope: controller.scope, providerMode: 'Explicit loopback HTTP provider double; no real integration', build: controller.buildEvidence };
   }
   const playwrightPath = process.env.ZARIX_PLAYWRIGHT_MODULE;
   if (!playwrightPath) throw blocked('ZARIX_PLAYWRIGHT_MODULE must identify an existing isolated Playwright installation');

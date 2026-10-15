@@ -4,8 +4,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import http from 'node:http';
-import { spawn } from 'node:child_process';
+import net from 'node:net';
+import { spawn, spawnSync } from 'node:child_process';
 import { performance } from 'node:perf_hooks';
+import { createHash } from 'node:crypto';
 import dotenv from 'dotenv';
 
 export async function createProfileController({ appUrl, output, fx, env = process.env }) {
@@ -20,6 +22,21 @@ export async function createProfileController({ appUrl, output, fx, env = proces
   assert.equal(target.origin, 'http://127.0.0.1:56321', 'Managed app must point exclusively to the load replica');
   const nextCli = path.join(appDirectory, 'node_modules/next/dist/bin/next');
   await fs.access(nextCli); await fs.access(path.join(appDirectory, '.next/BUILD_ID'));
+  assert.ok(env.ZARIX_LOAD_FROZEN_MANIFEST, 'A root frozen source manifest is required');
+  const copiedManifestBytes = await fs.readFile(path.join(appDirectory, 'copy-source-manifest.json'));
+  const copiedManifest = JSON.parse(copiedManifestBytes);
+  const frozenManifest = JSON.parse(await fs.readFile(env.ZARIX_LOAD_FROZEN_MANIFEST, 'utf8'));
+  assert.deepEqual(copiedManifest.sources, frozenManifest.sources, 'Physical copy and root frozen source manifest differ');
+  assert.equal(copiedManifest.revision, frozenManifest.revision, 'Physical copy and root revision differ');
+  assert.ok(copiedManifest.sources?.length, 'An empty physical source manifest is not evidence');
+  const hash = value => createHash('sha256').update(value).digest('hex');
+  for (const source of copiedManifest.sources) {
+    assert.ok(!path.isAbsolute(source.path) && !source.path.split('/').includes('..'), 'Source paths must remain inside the copied application');
+    assert.equal(hash(await fs.readFile(path.join(appDirectory, source.path))), source.sha256, 'Copied source file differs from frozen manifest');
+  }
+  const buildId = (await fs.readFile(path.join(appDirectory, '.next/BUILD_ID'), 'utf8')).trim();
+  if (copiedManifest.buildId) assert.equal(buildId, copiedManifest.buildId);
+  const buildEvidence = { buildId, copiedManifestSha256: hash(copiedManifestBytes), revision: copiedManifest.revision, sourceCount: copiedManifest.sources.length, frozenManifestEqual: true };
   const providerPort = 3311;
   const sell = Object.fromEntries(fx.map(quote => [quote.source, Number(quote.rate)]));
   const sourceTime = fx.find(quote => quote.source === 'blue').timestamp;
@@ -51,6 +68,9 @@ export async function createProfileController({ appUrl, output, fx, env = proces
   }
   async function start(profileMode) {
     await stop(); mode = profileMode;
+    const probe = net.createServer();
+    await new Promise((resolve, reject) => { probe.once('error', () => reject(new Error('Owned application port is already occupied'))); probe.listen(Number(appUrl.port), '127.0.0.1', resolve); });
+    await new Promise(resolve => probe.close(resolve));
     const startedAt = new Date().toISOString(), beginning = performance.now();
     const systemEnv = Object.fromEntries(['PATH', 'TMPDIR', 'LANG', 'DEVELOPER_DIR'].filter(key => env[key]).map(key => [key, env[key]]));
     const appEnv = { ...systemEnv, ...supplied, NODE_ENV: 'production', TZ: 'Etc/UTC',
@@ -68,19 +88,24 @@ export async function createProfileController({ appUrl, output, fx, env = proces
       if (launchError || child.exitCode !== null) throw new Error('Owned Next process failed before readiness');
       try {
         const health = await fetch(new URL('/api/health', appUrl), { redirect: 'error', signal: AbortSignal.timeout(1500) });
-        if (health.status === 200) break;
+        if (health.status === 200) {
+          const listener = spawnSync('/usr/sbin/lsof', ['-nP', '-a', '-p', String(child.pid), `-iTCP:${appUrl.port}`, '-sTCP:LISTEN', '-Fpcn'], { encoding: 'utf8' });
+          assert.equal(listener.status, 0, 'New owned Next PID is not the listener for the measured application');
+          assert.ok(listener.stdout.split('\n').includes(`p${child.pid}`) && listener.stdout.includes(`:${appUrl.port}`), 'Health response cannot be attributed to the owned process');
+          break;
+        }
       } catch { /* process has not bound the loopback port yet */ }
       if (performance.now() - beginning > 45_000) throw new Error('Owned Next process readiness timeout');
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    const event = { at: startedAt, type: 'owned-process-ready', processIndex: ++processIndex, profileMode, pid: child.pid, startupMs: performance.now() - beginning, readiness: '/api/health only; dashboard not visited by controller' };
+    const event = { at: startedAt, type: 'owned-process-ready', processIndex: ++processIndex, profileMode, pid: child.pid, listenerOwnedByPid: true, portPreviouslyFree: true, startupMs: performance.now() - beginning, readiness: '/api/health only; dashboard not visited by controller' };
     events.push(event); return event;
   }
   function counters() {
     return { normal: requests.filter(request => request.mode === 'normal').length, outage503: requests.filter(request => request.mode === 'outage' && request.status === 503).length, paths: Object.fromEntries([...new Set(requests.map(request => request.path))].map(pathname => [pathname, requests.filter(request => request.path === pathname).length])) };
   }
   async function close() { await stop(); await new Promise(resolve => server.close(resolve)); }
-  return { start, stop, close, counters, requests, events,
+  return { start, stop, close, counters, requests, events, buildEvidence,
     scope: 'Fresh Next Node/JavaScript process per wave; persisted SQL FX remains valid. No OS, filesystem, Supabase, or browser-cache cold claim. Providers are explicit local doubles, never real integrations.',
     output };
 }
