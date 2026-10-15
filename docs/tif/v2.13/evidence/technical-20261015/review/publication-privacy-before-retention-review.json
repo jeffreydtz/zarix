@@ -1,0 +1,148 @@
+{
+  "reviewedAt": "2026-10-15T07:05:00.910Z",
+  "status": "PASS_WITH_REVIEWED_FALSE_POSITIVES",
+  "phase": "before-retention",
+  "checkoutHeadAtReview": "5e8f10f4eff58de676848cf90cf3d1588b669303",
+  "reviewMethod": "Independent public-source, raw-report and exact-file-hash review. Review did not run either scanner again or read any private env, credential, recovery checkpoint or current private value.",
+  "scannerSources": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/scan-evidence-final-publication.mjs",
+      "sha256": "4e4665692657e564cf661d7275967fd40a9a0aea198ea617bdcd88ccec874fe9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/scan-exact-private-values-final-publication.mjs",
+      "sha256": "7f435ac81141b04252d80c5ed04a737091a53c705ac08e8d7de539f635373b9a"
+    }
+  ],
+  "rawReports": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/evidence-secret-scan-before-retention.json",
+      "sha256": "2b8d29283a3cffbd0c675e9eb64964095cf2d913414b57d0869026f5ed7f0663"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-scan-before-retention.json",
+      "sha256": "f9822b5e139b44bfc851cd7aa47362de9147cb06e22856b1953934f7218a5c8b"
+    }
+  ],
+  "heuristic": {
+    "utf8EvidenceFiles": 1574,
+    "binaryFilesNotInspected": 128,
+    "reportedCandidates": 2,
+    "reviewedCandidates": [
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/arc-launch-permission-preflight.json",
+        "sha256": "4dcd19833618cbe9d84f1ee2574fe82cc886041712a1830dd8a673574dae9b84",
+        "rule": "credential-field",
+        "matchedField": "$.authorization",
+        "valueClassification": "Descriptive user permission and scope metadata in the Arc preflight record",
+        "decision": "REVIEWED_FALSE_POSITIVE",
+        "notBearerOrBasicMaterial": true,
+        "notJWTShape": true,
+        "scope": "Classification applies only to this concrete field and current file hash; future same-named fields require review."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/environment/e2e-stack-restart.json",
+        "sha256": "8b2267a6d94e77e1ef8d7409924b37f4093fb50005fc8e3d9430e8092969c99b",
+        "rule": "credential-field",
+        "matchedField": "$.authorization",
+        "valueClassification": "Descriptive approved isolated restart and scope metadata",
+        "decision": "REVIEWED_FALSE_POSITIVE",
+        "notBearerOrBasicMaterial": true,
+        "notJWTShape": true,
+        "scope": "Classification applies only to this concrete field and current file hash; future same-named fields require review."
+      }
+    ]
+  },
+  "exact": {
+    "selectedPrivateValuesReported": 53,
+    "repositoryFilesReported": 2555,
+    "rawStatusPreserved": "FAIL",
+    "reportedPaths": 5,
+    "reviewedPaths": [
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper",
+        "byteIdenticalToVersionedHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "baselineGitBlobSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "scope": "This exact path/hash is reviewed. No generic exemption of database URLs, scripts or archived source copies is granted."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper",
+        "byteIdenticalToVersionedHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "baselineGitBlobSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "scope": "This exact path/hash is reviewed. No generic exemption of database URLs, scripts or archived source copies is granted."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/attempt-1/sources/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper",
+        "byteIdenticalToVersionedHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "baselineGitBlobSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "scope": "This exact path/hash is reviewed. No generic exemption of database URLs, scripts or archived source copies is granted."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/attempt-2/sources/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper",
+        "byteIdenticalToVersionedHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "baselineGitBlobSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "scope": "This exact path/hash is reviewed. No generic exemption of database URLs, scripts or archived source copies is granted."
+      },
+      {
+        "path": "scripts/lib/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback database fallback in the original versioned native-test helper",
+        "byteIdenticalToVersionedHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "baselineGitBlobSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "scope": "This exact path/hash is reviewed. No generic exemption of database URLs, scripts or archived source copies is granted."
+      }
+    ],
+    "attributionLimit": "Current candidate attribution uses byte identity with the concrete original Git helper and previously reviewed public fallback. No additional private-value comparison was performed by this reviewer."
+  },
+  "priorConcreteReviews": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/publication-privacy-checkpoint-0426-review.json",
+      "sha256": "1b959517704e159e7bb61f1851a0c7ed42269d41964374ffc7e19534eb68b667"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-false-positive.json",
+      "sha256": "029bc8b6a7f8738f0d3be235ad97e62403996ed64347047ef6c940fefce14729"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-false-positive-0358.json",
+      "sha256": "b076069c708115f17635c976a8d19250fc6c93623bbc1e6341b5b1e0f8454d6a"
+    }
+  ],
+  "newSecretDisclosureObservedInReportedCandidateBytes": false,
+  "remainingPublicationBlockersFromTheseCandidates": [],
+  "limits": [
+    "Raw reports are preserved unchanged; the exact comparison remains FAIL with five paths. This independent assessment does not replace or suppress that result.",
+    "Heuristic scope is only UTF-8 files under evidence technical-20261013/14/15. The 128 binary/image files are not inspected by that heuristic or by this review.",
+    "Exact comparison checks the reported selected local values against tracked and non-ignored untracked repository files, including byte sequences in binaries. It excludes ignored build assets and external files and does not prove universal absence of secrets.",
+    "No suspected values, credential-value hashes, matching excerpts, env contents or recovery material are stored in this review. Artifact and source file hashes identify complete public files.",
+    "After-retention documents require their own separately named final scanner reports and independent review."
+  ]
+}
