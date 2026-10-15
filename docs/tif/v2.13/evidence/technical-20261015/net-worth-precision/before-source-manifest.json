@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-15T05:03:14.562787+00:00",
+  "status": "BEFORE_REPOSITORY_RUN_PREPARED",
+  "purpose": "CP3-06 USD cents regression, real React SSR",
+  "servedFinancialBuildUnchanged": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+  "sources": [
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb"
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "sha256": "f5eacff2eba0c2e6b96beae73a4ea84849d80966cc034379248cd9d2576b1b4a"
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520"
+    },
+    {
+      "path": "lib/hooks/use-privacy.ts",
+      "sha256": "1429c9bee887ff5e3816afe9eec6435c1bfdaf6c2ce507865a56ee01e47eb43c"
+    }
+  ],
+  "test": {
+    "path": "__tests__/net-worth-usd-formatting.test.ts",
+    "sha256": "bc8fe6aa13c5f0d0712024a6e6185dab687c78624c7f7ad9e41eacfd05bec78e"
+  },
+  "mockedModules": [],
+  "componentsModified": false,
+  "browserCalls": 0,
+  "apiCalls": 0,
+  "databaseCalls": 0,
+  "knownLimits": [
+    "Hero client USD view not exercised by SSR",
+    "Sticky initially hidden in SSR; its visible amounts not exercised"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-10-15T05:06:32.797043+00:00",
+  "status": "CORRECTED_ORACLE_BEFORE_PREPARED",
+  "reason": "The CSV requires preserving181.67 cents, not imposing .00 on integralUSD100. Parent narrowed integer display to existing100. Initial stricter attempt/source preserved; no component modified.",
+  "oldTestSha256": "bc8fe6aa13c5f0d0712024a6e6185dab687c78624c7f7ad9e41eacfd05bec78e",
+  "newTestSha256": "7a05c358b2f9513b229cedc1b8089017bdc48a891619a083036397162c30c629",
+  "sourceManifest": [
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb"
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "sha256": "f5eacff2eba0c2e6b96beae73a4ea84849d80966cc034379248cd9d2576b1b4a"
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520"
+    },
+    {
+      "path": "lib/hooks/use-privacy.ts",
+      "sha256": "1429c9bee887ff5e3816afe9eec6435c1bfdaf6c2ce507865a56ee01e47eb43c"
+    }
+  ],
+  "expectedBefore": {
+    "failed": 2,
+    "passed": 4,
+    "total": 6
+  },
+  "archivalSourceRename": {
+    "original": "temporary-before/net-worth-money-regression.test.ts",
+    "preserved": "temporary-before/net-worth-money-regression.test-source.ts",
+    "contentUnchanged": true,
+    "reason": "Prevent automatic Vitest discovery of historical source artifacts; actual runnable test is only __tests__/net-worth-usd-formatting.test.ts."
+  },
+  "runtime": false
+}

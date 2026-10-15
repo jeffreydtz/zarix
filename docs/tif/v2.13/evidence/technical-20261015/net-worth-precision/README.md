@@ -1,0 +1,17 @@
+# CP3-06: precisión USD en patrimonio
+
+El before válido, ejecutado con los componentes reales e intactos, produjo **2 FAIL y 4 PASS**. La corrección incluida en `84df929ab2f169251a49f3e95d0e0c148dfcb87c` produjo **6/6 PASS** en las mismas pruebas SSR. El resultado se extrajo del [focal definitivo de 51 pruebas](../partial-account-valuation/focused-final.json); no se repitió la ejecución para crear este informe. [after-summary.json](after-summary.json) conserva los hashes y el alcance, y [after-source-binding.json](after-source-binding.json) contrasta los 18 archivos del manifiesto focal con Git y sus bytes actuales.
+
+Las pruebas usan React SSR, NetWorthHero, StickyNetWorthBar, Amount y sus hooks reales, sin mocks, reemplazos de estado ni props de decimales añadidas por el test. Para +181.67/-181.67 USD, el before mostraba “≈ US$ 182”/“≈ US$ -182” aunque el atributo `data` conservaba el valor original; el after satisface “≈ US$ 181,67”/“≈ US$ -181,67”. USD100 mantiene “≈ US$ 100”. Los controles Amount ARS218000/218000.49 mantienen “$ 218.000”. Amount y el hook de privacidad conservan sus hashes originales.
+
+El producto formatea USD fraccional con dos decimales y USD entero sin decimales; ARS y los ticks compactos conservan su formato. Las ramas principal, delta, tooltip y Sticky visible se revisaron estáticamente. **Estas seis pruebas sólo ejercitan el equivalente secundario del Hero, los controles Amount ARS y el estado Sticky inicialmente oculto.** Hero SSR empieza en vista ARS con contador animado 0; ese 0 no se interpreta como un cálculo financiero. La vista USD cliente, los tooltips/delta interactivos y Sticky visible siguen fuera de esta prueba. No hubo navegador, petición API ni consulta DB en estas regresiones.
+
+La corrida global CI6 sobre la misma revisión registró 913 pruebas correctas, incluidas estas seis, con fuentes limpias y estables; [core-closure/verification.json](../core-closure/verification.json) conserva los 17 gates, incluido el fallo separado de la consulta de auditoría. Este documento no convierte esa auditoría en PASS ni acredita una nueva prueba de navegador.
+
+## Corrección explícita del oráculo inicial
+
+El primer intento exigía “100,00” incluso para USD100 entero. El CSV exige conservar los centavos de181.67, pero no fija ese formato adicional para enteros. El padre acotó el requisito a conservar100 como se mostraba antes. El intento inicial **3 FAIL/3 PASS**, su fuente exacta y sus observaciones permanecen en [before-repo.json](before-repo.json) y [strict-oracle.test-source.ts](strict-oracle.test-source.ts); la tercera falla no se cuenta como defecto aceptado.
+
+[before-corrected.json](before-corrected.json) conserva el before válido de **2 FAIL por fracciones ±181.67 y 4 PASS de controles**, sin modificar producto. [oracle-correction.json](oracle-correction.json) registra ambos hashes de test y el motivo. La fase previa en `/tmp` se preserva en [temporary-before/](temporary-before/) sin sobrescribir los resultados del repositorio. El fallo literal CI5 “182 frente a181.67” también permanece separado en [executed-final/](../account-analysis-contracts/executed-final/).
+
+Las copias históricas usan extensión `.test-source.ts` para conservar sus bytes sin que Vitest las descubra como pruebas activas. La única prueba activa de esta regresión es [net-worth-usd-formatting.test.ts](../../../../../../__tests__/net-worth-usd-formatting.test.ts). No se modificó la matriz desde este paquete documental.

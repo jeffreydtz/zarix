@@ -1,0 +1,53 @@
+[
+  {
+    "usd": 181.67,
+    "ars": 218000,
+    "expected": "≈ US$ 181,67",
+    "actual": "≈ US$ 182",
+    "data": [
+      {
+        "attribute": " value=\"0\" class=\"tabular-nums text-4xl font-semibold tracking-tight text-foreground md:text-5xl\"",
+        "visible": "$ 0"
+      },
+      {
+        "attribute": " value=\"181.67\" class=\"tabular-nums \"",
+        "visible": "≈ US$ 182"
+      }
+    ],
+    "html": "<section class=\"card space-y-5\"><div class=\"flex flex-wrap items-center justify-between gap-3\"><div class=\"flex items-center gap-2\"><h2 class=\"text-sm font-medium text-muted-foreground\">Patrimonio total</h2><button type=\"button\" aria-label=\"Ocultar montos\" aria-pressed=\"false\" class=\"rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" class=\"h-4 w-4\" aria-hidden=\"true\"><path d=\"M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path><circle cx=\"12\" cy=\"12\" r=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></circle></svg></button></div><div role=\"group\" aria-label=\"Vista de patrimonio\" class=\"inline-flex items-center gap-1 rounded-control border border-border bg-secondary/60 p-1\"><button type=\"button\" aria-pressed=\"true\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors bg-card text-foreground shadow-sm\">ARS</button><button type=\"button\" aria-pressed=\"false\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors text-muted-foreground hover:text-foreground\">USD blue</button><button type=\"button\" aria-pressed=\"false\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors text-muted-foreground hover:text-foreground\">ARS reales</button></div></div><div><data value=\"0\" class=\"tabular-nums text-4xl font-semibold tracking-tight text-foreground md:text-5xl\">$ 0</data><p class=\"mt-1.5 text-sm text-muted-foreground\"><data value=\"181.67\" class=\"tabular-nums \">≈ US$ 182</data></p><div class=\"mt-2 space-y-1 text-xs text-muted-foreground\"><p class=\"\">Referencia USD/ARS: tasa, fuente y fecha no informadas.</p></div></div><p class=\"text-xs text-muted-foreground\">El gráfico se construye día a día a partir de hoy.</p></section>"
+  },
+  {
+    "usd": -181.67,
+    "ars": -218000,
+    "expected": "≈ US$ -181,67",
+    "actual": "≈ US$ -182",
+    "data": [
+      {
+        "attribute": " value=\"0\" class=\"tabular-nums text-4xl font-semibold tracking-tight text-foreground md:text-5xl\"",
+        "visible": "$ 0"
+      },
+      {
+        "attribute": " value=\"-181.67\" class=\"tabular-nums \"",
+        "visible": "≈ US$ -182"
+      }
+    ],
+    "html": "<section class=\"card space-y-5\"><div class=\"flex flex-wrap items-center justify-between gap-3\"><div class=\"flex items-center gap-2\"><h2 class=\"text-sm font-medium text-muted-foreground\">Patrimonio total</h2><button type=\"button\" aria-label=\"Ocultar montos\" aria-pressed=\"false\" class=\"rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" class=\"h-4 w-4\" aria-hidden=\"true\"><path d=\"M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path><circle cx=\"12\" cy=\"12\" r=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></circle></svg></button></div><div role=\"group\" aria-label=\"Vista de patrimonio\" class=\"inline-flex items-center gap-1 rounded-control border border-border bg-secondary/60 p-1\"><button type=\"button\" aria-pressed=\"true\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors bg-card text-foreground shadow-sm\">ARS</button><button type=\"button\" aria-pressed=\"false\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors text-muted-foreground hover:text-foreground\">USD blue</button><button type=\"button\" aria-pressed=\"false\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors text-muted-foreground hover:text-foreground\">ARS reales</button></div></div><div><data value=\"0\" class=\"tabular-nums text-4xl font-semibold tracking-tight text-foreground md:text-5xl\">$ 0</data><p class=\"mt-1.5 text-sm text-muted-foreground\"><data value=\"-181.67\" class=\"tabular-nums \">≈ US$ -182</data></p><div class=\"mt-2 space-y-1 text-xs text-muted-foreground\"><p class=\"\">Referencia USD/ARS: tasa, fuente y fecha no informadas.</p></div></div><p class=\"text-xs text-muted-foreground\">El gráfico se construye día a día a partir de hoy.</p></section>"
+  },
+  {
+    "usd": 100,
+    "ars": 120000,
+    "expected": "≈ US$ 100,00",
+    "actual": "≈ US$ 100",
+    "data": [
+      {
+        "attribute": " value=\"0\" class=\"tabular-nums text-4xl font-semibold tracking-tight text-foreground md:text-5xl\"",
+        "visible": "$ 0"
+      },
+      {
+        "attribute": " value=\"100\" class=\"tabular-nums \"",
+        "visible": "≈ US$ 100"
+      }
+    ],
+    "html": "<section class=\"card space-y-5\"><div class=\"flex flex-wrap items-center justify-between gap-3\"><div class=\"flex items-center gap-2\"><h2 class=\"text-sm font-medium text-muted-foreground\">Patrimonio total</h2><button type=\"button\" aria-label=\"Ocultar montos\" aria-pressed=\"false\" class=\"rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" class=\"h-4 w-4\" aria-hidden=\"true\"><path d=\"M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path><circle cx=\"12\" cy=\"12\" r=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></circle></svg></button></div><div role=\"group\" aria-label=\"Vista de patrimonio\" class=\"inline-flex items-center gap-1 rounded-control border border-border bg-secondary/60 p-1\"><button type=\"button\" aria-pressed=\"true\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors bg-card text-foreground shadow-sm\">ARS</button><button type=\"button\" aria-pressed=\"false\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors text-muted-foreground hover:text-foreground\">USD blue</button><button type=\"button\" aria-pressed=\"false\" class=\"rounded-[calc(var(--radius-control)-0.25rem)] px-3 py-1.5 text-xs font-medium transition-colors text-muted-foreground hover:text-foreground\">ARS reales</button></div></div><div><data value=\"0\" class=\"tabular-nums text-4xl font-semibold tracking-tight text-foreground md:text-5xl\">$ 0</data><p class=\"mt-1.5 text-sm text-muted-foreground\"><data value=\"100\" class=\"tabular-nums \">≈ US$ 100</data></p><div class=\"mt-2 space-y-1 text-xs text-muted-foreground\"><p class=\"\">Referencia USD/ARS: tasa, fuente y fecha no informadas.</p></div></div><p class=\"text-xs text-muted-foreground\">El gráfico se construye día a día a partir de hoy.</p></section>"
+  }
+]

@@ -1,0 +1,257 @@
+{
+  "reviewedAt": "2026-10-15T05:15:03.710711+00:00",
+  "status": "REVIEW_COMPLETE_8_ORIGINAL_PASS_2_CONFIRMED_PRODUCT_FAIL",
+  "reviewer": "/root/e2e",
+  "scope": "Independent read-only review of15 execution artifacts, literalCSV,17 archived harness snapshots,27 product files against immutableGit7c and servedcopy, compiled client manifests and archived ownership evidence. No runtime, new tests, requests, DB queries, browser actions or raw edits.",
+  "manifest": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/manifest.json",
+    "sha256": "424e0b050f9d8ce4c60e00a34a6b0b4702fa86689de57f1acf3163c7854dd481"
+  },
+  "binding": {
+    "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "runtimeProfile": "final-core-acceptance",
+    "runtimeMode": "clock",
+    "buildId": "vPLjt1QViugJhUWR62DPp",
+    "nextPidAtExecution": 17292,
+    "apiOrigin": "http://127.0.0.1:58321",
+    "appOrigin": "http://127.0.0.1:3002",
+    "independentlyVerifiedProductFiles": 27,
+    "independentlyVerifiedHarnessSnapshots": 17,
+    "physicalSourceCountRecordedByExecutionGuard": 480,
+    "gitSourceCountRecordedByExecutionGuard": 479,
+    "notClaimingNewProcessOrBuildExecution": true
+  },
+  "reports": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp2-02.json",
+      "sha256": "7cf863fdca0856d5b36b7443d9db5753b332d8fe1f3cebcbca49fcb84074ace7",
+      "status": "PASS",
+      "assertions": 7,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp2-03.json",
+      "sha256": "2ab79adfdcb72d8b364166cbda08204ad23123e656354192139720a88e9d8c6a",
+      "status": "PASS",
+      "assertions": 9,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp2-05-ssr.json",
+      "sha256": "a51d6eb1d88bf94eb70587683197d492da909fe7516a6b26275d5f7a7ea27e38",
+      "status": "FAIL",
+      "assertions": 21,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 13
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp2-05.json",
+      "sha256": "ce72ffbcc8f85f11174eeda35fdcabc2703c639be902ef28ea37930825c3d83b",
+      "status": "PARTIAL",
+      "assertions": 11,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp2-06.json",
+      "sha256": "72a32e6cfad02bde9763fabaa927a5cb132e998b93ed74071b446c21a4c751f2",
+      "status": "PASS",
+      "assertions": 12,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp2-20.json",
+      "sha256": "50c12d2427b41c1c76b7720ada50ee285b6e70c277e332e189a304b3a6ec6d09",
+      "status": "PASS",
+      "assertions": 15,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-04-ssr.json",
+      "sha256": "48d805b7fd69c0ba140d16fac1a3e84d715f69fdc1ec0cdd91ea3daf5c8730de",
+      "status": "PASS",
+      "assertions": 12,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 13
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-04.json",
+      "sha256": "db8c9442add69341a2de4c23ba9b4ce801b12e4e834bab22bbd33327092ebba2",
+      "status": "PARTIAL",
+      "assertions": 7,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-05-fixture-oracle-attempt-1.json",
+      "sha256": "20090bcc69978f3b506c00fbf3f262e93d7339c5fa044c7efd5067c13a37d21b",
+      "status": "FAIL",
+      "assertions": 6,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 13
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-05-ssr.json",
+      "sha256": "2b4c0159294c54d7b3a5c66aed125059fdebad7c2daf3500c64d7b98d286edf3",
+      "status": "PASS",
+      "assertions": 16,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 13
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-06-ssr.json",
+      "sha256": "350053178d193a19a6be5b685a0fb335f9a107e78af9d9feab9ea817b9398364",
+      "status": "FAIL",
+      "assertions": 19,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 13
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-06.json",
+      "sha256": "a447e9900b5e2b1437d732175bdf4ad72c2da62aa355f1861e0203e8224ee57f",
+      "status": "PARTIAL",
+      "assertions": 14,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-08-ssr.json",
+      "sha256": "3e8bb09928c7cab681ff4012d2f0ea7b16cb01b76ac1485ff3d7c600bd4973f6",
+      "status": "PASS",
+      "assertions": 17,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 13
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-08.json",
+      "sha256": "aa7a35598e806b32dd3073476d66c398e92b77852764fa08a0a69b81cfb0326c",
+      "status": "PARTIAL",
+      "assertions": 12,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/cp3-18.json",
+      "sha256": "076c2ecc22c93e0d62ea0301eda3089dc1dc80e4bd63480cc832b94218d83be7",
+      "status": "FAIL",
+      "assertions": 12,
+      "sourceStable": true,
+      "servedBuildStable": true,
+      "originalTablesUnchanged": true,
+      "originalTableCount": 12
+    }
+  ],
+  "acceptedOriginals": [
+    {
+      "id": "CP2-02",
+      "status": "PASS"
+    },
+    {
+      "id": "CP2-03",
+      "status": "PASS"
+    },
+    {
+      "id": "CP2-05",
+      "status": "PASS"
+    },
+    {
+      "id": "CP2-06",
+      "status": "PASS"
+    },
+    {
+      "id": "CP2-20",
+      "status": "PASS"
+    },
+    {
+      "id": "CP3-04",
+      "status": "PASS"
+    },
+    {
+      "id": "CP3-05",
+      "status": "PASS"
+    },
+    {
+      "id": "CP3-06",
+      "status": "FAIL"
+    },
+    {
+      "id": "CP3-08",
+      "status": "PASS"
+    },
+    {
+      "id": "CP3-18",
+      "status": "FAIL"
+    }
+  ],
+  "caseInterpretations": {
+    "CP2-05": "OriginalPASS: primaryARS debt10000 untouched, secondaryUSD100→90 through explicit payment, actual API/SQL and SSRnow−130000ARS/−108.33USD then−118000ARS/−98.33USD subtract both debts. Two text precisionFAIL remain raw/derived; the literalCP205 has no cent-display criterion. This does not conceal CP306 which does require it.",
+    "CP3-06": "OriginalFAIL confirmed: actual server now218000ARS/181.67USD and data181.67, visible equivalent182 instead of literal181.67. Initial SSR countup0 is not mistaken for the financial total; the failing USD secondary is the reachable SSR amount.",
+    "CP3-18": "OriginalFAIL confirmed: preserved legacyZZZ10 plus knownARS120000 remain intact, GETaccounts500 avoids fabricating a total but does not implement the required knownsubtotal+explicitexclusion+partialresult.",
+    "CP3-04": "Actual authenticated server response/compiledHero props now240000ARS/200USD and original120000ARS/100USD preserved. Client/hydration not inferred.",
+    "CP3-05": "Actual portfolio6×110=660USD plus separate liquidcash100 yields760USD/912000ARS, with cashfullrow stable and brokercash0. The fixture interpretation (liquidbankcash separate from investmentposition) is explicit and consistent with the expected liquid100/RN09; it does not claim that arbitrary investment-accountcash is liquid. Preliminary cost-property oracleFAIL is preserved, not hidden.",
+    "CP3-08": "Actual custom1–6October inclusive serverperiod, normal-owner SQL and compiled chart props give Alimentos2000/count3 and income5000; transfer/U2/September excluded. Actual HTML total cards2000/5000 match. Category uses a declared synthetic unique suffix and ownerID; no pixels/filterinteraction claimed."
+  },
+  "compiledSSR": {
+    "parse": "JSON.parse of Flight and exact compiled client-manifest assignment; no eval or HTMLJavaScript execution. Require unique bound module payload.",
+    "dashboard": {
+      "manifestSha256": "7237a0a85f1450e4d4afee49acd69ffaa4806c59438f43a373fcaac3b673746b",
+      "HeroModuleId": 48648
+    },
+    "analysis": {
+      "manifestSha256": "5d42be6e4954dec7672c63cdd37a8ec35e6c36f63b27ef988eef6f23bb43411d",
+      "AnalysisChartsModuleId": 60608,
+      "PeriodPickerModuleId": 12881
+    },
+    "actualCompiledFilesRehashed": true
+  },
+  "snapshotOwnership": {
+    "id": "125cf6c5-58b2-4bc8-be34-fd4a479eaea0",
+    "day": "2026-10-06",
+    "createdDuringRun": "56423408-b755-44b5-8045-45e1a6b925ee",
+    "initialInventory": 0,
+    "ordinaryDashboardCreatedIt": true,
+    "privateArchiveSha256Reverified": "2de6567d327fd4e2dc802682d242b63f6b6dead106ec1eed56aae7b9951e79d2",
+    "subsequentUseGuardedByExactProjectUserDayAndUuid": true,
+    "otherOriginalSnapshotsProtected": true,
+    "meaning": "Only this newly created auxiliary snapshot was intentionally upserted; reportoriginal13-rowsets exclude this declared ownUUID when reused and remain hash-identical. No original snapshot was overwritten. Analysis-onlyCP308 protects the existing snapshot as an original and leaves it unchanged."
+  },
+  "limitations": [
+    "No browser, hydration, chartpixels, viewport, interaction or provider acceptance inferred.",
+    "This review is bound to CI5Git7c; the new306/318source fixes require independent CI6/runtime evidence.",
+    "CP2-05rawFAIL and all preliminaryPARTIAL/FAIL artifacts remain unchanged."
+  ],
+  "newMaterialEvidenceDefects": [],
+  "rawFilesModified": false
+}

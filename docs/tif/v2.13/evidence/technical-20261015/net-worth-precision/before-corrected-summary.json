@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-15T05:06:55.546093+00:00",
+  "status": "FAIL_BEFORE_VALID_CENTS_FIX",
+  "tests": 6,
+  "passed": 4,
+  "failed": 2,
+  "sourceStable": true,
+  "testSha256": "7a05c358b2f9513b229cedc1b8089017bdc48a891619a083036397162c30c629",
+  "resultSha256": "f1acc639d72bde21dd65a0ef3d1648187189b7d4f7e2567485052e3251efa210",
+  "integerUsd100Preserved": true,
+  "arsDefaultPreserved": true,
+  "stickyVisibleOrClientUsdViewTested": false,
+  "initialStrictOraclePreserved": {
+    "report": "before-repo.json",
+    "source": "strict-oracle.test-source.ts",
+    "reason": "Integer100.00 was stricter than the CSV; not counted as an accepted product defect."
+  },
+  "failedTestTitles": [
+    "preserves USD cents or the existing integer display for the real Hero equivalent 181.67",
+    "preserves USD cents or the existing integer display for the real Hero equivalent -181.67"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "recordedAt": "2026-10-15T05:18:08.096906+00:00",
+  "status": "PASS_SIX_REAL_SSR_REGRESSIONS_WITH_CLIENT_LIMITS",
+  "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "evidenceOperation": "Extracted existing results; no rerun",
+  "focalResult": {
+    "path": "../partial-account-valuation/focused-final.json",
+    "sha256": "75f0eea8549952781e3da1947964afe2f390948e608c53ff13ebff91512749bc",
+    "totalTests": 51,
+    "passedTests": 51,
+    "failedTests": 0,
+    "selectedTestPath": "__tests__/net-worth-usd-formatting.test.ts",
+    "selectedTestSha256": "7a05c358b2f9513b229cedc1b8089017bdc48a891619a083036397162c30c629",
+    "selectedTests": 6,
+    "selectedPassed": 6,
+    "selectedFailed": 0,
+    "assertions": [
+      {
+        "title": "preserves USD cents or the existing integer display for the real Hero equivalent 181.67",
+        "status": "passed"
+      },
+      {
+        "title": "preserves USD cents or the existing integer display for the real Hero equivalent -181.67",
+        "status": "passed"
+      },
+      {
+        "title": "preserves USD cents or the existing integer display for the real Hero equivalent 100",
+        "status": "passed"
+      },
+      {
+        "title": "preserves the existing real Amount ARS default display for 218000",
+        "status": "passed"
+      },
+      {
+        "title": "preserves the existing real Amount ARS default display for 218000.49",
+        "status": "passed"
+      },
+      {
+        "title": "preserves Sticky SSR initially hidden; does not claim its visible USD branch was exercised",
+        "status": "passed"
+      }
+    ]
+  },
+  "validBefore": {
+    "path": "before-corrected.json",
+    "sha256": "f1acc639d72bde21dd65a0ef3d1648187189b7d4f7e2567485052e3251efa210",
+    "passed": 4,
+    "failed": 2
+  },
+  "initialStricterOracle": {
+    "path": "before-repo.json",
+    "sha256": "e4c17cd84741e1648da38aa6f8d95b61ae43407348b4e263236ee6782cf151ef",
+    "passed": 3,
+    "failed": 3,
+    "thirdFailureAcceptedAsProductDefect": false,
+    "correction": "USD100 may preserve its existing integer format; only fractional cent loss is required to change."
+  },
+  "globalCI6": {
+    "verificationPath": "../core-closure/verification.json",
+    "verificationSha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7",
+    "vitestPath": "../core-closure/final-vitest.json",
+    "vitestSha256": "32f376cc3687dc3b737ccc4cc823fe5eaf9b951b123100338ab7abaab50651f0",
+    "passedTests": 913,
+    "failedTests": 0,
+    "testResultFiles": 92,
+    "selectedSixAlsoPassed": true,
+    "sourceStable": true,
+    "sourceWorkingTreeClean": true,
+    "auditGateReportedSeparately": "Audit query failed in core-closure; this summary does not turn the complete gate run into an unconditional PASS."
+  },
+  "testedBehavior": [
+    "Real Hero SSR equivalent preserves 181.67 and -181.67 USD cents",
+    "Real Hero equivalent USD100 preserves integer display",
+    "Real Amount ARS218000 and218000.49 preserves existing default display",
+    "Real Sticky SSR remains initially hidden"
+  ],
+  "mockedModules": [],
+  "newBrowserCalls": 0,
+  "newApiCalls": 0,
+  "newDatabaseCalls": 0,
+  "limits": [
+    "SSR uses the real initial ARS view and count-up state; the primary animated amount is not an observed final client total.",
+    "Client USD view, delta and tooltip interactions, and visible Sticky branch are not exercised by these six tests. Their format changes have static review only in this package.",
+    "No browser screenshot or full CP3-06 UI acceptance is claimed.",
+    "The CI5 literal display failure remains preserved in account-analysis-contracts/executed-final; this after phase uses CI6 sources."
+  ]
+}
