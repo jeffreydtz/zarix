@@ -1,0 +1,11 @@
+{
+  "purpose": "cnf11-extension",
+  "stackId": "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+  "existingDatabase": "zarix_delta_e4bd026f703549bfa24de940134184b8",
+  "sourceSha256": "6a15b30f104e997ae7bf7a385a5e346d0a4ca8604f29fff43b28efd53099464f",
+  "commonSha256": "370bc7da27c2d5b1b9a68ac40c54c4d5f6ad6670ecdd69940628f17d54304b28",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "checkoutHead": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b",
+  "existingStateReference": "/tmp/zarix-runtime-20261015/home/stacks/c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09/state.json",
+  "rawOutputDisposition": "discarded-before-filesystem"
+}

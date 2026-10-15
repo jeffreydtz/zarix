@@ -1,0 +1,163 @@
+{
+  "schema": "zarix.independent-source-guard-review.v1",
+  "reviewedAt": "2026-10-15T09:41:48Z",
+  "reviewer": "independent cnf11_privacy agent",
+  "status": "PASS_STATIC_REVIEW",
+  "checkoutRevision": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b",
+  "productSourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "productSourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+  "productSourceCount": 517,
+  "scope": "Independent source and guard review of the new CNF11 coordinator and workers. This report does not assert test execution, case promotion, privacy-scan completion, database cleanup or service shutdown.",
+  "sources": [
+    {
+      "path": "coordinator/common.py",
+      "sha256": "370bc7da27c2d5b1b9a68ac40c54c4d5f6ad6670ecdd69940628f17d54304b28",
+      "pythonAstParse": "PASS"
+    },
+    {
+      "path": "coordinator/prepare-source.py",
+      "sha256": "0a0183d9aad4b124f924fa255dbe364ec7c63b52b6c6d9be74e0573146593711",
+      "pythonAstParse": "PASS"
+    },
+    {
+      "path": "coordinator/reopen.py",
+      "sha256": "6a15b30f104e997ae7bf7a385a5e346d0a4ca8604f29fff43b28efd53099464f",
+      "pythonAstParse": "PASS"
+    },
+    {
+      "path": "coordinator/launch-services.py",
+      "sha256": "5e0fbb892c996418864048fe71ddc68575057258f566bbb470144f4cfefa5482",
+      "pythonAstParse": "PASS"
+    },
+    {
+      "path": "coordinator/local-http.mjs",
+      "sha256": "58db69b7c2be3a874f1e7e9bd87ada0fedee28c1be7a825cd68b4c98146f4253",
+      "pythonAstParse": "not_applicable"
+    },
+    {
+      "path": "coordinator/retain-and-stop.py",
+      "sha256": "992a28d79d63667cf8a0896e017b11698a3a12c840a2c0f9a020d3fe1049e862",
+      "pythonAstParse": "PASS"
+    },
+    {
+      "path": "bot/bot.test-source.ts",
+      "sha256": "f04705ee962e93309bff428967d22ee0abb528d012948dccc14c4e7b0b9bc740",
+      "pythonAstParse": "not_applicable"
+    },
+    {
+      "path": "bot/run-bot.py",
+      "sha256": "1f228587979077b29ad2df1738c7a721be4469850fa09502de2ea39448332873",
+      "pythonAstParse": "PASS"
+    },
+    {
+      "path": "bot/vitest.config.mjs",
+      "sha256": "982498bca94fab1afe5c15dc106c158fb09b03fc6d4d95f6b56944266ff547bc",
+      "pythonAstParse": "not_applicable"
+    },
+    {
+      "path": "nominal/nominal.test-source.ts",
+      "sha256": "d050e6b968d32932c29f54b22584f55c9fed7a0efb923f42aa17ad1a5912ea3f",
+      "pythonAstParse": "not_applicable"
+    },
+    {
+      "path": "nominal/run-nominal.py",
+      "sha256": "57594d19b41198e1d1265c6df78bbb8b708c133416e467f9ec09ba4779542e4c",
+      "pythonAstParse": "PASS"
+    },
+    {
+      "path": "nominal/vitest.config.mjs",
+      "sha256": "363b7097f494179650875e8571db30e7442af0818f223e2bd7d93f7b4f9e3c27",
+      "pythonAstParse": "not_applicable"
+    },
+    {
+      "path": "nominal/held-acknowledgement.ts",
+      "sha256": "40b69bab37c6ee6f18af683253d506c3a1a502b3ceb7729dc74a684d83a1fd72",
+      "pythonAstParse": "not_applicable"
+    }
+  ],
+  "supportingDocumentation": [
+    {
+      "path": "bot/PLAN.md",
+      "sha256": "1620b68d20eb087cd4cc34820bbb2ee74b7c2124a699a09510d1d7331e66b853"
+    },
+    {
+      "path": "nominal/README.md",
+      "sha256": "86219066f342a1d8397ef6a270215f9e27bf314def45ae19145fc1cfce19e94e"
+    },
+    {
+      "path": "nominal/composition.json",
+      "sha256": "485fe62ef883936653bd332557df5aa032d6341a742a89d1c882c2300b414046"
+    },
+    {
+      "path": "nominal/prepared-manifest.json",
+      "sha256": "c665393cb4208b67566fe4947ac6ade044003bf0177f1051d0fe083eca29becf"
+    }
+  ],
+  "checks": [
+    {
+      "id": "frozen-source",
+      "status": "PASS",
+      "evidence": "All 13 effective source hashes independently recomputed and matched the author freezes; Python sources AST-parsed without import or execution."
+    },
+    {
+      "id": "preserve-prior-artifacts",
+      "status": "PASS",
+      "evidence": "Protected CSV, original checkpoint and three retained database archives were independently hashed without decoding rows; the previous native manifest is unchanged. Existing tracked files and index had no diff at this review."
+    },
+    {
+      "id": "credential-handling",
+      "status": "PASS",
+      "evidence": "Existing local credential references are read into process memory/environment. No new token, cookie, password, derived env or external credential file is written by these sources. Auth clients disable persistent sessions. Private restore checkpoints contain only allowlisted synthetic state and hashes."
+    },
+    {
+      "id": "test-isolation",
+      "status": "PASS",
+      "evidence": "Exact clone database, two existing synthetic identities, source-copy manifest, fixed loopback fetch origins, disabled signup and explicit root-release gates. No browser, external messaging, production connector or external provider is launched."
+    },
+    {
+      "id": "transport-and-errors",
+      "status": "PASS",
+      "evidence": "Gateway/provider journals record categories/status only. Bodies, headers, credentials and raw stdout/stderr are not persisted or printed by the launchers. Worker diagnostics use allowlisted names/counts/IDs/hashes and console strings remain in RAM."
+    },
+    {
+      "id": "bot-capture",
+      "status": "PASS",
+      "evidence": "Bot console capture uses formatWithOptions with hidden properties and unlimited depth/length, with Error message/stack/cause positive calibration before Auth/SQL. Generated bot token and newly issued sessions are selected RAM needles. This is source inspection; observed counts require the run."
+    },
+    {
+      "id": "nominal-capture-limit",
+      "status": "PASS_WITH_LIMIT",
+      "evidence": "Nominal console capture uses the robust formatter and selected RAM needles, but it has no own canary calibration. No calibration from another worker/process is attributed to this phase."
+    },
+    {
+      "id": "checkpoint-and-ownership",
+      "status": "PASS",
+      "evidence": "Before mutations, workers checkpoint allowlisted plan fields and new fixture UUIDs/constraint identities. Nominal now checkpoints all four fields it later restores, including the prior resource reference or explicit null. Launcher owner/process journals precede waiting. Timeout cannot imply successful JavaScript finally or clean SQL; root owns exceptional recovery."
+    },
+    {
+      "id": "retention-and-stop-guards",
+      "status": "PASS",
+      "evidence": "Retainer requires explicit root release after workers and zero Auth sessions/refresh grants, verifies exact owned actor identity/cwd/listener before signals, retains a new private Fc archive, preserves prior archives and original fingerprints, and uses official PROOF stop. TOC/decode is scoped as retention, not a new restoration or Storage-object proof."
+    }
+  ],
+  "resolvedMaterialReviewFindings": [
+    "Nominal timeout handling lacked a durable worker-owner journal and mutation recovery identifiers. Frozen sources now record owner PID/PGID and allowlisted checkpoints/fixture identities before writes, classify timeout as blocked and assign exceptional cleanup to root.",
+    "Nominal modifies four plan fields but the first checkpoint retained three. The final reviewed worker retains the fourth synthetic payment resource reference or null as an allowlisted restore field, without copying a profile row or Auth credentials."
+  ],
+  "blockingFindings": [],
+  "limits": [
+    "Reviewer did not start native services, workers, Auth sessions, SQL, scanners, browsers or external providers.",
+    "Static review does not prove a worker ran, cleanup succeeded, private-value hit counts were zero or no service remains active.",
+    "Telegram, Gemini and media are explicit doubles; payment/quotes are local HTTP doubles. External provider acceptance is outside this supplement.",
+    "Timeout tests retain an acknowledgement at an in-process/doubled transport boundary after a real SQL oracle; they do not prove physical network outage.",
+    "Concurrent replay waves begin after the first committed result; no ten-first-commit contention claim is made.",
+    "Bot restart scope is a new worker process over the same persistent database and event identities; PostgreSQL/hardware restart is not claimed.",
+    "A reserved AI request after provider failure is not released artificially; money remains readable/exportable and automatic acknowledgement recovery is not claimed.",
+    "Any actual pre-run resource reference must remain in its private checkpoint. This public review records source behavior and hashes, not that reference value."
+  ],
+  "newReviewerWrites": [
+    "independent-source-guard-review.json"
+  ],
+  "privateValuesPublished": false,
+  "newRuntimeOperationsByReviewer": false
+}

@@ -1,0 +1,2019 @@
+{
+  "status": "FAIL",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "sourceCopyRoot": "/tmp/zarix-cnf11-extension-app-27e6af51-dcbd-4498-99ef-aec049bb9cc0",
+  "commandScope": "real imported handlers in process; real local Auth, REST and PostgreSQL",
+  "protocols": [
+    {
+      "id": "manual-expense-1500",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Upstream handler returned expected status before retention",
+          "passed": true
+        },
+        {
+          "name": "Exactly one expense1500, one receipt and balance8500",
+          "passed": true
+        },
+        {
+          "name": "Consumer observed a native DOMException TimeoutError",
+          "passed": true
+        },
+        {
+          "name": "Deadline was armed only after the committed-state SQL oracle",
+          "passed": true
+        },
+        {
+          "name": "Native abort signal supplied the rejected timeout reason",
+          "passed": true
+        },
+        {
+          "name": "Measured native deadline elapsed after SQL confirmation",
+          "passed": true
+        },
+        {
+          "name": "Retained initial response was never forwarded to consumer",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Ten replay calls reached the common start barrier",
+          "passed": true
+        },
+        {
+          "name": "Replay handler calls actually overlapped in process",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Exactly one expense1500, one receipt and balance8500",
+          "passed": true
+        },
+        {
+          "name": "Durable expense receipt points to returned transaction",
+          "passed": true
+        }
+      ],
+      "details": {
+        "acknowledgement": {
+          "scope": "in-process-handler-consumer-boundary",
+          "stage": "mutation-committed",
+          "responseForwardedToConsumer": false,
+          "commitOracleConfirmed": true,
+          "adapterStartedAtMs": 2320.250833,
+          "handlerResolvedAtMs": 2379.928375,
+          "upstreamStatus": 201,
+          "sqlOracleConfirmedAtMs": 2457.57625,
+          "deadlineMs": 40,
+          "timeoutStartedAtMs": 2457.580791,
+          "timeoutFiredAtMs": 2500.225833,
+          "elapsedAfterOracleMs": 42.64958299999989,
+          "timeoutName": "TimeoutError",
+          "nativeDomException": true,
+          "nativeSignalAborted": true,
+          "rejectedWithSignalReason": true
+        },
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentStartedAfterTimeout": true,
+        "concurrentStartBarrierArrivals": 10,
+        "peakInFlightHandlerCalls": 10,
+        "concurrentTiming": [
+          {
+            "index": 0,
+            "startedAtMs": 3257.135833,
+            "finishedAtMs": 3342.99825
+          },
+          {
+            "index": 1,
+            "startedAtMs": 3257.565125,
+            "finishedAtMs": 3354.782291
+          },
+          {
+            "index": 2,
+            "startedAtMs": 3257.711333,
+            "finishedAtMs": 3319.261958
+          },
+          {
+            "index": 3,
+            "startedAtMs": 3257.879208,
+            "finishedAtMs": 3331.528333
+          },
+          {
+            "index": 4,
+            "startedAtMs": 3257.992458,
+            "finishedAtMs": 3327.6235
+          },
+          {
+            "index": 5,
+            "startedAtMs": 3258.084791,
+            "finishedAtMs": 3339.03375
+          },
+          {
+            "index": 6,
+            "startedAtMs": 3258.401125,
+            "finishedAtMs": 3323.011916
+          },
+          {
+            "index": 7,
+            "startedAtMs": 3258.530958,
+            "finishedAtMs": 3350.844541
+          },
+          {
+            "index": 8,
+            "startedAtMs": 3258.616375,
+            "finishedAtMs": 3334.971291
+          },
+          {
+            "index": 9,
+            "startedAtMs": 3258.689333,
+            "finishedAtMs": 3346.861333
+          }
+        ],
+        "stateAfterCommitSha256": "0fe9de1c68166dcd2a8e6c88b10fd8c8c0d6edbac75d7bf0acbf590f40527fdb",
+        "stateAfterReplaysSha256": "0fe9de1c68166dcd2a8e6c88b10fd8c8c0d6edbac75d7bf0acbf590f40527fdb",
+        "outcomes": [
+          {
+            "phase": "initial",
+            "consumerOutcome": "TimeoutError",
+            "upstreamStatus": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 201
+          }
+        ],
+        "initialBodyParsedOrDiscardedByConsumer": false,
+        "physicalNetworkFailure": false,
+        "firstCommitConcurrencyTested": false,
+        "sameReplyRequired": true,
+        "stateTransition": "COMMITTED",
+        "oracle": {
+          "expenseRows": 1,
+          "amount": 1500,
+          "receiptRows": 1,
+          "balance": 8500
+        },
+        "fixtures": {
+          "accountId": "a73d5512-01f3-45e3-89d4-4499687d7cde",
+          "requestId": "18723375-0263-426b-bb58-0c2236bc6e63"
+        }
+      }
+    },
+    {
+      "id": "transfer-1500",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Upstream handler returned expected status before retention",
+          "passed": true
+        },
+        {
+          "name": "One transfer, receipt and exact debit/credit totals",
+          "passed": true
+        },
+        {
+          "name": "Consumer observed a native DOMException TimeoutError",
+          "passed": true
+        },
+        {
+          "name": "Deadline was armed only after the committed-state SQL oracle",
+          "passed": true
+        },
+        {
+          "name": "Native abort signal supplied the rejected timeout reason",
+          "passed": true
+        },
+        {
+          "name": "Measured native deadline elapsed after SQL confirmation",
+          "passed": true
+        },
+        {
+          "name": "Retained initial response was never forwarded to consumer",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Ten replay calls reached the common start barrier",
+          "passed": true
+        },
+        {
+          "name": "Replay handler calls actually overlapped in process",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "One transfer, receipt and exact debit/credit totals",
+          "passed": true
+        }
+      ],
+      "details": {
+        "acknowledgement": {
+          "scope": "in-process-handler-consumer-boundary",
+          "stage": "mutation-committed",
+          "responseForwardedToConsumer": false,
+          "commitOracleConfirmed": true,
+          "adapterStartedAtMs": 3996.127583,
+          "handlerResolvedAtMs": 4051.143125,
+          "upstreamStatus": 201,
+          "sqlOracleConfirmedAtMs": 4129.7585,
+          "deadlineMs": 40,
+          "timeoutStartedAtMs": 4129.759458,
+          "timeoutFiredAtMs": 4171.981291,
+          "elapsedAfterOracleMs": 42.22279100000014,
+          "timeoutName": "TimeoutError",
+          "nativeDomException": true,
+          "nativeSignalAborted": true,
+          "rejectedWithSignalReason": true
+        },
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentStartedAfterTimeout": true,
+        "concurrentStartBarrierArrivals": 10,
+        "peakInFlightHandlerCalls": 10,
+        "concurrentTiming": [
+          {
+            "index": 0,
+            "startedAtMs": 4916.528375,
+            "finishedAtMs": 4991.697583
+          },
+          {
+            "index": 1,
+            "startedAtMs": 4916.830083,
+            "finishedAtMs": 4987.670625
+          },
+          {
+            "index": 2,
+            "startedAtMs": 4916.936625,
+            "finishedAtMs": 4975.834666
+          },
+          {
+            "index": 3,
+            "startedAtMs": 4917.01775,
+            "finishedAtMs": 5009.742416
+          },
+          {
+            "index": 4,
+            "startedAtMs": 4917.086041,
+            "finishedAtMs": 5003.612791
+          },
+          {
+            "index": 5,
+            "startedAtMs": 4917.1475,
+            "finishedAtMs": 5017.724666
+          },
+          {
+            "index": 6,
+            "startedAtMs": 4917.207958,
+            "finishedAtMs": 4979.628083
+          },
+          {
+            "index": 7,
+            "startedAtMs": 4917.266875,
+            "finishedAtMs": 4983.748916
+          },
+          {
+            "index": 8,
+            "startedAtMs": 4917.324958,
+            "finishedAtMs": 4995.652416
+          },
+          {
+            "index": 9,
+            "startedAtMs": 4917.381166,
+            "finishedAtMs": 4999.83775
+          }
+        ],
+        "stateAfterCommitSha256": "1441d905690b7c96126ab8503a532f7b0becf57ff7ba7daaa6d73fb802d418c4",
+        "stateAfterReplaysSha256": "1441d905690b7c96126ab8503a532f7b0becf57ff7ba7daaa6d73fb802d418c4",
+        "outcomes": [
+          {
+            "phase": "initial",
+            "consumerOutcome": "TimeoutError",
+            "upstreamStatus": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 201
+          }
+        ],
+        "initialBodyParsedOrDiscardedByConsumer": false,
+        "physicalNetworkFailure": false,
+        "firstCommitConcurrencyTested": false,
+        "sameReplyRequired": true,
+        "stateTransition": "COMMITTED",
+        "oracle": {
+          "transferRows": 1,
+          "receiptRows": 1,
+          "source": 8500,
+          "destination": 3500,
+          "total": 12000
+        },
+        "fixtures": {
+          "sourceAccountId": "7f767b9e-a696-4550-b9eb-4b5089c1549b",
+          "destinationAccountId": "ee00c47d-3489-4add-b33f-fdde0c566e38",
+          "requestId": "729cc1b8-0b95-4e14-8e23-150f46bdf2e2"
+        },
+        "rollbackEditDeleteComposition": "prior-focal-transfer-1500"
+      }
+    },
+    {
+      "id": "import-200-plus-300",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Upstream handler returned expected status before retention",
+          "passed": true
+        },
+        {
+          "name": "Two expenses500, one batch, two row receipts and balance9500",
+          "passed": true
+        },
+        {
+          "name": "Consumer observed a native DOMException TimeoutError",
+          "passed": true
+        },
+        {
+          "name": "Deadline was armed only after the committed-state SQL oracle",
+          "passed": true
+        },
+        {
+          "name": "Native abort signal supplied the rejected timeout reason",
+          "passed": true
+        },
+        {
+          "name": "Measured native deadline elapsed after SQL confirmation",
+          "passed": true
+        },
+        {
+          "name": "Retained initial response was never forwarded to consumer",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Ten replay calls reached the common start barrier",
+          "passed": true
+        },
+        {
+          "name": "Replay handler calls actually overlapped in process",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Two expenses500, one batch, two row receipts and balance9500",
+          "passed": true
+        },
+        {
+          "name": "Import reports two imported rows and zero skipped or pending",
+          "passed": true
+        }
+      ],
+      "details": {
+        "acknowledgement": {
+          "scope": "in-process-handler-consumer-boundary",
+          "stage": "mutation-committed",
+          "responseForwardedToConsumer": false,
+          "commitOracleConfirmed": true,
+          "adapterStartedAtMs": 5576.000333,
+          "handlerResolvedAtMs": 5654.905625,
+          "upstreamStatus": 200,
+          "sqlOracleConfirmedAtMs": 5736.264583,
+          "deadlineMs": 40,
+          "timeoutStartedAtMs": 5736.265541,
+          "timeoutFiredAtMs": 5777.536541,
+          "elapsedAfterOracleMs": 41.27195800000027,
+          "timeoutName": "TimeoutError",
+          "nativeDomException": true,
+          "nativeSignalAborted": true,
+          "rejectedWithSignalReason": true
+        },
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentStartedAfterTimeout": true,
+        "concurrentStartBarrierArrivals": 10,
+        "peakInFlightHandlerCalls": 10,
+        "concurrentTiming": [
+          {
+            "index": 0,
+            "startedAtMs": 6563.107583,
+            "finishedAtMs": 6769.842416
+          },
+          {
+            "index": 1,
+            "startedAtMs": 6563.335,
+            "finishedAtMs": 6757.989208
+          },
+          {
+            "index": 2,
+            "startedAtMs": 6563.404666,
+            "finishedAtMs": 6778.358375
+          },
+          {
+            "index": 3,
+            "startedAtMs": 6563.451833,
+            "finishedAtMs": 6782.1035
+          },
+          {
+            "index": 4,
+            "startedAtMs": 6563.493791,
+            "finishedAtMs": 6773.887625
+          },
+          {
+            "index": 5,
+            "startedAtMs": 6563.529791,
+            "finishedAtMs": 6765.872166
+          },
+          {
+            "index": 6,
+            "startedAtMs": 6563.633833,
+            "finishedAtMs": 6761.879041
+          },
+          {
+            "index": 7,
+            "startedAtMs": 6563.734041,
+            "finishedAtMs": 6750.113916
+          },
+          {
+            "index": 8,
+            "startedAtMs": 6563.773708,
+            "finishedAtMs": 6785.860416
+          },
+          {
+            "index": 9,
+            "startedAtMs": 6563.813958,
+            "finishedAtMs": 6754.814791
+          }
+        ],
+        "stateAfterCommitSha256": "876949e2de26f1051278027d93c0a65b6206680f03608abad60f4eb6be0fb681",
+        "stateAfterReplaysSha256": "876949e2de26f1051278027d93c0a65b6206680f03608abad60f4eb6be0fb681",
+        "outcomes": [
+          {
+            "phase": "initial",
+            "consumerOutcome": "TimeoutError",
+            "upstreamStatus": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 200
+          }
+        ],
+        "initialBodyParsedOrDiscardedByConsumer": false,
+        "physicalNetworkFailure": false,
+        "firstCommitConcurrencyTested": false,
+        "sameReplyRequired": true,
+        "stateTransition": "COMMITTED",
+        "oracle": {
+          "expenseRows": 2,
+          "amount": 500,
+          "balance": 9500,
+          "batchRows": 1,
+          "perRowReceipts": 2
+        },
+        "fixtures": {
+          "accountId": "5e8c7844-9812-4954-b1a3-b82c4c342987",
+          "batchId": "656c9911-7e7d-4f4b-b330-87c91ee22d5a",
+          "csvSha256": "bf7f78a5b1d503ab29987366c20238d575cdff89b041f4b62f94e7ee24f153b6"
+        }
+      }
+    },
+    {
+      "id": "cron-400",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "No previous recurring fixture can be expired or executed by this job",
+          "passed": true
+        },
+        {
+          "name": "Upstream handler returned expected status before retention",
+          "passed": true
+        },
+        {
+          "name": "One occurrence400, receipt, durable undelivered outbox and balance9600",
+          "passed": true
+        },
+        {
+          "name": "Consumer observed a native DOMException TimeoutError",
+          "passed": true
+        },
+        {
+          "name": "Deadline was armed only after the committed-state SQL oracle",
+          "passed": true
+        },
+        {
+          "name": "Native abort signal supplied the rejected timeout reason",
+          "passed": true
+        },
+        {
+          "name": "Measured native deadline elapsed after SQL confirmation",
+          "passed": true
+        },
+        {
+          "name": "Retained initial response was never forwarded to consumer",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Ten replay calls reached the common start barrier",
+          "passed": true
+        },
+        {
+          "name": "Replay handler calls actually overlapped in process",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "One occurrence400, receipt, durable undelivered outbox and balance9600",
+          "passed": true
+        }
+      ],
+      "details": {
+        "acknowledgement": {
+          "scope": "in-process-handler-consumer-boundary",
+          "stage": "mutation-committed",
+          "responseForwardedToConsumer": false,
+          "commitOracleConfirmed": true,
+          "adapterStartedAtMs": 7427.460458,
+          "handlerResolvedAtMs": 7466.456208,
+          "upstreamStatus": 200,
+          "sqlOracleConfirmedAtMs": 7546.026625,
+          "deadlineMs": 40,
+          "timeoutStartedAtMs": 7546.027583,
+          "timeoutFiredAtMs": 7588.17275,
+          "elapsedAfterOracleMs": 42.1461249999993,
+          "timeoutName": "TimeoutError",
+          "nativeDomException": true,
+          "nativeSignalAborted": true,
+          "rejectedWithSignalReason": true
+        },
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentStartedAfterTimeout": true,
+        "concurrentStartBarrierArrivals": 10,
+        "peakInFlightHandlerCalls": 10,
+        "concurrentTiming": [
+          {
+            "index": 0,
+            "startedAtMs": 8336.330791,
+            "finishedAtMs": 8392.4305
+          },
+          {
+            "index": 1,
+            "startedAtMs": 8336.690375,
+            "finishedAtMs": 8396.443916
+          },
+          {
+            "index": 2,
+            "startedAtMs": 8336.815,
+            "finishedAtMs": 8388.686
+          },
+          {
+            "index": 3,
+            "startedAtMs": 8336.912958,
+            "finishedAtMs": 8404.421
+          },
+          {
+            "index": 4,
+            "startedAtMs": 8336.99375,
+            "finishedAtMs": 8408.682083
+          },
+          {
+            "index": 5,
+            "startedAtMs": 8337.065291,
+            "finishedAtMs": 8400.393791
+          },
+          {
+            "index": 6,
+            "startedAtMs": 8337.148166,
+            "finishedAtMs": 8420.54025
+          },
+          {
+            "index": 7,
+            "startedAtMs": 8337.227208,
+            "finishedAtMs": 8412.61425
+          },
+          {
+            "index": 8,
+            "startedAtMs": 8337.296375,
+            "finishedAtMs": 8416.66525
+          },
+          {
+            "index": 9,
+            "startedAtMs": 8337.360125,
+            "finishedAtMs": 8424.434958
+          }
+        ],
+        "stateAfterCommitSha256": "35ba6d917e861c06084018b588b4dff46c7ddaea5b576a9336f18a108374a4cb",
+        "stateAfterReplaysSha256": "35ba6d917e861c06084018b588b4dff46c7ddaea5b576a9336f18a108374a4cb",
+        "outcomes": [
+          {
+            "phase": "initial",
+            "consumerOutcome": "TimeoutError",
+            "upstreamStatus": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 200
+          }
+        ],
+        "initialBodyParsedOrDiscardedByConsumer": false,
+        "physicalNetworkFailure": false,
+        "firstCommitConcurrencyTested": false,
+        "sameReplyRequired": false,
+        "stateTransition": "COMMITTED",
+        "oracle": {
+          "occurrenceRows": 1,
+          "amount": 400,
+          "balance": 9600,
+          "receiptRows": 1,
+          "outboxRows": 1,
+          "outboxAttempts": 0
+        },
+        "fixtures": {
+          "accountId": "bda4597d-ea2f-404b-abbd-d6d1dffa3ed7",
+          "ruleId": "fc93e3d6-4c69-42ec-90cf-08cd460c3730",
+          "occurrenceId": "recurring:fc93e3d6-4c69-42ec-90cf-08cd460c3730:2026-10-15"
+        },
+        "outboxDeliveryInvoked": false,
+        "chatMappingCreated": false
+      }
+    },
+    {
+      "id": "investment-sale-4x120-from10x100",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Upstream handler returned expected status before retention",
+          "passed": true
+        },
+        {
+          "name": "One sale4, realizedUSD80, quantity6, one receipt and no invented cash credit",
+          "passed": true
+        },
+        {
+          "name": "Consumer observed a native DOMException TimeoutError",
+          "passed": true
+        },
+        {
+          "name": "Deadline was armed only after the committed-state SQL oracle",
+          "passed": true
+        },
+        {
+          "name": "Native abort signal supplied the rejected timeout reason",
+          "passed": true
+        },
+        {
+          "name": "Measured native deadline elapsed after SQL confirmation",
+          "passed": true
+        },
+        {
+          "name": "Retained initial response was never forwarded to consumer",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Ten replay calls reached the common start barrier",
+          "passed": true
+        },
+        {
+          "name": "Replay handler calls actually overlapped in process",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "One sale4, realizedUSD80, quantity6, one receipt and no invented cash credit",
+          "passed": true
+        }
+      ],
+      "details": {
+        "acknowledgement": {
+          "scope": "in-process-handler-consumer-boundary",
+          "stage": "mutation-committed",
+          "responseForwardedToConsumer": false,
+          "commitOracleConfirmed": true,
+          "adapterStartedAtMs": 8990.220916,
+          "handlerResolvedAtMs": 9057.423666,
+          "upstreamStatus": 201,
+          "sqlOracleConfirmedAtMs": 9136.355958,
+          "deadlineMs": 40,
+          "timeoutStartedAtMs": 9136.35725,
+          "timeoutFiredAtMs": 9177.589166,
+          "elapsedAfterOracleMs": 41.23320799999965,
+          "timeoutName": "TimeoutError",
+          "nativeDomException": true,
+          "nativeSignalAborted": true,
+          "rejectedWithSignalReason": true
+        },
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentStartedAfterTimeout": true,
+        "concurrentStartBarrierArrivals": 10,
+        "peakInFlightHandlerCalls": 10,
+        "concurrentTiming": [
+          {
+            "index": 0,
+            "startedAtMs": 9928.14875,
+            "finishedAtMs": 10012.417541
+          },
+          {
+            "index": 1,
+            "startedAtMs": 9928.417958,
+            "finishedAtMs": 10007.946416
+          },
+          {
+            "index": 2,
+            "startedAtMs": 9928.513083,
+            "finishedAtMs": 9991.951916
+          },
+          {
+            "index": 3,
+            "startedAtMs": 9928.584458,
+            "finishedAtMs": 9988.12125
+          },
+          {
+            "index": 4,
+            "startedAtMs": 9928.648583,
+            "finishedAtMs": 10016.879291
+          },
+          {
+            "index": 5,
+            "startedAtMs": 9928.70975,
+            "finishedAtMs": 10003.975041
+          },
+          {
+            "index": 6,
+            "startedAtMs": 9928.764583,
+            "finishedAtMs": 10024.929666
+          },
+          {
+            "index": 7,
+            "startedAtMs": 9928.824583,
+            "finishedAtMs": 9999.861291
+          },
+          {
+            "index": 8,
+            "startedAtMs": 9928.902708,
+            "finishedAtMs": 10020.973791
+          },
+          {
+            "index": 9,
+            "startedAtMs": 9928.9565,
+            "finishedAtMs": 9995.9665
+          }
+        ],
+        "stateAfterCommitSha256": "227f3f735c4be37d2c6353341c7dfff702b72ca77383c3b93a2cee624f308ae2",
+        "stateAfterReplaysSha256": "227f3f735c4be37d2c6353341c7dfff702b72ca77383c3b93a2cee624f308ae2",
+        "outcomes": [
+          {
+            "phase": "initial",
+            "consumerOutcome": "TimeoutError",
+            "upstreamStatus": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 201
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 201
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 201
+          }
+        ],
+        "initialBodyParsedOrDiscardedByConsumer": false,
+        "physicalNetworkFailure": false,
+        "firstCommitConcurrencyTested": false,
+        "sameReplyRequired": true,
+        "stateTransition": "COMMITTED",
+        "oracle": {
+          "saleRows": 1,
+          "sold": 4,
+          "realizedUSD": 80,
+          "remainingQuantity": 6,
+          "receiptRows": 1,
+          "cashBalance": 0
+        },
+        "fixtures": {
+          "accountId": "0aaf98b4-47e8-45f5-b0e4-ac9201ff1d5e",
+          "positionId": "235d5692-57cf-4711-afb0-9fb001f00dd3",
+          "requestId": "ac376590-213c-4b40-a2dd-f1fbd42ee353"
+        },
+        "oversellComposition": "prior-focal-investment-sale-4x120-from10x100"
+      }
+    },
+    {
+      "id": "payment-authorized-same-active-fixed-period-noop",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Upstream handler returned expected status before retention",
+          "passed": true
+        },
+        {
+          "name": "Authorized nominal preapproval is a complete profile NOOP",
+          "passed": true
+        },
+        {
+          "name": "Authorized preapproval creates no financial row, receipt or outbox",
+          "passed": true
+        },
+        {
+          "name": "Preexisting paid period remains fixed without renewal",
+          "passed": true
+        },
+        {
+          "name": "Consumer observed a native DOMException TimeoutError",
+          "passed": true
+        },
+        {
+          "name": "Deadline was armed only after the committed-state SQL oracle",
+          "passed": true
+        },
+        {
+          "name": "Native abort signal supplied the rejected timeout reason",
+          "passed": true
+        },
+        {
+          "name": "Measured native deadline elapsed after SQL confirmation",
+          "passed": true
+        },
+        {
+          "name": "Retained initial response was never forwarded to consumer",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Sequential replay left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Ten replay calls reached the common start barrier",
+          "passed": true
+        },
+        {
+          "name": "Replay handler calls actually overlapped in process",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned expected status",
+          "passed": true
+        },
+        {
+          "name": "Concurrent replay returned the durable original",
+          "passed": true
+        },
+        {
+          "name": "Ten concurrent replays left committed state unchanged",
+          "passed": true
+        },
+        {
+          "name": "Authorized nominal preapproval is a complete profile NOOP",
+          "passed": true
+        },
+        {
+          "name": "Authorized preapproval creates no financial row, receipt or outbox",
+          "passed": true
+        },
+        {
+          "name": "Preexisting paid period remains fixed without renewal",
+          "passed": true
+        }
+      ],
+      "details": {
+        "acknowledgement": {
+          "scope": "in-process-handler-consumer-boundary",
+          "stage": "no-op-confirmed",
+          "responseForwardedToConsumer": false,
+          "commitOracleConfirmed": true,
+          "adapterStartedAtMs": 11530.959791,
+          "handlerResolvedAtMs": 11550.55925,
+          "upstreamStatus": 200,
+          "sqlOracleConfirmedAtMs": 12740.3925,
+          "deadlineMs": 40,
+          "timeoutStartedAtMs": 12740.394125,
+          "timeoutFiredAtMs": 12781.672708,
+          "elapsedAfterOracleMs": 41.28020800000013,
+          "timeoutName": "TimeoutError",
+          "nativeDomException": true,
+          "nativeSignalAborted": true,
+          "rejectedWithSignalReason": true
+        },
+        "invocations": 13,
+        "sequentialReplays": 2,
+        "concurrentReplays": 10,
+        "concurrentStartedAfterTimeout": true,
+        "concurrentStartBarrierArrivals": 10,
+        "peakInFlightHandlerCalls": 10,
+        "concurrentTiming": [
+          {
+            "index": 0,
+            "startedAtMs": 15705.56325,
+            "finishedAtMs": 15764.669958
+          },
+          {
+            "index": 1,
+            "startedAtMs": 15705.845375,
+            "finishedAtMs": 15772.7635
+          },
+          {
+            "index": 2,
+            "startedAtMs": 15706.013375,
+            "finishedAtMs": 15788.692708
+          },
+          {
+            "index": 3,
+            "startedAtMs": 15706.08475,
+            "finishedAtMs": 15780.690791
+          },
+          {
+            "index": 4,
+            "startedAtMs": 15706.136583,
+            "finishedAtMs": 15804.718208
+          },
+          {
+            "index": 5,
+            "startedAtMs": 15706.196666,
+            "finishedAtMs": 15796.6995
+          },
+          {
+            "index": 6,
+            "startedAtMs": 15706.310125,
+            "finishedAtMs": 15832.577708
+          },
+          {
+            "index": 7,
+            "startedAtMs": 15706.36575,
+            "finishedAtMs": 15828.724291
+          },
+          {
+            "index": 8,
+            "startedAtMs": 15706.4065,
+            "finishedAtMs": 15820.614666
+          },
+          {
+            "index": 9,
+            "startedAtMs": 15706.444291,
+            "finishedAtMs": 15812.608
+          }
+        ],
+        "stateAfterCommitSha256": "3d5ded429b09685e8774539dfcb1e983a2cb916742e765cf645e4549c176bdf8",
+        "stateAfterReplaysSha256": "3d5ded429b09685e8774539dfcb1e983a2cb916742e765cf645e4549c176bdf8",
+        "outcomes": [
+          {
+            "phase": "initial",
+            "consumerOutcome": "TimeoutError",
+            "upstreamStatus": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 1,
+            "status": 200
+          },
+          {
+            "phase": "sequential-replay",
+            "index": 2,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 0,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 1,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 2,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 3,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 4,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 5,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 6,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 7,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 8,
+            "status": 200
+          },
+          {
+            "phase": "concurrent-replay",
+            "index": 9,
+            "status": 200
+          }
+        ],
+        "initialBodyParsedOrDiscardedByConsumer": false,
+        "physicalNetworkFailure": false,
+        "firstCommitConcurrencyTested": false,
+        "sameReplyRequired": true,
+        "stateTransition": "NOOP",
+        "oracle": {
+          "stateTransition": "NOOP",
+          "status": "ACTIVE",
+          "existingPeriod": "2026-11-06T12:00:00+00:00",
+          "providerNextPaymentDate": "2026-11-06T12:00:00.000Z",
+          "renewedPeriod": false,
+          "durableReceiptPolicy": "no-mutation-no-receipt",
+          "externalProviderAcceptanceProved": false
+        },
+        "fixtures": {
+          "resourceId": "zarix-cnf11-extension-nominal",
+          "requestId": "62ffddf9-a27e-4ecd-9f64-5ffe471070aa"
+        }
+      }
+    }
+  ],
+  "paymentRollback": [
+    {
+      "id": "payment-valid-signed-cancelled-state-write-fails",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Valid provider lookup reaches SQL update and returns500",
+          "passed": true
+        },
+        {
+          "name": "All profile fields including updated_at survive SQL rollback exactly",
+          "passed": true
+        },
+        {
+          "name": "Payment SQL failure changes no ledger, receipt, outbox or history",
+          "passed": true
+        },
+        {
+          "name": "Valid synthetic HTTP provider lookup completed successfully",
+          "passed": true
+        },
+        {
+          "name": "Actual database persist step records a consistency error",
+          "passed": true
+        }
+      ],
+      "details": {
+        "oracle": {
+          "status": 500,
+          "fullProfileIncludingUpdatedAtUnchanged": true,
+          "financesUnchanged": true,
+          "fixtureScopedCheck": true,
+          "triggersDisabled": false,
+          "validSyntheticProviderHttp": true,
+          "externalProviderAcceptanceProved": false
+        }
+      }
+    }
+  ],
+  "checks": 217,
+  "channelCalls": {
+    "transaction": 13,
+    "transfer": 13,
+    "import": 13,
+    "cron": 13,
+    "sale": 13,
+    "payment": 13,
+    "paymentRollback": 1
+  },
+  "totalHandlerInvocations": 79,
+  "normalAuthIdentitiesReused": 2,
+  "cleanup": {
+    "planFieldsRestoredExactly": true,
+    "allOtherProfileColumnsCompared": true,
+    "nonPlanColumnsChanged": [
+      "updated_at"
+    ],
+    "onlyAutomaticUpdatedAtDelta": true,
+    "otherUserProfileUnchanged": true,
+    "originalFinancialRowsUnchanged": true,
+    "historyUnchanged": true,
+    "preferencesUnchanged": true,
+    "newAccountsArchived": false,
+    "newRecurringRulesDisabled": false,
+    "sqlConstraintRemoved": true,
+    "authSessions": 0,
+    "authRefreshTokens": 0,
+    "sdkLogoutResults": [
+      {
+        "noError": true,
+        "errorStatus": null
+      },
+      {
+        "noError": true,
+        "errorStatus": null
+      }
+    ]
+  },
+  "privacy": {
+    "capture": "node:util.formatWithOptions",
+    "consoleMethods": [
+      "assert",
+      "clear",
+      "count",
+      "countReset",
+      "debug",
+      "dir",
+      "dirxml",
+      "error",
+      "group",
+      "groupCollapsed",
+      "groupEnd",
+      "info",
+      "log",
+      "table",
+      "time",
+      "timeEnd",
+      "timeLog",
+      "trace",
+      "warn"
+    ],
+    "callsCaptured": 302,
+    "privateNeedles": 14,
+    "secretOrSessionHitCount": 0,
+    "rawConsolePersisted": false,
+    "options": {
+      "showHidden": true,
+      "depth": null,
+      "maxStringLength": "Infinity",
+      "maxArrayLength": "Infinity",
+      "customInspect": false
+    },
+    "scope": "all captured public-console arguments with the specified formatter; no universal serialization claim"
+  },
+  "outerFailure": false,
+  "syntheticHttpProvider": true,
+  "externalProviderAcceptanceProved": false,
+  "physicalNetworkLossProved": false,
+  "browserOrUiUsed": false,
+  "firstCommitConcurrencyProved": false,
+  "newPersistentAccessCreated": false,
+  "fixtureFinancialHistoryRetained": true,
+  "fixtures": {
+    "accounts": [
+      "a73d5512-01f3-45e3-89d4-4499687d7cde",
+      "7f767b9e-a696-4550-b9eb-4b5089c1549b",
+      "ee00c47d-3489-4add-b33f-fdde0c566e38",
+      "5e8c7844-9812-4954-b1a3-b82c4c342987",
+      "bda4597d-ea2f-404b-abbd-d6d1dffa3ed7",
+      "0aaf98b4-47e8-45f5-b0e4-ac9201ff1d5e"
+    ],
+    "rules": [
+      "fc93e3d6-4c69-42ec-90cf-08cd460c3730"
+    ],
+    "positions": [
+      "235d5692-57cf-4711-afb0-9fb001f00dd3"
+    ]
+  }
+}

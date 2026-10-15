@@ -1,0 +1,31 @@
+{
+  "launcherPid": 9663,
+  "workerPid": 9671,
+  "workerIdentity": "9671  9663 Thu Oct 15 06:51:33 2026     node",
+  "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/vitest.config.mjs"
+  ],
+  "startedAt": "2026-10-15T09:51:33.238358+00:00",
+  "workerSources": [
+    {
+      "path": "run-bot.py",
+      "sha256": "1f228587979077b29ad2df1738c7a721be4469850fa09502de2ea39448332873"
+    },
+    {
+      "path": "vitest.config.mjs",
+      "sha256": "982498bca94fab1afe5c15dc106c158fb09b03fc6d4d95f6b56944266ff547bc"
+    },
+    {
+      "path": "bot.test-source.ts",
+      "sha256": "f04705ee962e93309bff428967d22ee0abb528d012948dccc14c4e7b0b9bc740"
+    }
+  ],
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "phase": "prepare",
+  "killPolicy": "No generic process killing; retain ownership and coordinate cleanup on timeout"
+}

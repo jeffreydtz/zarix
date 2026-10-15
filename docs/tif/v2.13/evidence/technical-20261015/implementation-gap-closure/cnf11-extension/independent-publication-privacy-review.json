@@ -1,0 +1,252 @@
+{
+  "schema": "zarix.independent-publication-privacy-review.v1",
+  "reviewedAt": "2026-10-15T10:03:56Z",
+  "reviewer": "independent cnf11_privacy agent",
+  "status": "PASS_SCOPED_REVIEW_WITH_RAW_EXACT_FAILURES_PRESERVED",
+  "productSourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "preservedPublicationCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b",
+  "runSourceAndPrivacyReviews": [
+    {
+      "path": "independent-source-guard-review.json",
+      "sha256": "383a1c095066ad3aa03181f43ff7688c97434656f4fae24c20e2ba96a5c1e9b6",
+      "scope": "Initial static freeze, nominal d050; remains immutable."
+    },
+    {
+      "path": "independent-harness-boolean-fix-review.json",
+      "sha256": "f73754e59e4155d7cfe28eb8155ba8bb923e1ba6741ee4f878e705fcb65aee3f",
+      "scope": "Two SELECT parser corrections only; effective nominal b965."
+    },
+    {
+      "path": "independent-postruntime-privacy-review.json",
+      "sha256": "31a88701f8bc56c00a500602c5873e30367b96d2964ec19b7c1968641f6aae09",
+      "scope": "Sanitized run exports, RAM counter scopes, archive hashes/modes and selected process/port closure; publication scans pending in that earlier report."
+    }
+  ],
+  "scannerExecution": {
+    "order": "heuristic first, then exact; both source files are unchanged from the prior reviewed scanners",
+    "heuristic": {
+      "command": "node docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-evidence-post-implementation.mjs evidence-secret-scan-cnf11-extension-20261015-attempt-1.json",
+      "processExitCode": 0,
+      "scannerSha256": "9ccd3e31d34bb68f2555b7d20c8c06438800303079a123a31951110d677b05ae",
+      "reportPath": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/evidence-secret-scan-cnf11-extension-20261015-attempt-1.json",
+      "reportSha256": "bd59ba6e08bd5cd9d951f4d25a2957f1720cd82b7869d2f85ad98cfa7756e034"
+    },
+    "exact": {
+      "command": "DEVELOPER_DIR=/Library/Developer/CommandLineTools node docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/scan-exact-private-values-post-implementation.mjs exact-private-value-scan-cnf11-extension-20261015-attempt-1.json",
+      "processExitCode": 0,
+      "scannerSha256": "952153e603a0755af04a334da9506c0558ad425a46e6d30ebc12113794e9b5f0",
+      "reportPath": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/exact-private-value-scan-cnf11-extension-20261015-attempt-1.json",
+      "reportSha256": "053ebf9fe3141b54a24ba296d361acf2d6836e04962d874031c35195ce0f9db0",
+      "rawReportStatus": "FAIL",
+      "processCompletionIsNotASecretCheckPass": true
+    },
+    "newCredentialOrSessionFilesCreatedByReview": false,
+    "networkOrDatabaseOperationsByScanners": false,
+    "rawValuesValueHashesOrMatchingExcerptsPublished": false
+  },
+  "heuristic": {
+    "roots": [
+      "docs/tif/v2.13/evidence/technical-20261013",
+      "docs/tif/v2.13/evidence/technical-20261014",
+      "docs/tif/v2.13/evidence/technical-20261015",
+      "docs/tif/v2.13/evidence/delta-20261015-cp1-08"
+    ],
+    "utf8Files": 2022,
+    "binaryFilesNotInspected": 128,
+    "reportedCandidates": 2,
+    "sameCandidateSetAndBytesAsPriorReview": true,
+    "reviewedCandidates": [
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/e2e/browser-preflight/arc-launch-permission-preflight.json",
+        "sha256": "4dcd19833618cbe9d84f1ee2574fe82cc886041712a1830dd8a673574dae9b84",
+        "rule": "credential-field",
+        "matchedField": "$.authorization",
+        "valueClassification": "Descriptive user permission and scope metadata in the Arc preflight record",
+        "sameBytesAsPriorAdjudication": true,
+        "decision": "REVIEWED_DESCRIPTIVE_METADATA_FALSE_POSITIVE",
+        "limit": "This field and complete file hash only; no general field exemption."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/environment/e2e-stack-restart.json",
+        "sha256": "8b2267a6d94e77e1ef8d7409924b37f4093fb50005fc8e3d9430e8092969c99b",
+        "rule": "credential-field",
+        "matchedField": "$.authorization",
+        "valueClassification": "Descriptive approved isolated restart and scope metadata",
+        "sameBytesAsPriorAdjudication": true,
+        "decision": "REVIEWED_DESCRIPTIVE_METADATA_FALSE_POSITIVE",
+        "limit": "This field and complete file hash only; no general field exemption."
+      }
+    ],
+    "newCandidatePaths": 0,
+    "boundary": "Every UTF-8 evidence file enumerated under the four named roots at that scan. Includes new CNF11 sources, snapshots and completed semantic documentation then present. Binary/image contents are excluded; there is no visual or semantic binary inspection."
+  },
+  "exact": {
+    "selectedHistoricalPrivateValues": 53,
+    "eligibleRepositoryFiles": 3027,
+    "rawStatusPreserved": "FAIL",
+    "reportedCandidatePaths": 5,
+    "sameCandidateSetAndBytesAsPriorReview": true,
+    "reviewedCandidates": [
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/executed-final/sources/1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362.txt",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback DB fallback in the versioned native-test helper",
+        "byteIdenticalToBaselineGitHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "sameBytesAsPriorAdjudication": true,
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "limit": "This concrete path and hash only. Raw FAIL is preserved; no generic default-value exemption."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/resume/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback DB fallback in the versioned native-test helper",
+        "byteIdenticalToBaselineGitHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "sameBytesAsPriorAdjudication": true,
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "limit": "This concrete path and hash only. Raw FAIL is preserved; no generic default-value exemption."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/attempt-1/sources/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback DB fallback in the versioned native-test helper",
+        "byteIdenticalToBaselineGitHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "sameBytesAsPriorAdjudication": true,
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "limit": "This concrete path and hash only. Raw FAIL is preserved; no generic default-value exemption."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/empty-account-contracts/attempt-2/sources/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback DB fallback in the versioned native-test helper",
+        "byteIdenticalToBaselineGitHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "sameBytesAsPriorAdjudication": true,
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "limit": "This concrete path and hash only. Raw FAIL is preserved; no generic default-value exemption."
+      },
+      {
+        "path": "scripts/lib/test-isolated-native-target.mjs",
+        "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+        "rule": "exact-existing-private-value",
+        "valueClassification": "Existing public loopback DB fallback in the versioned native-test helper",
+        "byteIdenticalToBaselineGitHelper": true,
+        "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+        "sameBytesAsPriorAdjudication": true,
+        "decision": "REVIEWED_FALSE_POSITIVE_FOR_NEW_SECRET_DISCLOSURE",
+        "limit": "This concrete path and hash only. Raw FAIL is preserved; no generic default-value exemption."
+      }
+    ],
+    "baselineGitRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "baselineGitPath": "scripts/lib/test-isolated-native-target.mjs",
+    "baselinePublicBlobSha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+    "allFiveCandidateFilesIndependentlyMatchBaselineBlob": true,
+    "newCandidatePaths": 0,
+    "boundary": "Exact byte comparison of 53 explicitly collected existing historical values against tracked and non-ignored untracked repository files, including eligible binary files. Ignored build assets, external private archives and values kept only in process RAM are outside that enumeration. No universal binary or secret coverage is asserted.",
+    "attributionLimit": "New candidate sets and complete file hashes match the concrete paths adjudicated in the pinned prior publication review. The five exact candidate files also independently match the public Git helper blob. This preserves the raw FAIL and creates no general default-value or field exemption."
+  },
+  "ramControlsAreSeparate": {
+    "nominalAttempt2": {
+      "selectedValues": 14,
+      "reportedSecretOrSessionHits": 0,
+      "capturedConsoleCalls": 302,
+      "ownPositiveCanaryCalibration": false
+    },
+    "botPrepare": {
+      "selectedValues": 13,
+      "reportedSelectedSecretHits": 0,
+      "reportedSyntheticErrorCanaryHits": 0,
+      "capturedConsoleCalls": 16,
+      "errorMessageStackCauseMessageAndCauseStackCalibration": true,
+      "calibrationCallsBeforeClear": 1,
+      "calibrationCallsAfterClear": 0
+    },
+    "botReplay": {
+      "selectedValues": 13,
+      "reportedSelectedSecretHits": 0,
+      "reportedSyntheticErrorCanaryHits": 0,
+      "capturedConsoleCalls": 13,
+      "errorMessageStackCauseMessageAndCauseStackCalibration": true,
+      "calibrationCallsBeforeClear": 1,
+      "calibrationCallsAfterClear": 0
+    },
+    "formatter": "formatWithOptions(showHidden:true,depth:null,maxStringLength:Infinity,maxArrayLength:Infinity,customInspect:false)",
+    "countsAreNotAdditiveCoverage": true,
+    "freshAccessRefreshTokenValuesGeneratedBotTokenAndDerivedPaymentDoubleMaterialAreNotInHistorical53Collector": true,
+    "actualAuthDatabaseRows": "Real isolated Auth session/refresh-grant rows were created by normal login and reported zero after logout; only their values were kept out of newly created credential/session files.",
+    "limit": "The raw console strings were not persisted, so the reviewer verifies source and sanitized result pins and cannot independently replay all console strings. Bot calibration applies only to its own corresponding process."
+  },
+  "preservation": {
+    "priorHeuristicReportSha256": "50b2834054077a0a9cce41cf94e113bcb4ef1b3eb7e471ca7fed3670f49115bb",
+    "priorExactReportSha256": "d824abcea48f956b0da24c150f6009380631b07922559eb914cf964bf8bdbe49",
+    "priorPublicationReviewSha256": "1b569e2b44541c34a3041ff57737f782d2ddcbe10d83dcc9a05ad4c8d3b81116",
+    "allPriorOutputsUnmodified": true,
+    "attempt1AggregateFailPreserved": true,
+    "initialStaticAndPostruntimeReviewsUnmodified": true,
+    "newPrivateAuthArchiveRemainsOutsideGit": "f0c4bdedbc47c0c3e2dcf6468e902849e3821bc3d1489803987d6da285f322ea",
+    "newPrivateArchiveMayContainSensitiveSyntheticAuthData": true
+  },
+  "publicSemanticFilesAtFreeze": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/README.md",
+      "sha256": "4d534df57f1cf8bd987d43b57270763b0bc8fc39d45f02e7c1c7cd71b078ca76"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/case-decision-cnf11.json",
+      "sha256": "c9460f85310172b5420abc354ad8f230b857ed4e937465a3995e8e6c2081f42b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/case-status-cnf11.json",
+      "sha256": "4113e5a066f2801eb81c84db7bb5ba3f1b3bba584b6a5e2e7c3b79c2ef98d665"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/case-traceability-cnf11.csv",
+      "sha256": "5d557b72976b3ac8a9cbf06be592da25916b603fe794fe01121a6426f40e4981"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/reconcile-cnf11.py",
+      "sha256": "95c3b63917c622af880f2c33554fbd8b8a14bc6734fa62e96e4470776416b180"
+    }
+  ],
+  "postScanMetadataBoundary": {
+    "currentReviewCreatedAfterBothEnumerations": true,
+    "heuristicDoesNotIncludeEitherNewScannerOutput": true,
+    "exactIncludesTheNewHeuristicOutputButNotItsOwnOutput": true,
+    "rootAnnouncedFutureMetadataNotClaimedAsInputs": [
+      "Independent matrix peer JSON if written after the scan",
+      "Coordinator final manifest metadata if written after the scan",
+      "Extension final manifest and publication closure metadata",
+      "Future Git commit, CI and PR metadata"
+    ],
+    "futureMetadataNotPreapprovedAsSecretFree": true,
+    "newSemanticOrSensitiveContentRequiresFocusedInspection": true,
+    "noGlobalRescanNeededForUnchangedAlreadyReviewedInputs": true
+  },
+  "newDisclosureObservedInReportedCandidateBytes": false,
+  "remainingPublicationBlockersFromReviewedCandidates": 0,
+  "limits": [
+    "Raw exact FAIL5 remains intact. The reviewed paths and file hashes are the only scope of the contextual adjudication.",
+    "The heuristic excludes 128 binary/image files. Exact eligible-file byte matching is a different, bounded check and does not establish visual or semantic binary privacy.",
+    "The 53 historical private values, 14 nominal RAM values and 13 RAM values per bot phase are separate inventories; their counts cannot be added or substituted.",
+    "No raw values, private-value hashes or matching excerpts are published. Public-file and complete-archive integrity hashes are separate evidence.",
+    "Source snapshots and replay event metadata are public; credential environments, complete profile/checkpoint rows, raw logs and the sensitive synthetic Auth archive remain private.",
+    "This publication review does not run functional, SQL, Auth, browser, real-provider, restoration, availability or load tests.",
+    "No universal absence of secrets or coverage of files created after enumeration is claimed."
+  ],
+  "newReviewerOutputs": [
+    "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/evidence-secret-scan-cnf11-extension-20261015-attempt-1.json",
+    "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/publication/exact-private-value-scan-cnf11-extension-20261015-attempt-1.json",
+    "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-publication-privacy-review.json"
+  ]
+}

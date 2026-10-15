@@ -1,0 +1,161 @@
+{
+  "status": "PASS_FOCAL_SCOPE",
+  "scope": "Six local nominal protocols with native controlled acknowledgement timeout and one valid-signed payment DB rollback; no full CNF11 promotion.",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "productSourceCount": 517,
+  "sourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+  "attempt1AggregateStatus": "FAIL_PRESERVED",
+  "attempt2AggregateStatus": "PASS",
+  "assertionsAttempt2": 217,
+  "handlerInvocationsAttempt2": 79,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "e27f0b6c4ab87d93351fc62f73d7ca976c8d7da7d97df9c5a1cdb5da6af69bac",
+      "bytes": 8260
+    },
+    {
+      "path": "attempt2-process-closure.json",
+      "sha256": "b240b9fb3f789cf82c74c8e8c7bc4906208c34878fa0f1c4655bbb70edc26473",
+      "bytes": 526
+    },
+    {
+      "path": "composition.json",
+      "sha256": "485fe62ef883936653bd332557df5aa032d6341a742a89d1c882c2300b414046",
+      "bytes": 3709
+    },
+    {
+      "path": "executed-attempt-1/execution.json",
+      "sha256": "b721363b2d5fe20ce8fd02427eb2cfbd899e10825bfc20ffe7c8378118618d90",
+      "bytes": 121622
+    },
+    {
+      "path": "executed-attempt-1/export-manifest.json",
+      "sha256": "9ce2402d431a53e2c22ae5e8f7f4346fc61e6476fc1534ba59aef0693bed6dff",
+      "bytes": 1735
+    },
+    {
+      "path": "executed-attempt-1/fixture-identities.jsonl",
+      "sha256": "1ad2336932c26f07263f9e19bb5b4c3b5d0df14741f4e76e48759e7d6497f573",
+      "bytes": 1835
+    },
+    {
+      "path": "executed-attempt-1/nominal-six-and-payment-rollback.json",
+      "sha256": "fd85600e8cd89b594045ae02631a2bfc2ef9fd7cfd5572b09c5d3954c3f0895a",
+      "bytes": 57793
+    },
+    {
+      "path": "executed-attempt-1/process-journal.json",
+      "sha256": "07f8e479e0adc9ff2fba320b99d0096ade8a53cd5a4df70043d2a570b35e1143",
+      "bytes": 444
+    },
+    {
+      "path": "executed-attempt-1/sources/held-acknowledgement.ts",
+      "sha256": "40b69bab37c6ee6f18af683253d506c3a1a502b3ceb7729dc74a684d83a1fd72",
+      "bytes": 2869
+    },
+    {
+      "path": "executed-attempt-1/sources/manifest.json",
+      "sha256": "e2813e4c388fd68c209f2de8e79e5db12882e51792056bc4e75005470b44721d",
+      "bytes": 616
+    },
+    {
+      "path": "executed-attempt-1/sources/nominal.test-source.ts",
+      "sha256": "d050e6b968d32932c29f54b22584f55c9fed7a0efb923f42aa17ad1a5912ea3f",
+      "bytes": 42075
+    },
+    {
+      "path": "executed-attempt-1/sources/run-nominal.py",
+      "sha256": "57594d19b41198e1d1265c6df78bbb8b708c133416e467f9ec09ba4779542e4c",
+      "bytes": 10308
+    },
+    {
+      "path": "executed-attempt-1/sources/vitest.config.mjs",
+      "sha256": "363b7097f494179650875e8571db30e7442af0818f223e2bd7d93f7b4f9e3c27",
+      "bytes": 460
+    },
+    {
+      "path": "executed-attempt-2/execution.json",
+      "sha256": "ac57cbd1ccb8b89d617b438c312c051d2bfd1f3d49376443f0bbf39bb4eefab4",
+      "bytes": 121620
+    },
+    {
+      "path": "executed-attempt-2/export-manifest.json",
+      "sha256": "18177d59957f4c3c299accc4f8d3c0955be12ee774ff76401fd7aa579b582811",
+      "bytes": 1687
+    },
+    {
+      "path": "executed-attempt-2/fixture-identities.jsonl",
+      "sha256": "c57f6c156951e7da1ce0625313a7b027f622c8be9d2c98a7850ebc3bf0b670ab",
+      "bytes": 1835
+    },
+    {
+      "path": "executed-attempt-2/nominal-six-and-payment-rollback.json",
+      "sha256": "24aca0ee08bb41cd648c7f28978cd65aa361403ccd264b6a7d1dc0fe0dec0180",
+      "bytes": 57806
+    },
+    {
+      "path": "executed-attempt-2/process-journal.json",
+      "sha256": "f2be1cfa6933ef30fd54c4f82776bc9f9535866cc2dd7cbb32ba7f111abcd30c",
+      "bytes": 444
+    },
+    {
+      "path": "executed-attempt-2/sources/held-acknowledgement.ts",
+      "sha256": "40b69bab37c6ee6f18af683253d506c3a1a502b3ceb7729dc74a684d83a1fd72",
+      "bytes": 2869
+    },
+    {
+      "path": "executed-attempt-2/sources/manifest.json",
+      "sha256": "68a4ba9caf87255b7dd77f78dfd5cfafb70209d9299aa6551b246c3082883c60",
+      "bytes": 616
+    },
+    {
+      "path": "executed-attempt-2/sources/nominal.test-source.ts",
+      "sha256": "b965ca960ff66d7507bf2fc642ec0919391ea48d0dbe42310eb0aaaa5cae381d",
+      "bytes": 42093
+    },
+    {
+      "path": "executed-attempt-2/sources/run-nominal.py",
+      "sha256": "57594d19b41198e1d1265c6df78bbb8b708c133416e467f9ec09ba4779542e4c",
+      "bytes": 10308
+    },
+    {
+      "path": "executed-attempt-2/sources/vitest.config.mjs",
+      "sha256": "363b7097f494179650875e8571db30e7442af0818f223e2bd7d93f7b4f9e3c27",
+      "bytes": 460
+    },
+    {
+      "path": "held-acknowledgement.ts",
+      "sha256": "40b69bab37c6ee6f18af683253d506c3a1a502b3ceb7729dc74a684d83a1fd72",
+      "bytes": 2869
+    },
+    {
+      "path": "nominal.test-source.ts",
+      "sha256": "b965ca960ff66d7507bf2fc642ec0919391ea48d0dbe42310eb0aaaa5cae381d",
+      "bytes": 42093
+    },
+    {
+      "path": "prepared-attempt-2-manifest.json",
+      "sha256": "9652ede3174785325a5fde37370d5d782711daab6d629ffd584f0ff8cf227388",
+      "bytes": 1646
+    },
+    {
+      "path": "prepared-manifest.json",
+      "sha256": "c665393cb4208b67566fe4947ac6ade044003bf0177f1051d0fe083eca29becf",
+      "bytes": 1343
+    },
+    {
+      "path": "run-nominal.py",
+      "sha256": "57594d19b41198e1d1265c6df78bbb8b708c133416e467f9ec09ba4779542e4c",
+      "bytes": 10308
+    },
+    {
+      "path": "vitest.config.mjs",
+      "sha256": "363b7097f494179650875e8571db30e7442af0818f223e2bd7d93f7b4f9e3c27",
+      "bytes": 460
+    }
+  ],
+  "secretFilesOrPrivateProfileCheckpointsIncluded": false,
+  "credentialsOrRawConsolePersisted": false,
+  "nominalWorkerOrSqlWriterActive": false
+}

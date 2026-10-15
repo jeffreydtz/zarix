@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "scope": "Independent readonly cleanup observations; original attempt1 aggregate FAIL is unchanged.",
+  "attempt1ReportSha256": "fd85600e8cd89b594045ae02631a2bfc2ef9fd7cfd5572b09c5d3954c3f0895a",
+  "fixtureAccountCount": 6,
+  "activeFixtureAccounts": 0,
+  "fixtureRuleCount": 1,
+  "activeFixtureRules": 0,
+  "authSessions": 0,
+  "authRefreshTokens": 0,
+  "ownerAActiveMovementAccounts": 18,
+  "planFieldsRestoredIndependently": true,
+  "otherUserProfileHashMatchesCheckpoint": true,
+  "workerGroup": 5028,
+  "remainingWorkerGroupMembers": [],
+  "booleanParserEvidence": {
+    "plainPsqlBoolean": "f",
+    "toJsonPsqlBoolean": "false",
+    "plainFailsJsonParse": true,
+    "toJsonParsesFalse": true
+  },
+  "nonPlanAHashLimitation": "Original remainder hash includes updated_at; only the executed worker can compare its original in-memory row allowing that automatic field. No complete user row is persisted here.",
+  "sqlWrites": 0,
+  "credentialValuesCopied": false,
+  "observedAt": "2026-10-15T09:48:53.027288+00:00"
+}

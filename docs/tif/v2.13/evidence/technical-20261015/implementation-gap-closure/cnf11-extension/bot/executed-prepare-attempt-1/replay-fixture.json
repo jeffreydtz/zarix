@@ -1,0 +1,204 @@
+{
+  "purpose": "cnf11-bot-sanitized-process-replay",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "database": "zarix_delta_e4bd026f703549bfa24de940134184b8",
+  "ownerA": "172273ed-7c48-427d-a55b-742069a4d9de",
+  "ownerB": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+  "sourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+  "fixtures": [
+    {
+      "id": "bot-expense",
+      "kind": "expense",
+      "chatId": 1366746310,
+      "accounts": [
+        {
+          "id": "628dded6-9da8-432e-85d9-e37ef2b80340",
+          "name": "C11-00f5c268-4654-4eda-960e-3df3d6041793-0",
+          "opening": 10000
+        }
+      ],
+      "update": {
+        "update_id": 1103881216,
+        "message": {
+          "message_id": 1103881216,
+          "date": 1791288000,
+          "from": {
+            "id": 1366746310,
+            "is_bot": false,
+            "first_name": "Synthetic"
+          },
+          "chat": {
+            "id": 1366746310,
+            "type": "private"
+          },
+          "text": "CNF11 expense 1500 00f5c268-4654-4eda-960e-3df3d6041793"
+        }
+      },
+      "requestKey": "telegram:772115:1103881216:chat",
+      "financialKey": "ai:172273ed-7c48-427d-a55b-742069a4d9de:a28ebe5e17a46a346d5223fa23490d67d65132e765227c88f56b51bb847ab19f:0",
+      "args": {
+        "type": "expense",
+        "amount": 1500,
+        "currency": "ARS",
+        "account": "C11-00f5c268-4654-4eda-960e-3df3d6041793-0",
+        "description": "CNF11 synthetic expense",
+        "transactionDate": "2026-10-06"
+      },
+      "transactionId": "23309997-4c48-48fc-9dc8-0c7478b3b8b7",
+      "finalSnapshotSha256": "47687650a4b4d9b04072e15c08e29092f444f955c6f99734fe9e782817f8b17a"
+    },
+    {
+      "id": "bot-transfer",
+      "kind": "transfer",
+      "chatId": 1232317353,
+      "accounts": [
+        {
+          "id": "e455aa60-3909-4b60-9fc9-f3ecde75815a",
+          "name": "C11-7429f587-0cf5-4f8a-bf7f-dde956e5f980-0",
+          "opening": 10000
+        },
+        {
+          "id": "e7634f4b-94ce-4503-a471-22d39f737342",
+          "name": "C11-7429f587-0cf5-4f8a-bf7f-dde956e5f980-1",
+          "opening": 2000
+        }
+      ],
+      "update": {
+        "update_id": 1229298329,
+        "message": {
+          "message_id": 1229298329,
+          "date": 1791288000,
+          "from": {
+            "id": 1232317353,
+            "is_bot": false,
+            "first_name": "Synthetic"
+          },
+          "chat": {
+            "id": 1232317353,
+            "type": "private"
+          },
+          "text": "CNF11 transfer 1500 7429f587-0cf5-4f8a-bf7f-dde956e5f980"
+        }
+      },
+      "requestKey": "telegram:772115:1229298329:chat",
+      "financialKey": "ai:172273ed-7c48-427d-a55b-742069a4d9de:05f6b312a283119130efe07f1d840c31522f775f16fb693786a884c38f3870b8:0",
+      "args": {
+        "type": "transfer",
+        "amount": 1500,
+        "currency": "ARS",
+        "account": "C11-7429f587-0cf5-4f8a-bf7f-dde956e5f980-0",
+        "destinationAccount": "C11-7429f587-0cf5-4f8a-bf7f-dde956e5f980-1",
+        "description": "CNF11 synthetic transfer",
+        "transactionDate": "2026-10-06"
+      },
+      "transactionId": "c8365c29-7a2a-48e7-bb82-07a1e5f14901",
+      "finalSnapshotSha256": "15f0c0fbfc3de45f2203e58f9fa75b9339bbe5c6b2bbf41afa93060ae41d6f6e"
+    },
+    {
+      "id": "bot-photo",
+      "kind": "photo",
+      "chatId": 1209585156,
+      "accounts": [
+        {
+          "id": "9c1349a5-1f2c-4c0d-b5d6-fd6c5efbe6f7",
+          "name": "C11-5047e85c-cf4e-4cc2-b05f-61a43fafa878-0",
+          "opening": 10000
+        }
+      ],
+      "update": {
+        "update_id": 1485220714,
+        "message": {
+          "message_id": 1485220714,
+          "date": 1791288000,
+          "from": {
+            "id": 1209585156,
+            "is_bot": false,
+            "first_name": "Synthetic"
+          },
+          "chat": {
+            "id": 1209585156,
+            "type": "private"
+          },
+          "text": "sí"
+        }
+      },
+      "requestKey": "telegram:772115:1485220714:chat",
+      "financialKey": "ai:172273ed-7c48-427d-a55b-742069a4d9de:19f77a9392c7d1cffa28c9cf8059e2558002e71bea1d6b948152b8adb50bd19e:0",
+      "args": {
+        "type": "expense",
+        "amount": 1500,
+        "currency": "ARS",
+        "account": "C11-5047e85c-cf4e-4cc2-b05f-61a43fafa878-0",
+        "description": "CNF11 synthetic photo",
+        "transactionDate": "2026-10-06"
+      },
+      "photo": {
+        "update_id": 1485220713,
+        "message": {
+          "message_id": 1485220714,
+          "date": 1791288000,
+          "from": {
+            "id": 1209585156,
+            "is_bot": false,
+            "first_name": "Synthetic"
+          },
+          "chat": {
+            "id": 1209585156,
+            "type": "private"
+          },
+          "photo": [
+            {
+              "file_id": "cnf11-media-5047e85c-cf4e-4cc2-b05f-61a43fafa878",
+              "file_unique_id": "cnf11-unique-5047e85c-cf4e-4cc2-b05f-61a43fafa878"
+            }
+          ]
+        }
+      },
+      "ocrKey": "telegram:772115:1485220713:ocr",
+      "transactionId": "170742e8-87d7-44ea-b9fe-5f17dfb1adf7",
+      "finalSnapshotSha256": "0bf86170d7d65f4464f1179e6a0419651826c647e749703ae873befd666a559f"
+    },
+    {
+      "id": "bot-ambiguous",
+      "kind": "ambiguous",
+      "chatId": 1160736695,
+      "accounts": [
+        {
+          "id": "5757a352-b908-4a91-bae0-6c33a923873b",
+          "name": "C11-8a9a7aca-1345-4f3b-b519-fed58602d09d-0",
+          "opening": 10000
+        }
+      ],
+      "update": {
+        "update_id": 1755493893,
+        "message": {
+          "message_id": 1755493893,
+          "date": 1791288000,
+          "from": {
+            "id": 1160736695,
+            "is_bot": false,
+            "first_name": "Synthetic"
+          },
+          "chat": {
+            "id": 1160736695,
+            "type": "private"
+          },
+          "text": "CNF11 ambiguous 1500 8a9a7aca-1345-4f3b-b519-fed58602d09d"
+        }
+      },
+      "requestKey": "telegram:772115:1755493893:chat",
+      "financialKey": "ai:172273ed-7c48-427d-a55b-742069a4d9de:e9136cb213ee47696fc3e70a7294c7d99392b5841164b0e81319b05550f9ee8d:0",
+      "args": {
+        "type": "expense",
+        "amount": 1500,
+        "currency": "ARS",
+        "account": "C11-8a9a7aca-1345-4f3b-b519-fed58602d09d-0",
+        "description": "CNF11 synthetic ambiguous",
+        "transactionDate": "2026-10-06"
+      },
+      "transactionId": "f0f9c7bc-b413-49b2-b3dc-bdec9ebe4a68",
+      "finalSnapshotSha256": "8455f4515ec5abe3b46294d77602d2945ce033b011d3e72e0920a300d1c6f069"
+    }
+  ],
+  "containsCredentials": false
+}

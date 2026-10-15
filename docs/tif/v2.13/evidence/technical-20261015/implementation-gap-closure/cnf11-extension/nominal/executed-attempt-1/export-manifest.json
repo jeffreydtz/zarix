@@ -1,0 +1,56 @@
+{
+  "status": "FAIL_PRESERVED",
+  "attempt": 1,
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "rawSanitizedReportsUnmodified": true,
+  "fullConsoleOrCredentialFilesCopied": false,
+  "profileCheckpointExported": false,
+  "aggregateStatusNotPromoted": true,
+  "files": [
+    {
+      "path": "nominal-six-and-payment-rollback.json",
+      "sha256": "fd85600e8cd89b594045ae02631a2bfc2ef9fd7cfd5572b09c5d3954c3f0895a",
+      "bytes": 57793
+    },
+    {
+      "path": "execution.json",
+      "sha256": "b721363b2d5fe20ce8fd02427eb2cfbd899e10825bfc20ffe7c8378118618d90",
+      "bytes": 121622
+    },
+    {
+      "path": "process-journal.json",
+      "sha256": "07f8e479e0adc9ff2fba320b99d0096ade8a53cd5a4df70043d2a570b35e1143",
+      "bytes": 444
+    },
+    {
+      "path": "fixture-identities.jsonl",
+      "sha256": "1ad2336932c26f07263f9e19bb5b4c3b5d0df14741f4e76e48759e7d6497f573",
+      "bytes": 1835
+    },
+    {
+      "path": "sources/manifest.json",
+      "sha256": "e2813e4c388fd68c209f2de8e79e5db12882e51792056bc4e75005470b44721d",
+      "bytes": 616
+    },
+    {
+      "path": "sources/nominal.test-source.ts",
+      "sha256": "d050e6b968d32932c29f54b22584f55c9fed7a0efb923f42aa17ad1a5912ea3f",
+      "bytes": 42075
+    },
+    {
+      "path": "sources/held-acknowledgement.ts",
+      "sha256": "40b69bab37c6ee6f18af683253d506c3a1a502b3ceb7729dc74a684d83a1fd72",
+      "bytes": 2869
+    },
+    {
+      "path": "sources/vitest.config.mjs",
+      "sha256": "363b7097f494179650875e8571db30e7442af0818f223e2bd7d93f7b4f9e3c27",
+      "bytes": 460
+    },
+    {
+      "path": "sources/run-nominal.py",
+      "sha256": "57594d19b41198e1d1265c6df78bbb8b708c133416e467f9ec09ba4779542e4c",
+      "bytes": 10308
+    }
+  ]
+}

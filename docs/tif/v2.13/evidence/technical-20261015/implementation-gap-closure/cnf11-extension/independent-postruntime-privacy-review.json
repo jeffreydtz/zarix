@@ -1,0 +1,235 @@
+{
+  "schema": "zarix.independent-postruntime-privacy-review.v1",
+  "reviewedAt": "2026-10-15T09:56:21Z",
+  "reviewer": "independent cnf11_privacy agent",
+  "status": "PASS_SCOPED_RUNTIME_PRIVACY_REVIEW_PUBLICATION_SCANS_PENDING",
+  "scope": "Review of the specified sanitized execution reports, exported source hashes, replay-fixture structure, runtime closure record, private-archive hashes/modes and selected process/port absence. No universal secret-absence claim and no publication scan result are asserted here.",
+  "productSourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "preservedCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b",
+  "previousReviewsPreserved": true,
+  "reportReferences": [
+    {
+      "path": "independent-source-guard-review.json",
+      "sha256": "383a1c095066ad3aa03181f43ff7688c97434656f4fae24c20e2ba96a5c1e9b6"
+    },
+    {
+      "path": "independent-harness-boolean-fix-review.json",
+      "sha256": "f73754e59e4155d7cfe28eb8155ba8bb923e1ba6741ee4f878e705fcb65aee3f"
+    },
+    {
+      "path": "nominal/executed-attempt-1/nominal-six-and-payment-rollback.json",
+      "sha256": "fd85600e8cd89b594045ae02631a2bfc2ef9fd7cfd5572b09c5d3954c3f0895a"
+    },
+    {
+      "path": "nominal/executed-attempt-2/nominal-six-and-payment-rollback.json",
+      "sha256": "24aca0ee08bb41cd648c7f28978cd65aa361403ccd264b6a7d1dc0fe0dec0180"
+    },
+    {
+      "path": "nominal/executed-attempt-2/execution.json",
+      "sha256": "ac57cbd1ccb8b89d617b438c312c051d2bfd1f3d49376443f0bbf39bb4eefab4"
+    },
+    {
+      "path": "bot/executed-prepare-attempt-1/bot-verification.json",
+      "sha256": "5861ee666f829c1587d97d219d8068d297a993b86408548c8d9230c5a43f983a"
+    },
+    {
+      "path": "bot/executed-prepare-attempt-1/execution.json",
+      "sha256": "a047b63255648bb2b62b46ca940dc3ae8920b7d15211805ad207427d708d9af7"
+    },
+    {
+      "path": "bot/executed-prepare-attempt-1/privacy.json",
+      "sha256": "e5b1afa8cef392f291d94c1cef7a87328b99f6ad3bcd21dd6b2f979183a6264b"
+    },
+    {
+      "path": "bot/executed-prepare-attempt-1/replay-fixture.json",
+      "sha256": "d284431c4e108bf8a0e6edb37b4b975a8b69834e910afd60d2e2ae86c5b3ff6e"
+    },
+    {
+      "path": "bot/executed-replay-attempt-1/bot-verification.json",
+      "sha256": "87a3ce96d80963c35c798e7f07df08c3c6f7b1a3fdf1291ded22cd1fbfeabd19"
+    },
+    {
+      "path": "bot/executed-replay-attempt-1/execution.json",
+      "sha256": "ce1c2f6d9053a818aa594d6be7af7587f5b58fe654e2ee211a8861a626c64e83"
+    },
+    {
+      "path": "bot/executed-replay-attempt-1/privacy.json",
+      "sha256": "2db6b585dff0a7b968a301f1948fccf47e68298678bb2486b9042c31a046edfd"
+    },
+    {
+      "path": "coordinator/executed-attempt-1/retention-stop.sanitized.json",
+      "sha256": "02aed8138224ee2ddc42acfef219ad79bb89e50d4fabb625718914cc70ccc868"
+    }
+  ],
+  "exportVerification": [
+    {
+      "path": "nominal/executed-attempt-1/export-manifest.json",
+      "sha256": "9ce2402d431a53e2c22ae5e8f7f4346fc61e6476fc1534ba59aef0693bed6dff",
+      "allListedHashesMatch": true,
+      "files": 9,
+      "aggregateStatus": "FAIL"
+    },
+    {
+      "path": "nominal/executed-attempt-2/export-manifest.json",
+      "sha256": "18177d59957f4c3c299accc4f8d3c0955be12ee774ff76401fd7aa579b582811",
+      "allListedHashesMatch": true,
+      "files": 9,
+      "aggregateStatus": "PASS"
+    },
+    {
+      "path": "bot/execution-summary.json",
+      "sha256": "1c1a04736d90d4f35a9d2910ce02515789a82e581bae3f9d04f7a47c57c3479c",
+      "allListedHashesMatch": true,
+      "files": 17
+    }
+  ],
+  "effectiveWorkerSources": {
+    "nominal": "b965ca960ff66d7507bf2fc642ec0919391ea48d0dbe42310eb0aaaa5cae381d",
+    "bot": "f04705ee962e93309bff428967d22ee0abb528d012948dccc14c4e7b0b9bc740",
+    "nominalCorrectionScope": "Only two cleanup SELECT expressions changed to to_json(is_active); separate immutable review f73754e59e4155d7cfe28eb8155ba8bb923e1ba6741ee4f878e705fcb65aee3f pins the source delta. Initial static review 383a remains bound to d050 and is not relabeled."
+  },
+  "runEvidence": {
+    "nominalAttempt1": {
+      "aggregateStatus": "FAIL",
+      "preserved": true,
+      "privacySelectedRamValues": 14,
+      "observedPrivacyHits": 0,
+      "cleanupParserFailureNotReclassified": true
+    },
+    "nominalAttempt2": {
+      "aggregateStatus": "PASS",
+      "checks": 217,
+      "handlerInvocations": 79,
+      "consoleCallsCaptured": 302,
+      "selectedRamValues": 14,
+      "observedSelectedSecretOrSessionHits": 0,
+      "rawConsolePersisted": false,
+      "formatter": "formatWithOptions with showHidden:true, depth:null and unlimited array/string lengths",
+      "ownCanaryCalibrationClaimed": false
+    },
+    "botPrepare": {
+      "aggregateStatus": "PASS",
+      "checks": 121,
+      "consoleCallsCaptured": 16,
+      "selectedRamValues": 13,
+      "observedSelectedSecretHits": 0,
+      "observedErrorCanaryHits": 0,
+      "positiveErrorCaptureCalibration": {
+        "errorMessage": true,
+        "errorStack": true,
+        "causeMessage": true,
+        "causeStack": true,
+        "callsBeforeClear": 1,
+        "callsAfterClear": 0,
+        "beforeAuthAndSql": true
+      },
+      "rawConsolePersisted": false
+    },
+    "botReplay": {
+      "aggregateStatus": "PASS",
+      "checks": 113,
+      "consoleCallsCaptured": 13,
+      "selectedRamValues": 13,
+      "observedSelectedSecretHits": 0,
+      "observedErrorCanaryHits": 0,
+      "positiveErrorCaptureCalibration": {
+        "errorMessage": true,
+        "errorStack": true,
+        "causeMessage": true,
+        "causeStack": true,
+        "callsBeforeClear": 1,
+        "callsAfterClear": 0,
+        "beforeAuthAndSql": true
+      },
+      "rawConsolePersisted": false
+    },
+    "countsAreAssertionsNotUniqueCases": true,
+    "rawConsoleIndependentlyReplayedByReviewer": false,
+    "ramPrivacyScope": "Observed counters are the executed workers’ reports. Fresh access-token strings, refresh-token values, generated bot token and derived payment-double material were kept in process memory/environment and are not part of the historical 53-value file scanner collector. Real Auth session/refresh-grant rows existed in the isolated database and the reports require zero remaining after logout."
+  },
+  "exportPrivacy": {
+    "allowedExportsInspected": "Source snapshots, hashes, process/port ownership metadata, synthetic event IDs, monetary oracles, safe check outcomes and cleanup counters.",
+    "replayFixture": {
+      "sha256": "d284431c4e108bf8a0e6edb37b4b975a8b69834e910afd60d2e2ae86c5b3ff6e",
+      "structureReviewed": true,
+      "includesDurableQuotaSnapshotOrNonce": false,
+      "includesAuthTokenOrCookie": false,
+      "containsSyntheticEventsAndIds": true
+    },
+    "privateRestoreAndFixtureCleanupJournalsExported": false,
+    "credentialEnvironmentOrRawLogFilesExported": false,
+    "profileRowsOrAuthSessionRowsExported": false
+  },
+  "cleanupEvidence": {
+    "workerReports": "Nominal2 and both bot phases report exact allowlisted plan restoration, unchanged B/profile and old financial rows, archived own accounts, zero Auth sessions/refresh grants; nominal also removes its CHECK and disables its own recurring rule.",
+    "nativeSqlPerformedByReviewer": false,
+    "ownerRetentionRecord": {
+      "sha256": "02aed8138224ee2ddc42acfef219ad79bb89e50d4fabb625718914cc70ccc868",
+      "status": "RETAIN_AND_STOP_PASS",
+      "originalFingerprints": 39,
+      "allOriginalsUnchanged": true,
+      "temporaryActorsStopped": 4,
+      "officialProofStopExitCode": 0,
+      "cloneRetained": true
+    },
+    "independentReadOnlyProcessCheck": {
+      "absentPids": [
+        5028,
+        7533,
+        9663,
+        9671,
+        10816,
+        10825,
+        4863,
+        4872,
+        4881,
+        4886
+      ],
+      "method": "native ps -p PID -o pid=, each exit1 with no PID output",
+      "portsWithoutListenerOutput": [
+        58321,
+        58322,
+        61321,
+        61323,
+        61327,
+        61329
+      ],
+      "portMethod": "native lsof exact listed TCP ports with LISTEN filter, exit1 and empty stdout",
+      "scope": "These specific processes and ports at review time; not a general process inventory."
+    },
+    "archive": {
+      "sha256": "f0c4bdedbc47c0c3e2dcf6468e902849e3821bc3d1489803987d6da285f322ea",
+      "bytes": 564353,
+      "fileMode": "0600",
+      "directoryMode": "0700",
+      "independentlyHashAndModeChecked": true,
+      "tablesInventoriedByOwner": 65,
+      "tocAndPayloadDecodeByOwner": true,
+      "newRestoreClaimed": false,
+      "storageScope": "Database metadata only; no Storage-object backup/restore claim",
+      "containsSensitiveSyntheticAuthData": true,
+      "publicArchiveOrDecodedRows": false
+    },
+    "independentlyPreserved": "Original CSV887ad, original checkpointf378, original databaseb200, prior deltaa9f, prior CNF13archive1f958b and staticreview383a matched their pinned bytes after closure."
+  },
+  "publicationScans": {
+    "executedByReviewer": false,
+    "status": "PENDING_ROOT_FINAL_PACKAGE_FREEZE",
+    "priorOutputsUnmodified": true
+  },
+  "blockingFindingsInReviewedScope": [],
+  "limits": [
+    "The raw console strings were intentionally not persisted. Selected-value zero counts are worker-produced observations, not an independent replay of raw strings.",
+    "Nominal formatter uses robust options but has no own positive canary; bot canaries apply only to their corresponding worker process.",
+    "The historical exact-value file scan does not cover the newly issued in-memory session values. No universal absence of secrets is claimed.",
+    "Gemini, Telegraf/media and payment/quotes remain explicit doubles. No real external delivery/provider acceptance, browser UI or physical network outage is established.",
+    "AI reservation after a provider error may remain reserved; tests prove no additional money effect and continued owner read/export, not automatic acknowledgement recovery.",
+    "Retention TOC/decode and the new private Fc are not a second empty-instance restoration or a Storage-object restoration.",
+    "Attempt1 remains an aggregate FAIL; the successful retry and independent cleanup observations are separate evidence.",
+    "Final publication scanners and candidate review must use new output names after root freezes the remaining public package."
+  ],
+  "newReviewerWrites": [
+    "independent-postruntime-privacy-review.json"
+  ],
+  "privateValuesPublished": false
+}

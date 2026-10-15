@@ -1,0 +1,66 @@
+{
+  "schema": "zarix.independent-harness-boolean-fix-review.v1",
+  "reviewedAt": "2026-10-15T09:47:24Z",
+  "reviewer": "remaining_scope independent acceptance reviewer",
+  "status": "PASS_STATIC_REVIEW",
+  "scope": "Read-only comparison of the preserved attempt-1 nominal worker and its two-line cleanup parser correction. This is not an execution result or CNF-11 promotion.",
+  "productSourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "preservedCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b",
+  "oldSource": {
+    "path": "/tmp/zarix-runtime-20261015/cnf11-extension-27e6af51-dcbd-4498-99ef-aec049bb9cc0/nominal-attempt-1/sources/nominal.test-source.ts",
+    "sha256": "d050e6b968d32932c29f54b22584f55c9fed7a0efb923f42aa17ad1a5912ea3f",
+    "preservedWithoutModification": true
+  },
+  "newSource": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/nominal.test-source.ts",
+    "sha256": "b965ca960ff66d7507bf2fc642ec0919391ea48d0dbe42310eb0aaaa5cae381d"
+  },
+  "comparison": {
+    "method": "diff -u of the actual preserved source snapshot and the new source; both SHA-256 values independently recomputed",
+    "changedLines": 2,
+    "changes": [
+      {
+        "field": "cleanup.newAccountsArchived",
+        "before": "SELECT is_active FROM accounts WHERE id='${id}'",
+        "after": "SELECT to_json(is_active) FROM accounts WHERE id='${id}'"
+      },
+      {
+        "field": "cleanup.newRecurringRulesDisabled",
+        "before": "SELECT is_active FROM recurring_rules WHERE id='${id}'",
+        "after": "SELECT to_json(is_active) FROM recurring_rules WHERE id='${id}'"
+      }
+    ],
+    "otherSourceChanges": 0
+  },
+  "reasoning": [
+    "The existing rows helper parses nonempty psql stdout with JSON.parse. A raw PostgreSQL boolean is returned as t/f, so an inactive fixture emits f and raises SyntaxError before cleanup flags can be assigned.",
+    "to_json(is_active) returns a JSON boolean. The existing acceptance of null or false is unchanged, including the empty-row path. No write, fixture, financial oracle, request key, timeout, response or replay logic changes.",
+    "The correction addresses the evidence harness parser. It does not turn attempt-1 aggregate FAIL into PASS and does not establish the current SQL fixture state. Independent readback, actor/session closure and any retry remain the root runtime owner's responsibility."
+  ],
+  "unchangedExecutionSources": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/run-nominal.py",
+      "sha256": "57594d19b41198e1d1265c6df78bbb8b708c133416e467f9ec09ba4779542e4c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/vitest.config.mjs",
+      "sha256": "363b7097f494179650875e8571db30e7442af0818f223e2bd7d93f7b4f9e3c27"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/held-acknowledgement.ts",
+      "sha256": "40b69bab37c6ee6f18af683253d506c3a1a502b3ceb7729dc74a684d83a1fd72"
+    }
+  ],
+  "blockingFindings": [],
+  "staticSuitability": "Suitable for a root-authorized narrow retry after independent current-state and actor/session guards pass; no runtime authorization is granted by this review.",
+  "attempt1AggregateStatusPreserved": "FAIL",
+  "executionResultsReclassified": false,
+  "productModifiedByReviewer": false,
+  "sqlOrAuthRunByReviewer": false,
+  "nodeOrTestsRunByReviewer": false,
+  "scannersRunByReviewer": false,
+  "privateValuesPublished": false,
+  "newReviewerWrites": [
+    "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-harness-boolean-fix-review.json"
+  ]
+}

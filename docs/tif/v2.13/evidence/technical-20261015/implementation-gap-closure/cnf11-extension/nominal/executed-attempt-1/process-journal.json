@@ -1,0 +1,12 @@
+{
+  "purpose": "cnf11-extension-owned-worker-process",
+  "pid": 5028,
+  "processGroupId": 5028,
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "startedAt": "2026-10-15T09:44:07.832090+00:00",
+  "workerSourceSha256": "d050e6b968d32932c29f54b22584f55c9fed7a0efb923f42aa17ad1a5912ea3f",
+  "deadlineSeconds": 240,
+  "cleanupOwnerIfTimeoutOrResidue": "root",
+  "automaticDatabaseRecovery": false,
+  "containsCredentials": false
+}

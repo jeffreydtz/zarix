@@ -1,0 +1,33 @@
+{
+  "status": "PREPARED_RUNTIME_NOT_STARTED",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "checkpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b",
+  "sourceCount": 517,
+  "sourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+  "files": [
+    {
+      "path": "common.py",
+      "sha256": "370bc7da27c2d5b1b9a68ac40c54c4d5f6ad6670ecdd69940628f17d54304b28"
+    },
+    {
+      "path": "prepare-source.py",
+      "sha256": "0a0183d9aad4b124f924fa255dbe364ec7c63b52b6c6d9be74e0573146593711"
+    },
+    {
+      "path": "reopen.py",
+      "sha256": "6a15b30f104e997ae7bf7a385a5e346d0a4ca8604f29fff43b28efd53099464f"
+    },
+    {
+      "path": "launch-services.py",
+      "sha256": "5e0fbb892c996418864048fe71ddc68575057258f566bbb470144f4cfefa5482"
+    },
+    {
+      "path": "local-http.mjs",
+      "sha256": "58db69b7c2be3a874f1e7e9bd87ada0fedee28c1be7a825cd68b4c98146f4253"
+    },
+    {
+      "path": "retain-and-stop.py",
+      "sha256": "992a28d79d63667cf8a0896e017b11698a3a12c840a2c0f9a020d3fe1049e862"
+    }
+  ]
+}

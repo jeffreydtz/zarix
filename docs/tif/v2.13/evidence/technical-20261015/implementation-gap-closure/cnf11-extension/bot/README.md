@@ -1,0 +1,24 @@
+# CNF-11: suplemento local de Telegram/OCR y reintento entre procesos
+
+Ejecutado sobre la copia exacta f5f362ee9dbb81da5268049cab41b357d90eccf1: `prepare` pasó 121/121 comprobaciones y `replay`, en otro proceso, 113/113. Son observaciones de tres fixtures nominales y una derivada repetidas en dos fases; no son 234 casos originales ni una prueba de navegador.
+
+| Fixture | Efecto observado | Estado durable |
+| --- | --- | --- |
+| Gasto de texto 1500 ARS | Un movimiento; 10000→8500 | Recibo financiero único y cuota AI completed |
+| Transferencia de texto 1500 ARS | Un movimiento; A=8500, B=3500, total12000 | Recibo único, débito/crédito equivalentes y cuota completed |
+| Foto→propuesta→confirmación 1500 ARS | Propuesta persistida y cero alta antes de confirmar; luego un gasto y saldo8500 | OCR completed y AI completed; mismo evento de confirmación en cada replay |
+| Fallo AI después de tool exitosa, derivado | Un gasto y saldo8500, legible/exportable | Recibo único y cuota reserved/resultnull; reintentos conservan el fence |
+
+Cada primer comando se siguió de dos entregas secuenciales y diez concurrentes del mismo evento. La barrera tuvo diez participantes listos y peak diez handlers en vuelo por fixture, con tiempos y resultados individuales conservados. Esto mide redelivery después del primer commit. La contención del primer commit no se atribuye a este suplemento.
+
+En los tres nominales el doble de transporte retuvo el primer acuse final: antes del timeout se comprobaron SQL ledger, recibo y cuota completed, luego un AbortSignal de40ms produjo TimeoutError real. Los reintentos alcanzaron el RPC de reserva y devolvieron exactamente `result.assistant_message`. El cuarto fixture hace fallar el proveedor AI después de la tool real; la aplicación conserva honestamente el resultado incierto sin liberar artificialmente la reserva. No se atribuye HTTP409 al bot ni recuperación automática del acuse de esa rama.
+
+La segunda invocación reenvió los mismos eventos/IDs/claves sobre la misma DB, sin reseed ni reactivar cuentas archivadas. No ejecutó `chatWithTools`, tool ni OCR adicional (0/0/0). Sí hubo53 resoluciones locales de cliente Gemini y una descarga de media doblada; no se confunden con trabajo del proveedor. Se conservaron los hashes completos de cuentas/ledger/recibos/cuotas, y cada movimiento pudo leerse con sesión normal A, fue invisible para B y apareció una vez en el export handler real del dueño. El historial de los cuatro chats propios puede anexarse de nuevo: no es un invariante de idempotencia monetaria. Todos los chats previos ajenos al ensayo se protegieron.
+
+Sólo Telegraf dispatcher/transporte, Gemini y la descarga de media son dobles explícitos. Handlers/middleware, cuota, herramientas, servicios, RPC, Auth, PostgREST y PostgreSQL son reales. El dueño custom se suministra por la interfaz real ya autenticada; no sustituye el ensayo del secret de webhook. No se probó entrega Telegram externa, interpretación OCR real, Gemini externo, UI ni permisos de Arc. El worker no creó identidades, chats vinculados persistentes ni credenciales externas, y no inició navegadores o servicios; la infraestructura local pertenece al coordinador.
+
+El plan temporal de A se restauró en cada fase. Todos sus demás campos permanecieron iguales salvo el `updated_at` automático, registrado; la fila completa B quedó igual. Se archivaron únicamente cinco cuentas UUID nuevas del ensayo, conservando ledger y recibos. Datos financieros previos, categorías y bot_sessions ajenos quedaron intactos. Cada fase cerró ambas sesiones: SQL `auth.sessions=0` y `auth.refresh_tokens=0`. Se verificó ausencia de los PIDs propios9663/9671 y10816/10825 antes de liberar el entorno al coordinador para retención/parada.
+
+La captura robusta de logs se calibró antes de Auth/SQL con Error.message/stack/cause no enumerables. Ambas fases compararon13 secretos exactos en RAM con cero coincidencias y cero señuelos; los16/13 console calls no se archivaron crudos. Los tokens del bot y de Auth nunca se guardaron. Los checkpoints privados sólo contienen tres campos del plan o IDs propios para limpieza y quedan fuera de estos exports.
+
+Los comandos exactos, SHA de worker/config/launcher, horas, PID y límites están en [execution-summary.json](execution-summary.json), [prepare/execution.json](executed-prepare-attempt-1/execution.json) y [replay/execution.json](executed-replay-attempt-1/execution.json). Las fuentes ejecutadas se preservan por fase; el fixture sintético público contiene sólo eventos/IDs/hashes. El plan y preparation-manifest son históricos anteriores a ejecutar. La aceptación CNF-11 integral requiere composición explícita con los seis protocolos monetarios del suplemento nominal y su revisión independiente; este paquete no modifica la matriz por sí mismo.

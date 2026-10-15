@@ -1,0 +1,46 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "sourceCount": 517,
+  "sourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+  "files": [
+    {
+      "path": "nominal.test-source.ts",
+      "sha256": "d050e6b968d32932c29f54b22584f55c9fed7a0efb923f42aa17ad1a5912ea3f",
+      "bytes": 42075
+    },
+    {
+      "path": "held-acknowledgement.ts",
+      "sha256": "40b69bab37c6ee6f18af683253d506c3a1a502b3ceb7729dc74a684d83a1fd72",
+      "bytes": 2869
+    },
+    {
+      "path": "vitest.config.mjs",
+      "sha256": "363b7097f494179650875e8571db30e7442af0818f223e2bd7d93f7b4f9e3c27",
+      "bytes": 460
+    },
+    {
+      "path": "run-nominal.py",
+      "sha256": "57594d19b41198e1d1265c6df78bbb8b708c133416e467f9ec09ba4779542e4c",
+      "bytes": 10308
+    },
+    {
+      "path": "README.md",
+      "sha256": "86219066f342a1d8397ef6a270215f9e27bf314def45ae19145fc1cfce19e94e",
+      "bytes": 6102
+    },
+    {
+      "path": "composition.json",
+      "sha256": "485fe62ef883936653bd332557df5aa032d6341a742a89d1c882c2300b414046",
+      "bytes": 3709
+    }
+  ],
+  "preparationChecks": {
+    "pythonAstParsed": true,
+    "launcherImported": false,
+    "nodeExecuted": false,
+    "sqlExecuted": false,
+    "authUsed": false,
+    "workerExecuted": false
+  }
+}

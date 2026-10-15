@@ -1,0 +1,10 @@
+{"status": "STOP_RESERVED", "name": "provider", "pid": 4886, "port": 61329}
+{"name": "provider", "pid": 4886, "port": 61329, "status": "STOP_PASS"}
+{"status": "STOP_RESERVED", "name": "gateway", "pid": 4881, "port": 61321}
+{"name": "gateway", "pid": 4881, "port": 61321, "status": "STOP_PASS"}
+{"status": "STOP_RESERVED", "name": "auth", "pid": 4872, "port": 61327}
+{"name": "auth", "pid": 4872, "port": 61327, "status": "STOP_PASS"}
+{"status": "STOP_RESERVED", "name": "postgrest", "pid": 4863, "port": 61323}
+{"name": "postgrest", "pid": 4863, "port": 61323, "status": "STOP_PASS"}
+{"status": "PROOF_OFFICIAL_STOP_RESERVED", "nativeOwnerPid": 4389}
+{"status": "PROOF_STOP_PASS", "cliExitCode": 0}

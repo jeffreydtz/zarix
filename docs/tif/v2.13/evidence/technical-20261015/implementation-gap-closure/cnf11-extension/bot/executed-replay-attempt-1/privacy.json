@@ -1,0 +1,18 @@
+{
+  "inspectedWith": "formatWithOptions(showHidden:true,depth:null,maxArrayLength:Infinity,maxStringLength:Infinity,customInspect:false)",
+  "calibration": {
+    "errorMessage": true,
+    "errorStack": true,
+    "causeMessage": true,
+    "causeStack": true,
+    "callsBeforeClear": 1,
+    "callsAfterClear": 0,
+    "beforeAuthAndSql": true
+  },
+  "selectedSecretCount": 13,
+  "exactSelectedSecretHits": 0,
+  "syntheticErrorCanaryHits": 0,
+  "consoleCalls": 13,
+  "rawConsolePersisted": false,
+  "tokenOrSessionFilesCreated": false
+}

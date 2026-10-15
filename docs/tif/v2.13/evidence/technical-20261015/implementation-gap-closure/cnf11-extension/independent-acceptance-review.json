@@ -1,0 +1,594 @@
+{
+  "schema": "zarix.independent-cnf11-acceptance-review.v1",
+  "reviewedAt": "2026-10-15T09:58:51.247666+00:00",
+  "reviewer": "remaining_scope independent acceptance reviewer",
+  "status": "PASS_INDEPENDENT_REVIEW",
+  "recommendation": {
+    "caseId": "CNF-11",
+    "caseStatus": "PASS",
+    "reason": "La aceptación local nueva cubre los canales y oráculos literales, timeout posterior al efecto, replays con identidad persistente y captura monetaria bot/OCR. Los rollback SQL y las variantes transferencia/sobreventa se componen con evidencia anterior explícitamente acotada. No queda una cláusula literal sin evidencia en esta composición.",
+    "matrixModifiedByReviewer": false,
+    "remainingLiteralBlockers": []
+  },
+  "scope": "Lectura independiente de fuentes, reportes sanitizados, manifiestos y composición histórica. Sin ejecutar workers, producto, Node, SQL, Auth, proveedores, navegadores ni scanners. Se crea únicamente este dictamen; la revisión previa del booleano permanece intacta.",
+  "contract": {
+    "path": "docs/tif/v2.13/casos_prueba.csv",
+    "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+    "id": "CNF-11",
+    "requisitos": "RNF06",
+    "escenario": "Transversal: manual/OCR/Telegram, transferencia/importación/cron; CU-004 venta; CU-002 pago",
+    "precondiciones": "Restaurar fixture por canal: U-A, cuenta A=10000 ARS y B=2000 ARS; lote 10×100 USD; blue válido; regla gasto 400; recurso de pago sintético. Comando lógico identificado por el protocolo que ofrezca cada canal. Idempotencia general manual/bot/importación/venta no se presume implementada.",
+    "entrada": "Repetir 2 veces y disparar 10 intentos concurrentes del MISMO comando por canal: gasto 1500 ARS; transferencia 1500 ARS A→B; lote importado gastos 200+300; regla 400 mismo díaAR; venta 4×120 USD del lote 10×100; webhook del mismo preapproval ACTIVE y mismo next_payment_date. Inyectar fallo entre escritura y acuse, y entre débito/crédito.",
+    "pasos": "1.Restaurar estado. 2.Repetir el mismo comando y provocar reintento tras timeout. 3.Ejecutar 10 intentos concurrentes. 4.Consultar filas/saldos/ventas/estado por dueño y referencia. 5.Comparar NUMERIC exacto y efectuar UPDATE/DELETE de la transferencia. 6.Conservar por canal correlación, número de filas y evidencia de rollback.",
+    "resultado_esperado": "Meta RNF06 por fixture: gasto único y A: 8500; transferencia única A: 8500/B: 3500 y total 12000; importación 2 filas y A: 9500; cron 1 fila y A: 9600; venta 1 fila, cantidad 6 y realizado 80 USD; pago conserva estado ACTIVE/vigencia del recurso sin efecto adicional. Fallo de escritura revierte registro y todos sus impactos; UPDATE/DELETE conserva equivalencias exactas. Una sobreventa concurrente nunca deja cantidad negativa. Si no existe protocolo persistente que identifique el comando manual/bot/import/venta, registrar la brecha y NO aprobar idempotencia general por el índice del cron.",
+    "evidencia_requerida": "Payloads y IDs lógicos por canal, versión, barrera de concurrencia, logs/consultas antes-después, centavos/equivalentes exactos, errores y resultado individual. Pruebas locales cron/SQL existentes se enlazan con su alcance y no sustituyen esta aceptación.",
+    "originalCsvUnmodified": true
+  },
+  "sourceBinding": {
+    "productRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+    "preservedPublishedCheckpoint": "23d91aeda8a22903d2bd795dd4ce9f3970ea1b5b",
+    "newRuntimeSourceCount": 517,
+    "newRuntimeSourceManifestSha256": "6c108712a7d338b4c6c1d14dca798921637abc9e5f2aa3009318fdf7b24e3a29",
+    "reviewedNominalWorkerSha256": "b965ca960ff66d7507bf2fc642ec0919391ea48d0dbe42310eb0aaaa5cae381d",
+    "reviewedBotWorkerSha256": "f04705ee962e93309bff428967d22ee0abb528d012948dccc14c4e7b0b9bc740",
+    "executedSourceSnapshotsMatchReviewedFiles": true,
+    "copyAndWorkerStabilityReportedByAllSuccessfulLaunchers": true,
+    "nestedManifestVerification": [
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-1/export-manifest.json",
+        "verifiedEntries": 9
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-2/export-manifest.json",
+        "verifiedEntries": 9
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/execution-summary.json",
+        "verifiedEntries": 17
+      }
+    ],
+    "priorCompositionCompatibility": "La comparación Git730767b→f5 de todas las migraciones y de services transactions/investments y PATCH/DELETE transactions no mostró cambios. El override20261015000402 está pinneado y coincide además con el manifiesto del gate SQL f5. Las revisiones históricas conservan su versión y no se presentan como ejecuciones f5."
+  },
+  "newNominalExecution": {
+    "attempt": 2,
+    "status": "PASS",
+    "checks": 217,
+    "handlerInvocations": 79,
+    "protocols": [
+      {
+        "id": "manual-expense-1500",
+        "status": "PASS",
+        "checks": 37,
+        "oracle": {
+          "expenseRows": 1,
+          "amount": 1500,
+          "receiptRows": 1,
+          "balance": 8500
+        },
+        "timeoutMs": 41.562167,
+        "barrierArrivals": 10,
+        "peakInFlight": 10,
+        "replays": {
+          "sequential": 2,
+          "concurrent": 10
+        },
+        "stateHashesEqual": true
+      },
+      {
+        "id": "transfer-1500",
+        "status": "PASS",
+        "checks": 36,
+        "oracle": {
+          "transferRows": 1,
+          "receiptRows": 1,
+          "source": 8500,
+          "destination": 3500,
+          "total": 12000
+        },
+        "timeoutMs": 42.1785,
+        "barrierArrivals": 10,
+        "peakInFlight": 10,
+        "replays": {
+          "sequential": 2,
+          "concurrent": 10
+        },
+        "stateHashesEqual": true
+      },
+      {
+        "id": "import-200-plus-300",
+        "status": "PASS",
+        "checks": 37,
+        "oracle": {
+          "expenseRows": 2,
+          "amount": 500,
+          "balance": 9500,
+          "batchRows": 1,
+          "perRowReceipts": 2
+        },
+        "timeoutMs": 42.259291,
+        "barrierArrivals": 10,
+        "peakInFlight": 10,
+        "replays": {
+          "sequential": 2,
+          "concurrent": 10
+        },
+        "stateHashesEqual": true
+      },
+      {
+        "id": "cron-400",
+        "status": "PASS",
+        "checks": 26,
+        "oracle": {
+          "occurrenceRows": 1,
+          "amount": 400,
+          "balance": 9600,
+          "receiptRows": 1,
+          "outboxRows": 1,
+          "outboxAttempts": 0
+        },
+        "timeoutMs": 42.135292,
+        "barrierArrivals": 10,
+        "peakInFlight": 10,
+        "replays": {
+          "sequential": 2,
+          "concurrent": 10
+        },
+        "stateHashesEqual": true
+      },
+      {
+        "id": "investment-sale-4x120-from10x100",
+        "status": "PASS",
+        "checks": 36,
+        "oracle": {
+          "saleRows": 1,
+          "sold": 4,
+          "realizedUSD": 80,
+          "remainingQuantity": 6,
+          "receiptRows": 1,
+          "cashBalance": 0
+        },
+        "timeoutMs": 41.249542,
+        "barrierArrivals": 10,
+        "peakInFlight": 10,
+        "replays": {
+          "sequential": 2,
+          "concurrent": 10
+        },
+        "stateHashesEqual": true
+      },
+      {
+        "id": "payment-authorized-same-active-fixed-period-noop",
+        "status": "PASS",
+        "checks": 40,
+        "oracle": {
+          "stateTransition": "NOOP",
+          "status": "ACTIVE",
+          "existingPeriod": "2026-11-06T12:00:00+00:00",
+          "providerNextPaymentDate": "2026-11-06T12:00:00.000Z",
+          "renewedPeriod": false,
+          "durableReceiptPolicy": "no-mutation-no-receipt",
+          "externalProviderAcceptanceProved": false
+        },
+        "timeoutMs": 42.230833,
+        "barrierArrivals": 10,
+        "peakInFlight": 10,
+        "replays": {
+          "sequential": 2,
+          "concurrent": 10
+        },
+        "stateHashesEqual": true
+      }
+    ],
+    "paymentWriteFailure": {
+      "status": "PASS",
+      "checks": 5,
+      "evidence": "Firma válida y lookup HTTP local exitoso de cancelled; CHECK propio impide UPDATE. Se observó500 y error de persistencia/consistencia, sin cambiar ninguna columna de A incluido updated_at ni el historial financiero. CHECK retirado; no triggers deshabilitados."
+    },
+    "preservation": {
+      "planFieldsRestoredExactly": true,
+      "allOtherProfileColumnsCompared": true,
+      "nonPlanColumnsChanged": [
+        "updated_at"
+      ],
+      "onlyAutomaticUpdatedAtDelta": true,
+      "otherUserProfileUnchanged": true,
+      "originalFinancialRowsUnchanged": true,
+      "historyUnchanged": true,
+      "preferencesUnchanged": true,
+      "newAccountsArchived": true,
+      "newRecurringRulesDisabled": true,
+      "sqlConstraintRemoved": true,
+      "authSessions": 0,
+      "authRefreshTokens": 0,
+      "sdkLogoutResults": [
+        {
+          "noError": true,
+          "errorStatus": null
+        },
+        {
+          "noError": true,
+          "errorStatus": null
+        }
+      ]
+    },
+    "privacy": {
+      "selectedRamNeedles": 14,
+      "selectedHits": 0,
+      "consoleCalls": 302,
+      "ownCanaryCalibrationClaimed": false
+    }
+  },
+  "newBotExecution": {
+    "prepare": {
+      "status": "PASS",
+      "checks": 121,
+      "cases": [
+        {
+          "id": "bot-expense",
+          "checks": 27
+        },
+        {
+          "id": "bot-transfer",
+          "checks": 30
+        },
+        {
+          "id": "bot-photo",
+          "checks": 31
+        },
+        {
+          "id": "bot-ambiguous",
+          "checks": 23
+        }
+      ],
+      "chatWork": 4,
+      "toolWork": 4,
+      "imageWork": 1,
+      "createTransactionOnceCalls": 4,
+      "heldFinalAcknowledgementTimeouts": 3,
+      "timeoutElapsedMs": [
+        42.523167,
+        42.867,
+        42.738583
+      ],
+      "allFourWavesReadyAndPeak": 10
+    },
+    "coldReplay": {
+      "status": "PASS",
+      "checks": 113,
+      "newWorkerProcess": true,
+      "prepareWorkerPid": 9671,
+      "replayWorkerPid": 10825,
+      "bothWorkersExited": true,
+      "sameReplayFixtureSha256": "d284431c4e108bf8a0e6edb37b4b975a8b69834e910afd60d2e2ae86c5b3ff6e",
+      "sameEventAndRequestKeys": true,
+      "allFourFinancialReceiptQuotaAccountSnapshotHashesUnchanged": true,
+      "chatWork": 0,
+      "toolWork": 0,
+      "imageWork": 0,
+      "createTransactionOnceCalls": 0,
+      "finishPlanUsageCalls": 0,
+      "reservePlanUsageCalls": 53,
+      "resolverCalls": 53,
+      "mediaDownloadDoubleCalls": 1,
+      "allFourWavesReadyAndPeak": 10,
+      "readAndExportOwnerAndForeignRlsChecks": "PASS"
+    },
+    "mechanism": "Handlers y middleware reales con Auth/REST/PG/cuota/historial/tools/servicios reales. Gasto1500 y transferencia1500 usan eventos propios persistentes; la foto produce propuesta persistida sin movimiento ni recibo, luego confirmación monetaria1500. Los nominales completed devuelven assistant_message durable exacto en cada2+10replay y en proceso nuevo. La rama AIpostcommit queda reserved/result:null; se comprueba un efecto, respuesta pending efectiva, lectura/export y ausencia de trabajo repetido.",
+    "privacy": {
+      "calibration": "Error message/stack/cause positivos antes de Auth/SQL, luego clear0 en ambas fases",
+      "selectedRamNeedlesPerPhase": 13,
+      "selectedAndCanaryHitsPerPhase": 0,
+      "rawConsolePersisted": false
+    },
+    "preservation": "Ambas fases restauran campos de plan y comparan Aresto/Bfila completa, datos previos y chats ajenos; sólo sus chats sintéticos pueden anexar historial. Cuentas propias archivadas conservando ledger/recibos. Ambas cierran sesiones normales y observan sessions0/refresh0."
+  },
+  "rollbackAndOtherVariantComposition": [
+    {
+      "clause": "Fallo de escritura revierte registro y todos los impactos monetarios: gasto y cron",
+      "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-5/test-db.log",
+        "scripts/test-durable-financial-operations.mjs"
+      ],
+      "acceptedScope": "Gate test-db PASS ejecutó25regresiones durable-financial en PL/pgSQL/PGlite aislado. El fallo en INSERT del receipt después del financial insert conserva saldo y conteo de transactions/outbox, marcador recurring anterior y ausencia del request fallido. Es el mismo create_transaction_once para gasto y cron; fixture de regresión100, no se reetiqueta como nuevo ensayo1500/400 ni timeout."
+    },
+    {
+      "clause": "Rollback importación",
+      "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-5/test-db.log",
+        "scripts/test-durable-import.mjs"
+      ],
+      "acceptedScope": "La regresión durable-import10/10 incluye trigger de fallo del receipt: fila importada y saldo se revierten; el posterior retry tiene un efecto. Prueba SQL del mecanismo, no timeout físico ni el nuevo fixture200+300."
+    },
+    {
+      "clause": "Rollback venta",
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-5/test-db.log",
+        "scripts/test-durable-financial-operations.mjs",
+        "docs/tif/v2.13/evidence/technical-20261015/native-full/native-verification.json"
+      ],
+      "acceptedScope": "Gate f5 prueba fallo del receipt de venta con quantity y sales iguales al antes; Native22PASS en1872f220 prueba fallo del INSERT sale después del decremento con rollback real PG. Se mantienen ambas revisiones y alcances, sin afirmar que Native22 sea una corrida nueva f5."
+    },
+    {
+      "clause": "Transferencia: fallo entre débito/crédito, UPDATE y DELETE exactos",
+      "sourceRevision": "730767b1723502b495d371e69c44df31eb230b56",
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/cnf11-six-local.json",
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-cnf-local-focal-review.json"
+      ],
+      "acceptedScope": "Transferencia1500 da8500/3500; PATCH2000 da8000/4000; DELETE devuelve10000/2000. CHECK propio del crédito provoca500 sin cambios en débito/crédito/ledger/receipt. No deshabilita triggers ni modifica filas ajenas."
+    },
+    {
+      "clause": "Sobreventa concurrente sin cantidad negativa",
+      "sourceRevision": "730767b1723502b495d371e69c44df31eb230b56",
+      "evidence": [
+        "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/cnf11-six-local.json"
+      ],
+      "acceptedScope": "Lote separado10; dos comandos distintos6+6 llegan a barrera RPCreal, uno201 y otro400, quantity4, una sale/receipt. Complementa la nueva venta nominal4×120, quantity6/realizado80; no confunde sus fixtures."
+    }
+  ],
+  "directUserDurabilityRequirement": {
+    "distinguishedFromLiteralCsv": true,
+    "newBotEvidence": "Prepare y replay son procesos distintos; no se recrean eventos ni estados y las cuotas/recibos/ledger conservan los cuatro hashes. Completed replay devuelve caché sin chat/tools/OCR; reserved sigue conteniendo la misma operación y permite lectura/export. No se repite Gemini ni se exige reiniciar PG/hardware para ese mecanismo nuevo.",
+    "historicalComplements": [
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/composite-verification.json",
+        "originalStatus": "PARTIAL",
+        "acceptedScope": "Se usan sólo sus subpruebas CU001PASS: cola IndexedDB11.11 tras Chromeclose/reopen y gasto22.22 confirmado201 con route.abort del acuse, seguido de Chrome+Nextrestart/mismoID y un receipt/efecto. El composite general y el resume original conservan PARTIAL/FAIL y el límite de guardia final no alcanzada; no se convierten en un nuevo PASSglobal."
+      },
+      {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/independent-restart-review.json",
+        "acceptedScope": "Prueba derivada histórica de replay venta tras PostgreSQL+Nextrestart en836fd18: mismo saleID/quantity5 y snapshot financiero idéntico. La pérdida anterior fue cancelación de stream tras headers201; no se llama timeoutobservado ni nuevo casoCSV."
+      }
+    ]
+  },
+  "preservedFailure": {
+    "attempt1AggregateStatus": "FAIL",
+    "report": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-1/nominal-six-and-payment-rollback.json",
+    "reportSha256": "fd85600e8cd89b594045ae02631a2bfc2ef9fd7cfd5572b09c5d3954c3f0895a",
+    "scope": "217checks monetarios pasaron; dos flags de cleanup quedaron false por JSON.parse de psqlf. Se conservan bytes, source y ejecuciónFAIL. Readback independiente posterior confirma6cuentas archivadas/regla inactiva/plan/B/Auth0/grupo0; el único delta de source son dos SELECTto_json(is_active). Se usa attempt2PASS para el agregado final.",
+    "fixReview": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-harness-boolean-fix-review.json"
+  },
+  "runtimeClosure": {
+    "status": "RETAIN_AND_STOP_PASS",
+    "sourceRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+    "originalTablesCompared": 39,
+    "allOriginalTablesUnchanged": true,
+    "allNormalAuthSessionsAndRefreshTokens": 0,
+    "temporaryActorsStopped": 4,
+    "officialProofStopExitCode": 0,
+    "ownedNativeActorsExited": true,
+    "cloneDatabaseDropped": false,
+    "newArchive": {
+      "sha256": "f0c4bdedbc47c0c3e2dcf6468e902849e3821bc3d1489803987d6da285f322ea",
+      "bytes": 564353,
+      "tables": 65,
+      "tocAndPayloadDecoded": true,
+      "newRestoreClaimed": false,
+      "storageObjectBytesClaimed": false
+    },
+    "priorArchivesAndOriginalCsvUnchanged": true
+  },
+  "limits": [
+    "PASS se refiere a la aceptación local compuesta CNF-11 y los alcances descritos. No implica cuatroCU íntegros, UIvisual, producción, carga o nuevos criterios de aceptación.",
+    "Los deadlines son reales en un límite consumidor/handler o transporteTelegrafdoble retenido después del oráculo SQL. No prueban caída física de TCP ni entrega realTelegram.",
+    "Las waves10concurrentes empiezan después del primer efecto durable. No se afirma contención de diezprimeroscommits; el CSV no exige esa condición adicional.",
+    "Gemini/OCR/Telegram/media son dobles explícitos. Se demuestra captura/propuesta/confirmación monetaria y protocolo persistente, no interpretación de un comprobante real, secreto del webhook externo ni servicio externoGemini.",
+    "Pago usa recurso sintético, proveedorHTTPloopback y HMACdeprueba. Eso satisface la precondición literal; MercadoPago externo no fue probado y no es un blocker añadido. El campo externoBLOCKED en composition.json conserva únicamente ese alcance externo.",
+    "La rama reserved/result:null no tiene TTL ni recuperación automática de la respuesta. Conserva un efecto y su lectura/export y bloquea ejecutar de nuevo el evento, incluso tras nuevo proceso. No se presenta como respuesta original recuperada, HTTP409 del bot o entrega exactly-once.",
+    "Cold bot replay registró53resoluciones de cliente y1descarga de media doble; cerochat/tool/imagework no significa ausencia de todas las llamadas preparatorias.",
+    "La composición SQL/native anterior respalda rollback y variantes por su alcance; no sustituye los nuevos protocolos monetarios ni se transforma en seis timeouts/reinicios anteriores.",
+    "La reserva de outbox no demuestra entrega físicaexactly-once. La retención nueva validó Fc/TOC/decodificación de65tablas, sin nueva restauración ni backup de bytesStorage.",
+    "Los ceros de secretos son los contadores observados de capturas acotadas; este reviewer no ejecutó un scanner ni concede una garantía universal de serialización o ausencia de todo secreto."
+  ],
+  "blockingFindings": [],
+  "reviewerRuntimeOperations": {
+    "workers": 0,
+    "sql": 0,
+    "auth": 0,
+    "providers": 0,
+    "browsers": 0,
+    "scanners": 0,
+    "productEdits": 0,
+    "indexOrCommits": 0
+  },
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/nominal.test-source.ts",
+      "sha256": "b965ca960ff66d7507bf2fc642ec0919391ea48d0dbe42310eb0aaaa5cae381d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/run-nominal.py",
+      "sha256": "57594d19b41198e1d1265c6df78bbb8b708c133416e467f9ec09ba4779542e4c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/held-acknowledgement.ts",
+      "sha256": "40b69bab37c6ee6f18af683253d506c3a1a502b3ceb7729dc74a684d83a1fd72"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/vitest.config.mjs",
+      "sha256": "363b7097f494179650875e8571db30e7442af0818f223e2bd7d93f7b4f9e3c27"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/bot.test-source.ts",
+      "sha256": "f04705ee962e93309bff428967d22ee0abb528d012948dccc14c4e7b0b9bc740"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/run-bot.py",
+      "sha256": "1f228587979077b29ad2df1738c7a721be4469850fa09502de2ea39448332873"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/vitest.config.mjs",
+      "sha256": "982498bca94fab1afe5c15dc106c158fb09b03fc6d4d95f6b56944266ff547bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/README.md",
+      "sha256": "e27f0b6c4ab87d93351fc62f73d7ca976c8d7da7d97df9c5a1cdb5da6af69bac"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/composition.json",
+      "sha256": "485fe62ef883936653bd332557df5aa032d6341a742a89d1c882c2300b414046"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/prepared-attempt-2-manifest.json",
+      "sha256": "9652ede3174785325a5fde37370d5d782711daab6d629ffd584f0ff8cf227388"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-1/nominal-six-and-payment-rollback.json",
+      "sha256": "fd85600e8cd89b594045ae02631a2bfc2ef9fd7cfd5572b09c5d3954c3f0895a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-1/execution.json",
+      "sha256": "b721363b2d5fe20ce8fd02427eb2cfbd899e10825bfc20ffe7c8378118618d90"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-1/export-manifest.json",
+      "sha256": "9ce2402d431a53e2c22ae5e8f7f4346fc61e6476fc1534ba59aef0693bed6dff"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-2/nominal-six-and-payment-rollback.json",
+      "sha256": "24aca0ee08bb41cd648c7f28978cd65aa361403ccd264b6a7d1dc0fe0dec0180"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-2/execution.json",
+      "sha256": "ac57cbd1ccb8b89d617b438c312c051d2bfd1f3d49376443f0bbf39bb4eefab4"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-2/export-manifest.json",
+      "sha256": "18177d59957f4c3c299accc4f8d3c0955be12ee774ff76401fd7aa579b582811"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/nominal/executed-attempt-2/sources/manifest.json",
+      "sha256": "68a4ba9caf87255b7dd77f78dfd5cfafb70209d9299aa6551b246c3082883c60"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/PLAN.md",
+      "sha256": "1620b68d20eb087cd4cc34820bbb2ee74b7c2124a699a09510d1d7331e66b853"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/preparation-manifest.json",
+      "sha256": "41cb880cd7b02e04b1ac6811030999a146b3432d1eb76e8b59caa33c5c28fcaa"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/execution-summary.json",
+      "sha256": "1c1a04736d90d4f35a9d2910ce02515789a82e581bae3f9d04f7a47c57c3479c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/executed-prepare-attempt-1/bot-verification.json",
+      "sha256": "5861ee666f829c1587d97d219d8068d297a993b86408548c8d9230c5a43f983a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/executed-prepare-attempt-1/execution.json",
+      "sha256": "a047b63255648bb2b62b46ca940dc3ae8920b7d15211805ad207427d708d9af7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/executed-prepare-attempt-1/sources/manifest.json",
+      "sha256": "4765a3826ba8f19610c9c2c8c1dfeb54529f0c42fcb2a6e8dcc3b5a814c33f1e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/executed-prepare-attempt-1/replay-fixture.json",
+      "sha256": "d284431c4e108bf8a0e6edb37b4b975a8b69834e910afd60d2e2ae86c5b3ff6e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/executed-replay-attempt-1/bot-verification.json",
+      "sha256": "87a3ce96d80963c35c798e7f07df08c3c6f7b1a3fdf1291ded22cd1fbfeabd19"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/executed-replay-attempt-1/execution.json",
+      "sha256": "ce1c2f6d9053a818aa594d6be7af7587f5b58fe654e2ee211a8861a626c64e83"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/bot/executed-replay-attempt-1/sources/manifest.json",
+      "sha256": "4765a3826ba8f19610c9c2c8c1dfeb54529f0c42fcb2a6e8dcc3b5a814c33f1e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-source-guard-review.json",
+      "sha256": "383a1c095066ad3aa03181f43ff7688c97434656f4fae24c20e2ba96a5c1e9b6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-harness-boolean-fix-review.json",
+      "sha256": "f73754e59e4155d7cfe28eb8155ba8bb923e1ba6741ee4f878e705fcb65aee3f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/coordinator/build-only/source-proof.metadata.json",
+      "sha256": "e4a60739d53647024ac1b0577c2b1b0c1b5423090172e4d990dd46948b74ea8a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/coordinator/nominal-attempt1-cleanup-readonly.json",
+      "sha256": "90552e73430238a330635ec4466db94875f817f416da900cf1cfc83a4a619ede"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/coordinator/executed-attempt-1/retention-stop.sanitized.json",
+      "sha256": "02aed8138224ee2ddc42acfef219ad79bb89e50d4fabb625718914cc70ccc868"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-5/verification.json",
+      "sha256": "316f73efc7d1588d19fb2b4a3bf7c673bc7979594ed1551a2f7ae08be7442be5"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-5/test-db.log",
+      "sha256": "75b3872833987159a8858c79cedde5ededb7b6e781d29330f248170e2010b5f2"
+    },
+    {
+      "path": "scripts/test-durable-financial-operations.mjs",
+      "sha256": "fd3c2e2b4301e81f0798c420bde81182aaa18fd3b3c9a54c0df92c3f24e62d80"
+    },
+    {
+      "path": "scripts/test-durable-import.mjs",
+      "sha256": "25694ea0871ac294686ef2fd4ffb61d5fef6891ca24c3cafa406637d58c1a5bb"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/native-full/native-verification.json",
+      "sha256": "8a5aa0b3f894b6d88ff899e6de5052ab4d12bb5000efdc2989a509c22de706e6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/native-full/manifest.json",
+      "sha256": "b7122fefd444be338b82d8e8d026cddf90dc739a008e436dcbe88a3d9c244a5b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/cnf11-final-local/executed-attempt-1/cnf11-six-local.json",
+      "sha256": "ce40204725db46665b667b1e45f6b4a32d6050dc126b9830f25c0ed1813e13f6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-cnf-local-focal-review.json",
+      "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/composite-verification.json",
+      "sha256": "b56875cec6b0329f9fecfa563c486a39b6318cfbc273fbee90e9344b0e3b63de"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/prepare-verification.json",
+      "sha256": "ed65faa2f0fae6c68f630c1d355b9c3abbe8d46eb5f9bac1ae2d82ed576f42c6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/resume-verification.json",
+      "sha256": "7e30d3979bdaa7d0fb1539cd6aa56790d773b619327d51d15b80e653b2ea88ef"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/independent-restart-review.json",
+      "sha256": "84ffdb345c5460395bc879474412a69cc76f106602aa9a7dc5a18d0cd8dbb0b0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-restart/verification.json",
+      "sha256": "657e6d3c2acad471850593aa0a34e623934ec0ba8911dfe81f2658811a0322e4"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/verification.json",
+      "sha256": "9ae8047a29465d8068d36ae360ed79b97e6dfe9b23302f81000f93e8cd928031"
+    }
+  ],
+  "newReviewerWrites": [
+    "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/cnf11-extension/independent-acceptance-review.json"
+  ],
+  "privateValuesPublished": false
+}
