@@ -1,0 +1,38 @@
+{
+  "startedAt": "2026-10-14T01:18:10.628Z",
+  "status": "PASS",
+  "scope": "Creates exactly two new synthetic normal Auth identities in a separate local replica. Existing source/recovery identities and canonical monetary data remain unchanged.",
+  "results": [
+    {
+      "name": "ordinary signin existing test user A",
+      "status": "PASS",
+      "userId": "b55e004c-0551-44fe-bcd4-e412fe198880",
+      "role": "authenticated"
+    },
+    {
+      "name": "ordinary signin existing test user B",
+      "status": "PASS",
+      "userId": "91adce1a-edfe-43fd-b7ad-b104f3f46534",
+      "role": "authenticated"
+    }
+  ],
+  "target": {
+    "apiOrigin": "http://127.0.0.1:57321",
+    "databasePort": "57322",
+    "purpose": "isolated-api-e2e-replica"
+  },
+  "existingMonetaryData": {
+    "beforeSha256": "a80aa3cf635df2d3f9f1f3554244a04f72816d0686d7bcac81ed632622a0adbc",
+    "afterSha256": "a80aa3cf635df2d3f9f1f3554244a04f72816d0686d7bcac81ed632622a0adbc",
+    "unchanged": true
+  },
+  "credentialPolicy": "Ephemeral local synthetic passwords in private 0600 fixture only; never copied into evidence",
+  "fixtureFile": "/tmp/zarix-runtime/e2e-logins.json",
+  "guest": {
+    "status": "PASS",
+    "ownGuests": 1,
+    "ownGroups": 2,
+    "scope": "One anonymous capability member; two registered members in its group and one foreign registered member. Tokens stay private; this does not assert guest Auth identity."
+  },
+  "finishedAt": "2026-10-14T01:18:11.691Z"
+}
