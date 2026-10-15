@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-15T03:16:57.379092+00:00",
+  "provenance": "Direct parent relay of human steering,15October2026; no browser or OS preference action performed by this record.",
+  "browsers": {
+    "Chrome": {
+      "status": "EXISTING_BROWSER_AUTHORIZED",
+      "execution": "Only dedicated test profiles; existing installed Chrome."
+    },
+    "Firefox": {
+      "status": "DECLINED_INSTALL",
+      "tests": "NOT_EXECUTED",
+      "reason": "Not installed; human declined installation."
+    },
+    "Edge": {
+      "status": "DECLINED_INSTALL",
+      "tests": "NOT_EXECUTED",
+      "reason": "Not installed; human declined installation."
+    },
+    "Arc": {
+      "status": "AUTHORIZED_BROWSER_UI_REQUIRES_SPECIFIC_APPLEEVENTS_CONSENT",
+      "executionAllowed": false,
+      "tests": "BLOCKED",
+      "version": "1.168.0",
+      "build": "88413",
+      "reason": "New local tab/incognito scripting route declared by installed Arc.sdef. Native read-only permission preflight returns -1744(would require user consent); prepared driver not executed. Separate-profile/pipe route remains unverified."
+    },
+    "Safari": {
+      "status": "WEBDRIVER_DISABLED",
+      "tests": "BLOCKED",
+      "action": "No change to Remote Automation, TCC, preferences or other permission."
+    }
+  },
+  "interpretation": "Historical Chrome tests do not establish Arc, Safari, Firefox or Edge compatibility. No browser equivalence is claimed."
+}

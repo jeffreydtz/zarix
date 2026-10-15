@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-15T03:19:58.568863+00:00",
+  "status": "DOCUMENT_VALIDATION_PASS",
+  "scope": "Static plan validation only; no application,API,SQL,browser or acceptance test execution.",
+  "caseCount": 24,
+  "uniqueCaseCount": 24,
+  "literalCsvFieldsUnchanged": true,
+  "sourceHashesMatch": true,
+  "newPassClaims": 0,
+  "planSha256": "d704c00d59e6b330f6fcd0b4fb5731bf875084ba58fe9f32fbcb2a7ec7570307"
+}

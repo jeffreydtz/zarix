@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-15T03:20:05.470314+00:00",
+  "scope": "Read-only AppleEvents permission preflight outside workspace sandbox. askUser=false; no AppleEvent sent, no app launch, no profile/tab read, no permission changed.",
+  "arc": {
+    "osStatus": -1744,
+    "alreadyAllowed": false,
+    "askedUser": false
+  },
+  "systemEvents": {
+    "osStatus": -600,
+    "alreadyAllowed": false,
+    "askedUser": false
+  }
+}
