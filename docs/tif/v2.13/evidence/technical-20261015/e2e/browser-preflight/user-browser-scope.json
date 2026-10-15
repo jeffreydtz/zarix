@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-10-15T03:16:57.379092+00:00",
+  "recordedAt": "2026-10-15T03:54:12.316069+00:00",
   "provenance": "Direct parent relay of human steering,15October2026; no browser or OS preference action performed by this record.",
   "browsers": {
     "Chrome": {
@@ -17,12 +17,17 @@
       "reason": "Not installed; human declined installation."
     },
     "Arc": {
-      "status": "AUTHORIZED_BROWSER_UI_REQUIRES_SPECIFIC_APPLEEVENTS_CONSENT",
+      "status": "AUTHORIZED_NATIVE_PERMISSION_GRANTED_UI_REFERENCE_BLOCKED",
       "executionAllowed": false,
       "tests": "BLOCKED",
       "version": "1.168.0",
       "build": "88413",
-      "reason": "New local tab/incognito scripting route declared by installed Arc.sdef. Native read-only permission preflight returns -1744(would require user consent); prepared driver not executed. Separate-profile/pipe route remains unverified."
+      "reason": "Human consent and native permission result0 confirmed. One reviewed incognito-window preflight failed at own incognito property resolution(-1728); close of own returned reference was not confirmed. No further make/attach/quit/enumeration pending cleanup reconciliation.",
+      "nativePermissionEvidence": "arc-launch-permission-preflight.json",
+      "executionEvidence": "arc-newtab-execution.json",
+      "ownWindowCleanup": "UNCONFIRMED",
+      "explicitLocalTabMakeReached": false,
+      "domReadReached": false
     },
     "Safari": {
       "status": "WEBDRIVER_DISABLED",

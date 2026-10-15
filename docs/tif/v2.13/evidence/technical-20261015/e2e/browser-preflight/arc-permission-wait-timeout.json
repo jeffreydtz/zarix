@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-15T03:50:15.720284+00:00",
+  "status": "PENDING_OBSERVATION_RESOLVED",
+  "scope": "Only this agents native permission-wait helper; Arc app and all browser windows/processes preserved. No repeat permission call and no AppleScript driver execution.",
+  "matchedOwnHelper": 0,
+  "signalledOwnHelper": false,
+  "nativeConsentResult": "UNKNOWN_PENDING_NO_RESULT",
+  "permissionChangedClaim": false,
+  "driverExecuted": false,
+  "arcStopped": false,
+  "initialObservedStatus": "OWN_NATIVE_PERMISSION_REQUEST_TIMEOUT",
+  "resolution": {
+    "source": "arc-launch-permission-preflight.json",
+    "nativeResult": 0,
+    "completedAt": "2026-10-15T03:50:16.318966+00:00",
+    "helperCompletedNaturally": true,
+    "signalsSent": false
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "recordedAt": "2026-10-15T04:21:37.071378+00:00",
+  "status": "PREPARED_NOT_EXECUTED",
+  "cases": [
+    "CP1-04",
+    "CP1-12",
+    "CP1-19",
+    "CP1-20",
+    "CP1-21",
+    "CP1-22",
+    "CP1-23",
+    "CP1-24",
+    "CP1-25",
+    "CP1-28",
+    "CP1-29",
+    "CP1-30",
+    "CP1-31",
+    "CP1-35"
+  ],
+  "sourceFiles": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs",
+      "sha256": "16e333a2afdc3a47d6b951c8f9d1000668a7f6c400975965c66634563d291b14"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-scenarios.mjs",
+      "sha256": "c580f3956237c0ad29f5aa06665a784a99c6420680e6f76f76a70a43eaadcdfb"
+    }
+  ],
+  "syntaxCheck": {
+    "node": "22.17.0",
+    "command": "node --check on both files",
+    "exitCode": 0,
+    "scope": "Parse only; modules never evaluated"
+  },
+  "profiles": {
+    "intermediate-core-reliability-clock": "Immutable Git836fd18b310a51cced9074b372a80ce5d7e1a870,core-reliability,copycontract-clock,API58321/PG58322/Next3002",
+    "final-core-acceptance": "Future frozen core-acceptance,own freshcopyfinal-proof,same isolated native backend; not implicitly selected"
+  },
+  "writerGuard": "ZARIX_CU001_REMAINING_WINDOW=released-clock-proof-58321 and synthetic-only, only after parent explicit serial release",
+  "financialActor": "A for normal/import/budget/secondary cases; existing PremiumB for cron only. No plan mutation,new identities,realTelegramdelivery or administrator messages.",
+  "temporaryFaults": "Only new target-ID-specific test hooks/sequence on own fixtures. Names, installAttempted flag and IF EXISTS cleanup registered/checkpointed BEFORE CREATE. Own installed definitions/ACL and full public function/trigger/sequence catalog hash/count before/after retained; own objects must be absent and catalog restored. SQL statement/lock timeouts17s/3s, psql22s. No product function replacement/migration edit; direct PUBLIC/anon/authenticated function execution revoked.",
+  "knownPendingScopes": [
+    "CP1-19/20 importer skipped field versus literal rejected/omitted terminology",
+    "CP1-21 duplicate criteria actual UI",
+    "CP1-23 next occurrence UI",
+    "CP1-24 linked Telegram fixture if absent",
+    "CP1-25 committed-unmarked23505 branch is not manufactured against atomic INSERT trigger",
+    "CP1-28 runtime pre-DB counter uninstrumented",
+    "CP1-30 realTelegramcredentialmissing",
+    "CP1-31 UIstate labels unexecuted"
+  ],
+  "databaseWrites": 0,
+  "browserCalls": 0,
+  "independentReview": {
+    "status": "STATIC_REVIEW_NO_MATERIAL_FINDING_REMAINING",
+    "reviewer": "/root/dependency_audit",
+    "scope": "Read-only full14 scenarios and delta fault cleanup; no runtime or Node by reviewer. Runtime DDL/catalog parity remains unexecuted. Last edit after review changes only report scope wording to distinguish intermediate/final builds."
+  },
+  "buildBinding": "Every served copy source matches immutable selected Git/core proof, env/backend and owned PID/listener/cwd; current product differences recorded executedByThisBuild:false; served copy rehashed after tests. Intermediate revision pinned836fd18."
+}

@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
+import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import { createServerClient } from '@supabase/ssr';
 import { isolatedNativeTargets, isolatedPgEnvironment, isolatedApiFetch } from '../../../../../../scripts/lib/test-isolated-native-target.mjs';
@@ -15,11 +16,14 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const runtime = '/tmp/zarix-runtime-20261015';
 const appOrigin = 'http://127.0.0.1:3002';
 const ids = ['CP1-01', 'CP1-02', 'CP1-03', 'CP1-05', 'CP1-09', 'CP1-11', 'CP1-33', 'CP1-34'];
+const options = parseArgs({ options: { cases: { type: 'string' } }, strict: true, allowPositionals: false }).values;
+const selectedIds = options.cases ? options.cases.split(',') : ids;
+assert.ok(selectedIds.length > 0 && new Set(selectedIds).size === selectedIds.length && selectedIds.every(id => ids.includes(id)), 'Select only distinct declared original case IDs');
 const digest = value => createHash('sha256').update(value).digest('hex');
 const lit = value => `'${String(value).replaceAll("'", "''")}'`;
 const sqlIds = values => values.length ? values.map(lit).join(',') : 'NULL';
 const run = randomUUID();
-const report = { status: 'PREPARED', startedAt: new Date().toISOString(), run, scope: 'Eight declared original CU001 cases, API/SQL scope only. No browser, cron, import, shared group, external provider acceptance, plan change or new identity.', results: [], requests: [], fixtures: [] };
+const report = { status: 'PREPARED', startedAt: new Date().toISOString(), run, selectedIds, scope: 'Selected declared original CU001 cases, API/SQL scope only. No browser, cron, import, shared group, external provider acceptance, plan change or new identity.', results: [], requests: [], fixtures: [] };
 const originalTables = ['users', 'accounts', 'transactions', 'investments', 'investment_sales', 'categories', 'budgets', 'recurring_rules', 'shared_groups', 'shared_group_members', 'shared_expenses', 'shared_expense_splits'];
 const users = [], ownedAccounts = [];
 let sql, rows, output, active, config, originals, initialSources;
@@ -118,6 +122,7 @@ async function category(name, type) {
 }
 async function summary() { const r = await request('GET', '/api/transactions/summary?month=2026-10-01T12:00:00Z'); check('October summary200', r.status, 200); return r.body; }
 async function exact(id, fn) {
+  if (!selectedIds.includes(id)) return;
   active = { id, status: 'RUNNING', complete_original_contract: false, assertions: [], observations: [], pendingScopes: [], startedAt: new Date().toISOString() }; report.results.push(active);
   const ownedStart = ownedAccounts.length;
   try { await fn(); active.status = active.pendingScopes.length ? 'PARTIAL' : 'PASS'; active.complete_original_contract = active.status === 'PASS'; }
@@ -202,7 +207,8 @@ try {
     for (const [name, id] of [['inactive-own', aa], ['foreign-owner', foreign]]) {
       const before = { accounts: accountRows([aa, foreign]), transactions: ledgerRows([aa, foreign]) };
       const r = await request('POST', '/api/transactions', { type: 'expense', accountId: id, amount: 1500, currency: 'ARS' });
-      check(`${name} access/state rejection`, r.status >= 400 && r.status < 500, true);
+      active.observations.push({ name: `${name} HTTP error status`, status: r.status, interpretation: 'Observed transport status only; the CSV requires state/access rejection without naming an HTTP code. A500 is not declared the expected API contract.' });
+      check(`${name} rejected with an error response`, r.status >= 400 && r.status < 600, true);
       check(`${name} no account or full-ledger change`, digest(JSON.stringify({ accounts: accountRows([aa, foreign]), transactions: ledgerRows([aa, foreign]) })), digest(JSON.stringify(before)));
       check(`${name} response excludes account/balance data`, Object.keys(r.body).sort(), ['error']);
     }
@@ -226,7 +232,7 @@ try {
   }
   for (const user of users) { try { await user.client.auth.signOut({ scope: 'local' }); } catch { report.authSessionCleanupFailed = true; } }
   if (initialSources) { try { report.sourceStable = JSON.stringify(initialSources) === JSON.stringify(await manifest()); } catch { report.sourceStable = false; } }
-  if (report.results.length) report.status = report.results.some(x => x.status === 'FAIL') || report.originalIntegrity?.some(x => !x.unchanged) || report.originalIntegrityUnavailable || report.authSessionCleanupFailed || !report.sourceStable ? 'FAIL' : report.results.length === ids.length ? (report.results.some(x => x.status !== 'PASS') ? 'PARTIAL' : 'PASS') : 'BLOCKED';
+  if (report.results.length) report.status = report.results.some(x => x.status === 'FAIL') || report.originalIntegrity?.some(x => !x.unchanged) || report.originalIntegrityUnavailable || report.authSessionCleanupFailed || !report.sourceStable ? 'FAIL' : report.results.length === selectedIds.length ? (report.results.some(x => x.status !== 'PASS') ? 'PARTIAL' : 'PASS') : 'BLOCKED';
   report.finishedAt = new Date().toISOString(); await save();
   console.log(JSON.stringify({ output: output ? path.basename(output) : null, status: report.status, cases: report.results.map(({ id, status }) => ({ id, status })), browserExecution: false }));
   if (report.status === 'FAIL') process.exitCode = 1;

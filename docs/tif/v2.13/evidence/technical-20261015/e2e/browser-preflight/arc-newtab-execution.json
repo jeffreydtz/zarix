@@ -1,0 +1,16 @@
+{
+  "startedAt": "2026-10-15T03:50:41.177274+00:00",
+  "finishedAt": "2026-10-15T03:50:41.650713+00:00",
+  "scope": "Only a newly created Arc incognito window/local login tab and scalar DOM metadata; no login or financial action",
+  "scriptSha256": "44109ae7a28c85e132a546641b952fd081e496803c652da3fb9f4d8b3a74d965",
+  "targetOrigin": "http://127.0.0.1:3002",
+  "result": {
+    "result": {
+      "status": "BLOCKED",
+      "stage": "verify_own_incognito_window",
+      "osStatus": -1728
+    },
+    "ownWindowCloseConfirmed": false,
+    "cleanupStatus": "UNCONFIRMED_DO_NOT_CLOSE_OTHER_WINDOWS"
+  }
+}
