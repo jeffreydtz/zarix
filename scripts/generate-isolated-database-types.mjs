@@ -35,7 +35,6 @@ assert.deepEqual(names,expectedTables,'Generated types must cover every live pub
 const transactions=namedMember(namedMember(tables,'transactions'),'Row');
 const accounts=namedMember(namedMember(tables,'accounts'),'Row');
 assert.ok(namedMember(transactions,'destination_amount_in_account_currency'),'Missing authoritative destination amount type');
-assert.ok(namedMember(accounts,'movement_enabled'),'Missing movement allowance field type');
 const functions=namedMember(publicSchema,'Functions');
 for(const name of ['save_shared_expense','sell_investment_position','create_transaction_once','sell_investment_once','save_shared_expense_once','recompute_account_balance'])assert.ok(namedMember(functions,name),`Missing RPC ${name}`);
 const recomputeArgs=namedMember(namedMember(functions,'recompute_account_balance'),'Args');

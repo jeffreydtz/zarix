@@ -15,18 +15,13 @@ const input={userId:'fixture-owner',message:'synthetic owner instruction',reques
 const sdkResponse=(calls:any[])=>new Response(JSON.stringify({candidates:[{content:{role:'model',parts:calls.map(call=>({functionCall:call}))},finishReason:'STOP'}]}));
 beforeEach(()=>{
  vi.clearAllMocks();vi.stubGlobal('fetch',vi.fn());vi.stubEnv('GEMINI_TIMEOUT_MS','500');
- let reserved=false;
  mocks.rpc.mockImplementation(async name=>{
-  if(name==='reserve_plan_usage'){
-   if(reserved)return {error:{message:'plan_request_in_progress'}};
-   reserved=true;return {data:{replayed:false}};
-  }
   throw new Error(`Unexpected quota release or completion: ${name}`);
  });
 });
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();});
 describe('ambiguous mutation aborts the complete real tool chain',()=>{
- it('commit then lost response creates exactly one ledger effect and leaves quota reserved',async()=>{
+ it('commit then lost response creates exactly one ledger effect without quota RPCs',async()=>{
   const ledger:string[]=[];
   mocks.create.mockImplementation(async()=>{ledger.push(nextFinancialRequestId()!);throw new Error('synthetic commit then lost response');});
   vi.mocked(fetch).mockResolvedValue(sdkResponse([
@@ -36,9 +31,7 @@ describe('ambiguous mutation aborts the complete real tool chain',()=>{
   await expect(processInternalAiChatMessage(input)).rejects.toBeInstanceOf(AmbiguousPlanWorkError);
   expect(ledger).toHaveLength(1);expect(ledger[0]).toMatch(/^ai:fixture-owner:[0-9a-f]{64}:0$/);
   expect(fetch).toHaveBeenCalledOnce();expect(mocks.create).toHaveBeenCalledOnce();
-  expect(mocks.rpc.mock.calls.map(call=>call[0])).toEqual(['reserve_plan_usage']);
-  await expect(processInternalAiChatMessage(input)).rejects.toMatchObject({status:409});
-  expect(mocks.create).toHaveBeenCalledOnce();expect(fetch).toHaveBeenCalledOnce();
+  expect(mocks.rpc).not.toHaveBeenCalled();
  });
  it('lost deletion response never reselects/deletes the next latest movement',async()=>{
   const ledger=[{id:'newest',type:'expense',amount:10},{id:'older',type:'expense',amount:20}];

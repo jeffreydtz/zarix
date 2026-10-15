@@ -99,7 +99,7 @@ describe('recurring relation disambiguation after owner composite FK',()=>{
   });
 });
 
-it('pauses rules against movement-disabled accounts without creating effects',()=>{
-  expect(new ProbeJob().eligible({ ...rule,account:{is_active:true,movement_enabled:false} })).toBe(false);
+it('pauses rules against inactive accounts without creating effects',()=>{
+  expect(new ProbeJob().eligible({ ...rule,account:{is_active:false} })).toBe(false);
   expect(mocks.create).not.toHaveBeenCalled();
 });

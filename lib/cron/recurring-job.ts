@@ -19,7 +19,7 @@ export class RecurringRulesJob extends IterativeCronJob<any> {
     // Get all active recurring rules with their accounts
     const { data: rules, error } = await supabase
       .from('recurring_rules')
-      .select('*, account:accounts!recurring_rules_account_id_fkey(name, currency, is_active, movement_enabled), user:users(status, current_period_end, grace_period_end)')
+      .select('*, account:accounts!recurring_rules_account_id_fkey(name, currency, is_active), user:users(status, current_period_end, grace_period_end)')
       .eq('is_active', true);
 
     if (error) throw error;
@@ -32,7 +32,7 @@ export class RecurringRulesJob extends IterativeCronJob<any> {
 
     // No generar movimientos contra una cuenta desactivada (el usuario la
     // considera cerrada). La regla sigue activa pero se saltea.
-    if (rule.account && (rule.account.is_active === false || rule.account.movement_enabled === false)) return false;
+    if (rule.account && (rule.account.is_active === false)) return false;
 
     return true;
   }

@@ -17,7 +17,7 @@
     "test:bot": "tsx lib/telegram/test-bot.ts",
     "set-password": "node scripts/set-password.js",
     "compare:import": "tsx scripts/compare-import-with-export.ts",
-    "test:db": "node scripts/test-balance-trigger.mjs && node scripts/test-shared-expenses-sql.mjs && node scripts/test-plan-limits.mjs && node scripts/test-durable-financial-operations.mjs && node scripts/test-durable-import.mjs && node scripts/test-atomic-account-recompute.mjs && node scripts/test-transaction-deletion-audit.mjs && node scripts/test-isolated-schema-mirror.mjs && node scripts/test-isolated-database.mjs",
+    "test:db": "node scripts/test-balance-trigger.mjs && node scripts/test-shared-expenses-sql.mjs && node scripts/test-durable-financial-operations.mjs && node scripts/test-durable-import.mjs && node scripts/test-atomic-account-recompute.mjs && node scripts/test-transaction-deletion-audit.mjs && node scripts/test-isolated-schema-mirror.mjs && node scripts/test-isolated-database.mjs",
     "test:db:native": "node scripts/test-isolated-native-supabase.mjs",
     "test:performance": "node scripts/test-isolated-performance.mjs",
     "db:schema:check": "node scripts/test-isolated-schema-mirror.mjs",

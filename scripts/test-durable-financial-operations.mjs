@@ -106,13 +106,11 @@ try {
     assert.equal((await db.query('SELECT * FROM claim_notification_outbox(10)')).rows.length, 0);
     assert.equal(await balance(), before);
   });
-  await test('committed replay survives downgrade and movement account disablement', async () => {
+  await test('committed replay survives downgrade', async () => {
     const receipt = await create('manual:request:1');
     await db.query("UPDATE users SET status='PAST_DUE', current_period_end=now()-interval '1 day' WHERE id=$1", [ids.a]);
-    await db.query('UPDATE accounts SET movement_enabled=false WHERE id=$1', [ids.accountA]);
     const before = await balance();
     assert.deepEqual(await create('manual:request:1'), receipt); assert.equal(await balance(), before);
-    await assert.rejects(create('manual:new:disabled'));
   });
   await test('browser roles cannot invoke server-only RPC or inspect receipt/outbox payloads', async () => {
     for (const role of ['anon', 'authenticated']) {

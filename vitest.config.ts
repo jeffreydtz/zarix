@@ -36,7 +36,6 @@ export default defineConfig({
         'lib/hooks/useOfflineQueue.ts',
         'lib/transaction-idempotency.ts',
         'lib/financial-request-context.ts',
-        'app/api/accounts/movement-selection/route.ts',
         'app/api/billing/cancel/route.ts',
         'app/api/export/backup/route.ts',
         'components/settings/SettingsForm.tsx',
