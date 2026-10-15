@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-15T03:38:21.650216+00:00",
+  "status": "PREPARED_NOT_EXECUTED",
+  "runner": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-basic.mjs",
+  "runnerSha256": "7a7da5eeedab6f5e0096758f80d84b7b607154842fae52219c220305744f1620",
+  "syntaxCheck": {
+    "command": "node --check docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-basic.mjs",
+    "exitCode": 0,
+    "scope": "Parse only; no module evaluation or local calls",
+    "nodeVersion": "22.17.0"
+  },
+  "databaseWrites": 0,
+  "browserLaunches": 0,
+  "requestedCases": [
+    "CP1-01",
+    "CP1-02",
+    "CP1-03",
+    "CP1-05",
+    "CP1-09",
+    "CP1-11",
+    "CP1-33",
+    "CP1-34"
+  ],
+  "independentStaticReview": {
+    "reviewer": "dependency_audit",
+    "status": "NO_MATERIAL_FINDING_REMAINS_IN_REVIEWED_SCOPE",
+    "scope": "Read-only source review; initial opening-adjustment oracle finding corrected before runtime. Full-ledger snapshots preserve openings; economic counts exclude only adjustment; no new executed tests."
+  }
+}

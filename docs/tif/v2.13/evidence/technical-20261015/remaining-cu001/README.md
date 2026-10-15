@@ -36,3 +36,21 @@ Las futuras ejecuciones corresponden exclusivamente a la réplica nueva 58321/58
 Riesgos de atribución: PATCH de API puede reparar mediante recomputación y no prueba por sí solo el trigger SQL; `JSON.stringify(NaN)` produce `null`; balances intactos no prueban que un rechazo ocurrió antes de acceder aDB; falta de un contador `skipped` no autoriza inventarlo. Los gastos recurrentes sí pueden dejar saldo negativo según el contrato literal. Las notificaciones por doble local no equivalen a entrega real de Telegram.
 
 Las aserciones UI quedan bloqueadas por la preflight de aislamiento de Arc. La versión instalada y las fuentes oficiales se registran en [arc-isolation-preflight.json](../e2e/browser-preflight/arc-isolation-preflight.json). No se ejecutó Arc ni se sustituyó por Chrome.
+
+## Arnés básico preparado
+
+[run-basic.mjs](run-basic.mjs) prepara CP1-01/02/03/05/09/11/33/34 contra el destino fijo API 58321/PG 58322 y Next 3002. No se ejecutó. La sintaxis Node fue verificada; esto no prueba el producto. Antes de cualquier I/O exige la liberación serial del padre y `synthetic-only`. Verifica la copia servida contra Git y CI4, buildID/env privados, PID/listener/cwd propios y las dos identidades clonadas por Auth normal. No altera planes, identidades ni originales.
+
+Para la ventana explícitamente liberada, sin imprimir credenciales:
+
+```sh
+ZARIX_CU001_BASIC_WINDOW=released-proof-58321 \
+ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only \
+node docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-basic.mjs
+```
+
+Las nuevas cuentas propias se archivan; los movimientos se conservan salvo los DELETE propios exigidos por CP1-09/11. El informe conserva huellas de las filas originales antes/después. No ejecuta cron, importación, compartidos, navegador o proveedor. Si faltan cupos ya configurados, bloquea el caso y continúa sin cambiar planes.
+
+CP1-05 registra primero UPDATE de `amount` solo y su saldo observado; después prueba la edición de ambas columnas monetarias canónicas. Esa segunda prueba no sustituye la primera ni promueve el caso original ambiguo a PASS. CP1-01 conserva pendiente el listado/dashboard UI. CP1-34 envía la cadena `NaN`, convertida por la API a NaN, y separa ese rechazo del comportamiento real de un input del navegador.
+
+La apertura contable de una cuenta es un `adjustment` documentado. Se conserva en los snapshots y en `openingLedgerRows`; el conteo de gastos/ingresos/transferencias se mantiene separado. La revisión estática independiente detectó esa distinción antes de ejecutar; no se descartó una falla observada del producto.
