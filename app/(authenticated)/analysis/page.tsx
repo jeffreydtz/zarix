@@ -51,25 +51,36 @@ export default async function AnalysisPage(
     });
     const monthlyWindow = monthlyTrendWindow(period);
 
-    const [
-      categoryBreakdown,
-      monthlyTrend,
-      dailyTrend,
-      topExpenses,
-      accountBreakdown,
-      incomeBreakdown,
-      prevExpenseBreakdown,
-      prevIncomeBreakdown,
-    ] = await Promise.all([
-      analyticsService.getCategoryBreakdown(user.id, period.startYmd, period.endYmd, 'expense').catch(() => []),
-      analyticsService.getMonthlyTrend(user.id, monthlyWindow.startYmd, monthlyWindow.endYmd).catch(() => []),
-      analyticsService.getDailyTrend(user.id, period.startYmd, period.endYmd).catch(() => []),
-      analyticsService.getTopExpenses(user.id, period.startYmd, period.endYmd, 10).catch(() => []),
-      analyticsService.getAccountBreakdown(user.id, period.startYmd, period.endYmd).catch(() => []),
-      analyticsService.getCategoryBreakdown(user.id, period.startYmd, period.endYmd, 'income').catch(() => []),
-      analyticsService.getCategoryBreakdown(user.id, period.prevStartYmd, period.prevEndYmd, 'expense').catch(() => []),
-      analyticsService.getCategoryBreakdown(user.id, period.prevStartYmd, period.prevEndYmd, 'income').catch(() => []),
-    ]);
+    const results = await Promise.all([
+      analyticsService.getCategoryBreakdown(user.id, period.startYmd, period.endYmd, 'expense'),
+      analyticsService.getMonthlyTrend(user.id, monthlyWindow.startYmd, monthlyWindow.endYmd),
+      analyticsService.getDailyTrend(user.id, period.startYmd, period.endYmd),
+      analyticsService.getTopExpenses(user.id, period.startYmd, period.endYmd, 10),
+      analyticsService.getAccountBreakdown(user.id, period.startYmd, period.endYmd),
+      analyticsService.getCategoryBreakdown(user.id, period.startYmd, period.endYmd, 'income'),
+      analyticsService.getCategoryBreakdown(user.id, period.prevStartYmd, period.prevEndYmd, 'expense'),
+      analyticsService.getCategoryBreakdown(user.id, period.prevStartYmd, period.prevEndYmd, 'income'),
+    ]).catch(() => null);
+
+    if (!results) {
+      const retryParams = new URLSearchParams({ period: period.preset });
+      if (period.preset === 'custom') {
+        retryParams.set('startDate', period.startYmd);
+        retryParams.set('endDate', period.endYmd);
+      }
+      return (
+        <PageScaffold hero={<PageHero eyebrow="Inteligencia financiera" title="Análisis financiero"
+          subtitle={`Tendencias y patrones de ${period.label}.`} />}>
+          <AnalysisPeriodPicker period={period} />
+          <div role="alert" className="card mt-4 border-warning/30 bg-warning/10">
+            <p>No se pudo cargar el análisis de este período. Volvé a intentar.</p>
+            <a className="btn btn-secondary mt-3" href={`/analysis?${retryParams.toString()}`}>Reintentar análisis</a>
+          </div>
+        </PageScaffold>
+      );
+    }
+    const [categoryBreakdown, monthlyTrend, dailyTrend, topExpenses, accountBreakdown,
+      incomeBreakdown, prevExpenseBreakdown, prevIncomeBreakdown] = results;
     const averages = analyticsService.getAveragesFromMonthly(monthlyTrend);
 
     const totalExpenses = categoryBreakdown.reduce((sum, c) => sum + c.amount, 0);

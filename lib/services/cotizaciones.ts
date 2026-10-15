@@ -1,11 +1,13 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { YAHOO_FINANCE_HEADERS } from '@/lib/yahoo-finance-headers';
 
-interface DolarQuote {
+export interface DolarQuote {
   type: 'blue' | 'oficial' | 'mep' | 'ccl';
   buy: number;
   sell: number;
   timestamp: Date;
+  provider?: string | null;
+  origin?: 'provider' | 'persisted';
 }
 
 interface CryptoQuote {
@@ -350,7 +352,7 @@ class CotizacionesService {
       const dbProvider = this.dolarProviders.find((p) => p.name === 'db');
       if (dbProvider) {
         try {
-          const quotes = await dbProvider.fetch();
+          const quotes = this.withProviderMetadata(await dbProvider.fetch(), dbProvider.name);
           this.setCache(dbCacheKey, quotes);
           return quotes;
         } catch {
@@ -365,7 +367,7 @@ class CotizacionesService {
     let lastError: unknown;
     for (const provider of this.dolarProviders) {
       try {
-        const quotes = await provider.fetch();
+        const quotes = this.withProviderMetadata(await provider.fetch(), provider.name);
         validateDolarQuotes(quotes);
         this.setCache(provider.name === 'db' ? dbCacheKey : cacheKey, quotes);
         if (provider.name !== 'db') {
@@ -379,6 +381,13 @@ class CotizacionesService {
     }
 
     throw lastError ?? new Error('No hay proveedor de cotización disponible');
+  }
+
+  private withProviderMetadata(quotes: Record<string, DolarQuote>, provider: string): Record<string, DolarQuote> {
+    return Object.fromEntries(Object.entries(quotes).map(([type, quote]) => [type, {
+      ...quote, provider: provider === 'db' ? null : provider,
+      origin: provider === 'db' ? 'persisted' as const : 'provider' as const,
+    }]));
   }
 
   async getCryptoQuote(symbol: string): Promise<CryptoQuote> {

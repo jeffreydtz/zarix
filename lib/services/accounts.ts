@@ -4,6 +4,7 @@ import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { ApiError } from '@/lib/api-handler';
 import { cotizacionesService } from './cotizaciones';
+import { blueFxReference, uniqueBlueFxReferences, type BlueFxReference } from '@/lib/blue-fx-reference';
 import type { Account } from '@/types/database';
 
 /** Moneda de cuenta normalizada (trim + mayúsculas) para claves de tasas. */
@@ -92,6 +93,8 @@ export interface AccountWithBalance extends Account {
   multicurrency_balance_secondary?: number;
   multicurrency_total_usd?: number;
   multicurrency_total_ars_blue?: number;
+  /** USD/ARS leg only; other currency crosses may use separate references. */
+  blueReference?: BlueFxReference;
 }
 
 /** Totales derivados de `list()` — misma cotización que cada fila. */
@@ -106,6 +109,7 @@ export interface AccountAggregates {
   totalCreditUsed: number;
   totalCreditLimit: number;
   creditUtilization: number;
+  blueReferences?: BlueFxReference[];
 }
 
 function roundMoney(n: number): number {
@@ -243,9 +247,11 @@ class AccountsService {
 
     if (error) throw error;
 
-    const blueRate = await cotizacionesService.getExchangeRate('USD', 'ARS');
+    const dolar = await cotizacionesService.getDolarQuotes();
+    const blueRate = dolar.blue.sell;
+    const reference = blueFxReference(dolar.blue);
 
-    if (blueRate === 0) {
+    if (!Number.isFinite(blueRate) || blueRate <= 0) {
       throw new Error('Exchange rate not available');
     }
 
@@ -287,6 +293,7 @@ class AccountsService {
         balance,
         balance_usd: balanceUSD,
         balance_ars_blue: balanceARSBlue,
+        blueReference: reference,
         multicurrency_balance_primary: multi?.primary,
         multicurrency_balance_secondary: multi?.secondary,
         multicurrency_total_usd:
@@ -359,6 +366,8 @@ class AccountsService {
     const totalARSBlue = liquidARSBlue + nonLiquidARSBlue + investmentsARSBlue;
 
     return {
+      blueReferences: uniqueBlueFxReferences(accounts.filter(account => account.include_in_total !== false)
+        .map(account => account.blueReference)),
       liquidUSD: roundMoney(liquidUSD),
       liquidARSBlue: roundMoney(liquidARSBlue),
       investmentsUSD: roundMoney(investmentsUSD),

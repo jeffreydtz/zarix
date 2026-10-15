@@ -10,6 +10,7 @@ import { axisProps } from '@/lib/chart-theme';
 import { usePrivacy, PRIVACY_MASK } from '@/lib/hooks/use-privacy';
 import { deflatorToToday, type InflacionMes } from '@/lib/services/inflacion';
 import type { NetWorthNow, NetWorthPoint } from '@/lib/services/net-worth';
+import BlueFxReferenceDetails from '@/components/ui/BlueFxReferenceDetails';
 
 type ViewMode = 'ars' | 'usd' | 'real';
 type TimeframeId = '1m' | '3m' | '1y' | 'max';
@@ -275,6 +276,16 @@ export default function NetWorthHero({ now, history, inflacion }: NetWorthHeroPr
           {view === 'usd' && <Amount value={now.totalARSBlue} currency="ARS" prefix="≈ " />}
           {view === 'real' && 'en pesos de hoy'}
         </p>
+
+        <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+          {now.blueReferences?.length ? now.blueReferences.map(({ component, reference }, index) => (
+            <BlueFxReferenceDetails key={`${component}-${index}`} reference={reference}
+              label={component === 'accounts' ? 'Cuentas · tramo USD/ARS' : 'Posiciones · tramo USD/ARS'} />
+          )) : <BlueFxReferenceDetails />}
+          {now.blueReferences && now.blueReferences.length > 1 ? (
+            <p>Cada componente conserva su referencia. Los cruces de otras monedas no están incluidos; el historial no conserva la fuente ni la fecha de la cotización.</p>
+          ) : null}
+        </div>
 
         {delta && (
           <p

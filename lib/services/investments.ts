@@ -4,6 +4,7 @@ import { transactionRequestHash, validTransactionRequestId } from '@/lib/transac
 import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
+import { blueFxReference, type BlueFxReference } from '@/lib/blue-fx-reference';
 import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
@@ -98,6 +99,8 @@ export interface PortfolioSummaryPayload {
   totalPnLPercent: number;
   /** Cotización blue usada (ARS por 1 USD). */
   blueArsPerUsd: number;
+  /** Exact FX reference used here; distinct from the price source of each asset. */
+  blueReference?: BlueFxReference;
   /** Equivalentes en ARS (referencia blue). */
   totalCurrentValueArsBlue: number;
   totalPurchaseValueArsBlue: number;
@@ -419,11 +422,12 @@ class InvestmentsService {
   private async loadInvestmentsNormalized(
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipQuoteRefresh?: boolean }
-  ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number }> {
+  ): Promise<{ investments: InvestmentWithPnL[]; blueArsPerUsd: number; blueReference: BlueFxReference }> {
     const supabase = createServiceClientSync();
 
     const dolar = await cotizacionesService.getDolarQuotes();
     const blueArsPerUsd = arsPerUsdFromDolar(dolar.blue);
+    const reference = blueFxReference(dolar.blue, dolar.blue.sell > 0 && Number.isFinite(dolar.blue.sell) ? 'sell' : 'buy');
 
     const { data: investmentsRaw, error } = await supabase
       .from('investments')
@@ -583,7 +587,7 @@ class InvestmentsService {
       );
     }
 
-    return { investments: investmentsWithPnL, blueArsPerUsd };
+    return { investments: investmentsWithPnL, blueArsPerUsd, blueReference: reference };
   }
 
   async list(userId: string, options?: { forceRefreshQuotes?: boolean }): Promise<InvestmentWithPnL[]> {
@@ -820,7 +824,7 @@ class InvestmentsService {
     userId: string,
     options?: { forceRefreshQuotes?: boolean; skipDailySnapshot?: boolean; skipQuoteRefresh?: boolean }
   ): Promise<PortfolioSummaryPayload> {
-    const { investments, blueArsPerUsd } = await this.loadInvestmentsNormalized(userId, options);
+    const { investments, blueArsPerUsd, blueReference } = await this.loadInvestmentsNormalized(userId, options);
 
     const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.market_value_usd, 0);
     const totalPurchaseValue = investments.reduce((sum, inv) => sum + inv.cost_basis_usd, 0);
@@ -872,6 +876,7 @@ class InvestmentsService {
       totalPnL,
       totalPnLPercent,
       blueArsPerUsd,
+      blueReference,
       totalCurrentValueArsBlue,
       totalPurchaseValueArsBlue,
       totalPnLArsBlue,

@@ -5,6 +5,7 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { normalizeCurrency } from '@/lib/transaction-exchange';
 import { accountsService, normalizeDebtBalanceForStorage } from './accounts';
 import { cotizacionesService } from './cotizaciones';
+import { readAllPages } from '@/lib/supabase-paginated-read';
 import type { Transaction, Account } from '@/types/database';
 
 /**
@@ -545,15 +546,14 @@ class TransactionsService {
       throw new Error('Cuenta no encontrada');
     }
 
-    const { data: txs, error: txErr } = await supabase
+    const txs = await readAllPages<Transaction>((from, to) => supabase
       .from('transactions')
       .select('*')
       .eq('user_id', userId)
       .or(`account_id.eq.${accountId},destination_account_id.eq.${accountId}`)
       .order('transaction_date', { ascending: true })
-      .order('id', { ascending: true });
-
-    if (txErr) throw txErr;
+      .order('id', { ascending: true })
+      .range(from, to));
 
     let balance = 0;
     for (const tx of txs || []) {
@@ -638,16 +638,17 @@ class TransactionsService {
     const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59);
 
     const activeIds = await accountsService.getActiveAccountIds(userId);
-    let monthQuery = supabase
-      .from('transactions')
-      .select('*, category:categories(name, icon)')
-      .eq('user_id', userId)
-      .gte('transaction_date', startOfMonth.toISOString())
-      .lte('transaction_date', endOfMonth.toISOString());
-    monthQuery = applyArchivedAccountsTransactionFilter(monthQuery, activeIds);
-    const { data: transactions, error } = await monthQuery;
-
-    if (error) throw error;
+    const transactions = await readAllPages<TransactionWithCategory>((from, to) => {
+      let monthQuery = supabase
+        .from('transactions')
+        .select('*, category:categories(name, icon)')
+        .eq('user_id', userId)
+        .gte('transaction_date', startOfMonth.toISOString())
+        .lte('transaction_date', endOfMonth.toISOString());
+      monthQuery = applyArchivedAccountsTransactionFilter(monthQuery, activeIds);
+      return monthQuery.order('transaction_date', { ascending: true })
+        .order('id', { ascending: true }).range(from, to);
+    });
 
     const expenses = transactions.filter((t) => t.type === 'expense');
     const income = transactions.filter((t) => t.type === 'income');

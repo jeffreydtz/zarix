@@ -2,6 +2,7 @@ import { createServiceClientSync } from '@/lib/supabase/server';
 import { accountsService } from '@/lib/services/accounts';
 import { investmentsService } from '@/lib/services/investments';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
+import type { BlueFxComponentReference } from '@/lib/blue-fx-reference';
 
 export interface NetWorthPoint {
   snapshot_date: string;
@@ -18,6 +19,8 @@ export interface NetWorthNow {
   totalUSD: number;
   totalARSBlue: number;
   blueRate: number;
+  /** Current components can have different quote samples; no universal source is inferred. */
+  blueReferences?: BlueFxComponentReference[];
 }
 
 /**
@@ -48,6 +51,11 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
     totalUSD: balances.totalUSD + portfolioUSD,
     totalARSBlue: balances.totalARSBlue + portfolioARSBlue,
     blueRate: dolar?.blue?.sell ?? 0,
+    blueReferences: [
+      ...('blueReferences' in balances ? balances.blueReferences ?? [] : []).map(reference => ({ component: 'accounts' as const, reference })),
+      ...(portfolio?.blueReference && portfolio.investments.length > 0
+        ? [{ component: 'portfolio' as const, reference: portfolio.blueReference }] : []),
+    ],
   };
 }
 

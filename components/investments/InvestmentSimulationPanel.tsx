@@ -98,7 +98,7 @@ export default function InvestmentSimulationPanel({ investments, canSimulate }: 
             <label className="text-sm text-foreground">
               Variación del precio (%)
               <input className="input mt-1 w-full" type="text" inputMode="decimal" value={variation}
-                aria-invalid={error !== null} aria-describedby="investment-simulation-help"
+                aria-invalid={error !== null} aria-describedby={error ? 'investment-simulation-help investment-simulation-error' : 'investment-simulation-help'}
                 placeholder="Ej.: 10 o -100"
                 onChange={event => { setVariation(event.target.value); clearScenario(); }} />
             </label>
@@ -108,7 +108,7 @@ export default function InvestmentSimulationPanel({ investments, canSimulate }: 
             {' '}El escenario no cambia posiciones, saldos ni ventas y no ejecuta operaciones reales.
           </p>
           <button type="submit" className="btn btn-primary">Simular</button>
-          {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
+          {error ? <p id="investment-simulation-error" role="alert" className="text-sm text-destructive">{error}</p> : null}
           {result ? (
             <div role="status" className="space-y-3 rounded-control border border-border p-3" data-testid="investment-simulation-result">
               <dl className="grid gap-3 sm:grid-cols-2 tabular-nums">

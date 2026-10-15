@@ -1,4 +1,5 @@
 import type { AccountWithBalance } from '@/lib/services/accounts';
+import BlueFxReferenceDetails from '@/components/ui/BlueFxReferenceDetails';
 
 type Variant = 'default' | 'dark' | 'detail';
 
@@ -56,6 +57,7 @@ export default function AccountBalanceEquivalents({
             ≈ ${fmtUsd(absUsd)} USD
           </span>
         </span>
+        {variant === 'detail' ? <BlueFxReferenceDetails reference={account.blueReference} className="text-xs mt-1" /> : null}
       </div>
     );
   }
@@ -72,6 +74,7 @@ export default function AccountBalanceEquivalents({
             ≈ ${fmtArs(absArs)} ARS
           </span>
         </span>
+        {variant === 'detail' ? <BlueFxReferenceDetails reference={account.blueReference} className="text-xs mt-1" /> : null}
       </div>
     );
   }
@@ -86,6 +89,7 @@ export default function AccountBalanceEquivalents({
   return (
     <div className={base}>
       <span className="tabular-nums text-muted-foreground">{parts.join(' · ')}</span>
+      {variant === 'detail' ? <BlueFxReferenceDetails reference={account.blueReference} label="Tramo USD/ARS (otros cruces no incluidos)" className="text-xs mt-1" /> : null}
     </div>
   );
 }

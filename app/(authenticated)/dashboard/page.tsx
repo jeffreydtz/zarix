@@ -113,6 +113,7 @@ export default async function DashboardPage() {
             totalCreditUsed: 0,
             totalCreditLimit: 0,
             creditUtilization: 0,
+            blueReferences: [],
           };
     const netWorthNow = {
       liquidUSD: balances.liquidUSD,
@@ -120,6 +121,11 @@ export default async function DashboardPage() {
       totalUSD: balances.totalUSD + (portfolio?.totalCurrentValue ?? 0),
       totalARSBlue: balances.totalARSBlue + (portfolio?.totalCurrentValueArsBlue ?? 0),
       blueRate: portfolio?.blueArsPerUsd ?? quotes?.dolar?.blue?.sell ?? 0,
+      blueReferences: [
+        ...(balances.blueReferences ?? []).map(reference => ({ component: 'accounts' as const, reference })),
+        ...(portfolio?.blueReference && portfolio.investments.length > 0
+          ? [{ component: 'portfolio' as const, reference: portfolio.blueReference }] : []),
+      ],
     };
 
     // Top 2 posiciones por valor para el strip de mercado

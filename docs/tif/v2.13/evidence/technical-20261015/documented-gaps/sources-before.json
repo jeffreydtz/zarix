@@ -1,0 +1,28 @@
+{
+  "revision": "d4524d8a79fabd5e44112345897a6350dc4d0805",
+  "capturedAtUTC": "2026-10-15T00:02:29.545055+00:00",
+  "files": {
+    "lib/blue-fx-reference.ts": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c",
+    "lib/supabase-paginated-read.ts": "5d7a6811702b18032e465eeb7168636cd140612d8dd2001b9fb9f7583a749795",
+    "lib/services/cotizaciones.ts": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece",
+    "lib/services/accounts.ts": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496",
+    "lib/services/investments.ts": "5c6fe1303a9e1c918c7f034c6f64a56e0f19c4219b3f693cf2726fb5eda2287f",
+    "lib/services/net-worth.ts": "6ec3915b5fe655a912133275700cc77a6750a31e732ac94092b162da1d8a54cb",
+    "lib/services/transactions.ts": "ac3f65332e7633f93537af21b003ae25c5bf0d34a6c1998a2ad1b61933d61b73",
+    "lib/services/month-flow.ts": "5a7a1fdce2b605c442e7461e9d5a4e6a10afe53a3563489892001fe84d897a29",
+    "lib/services/analytics.ts": "0ba095592475031edf3d2d0911250c1f06a6b666527b7bbddd66562b53741d47",
+    "app/(authenticated)/dashboard/page.tsx": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea",
+    "app/(authenticated)/analysis/page.tsx": "4e8385c1beca38ca72dc1bffc8a17d579ef9aaa6c9af8f567097588e5182e06d",
+    "components/ui/BlueFxReferenceDetails.tsx": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+    "components/accounts/AccountBalanceEquivalents.tsx": "f7540e2e5a121431c69af9e0f4796bbc88c5aa2b36ae088bac15f2e3548956d8",
+    "components/dashboard/NetWorthHero.tsx": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb",
+    "components/investments/InvestmentSimulationPanel.tsx": "093b4f9ffcd0f0715afddfcdd191385dc8eca26154fccc6251ac9e90242c24eb",
+    "vitest.config.ts": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8",
+    "__tests__/blue-fx-metadata.test.ts": "9cd92e57cc0f2bb782cb2e211a33edbf9c1e666ccedbf40c9e1abaa7f890e9b2",
+    "__tests__/blue-fx-metadata-components.test.ts": "9b7135c3f9ef3b3704e02a67105e0e117fd8116605b89d2604546e163a0bcef5",
+    "__tests__/financial-summary-pagination.test.ts": "dca663cdf9bea3da2ecad61ed87c0ad8b8f3751d527d31d4b8edbea9190f4d40",
+    "__tests__/analytics-pagination.test.ts": "4c70b963b8238b80c345c757969b6e8d341046f16811d3d872eaddd4bd6c7b34",
+    "__tests__/analysis-page-read-failure.test.ts": "d44d20db6005aabb8ecbd5887dda8c658f43962f99731c1700a9be75447a2610",
+    "__tests__/investment-simulation-component.test.ts": "ef9748d355267f555362e3b408a43b0d1b0d1b55e972aa872a3e007fe5f60f79"
+  }
+}
