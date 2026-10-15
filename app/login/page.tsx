@@ -323,6 +323,14 @@ function LoginForm() {
           </motion.button>
         </form>
 
+        {mode === 'password' ? (
+          <p className="mt-4 text-center text-sm">
+            <Link href="/auth/forgot-password" className="font-medium text-primary underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </p>
+        ) : null}
+
         {passkeySupported && (
           <div className="mt-4">
             <div className="flex items-center gap-3 my-4">

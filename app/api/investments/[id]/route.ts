@@ -2,7 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { PatchInvestmentInput } from '@/lib/services/investments';
 import { investmentsService } from '@/lib/services/investments';
-import { errorResponse } from '@/lib/api-handler';
+import { ApiError, errorResponse, requireUser } from '@/lib/api-handler';
+
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  try {
+    const { supabase, user } = await requireUser();
+    const { id } = await props.params;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      throw new ApiError('Identificador de posición inválido.', 400);
+    }
+    // The request's normal JWT/RLS client and an explicit owner predicate both
+    // protect this read. Historical/archived own rows remain readable.
+    const { data, error } = await supabase.from('investments')
+      .select('*').eq('id', id).eq('user_id', user.id).maybeSingle();
+    if (error) throw error;
+    if (!data) throw new ApiError('Posición no encontrada.', 404);
+    return NextResponse.json(data, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) {
+    return errorResponse(error);
+  }
+}
 
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
