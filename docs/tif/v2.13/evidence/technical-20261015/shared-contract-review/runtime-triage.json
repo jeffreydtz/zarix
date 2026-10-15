@@ -1,0 +1,150 @@
+{
+  "reviewedAt": "2026-10-15T03:56:13.279324+00:00",
+  "status": "READ_ONLY_TRIAGE",
+  "scope": "Fourteen literal original CU001 contracts reviewed against current source and existing evidence; no new runtime, DB, HTTP, credentials, CSV or product changes. Static inferences are not observed FAILs.",
+  "contracts": [
+    {
+      "id": "CP1-19",
+      "classification": "NEEDS_LITERAL_RUNTIME",
+      "originalExpected": "dos operaciones válidas; una rechazada; importadas2/rechazadas1/omitidas0; total3; A=10200",
+      "exactFixtureAndOracle": "A10000; CSV06Oct expense500/income700/expense0; exact counts2/1/0 and balance10200.",
+      "gapOrConstraint": "Static conflict: CSV zero is classified skipped; do not relabel as rejected. Durable SQL uses different amounts and bypasses parser/API."
+    },
+    {
+      "id": "CP1-20",
+      "classification": "NEEDS_LITERAL_RUNTIME",
+      "originalExpected": "mismo oráculo CP1-19: dos altas, una rechazada, saldo10200",
+      "exactFixtureAndOracle": "Independent A10000, JSON documented keys date/type/amount/currency/account, same rows and balance10200.",
+      "gapOrConstraint": "Static inference, not executed: JSON zero reaches DB and may become pending1/503 rather than rejected1. Observe raw counters and receipt reconciliation."
+    },
+    {
+      "id": "CP1-21",
+      "classification": "NEEDS_LITERAL_RUNTIME_AND_UI",
+      "originalExpected": "cero altas nuevas; omitidas1; A=9500; muestra criterios de coincidencia",
+      "exactFixtureAndOracle": "Existing expense500 and A9500; same full fingerprint/new batch/skipDuplicates=true; new effects0/skipped1/A9500.",
+      "gapOrConstraint": "UI selection and visible matching criteria remain required; existing SQL skip test is different fixture and does not prove visibility."
+    },
+    {
+      "id": "CP1-22",
+      "classification": "NEEDS_LITERAL_RUNTIME",
+      "originalExpected": "rechaza sin impactos inválidos ni exposiciónU2; archivo irresoluble no inicia lote",
+      "exactFixtureAndOracle": "Three independent inputs: missing amount, U2 account and truncated/unresolvable file; invalid effects0/U2 not exposed/unresolvable no import_batch.",
+      "gapOrConstraint": "Use separate own fixtures, no batch or financial creation for irrecoverable file; SQL-only foreign-account denial is partial."
+    },
+    {
+      "id": "CP1-23",
+      "classification": "NEEDS_LITERAL_RUNTIME_AND_UI",
+      "originalExpected": "regla propiedadU1 refleja estados/datos; fin inclusiva; próxima ejecución coherente; sin movimientos al guardar regla",
+      "exactFixtureAndOracle": "Own eligible Premium user/account/categoryAlimentos, daily1000 start10-01 end10-06; create/pause/reactivate/edit, states/ownership, no movement on save.",
+      "gapOrConstraint": "Fixed process date needed for inclusive end/next execution. Actual existing Free A is not cron-eligible; do not silently change its plan. UI next-date evidence needed."
+    },
+    {
+      "id": "CP1-24",
+      "classification": "NEEDS_LITERAL_RUNTIME",
+      "originalExpected": "una ocurrencia clave(regla,2026-10-06); un gasto; A=9000; ultima10-06; una intención de notificación",
+      "exactFixtureAndOracle": "A10000, daily1000/start10-01/last10-05, date06Oct12Z; two concurrent calls plus third retry -> one dated occurrence/A9000/last10-06/outbox1.",
+      "gapOrConstraint": "Prior actual API fixture was400 and balance9600/current date, no third retry: derived support only. Bot-linked prerequisite and real delivery must be distinguished; no fabricated external token."
+    },
+    {
+      "id": "CP1-25",
+      "classification": "PARTIAL_RUNTIME_AND_CONTRACT_RESOLUTION",
+      "originalExpected": "Fallo antes de crear no marca last_executed_date. Tras INSERT confirmado y fallo de marca, retry23505 recupera ocurrencia y repara marca sin segundo débito.",
+      "exactFixtureAndOracle": "Before-INSERT SQL failure -> no new mark; then retry. Second original branch asks committed INSERT followed by failed mark/23505 repair.",
+      "gapOrConstraint": "Current SQL atomically commits insertion+marker+receipt+outbox. Do not break that guarantee to manufacture an unmarked committed occurrence. Legacy manually unmarked fixture is separate evidence; durable receipt replay need not throw23505."
+    },
+    {
+      "id": "CP1-28",
+      "classification": "NEEDS_LITERAL_RUNTIME",
+      "originalExpected": "401sin accesoDB paraBearer incorrecto; inactiva no ejecuta; vencida se desactiva sin nuevo movimiento",
+      "exactFixtureAndOracle": "Independent wrongBearer401/noDBaccess, inactive no occurrence, expired10-05 at10-06 deactivated/no movement.",
+      "gapOrConstraint": "Unchanged balances alone do not prove no DB access: use transport guard/instrumentation. Do not modify original active rules to force an empty global cron."
+    },
+    {
+      "id": "CP1-29",
+      "classification": "NEEDS_LITERAL_RUNTIME",
+      "originalExpected": "Movimiento1000; saldo-500; marca éxito actual. No se espera rechazo por saldo insuficiente.",
+      "exactFixtureAndOracle": "Eligible active expense rule1000/account500 -> one occurrence, balance−500 and execution date success.",
+      "gapOrConstraint": "No allowOverdraft attribute or insufficient-balance rejection exists in this contract; do not invent one."
+    },
+    {
+      "id": "CP1-30",
+      "classification": "PARTIAL_RUNTIME_PROVIDER_ACCESS",
+      "originalExpected": "Movimiento1000; saldo-500; fecha exitosa actual; aviso si el proveedor lo acepta. No afirmar advertencia específica de descubierto que el producto no tenga.",
+      "exactFixtureAndOracle": "Same500→−500 plus notification enabled, one durable intent and dispatch observation.",
+      "gapOrConstraint": "Report real provider delivery only with an existing authorized test bot. A double must stay labelled; otherwise preserve outbox/delivery BLOCKED. No invented overdraft-specific warning."
+    },
+    {
+      "id": "CP1-31",
+      "classification": "NEEDS_LITERAL_RUNTIME_AND_UI",
+      "originalExpected": "restante0.01/0/-0.01; estado disponible/límite/superado; transfer no consume; informe no bloquea movimientos",
+      "exactFixtureAndOracle": "Three independent October10000 budgets: expenses9999.99/10000/10000.01 -> remaining.01/0/−.01; categorized transfer500 excluded.",
+      "gapOrConstraint": "Static UI conflict: percent rounded2 reaches100.00 in all three cases; BudgetCard uses>=100 exceeded and rounds displayed remaining to0decimals. Need observe exact states, not assume numeric DB success proves UI."
+    },
+    {
+      "id": "CP1-35",
+      "classification": "NEEDS_LITERAL_RUNTIME",
+      "originalExpected": "Lote vacío: total0/processed0/errors0. Lote de tres: processed1/errors1, regla archivada omitida. El resumen actual no expone contador skipped; la omisión se reconstruye de total y resultados.",
+      "exactFixtureAndOracle": "Empty batch0/0/0; separate fixture3rules(valid,inactive,SQLfail) -> processed1/errors1 and inactive unchanged.",
+      "gapOrConstraint": "Actual fetch excludes inactive: total is fetched active2, not fixture input3. Original explicit processed/errors can be checked; record input3 separately and do not invent skipped response field."
+    },
+    {
+      "id": "CP1-37",
+      "classification": "EXACT_EXISTING_SQL_PASS",
+      "originalExpected": "Primera división3.34+3.34+3.33; dedup [C,A] produce6.18+6.17; conserva fecha. El fixture fue ejecutado por SGSQL con alcance SQL aislado.",
+      "exactFixtureAndOracle": "See acceptance.json: SHSQL02/03 exact10.01 and12.35 dedup/date.",
+      "gapOrConstraint": "No new runtime required for original explicitly SQL-isolated acceptance scope."
+    },
+    {
+      "id": "CP1-38",
+      "classification": "EXACT_EXISTING_SQL_PASS",
+      "originalExpected": "Rechazo sin cambios; falla revierte gasto+splits, no huérfanos. Autoría por capability declarada, no prueba identidad Auth individual.",
+      "exactFixtureAndOracle": "See acceptance.json: SHSQL04–11 foreign IDs/capability/rollback/no orphan.",
+      "gapOrConstraint": "Capability attribution, not individual Auth identity; native grants/RLS evidence is adjacent and scoped."
+    }
+  ],
+  "runtimeSafety": [
+    "Recurring fetch/expiration is global and may touch all active rules: guard against unrelated active/expired originals; do not disable originals or add product filters to make a fixture pass.",
+    "Use the existing eligible Premium synthetic actor where required; Free recurrence is intentionally paused.",
+    "Fixed06Oct clock belongs only to a dedicated process, never OS. DB timestamps, Auth expiry and FX freshness remain separate clocks.",
+    "Keep notification intent, dispatcher double and actual provider delivery distinct.",
+    "Preserve old figures and do not remap a different amount/date as exact original acceptance."
+  ],
+  "cp117NotReusable": "Original CP1-17 is the unexecuted/provider-blocked JPG OCR1500→correct1600→A8400 fixture; it cannot close these import/cron contracts.",
+  "sources": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444"
+    },
+    {
+      "path": "lib/cron/recurring-job.ts",
+      "sha256": "bbc30ebeb0a8feb8395a3032802a73f392005fc1f3195d47c25c0ae1c956ce72"
+    },
+    {
+      "path": "lib/cron/cron-job.ts",
+      "sha256": "03e0f39258e9cbcc994d6e56ba1861739ee310dc6c0c40e04fad26bd30b674a9"
+    },
+    {
+      "path": "lib/cron/recurring-schedule.ts",
+      "sha256": "d9725bfd1d8735d24a65d19bb6f462e3a920ef1130df34299bf4dd2790c2547e"
+    },
+    {
+      "path": "components/budgets/BudgetCard.tsx",
+      "sha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    }
+  ],
+  "existingEvidence": [
+    "core-reliability/shared-sql.json",
+    "core-reliability/import-sql.json",
+    "e2e/api/api-verification.json",
+    "durability/reconciled-contracts.json"
+  ],
+  "independentReview": "Read-only child review corroborated literal CSV constraints and source paths; no mutation or runtime."
+}

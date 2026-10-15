@@ -1,0 +1,101 @@
+{
+  "reviewedAt": "2026-10-15T03:51:33.673117+00:00",
+  "reviewType": "Read-only exact original-contract review. No new test, runtime, SQL, HTTP, user or financial mutation.",
+  "status": "PASS_SCOPED",
+  "originalCases": [
+    {
+      "id": "CP1-37",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "scope": "Literal isolated SQL acceptance expressly declared by the CSV. No UI/HTTP/hosted assertion.",
+      "evidenceChecks": [
+        "SH-SQL-02 create and remainder cents conserve total",
+        "SH-SQL-03 update replaces amount and splits atomically"
+      ],
+      "oracles": {
+        "firstAmount": "10.01ARS",
+        "firstSplits": [
+          "3.34",
+          "3.34",
+          "3.33"
+        ],
+        "initialSplitSumCents": 1001,
+        "updatedAmount": "12.35ARS",
+        "inputMembers": [
+          "C",
+          "A",
+          "C"
+        ],
+        "deduplicatedMemberAmounts": {
+          "C": "6.18",
+          "A": "6.17"
+        },
+        "originalDateRetained": "2026-10-06"
+      }
+    },
+    {
+      "id": "CP1-38",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "scope": "Literal isolated SQL acceptance for capability/group boundaries and transactional rollback, with financial-state before/after comparisons. Capability is declared authorship, not Auth identity proof.",
+      "evidenceChecks": [
+        "SH-SQL-04 actor from another group",
+        "SH-SQL-05 payer from another group",
+        "SH-SQL-06 split from another group",
+        "SH-SQL-08 another group cannot edit an existing expense",
+        "SH-SQL-09 invalid/revoked capabilities do not mutate",
+        "SH-SQL-10 split insert failure rolls back UPDATE and removed old splits",
+        "SH-SQL-11 split insert failure leaves no orphan new expense"
+      ],
+      "oracles": {
+        "foreignActorSqlstate": "42501",
+        "foreignPayerOrMemberSqlstate": "22023",
+        "foreignExpenseLookup": "null, no changes",
+        "invalidOrInactiveCapability": "null, no changes",
+        "injectedSplitFailureSqlstate": "23514",
+        "rollback": "Both updated old expense/splits and fresh expense/splits remain byte-equivalent to pre-error snapshots; no orphan."
+      }
+    }
+  ],
+  "evidence": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/core-reliability/shared-sql.json",
+    "sha256": "969154e7ae1d72793408a3d5229fc0def10f3fabd54dd236a3be04ec08994cd0",
+    "passed": 11,
+    "total": 11,
+    "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+    "scope": "Real PL/pgSQL, minimum isolated schema, RPC access privileges, group scopes and rollback. No hosted deployment, RLS environment or multi-connection load test."
+  },
+  "executionBinding": {
+    "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "coreVerificationPath": "docs/tif/v2.13/evidence/technical-20261015/core-reliability/verification.json",
+    "coreVerificationSha256": "fb9d31968afdbf0d02a8144fd955d0575a210ada1620f5bea3f922b4eb3ce13b",
+    "sourceManifest": [
+      {
+        "path": "scripts/test-shared-expenses-sql.mjs",
+        "sha256": "4e8556588933d11818db72bbd5f29ca05e8bd40bd45f3d16a9bed64be8f8394f",
+        "matchesImmutableCi4": true
+      },
+      {
+        "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+        "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9",
+        "matchesImmutableCi4": true
+      },
+      {
+        "path": "supabase/schema.sql",
+        "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+        "matchesImmutableCi4": true
+      }
+    ],
+    "underlyingRpcDefinitionMigrations": [
+      "supabase/migrations/20261006235955_atomic_shared_expense.sql"
+    ],
+    "noLaterUnderlyingRpcRedefinition": true,
+    "laterDurableWrapper": "20261009035715_durable_sales_shared_expenses.sql calls the unchanged base RPC; it is not a replacement for these exact base-function tests."
+  },
+  "adjacentNativeEvidence": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/native-full/native-verification.json",
+    "scope": "Separate normal Auth/anon/backend grants, RLS and guest capability tests exist in the full native report; its two-member10.01 fixture does not replace this exact three-member SQL oracle."
+  },
+  "decision": "Reuse existing current CI4 isolated SQL evidence for these two exact original contracts. No unnecessary native/UI rerun is required for the CSV-stated SQL scope. Do not promote these checks to full UI, hosted RLS or provider acceptance.",
+  "matrixPolicy": "No change to casos_prueba.csv or its273 rows; these two original cases are not eleven new matrix cases."
+}

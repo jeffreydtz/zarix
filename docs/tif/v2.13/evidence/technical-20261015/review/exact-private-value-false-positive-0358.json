@@ -1,0 +1,52 @@
+{
+  "reviewedAt": "2026-10-15T03:57:35.913Z",
+  "status": "ADJUDICATED_FALSE_POSITIVE",
+  "scope": "Read-only source/artifact review plus private in-memory comparison against the same named fields. No repository-wide scan rerun, network, DB, Auth, browser or product edits. No matching value, excerpt or hash of a value emitted.",
+  "rawScan": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/review/exact-private-value-scan-0358.json",
+    "sha256": "392ab44e22dcd05ad1f59b512f3ec9ed45c3d4ec3fdc66571c4fc3f9acc8c61f",
+    "checkedAt": "2026-10-15T03:56:20.748Z",
+    "status": "FAIL",
+    "privateValuesCompared": 27,
+    "files": 1785,
+    "candidateCount": 1
+  },
+  "scanner": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/review/check-publication-reviewed-0358.mjs",
+    "sha256": "ea7bfcd67b5320a652899f8bf2d15462e97eee84146f03c150858153442e8e61",
+    "privateOrigin": "/tmp/zarix-runtime-20261015/check-publication-0358.mjs",
+    "optionalEnvironmentFiles": 13,
+    "optionalFixtureFiles": 13,
+    "selection": "Same secretName expression and auth-token cookie name/value traversal; deduplicated strings of length>=8. Only existing explicitly named private inputs.",
+    "scope": "Git cached and non-ignored untracked file bytes. Ignored build assets/external files/nonselected fields are outside scope."
+  },
+  "candidate": {
+    "path": "scripts/lib/test-isolated-native-target.mjs",
+    "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362",
+    "matchingUniqueValues": 1,
+    "matchingOriginFields": [
+      {
+        "file": "runtime.env",
+        "field": "ZARIX_LOCAL_DATABASE_URL"
+      },
+      {
+        "file": "source.env",
+        "field": "ZARIX_LOCAL_DATABASE_URL"
+      }
+    ],
+    "entireMatchedValueEqualsExistingStaticFallback": true,
+    "literalTargetsLoopback": true,
+    "classification": "Known static local database connection template coinciding with synthetic runtime configuration, not a random password, Auth cookie/JWT, recovery hash, capability or external credential.",
+    "history": {
+      "revision": "e65e09c648aaae31bf420bc4b5c044a4dbb8f310",
+      "sameFallbackLiteral": true,
+      "scope": "Literal comparison only; the entire historical helper changed later."
+    },
+    "ci4": {
+      "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "entireSourceByteIdentical": true
+    }
+  },
+  "decision": "Retain raw FAIL and one candidate. Adjudication applies only to this exact pinned source occurrence; no blanket whitelist and no zero-candidate/universal absence claim.",
+  "priorReview": "exact-private-value-false-positive.json remains the distinct18-value/1669-file historical review."
+}

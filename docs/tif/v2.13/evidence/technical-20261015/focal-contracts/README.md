@@ -4,7 +4,7 @@ Arnés independiente de los gates CI3 y de los recorridos API/UI anteriores. No 
 
 El [primer intento](attempt-1-existing-full-plan/verification.json) ejecutó CP1-36 con resultado PASS: gasto original100 ARS, tres cuotas33.34/33.33/33.33, netos del gasto y grupo0.00, grupo archivado conservado. Los otros cuatro casos quedaron BLOCKED antes de crear fixtures o enviar comandos: A ya tenía20 cuentas activas de20 permitidas. Las doce tablas protegidas conservaron todas sus filas originales sin cambios. La [revisión independiente](cp1-36-review.json) contrasta reporte, arnés exacto preservado y referencia API anterior; este resultado corresponde al buildCI3 `QcXclgO6C0_ktQ5ac8YWh`, no a cambios posteriores del checkout.
 
-**El perfil nuevo de cuatro casos está preparado, todavía no ejecutado.** Usa una quinta réplica local autorizada con las mismas dos identidades sintéticas del ensayo nativo anterior; AFree/BPremium se preparan fuera de este arnés. La ejecución requiere una ventana liberada por el coordinador y el buildCI4 separado. Los contratos de análisis de cuenta vacía se ejecutan primero; sus fixtures conservadas pueden existir después, sin exigir una base global vacía para estos cuatro casos. `node --check` sólo comprueba sintaxis; no aprueba contratos.
+**El [segundo intento en PROOF](attempt-2-fresh-proof/verification.json) ejecutó los cuatro casos restantes:4PASS/0FAIL/0BLOCKED y29aserciones.** La [revisión independiente](fresh-proof-review.json) confirmó oráculos literales, dos conexiones bloqueadas en la barrera, siete cuentas propias archivadas e historia conservada, y todas las filas originales de doce tablas intactas. Build836/a2WB/Next52579; BlueFX528 y el export actual son diferencias no servidas. Usa una quinta réplica local autorizada con las mismas dos identidades sintéticas del ensayo nativo anterior; AFree/BPremium se preparan fuera de este arnés. La ejecución requiere una ventana liberada por el coordinador y el buildCI4 separado. Los contratos de análisis de cuenta vacía se ejecutan primero; sus fixtures conservadas pueden existir después, sin exigir una base global vacía para estos cuatro casos. `node --check` sólo comprueba sintaxis; no aprueba contratos.
 
 | ID | Fixture y oráculo literal |
 | --- | --- |
@@ -30,7 +30,7 @@ node docs/tif/v2.13/evidence/technical-20261015/focal-contracts/run.mjs
 
 Sin argumentos se conserva el perfil original `existing-e2e`: lee en memoria `e2e.env` y `e2e-logins.json` privados0600 en `/tmp/zarix-runtime-20261015`, API57321/DB57322, Next3000 y cinco casos. La copia ejecutada del primer intento permanece en `attempt-1-existing-full-plan/executed-run.mjs`, con su propio hash; no se reemplaza por este arnés ampliado.
 
-Comando futuro de los cuatro casos pendientes, **sólo después de CI4 y de liberar PROOF**:
+Comando exacto del segundo intento, ejecutado después de CI4 y de liberar PROOF:
 
 ```sh
 ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only \

@@ -1,0 +1,65 @@
+{
+  "reviewedAt": "2026-10-15T03:55:16.047793+00:00",
+  "status": "PASS",
+  "scope": "Independent read-only artifact/executed-source review, no HTTP/SQL/process/session/credential reread. Four exact original contracts at authenticated API->nativeDB scope, not browser acceptance.",
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/focal-contracts/attempt-2-fresh-proof/verification.json",
+      "sha256": "73f884653e612a270c23223e47474cc515aadb13f23162b169795a97e3d993ed"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
+      "sha256": "87d9a3557ce07dcbb4a90a6462f9024155c7eca699147917272d412d805581af"
+    }
+  ],
+  "originalCases": [
+    {
+      "id": "CP1-06",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 6
+    },
+    {
+      "id": "CP1-10",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 8
+    },
+    {
+      "id": "CP1-13",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 7
+    },
+    {
+      "id": "CP4-03",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": 8
+    }
+  ],
+  "checks": {
+    "assertionsPassed": 29,
+    "allHttpRequestsCompleted": true,
+    "noBlockersOrFatal": true,
+    "protectedTables": 12,
+    "allOriginalRowsUnchanged": true,
+    "sourceStable": true,
+    "sqlMigrations": 27,
+    "ownedAccountsArchivedExactlyOnce": 7,
+    "financialHistoryRetained": true,
+    "concurrency": "Two distinct active/Lock PostgreSQL PIDs form a chain to the owned row barrier; zero expense rows visible before release, then two6000effects/two receipts and balance−2000."
+  },
+  "executionBinding": {
+    "servedRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "nextPid": 52579,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "allCopiedSourcesMatchGit": true,
+    "ownedListenerConfirmed": true,
+    "ownedProcessCwdBound": true,
+    "scope": "Current checkout BlueFX528 and export route changes are explicitly executedByThisBuild:false; this report does not approve them."
+  },
+  "findings": []
+}
