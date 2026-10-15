@@ -3,9 +3,16 @@ import csv,json,pathlib,sys,re,datetime,argparse
 root=pathlib.Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--evidence-dir',type=pathlib.Path,default=root/'docs/tif/v2.13/evidence/technical-20261009')
+parser.add_argument('--core-dir',type=pathlib.Path,help='Select a core report directory inside --evidence-dir (relative to it, or absolute)')
 args=parser.parse_args()
 out=args.evidence_dir.resolve()
-core=out/'core' if (out/'core/final-vitest.json').exists() else out
+if args.core_dir is not None:
+ core=(args.core_dir if args.core_dir.is_absolute() else out/args.core_dir).resolve()
+ try:core.relative_to(out)
+ except ValueError:parser.error('--core-dir must remain inside --evidence-dir')
+ if not core.is_dir():parser.error('Selected --core-dir does not exist')
+else:core=out/'core' if (out/'core/final-vitest.json').exists() else out
+def core_reference(name):return (core.relative_to(out)/name).as_posix()
 vitest=json.loads((core/'final-vitest.json').read_text())
 assertions=[{**a,'file':r['name']} for r in vitest['testResults'] for a in r.get('assertionResults',[])]
 reports={name:json.loads((core/name).read_text()) for name in ['balance-sql.json','shared-sql.json','database-verification.json']}
@@ -31,7 +38,7 @@ for row in rows:
   if not matches and id in reconciled:
    revision=reconciled[id]
    matches=[a for a in assertions if a['fullName']==revision['replacement_contract']]
-   evidence='core/final-vitest.json; durability/reconciled-contracts.json'
+   evidence=f'{core_reference("final-vitest.json")}; durability/reconciled-contracts.json'
    scope=revision['scope']
    contract_revision=f"Explicit reconciliation: {revision['historical_contract']} -> {revision['replacement_contract']}. Original inline mechanism was replaced, not silently reexecuted."
  elif id.startswith('SQL-'):
@@ -53,7 +60,7 @@ for row in rows:
   else:blocker='Local socket creation denied (EPERM), including reviewed escalation: genuine Supabase Auth/PostgREST and authenticated browser path unavailable. Related unit/SQL checks do not complete this case.'
   if 'IA' in row['entrada'] or 'OCR' in row['entrada'] or 'Telegram' in row['entrada'] or id in ['CP2-13','CP2-14','CP2-15','CP2-17','CP2-18','CP3-09']:
    blocker+=' Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately.'
-  evidence=f'{environment_evidence}; core/final-vitest.json; {native_evidence}' if native_executed else f'{environment_evidence}; final-vitest.json; database-verification.json'
+  evidence=f'{environment_evidence}; {core_reference("final-vitest.json")}; {native_evidence}' if native_executed else f'{environment_evidence}; {core_reference("final-vitest.json")}; {core_reference("database-verification.json")}'
   if id=='CNF-04' and at_rest_evidence:evidence+=f'; {at_rest_evidence}'
   if id in system:
    executed=system[id]
@@ -72,11 +79,11 @@ for row in rows:
   else:status='PASS' if all(status in ['pass','passed'] for status in statuses) else 'FAIL'
  elif not blocker:
   blocker='No exact executed assertion matched this original case. Do not infer a pass from a neighboring test.'
- if core!=out and evidence in ['final-vitest.json','balance-sql.json','shared-sql.json','database-verification.json']:evidence='core/'+evidence
+ if evidence in ['final-vitest.json','balance-sql.json','shared-sql.json','database-verification.json']:evidence=core_reference(evidence)
  result.append({'case_id':id,'use_case':row['cu'].replace('-',''),'requirements':row['requisitos'],'status':status,'scope':scope,'contract_revision':contract_revision,'evidence':evidence,'assertions':' | '.join(m.get('fullName',m.get('name',m.get('id',''))) for m in matches),'blocker':blocker})
 assert len({r['case_id'] for r in result})==len(rows)
 assert {r['use_case'] for r in result}=={'CU001','CU002','CU003','CU004'}
 with (out/'case-traceability.csv').open('w',newline='') as f:
  w=csv.DictWriter(f,fieldnames=list(result[0]));w.writeheader();w.writerows(result)
-summary={'generated_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'original_cases':len(rows),'use_cases':sorted({r['use_case'] for r in result}),'counts':{s:sum(r['status']==s for r in result) for s in ['PASS','FAIL','BLOCKED']},'rule':'PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence.'}
+summary={'generated_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'core_directory':core.relative_to(out).as_posix(),'original_cases':len(rows),'use_cases':sorted({r['use_case'] for r in result}),'counts':{s:sum(r['status']==s for r in result) for s in ['PASS','FAIL','BLOCKED']},'rule':'PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence.'}
 (out/'traceability-summary.json').write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary,indent=2))

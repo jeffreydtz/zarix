@@ -141,6 +141,51 @@ class TraceabilityStatusRegression(unittest.TestCase):
                 else:
                     self.assertIn("No encryption-at-rest evidence", by_id["CNF-04"]["blocker"])
 
+    def test_explicit_core_final_selects_its_assertions_and_existing_report_paths(self):
+        fixture = Path(self.temp.name) / "explicit-core"
+        for directory, assertions in [
+            ("core", [{"fullName": "Historical CB-R01 failure", "status": "failed"},
+                      {"fullName": "Historical CB-R02 pass", "status": "passed"}]),
+            ("core-final", [{"fullName": "Current CB-R01 pass", "status": "passed"},
+                            {"fullName": "Current synthetic outbox replacement", "status": "passed"}]),
+        ]:
+            target = fixture / directory
+            target.mkdir(parents=True)
+            (target / "final-vitest.json").write_text(json.dumps({"testResults": [{
+                "name": "synthetic-core-selection.test.ts", "assertionResults": assertions
+            }]}))
+            for name in ["balance-sql.json", "shared-sql.json", "database-verification.json"]:
+                (target / name).write_text(json.dumps({"results": []}))
+        for directory in ["native-full", "environment", "durability"]:
+            (fixture / directory).mkdir()
+        (fixture / "native-full/native-verification.json").write_text(json.dumps({"status": "PASS"}))
+        (fixture / "environment/runtime-manifest.json").write_text(json.dumps({"scope": "Synthetic only"}))
+        (fixture / "durability/reconciled-contracts.json").write_text(json.dumps([{
+            "case_id": "RTV-034", "historical_contract": "Synthetic historical mechanism",
+            "replacement_contract": "Current synthetic outbox replacement", "scope": "Synthetic assertion selection only"
+        }]))
+        command = [sys.executable, str(ROOT / "scripts/build-technical-traceability.py"),
+                   "--evidence-dir", str(fixture), "--core-dir", "core-final"]
+        completed = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        with (fixture / "case-traceability.csv").open() as stream:
+            by_id = {row["case_id"]: row for row in csv.DictReader(stream)}
+        self.assertEqual(by_id["CB-R01"]["status"], "PASS")
+        self.assertEqual(by_id["CB-R02"]["status"], "BLOCKED")
+        self.assertEqual(by_id["RTV-034"]["status"], "PASS")
+        self.assertEqual(json.loads((fixture / "traceability-summary.json").read_text())["core_directory"], "core-final")
+        for case_id in ["CB-R01", "CB-P03", "RTV-034", "SQL-01", "SGSQL-01", "CP1-01", "CNF-12"]:
+            row = by_id[case_id]
+            self.assertIn("core-final/", row["evidence"])
+            self.assertNotIn("core/", row["evidence"])
+            for reference in row["evidence"].split("; "):
+                self.assertTrue((fixture / reference).is_file(), reference)
+        for case_id in ["CP1-01", "CP2-19", "CNF-12"]:
+            self.assertEqual(by_id[case_id]["status"], "BLOCKED")
+        rejected = subprocess.run(command[:-1] + ["../"], cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(rejected.returncode, 2)
+        self.assertIn("must remain inside", rejected.stderr)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

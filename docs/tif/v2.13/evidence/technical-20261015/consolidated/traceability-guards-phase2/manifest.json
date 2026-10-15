@@ -1,0 +1,43 @@
+{
+  "executed_at_utc": "2026-10-15T01:21:48.744642+00:00",
+  "revision_before_own_commit": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+  "status": "PASS",
+  "python": "3.12.5",
+  "command": [
+    "python3",
+    "scripts/test-technical-traceability.py"
+  ],
+  "test_methods": 5,
+  "scope": "Report provenance only: explicitly selected core-final supplies exact unit assertions; original complete CP/CNF cases remain blocked",
+  "checks": [
+    "Default legacy/core layouts retained",
+    "Selected core-final ignores old core assertion results",
+    "Every generated report path points to selected existing reports",
+    "Reconciled RTV assertion comes from selected final report",
+    "Complete system fixtures stay BLOCKED without exact executed assertions",
+    "Core directory outside evidence root rejected with exit2",
+    "Selected core directory recorded in summary"
+  ],
+  "source_manifest": [
+    {
+      "path": "scripts/build-technical-traceability.py",
+      "sha256": "9b3b0757441502ec5057586901d495018035aad1e7657b7ba8fd786285113434"
+    },
+    {
+      "path": "scripts/test-technical-traceability.py",
+      "sha256": "a5b545c20c94e41ee3ae68a368704beb99d831f50cd9d280b1c7a1da4c07aede"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "regression.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regression.stderr.log",
+      "sha256": "21813edafa539a92e6dcb045e2eb8d9ee8a8c68ea12f5fb04f98ffa1bbcf0c6f"
+    }
+  ],
+  "historical_global_evidence": "../core/verification.json remains unchanged; global2 not executed by this regression",
+  "original_case_csv_sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+}
