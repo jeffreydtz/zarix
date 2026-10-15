@@ -1,0 +1,77 @@
+{
+  "startedAt": "2026-10-15T02:08:30.391Z",
+  "scope": "Read-only synthetic normal UI account login; DOM bounding/style diagnosis only at768x1024. No product/financial changes.",
+  "pages": [
+    {
+      "path": "/accounts",
+      "innerWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "body": {
+        "width": 768,
+        "overflow": "visible",
+        "paddingRight": "0px"
+      },
+      "offenders": []
+    },
+    {
+      "path": "/analysis",
+      "innerWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "body": {
+        "width": 768,
+        "overflow": "visible",
+        "paddingRight": "0px"
+      },
+      "offenders": [
+        {
+          "tag": "BUTTON",
+          "class": "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold min-h-[36px] transition-colors bg-secondary text-muted-foreground hover:text-foreground",
+          "left": 716.1875,
+          "right": 836.328125,
+          "width": 120.140625,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "0",
+          "minWidth": "auto",
+          "gap": "normal",
+          "padding": "6px 12px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        },
+        {
+          "tag": "BUTTON",
+          "class": "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold min-h-[36px] transition-colors bg-secondary text-muted-foreground hover:text-foreground",
+          "left": 844.328125,
+          "right": 917.96875,
+          "width": 73.640625,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "0",
+          "minWidth": "auto",
+          "gap": "normal",
+          "padding": "6px 12px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        },
+        {
+          "tag": "BUTTON",
+          "class": "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold min-h-[36px] transition-colors bg-secondary text-muted-foreground hover:text-foreground",
+          "left": 925.96875,
+          "right": 1032.375,
+          "width": 106.40625,
+          "display": "block",
+          "position": "static",
+          "flexShrink": "0",
+          "minWidth": "auto",
+          "gap": "normal",
+          "padding": "6px 12px",
+          "overflowX": "visible",
+          "ariaLabel": null
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-10-15T02:08:33.355Z"
+}

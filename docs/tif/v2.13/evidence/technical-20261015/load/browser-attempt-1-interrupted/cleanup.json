@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-15T02:40:37.573Z",
+  "scope": "Only owned load/diagnostic runner, Chrome and Next PID metadata plus their three loopback test ports. No signals sent by this verification.",
+  "status": "PASS",
+  "expected": [
+    {
+      "runner": 24027,
+      "chrome": 24183
+    },
+    {
+      "runner": 32242,
+      "next": 32245,
+      "chrome": 32254
+    }
+  ],
+  "processQueryExit": 1,
+  "remainingOwnedPidMetadata": "",
+  "listenerQueryExit": 1,
+  "remainingTestListeners": "",
+  "host": {
+    "totalMemoryBytes": 17179869184,
+    "freeMemoryBytes": 1234599936,
+    "loadAverage": [
+      14.9345703125,
+      49.0126953125,
+      56.58203125
+    ],
+    "cpuCount": 12
+  },
+  "interpretation": "Load average is a historical rolling indicator, not currentCPU percentage. No other applications were inspected or stopped."
+}

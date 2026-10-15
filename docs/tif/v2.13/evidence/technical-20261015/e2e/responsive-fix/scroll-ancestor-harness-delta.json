@@ -11,5 +11,6 @@
     "command": "node --check scripts/test-isolated-visual.mjs",
     "exitCode": 0
   },
-  "executed": false
+  "executed": true,
+  "executedResult": "../visual/visual-verification.json"
 }

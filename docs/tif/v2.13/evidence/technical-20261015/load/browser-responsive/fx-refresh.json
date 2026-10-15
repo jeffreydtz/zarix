@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-15T02:14:34.781Z",
+  "status": "PASS",
+  "scope": "Append8syntheticFXquotes only to ownLOADreplica56321/56322 before measurement; no financial account/ledger/position mutation or deletion.",
+  "apiOrigin": "http://127.0.0.1:56321",
+  "databasePort": "56322",
+  "afterCount": 16,
+  "beforeCount": 8,
+  "sampleCount": 1,
+  "insertedRows": 8,
+  "sampleTimestamp": "2026-10-15T02:14:34.756936+00:00",
+  "allPreviousRowsPreserved": true
+}

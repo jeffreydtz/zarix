@@ -35,8 +35,8 @@ async function save() {
   await fs.writeFile(path.join(output, 'browser-load.json'), JSON.stringify(report, null, 2) + '\n', { mode: 0o600 });
   const fields = ['netWorthARS', 'netWorthUSD', 'incomeARS', 'spentARS', 'balanceARS'];
   for (const [profile, result] of Object.entries(report.profiles)) {
-    const rows = result.observations.map(item => [item.index, item.wave, item.context, item.user, item.startedAt, item.durationMs, item.status, item.failure || '', item.httpStatus ?? '', item.pageErrors, item.financialRequestFailures, ...fields.map(field => item.observedFinancialValues?.[field] ?? '')].join(','));
-    await fs.writeFile(path.join(output, `${profile}-observations.csv`), 'index,wave,context,user,startedAt,durationMs,status,failure,httpStatus,pageErrors,financialRequestFailures,netWorthARS,netWorthUSD,incomeARS,spentARS,balanceARS\n' + rows.join('\n') + '\n', { mode: 0o600 });
+    const rows = result.observations.map(item => [item.index, item.wave, item.context, item.user, item.startedAt, item.durationMs, item.status, item.failure || '', item.failurePhase || '', item.httpStatus ?? '', item.navigationResponseStatus ?? '', item.pageErrors, item.financialRequestFailures, ...fields.map(field => item.observedFinancialValues?.[field] ?? '')].join(','));
+    await fs.writeFile(path.join(output, `${profile}-observations.csv`), 'index,wave,context,user,startedAt,durationMs,status,failure,failurePhase,httpStatus,navigationResponseStatus,pageErrors,financialRequestFailures,netWorthARS,netWorthUSD,incomeARS,spentARS,balanceARS\n' + rows.join('\n') + '\n', { mode: 0o600 });
   }
 }
 function blocked(message) { return Object.assign(new Error(message), { blocked: true }); }
@@ -119,7 +119,12 @@ try {
     const flow = rows(`SELECT COALESCE(sum(amount*(CASE currency WHEN 'ARS' THEN 1 ELSE ${blue} END)) FILTER(WHERE type='income'),0) AS income_ars, COALESCE(sum(amount*(CASE currency WHEN 'ARS' THEN 1 ELSE ${blue} END)) FILTER(WHERE type='expense'),0) AS spent_ars FROM transactions WHERE user_id=${literal(user.id)} AND transaction_date>=date_trunc('month',now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC' AND transaction_date<=now()`)[0];
     const accountUSD = accounts.reduce((total, account) => total + Number(account.balance) / (account.currency === 'USD' ? 1 : blue), 0);
     const positionUSD = positions.reduce((total, position) => total + Number(position.quantity) * Number(position.current_price), 0);
-    const oracle = { user: index + 1, id: user.id, netWorthARS: (accountUSD + positionUSD) * blue, netWorthUSD: accountUSD + positionUSD, incomeARS: Number(flow.income_ars), spentARS: Number(flow.spent_ars), balanceARS: Number(flow.income_ars) - Number(flow.spent_ars), accountIds: accounts.map(account => account.id), accountNames: accounts.map(account => account.name), recentDescriptions: transactions.slice(0, 5).map(transaction => transaction.description), fingerprint: sha(JSON.stringify({ accounts, transactions, positions })) };
+    // Account totals have an existing two-decimal monetary boundary before
+    // portfolio values are added (accounts.aggregateAccountTotals/computeNetWorth).
+    // Keep the oracle SQL-derived; do not widen the numeric assertion tolerance.
+    const accountTotals = rows(`SELECT round(sum(balance / CASE currency WHEN 'USD' THEN 1::numeric ELSE ${blue}::numeric END),2) AS usd, round(sum(balance * CASE currency WHEN 'USD' THEN ${blue}::numeric ELSE 1::numeric END),2) AS ars FROM accounts WHERE user_id=${literal(user.id)} AND is_active AND include_in_total`)[0];
+    assert.ok(Math.abs(Number(accountTotals.usd) - Math.round(accountUSD * 100) / 100) < 1e-6);
+    const oracle = { user: index + 1, id: user.id, netWorthARS: Number(accountTotals.ars) + positionUSD * blue, netWorthUSD: Number(accountTotals.usd) + positionUSD, incomeARS: Number(flow.income_ars), spentARS: Number(flow.spent_ars), balanceARS: Number(flow.income_ars) - Number(flow.spent_ars), accountIds: accounts.map(account => account.id), accountNames: accounts.map(account => account.name), recentDescriptions: transactions.slice(0, 5).map(transaction => transaction.description), fingerprint: sha(JSON.stringify({ accounts, transactions, positions })) };
     oracles.push(oracle);
     report.fixture.users.push({ id: user.id, user: index + 1, fingerprint: oracle.fingerprint, oracle: { netWorthARS: oracle.netWorthARS, netWorthUSD: oracle.netWorthUSD, incomeARS: oracle.incomeARS, spentARS: oracle.spentARS, balanceARS: oracle.balanceARS }, rows: { accounts: accounts.length, transactions: transactions.length, positions: positions.length } });
   }
@@ -170,6 +175,7 @@ try {
     page.on('pageerror', () => participant.errors++);
     page.on('response', response => {
       const url = new URL(response.url());
+      if (url.origin === appUrl.origin && url.pathname === '/dashboard' && response.request().resourceType() === 'document') participant.mainDocumentStatus = response.status();
       if (url.origin === appUrl.origin && /^\/api\/(accounts|transactions|investments)(?:\/|$)/.test(url.pathname) && response.status() >= 400) participant.financialFailures++;
     });
     page.on('requestfailed', request => {
@@ -194,20 +200,27 @@ try {
   }
   async function completeDashboard(participant) {
     const { page, oracle } = participant;
+    participant.phase = 'dashboard-path';
     assert.equal(new URL(page.url()).pathname, '/dashboard');
     const hero = page.locator('section').filter({ has: page.getByRole('heading', { name: 'Patrimonio total', exact: true }) });
+    participant.phase = 'hero-ARS';
     await expectValue(hero.locator('data').nth(0), oracle.netWorthARS);
+    participant.phase = 'hero-USD';
     await expectValue(hero.locator('data').nth(1), oracle.netWorthUSD);
     const flow = page.getByRole('link').filter({ has: page.getByRole('heading', { name: 'Este mes', exact: true }) });
+    participant.phase = 'month-flow';
     await expectValue(flow.locator('data').nth(0), oracle.incomeARS);
     await expectValue(flow.locator('data').nth(1), oracle.spentARS);
     await expectValue(flow.locator('data').nth(2), oracle.balanceARS);
+    participant.phase = 'ten-account-links';
     await page.getByRole('heading', { name: 'Tus Cuentas', exact: true }).waitFor({ state: 'visible' });
     for (const name of oracle.accountNames) await page.getByRole('link', { name: `Ver movimientos de ${name}`, exact: true }).waitFor({ state: 'visible' });
+    participant.phase = 'five-recent-descriptions';
     await page.getByRole('heading', { name: 'Ultimos Movimientos', exact: true }).waitFor({ state: 'visible' });
     for (const description of oracle.recentDescriptions) await page.getByText(description, { exact: true }).waitFor({ state: 'visible' });
     // Playwright's visible state permits opacity0. Include actual financial
     // content at effective opacity>=0.99 in the conservative timing boundary.
+    participant.phase = 'effective-opacity';
     await page.evaluate(async expected => {
       const heading = name => [...document.querySelectorAll('h2,h3')].find(node => node.textContent?.trim() === name);
       const nodes = () => {
@@ -235,6 +248,7 @@ try {
     }, { accountNames: oracle.accountNames, recentDescriptions: oracle.recentDescriptions });
     assert.equal(participant.errors, 0, 'Browser JavaScript error');
     assert.equal(participant.financialFailures, 0, 'Financial API failure');
+    participant.phase = 'complete';
   }
   async function observedFinancialValues(page) {
     // Numeric synthetic diagnostics only; do not copy body text, URLs or session data.
@@ -261,10 +275,11 @@ try {
   // Warmup failures are disclosed; all 100 measured samples still run and retain failures.
   for (let wave = 1; wave <= 5; wave++) {
     const observations = await Promise.all(participants.map(async participant => {
-      participant.errors = 0; participant.financialFailures = 0;
+      participant.errors = 0; participant.financialFailures = 0; participant.mainDocumentStatus = null;
       const observation = { index: (wave - 1) * 20 + participant.index, wave, context: participant.index, user: participant.oracle.user, startedAt: new Date().toISOString(), status: 'RUNNING' };
       const start = performance.now();
       try {
+        participant.phase = 'goto-domcontentloaded';
         const response = await participant.page.goto(new URL('/dashboard', appUrl).href, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         observation.httpStatus = response?.status();
         assert.equal(observation.httpStatus, 200);
@@ -273,8 +288,10 @@ try {
       } catch (error) {
         observation.status = 'FAIL';
         observation.failure = ['AssertionError', 'TimeoutError'].includes(error.name) ? error.name : 'BrowserOrOracleError';
+        observation.failurePhase = participant.phase;
       }
       observation.durationMs = performance.now() - start;
+      observation.navigationResponseStatus = participant.mainDocumentStatus;
       observation.pageErrors = participant.errors;
       observation.financialRequestFailures = participant.financialFailures;
       // Read after stopping the timer so recording diagnostics does not inflate the SLO.
@@ -296,15 +313,17 @@ try {
   warm.status = warm.localThreshold.met ? 'PASS' : 'FAIL';
   async function measureProfileWave(profile, wave) {
     const observations = await Promise.all(participants.map(async participant => {
-      participant.errors = 0; participant.financialFailures = 0;
+      participant.errors = 0; participant.financialFailures = 0; participant.mainDocumentStatus = null;
       const observation = { index: (wave - 1) * 20 + participant.index, wave, context: participant.index, user: participant.oracle.user, startedAt: new Date().toISOString(), status: 'RUNNING' };
       const start = performance.now();
       try {
+        participant.phase = 'goto-domcontentloaded';
         const response = await participant.page.goto(new URL('/dashboard', appUrl).href, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         observation.httpStatus = response?.status(); assert.equal(observation.httpStatus, 200);
         await completeDashboard(participant); observation.status = 'PASS';
-      } catch (error) { observation.status = 'FAIL'; observation.failure = ['AssertionError', 'TimeoutError'].includes(error.name) ? error.name : 'BrowserOrOracleError'; }
+      } catch (error) { observation.status = 'FAIL'; observation.failure = ['AssertionError', 'TimeoutError'].includes(error.name) ? error.name : 'BrowserOrOracleError'; observation.failurePhase = participant.phase; }
       observation.durationMs = performance.now() - start;
+      observation.navigationResponseStatus = participant.mainDocumentStatus;
       observation.pageErrors = participant.errors; observation.financialRequestFailures = participant.financialFailures;
       observation.observedFinancialValues = await observedFinancialValues(participant.page).catch(() => null);
       return observation;

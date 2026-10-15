@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-15T02:43:31.526Z",
+  "harness": {
+    "path": "scripts/test-isolated-browser-load.mjs",
+    "beforeSha256": "5c5723acc934b56a30290d4655e196572b20ecfea164c6417472397c3db395a7",
+    "afterSha256": "0af900e7a7c8219ee4a8cff3d33a34027a0414f6bba0069670b9d21b20da697f",
+    "changes": [
+      "IndependentSQLround(sum(accountUSD),2)monetaryboundary beforeaddingportfolio; unchangednumerictolerance",
+      "FailurephaseandinitialdocumentHTTPstatusreportedseparatelyfromDOMContentLoadedcompletion; CSVcolumnsadded"
+    ],
+    "validation": {
+      "command": "node --check scripts/test-isolated-browser-load.mjs",
+      "exitCode": 0,
+      "scope": "Syntaxonly; changedharnessnotyetusedfornewcanonicalprofile"
+    }
+  },
+  "productBuild": {
+    "revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+    "filesCompared": 324,
+    "allEqual": true,
+    "mismatches": []
+  },
+  "interpretation": "Global819tests/core-responsiveapplytoexactbb2e8a6productanditsoriginalharnessbytes. ThispostCI3harnessdeltaisreviewed/syntaxcheckedseparatelyanddoesnotinheritthatglobaltestclaim."
+}

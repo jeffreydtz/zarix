@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-15T02:13:38.324Z",
+  "scope": "32scopedgeometry/actionchecks and40nativeviewportPNG; not fullCNF05-09 acceptance. Public Markets reads and legacy chart legibility observations remain separately qualified.",
+  "productRevision": "bb2e8a6",
+  "repositoryRevisionAtRun": "3308625d5ff88484b99a0e910e4dbb09ae778efd",
+  "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+  "nextPid": 13977,
+  "appOrigin": "http://127.0.0.1:3000",
+  "apiOrigin": "http://127.0.0.1:57321",
+  "harnessSha256": "45f70570ff9ee680713bf498798fc91359ffdc967500c71f749a1e9b1534685c",
+  "sourceStable": true,
+  "financeIntegrity": {
+    "beforeSha256": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+    "afterSha256": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+    "status": "PASS"
+  },
+  "actualNavigationOverflow": {
+    "beforeWidth": 781,
+    "afterWidth": 768,
+    "viewportWidth": 768
+  },
+  "bitmapMode": "Native viewport atactual100/200% Chrome browser zoom; every successfulIHDR matches configured physicalviewport. Previous fullPage clips preserved separately.",
+  "networkBoundary": "App/APIfrontendsloopback; native internalREST wildcard listener documented in environment/e2e-stack-restart.json. No all-sockets-loopback/LAN-isolation claim."
+}

@@ -1,0 +1,6038 @@
+{
+  "startedAt": "2026-10-15T02:15:03.739Z",
+  "status": "RUNNING",
+  "criterion": "CNF-01",
+  "command": "node scripts/test-isolated-browser-load.mjs",
+  "scope": "Local installed Chrome, 20 ordinary password-authenticated contexts, 100 warm full dashboard navigations. SQL checks all fixture rows and actual visible financial values; local measurements do not establish deployment equivalence or whole CNF-01 acceptance.",
+  "environment": {
+    "node": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "cpu": "Apple M2 Pro",
+    "postgres": "PostgreSQL 17.11 on aarch64-apple-darwin25.3.0, compiled by clang version 21.1.7, 64-bit",
+    "instance": {
+      "database": "postgres",
+      "apiOrigin": "http://127.0.0.1:56321",
+      "appOrigin": "http://127.0.0.1:3101",
+      "applicationMode": "next start after production build; isolated local machine; no deployment equivalence claimed",
+      "applicationTimeZone": "Etc/UTC"
+    },
+    "managedProfiles": {
+      "appPort": "3101",
+      "scope": "Fresh Next Node/JavaScript process per wave; persisted SQL FX remains valid. No OS, filesystem, Supabase, or browser-cache cold claim. Providers are explicit local doubles, never real integrations.",
+      "providerMode": "Explicit loopback HTTP provider double; no real integration",
+      "build": {
+        "buildId": "vezpBno1qh0_ef6W9-W56",
+        "copiedManifestSha256": "b5120a5938d9bbbc29bd627c70e0afa47ecc085090edaf6ccd8ed09adaa60168",
+        "frozenManifestSha256": "fff0c2aafe9668fbc395e3ae6d93cff51376584a1a6ead0278d0d8f9029c0df4",
+        "revision": "bb2e8a6aa5de7f7f26ba745da67257b0f1f25e81",
+        "sourceCount": 467,
+        "frozenManifestEqual": true,
+        "buildProof": {
+          "startedAt": "2026-10-15T01:59:32.539672Z",
+          "finishedAt": "2026-10-15T01:59:53.702500Z",
+          "exitCode": 0,
+          "sourceManifestSha256": "fff0c2aafe9668fbc395e3ae6d93cff51376584a1a6ead0278d0d8f9029c0df4"
+        }
+      }
+    },
+    "browser": {
+      "product": "Installed Google Chrome",
+      "version": "146.0.7680.165",
+      "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "headless": true,
+      "playwrightModuleSha256": "a0f5715ea22354f922791a9c53dc012d5d5c067ff9cc4cd35ffb7cd272071a9f"
+    }
+  },
+  "network": {
+    "mechanism": "Chrome CDP Network.emulateNetworkConditions",
+    "downloadBitsPerSecond": 20000000,
+    "uploadBitsPerSecond": 20000000,
+    "latencyMs": 50,
+    "scope": "Per browser target; not a shared 20 Mbps pipe and not server-to-provider shaping",
+    "browserHttpCache": "Disabled implicitly by Playwright routing used for the loopback guard; warmup refers to application/server state and persisted quote cache"
+  },
+  "profiles": {
+    "warm": {
+      "status": "FAIL",
+      "scheduledObservations": 100,
+      "concurrentContexts": 20,
+      "warmupNavigations": 20,
+      "observations": [
+        {
+          "index": 1,
+          "wave": 1,
+          "context": 1,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.604Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30624.96970799999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "wave": 1,
+          "context": 2,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.604Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31462.885083,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "wave": 1,
+          "context": 3,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.604Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.268708999996,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "wave": 1,
+          "context": 4,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.604Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.305542000002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 201337.32,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 201337.32
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "wave": 1,
+          "context": 5,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.604Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.32362499999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 200670.66
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "wave": 1,
+          "context": 6,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.33537500001,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "wave": 1,
+          "context": 7,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.356625,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "wave": 1,
+          "context": 8,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.373666999993,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "wave": 1,
+          "context": 9,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.375625,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "wave": 1,
+          "context": 10,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.38829100001,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "wave": 1,
+          "context": 11,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.400292000006,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "wave": 1,
+          "context": 12,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.395625000005,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 201337.32,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 201337.32
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 13,
+          "wave": 1,
+          "context": 13,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31463.396332999997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 200670.66
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 14,
+          "wave": 1,
+          "context": 14,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31496.642334000004,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 15,
+          "wave": 1,
+          "context": 15,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31497.024707999997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "wave": 1,
+          "context": 16,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31497.103042000002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 17,
+          "wave": 1,
+          "context": 17,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31601.242417,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 18,
+          "wave": 1,
+          "context": 18,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31634.640291000003,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 22000,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 22000
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 19,
+          "wave": 1,
+          "context": 19,
+          "user": 1,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31634.721124999996,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 200670.66
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 20,
+          "wave": 1,
+          "context": 20,
+          "user": 2,
+          "startedAt": "2026-10-15T02:16:24.605Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31634.763292000003,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 21,
+          "wave": 2,
+          "context": 1,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30255.178625,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 200670.66
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 22,
+          "wave": 2,
+          "context": 2,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30256.09829199998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 23,
+          "wave": 2,
+          "context": 3,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30256.214749999985,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 24,
+          "wave": 2,
+          "context": 4,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30256.383875,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 25,
+          "wave": 2,
+          "context": 5,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30256.415915999998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 200670.66
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 26,
+          "wave": 2,
+          "context": 6,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30256.513875000004,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 27,
+          "wave": 2,
+          "context": 7,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30256.719290999987,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 28,
+          "wave": 2,
+          "context": 8,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30256.85949999999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 29,
+          "wave": 2,
+          "context": 9,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.127Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30257.03774999999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 22000,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 22000
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 30,
+          "wave": 2,
+          "context": 10,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.128Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30257.115416999994,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 31,
+          "wave": 2,
+          "context": 11,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.128Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30257.133457999997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 200670.66
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 32,
+          "wave": 2,
+          "context": 12,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.128Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30257.156500000012,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 201337.32,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 201337.32
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 33,
+          "wave": 2,
+          "context": 13,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.128Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30257.203375000012,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 34,
+          "wave": 2,
+          "context": 14,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.128Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30257.273833999992,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 35,
+          "wave": 2,
+          "context": 15,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.128Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30329.79591700001,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 36,
+          "wave": 2,
+          "context": 16,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.128Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30329.867750000005,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 201337.32,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 201337.32
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 37,
+          "wave": 2,
+          "context": 17,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.128Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30329.859958999994,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 200670.66
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 38,
+          "wave": 2,
+          "context": 18,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.129Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30329.401542000007,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 39,
+          "wave": 2,
+          "context": 19,
+          "user": 1,
+          "startedAt": "2026-10-15T02:18:30.129Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30329.388166999997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": 200670.66
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 40,
+          "wave": 2,
+          "context": 20,
+          "user": 2,
+          "startedAt": "2026-10-15T02:18:30.129Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30329.352042000013,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": 0
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": 0
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 41,
+          "wave": 3,
+          "context": 1,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.884Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30944.396915999998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 42,
+          "wave": 3,
+          "context": 2,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.886Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30946.998125000042,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 43,
+          "wave": 3,
+          "context": 3,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.886Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30947.11504200002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 44,
+          "wave": 3,
+          "context": 4,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.886Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30947.204415999993,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 45,
+          "wave": 3,
+          "context": 5,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.887Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30947.27691700001,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 46,
+          "wave": 3,
+          "context": 6,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.887Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30947.093166999985,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 47,
+          "wave": 3,
+          "context": 7,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.887Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30946.588083999988,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 48,
+          "wave": 3,
+          "context": 8,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.887Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30946.617749999976,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 49,
+          "wave": 3,
+          "context": 9,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.888Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31318.020415999985,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 50,
+          "wave": 3,
+          "context": 10,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.888Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31318.34062500001,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 51,
+          "wave": 3,
+          "context": 11,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.888Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31318.502041,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 52,
+          "wave": 3,
+          "context": 12,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.888Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31410.634750000027,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 53,
+          "wave": 3,
+          "context": 13,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.888Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31412.387042000017,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 54,
+          "wave": 3,
+          "context": 14,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.888Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31413.16387499997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 55,
+          "wave": 3,
+          "context": 15,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.889Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31415.502499999944,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 56,
+          "wave": 3,
+          "context": 16,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.889Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31415.546625000017,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 57,
+          "wave": 3,
+          "context": 17,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.889Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31415.60845900001,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 58,
+          "wave": 3,
+          "context": 18,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.889Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31418.379707999993,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 59,
+          "wave": 3,
+          "context": 19,
+          "user": 1,
+          "startedAt": "2026-10-15T02:19:38.889Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31418.61274999997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 60,
+          "wave": 3,
+          "context": 20,
+          "user": 2,
+          "startedAt": "2026-10-15T02:19:38.889Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31418.77683400002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 61,
+          "wave": 4,
+          "context": 1,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.066Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30965.71095799998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 62,
+          "wave": 4,
+          "context": 2,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.071Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31251.437124999997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 63,
+          "wave": 4,
+          "context": 3,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.071Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31251.526292000024,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 64,
+          "wave": 4,
+          "context": 4,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.071Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31251.643708000018,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 65,
+          "wave": 4,
+          "context": 5,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.071Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31251.667625000002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 66,
+          "wave": 4,
+          "context": 6,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.071Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31251.573957999994,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 67,
+          "wave": 4,
+          "context": 7,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.071Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31251.47645899997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 68,
+          "wave": 4,
+          "context": 8,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.071Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31251.460040999984,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 69,
+          "wave": 4,
+          "context": 9,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.072Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31251.355541000026,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 70,
+          "wave": 4,
+          "context": 10,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.072Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31701.998166000005,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 71,
+          "wave": 4,
+          "context": 11,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.072Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31702.105209,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 72,
+          "wave": 4,
+          "context": 12,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.072Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31702.157582999964,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 73,
+          "wave": 4,
+          "context": 13,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.072Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31702.127540999965,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 74,
+          "wave": 4,
+          "context": 14,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.073Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31701.945125000027,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 75,
+          "wave": 4,
+          "context": 15,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.073Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31701.81237499998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 76,
+          "wave": 4,
+          "context": 16,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.073Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31718.716209000035,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 77,
+          "wave": 4,
+          "context": 17,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.073Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31896.173500000034,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 78,
+          "wave": 4,
+          "context": 18,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.074Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31895.757874999952,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 79,
+          "wave": 4,
+          "context": 19,
+          "user": 1,
+          "startedAt": "2026-10-15T02:20:25.074Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31895.829666999984,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 80,
+          "wave": 4,
+          "context": 20,
+          "user": 2,
+          "startedAt": "2026-10-15T02:20:25.074Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31895.877875000006,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 81,
+          "wave": 5,
+          "context": 1,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30656.61387499998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 82,
+          "wave": 5,
+          "context": 2,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30760.80583299999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 83,
+          "wave": 5,
+          "context": 3,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30760.94895800005,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 84,
+          "wave": 5,
+          "context": 4,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30760.96858399996,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 85,
+          "wave": 5,
+          "context": 5,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30761.008165999956,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 86,
+          "wave": 5,
+          "context": 6,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30761.032125000027,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 87,
+          "wave": 5,
+          "context": 7,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30761.054958999972,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 88,
+          "wave": 5,
+          "context": 8,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30761.09591699997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 89,
+          "wave": 5,
+          "context": 9,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30761.124459000013,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 90,
+          "wave": 5,
+          "context": 10,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30761.222291999962,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 91,
+          "wave": 5,
+          "context": 11,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.317Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30761.26575000002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 92,
+          "wave": 5,
+          "context": 12,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.370Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30709.042000000016,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 93,
+          "wave": 5,
+          "context": 13,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.370Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30708.872167000023,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 94,
+          "wave": 5,
+          "context": 14,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.371Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30736.896042000037,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 95,
+          "wave": 5,
+          "context": 15,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.371Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30738.75895799999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 96,
+          "wave": 5,
+          "context": 16,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.372Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30738.440125000023,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 97,
+          "wave": 5,
+          "context": 17,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.372Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30738.43670900003,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 98,
+          "wave": 5,
+          "context": 18,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.372Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30738.33720899996,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 99,
+          "wave": 5,
+          "context": 19,
+          "user": 1,
+          "startedAt": "2026-10-15T02:21:14.372Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30738.321166999987,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 267204787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 222670.65583333332,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        },
+        {
+          "index": 100,
+          "wave": 5,
+          "context": 20,
+          "user": 2,
+          "startedAt": "2026-10-15T02:21:14.372Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30738.195415999973,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          },
+          "financialMismatches": [
+            {
+              "field": "netWorthARS",
+              "expected": 268004787,
+              "observed": null
+            },
+            {
+              "field": "netWorthUSD",
+              "expected": 223337.3225,
+              "observed": null
+            },
+            {
+              "field": "incomeARS",
+              "expected": 63095562,
+              "observed": null
+            },
+            {
+              "field": "spentARS",
+              "expected": 63090775,
+              "observed": null
+            },
+            {
+              "field": "balanceARS",
+              "expected": 4787,
+              "observed": null
+            }
+          ]
+        }
+      ],
+      "warmupFailures": 20,
+      "summary": {
+        "count": 100,
+        "failures": 100,
+        "p50Ms": 30965.71095799998,
+        "p95Ms": 31702.157582999964,
+        "maxMs": 31896.173500000034,
+        "percentileMethod": "Nearest rank over all recorded durations, including errors and timeouts; no failed sample removed"
+      },
+      "measurementBoundary": "Immediately before page.goto through correct own net worth/month income-expense-balance, all ten account cards/links and five recent descriptions matching independent full SQL AND effective opacity (element times all ancestors)>=0.99. This conservative boundary includes entrance animations, rather than stopping at DOM-ready/Playwright visible. Login, post-measurement screenshots and SQL integrity checks excluded; every navigation error/timeout remains in its profile denominator.",
+      "localThreshold": {
+        "required": "p95 < 2000 ms AND zero failed observations AND successful warmup",
+        "met": false
+      }
+    },
+    "coldStart": {
+      "status": "RUNNING",
+      "observations": [
+        {
+          "index": 1,
+          "wave": 1,
+          "context": 1,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30920.143624999968,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 2,
+          "wave": 1,
+          "context": 2,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31235.13845899998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 3,
+          "wave": 1,
+          "context": 3,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31238.10725,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 4,
+          "wave": 1,
+          "context": 4,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31238.70200000005,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 5,
+          "wave": 1,
+          "context": 5,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31238.944874999986,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 6,
+          "wave": 1,
+          "context": 6,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.050833000045,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 7,
+          "wave": 1,
+          "context": 7,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.097750000015,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 8,
+          "wave": 1,
+          "context": 8,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.154333000013,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 201337.32,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 9,
+          "wave": 1,
+          "context": 9,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.195916999946,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 10,
+          "wave": 1,
+          "context": 10,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.273958000005,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 11,
+          "wave": 1,
+          "context": 11,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.450Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.326166999992,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 12,
+          "wave": 1,
+          "context": 12,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.365374999994,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 13,
+          "wave": 1,
+          "context": 13,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.41749999998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 14,
+          "wave": 1,
+          "context": 14,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.477542000008,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 15,
+          "wave": 1,
+          "context": 15,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.525083000015,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 16,
+          "wave": 1,
+          "context": 16,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.560375,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 201337.32,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 17,
+          "wave": 1,
+          "context": 17,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.621667,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 200670.66,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 18,
+          "wave": 1,
+          "context": 18,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.662249999994,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 201337.32,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 19,
+          "wave": 1,
+          "context": 19,
+          "user": 1,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.712583999964,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 20,
+          "wave": 1,
+          "context": 20,
+          "user": 2,
+          "startedAt": "2026-10-15T02:22:27.451Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31239.758959,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": 0,
+            "netWorthUSD": 0,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 21,
+          "wave": 2,
+          "context": 1,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.365Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30243.2252499999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 22,
+          "wave": 2,
+          "context": 2,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.365Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30252.363082999946,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 23,
+          "wave": 2,
+          "context": 3,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.365Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30252.53766599996,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 24,
+          "wave": 2,
+          "context": 4,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.365Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30252.58345799998,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 25,
+          "wave": 2,
+          "context": 5,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.365Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30252.670292000053,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 26,
+          "wave": 2,
+          "context": 6,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.365Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30252.703125,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 27,
+          "wave": 2,
+          "context": 7,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.365Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30252.729500000016,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 28,
+          "wave": 2,
+          "context": 8,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.365Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30252.75129200006,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 29,
+          "wave": 2,
+          "context": 9,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30252.782999999938,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 30,
+          "wave": 2,
+          "context": 10,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.283042000025,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 31,
+          "wave": 2,
+          "context": 11,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.616791000008,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 32,
+          "wave": 2,
+          "context": 12,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.684291000012,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 33,
+          "wave": 2,
+          "context": 13,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.72658300004,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 34,
+          "wave": 2,
+          "context": 14,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.78941700002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 35,
+          "wave": 2,
+          "context": 15,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.896999999997,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 36,
+          "wave": 2,
+          "context": 16,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.92833399994,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 37,
+          "wave": 2,
+          "context": 17,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.95762500004,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 38,
+          "wave": 2,
+          "context": 18,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30261.98345900001,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 39,
+          "wave": 2,
+          "context": 19,
+          "user": 1,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30262.016375000007,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 40,
+          "wave": 2,
+          "context": 20,
+          "user": 2,
+          "startedAt": "2026-10-15T02:24:05.366Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30262.042292000027,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 41,
+          "wave": 3,
+          "context": 1,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.103Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30450.660832999973,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 42,
+          "wave": 3,
+          "context": 2,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.103Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30450.767874999903,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 43,
+          "wave": 3,
+          "context": 3,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.103Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30450.810457999934,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 44,
+          "wave": 3,
+          "context": 4,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.103Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30450.84170800005,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 45,
+          "wave": 3,
+          "context": 5,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30450.88704199996,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 46,
+          "wave": 3,
+          "context": 6,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30450.925999999978,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 47,
+          "wave": 3,
+          "context": 7,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 30450.95870800002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 48,
+          "wave": 3,
+          "context": 8,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31018.582249999978,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 49,
+          "wave": 3,
+          "context": 9,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31019.113999999943,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 50,
+          "wave": 3,
+          "context": 10,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31019.16608300002,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 51,
+          "wave": 3,
+          "context": 11,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31019.22649999999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 52,
+          "wave": 3,
+          "context": 12,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31022.40949999995,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 53,
+          "wave": 3,
+          "context": 13,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31025.955499999924,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 54,
+          "wave": 3,
+          "context": 14,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31026.538625000045,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 55,
+          "wave": 3,
+          "context": 15,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31026.736167000025,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 56,
+          "wave": 3,
+          "context": 16,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31027.077291000052,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 57,
+          "wave": 3,
+          "context": 17,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31027.14829199994,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 58,
+          "wave": 3,
+          "context": 18,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31027.229625000036,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 59,
+          "wave": 3,
+          "context": 19,
+          "user": 1,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31027.59133299999,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        },
+        {
+          "index": 60,
+          "wave": 3,
+          "context": 20,
+          "user": 2,
+          "startedAt": "2026-10-15T02:25:29.104Z",
+          "status": "FAIL",
+          "failure": "TimeoutError",
+          "durationMs": 31027.719500000007,
+          "pageErrors": 0,
+          "financialRequestFailures": 0,
+          "observedFinancialValues": {
+            "netWorthARS": null,
+            "netWorthUSD": null,
+            "incomeARS": null,
+            "spentARS": null,
+            "balanceARS": null
+          }
+        }
+      ],
+      "scheduledObservations": 100,
+      "concurrentContexts": 20,
+      "processEvents": [
+        {
+          "at": "2026-10-15T02:22:24.138Z",
+          "type": "owned-process-ready",
+          "processIndex": 2,
+          "profileMode": "normal",
+          "pid": 27527,
+          "listenerOwnedByPid": true,
+          "portPreviouslyFree": true,
+          "startupMs": 3311.5399169999873,
+          "readiness": "/api/health only; dashboard not visited by controller"
+        },
+        {
+          "at": "2026-10-15T02:24:03.655Z",
+          "type": "owned-process-ready",
+          "processIndex": 3,
+          "profileMode": "normal",
+          "pid": 27956,
+          "listenerOwnedByPid": true,
+          "portPreviouslyFree": true,
+          "startupMs": 1709.2111670000013,
+          "readiness": "/api/health only; dashboard not visited by controller"
+        },
+        {
+          "at": "2026-10-15T02:25:23.630Z",
+          "type": "owned-process-ready",
+          "processIndex": 4,
+          "profileMode": "normal",
+          "pid": 28565,
+          "listenerOwnedByPid": true,
+          "portPreviouslyFree": true,
+          "startupMs": 5473.138916999917,
+          "readiness": "/api/health only; dashboard not visited by controller"
+        }
+      ],
+      "scope": "Fresh Next Node/JavaScript process per wave; persisted SQL FX remains valid. No OS, filesystem, Supabase, or browser-cache cold claim. Providers are explicit local doubles, never real integrations.",
+      "measurementBoundary": "Immediately before page.goto through correct own net worth/month income-expense-balance, all ten account cards/links and five recent descriptions matching independent full SQL AND effective opacity (element times all ancestors)>=0.99. This conservative boundary includes entrance animations, rather than stopping at DOM-ready/Playwright visible. Login, post-measurement screenshots and SQL integrity checks excluded; every navigation error/timeout remains in its profile denominator.",
+      "sessionScope": "The same 20 normally authenticated browser contexts retain sessions across five owned Next process restarts; no login occurs in the measured boundary."
+    },
+    "providerOutage": {
+      "status": "BLOCKED",
+      "observations": [],
+      "reason": "No separately identified server-side outage profile and independent fallback oracle were supplied. Browser loopback restriction does not simulate a server provider outage."
+    }
+  },
+  "blockers": [
+    "Deployment-equivalent hardware, topology and device profile not established by this isolated local run",
+    "Separate legitimate cold-start and provider-outage profiles remain required"
+  ],
+  "screenshots": [],
+  "sourceManifest": [
+    {
+      "path": "scripts/test-isolated-browser-load.mjs",
+      "sha256": "5c5723acc934b56a30290d4655e196572b20ecfea164c6417472397c3db395a7"
+    },
+    {
+      "path": "docs/testing/isolated-browser-load.md",
+      "sha256": "bc03b108af0ea958406c72380d060ce9c785d2d2ef2d0b4929c315eb15eb477a"
+    },
+    {
+      "path": "scripts/lib/test-isolated-browser-profile-controller.mjs",
+      "sha256": "d459129c7aa61210c13888d6d6d1e1726b232c052a1d0df20cc8b4f0d5573342"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "170b86b6b568992e119ac903fb6181dfdea2e23bf20e4fd90eab75a32254ceea"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "056db0c1fa6788c7b235752cf056bc6e1fcb72045d2ffbfbb6ea432c8b0408eb"
+    },
+    {
+      "path": "components/dashboard/MonthFlowCard.tsx",
+      "sha256": "95679ebf74a3faed618fbc977656795e1840fd55af7047aa0345b40c0ef9a4c2"
+    },
+    {
+      "path": "components/dashboard/AccountCards.tsx",
+      "sha256": "52190b2edc6d6bfbdaaa404dc7b7d666f1bce5d0b2d649849e38f92f2bb26b3f"
+    },
+    {
+      "path": "components/dashboard/RecentTransactions.tsx",
+      "sha256": "f8c496b836e91d1cd9dee662083f3f93c49ffdc69216bc63f377b26366ab1882"
+    },
+    {
+      "path": "components/ui/Amount.tsx",
+      "sha256": "2b12b2957c3dd9d360366799ff8a7373f1e74492d5c0e1a83f58d49a48542520"
+    },
+    {
+      "path": "lib/services/month-flow.ts",
+      "sha256": "5a7a1fdce2b605c442e7461e9d5a4e6a10afe53a3563489892001fe84d897a29"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "3f708823e79dd2f500b66277a140f70393be91e0daa81c3c15e13b84bcef8496"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "d07c50b87fbd206d1d8bbb770eee3d18047749e2df3b48fc3e0720b5d1fa3ece"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    }
+  ],
+  "revision": "3308625d5ff88484b99a0e910e4dbb09ae778efd",
+  "trackedWorkingTreeChanges": [
+    "docs/tif/v2.13/evidence/technical-20261015/case-traceability.csv",
+    "docs/tif/v2.13/evidence/technical-20261015/consolidated/README-draft.md",
+    "docs/tif/v2.13/evidence/technical-20261015/consolidated/build-draft.py",
+    "docs/tif/v2.13/evidence/technical-20261015/consolidated/case-status-delta.json",
+    "docs/tif/v2.13/evidence/technical-20261015/consolidated/evidence-index.json",
+    "docs/tif/v2.13/evidence/technical-20261015/consolidated/recompute-contract-reconciliation.json",
+    "docs/tif/v2.13/evidence/technical-20261015/consolidated/reconciled-contracts.json",
+    "docs/tif/v2.13/evidence/technical-20261015/consolidated/technical-evidence-matrix.csv",
+    "docs/tif/v2.13/evidence/technical-20261015/consolidated/traceability-integration.md",
+    "docs/tif/v2.13/evidence/technical-20261015/durability/reconciled-contracts.json",
+    "docs/tif/v2.13/evidence/technical-20261015/e2e/responsive-fix/manifest.json",
+    "docs/tif/v2.13/evidence/technical-20261015/e2e/responsive-fix/scroll-ancestor-harness-delta.json",
+    "docs/tif/v2.13/evidence/technical-20261015/environment/e2e-stack-restart.md",
+    "docs/tif/v2.13/evidence/technical-20261015/review/evidence-secret-scan.json",
+    "docs/tif/v2.13/evidence/technical-20261015/traceability-summary.json"
+  ],
+  "fixture": {
+    "syntheticOnly": true,
+    "countsPerUser": {
+      "accounts": 10,
+      "transactions": 5000,
+      "positions": 100
+    },
+    "users": [
+      {
+        "id": "eb9e694f-d838-4184-9450-31faa18eafc8",
+        "user": 1,
+        "fingerprint": "b6d1bd97dd855de22a86fbc95de482a2954e714581f01faf44f787668cc93b60",
+        "oracle": {
+          "netWorthARS": 267204787,
+          "netWorthUSD": 222670.65583333332,
+          "incomeARS": 63095562,
+          "spentARS": 63090775,
+          "balanceARS": 4787
+        },
+        "rows": {
+          "accounts": 10,
+          "transactions": 5000,
+          "positions": 100
+        }
+      },
+      {
+        "id": "5b7490ce-4244-44f2-be59-e2f5fed38085",
+        "user": 2,
+        "fingerprint": "ce924be6073d9d57dcde2e41baee909c445bc0566eadc8b46a3c2387fcb31f07",
+        "oracle": {
+          "netWorthARS": 268004787,
+          "netWorthUSD": 223337.3225,
+          "incomeARS": 63095562,
+          "spentARS": 63090775,
+          "balanceARS": 4787
+        },
+        "rows": {
+          "accounts": 10,
+          "transactions": 5000,
+          "positions": 100
+        }
+      }
+    ],
+    "quoteMode": "Synthetic persisted local reference; no real provider acceptance",
+    "fx": [
+      {
+        "source": "blue",
+        "rate": 1200,
+        "timestamp": "2026-10-15T02:14:34.756936+00:00"
+      },
+      {
+        "source": "ccl",
+        "rate": 1280,
+        "timestamp": "2026-10-15T02:14:34.756936+00:00"
+      },
+      {
+        "source": "mep",
+        "rate": 1250,
+        "timestamp": "2026-10-15T02:14:34.756936+00:00"
+      },
+      {
+        "source": "oficial",
+        "rate": 1000,
+        "timestamp": "2026-10-15T02:14:34.756936+00:00"
+      }
+    ]
+  },
+  "authentication": {
+    "normalPasswordLogins": 20,
+    "verifiedBrowserContexts": 20,
+    "distinctUsers": 2,
+    "simultaneousContexts": 20,
+    "serviceRoleBrowserSessions": 0
+  },
+  "finishedAt": "2026-10-15T02:26:18.981Z"
+}

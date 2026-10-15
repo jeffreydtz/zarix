@@ -1,6 +1,6 @@
 {
   "at": "2026-10-15T01:50:10.156Z",
-  "status": "PREPARED",
+  "status": "SCOPED_PASS",
   "reason": "Actual Chrome768px navigation overflow13px confirmed by DOM; preserve target44px and original>=lg spacing. Real200% fullPage compositor crop separately calibrated.",
   "product": {
     "path": "components/Navigation.tsx",
@@ -38,7 +38,18 @@
       "exitCode": 0
     }
   },
-  "afterActualBuildVerification": "PENDING rootCI3build and32newcells; no old-runtime DOM injection used",
+  "afterActualBuildVerification": {
+    "buildId": "QcXclgO6C0_ktQ5ac8YWh",
+    "productRevision": "bb2e8a6",
+    "cells": 32,
+    "scopedPass": 32,
+    "sourceStable": true,
+    "beforeOverflow": 781,
+    "afterOverflow": 768,
+    "viewport": 768
+  },
   "modalCalibration": "../capture-calibration/modal/modal-calibration.json",
-  "modalFinding": "Actual button rect815..863 within modal36..864 and native viewport shows Guardar complete; fullPage bitmap clips it. No modal product change."
+  "modalFinding": "Actual button rect815..863 within modal36..864 and native viewport shows Guardar complete; fullPage bitmap clips it. No modal product change.",
+  "executed": true,
+  "executedResult": "../visual/visual-verification.json"
 }

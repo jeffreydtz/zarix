@@ -1,0 +1,675 @@
+{
+  "startedAt": "2026-10-15T02:29:26.984Z",
+  "scope": "One ordinary normal UI session; read-only diagnostic after interrupted load attempt. Not an observation of the canonical20-session profile.",
+  "priorAttempt": {
+    "warm": {
+      "count": 100,
+      "failures": 100,
+      "p50Ms": 30965.71095799998,
+      "p95Ms": 31702.157582999964,
+      "maxMs": 31896.173500000034,
+      "percentileMethod": "Nearest rank over all recorded durations, including errors and timeouts; no failed sample removed"
+    },
+    "coldRecorded": 60
+  },
+  "phases": [
+    {
+      "phase": "one-context-unshaped",
+      "startedAt": "2026-10-15T02:29:30.240Z",
+      "httpStatus": 200,
+      "goto": "PASS",
+      "gotoDurationMs": 436.30454199999986,
+      "hero": "visible",
+      "dom": {
+        "path": "/dashboard",
+        "readyState": "complete",
+        "title": "Zarix - Finanzas Personales",
+        "heading": [
+          "Patrimonio total",
+          "Mercado hoy",
+          "Este mes",
+          "Próximos vencimientos",
+          "Tus Cuentas",
+          "Ultimos Movimientos"
+        ],
+        "data": [
+          {
+            "value": "0",
+            "text": "$ 0"
+          },
+          {
+            "value": "222670.66",
+            "text": "≈ US$ 222.671"
+          },
+          {
+            "value": "63095562",
+            "text": "$ 63.095.562"
+          },
+          {
+            "value": "63090775",
+            "text": "$ 63.090.775"
+          },
+          {
+            "value": "4787",
+            "text": "+$ 4.787"
+          },
+          {
+            "value": "135194517.85714287",
+            "text": "−$ 135.194.518"
+          }
+        ],
+        "skeletons": 1,
+        "links": 10
+      },
+      "events": [
+        {
+          "phase": "one-context-unshaped",
+          "path": "/accounts",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/dashboard",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/expenses",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/investments",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/api/user/onboarding",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/dashboard",
+          "status": 200,
+          "type": "document"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/logo-formats/logo.svg",
+          "status": 200,
+          "type": "image"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+          "status": 200,
+          "type": "font"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/css/8e43fe9ff4af3686.css",
+          "status": 200,
+          "type": "stylesheet"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/app/(authenticated)/loading-1431000554539f25.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/app/(authenticated)/layout-a817fa524fca0bd6.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/3362-e85a83a5cc0c01e5.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/investments",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/accounts",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/expenses",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/api/categories",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/api/accounts",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/accounts",
+          "type": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/1179-efb7d52aaeb80b8c.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/app/(authenticated)/accounts/page-5737fdc531f08bfd.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/investments",
+          "type": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/4807-1e6a4b514420b7bd.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/app/(authenticated)/investments/page-38bd3e9533c7b459.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/640-82eeea1f82f63315.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/expenses",
+          "type": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/7929-9e0affc838878b2f.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/4318-c0310bb5882aa67a.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/app/(authenticated)/expenses/page-14893f8cd8b4132c.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/2077-46496adc4c75db5a.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/508-aefa69ea3371fc93.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/4390-3b5cb54eb8a2c748.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/app/(authenticated)/dashboard/page-288b80b3e692e4c6.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/chunks/5940-ca7f71b8fb1bf179.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/logo-formats/favicon-32x32.png",
+          "status": 200,
+          "type": "other"
+        },
+        {
+          "phase": "one-context-unshaped",
+          "path": "/_next/static/media/8e9860b6e62d6359-s.woff2",
+          "status": 200,
+          "type": "font"
+        }
+      ]
+    },
+    {
+      "phase": "one-context-cdp-20Mbps-50ms",
+      "startedAt": "2026-10-15T02:29:30.827Z",
+      "httpStatus": 200,
+      "goto": "PASS",
+      "gotoDurationMs": 225.8563749999994,
+      "hero": "visible",
+      "dom": {
+        "path": "/dashboard",
+        "readyState": "complete",
+        "title": "Zarix - Finanzas Personales",
+        "heading": [
+          "Patrimonio total",
+          "Mercado hoy",
+          "Este mes",
+          "Próximos vencimientos",
+          "Tus Cuentas",
+          "Ultimos Movimientos"
+        ],
+        "data": [
+          {
+            "value": "8253024.805621322",
+            "text": "$ 8.253.025"
+          },
+          {
+            "value": "222670.66",
+            "text": "≈ US$ 222.671"
+          },
+          {
+            "value": "63095562",
+            "text": "$ 63.095.562"
+          },
+          {
+            "value": "63090775",
+            "text": "$ 63.090.775"
+          },
+          {
+            "value": "4787",
+            "text": "+$ 4.787"
+          },
+          {
+            "value": "135194517.85714287",
+            "text": "−$ 135.194.518"
+          }
+        ],
+        "skeletons": 1,
+        "links": 10
+      },
+      "events": [
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/api/ai/anomalies",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/budgets",
+          "type": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/api/transactions",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/dashboard",
+          "status": 200,
+          "type": "document"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/logo-formats/logo.svg",
+          "status": 200,
+          "type": "image"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/css/8e43fe9ff4af3686.css",
+          "status": 200,
+          "type": "stylesheet"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/webpack-5bd431c36e4cc321.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+          "status": 200,
+          "type": "font"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/867d2545-a9fd02b4f704da4e.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/main-app-a8eda352bc60d222.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/app/layout-d0504a378908a2b7.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/9768-46aeb931ef534404.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/d7509858-b5bfa9c471a66b9e.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/418-bf981cd8137a170a.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/8333-20ba085add14d0d0.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/4475-219c2e575230f2f9.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/8073-ef8a6bab58255c98.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/4433-d54e1b89122e6cec.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/3382-80c8ffc8515227e0.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/9503-3b987960f2d807da.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/3362-e85a83a5cc0c01e5.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/app/(authenticated)/layout-a817fa524fca0bd6.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/app/(authenticated)/loading-1431000554539f25.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/4390-3b5cb54eb8a2c748.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/640-82eeea1f82f63315.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/2077-46496adc4c75db5a.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/508-aefa69ea3371fc93.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/5940-ca7f71b8fb1bf179.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/app/(authenticated)/dashboard/page-288b80b3e692e4c6.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/expenses",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/accounts",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/accounts",
+          "type": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/investments",
+          "status": 200,
+          "type": "fetch"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/expenses",
+          "type": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/logo-formats/favicon-32x32.png",
+          "status": 200,
+          "type": "other"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/investments",
+          "type": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/1179-efb7d52aaeb80b8c.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/app/(authenticated)/accounts/page-5737fdc531f08bfd.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/7929-9e0affc838878b2f.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/4318-c0310bb5882aa67a.js",
+          "status": 200,
+          "type": "script"
+        },
+        {
+          "phase": "one-context-cdp-20Mbps-50ms",
+          "path": "/_next/static/chunks/app/(authenticated)/expenses/page-14893f8cd8b4132c.js",
+          "status": 200,
+          "type": "script"
+        }
+      ]
+    }
+  ],
+  "process": {
+    "at": "2026-10-15T02:29:27.060Z",
+    "type": "owned-process-ready",
+    "processIndex": 1,
+    "profileMode": "normal",
+    "pid": 29307,
+    "listenerOwnedByPid": true,
+    "portPreviouslyFree": true,
+    "startupMs": 721.505583,
+    "readiness": "/api/health only; dashboard not visited by controller"
+  },
+  "login": {
+    "path": "/dashboard",
+    "readyState": "complete",
+    "title": "Zarix - Finanzas Personales",
+    "heading": [],
+    "data": [],
+    "skeletons": 2,
+    "links": 0
+  },
+  "status": "DIAGNOSED",
+  "finishedAt": "2026-10-15T02:29:31.541Z"
+}

@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-15T02:41:47.730Z",
+  "scope": "Exact diagnostic source/output bytes; not canonicalSLOsamples. FourPNG viewed manually: synthetic fixtureonly/no cookies/tokens/guestcapability visible. Images preserve animation/incomplete/error states without implying readiness.",
+  "files": [
+    {
+      "path": "single-context/diagnostic.json",
+      "sha256": "76798c655145ad527746b2287ced1c3ed0aa565096aa69ce8810892eec51532a"
+    },
+    {
+      "path": "single-context/run.mjs",
+      "sha256": "9f4787de76e5bb7468aaa3fc4dfa25e85a10d7b493d02c5625f85fdff763b053"
+    },
+    {
+      "path": "single-context/shaped.png",
+      "sha256": "ffa02808122fffe2d0855ebdbfaefc07a039a9c58dbd91fb75c963b870702372"
+    },
+    {
+      "path": "single-context/unshaped.png",
+      "sha256": "3c88275a1a80fd3d03c698919362b3bd3c0048d70f0ca454ce554e364753fd7d"
+    },
+    {
+      "path": "concurrency/diagnostic.json",
+      "sha256": "35a2f1246d1c5096dca436a1dafcddd6905c290e5dca3fa447ff0931c4f0de49"
+    },
+    {
+      "path": "concurrency/run.mjs",
+      "sha256": "269b1ca3aace937b24454977ee193bf15f76332bf57be70abdccc36a2b8c510b"
+    },
+    {
+      "path": "concurrency/dashboard-context1.png",
+      "sha256": "3b14704e382181e5e1b33d530d81375925b629cefff226af3f19b2eea7a0382f"
+    },
+    {
+      "path": "concurrency/host-during-dashboard.json",
+      "sha256": "f82c441b5e66f273cf9b52c63df578a5e1ca6c96c74d5a845c29f3a0edfc47eb"
+    },
+    {
+      "path": "concurrency-errors/diagnostic.json",
+      "sha256": "bc0986973481cf2c040739e397cbfefe8eeb49a3fe73822c967982e8040f3c4c"
+    },
+    {
+      "path": "concurrency-errors/run.mjs",
+      "sha256": "3b53b7e9f708d5d2b77d718d40068879f3be91c4eb62abdc913fb1e8f4c9627b"
+    },
+    {
+      "path": "concurrency-errors/dashboard-context1.png",
+      "sha256": "10cf8116eeb8bc7982afe252b1b3bef3cffd10937e368b40939c80bcbe8dde53"
+    },
+    {
+      "path": "concurrency-errors/host-during-dashboard.json",
+      "sha256": "9abd8b98538981c43c66ae7a6c800495fbc044103fb83fc9d76074eb60c5ac13"
+    }
+  ]
+}

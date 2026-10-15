@@ -1,0 +1,232 @@
+{
+  "at": "2026-10-15T02:37:58.407Z",
+  "host": {
+    "freeMemory": 59244544,
+    "totalMemory": 17179869184,
+    "loadAverage": [
+      90.58251953125,
+      67.14990234375,
+      62.73681640625
+    ]
+  },
+  "pg": {
+    "exitCode": 0,
+    "waits": [
+      {
+        "count": 3,
+        "state": "idle",
+        "wait_event": "ClientRead",
+        "wait_event_type": "Client"
+      },
+      {
+        "count": 1,
+        "state": "idle",
+        "wait_event": "Extension",
+        "wait_event_type": "Extension"
+      },
+      {
+        "count": 1,
+        "state": "idle in transaction",
+        "wait_event": "ClientRead",
+        "wait_event_type": "Client"
+      },
+      {
+        "count": 1,
+        "state": null,
+        "wait_event": "Extension",
+        "wait_event_type": "Extension"
+      }
+    ]
+  },
+  "ownedProcesses": [
+    {
+      "pid": 32242,
+      "ppid": 35803,
+      "cpuPercent": 0.8,
+      "rssKiB": 66304,
+      "command": "node"
+    },
+    {
+      "pid": 32245,
+      "ppid": 32242,
+      "cpuPercent": 1,
+      "rssKiB": 90864,
+      "command": "next-server (v15.5.27)"
+    },
+    {
+      "pid": 32254,
+      "ppid": 32242,
+      "cpuPercent": 1.8,
+      "rssKiB": 240064,
+      "command": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    },
+    {
+      "pid": 32260,
+      "ppid": 32254,
+      "cpuPercent": 104.4,
+      "rssKiB": 136800,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (GPU).app/Contents/MacOS/Google Chrome Helper (GPU)"
+    },
+    {
+      "pid": 32261,
+      "ppid": 32254,
+      "cpuPercent": 0.2,
+      "rssKiB": 92304,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper"
+    },
+    {
+      "pid": 32262,
+      "ppid": 32254,
+      "cpuPercent": 0,
+      "rssKiB": 62864,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper"
+    },
+    {
+      "pid": 32332,
+      "ppid": 32254,
+      "cpuPercent": 49.7,
+      "rssKiB": 357136,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32334,
+      "ppid": 32254,
+      "cpuPercent": 51.5,
+      "rssKiB": 316896,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32336,
+      "ppid": 32254,
+      "cpuPercent": 51.8,
+      "rssKiB": 317328,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32338,
+      "ppid": 32254,
+      "cpuPercent": 50.3,
+      "rssKiB": 321472,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32340,
+      "ppid": 32254,
+      "cpuPercent": 49.7,
+      "rssKiB": 296976,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32342,
+      "ppid": 32254,
+      "cpuPercent": 48.4,
+      "rssKiB": 314144,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32345,
+      "ppid": 32254,
+      "cpuPercent": 0.6,
+      "rssKiB": 164816,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32347,
+      "ppid": 32254,
+      "cpuPercent": 2.1,
+      "rssKiB": 164320,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32349,
+      "ppid": 32254,
+      "cpuPercent": 46.2,
+      "rssKiB": 329696,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32353,
+      "ppid": 32254,
+      "cpuPercent": 0,
+      "rssKiB": 166352,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32356,
+      "ppid": 32254,
+      "cpuPercent": 45.7,
+      "rssKiB": 311248,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32359,
+      "ppid": 32254,
+      "cpuPercent": 0,
+      "rssKiB": 142336,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32361,
+      "ppid": 32254,
+      "cpuPercent": 52.1,
+      "rssKiB": 318608,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32363,
+      "ppid": 32254,
+      "cpuPercent": 52.9,
+      "rssKiB": 291168,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32365,
+      "ppid": 32254,
+      "cpuPercent": 51.8,
+      "rssKiB": 292880,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32367,
+      "ppid": 32254,
+      "cpuPercent": 56.3,
+      "rssKiB": 370896,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32369,
+      "ppid": 32254,
+      "cpuPercent": 47.2,
+      "rssKiB": 312928,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32371,
+      "ppid": 32254,
+      "cpuPercent": 58.4,
+      "rssKiB": 343296,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32373,
+      "ppid": 32254,
+      "cpuPercent": 51.4,
+      "rssKiB": 320880,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 32375,
+      "ppid": 32254,
+      "cpuPercent": 54,
+      "rssKiB": 346832,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    },
+    {
+      "pid": 33061,
+      "ppid": 32254,
+      "cpuPercent": 0,
+      "rssKiB": 76160,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/146.0.7680.165/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+    }
+  ]
+}
