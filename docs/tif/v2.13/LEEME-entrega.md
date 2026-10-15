@@ -1,4 +1,6 @@
-> Actualización técnica 15/10/2026: [verificación local, revisiones exactas, matriz y límites](VERIFICACION-TECNICA-20261015.md). La matriz actual es 232 PASS/1 FAIL/40 BLOCKED; se distinguen runtime CI6 y revalidación final de empaquetado, con retención privada y seis paradas oficiales completadas. La evidencia histórica 09/10 y las cifras de la entrega original se conservan sin reescribir; la aceptación actual es parcial.
+> Continuación técnica 15/10/2026: [implementación, gates finales y bloqueos](evidence/technical-20261015/implementation-gap-closure/README.md). Producto `f5f362e`: seis comandos requeridos PASS, 1037 pruebas/105 archivos; [matriz derivada](evidence/technical-20261015/implementation-gap-closure/case-traceability-delta.csv) **238 PASS/1 FAIL/34 BLOCKED**. Incluye auditoría de DELETE, preferencias propias, recuperación UI, lectura privada, correlación y correcciones de logs. La aceptación sigue parcial; no hubo fusión ni despliegue.
+
+> Checkpoint técnico anterior del 15/10/2026: [verificación local, revisiones exactas, matriz y límites](VERIFICACION-TECNICA-20261015.md). Su matriz 232 PASS/1 FAIL/40 BLOCKED y runtime CI6/revalidación de empaquetado se conservan como fase anterior, con retención privada y seis paradas oficiales completadas. La evidencia histórica 09/10 y las cifras de la entrega original no se reescriben.
 
 > Actualización técnica 09/10/2026: ver [verificación aislada y bloqueos](VERIFICACION-TECNICA-20261009.md). Las cifras anteriores son evidencia histórica, no aceptación integral nueva.
 

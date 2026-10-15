@@ -1,0 +1,136 @@
+{
+  "schema": "zarix.independent-dashboard-supplement-review.v1",
+  "reviewedAt": "2026-10-15T08:29:24.165881+00:00",
+  "reviewer": "e2e",
+  "status": "PASS_SCOPED_API_SQL_SSR_COMPOSITION_CANDIDATE",
+  "case": "CP3-17",
+  "method": "Public reports/source snapshots/Git bytes only; no runtime, privatefiles, Auth,HTTP,SQL,browser or tests by reviewer.",
+  "binding": {
+    "revision": "730767b1723502b495d371e69c44df31eb230b56",
+    "buildId": "GrFyU52-vQBoa29ojnwTI",
+    "sourceManifestSha256": "e1e3d2c6cef6f6f1389f36ed263b897b6a700faa6bcc5db41fd38bbe69157433"
+  },
+  "sourceProof": {
+    "executedWorkerSha256": "6ffa87a7d630a1a4ae821358a2338f50d31c51b5e0900214e95a4378de6f9cca",
+    "currentWorkerMatchesExecutedSnapshot": true,
+    "parserSha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+    "parserMatchesExactGit730": true,
+    "514ProductSourceRowsVerifiedFromSame730Execution": true,
+    "reportedCopyStableBeforeAfter": true,
+    "compiledComponentManifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0",
+    "realComponentModuleIds": {
+      "hero": 48648,
+      "sticky": 7616
+    },
+    "provenanceLimit": "This supplementaryworker rehashes the same frozen copy against the existing buildproof; it does not independently re-lsof the listener or recapture buildlogs. Existing SSR38 build/state proofs remain required."
+  },
+  "checks": {
+    "passed": 26,
+    "total": 26,
+    "allReportedChecksRecounted": true,
+    "dashboardRequests": 2,
+    "actualHttpOwnerA": {
+      "actor": "A",
+      "status": 200,
+      "responseSha256": "aa996d392148e51d0617e6b4740eaba88ccdc5dadeadd9f83378bdf35d1d4012",
+      "baseCurrency": "USD",
+      "visible": false,
+      "hero": {
+        "component": "components/dashboard/NetWorthHero.tsx",
+        "moduleId": 48648,
+        "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0"
+      },
+      "sticky": {
+        "component": "components/dashboard/StickyNetWorthBar.tsx",
+        "moduleId": 7616,
+        "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0"
+      }
+    },
+    "actualHttpOwnerB": {
+      "actor": "B",
+      "status": 200,
+      "responseSha256": "6a2ba0461ba58375b4deca49cafbeb0a71d91991e3b9b7bfbcc7621fc271c673",
+      "baseCurrency": "ARS",
+      "visible": true,
+      "hero": {
+        "component": "components/dashboard/NetWorthHero.tsx",
+        "moduleId": 48648,
+        "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0"
+      },
+      "sticky": {
+        "component": "components/dashboard/StickyNetWorthBar.tsx",
+        "moduleId": 7616,
+        "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0"
+      },
+      "actualHeroBaseCurrency": "ARS",
+      "actualTotalUSD": 0
+    }
+  },
+  "criteriaAssessment": {
+    "gapClosed": "SSR38 had no DashboardB request. This separate run uses two newly verified normal sessions; each saves its own state through actual cookie-authenticated NextAPI and requests its Dashboard.",
+    "A": "OwnUSD/hidden saved and returned. Actual HTML has noPatrimonio heading/sentinel, actualFlight has noHero/Sticky. USD200 itself remains supported by earlierSSR38/Native, not newly invented from the hiddenpage.",
+    "B": "OwnARS/visible saved and returned. ActualHTML includes heading/sentinel, actualFlight includes realHero/Sticky modulepayload, ARSbase, ownuserkey and ownUSDtotal0, excludingA200.",
+    "history": "Before/after deterministic full-row inventories of accounts,transactions,investments,investment_sales,net_worth_snapshots,portfolio_performance_snapshots,transaction_deletion_audit compare equal. No rawdatabaseinventory retained in thispublic report.",
+    "composition": "Together with unchangedSSR38 and Native730, the literal CP3-17 API/SQL/SSR acceptanceconditions are supported; no automatic originalmatrix promotion by reviewer."
+  },
+  "cleanup": {
+    "sdkLocalLogouts": [
+      {
+        "actor": "A",
+        "errorIsNull": true
+      },
+      {
+        "actor": "B",
+        "errorIsNull": true
+      }
+    ],
+    "tokensCookiesOnlyInMemory": true,
+    "authSessionsRemaining": 0,
+    "authRefreshTokensRemaining": 0
+  },
+  "limits": [
+    "26checks belong to thisseparate helper; they are not added to globalVitestcounts or othercaseassertions.",
+    "SDK local logout error:null and realSQLsessions0/refreshtokens0 are observed; no transport204 is inferred.",
+    "No browser, clienthydration, clicks, selectedcheckboxpixelstate, animation, layout/zoom or visualacceptance.",
+    "No new provider acceptance, rawHTMLretention, privatecredential scan or universal secretabsence is claimed.",
+    "Preferences in the clonedprofiles are intentionally saved; identical financialhistory does not mean usersrows were unchanged."
+  ],
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/dashboard-supplement/verification.json",
+      "sha256": "13d8c300bce08cbe4ac304e1ee5e9564690d6a29a63b4ac92e70c04d7af6fc88",
+      "bytes": 4303
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/dashboard-supplement/sources/run-dashboard-supplement.mjs",
+      "sha256": "6ffa87a7d630a1a4ae821358a2338f50d31c51b5e0900214e95a4378de6f9cca",
+      "bytes": 9539
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/dashboard-supplement/README.md",
+      "sha256": "0537ae59cd8c210e5042faa508c72875f1dc830caf0024b58f82b09fed260a64",
+      "bytes": 1052
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/verification.json",
+      "sha256": "32db3165f6a6bc9b75534b9ca7e9f51b66d382aa8f308f0888ceae00b9597bed",
+      "bytes": 8607
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/manifest.json",
+      "sha256": "fb7434a09bd4f052802cbb2d329e9c72a1447a761db7d30a423c0c2e72225dc8",
+      "bytes": 1754
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/ssr-http/attempt-1/build-verification.json",
+      "sha256": "4fd07e7883e94b35c19d47d4b628b17c9497709fac3f5bfa1504bf49932e19b9",
+      "bytes": 78301
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/ssr-financial-read.mjs",
+      "sha256": "126fa89cecdda56dd1aaf95eed2c6c3712d25f66bdedf469f557d2de202b3796",
+      "bytes": 14502
+    }
+  ],
+  "noMatrixPromotion": true
+}

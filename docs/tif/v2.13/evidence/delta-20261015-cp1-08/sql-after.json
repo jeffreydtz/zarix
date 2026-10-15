@@ -1,0 +1,1428 @@
+{
+  "runAt": "2026-10-15T07:31:51.563Z",
+  "mode": "after",
+  "scope": "CP1-08 exact SQL1500 fixture plus role/grant/RLS/atomicity regressions in isolated PGlite; synthetic Auth claims, no GoTrue/PostgREST/native/runtime/provider acceptance.",
+  "sources": [
+    {
+      "path": "supabase/baselines/pre_20260401_fresh_install.sql",
+      "sha256": "6e14e39f1964ab96c5b0ba192a7390823b7a3ddc38c63598a1e5ad0c55244247"
+    },
+    {
+      "path": "supabase/migrations/20260401120000_handle_new_user_idempotent.sql",
+      "sha256": "2626bb5155eec3e53c08679ca820a9d894e3ab1a607de61c2c959275cb618f60"
+    },
+    {
+      "path": "supabase/migrations/20260401140000_user_integrations_gemini_telegram.sql",
+      "sha256": "bb59ae6a70d129f60b23e3127c6e8ce6dcac7f3361e104147ebb8cc30347787a"
+    },
+    {
+      "path": "supabase/migrations/20260401160000_market_data_cache.sql",
+      "sha256": "deb96d28ce4fa2a872a4b63fe4989969569891fe8a1778421d01e145ef45dee6"
+    },
+    {
+      "path": "supabase/migrations/20260401180000_fix_balance_trigger_delete_adjustment.sql",
+      "sha256": "6e463be41204208d98de62934865dcecd592a0a0bfc97989fe7b14136a919390"
+    },
+    {
+      "path": "supabase/migrations/20260406120000_accounts_include_in_liquid.sql",
+      "sha256": "8dbcc109b97aaec39bb4c13d9169324dac7d33ce1cac5d843cc48878d532b121"
+    },
+    {
+      "path": "supabase/migrations/20260429124500_performance_indexes_rpc_aggregates.sql",
+      "sha256": "07b6905b834b3331266a2555cfb666cba2590d28d1de8a549ff341066935eaf8"
+    },
+    {
+      "path": "supabase/migrations/20260504104000_multicurrency_usd_payment_waterfall.sql",
+      "sha256": "a1d04d791d82177b57764e23ccaa2545cea0a015847e8c8f5a4486f426ff64d9"
+    },
+    {
+      "path": "supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql",
+      "sha256": "4f9f2bbbb06577c3cb0f55922db6b81baa41124a79450ccec372294a9a1fd480"
+    },
+    {
+      "path": "supabase/migrations/20260504164000_multicurrency_bidirectional_payment_waterfall.sql",
+      "sha256": "6577a0a494a89a48d8752145104ff36da2677984d597e46a714685d55b926797"
+    },
+    {
+      "path": "supabase/migrations/20260526120000_investments_daily_change.sql",
+      "sha256": "3404033b1980199c0550fe422f228ef9063ba9f6ca817a73e2a852546ca6f976"
+    },
+    {
+      "path": "supabase/migrations/20260526130000_investment_sales.sql",
+      "sha256": "33ec37f7ea4da80eb78e33f145ae0b8a0178e86c31727707a7476d676ba10f68"
+    },
+    {
+      "path": "supabase/migrations/20260601120000_investments_market_currency_manual_price.sql",
+      "sha256": "30db2d8d5bb92eb823aca3e4be0562c5b7a51c373a6cd434755b3b7d6e3bf923"
+    },
+    {
+      "path": "supabase/migrations/20260609120000_shared_expenses.sql",
+      "sha256": "b18293971440256a42d2891563f022689fce7a131d4dbe08b9df494c895b933b"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20260811120000_security_hardening.sql",
+      "sha256": "2e639815c8f47ad11c7b0cd4a24b5e7e99f4c7e740c74af97511655918e6c891"
+    },
+    {
+      "path": "supabase/migrations/20260811130000_data_integrity.sql",
+      "sha256": "942bffc1325e78de010542c641070f10d8e1afac03b183479a1eecf359f58dad"
+    },
+    {
+      "path": "supabase/migrations/20260814120000_net_worth_snapshots.sql",
+      "sha256": "4835efb3ebd09f09704a7dc6f4afaf44a50588a8f33c52a2469826c346ccd57e"
+    },
+    {
+      "path": "supabase/migrations/20260819120000_security_integrity_followup.sql",
+      "sha256": "016e31e0a00236b4d87648359b22cdb32653cd56d49f8883335436c6bf5f7ead"
+    },
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261009034852_durable_financial_requests_outbox.sql",
+      "sha256": "c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql",
+      "sha256": "05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/migrations/20261009041100_durable_import_batches.sql",
+      "sha256": "7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    },
+    {
+      "path": "supabase/migrations/20261015072636_audit_transaction_deletions.sql",
+      "sha256": "f5e9ecde74f98b62233aada534206df22655361a661b6b1963a537b221f1b355"
+    },
+    {
+      "path": "supabase/migrations/20261015072807_presentation_preferences.sql",
+      "sha256": "ca6aefd4b6c61e4a60f4b4dd075f5fd6bbbe27dd6e72e7ecddd024544c421309"
+    },
+    {
+      "path": "scripts/test-transaction-deletion-audit.mjs",
+      "sha256": "a9014dfd5e6e9611f49c303c0d44b1ed7b2ba074fecd8f05c2d2008834ca7a46"
+    },
+    {
+      "path": "scripts/lib/test-isolated-database.mjs",
+      "sha256": "395514d590d118c4b7b40a6ceca974db36fc2684a68447c857600be40e22da9b"
+    }
+  ],
+  "results": [
+    {
+      "profile": "explicit-grants-only",
+      "name": "CP1-08 expense1500 delete restores10000 and retains exact OLD identity and actor",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Fresh account balance",
+          "actual": 10000,
+          "expected": 10000
+        },
+        {
+          "name": "Expense balance before DELETE",
+          "actual": 8500,
+          "expected": 8500
+        },
+        {
+          "name": "DELETE returned exactly one original ID",
+          "actual": [
+            "5d589b32-7d91-43ee-b604-9e63f71b50b6"
+          ],
+          "expected": [
+            "5d589b32-7d91-43ee-b604-9e63f71b50b6"
+          ]
+        },
+        {
+          "name": "Balance after DELETE",
+          "actual": 10000,
+          "expected": 10000
+        },
+        {
+          "name": "Operational movement absent",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "Exactly one owner audit event",
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "Deleted transaction identity",
+          "actual": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+          "expected": "5d589b32-7d91-43ee-b604-9e63f71b50b6"
+        },
+        {
+          "name": "Original owner retained",
+          "actual": "11111111-1111-4111-8111-111111111111",
+          "expected": "11111111-1111-4111-8111-111111111111"
+        },
+        {
+          "name": "Actual authenticated actor",
+          "actual": "11111111-1111-4111-8111-111111111111",
+          "expected": "11111111-1111-4111-8111-111111111111"
+        },
+        {
+          "name": "Actual request SQL role",
+          "actual": "authenticated",
+          "expected": "authenticated"
+        },
+        {
+          "name": "Full previous row unchanged",
+          "actual": {
+            "id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+            "tags": [
+              "audit-fixture"
+            ],
+            "type": "expense",
+            "notes": "Original note",
+            "amount": 1500,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T04:31:52.407-03:00",
+            "updated_at": "2026-10-15T04:31:52.407-03:00",
+            "category_id": null,
+            "description": "Synthetic deleted movement",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1500,
+            "destination_amount_in_account_currency": null
+          },
+          "expected": {
+            "id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+            "tags": [
+              "audit-fixture"
+            ],
+            "type": "expense",
+            "notes": "Original note",
+            "amount": 1500,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T04:31:52.407-03:00",
+            "updated_at": "2026-10-15T04:31:52.407-03:00",
+            "category_id": null,
+            "description": "Synthetic deleted movement",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1500,
+            "destination_amount_in_account_currency": null
+          }
+        },
+        {
+          "name": "Deletion event timestamp present",
+          "actual": true,
+          "expected": true
+        }
+      ]
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "RLS hides another owner audit and rejects a cross-owner DELETE",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Other user cannot read A audit",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "A cannot delete B movement",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "Cross-owner attempt produces no B audit",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "Foreign movement intact",
+          "actual": [
+            "4b3d2b69-09d4-4bde-9532-2a97899aab38"
+          ],
+          "expected": [
+            "4b3d2b69-09d4-4bde-9532-2a97899aab38"
+          ]
+        },
+        {
+          "name": "A still reads only its own event",
+          "actual": [
+            "11111111-1111-4111-8111-111111111111"
+          ],
+          "expected": [
+            "11111111-1111-4111-8111-111111111111"
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "Only the internal trigger can write audit rows, including legacy defaults",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "authenticated cannot fabricate an event",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "authenticated cannot UPDATE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "authenticated cannot DELETE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "authenticated cannot TRUNCATE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "authenticated cannot execute the private trigger function",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot fabricate an event",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot UPDATE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot DELETE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot TRUNCATE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot execute the private trigger function",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "Anonymous audit read denied",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "Privileged function has no client EXECUTE",
+          "actual": {
+            "prosecdef": true,
+            "proconfig": [
+              "search_path=pg_catalog, pg_temp"
+            ],
+            "anon": false,
+            "authenticated": false,
+            "service_role": false
+          },
+          "expected": {
+            "prosecdef": true,
+            "proconfig": [
+              "search_path=pg_catalog, pg_temp"
+            ],
+            "anon": false,
+            "authenticated": false,
+            "service_role": false
+          }
+        }
+      ]
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "DELETE retry over an absent movement does not append another audit",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Repeated DELETE affects zero rows",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "Existing audit remains exact",
+          "actual": [
+            {
+              "id": "82ee9d87-4f2b-462b-b0e2-da287fc73003",
+              "transaction_id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:52.418Z",
+              "previous_row": {
+                "id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:52.407-03:00",
+                "updated_at": "2026-10-15T04:31:52.407-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ],
+          "expected": [
+            {
+              "id": "82ee9d87-4f2b-462b-b0e2-da287fc73003",
+              "transaction_id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:52.418Z",
+              "previous_row": {
+                "id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:52.407-03:00",
+                "updated_at": "2026-10-15T04:31:52.407-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "Rolling back DELETE also rolls back its audit and balance reversal",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Original expense remains after rollback",
+          "actual": [
+            "5fa84465-7b90-404d-8d84-590646e40abc"
+          ],
+          "expected": [
+            "5fa84465-7b90-404d-8d84-590646e40abc"
+          ]
+        },
+        {
+          "name": "Expense balance remains after rollback",
+          "actual": 9930,
+          "expected": 9930
+        },
+        {
+          "name": "No rolled-back audit event persists",
+          "actual": [
+            {
+              "id": "82ee9d87-4f2b-462b-b0e2-da287fc73003",
+              "transaction_id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:52.418Z",
+              "previous_row": {
+                "id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:52.407-03:00",
+                "updated_at": "2026-10-15T04:31:52.407-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ],
+          "expected": [
+            {
+              "id": "82ee9d87-4f2b-462b-b0e2-da287fc73003",
+              "transaction_id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:52.418Z",
+              "previous_row": {
+                "id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:52.407-03:00",
+                "updated_at": "2026-10-15T04:31:52.407-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "An audit INSERT failure aborts the whole deletion",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Audit constraint failure surfaces",
+          "actual": "23514",
+          "expected": "23514"
+        },
+        {
+          "name": "Expense balance not reversed on failure",
+          "actual": 9960,
+          "expected": 9960
+        },
+        {
+          "name": "Original movement remains on failure",
+          "actual": [
+            "31aa1bdc-8ad4-473a-8bbc-6e0d6df17f5f"
+          ],
+          "expected": [
+            "31aa1bdc-8ad4-473a-8bbc-6e0d6df17f5f"
+          ]
+        },
+        {
+          "name": "No audit partial effect",
+          "actual": [
+            {
+              "id": "82ee9d87-4f2b-462b-b0e2-da287fc73003",
+              "transaction_id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:52.418Z",
+              "previous_row": {
+                "id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:52.407-03:00",
+                "updated_at": "2026-10-15T04:31:52.407-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            },
+            {
+              "id": "415b74ea-f1b0-44e0-a5be-a584f97a815d",
+              "transaction_id": "5fa84465-7b90-404d-8d84-590646e40abc",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:52.442Z",
+              "previous_row": {
+                "id": "5fa84465-7b90-404d-8d84-590646e40abc",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 70,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:52.437-03:00",
+                "updated_at": "2026-10-15T04:31:52.437-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 70,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ],
+          "expected": [
+            {
+              "id": "82ee9d87-4f2b-462b-b0e2-da287fc73003",
+              "transaction_id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:52.418Z",
+              "previous_row": {
+                "id": "5d589b32-7d91-43ee-b604-9e63f71b50b6",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:52.407-03:00",
+                "updated_at": "2026-10-15T04:31:52.407-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            },
+            {
+              "id": "415b74ea-f1b0-44e0-a5be-a584f97a815d",
+              "transaction_id": "5fa84465-7b90-404d-8d84-590646e40abc",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:52.442Z",
+              "previous_row": {
+                "id": "5fa84465-7b90-404d-8d84-590646e40abc",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 70,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:52.437-03:00",
+                "updated_at": "2026-10-15T04:31:52.437-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 70,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "explicit-grants-only",
+      "name": "Backend without a session is explicit, never impersonates the owner",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Backend actor remains null",
+          "actual": null,
+          "expected": null
+        },
+        {
+          "name": "Backend role recorded",
+          "actual": "service_role",
+          "expected": "service_role"
+        },
+        {
+          "name": "Backend event still has the original owner",
+          "actual": "11111111-1111-4111-8111-111111111111",
+          "expected": "11111111-1111-4111-8111-111111111111"
+        },
+        {
+          "name": "Balance restored",
+          "actual": 10000,
+          "expected": 10000
+        }
+      ]
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "CP1-08 expense1500 delete restores10000 and retains exact OLD identity and actor",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Fresh account balance",
+          "actual": 10000,
+          "expected": 10000
+        },
+        {
+          "name": "Expense balance before DELETE",
+          "actual": 8500,
+          "expected": 8500
+        },
+        {
+          "name": "DELETE returned exactly one original ID",
+          "actual": [
+            "3d436139-2d0c-4ec1-bcbb-4ec153b5de19"
+          ],
+          "expected": [
+            "3d436139-2d0c-4ec1-bcbb-4ec153b5de19"
+          ]
+        },
+        {
+          "name": "Balance after DELETE",
+          "actual": 10000,
+          "expected": 10000
+        },
+        {
+          "name": "Operational movement absent",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "Exactly one owner audit event",
+          "actual": 1,
+          "expected": 1
+        },
+        {
+          "name": "Deleted transaction identity",
+          "actual": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+          "expected": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19"
+        },
+        {
+          "name": "Original owner retained",
+          "actual": "11111111-1111-4111-8111-111111111111",
+          "expected": "11111111-1111-4111-8111-111111111111"
+        },
+        {
+          "name": "Actual authenticated actor",
+          "actual": "11111111-1111-4111-8111-111111111111",
+          "expected": "11111111-1111-4111-8111-111111111111"
+        },
+        {
+          "name": "Actual request SQL role",
+          "actual": "authenticated",
+          "expected": "authenticated"
+        },
+        {
+          "name": "Full previous row unchanged",
+          "actual": {
+            "id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+            "tags": [
+              "audit-fixture"
+            ],
+            "type": "expense",
+            "notes": "Original note",
+            "amount": 1500,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T04:31:53.074-03:00",
+            "updated_at": "2026-10-15T04:31:53.074-03:00",
+            "category_id": null,
+            "description": "Synthetic deleted movement",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1500,
+            "destination_amount_in_account_currency": null
+          },
+          "expected": {
+            "id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+            "tags": [
+              "audit-fixture"
+            ],
+            "type": "expense",
+            "notes": "Original note",
+            "amount": 1500,
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "created_at": "2026-10-15T04:31:53.074-03:00",
+            "updated_at": "2026-10-15T04:31:53.074-03:00",
+            "category_id": null,
+            "description": "Synthetic deleted movement",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T09:00:00-03:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1500,
+            "destination_amount_in_account_currency": null
+          }
+        },
+        {
+          "name": "Deletion event timestamp present",
+          "actual": true,
+          "expected": true
+        }
+      ]
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "RLS hides another owner audit and rejects a cross-owner DELETE",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Other user cannot read A audit",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "A cannot delete B movement",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "Cross-owner attempt produces no B audit",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "Foreign movement intact",
+          "actual": [
+            "b989e18c-c31d-4a1f-a556-bf4de8d323df"
+          ],
+          "expected": [
+            "b989e18c-c31d-4a1f-a556-bf4de8d323df"
+          ]
+        },
+        {
+          "name": "A still reads only its own event",
+          "actual": [
+            "11111111-1111-4111-8111-111111111111"
+          ],
+          "expected": [
+            "11111111-1111-4111-8111-111111111111"
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "Only the internal trigger can write audit rows, including legacy defaults",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "authenticated cannot fabricate an event",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "authenticated cannot UPDATE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "authenticated cannot DELETE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "authenticated cannot TRUNCATE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "authenticated cannot execute the private trigger function",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot fabricate an event",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot UPDATE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot DELETE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot TRUNCATE audit",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "service_role cannot execute the private trigger function",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "Anonymous audit read denied",
+          "actual": "42501",
+          "expected": "42501"
+        },
+        {
+          "name": "Privileged function has no client EXECUTE",
+          "actual": {
+            "prosecdef": true,
+            "proconfig": [
+              "search_path=pg_catalog, pg_temp"
+            ],
+            "anon": false,
+            "authenticated": false,
+            "service_role": false
+          },
+          "expected": {
+            "prosecdef": true,
+            "proconfig": [
+              "search_path=pg_catalog, pg_temp"
+            ],
+            "anon": false,
+            "authenticated": false,
+            "service_role": false
+          }
+        }
+      ]
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "DELETE retry over an absent movement does not append another audit",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Repeated DELETE affects zero rows",
+          "actual": [],
+          "expected": []
+        },
+        {
+          "name": "Existing audit remains exact",
+          "actual": [
+            {
+              "id": "1f8af09b-6c66-4864-afd2-390a98490901",
+              "transaction_id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:53.082Z",
+              "previous_row": {
+                "id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:53.074-03:00",
+                "updated_at": "2026-10-15T04:31:53.074-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ],
+          "expected": [
+            {
+              "id": "1f8af09b-6c66-4864-afd2-390a98490901",
+              "transaction_id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:53.082Z",
+              "previous_row": {
+                "id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:53.074-03:00",
+                "updated_at": "2026-10-15T04:31:53.074-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "Rolling back DELETE also rolls back its audit and balance reversal",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Original expense remains after rollback",
+          "actual": [
+            "66045961-a547-4b75-902f-a3de1c88d48e"
+          ],
+          "expected": [
+            "66045961-a547-4b75-902f-a3de1c88d48e"
+          ]
+        },
+        {
+          "name": "Expense balance remains after rollback",
+          "actual": 9930,
+          "expected": 9930
+        },
+        {
+          "name": "No rolled-back audit event persists",
+          "actual": [
+            {
+              "id": "1f8af09b-6c66-4864-afd2-390a98490901",
+              "transaction_id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:53.082Z",
+              "previous_row": {
+                "id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:53.074-03:00",
+                "updated_at": "2026-10-15T04:31:53.074-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ],
+          "expected": [
+            {
+              "id": "1f8af09b-6c66-4864-afd2-390a98490901",
+              "transaction_id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:53.082Z",
+              "previous_row": {
+                "id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:53.074-03:00",
+                "updated_at": "2026-10-15T04:31:53.074-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "An audit INSERT failure aborts the whole deletion",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Audit constraint failure surfaces",
+          "actual": "23514",
+          "expected": "23514"
+        },
+        {
+          "name": "Expense balance not reversed on failure",
+          "actual": 9960,
+          "expected": 9960
+        },
+        {
+          "name": "Original movement remains on failure",
+          "actual": [
+            "8d45ae03-6264-4b39-b3e1-9cd0e38afb33"
+          ],
+          "expected": [
+            "8d45ae03-6264-4b39-b3e1-9cd0e38afb33"
+          ]
+        },
+        {
+          "name": "No audit partial effect",
+          "actual": [
+            {
+              "id": "1f8af09b-6c66-4864-afd2-390a98490901",
+              "transaction_id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:53.082Z",
+              "previous_row": {
+                "id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:53.074-03:00",
+                "updated_at": "2026-10-15T04:31:53.074-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            },
+            {
+              "id": "2701cf3e-44e6-4fd3-a289-1ee55f1c4c8b",
+              "transaction_id": "66045961-a547-4b75-902f-a3de1c88d48e",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:53.104Z",
+              "previous_row": {
+                "id": "66045961-a547-4b75-902f-a3de1c88d48e",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 70,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:53.099-03:00",
+                "updated_at": "2026-10-15T04:31:53.099-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 70,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ],
+          "expected": [
+            {
+              "id": "1f8af09b-6c66-4864-afd2-390a98490901",
+              "transaction_id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:53.082Z",
+              "previous_row": {
+                "id": "3d436139-2d0c-4ec1-bcbb-4ec153b5de19",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 1500,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:53.074-03:00",
+                "updated_at": "2026-10-15T04:31:53.074-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 1500,
+                "destination_amount_in_account_currency": null
+              }
+            },
+            {
+              "id": "2701cf3e-44e6-4fd3-a289-1ee55f1c4c8b",
+              "transaction_id": "66045961-a547-4b75-902f-a3de1c88d48e",
+              "user_id": "11111111-1111-4111-8111-111111111111",
+              "actor_id": "11111111-1111-4111-8111-111111111111",
+              "actor_role": "authenticated",
+              "deleted_at": "2026-10-15T07:31:53.104Z",
+              "previous_row": {
+                "id": "66045961-a547-4b75-902f-a3de1c88d48e",
+                "tags": [
+                  "audit-fixture"
+                ],
+                "type": "expense",
+                "notes": "Original note",
+                "amount": 70,
+                "user_id": "11111111-1111-4111-8111-111111111111",
+                "currency": "ARS",
+                "location": null,
+                "account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                "created_at": "2026-10-15T04:31:53.099-03:00",
+                "updated_at": "2026-10-15T04:31:53.099-03:00",
+                "category_id": null,
+                "description": "Synthetic deleted movement",
+                "receipt_url": null,
+                "is_recurring": false,
+                "exchange_rate": null,
+                "transaction_date": "2026-10-06T09:00:00-03:00",
+                "installment_total": null,
+                "recurring_rule_id": null,
+                "installment_number": null,
+                "installment_group_id": null,
+                "destination_account_id": null,
+                "amount_in_account_currency": 70,
+                "destination_amount_in_account_currency": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "legacy-default-grants",
+      "name": "Backend without a session is explicit, never impersonates the owner",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "Backend actor remains null",
+          "actual": null,
+          "expected": null
+        },
+        {
+          "name": "Backend role recorded",
+          "actual": "service_role",
+          "expected": "service_role"
+        },
+        {
+          "name": "Backend event still has the original owner",
+          "actual": "11111111-1111-4111-8111-111111111111",
+          "expected": "11111111-1111-4111-8111-111111111111"
+        },
+        {
+          "name": "Balance restored",
+          "actual": 10000,
+          "expected": 10000
+        }
+      ]
+    }
+  ],
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "sourceStable": true,
+  "passed": 14,
+  "total": 14,
+  "status": "PASS"
+}

@@ -1,0 +1,330 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T08:01:32.670Z",
+  "checks": [
+    {
+      "name": "Fresh cloned Auth sessions after NativeCases",
+      "passed": true
+    },
+    {
+      "name": "A-first normal GoTrue login",
+      "passed": true
+    },
+    {
+      "name": "A-first normal identity",
+      "passed": true
+    },
+    {
+      "name": "B normal GoTrue login",
+      "passed": true
+    },
+    {
+      "name": "B normal identity",
+      "passed": true
+    },
+    {
+      "name": "A USD visible save through actual Next cookie API",
+      "passed": true
+    },
+    {
+      "name": "Actual A visible dashboard HTTP200",
+      "passed": true
+    },
+    {
+      "name": "One actual compiled Hero payload",
+      "passed": true
+    },
+    {
+      "name": "Actual SSR USD base",
+      "passed": true
+    },
+    {
+      "name": "Actual SSR USD200 from ARS120000 and USD100 at1200",
+      "passed": true
+    },
+    {
+      "name": "Actual SSR ARS240000",
+      "passed": true
+    },
+    {
+      "name": "A hides widget through actual cookie API",
+      "passed": true
+    },
+    {
+      "name": "Old owner header is denied by actual Next API",
+      "passed": true
+    },
+    {
+      "name": "First A session local logout",
+      "passed": true
+    },
+    {
+      "name": "A-new normal GoTrue login",
+      "passed": true
+    },
+    {
+      "name": "A-new normal identity",
+      "passed": true
+    },
+    {
+      "name": "A-new preferences HTTP200",
+      "passed": true
+    },
+    {
+      "name": "New A session retains USD and hidden widget",
+      "passed": true
+    },
+    {
+      "name": "B preferences HTTP200",
+      "passed": true
+    },
+    {
+      "name": "B settings remain own ARS visible",
+      "passed": true
+    },
+    {
+      "name": "Actual hidden dashboard HTTP200",
+      "passed": true
+    },
+    {
+      "name": "Hidden dashboard has no Hero Flight payload",
+      "passed": true
+    },
+    {
+      "name": "Hidden dashboard has no Sticky Flight payload",
+      "passed": true
+    },
+    {
+      "name": "Hidden dashboard removes own hero sentinel",
+      "passed": true
+    },
+    {
+      "name": "A-new actual Settings SSR200",
+      "passed": true
+    },
+    {
+      "name": "A-new one bound SettingsForm",
+      "passed": true
+    },
+    {
+      "name": "A-new actual Settings owner",
+      "passed": true
+    },
+    {
+      "name": "A-new actual Settings stored preference",
+      "passed": true
+    },
+    {
+      "name": "B actual Settings SSR200",
+      "passed": true
+    },
+    {
+      "name": "B one bound SettingsForm",
+      "passed": true
+    },
+    {
+      "name": "B actual Settings owner",
+      "passed": true
+    },
+    {
+      "name": "B actual Settings stored preference",
+      "passed": true
+    },
+    {
+      "name": "Forgot password actual HTTP200 email form",
+      "passed": true
+    },
+    {
+      "name": "Update without session has safe message and no password form",
+      "passed": true
+    },
+    {
+      "name": "Update with normal session actual password form",
+      "passed": true
+    },
+    {
+      "name": "Update form is bound to actual current UID",
+      "passed": true
+    },
+    {
+      "name": "Invalid recovery callback redirects safely without reflection",
+      "passed": true
+    },
+    {
+      "name": "Presentation and SSR preserve all seven financial/history inventories",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "actor": "A-first",
+      "path": "/api/user/preferences",
+      "method": "PUT",
+      "status": 200,
+      "bodySha256": "8feee7224356a963cc0828096395bc389d6823b25618d2c58bac4a27724ba3ed"
+    },
+    {
+      "actor": "A-first",
+      "path": "/dashboard",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "514847c0eea7f839791f1a7e641fd87e239edf7054cd7c9b1ccc6c95301388c1"
+    },
+    {
+      "actor": "A-first",
+      "path": "/api/user/preferences",
+      "method": "PUT",
+      "status": 200,
+      "bodySha256": "c15f7897bd2ecd8cd1aa8407099f6b311b0cbc90ff98bf9cabe88e42f422663a"
+    },
+    {
+      "actor": "A-first",
+      "path": "/api/user/preferences",
+      "method": "PUT",
+      "status": 403,
+      "bodySha256": "998aa2b66cdf7f2e60661bd6b41ef5fbe13cd015fab18e09042ca663b70dd84e"
+    },
+    {
+      "actor": "A-new",
+      "path": "/api/user/preferences",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "c15f7897bd2ecd8cd1aa8407099f6b311b0cbc90ff98bf9cabe88e42f422663a"
+    },
+    {
+      "actor": "B",
+      "path": "/api/user/preferences",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "f41c1d5084815ad4d60fbad6a5e43888eaa3817ac850ec2c2c1a3f62e39fd55d"
+    },
+    {
+      "actor": "A-new",
+      "path": "/dashboard",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "921944be10d03ba5b668ba942dc5dc40a55a12f39e0b9da3bdb7ebbc26f3dfb1"
+    },
+    {
+      "actor": "A-new",
+      "path": "/settings",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "494d014d9ba95cdb5efd04fb3f3b4cb0116b30676b293b97d71ddd89d31fb249"
+    },
+    {
+      "actor": "B",
+      "path": "/settings",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "0cb23d592c420bc5f058cec61f2ab5458d66328957ab260f66f4a08f58babca2"
+    },
+    {
+      "actor": "anonymous",
+      "path": "/auth/forgot-password",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "a57edf2f4f1224bfb7b34e259c4e920d7be2e835e1159b06352f6269dfd4c863"
+    },
+    {
+      "actor": "anonymous",
+      "path": "/auth/update-password",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "fbf72a84d6593a3b2161bc61b5ec7c3d966b1453f8ba68e5076e4ffdf8e19747"
+    },
+    {
+      "actor": "A-new",
+      "path": "/auth/update-password",
+      "method": "GET",
+      "status": 200,
+      "bodySha256": "8adf6aac54ec42823455a3e637edfcab5e6c13a461cde114e6d3a9e1c01b8b12"
+    },
+    {
+      "actor": "anonymous",
+      "path": "/auth/callback",
+      "method": "GET",
+      "status": 307,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Real Next730 HTTP/cookies/API/SSR and PostgreSQL reads. No browser, hydration, visual layout, email delivery, password change or external provider acceptance.",
+  "binding": {
+    "revision": "730767b1723502b495d371e69c44df31eb230b56",
+    "sqlApplicationBaseline": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+    "buildId": "GrFyU52-vQBoa29ojnwTI",
+    "copyRoot": "/tmp/zarix-app-delta-db3cf513-b7ad-4f2b-abcd-a2a44aeed27b",
+    "physicalSourceCount": 514,
+    "sourceManifestSha256": "e1e3d2c6cef6f6f1389f36ed263b897b6a700faa6bcc5db41fd38bbe69157433",
+    "appOrigin": "http://127.0.0.1:3006",
+    "apiOrigin": "http://127.0.0.1:61321",
+    "newDatabaseName": "zarix_delta_e4bd026f703549bfa24de940134184b8",
+    "browserAssetExactValueScan": {
+      "files": 139,
+      "matchingPaths": {
+        "SUPABASE_SERVICE_ROLE_KEY": [],
+        "CRON_SECRET": [],
+        "MP_WEBHOOK_SECRET": [],
+        "MP_ACCESS_TOKEN": []
+      },
+      "status": "PASS",
+      "scope": "Four complete selected private values in .next/static bytes only; not universal absence proof."
+    }
+  },
+  "visibleHero": {
+    "binding": {
+      "component": "components/dashboard/NetWorthHero.tsx",
+      "manifestSha256": "46c4b0763ee397966768e22a66dc5dfdf7ca73ad87ca5292d823d955c7fab2c0",
+      "moduleId": 48648
+    },
+    "baseCurrency": "USD",
+    "totalUSD": 200,
+    "totalARSBlue": 240000
+  },
+  "settings": [
+    {
+      "actor": "A-new",
+      "binding": {
+        "component": "components/settings/SettingsForm.tsx",
+        "manifestSha256": "98e34199c4e11c2e81e4e432d219085fbeb01df01d2aa71535f164c7fab5a98d",
+        "moduleId": 23820
+      },
+      "defaultCurrency": "USD",
+      "netWorthVisible": false,
+      "ownerMatchesSession": true
+    },
+    {
+      "actor": "B",
+      "binding": {
+        "component": "components/settings/SettingsForm.tsx",
+        "manifestSha256": "98e34199c4e11c2e81e4e432d219085fbeb01df01d2aa71535f164c7fab5a98d",
+        "moduleId": 23820
+      },
+      "defaultCurrency": "ARS",
+      "netWorthVisible": true,
+      "ownerMatchesSession": true
+    }
+  ],
+  "financialHistoryIntegrity": {
+    "tablesCompared": 7,
+    "unchanged": true
+  },
+  "frozenCopyStable": true,
+  "cleanup": {
+    "ownedSessionLogoutResults": [
+      {
+        "actor": "B",
+        "errorIsNull": true
+      },
+      {
+        "actor": "A-new",
+        "errorIsNull": true
+      }
+    ],
+    "tokensCookiesOnlyInMemory": true,
+    "credentialFilesCreated": 0
+  },
+  "finishedAt": "2026-10-15T08:01:35.260Z",
+  "passed": 38,
+  "total": 38
+}

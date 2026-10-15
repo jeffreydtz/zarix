@@ -1,0 +1,183 @@
+{
+  "checkpoint": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "productRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "originalCases": 273,
+  "originalCsvSha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+  "baselineMatrixSha256": "5b9634e7c2668347c2f08bc67d5c2c8f3d8f9edaca819f72e503124f5d8aca92",
+  "decisionFileSha256": "63f31d8c471d090b062b7134d058bcc14499a11f6ca45b0e010570c49d5166dc",
+  "matrixSha256": "edf0ad11670360817c6798bd8c82b6d4a7dd5b1c44d850b639c6a97409b677c1",
+  "before": {
+    "PASS": 232,
+    "BLOCKED": 40,
+    "FAIL": 1
+  },
+  "evidencePathsRelativeTo": "implementation-gap-closure/",
+  "after": {
+    "PASS": 238,
+    "BLOCKED": 34,
+    "FAIL": 1
+  },
+  "updatedContracts": [
+    {
+      "case_id": "CP1-08",
+      "before": "BLOCKED",
+      "after": "PASS",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-cnf-local-focal-review.json",
+          "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+        }
+      ]
+    },
+    {
+      "case_id": "CP2-11",
+      "before": "BLOCKED",
+      "after": "PASS",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        }
+      ]
+    },
+    {
+      "case_id": "CP2-12",
+      "before": "BLOCKED",
+      "after": "PASS",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        }
+      ]
+    },
+    {
+      "case_id": "CP3-17",
+      "before": "BLOCKED",
+      "after": "PASS",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        },
+        {
+          "path": "independent-dashboard-supplement-review.json",
+          "sha256": "c13e23856892300ebceb3b1c349a2bc1a37c18ada3a4d5e99cdd32bae71518e9"
+        }
+      ]
+    },
+    {
+      "case_id": "CNF-10",
+      "before": "BLOCKED",
+      "after": "PASS",
+      "reviews": [
+        {
+          "path": "channel-secrets/independent-channel-secrets-review.json",
+          "sha256": "b0f907412c997b929009f85856391cef7813a32730289214992b8e47284d2142"
+        },
+        {
+          "path": "independent-cnf-local-focal-review.json",
+          "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+        }
+      ]
+    },
+    {
+      "case_id": "CNF-13",
+      "before": "BLOCKED",
+      "after": "PASS",
+      "reviews": [
+        {
+          "path": "independent-cnf-local-focal-review.json",
+          "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+        },
+        {
+          "path": "independent-cnf13-robust-review.json",
+          "sha256": "4deab9df8c3777ef1adefa4c696251f1fb2220ab8e7e6ea4b13bde02985cc5d1"
+        }
+      ]
+    },
+    {
+      "case_id": "CNF-11",
+      "before": "BLOCKED",
+      "after": "BLOCKED",
+      "reviews": [
+        {
+          "path": "independent-cnf-local-focal-review.json",
+          "sha256": "0e0a61c5ca34bfab2109a70daea840506e67bd89e738e522314874dd7ce51dab"
+        }
+      ]
+    },
+    {
+      "case_id": "CP2-19",
+      "before": "BLOCKED",
+      "after": "BLOCKED",
+      "reviews": [
+        {
+          "path": "independent-native-delta-review.json",
+          "sha256": "093efce9622ab3f179ff6ce9c605e7c25ab3fd9b0a2d951deb9314b4441f7f40"
+        },
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        }
+      ]
+    },
+    {
+      "case_id": "CNF-06",
+      "before": "BLOCKED",
+      "after": "BLOCKED",
+      "reviews": [
+        {
+          "path": "independent-ssr-http-review.json",
+          "sha256": "903028d5b72ce5801d9afe21bd974320eba75e98ac6d0a9303cc9093eb8e365d"
+        }
+      ]
+    }
+  ],
+  "preservedSources": [
+    {
+      "path": "supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql",
+      "sha256": "7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296",
+      "unchangedSince": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df"
+    },
+    {
+      "path": "supabase/migrations/20261006235955_atomic_shared_expense.sql",
+      "sha256": "dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9",
+      "unchangedSince": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f",
+      "unchangedSince": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3",
+      "unchangedSince": "b40feeed28d6e9ea6e8b0b2f112119e2435de1df"
+    },
+    {
+      "path": "docs/tif/v2.13/VERIFICACION-TECNICA-20261009.md",
+      "sha256": "1990c740bb2ab4581139aca1a219b1170dad217b9b0856b53939b93dc1178ca4",
+      "unchangedSince": "7f71f2757a4decb0e0becbafb82860008b2f9185"
+    }
+  ],
+  "statusChanges": 6,
+  "statusesUnchanged": 267,
+  "scope": "New derived matrix only. Historical matrix and original contracts remain unchanged. Assertions, test files and protocol groups are not unique cases."
+}

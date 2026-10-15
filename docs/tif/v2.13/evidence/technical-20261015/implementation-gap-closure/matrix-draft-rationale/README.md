@@ -1,0 +1,1 @@
+Borrador editorial antes de aclarar CNF11. La contención inicial es límite de evidencia y no condición adicional del CSV. No es una corrida; estados iguales. La matriz vigente está en ../case-traceability-delta.csv.

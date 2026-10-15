@@ -1,0 +1,165 @@
+{
+  "createdAt": "2026-10-15T07:38:20.878012+00:00",
+  "publishedCheckpoint": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "workingTreeDelta": true,
+  "status": "IMPLEMENTED_LOCAL_FOCAL_PASS_NATIVE_AND_GLOBAL_PENDING",
+  "scope": "CP1-08 only: transaction deletion audit and preserving session actors in individual/bulk/all user DELETE paths. No new UI, no account hard-delete, no remote/native runtime operation, no existing acceptance matrix edit.",
+  "originalContract": {
+    "case": "CP1-08",
+    "channel": "Normal DELETE SQL",
+    "fixture": "Fresh A10000; expense1500 yields8500",
+    "expected": "DELETE returns one ID; balance10000; no operative row; audit retains original transaction identity, real actor and full prior row"
+  },
+  "results": {
+    "beforeWithoutNewMigration": {
+      "passed": 0,
+      "groups": 2,
+      "exitCode": 1,
+      "reason": "42P01: audit table absent after DELETE balance restoration and missing operative row were observed",
+      "sourceStable": true
+    },
+    "afterMigration": {
+      "passed": 16,
+      "groups": 16,
+      "exitCode": 0,
+      "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+      "profiles": [
+        "explicit-grants-only",
+        "legacy-default-grants"
+      ],
+      "sourceStable": true
+    },
+    "vitest": {
+      "passed": 16,
+      "total": 16,
+      "newDeleteActorTests": 11,
+      "existingEditRegressions": 5,
+      "exitCode": 0,
+      "selectedSourceStable": true
+    },
+    "schemaMirror": {
+      "sources": 30,
+      "baseline": 1,
+      "migrations": 29,
+      "writeExitCode": 0,
+      "checkExitCode": 0
+    },
+    "diffCheck": {
+      "exitCode": 0
+    },
+    "typecheck": "Not rerun by this owner; parent coordinates one joint source freeze/gate.",
+    "native": "Not run; original stacks remain outside this delta."
+  },
+  "security": {
+    "publicTableRls": true,
+    "readPolicy": "authenticated owner by user_id; service_role read permitted",
+    "directWrites": "INSERT/UPDATE/DELETE/TRUNCATE revoked from PUBLIC, anon, authenticated and service_role",
+    "triggerExecution": "Private schema and function have no application-role USAGE/EXECUTE; actual SQL tests show trigger still works under authenticated role.",
+    "definerSearchPath": "pg_catalog, pg_temp; all schema objects qualified",
+    "actor": "auth.uid when present; otherwise NULL with actual request SQL role, never owner fallback",
+    "atomicity": "Audit and DELETE/balance reversal commit or roll back together; audit insertion failure is surfaced, never swallowed.",
+    "history": "No FK/cascade; no backfill or revaluation of prior deletions, existing movements or balances.",
+    "logs": "Deletion failures and bulk reconciliation log only fixed messages, no prior-row snapshots/errors/IDs."
+  },
+  "types": {
+    "file": "types/supabase-generated.ts",
+    "method": "Additive table block checked against actual full-schema isolated PGlite catalog and TypeScript AST for Row/Insert/Update nullability/defaults; all7 columns and no relationships verified in both profiles.",
+    "officialFullCliRegeneration": "Pending separately authorized native replay; no claim that this delta ran official generation.",
+    "manualDisplayModels": "No new display model needed; Database export uses the synchronized public table type."
+  },
+  "commands": [
+    {
+      "command": "supabase migration new --help",
+      "exitCode": 0,
+      "scope": "Official CLI2.120 cached binary; no database operation"
+    },
+    {
+      "command": "supabase migration new audit_transaction_deletions",
+      "exitCode": 0,
+      "created": "supabase/migrations/20261015072636_audit_transaction_deletions.sql"
+    },
+    {
+      "command": "node scripts/test-transaction-deletion-audit.mjs --without-audit --output=docs/tif/v2.13/evidence/delta-20261015-cp1-08/sql-before-final.json",
+      "exitCode": 1,
+      "expectedFailure": true
+    },
+    {
+      "command": "node scripts/test-transaction-deletion-audit.mjs --output=docs/tif/v2.13/evidence/delta-20261015-cp1-08/sql-after-final.json",
+      "exitCode": 0
+    },
+    {
+      "command": "node scripts/test-isolated-schema-mirror.mjs --write",
+      "exitCode": 0
+    },
+    {
+      "command": "node scripts/test-isolated-schema-mirror.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "./node_modules/.bin/vitest",
+        "run",
+        "__tests__/transaction-delete-actor.test.ts",
+        "__tests__/transaction-edit-regression.test.ts",
+        "--reporter=json",
+        "--outputFile=docs/tif/v2.13/evidence/delta-20261015-cp1-08/vitest-final.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": "supabase db advisors --help",
+      "exitCode": 0,
+      "scope": "Availability/help only; no advisor query against a database was executed."
+    }
+  ],
+  "limitations": [
+    "Local SQL uses actual PostgreSQL WASM with synthetic Auth claims; route tests use explicit client/transport doubles. This is not a normal GoTrue/PostgREST session/API integration acceptance.",
+    "No global gate, native advisor query or full official CLI type regeneration ran in this phase, as required by the parent no-native/no-global instruction.",
+    "Past deletions cannot be reconstructed; only future DELETE operations after applying this new migration produce events.",
+    "Application/admin service operations without a user JWT retain actor_idNULL; browser/API DELETE paths now preserve the real verified JWT.",
+    "No migration was applied to a native/remote/production database; no browser, load run, real user data, payment or provider action occurred.",
+    "Historical matrices and evidence are unchanged.16 SQL groups and16 Vitest tests are distinct focal counts and are not added to historical global totals."
+  ],
+  "sources": [
+    {
+      "path": "supabase/migrations/20261015072636_audit_transaction_deletions.sql",
+      "sha256": "f5e9ecde74f98b62233aada534206df22655361a661b6b1963a537b221f1b355"
+    },
+    {
+      "path": "scripts/test-transaction-deletion-audit.mjs",
+      "sha256": "8d47dba2240184b977dce932b4def1755bcd1efeb2bf8f7f1ef459b373a474df"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "38c6b9f14a22b6efc7cc9f38557b136e96b6b10935f44cb33c4a1b3d2fb48f72"
+    },
+    {
+      "path": "app/api/transactions/bulk/route.ts",
+      "sha256": "c5c0f8c931989716b957c072537ad425065fdca4559f7ca444476189e571c078"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "a4b31c4851e912659c6a037b51b2cdadbf782b45cbd2ede2465dd1b00e3a26f8"
+    },
+    {
+      "path": "__tests__/transaction-delete-actor.test.ts",
+      "sha256": "689128d10d1003485c669b6f227877d9b0fcddd0e947dd8f1933018392b611d0"
+    },
+    {
+      "path": "__tests__/transaction-edit-regression.test.ts",
+      "sha256": "1e00e4ac332c2ac1ac0760683014b498573d3d012656a3168819ec6d62f6b2d3"
+    },
+    {
+      "path": "package.json",
+      "sha256": "45b54db3d6cb452127fab13e3b2af39e343394fb91ac26bc32e4c3e1f2c25725"
+    },
+    {
+      "path": "types/supabase-generated.ts",
+      "sha256": "5bb7017d68d5126f8c2e1bbf3cf1a0aae7d561040c7d64ef79e8b6448bad43ba"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "83b4b2c5c33495bfaf7a43da233f1925a58d3806a214edf93a37ac637d9a74a8"
+    }
+  ]
+}

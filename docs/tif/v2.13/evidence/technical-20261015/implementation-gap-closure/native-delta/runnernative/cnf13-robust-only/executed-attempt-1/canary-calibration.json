@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "errorMessageCaptured": true,
+  "errorStackCaptured": true,
+  "errorCauseMessageCaptured": true,
+  "errorCauseStackCaptured": true,
+  "nonEnumerableErrorFieldsUsed": true,
+  "literalSentinelCategoriesCaptured": 3,
+  "imageRepresentationCategoriesCaptured": 4,
+  "consoleCallsBeforeClear": 1,
+  "consoleCallsAfterClear": 0,
+  "performedBeforeAnyAuthOrDatabaseOperation": true
+}

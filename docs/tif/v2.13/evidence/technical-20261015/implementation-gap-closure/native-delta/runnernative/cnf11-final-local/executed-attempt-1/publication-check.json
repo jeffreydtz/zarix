@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "scope": "Selected existing environment values/passwords and local MP placeholders compared in memory against nine proposed public reports/source files. Three literal sentinel checks and JWT-pattern check. Does not claim universal absence or retain RAM-issued sessions/images.",
+  "selectedPrivateValues": 8,
+  "candidateFiles": 9,
+  "exactCredentialMatches": 0,
+  "literalSentinelMatches": 0,
+  "jwtLikeMatches": 0,
+  "rawConsoleCopied": false,
+  "files": [
+    {
+      "path": "cnf11-six-local.json",
+      "sha256": "ce40204725db46665b667b1e45f6b4a32d6050dc126b9830f25c0ed1813e13f6"
+    },
+    {
+      "path": "cnf13-nine-literal.json",
+      "sha256": "9ecb1620fa8ef12f820c9d55360a48acaae18c1156862ecba148c326d5fe9a02"
+    },
+    {
+      "path": "cnf10-user-jwt.json",
+      "sha256": "a1bbbd54b21773719a4316c362bdb15dddb5d35365a3f0fbf847cfdadd0a93c3"
+    },
+    {
+      "path": "privacy-and-cleanup.json",
+      "sha256": "12aab0f40211b31295ac30ecae6d3d8d80a1b4b8469ef00adbe839a107d444f6"
+    },
+    {
+      "path": "execution.json",
+      "sha256": "d52b804c723a3f70193008358e1fc730e9545d41774b1fdd0aa9bc00e2de3cf9"
+    },
+    {
+      "path": "sources/manifest.json",
+      "sha256": "0907541db6e29b1387632a5475b0593147733a0d0f95653eca006ef10f7dd176"
+    },
+    {
+      "path": "sources/run-focal.py",
+      "sha256": "d47d5a28d1a0e27d1ff8085d13cd7582dec8c52d18d7cce05f6a70aa994d5e44"
+    },
+    {
+      "path": "sources/vitest.config.mjs",
+      "sha256": "833ec707d6e5bc2a0d14512bce6baa3bac88317ebd6a1f64cfb76aa87c66455f"
+    },
+    {
+      "path": "sources/focal.test-source.ts",
+      "sha256": "60911deccf76819b168bbac35bf48bd79357c8ec91097a4b226ab97ca5c20b4e"
+    }
+  ]
+}

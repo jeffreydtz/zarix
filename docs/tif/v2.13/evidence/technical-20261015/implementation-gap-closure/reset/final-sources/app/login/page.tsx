@@ -1,0 +1,441 @@
+'use client';
+
+import { Suspense, useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { translateSupabaseAuthError, translatePasskeyError } from '@/lib/auth/auth-error-messages';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
+
+function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [showResendConfirmation, setShowResendConfirmation] = useState(false);
+  const [mode, setMode] = useState<'magiclink' | 'password'>('password');
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [passkeySupported, setPasskeySupported] = useState(false);
+  // La navegación al dashboard (Promise.all pesado del server) tarda ~2s: mientras
+  // tanto mostramos un overlay de "entrando" para que no parezca colgado.
+  const [redirecting, setRedirecting] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    setPasskeySupported(
+      typeof window !== 'undefined' &&
+        typeof window.PublicKeyCredential !== 'undefined'
+    );
+
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setRedirecting(true);
+        router.push('/dashboard');
+      }
+    });
+
+    const error = searchParams.get('error');
+    if (error) {
+      setMessage(`Error: ${decodeURIComponent(error)}`);
+    }
+
+    if (searchParams.get('registered') === '1') {
+      setMessage(
+        'success:Te enviamos un correo para confirmar tu cuenta. Revisá tu bandeja (y spam).'
+      );
+    }
+  }, [router, searchParams]);
+
+  const handlePasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+    setShowResendConfirmation(false);
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        const code = (error as { code?: string }).code;
+        const msg = error.message.toLowerCase();
+        if (
+          code === 'email_not_confirmed' ||
+          msg.includes('email not confirmed')
+        ) {
+          setShowResendConfirmation(true);
+        }
+        throw error;
+      }
+
+      // Éxito: mantenemos el overlay hasta que el dashboard termine de renderizar
+      // (no reseteamos loading; el componente se desmonta al navegar).
+      setRedirecting(true);
+      router.push('/dashboard');
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setMessage(
+        `Error: ${translateSupabaseAuthError(err.message ?? 'Error al iniciar sesión')}`
+      );
+      setLoading(false);
+    }
+  };
+
+  const handlePasskeyLogin = async () => {
+    setPasskeyLoading(true);
+    setMessage('');
+    setShowResendConfirmation(false);
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPasskey();
+      if (error) throw error;
+      setRedirecting(true);
+      router.push('/dashboard');
+    } catch (error: unknown) {
+      setMessage(`Error: ${translatePasskeyError(error)}`);
+      setPasskeyLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email.trim()) {
+      setMessage('Error: Ingresá tu email arriba para reenviar la confirmación.');
+      return;
+    }
+    setResendLoading(true);
+    setMessage('');
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+      setMessage('success:Te reenviamos el correo de confirmación.');
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setMessage(`Error: ${translateSupabaseAuthError(err.message ?? 'No se pudo reenviar')}`);
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  const handleMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) throw error;
+
+      setMessage('success:Te enviamos un link a tu email. Revisá tu casilla.');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Error';
+      setMessage(`Error: ${translateSupabaseAuthError(msg)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isError = message.startsWith('Error:');
+  const isSuccess = message.startsWith('success:');
+  const displayMessage = message.replace('success:', '').replace('Error: ', '');
+
+  return (
+    <>
+    <AnimatePresence>
+      {redirecting && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-gradient-to-br from-primary/20 via-background to-background"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.12, 1], rotate: [0, -6, 6, 0] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+            className="text-7xl"
+          >
+            💰
+          </motion.div>
+          <div className="text-center">
+            <p className="text-lg font-semibold text-primary">Entrando a Zarix…</p>
+            <p className="text-sm text-muted-foreground">Preparando tu tablero</p>
+          </div>
+          <div className="h-1 w-40 overflow-hidden rounded-full bg-secondary">
+            <motion.div
+              className="h-full w-1/2 rounded-full bg-primary"
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    <div className="min-h-dvh min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-primary/15 via-background to-background p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <motion.div 
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="bg-card rounded-3xl shadow-2xl p-8 w-full max-w-md border border-border"
+      >
+        <motion.div 
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <motion.div
+            animate={{ rotate: [0, -5, 5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            className="text-6xl mb-4"
+          >
+            💰
+          </motion.div>
+          <h1 className="text-4xl font-bold text-primary mb-2">
+            Zarix
+          </h1>
+          <p className="text-muted-foreground">
+            Tus finanzas personales en un solo lugar
+          </p>
+        </motion.div>
+
+        <div className="flex gap-2 mb-6 p-1 bg-secondary rounded-xl">
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setMode('password')}
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              mode === 'password'
+                ? 'bg-card text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Contrasena
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setMode('magiclink')}
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              mode === 'magiclink'
+                ? 'bg-card text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Magic Link
+          </motion.button>
+        </div>
+
+        <form onSubmit={mode === 'password' ? handlePasswordLogin : handleMagicLink} className="space-y-4">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <label htmlFor="email" className="block text-sm font-medium text-muted-foreground mb-2">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@email.com"
+              required
+              className="input"
+            />
+          </motion.div>
+
+          <AnimatePresence mode="wait">
+            {mode === 'password' && (
+              <motion.div
+                key="password-field"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <label htmlFor="password" className="block text-sm font-medium text-muted-foreground mb-2">
+                  Contrasena
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Minimo 6 caracteres"
+                    required
+                    className="input pr-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <motion.button
+            type="submit"
+            disabled={loading}
+            whileTap={{ scale: 0.97 }}
+            className="w-full btn btn-primary py-3.5 text-lg mt-2"
+          >
+            {loading ? (
+              <motion.span
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                Cargando...
+              </motion.span>
+            ) : mode === 'password' ? (
+              'Ingresar'
+            ) : (
+              'Enviar link'
+            )}
+          </motion.button>
+        </form>
+
+        {mode === 'password' ? (
+          <p className="mt-4 text-center text-sm">
+            <Link href="/auth/forgot-password" className="font-medium text-primary underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </p>
+        ) : null}
+
+        {passkeySupported && (
+          <div className="mt-4">
+            <div className="flex items-center gap-3 my-4">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs text-muted-foreground">o</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <motion.button
+              type="button"
+              onClick={handlePasskeyLogin}
+              disabled={passkeyLoading}
+              whileTap={{ scale: 0.97 }}
+              className="w-full btn py-3.5 text-lg flex items-center justify-center gap-2 border border-border"
+            >
+              <span>🔑</span>
+              {passkeyLoading ? 'Verificando...' : 'Ingresar con passkey'}
+            </motion.button>
+          </div>
+        )}
+
+        <AnimatePresence mode="wait">
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`mt-4 p-4 rounded-xl text-sm font-medium ${
+                isSuccess
+                  ? 'bg-success/10 text-success border border-success/30'
+                  : 'bg-destructive/10 text-destructive border border-destructive/30'
+              }`}
+            >
+              <span className="mr-2">{isSuccess ? '✓' : '!'}</span>
+              {displayMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {mode === 'password' && showResendConfirmation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-3 text-center"
+          >
+            <button
+              type="button"
+              onClick={handleResendConfirmation}
+              disabled={resendLoading}
+              className="text-sm font-medium text-primary hover:underline disabled:opacity-50"
+            >
+              {resendLoading ? 'Enviando…' : 'Reenviar correo de confirmación'}
+            </button>
+          </motion.div>
+        )}
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          ¿No tenés cuenta?{' '}
+          <Link
+            href="/register"
+            className="font-semibold text-primary hover:underline"
+          >
+            Registrate
+          </Link>
+        </p>
+
+        <motion.div 
+          className="mt-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-2">
+            <span className="text-lg">🇦🇷</span>
+            <span>Optimizado para Argentina</span>
+          </div>
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+            <span>Blue</span>
+            <span className="text-muted-foreground">•</span>
+            <span>MEP</span>
+            <span className="text-muted-foreground">•</span>
+            <span>CCL</span>
+            <span className="text-muted-foreground">•</span>
+            <span>Crypto</span>
+          </div>
+        </motion.div>
+      </motion.div>
+    </div>
+    </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/15 via-background to-background">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="text-6xl"
+        >
+          💰
+        </motion.div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
+  );
+}

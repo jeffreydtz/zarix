@@ -1,0 +1,236 @@
+{
+  "schema": "zarix.channel-secrets.local-verification.v1",
+  "createdAt": "2026-10-15T08:04:14.900121+00:00",
+  "baselineRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "checkoutRevisionAtPackageCreation": "730767b1723502b495d371e69c44df31eb230b56",
+  "case": "CNF-10",
+  "localResult": "PASS",
+  "originalCaseReclassified": false,
+  "scope": "Real application cron template, webhook route handlers and application bot handlers/catches; explicit transport, data and provider doubles. No actual DB/Auth/browser/Telegram/Gemini calls.",
+  "contract": {
+    "path": "docs/tif/v2.13/casos_prueba.csv",
+    "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+    "exactCsvRow": [
+      "CNF-10",
+      "RNF03",
+      "CU-001",
+      "A06/A03",
+      "Sistema / aceptación",
+      "Secretos servicios",
+      "Atributo no funcional",
+      "JWTusuariocomún,noJWT ycronsecretincorrecto; headerbotsecreterror",
+      "llamarcron y webhookbot sincredencial válida; compararconvalidacióncorrecta enfixture",
+      "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+      "",
+      "sincredencialdenegadoantes deDBefectos; credencialválidapasa sóloloscanalesdefinidos; secretosnologueados",
+      "No ejecutado",
+      "Diseñado; pendiente de ejecución",
+      "",
+      "Respuestas/contadorI/Oylogsredactados; nodivulgarsecrets reales",
+      "Contrato revisado alineado a código; fixture de aceptación diseñado, no ejecutado.",
+      "",
+      "",
+      "",
+      "v2.13 propuesta"
+    ]
+  },
+  "reports": {
+    "focused-before.json": {
+      "sha256": "b9a5acbb4085d7602459a89fb96734257071d717487dc817362816c90284503c",
+      "success": false,
+      "total": 26,
+      "passed": 17,
+      "failed": 9,
+      "files": [
+        {
+          "path": "__tests__/channel-secrets-routes.test.ts",
+          "passed": 17,
+          "failed": 2
+        },
+        {
+          "path": "__tests__/telegram-error-log-privacy.test.ts",
+          "passed": 0,
+          "failed": 7
+        }
+      ]
+    },
+    "focused-after.json": {
+      "sha256": "33779dc2a881bbc570e92d3616c3e7a35d60e20a49a9a444802d74fc16f804cf",
+      "success": true,
+      "total": 26,
+      "passed": 26,
+      "failed": 0,
+      "files": [
+        {
+          "path": "__tests__/channel-secrets-routes.test.ts",
+          "passed": 19,
+          "failed": 0
+        },
+        {
+          "path": "__tests__/telegram-error-log-privacy.test.ts",
+          "passed": 7,
+          "failed": 0
+        }
+      ]
+    },
+    "related-after.json": {
+      "sha256": "aebd8716d9fc2e702cf4e72bf9474633aa4de1060d926cc1f30111b93aa9defe",
+      "success": true,
+      "total": 60,
+      "passed": 60,
+      "failed": 0,
+      "files": [
+        {
+          "path": "__tests__/billing-nonbilling-telegram-isolation.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "__tests__/channel-secrets-routes.test.ts",
+          "passed": 19,
+          "failed": 0
+        },
+        {
+          "path": "__tests__/cron-auth.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "__tests__/cron-job-structural.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "__tests__/notification-outbox-route.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "__tests__/telegram-error-log-privacy.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "__tests__/webhook-auth.test.ts",
+          "passed": 4,
+          "failed": 0
+        }
+      ]
+    }
+  },
+  "baselineProductBindings": [
+    {
+      "path": "app/api/telegram/webhook/route.ts",
+      "beforeSha256": "b4080d793747f4112655081c2b77175c8dadba82e9b2d4958ede3b3ae5e75afe",
+      "gitBaselineSha256": "b4080d793747f4112655081c2b77175c8dadba82e9b2d4958ede3b3ae5e75afe",
+      "baselineMatches": true
+    },
+    {
+      "path": "app/api/telegram/webhook/u/[secret]/route.ts",
+      "beforeSha256": "4693bd7e623946400aba94ced88df7bbcde11fa540edbd37ee9525fd7a914191",
+      "gitBaselineSha256": "4693bd7e623946400aba94ced88df7bbcde11fa540edbd37ee9525fd7a914191",
+      "baselineMatches": true
+    },
+    {
+      "path": "lib/telegram/bot.ts",
+      "beforeSha256": "7c20ae76b5b9b7f69ba23f7fa16d71794c23d10693e2bb84bfa79895f00f3531",
+      "gitBaselineSha256": "7c20ae76b5b9b7f69ba23f7fa16d71794c23d10693e2bb84bfa79895f00f3531",
+      "baselineMatches": true
+    }
+  ],
+  "checks": [
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "exitCode": 0,
+      "toolSessionId": 79744
+    },
+    {
+      "command": "node node_modules/next/dist/bin/next lint --file app/api/telegram/webhook/route.ts --file 'app/api/telegram/webhook/u/[secret]/route.ts' --file lib/telegram/bot.ts --file __tests__/channel-secrets-routes.test.ts --file __tests__/telegram-error-log-privacy.test.ts",
+      "exitCode": 0,
+      "toolSessionId": 51883,
+      "result": "No ESLint warnings or errors"
+    }
+  ],
+  "selectedSourceLogInspection": [
+    {
+      "path": "app/api/telegram/webhook/route.ts",
+      "sha256": "3ca93c16e9033784b42f1c98838c49897d27700057d85c827ec1adb9d0a88b47",
+      "calls": [
+        {
+          "line": 24,
+          "text": "console.error('Telegram webhook error:');"
+        }
+      ],
+      "nonErrorCalls": 0,
+      "onlyFixedStringErrorCalls": true
+    },
+    {
+      "path": "app/api/telegram/webhook/u/[secret]/route.ts",
+      "sha256": "4c29f7e530f64ad54495c0a963d98dc64cf9de20020a40bc1989fb93e20673c6",
+      "calls": [
+        {
+          "line": 52,
+          "text": "console.error('Custom Telegram webhook error:');"
+        }
+      ],
+      "nonErrorCalls": 0,
+      "onlyFixedStringErrorCalls": true
+    },
+    {
+      "path": "lib/telegram/bot.ts",
+      "sha256": "ec41bcb77f8fde55069aafae44be99b17214b0723ff60be73d9ba1ff0e119d57",
+      "calls": [
+        {
+          "line": 569,
+          "text": "console.error('[telegram] receipt proposal persistence failed');"
+        },
+        {
+          "line": 576,
+          "text": "console.error('Photo processing error:');"
+        },
+        {
+          "line": 661,
+          "text": "console.error('[telegram] appendBotTurn failed');"
+        },
+        {
+          "line": 667,
+          "text": "console.error('Voice processing error:');"
+        },
+        {
+          "line": 751,
+          "text": "console.error('[telegram] appendBotTurn failed');"
+        },
+        {
+          "line": 757,
+          "text": "console.error('Bot error:');"
+        },
+        {
+          "line": 778,
+          "text": "console.error('Telegram handler error:');"
+        },
+        {
+          "line": 837,
+          "text": "console.error('TELEGRAM_BOT_TOKEN no configurado');"
+        }
+      ],
+      "nonErrorCalls": 0,
+      "onlyFixedStringErrorCalls": true
+    }
+  ],
+  "observations": [
+    "Three invalid cron credential carriers (none, synthetic ordinary-user bearer, wrong cron secret) return 401 before client creation/work; valid exact bearer dispatches its work once only.",
+    "Shared webhook missing/wrong/cross-channel header returns 401 without DB client/bot; missing configured secret fails closed. Valid header dispatches the exact update only to the shared bot.",
+    "Custom webhook short path or missing/wrong/shared-channel header returns 401 before client/DB/bot. A matching derived header with absent/revoked/mismatched stored capability requires exactly one read-only owner lookup, then returns 401 without bot dispatch.",
+    "Custom valid header resolves stored owner/chat/token and forwards that owner, ignoring identity-like payload fields; authenticated bot failure still returns the existing 200 acknowledgement.",
+    "Two route error catches and seven internal application bot error catches omit raw exceptions. Controlled errors contain synthetic secret/text/header canaries; expected public replies remain identical and no canary reaches console error/warn/log/info.",
+    "Selected sources contain no console.log/warn/info/debug calls; this inspection does not assert absence across the entire application or hosting access logs."
+  ],
+  "limits": [
+    "Ordinary-user bearer is an explicit synthetic carrier; this package does not issue or validate a real GoTrue JWT.",
+    "Data/client/bot-dispatch counters are spies, not PostgreSQL effects. Related bot isolation tests use fake Telegraf transport and synthetic user rows.",
+    "No real Telegram delivery, webhook registration, chat control, Gemini call or new provider credential is claimed. Those provider contracts remain separately evidenced or blocked.",
+    "No real HTTP server, new build, deployed collector/access-log inspection, browser interaction or acceptance matrix promotion is claimed.",
+    "The historical 730767b baseline build/gates remain attributed to that revision; this later source delta is verified only by the listed focal/type/lint checks until the parent final gate."
+  ],
+  "zeroActualExternalOperations": true
+}

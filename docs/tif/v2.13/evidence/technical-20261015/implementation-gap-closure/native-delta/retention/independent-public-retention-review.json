@@ -1,0 +1,155 @@
+{
+  "reviewedAt": "2026-10-15T08:29:09.637Z",
+  "status": "PASS_WITH_SCOPE_LIMITS",
+  "reviewMethod": "Independent public metadata and executed-source inspection only; no private files, backups, credentials, processes, sockets or database were opened or probed",
+  "sourceRevisionOfRuntimeEvidence": "730767b1723502b495d371e69c44df31eb230b56",
+  "doesNotAttributeLaterTelegramOrOtherProductDeltaToThisRuntime": true,
+  "publicArtifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention/verification.json",
+      "sha256": "9659a2e3b1714ee266d1d5f955b5bb2a1f89fa6fdaa76f4f589328da151f73b6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention/sources/retain-and-stop.py",
+      "sha256": "35769269562d00f5562a7d85bcc0c2456e34d7fb16c5ff0da11184d24b9f6392"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention/README.md",
+      "sha256": "897cbcd92386a00cc05f8775f4ab8996c6ab76f8b249c55d4c110408fdee8a33"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "sha256": "bab8ac98200fde1eea5bbce532ef28e97348e7976c02adf434bef0d42db48688"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/native-retention-final-plan.json",
+      "sha256": "a1c79c47a8853dc33d6f553b07c3112fe16821f929faae08b06d1c7ded29bbbb"
+    }
+  ],
+  "executedSourceHashMatchesReport": true,
+  "sourceGuardReview": {
+    "parentReleaseRequired": true,
+    "privateWorkingDirectoryFamilyPinnedAndSymlinkRejected": true,
+    "privateDirectory0700AndArchive0600": true,
+    "newDatabaseNameAndLoopbackOriginal58322Checked": true,
+    "sqlClosureQueriesReadOnly": true,
+    "allTemporaryActorsValidatedBeforeFirstSignal": {
+      "count": 6,
+      "checks": [
+        "Exact recorded PID",
+        "Current UID equals caller UID",
+        "Process start time within2 seconds of recorded UTC time",
+        "Current working directory matches recorded owned directory",
+        "Expected127.0.0.1 port belongs only to that PID"
+      ]
+    },
+    "eachPidIdentitySnapshotRecheckedImmediatelyBeforeSigterm": true,
+    "onlySigtermAndBoundedWaitNoForce": true,
+    "exitedProcessAndListenerAbsenceChecked": true,
+    "nativePreflight": {
+      "helperSourceHashPinned": true,
+      "projectStackDataDirectoryOwnerPostmasterAndPortsChecked": true,
+      "stableStateConfigFingerprintBindingsCheckedBeforeDumpAndBeforeStop": true,
+      "officialStopArgvValidatedByHelper": true,
+      "proofStopArgv": [
+        "/tmp/zarix-runtime-20261015/bin/supabase",
+        "stack",
+        "stop",
+        "--workdir",
+        "/tmp/zarix-runtime-20261015/proof",
+        "--stack-id",
+        "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+        "--output-format",
+        "json"
+      ]
+    },
+    "nativeActorsAnd58321_58322ListenersCheckedAbsentAfterOfficialStop": true,
+    "originalPGVersion17DirectoryRetained": true,
+    "scriptHasNoDropResetDestroyOrCredentialConfigurationCopy": true,
+    "rawErrorOutputSuppressedByGenericFailureSummary": true
+  },
+  "reportedExecutedResults": {
+    "status": "RETAIN_AND_STOP_PASS",
+    "archive": {
+      "format": "PostgreSQL custom (-Fc)",
+      "bytes": 553793,
+      "sha256": "a9f03e0b2c4e91b30212fe8acda7267c64483d982b0b9971b3bf6317ef440bd1",
+      "tableInventoryCount": 65,
+      "tocValidated": true,
+      "payloadDecodedToDevNull": true,
+      "includesSchemaAuthApplicationData": true,
+      "newRestoreClaimed": false
+    },
+    "ownedTemporaryProcesses": [
+      {
+        "name": "next",
+        "pid": 85310,
+        "port": 3006,
+        "status": "STOP_PASS"
+      },
+      {
+        "name": "mp-nominal",
+        "pid": 89310,
+        "port": 61339,
+        "status": "STOP_PASS"
+      },
+      {
+        "name": "provider",
+        "pid": 83854,
+        "port": 61329,
+        "status": "STOP_PASS"
+      },
+      {
+        "name": "gateway",
+        "pid": 83849,
+        "port": 61321,
+        "status": "STOP_PASS"
+      },
+      {
+        "name": "auth",
+        "pid": 83840,
+        "port": 61327,
+        "status": "STOP_PASS"
+      },
+      {
+        "name": "postgrest",
+        "pid": 83829,
+        "port": 61323,
+        "status": "STOP_PASS"
+      }
+    ],
+    "nativeStackStopped": "proof",
+    "officialCliExitCode": 0,
+    "newCloneAuthSessionsRemaining": 0,
+    "newCloneAuthRefreshTokensRemaining": 0,
+    "originalFingerprints": {
+      "tableCount": 39,
+      "allReportedUnchanged": true,
+      "scopeBySchema": {
+        "auth": 2,
+        "public": 27,
+        "storage": 10
+      },
+      "timing": "Original fingerprint baseline is after PROOF startup; startup-internal Auth cleanup is not claimed absent."
+    },
+    "originalBackupHashTiming": "Original checkpoint and PROOF dump hashes are checked before stop; checkpoint hash is checked again after stop. This script does not rehash all2134 historical retained files after this later restart.",
+    "originalDataDirectoryAndCloneRetained": true
+  },
+  "privacyInterpretation": {
+    "dumpRemainsPrivateOutsideGit": true,
+    "noArchiveContentReadByReviewer": true,
+    "authDataInsideAuthorizedPrivateDumpRemainsSensitive": true,
+    "noNewEnvSigningCredentialConfigCopyIsClaimedByCredentialsCopiedFalse": true,
+    "noNewStorageObjectsIntroducedClaimIsSeparateFromHistoricalAuthStorageRestoreEvidence": true,
+    "noBrowserOrPersonalProcessTouchClaimIsConsistentWithOwnedActorListAndSource": true
+  },
+  "findings": [],
+  "limits": [
+    "Public metadata and hash-pinned source support the stated retention/stop result; this reviewer does not independently inspect the private dump, private baselines, process state or database.",
+    "TOC validation and pg_restore decoding to/dev/null do not execute a new database restoration, verify a deployed provider project, or establish full CNF-12 acceptance or RPO/RTO.",
+    "The39 protected tables are27public+2Auth+10Storage, not every Auth table or all65 archived tables. New clone Auth session/refresh zero is a separate pre-backup check.",
+    "Original-integrity baseline begins after PROOF startup; the review does not infer absence of startup Auth housekeeping.",
+    "credentialsCopied:false concerns additional credential/config files. The authorized private dump includes Auth/application data and must never be published.",
+    "The sourceRevision is730767b. This result does not prove the later Telegram logging delta or any subsequent product changes."
+  ]
+}

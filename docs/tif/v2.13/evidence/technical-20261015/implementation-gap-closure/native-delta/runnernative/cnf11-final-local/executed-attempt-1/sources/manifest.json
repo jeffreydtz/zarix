@@ -1,0 +1,18 @@
+{
+  "sourceRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "files": [
+    {
+      "path": "run-focal.py",
+      "sha256": "d47d5a28d1a0e27d1ff8085d13cd7582dec8c52d18d7cce05f6a70aa994d5e44"
+    },
+    {
+      "path": "vitest.config.mjs",
+      "sha256": "833ec707d6e5bc2a0d14512bce6baa3bac88317ebd6a1f64cfb76aa87c66455f"
+    },
+    {
+      "path": "focal.test-source.ts",
+      "sha256": "60911deccf76819b168bbac35bf48bd79357c8ec91097a4b226ab97ca5c20b4e"
+    }
+  ]
+}

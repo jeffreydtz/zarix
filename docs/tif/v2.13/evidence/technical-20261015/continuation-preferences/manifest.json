@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "workingTreeSources": true,
+  "sources": [
+    {
+      "path": "app/api/user/preferences/route.ts",
+      "sha256": "8d94371ce53ffb057b287455d05215e7534bc829bf9d80d407d35c6c4a3cf3dc"
+    },
+    {
+      "path": "lib/presentation-preferences.ts",
+      "sha256": "1eb0393f16e16f48c73aa494fe5b53e8a423a7bd8bd76aaa3a1a7201efcfe6ca"
+    },
+    {
+      "path": "lib/services/presentation-preferences.ts",
+      "sha256": "4ae0e9274a9777ca33cff97984c3a8fb9c9182d297417637d116bf5ae1555fff"
+    },
+    {
+      "path": "components/settings/SettingsForm.tsx",
+      "sha256": "29a459d0bd04cc0ef89cc2aee5f2c9218e0721b22928dbc124e63e0ccd7b3166"
+    },
+    {
+      "path": "app/(authenticated)/settings/page.tsx",
+      "sha256": "4412dcd1cc6a243cc8e4565b4e5eee3e583d9d49a845ae70870bd6746ad7d102"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "67250643d94bf35c533f569c8e2019c40f30aa15e2a66ee7d4287b6454da85bd"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "ad4f57203212a56bd9ce41981ea09e9b2d3d50a690e639da37e23602e0debe4d"
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "sha256": "79698b8aa3b9968f5d62d8e191d6299e3620cd71fa4e5375f41382f1de05ee7a"
+    },
+    {
+      "path": "supabase/migrations/20261015072807_presentation_preferences.sql",
+      "sha256": "ca6aefd4b6c61e4a60f4b4dd075f5fd6bbbe27dd6e72e7ecddd024544c421309"
+    },
+    {
+      "path": "lib/constants/user-columns.ts",
+      "sha256": "bcf1544bd81a77aa690f7147757b1e4af65641908d9b863d69484fe3d13ff1ad"
+    },
+    {
+      "path": "types/database.ts",
+      "sha256": "a7711e2131e9c73833832d2102561dc50dbb78bcce16f585bedcf2ab985c1126"
+    },
+    {
+      "path": "types/supabase-generated.ts",
+      "sha256": "5bb7017d68d5126f8c2e1bbf3cf1a0aae7d561040c7d64ef79e8b6448bad43ba"
+    },
+    {
+      "path": "__tests__/presentation-preferences.test.ts",
+      "sha256": "b2b0c2ebf5d74c85c544cc2478d6476989c53cd443d3ea0be17b3ecfc3b1d494"
+    },
+    {
+      "path": "__tests__/presentation-preferences-ui.test.ts",
+      "sha256": "247afb5c06bb0cf6ed1c8977c5a40ea87272ab15742622b0bd5bc82ee4d43dcc"
+    },
+    {
+      "path": "__tests__/presentation-preferences-hero.test.ts",
+      "sha256": "10d40afa61a950570c1eaa6808117964f22310f0fed2a4fb0ba873a3e70f604b"
+    },
+    {
+      "path": "__tests__/dashboard-read-failures.test.ts",
+      "sha256": "8eb6652b8f2e5fcc637e060ebc51c7c387c5d281ffa51fa3f1e04f6c7facf93e"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "83b4b2c5c33495bfaf7a43da233f1925a58d3806a214edf93a37ac637d9a74a8"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/plan.md",
+      "sha256": "e2bc8dad2bda2c3915337189000fdd8a980b4d8e6e703e83d9036141be740393"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "README.md",
+      "sha256": "aa9960610261702de178d20ede56d55c0bdf2c28dab70856565aff5a59b5a66d",
+      "bytes": 4666
+    },
+    {
+      "path": "focused-attempt-1.json",
+      "sha256": "1611b911ee064e611cd1e048cdd83657d8e86a8a43bfe40171faa611ade3a04e",
+      "bytes": 21453
+    },
+    {
+      "path": "focused-before-owner-guard.json",
+      "sha256": "1f90b62e1d8ec3894530ca4b10a888cdfcb78866993174fd771e9f22098d9eaf",
+      "bytes": 23651
+    },
+    {
+      "path": "focused-final.json",
+      "sha256": "82dc809a30f161e72f48dcfe6e166028654b764e3c40fffda0f75b46ecf246d9",
+      "bytes": 24482
+    },
+    {
+      "path": "independent-source-review.json",
+      "sha256": "44524bd150a74c979c9a988634b6c18ac63537330f61fb8876027b7bbb7819ff",
+      "bytes": 7875
+    },
+    {
+      "path": "lint-before-owner-guard.log",
+      "sha256": "126461655dea274e8fd1cbc5d718d82dc6d4bec6d9cc7a0696270bf8b8130728",
+      "bytes": 267
+    },
+    {
+      "path": "lint-final.log",
+      "sha256": "126461655dea274e8fd1cbc5d718d82dc6d4bec6d9cc7a0696270bf8b8130728",
+      "bytes": 267
+    },
+    {
+      "path": "typecheck-before-owner-guard.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "typecheck-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "verification.json",
+      "sha256": "bf21ded21753892b206c91a7215eb4ebd0745c976000bae53fc8fd4f5ee15bb6",
+      "bytes": 6188
+    }
+  ],
+  "sourceStableAtFinalCheck": true,
+  "oldEvidenceAndMatrixChanged": false,
+  "nativeRuntimeStarted": false
+}

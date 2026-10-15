@@ -1,0 +1,568 @@
+{
+  "status": "PASS_INDEPENDENT_ATTEMPT4_REVIEW_SCOPED_WITH_UNRESOLVED_DEV_AUDIT",
+  "reviewedAt": "2026-10-15T08:26:18.799575+00:00",
+  "reviewer": "dependency_audit",
+  "findingsInReviewedEvidence": [],
+  "selectedAttempt": "required-gates-attempt-4",
+  "codeRevision": "b055ac83107175c29418b8d8ed664d0e6395651a",
+  "publishedCheckpoint": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "finalHeadAcceptanceClaimed": false,
+  "reviewMethod": "Read-only parsing of existing public gate reports, JSON/logs and six newly retrieved primary-source payloads. Current source and frozen Git SHA256 comparisons were performed; no gate, npm command, package installation, scanner, network query, Native/API/Auth/browser/provider operation or product mutation was executed by this review.",
+  "checkpointBoundary": "This is the b055 checkpoint. The parent subsequently reported a bounded sell-handler raw-error logging fix and another gate phase. Those later bytes/results are outside this immutable review; the filename does not imply final acceptance of a later HEAD.",
+  "gates": {
+    "records": [
+      {
+        "name": "npm-ci",
+        "command": [
+          "npm",
+          "ci"
+        ],
+        "startedAt": "2026-10-15T08:21:02.133739+00:00",
+        "finishedAt": "2026-10-15T08:21:10.901223+00:00",
+        "durationMs": 8768,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "typecheck",
+        "command": [
+          "npm",
+          "run",
+          "typecheck"
+        ],
+        "startedAt": "2026-10-15T08:21:10.901349+00:00",
+        "finishedAt": "2026-10-15T08:21:12.552602+00:00",
+        "durationMs": 1651,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "lint",
+        "command": [
+          "npm",
+          "run",
+          "lint"
+        ],
+        "startedAt": "2026-10-15T08:21:12.552694+00:00",
+        "finishedAt": "2026-10-15T08:21:13.490858+00:00",
+        "durationMs": 938,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "coverage",
+        "command": [
+          "npm",
+          "run",
+          "test:coverage",
+          "--",
+          "--reporter=json",
+          "--outputFile=/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/final-vitest.json"
+        ],
+        "startedAt": "2026-10-15T08:21:13.490936+00:00",
+        "finishedAt": "2026-10-15T08:21:21.483766+00:00",
+        "durationMs": 7993,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "test-db",
+        "command": [
+          "npm",
+          "run",
+          "test:db"
+        ],
+        "startedAt": "2026-10-15T08:21:21.483890+00:00",
+        "finishedAt": "2026-10-15T08:21:34.670599+00:00",
+        "durationMs": 13187,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "build",
+        "command": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "startedAt": "2026-10-15T08:21:34.670686+00:00",
+        "finishedAt": "2026-10-15T08:21:53.443042+00:00",
+        "durationMs": 18772,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "dependency-audit",
+        "command": [
+          "npm",
+          "audit",
+          "--json"
+        ],
+        "startedAt": "2026-10-15T08:21:53.443111+00:00",
+        "finishedAt": "2026-10-15T08:21:54.314753+00:00",
+        "durationMs": 872,
+        "exitCode": 1,
+        "status": "FAIL"
+      },
+      {
+        "name": "production-audit",
+        "command": [
+          "npm",
+          "audit",
+          "--omit=dev",
+          "--json"
+        ],
+        "startedAt": "2026-10-15T08:21:54.314837+00:00",
+        "finishedAt": "2026-10-15T08:21:54.840397+00:00",
+        "durationMs": 526,
+        "exitCode": 0,
+        "status": "PASS"
+      }
+    ],
+    "recordCount": 8,
+    "requiredNpmGateCount": 6,
+    "requiredNpmPassed": 6,
+    "fullAudit": "FAIL",
+    "fullAuditExitCode": 1,
+    "productionAudit": "PASS",
+    "productionAuditExitCode": 0,
+    "allEightPassed": false,
+    "node": "v22.17.0",
+    "npm": "11.4.2",
+    "buildId": "WVmaqzydh8KkymkZo2DKQ"
+  },
+  "sourceProof": {
+    "declaredTrackedInputs": 480,
+    "all480MatchedFrozenGitB055": true,
+    "all480MatchedCheckoutWhenRead": true,
+    "compactManifestSha256": "ef927127950cf12da9db1d95f9a22d9f0fa514ae479e31aaafda6b7b3ea1fbde",
+    "executorReportedClean": true,
+    "executorReportedStable": true,
+    "scope": "Tracked application/test/SQL/build inputs only. Subsequent checkout mutations for the announced fix are not credited by this run. Documentation snapshots and original earlier reviews remain unchanged."
+  },
+  "unitAndCoverage": {
+    "passedTests": 1034,
+    "totalTests": 1034,
+    "failedTests": 0,
+    "pendingTests": 0,
+    "assertionResultsRecounted": 1034,
+    "actualTestFiles": 104,
+    "fileCountMethod": "testResults.length; numTotalTestSuites 260 is not the file count.",
+    "instrumentedFiles": 37,
+    "coverageTotals": {
+      "lines": {
+        "total": 2549,
+        "covered": 1874,
+        "skipped": 0,
+        "pct": 73.51
+      },
+      "statements": {
+        "total": 2955,
+        "covered": 2082,
+        "skipped": 0,
+        "pct": 70.45
+      },
+      "functions": {
+        "total": 440,
+        "covered": 306,
+        "skipped": 0,
+        "pct": 69.54
+      },
+      "branches": {
+        "total": 2541,
+        "covered": 1632,
+        "skipped": 0,
+        "pct": 64.22
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "coverageScope": "Risk-focused 37-file coverage, not whole-application coverage, an overall RNF coverage target or visual acceptance. Counts are this attempt only, not cumulative with 1008/102 or 913/92 earlier phases."
+  },
+  "databaseGate": {
+    "topLevelScriptReports": 9,
+    "packageCommand": "node scripts/test-balance-trigger.mjs && node scripts/test-shared-expenses-sql.mjs && node scripts/test-plan-limits.mjs && node scripts/test-durable-financial-operations.mjs && node scripts/test-durable-import.mjs && node scripts/test-atomic-account-recompute.mjs && node scripts/test-transaction-deletion-audit.mjs && node scripts/test-isolated-schema-mirror.mjs && node scripts/test-isolated-database.mjs",
+    "allReportedCurrentChecksPass": true,
+    "syntheticHistory": {
+      "migrations-only": {
+        "status": "BLOCKED",
+        "file": "20260401140000_user_integrations_gemini_telegram.sql",
+        "code": "42P01",
+        "message": "relation \"public.users\" does not exist"
+      },
+      "snapshot-then-all-migrations": {
+        "status": "BLOCKED",
+        "file": "20260526130000_investment_sales.sql",
+        "code": "42710",
+        "message": "policy \"investment_sales_all\" for table \"investment_sales\" already exists"
+      },
+      "reconstructed-baseline-then-all-migrations": {
+        "status": "PASS",
+        "sources": 30,
+        "migrations": 29,
+        "skipped": 0
+      }
+    },
+    "currentSources": 30,
+    "currentMigrationCount": 29,
+    "skippedMigrations": 0,
+    "migrationManifestMatchesFrozenSourceHashes": true,
+    "freshBaselineReplayChecks": 128,
+    "freshBaselineReplayChecksPassed": 128,
+    "recovery": {
+      "format": "PGlite physical datadir gzip archive",
+      "tables": 29,
+      "scope": "The recorded PGlite datadir restore is synthetic, with synthetic Auth fixture only; it is not a newly executed native GoTrue/Storage restore or full CNF12 acceptance."
+    },
+    "originalBeforeProof": {
+      "sources": 27,
+      "status": "ORIGINAL_FAILURE_REPRODUCED",
+      "currentRecomputeChecksPassed": 18
+    },
+    "scope": "PostgreSQL 18.3 via PGlite 0.5.8 and the frozen script scopes. The alternative migrations-only and snapshot-then-all-migrations paths remain explicitly BLOCKED in the report; the reproducible baseline+29 path passes. No multi-session native contention, remote service, UI or production recovery is inferred."
+  },
+  "audit": {
+    "fullCounts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "productionCounts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "affectedPackageEntries": 7,
+    "affectedInstalledNodes": 8,
+    "allAffectedNodesLockDev": true,
+    "installedNodes": [
+      {
+        "package": "@next/eslint-plugin-next",
+        "path": "node_modules/@next/eslint-plugin-next",
+        "version": "15.5.27",
+        "lockDev": true
+      },
+      {
+        "package": "braces",
+        "path": "node_modules/braces",
+        "version": "3.0.3",
+        "lockDev": true
+      },
+      {
+        "package": "chokidar",
+        "path": "node_modules/chokidar",
+        "version": "3.6.0",
+        "lockDev": true
+      },
+      {
+        "package": "eslint-config-next",
+        "path": "node_modules/eslint-config-next",
+        "version": "15.5.27",
+        "lockDev": true
+      },
+      {
+        "package": "fast-glob",
+        "path": "node_modules/fast-glob",
+        "version": "3.3.1",
+        "lockDev": true
+      },
+      {
+        "package": "fast-glob",
+        "path": "node_modules/tailwindcss/node_modules/fast-glob",
+        "version": "3.3.3",
+        "lockDev": true
+      },
+      {
+        "package": "micromatch",
+        "path": "node_modules/micromatch",
+        "version": "4.0.8",
+        "lockDev": true
+      },
+      {
+        "package": "tailwindcss",
+        "path": "node_modules/tailwindcss",
+        "version": "3.4.19",
+        "lockDev": true
+      }
+    ],
+    "recommendations": {
+      "@next/eslint-plugin-next": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "braces": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      "chokidar": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      "eslint-config-next": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "fast-glob": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "micromatch": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      "tailwindcss": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      }
+    },
+    "allRecommendationsMarkedSemVerMajor": true,
+    "statusInterpretation": "Full audit remains FAIL for seven package entries in the braces development/build dependency chain; these are not seven independent advisories. Production omission reports 0 and does not erase build/dev exposure."
+  },
+  "freshPrimarySources": {
+    "retrievalSha256": "3cb59527dfa4940b2f4b1920ebb35b026cb58008b48624941230a71ca9fdb2dd",
+    "retrievedFrom": "2026-10-15T08:19:51.059300+00:00",
+    "retrievedThrough": "2026-10-15T08:19:53.264953+00:00",
+    "http200Records": 6,
+    "all6PayloadHashesVerified": true,
+    "urls": [
+      "https://registry.npmjs.org/braces/latest",
+      "https://registry.npmjs.org/micromatch/latest",
+      "https://registry.npmjs.org/fast-glob/latest",
+      "https://registry.npmjs.org/tailwindcss/3.4.19",
+      "https://registry.npmjs.org/@next%2feslint-plugin-next/15.5.28",
+      "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm"
+    ],
+    "bracesLatestTag": "3.0.3",
+    "advisoryId": "GHSA-vfj7-8cjw-p6xm",
+    "advisoryUpdatedAt": "2026-10-02T22:36:34Z",
+    "advisoryWithdrawnAt": null,
+    "affectedRange": "<= 3.0.3",
+    "firstPatchedVersion": null,
+    "chainFacts": [
+      {
+        "package": "micromatch",
+        "selectedVersion": "4.0.8",
+        "selection": "registry latest tag",
+        "dependency": "braces",
+        "range": "^3.0.3"
+      },
+      {
+        "package": "fast-glob",
+        "selectedVersion": "3.3.3",
+        "selection": "registry latest tag",
+        "dependency": "micromatch",
+        "range": "^4.0.8"
+      },
+      {
+        "package": "tailwindcss",
+        "selectedVersion": "3.4.19",
+        "selection": "Exact retrieved version 3.4.19, not an exhaustive latest 3.x query",
+        "dependencies": {
+          "chokidar": "^3.6.0",
+          "fast-glob": "^3.3.2",
+          "micromatch": "^4.0.8"
+        }
+      },
+      {
+        "package": "@next/eslint-plugin-next",
+        "selectedVersion": "15.5.28",
+        "selection": "Exact retrieved version 15.5.28, not an exhaustive latest 15.x query",
+        "dependency": "fast-glob",
+        "range": "3.3.1"
+      }
+    ],
+    "compatibilityAssessment": "As of these newly retrieved primary payloads, the braces latest tag is itself within the advisory affected range and GitHub documents no first patched version. The retrieved micromatch/fast-glob latest metadata and exact Next 15.5.28/Tailwind 3.4.19 metadata retain the affected dependency chain. Updating the selected compatible patch versions is therefore not demonstrated to remove this vulnerability. npm audit proposes only isSemVerMajor:true targets; no override, forced upgrade, major migration or install is applied. This is a conclusion from the current payloads, not reliance on an old audit.",
+    "limitations": "Six selected metadata responses are not an exhaustive search of every compatible ancestor version, alternative implementation, prerelease, fork or future publication. No blanket claim that all possible compatible remediation is impossible is made."
+  },
+  "scopeLimits": [
+    "The attempt 4 review does not supersede the preserved attempt 3 review or failed attempts 1/2; each remains bound to its own revision and sources.",
+    "No acceptance matrix status is promoted. Native/cookie HTTP/SSR/restore evidence retains its own recorded application revision and scope.",
+    "Build uses dummy Supabase values and existing local font fixtures. The global-fetch preload is not a universal network firewall.",
+    "Successful command exits do not imply empty stderr: lint deprecation, Vite loader and build dynamic-render diagnostics remain retained.",
+    "No dependency or package-lock change is made, and no new source/provider/registry query was performed by this reviewer."
+  ],
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/build.log",
+      "sha256": "9c6c4039aef3b5b2cc91f3c274dba1ced11bb7fc5bcb01fc14061af855be4dba",
+      "bytes": 7241
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/build.stderr.log",
+      "sha256": "98e855ddfbe246cb5e057005c79a49a084b69290ae8ae793ed1524bd41026f20",
+      "bytes": 1949
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/coverage-summary.json",
+      "sha256": "9dd5c521e98e49d29fd12eff6cc2cb476d64cd335a33ac8251700f37dea0844b",
+      "bytes": 12626
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/coverage.log",
+      "sha256": "553d40976f68b28842d38b11c205079ee50cabd50104193543fe407bfe9c02b4",
+      "bytes": 4992
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/coverage.stderr.log",
+      "sha256": "b4acd4f819050212c4fe3b3ed8416421330f7ff8c72cb9bb667c335f3e24a94e",
+      "bytes": 375
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/dependency-audit.log",
+      "sha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf",
+      "bytes": 3985
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/dependency-audit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/final-vitest.json",
+      "sha256": "ea07d8d942676c140bbee240a1fa57591e459c2fd3221d6618c124e602f1aafc",
+      "bytes": 1178919
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/lint.log",
+      "sha256": "e961f726b387de7cc537facff218c77151a54d399b56e20dbeee1350973ee70c",
+      "bytes": 66
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/lint.stderr.log",
+      "sha256": "a9e853f86aaa439d80c9c70fc5cb52ed5a20a68e3611a5b826d196cc46d675a2",
+      "bytes": 234
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/npm-ci.log",
+      "sha256": "f9e8e64d953fe864c32cd4a44cc05de9525fefc26c53ca9b555c8f12d5e395ae",
+      "bytes": 264
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/npm-ci.stderr.log",
+      "sha256": "45cf5ebfcae15bdeefc39c21264fb0ea83ecdf4a783d377de8de7083a6ae3fbd",
+      "bytes": 1545
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/production-audit.log",
+      "sha256": "e7a71ea70895f12bb3d991264928cb23b141117439bf1be02bbc7907e4b92910",
+      "bytes": 367
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/production-audit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/test-db.log",
+      "sha256": "f1b60219d462e72c3a5ee808bd5a41b69ec16ab07c0fa72c8743902834268b02",
+      "bytes": 150344
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/test-db.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/typecheck.log",
+      "sha256": "469f7b7deaf0603039d0351d61b584c9c9a9f9e495a3dde5eeb847324a9e7e24",
+      "bytes": 41
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/typecheck.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/required-gates-attempt-4/verification.json",
+      "sha256": "28ac1e735719316dba810248ecdced618f35379ffb54619ca3458f01f2168de7",
+      "bytes": 75871
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/braces-latest.json",
+      "sha256": "8fd4c1db771542ab5456bb4806408fea9cdb5bf77f6cb9d5d563a3bd0ebb0b13",
+      "bytes": 2428
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/fast-glob-latest.json",
+      "sha256": "a336b6b77121af80e04a369080634b32e6bf269a08c1d5f0a09a6c1457011f7a",
+      "bytes": 3365
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/github-advisory.json",
+      "sha256": "27a2ee7ec058cb9e53d6fe6d82bf7c5e982174fa61e958a19acdf6defc75c9da",
+      "bytes": 2463
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/micromatch-latest.json",
+      "sha256": "a65635515e4deb07ace263a33105cf4a10056affd438d48818b5368e27b05906",
+      "bytes": 3391
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/next-eslint-15.json",
+      "sha256": "a5ffa1c2ea097e9974568922be0eec905d949f5ee5b0c4cc1e6475b5dd570af6",
+      "bytes": 2320
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/retrieval.json",
+      "sha256": "3cb59527dfa4940b2f4b1920ebb35b026cb58008b48624941230a71ca9fdb2dd",
+      "bytes": 7261
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/dependencies-current/tailwind-3.json",
+      "sha256": "80fafa132f0b60c00c4b43978ce3464cedadfccad993354af7cf5a86ea603777",
+      "bytes": 3978
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/requery-dependencies.py",
+      "sha256": "490d37c791e49bda9f3a72a17586cb164fadc8092b295d5b9b4ebeb80f608fb8",
+      "bytes": 2885
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/run-required-gates.py",
+      "sha256": "ac3efbe6f88e864ef05dc5b5bc8a0e530848394df8a18a40f79c137f8974acc6",
+      "bytes": 7047
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/independent-required-gates-review.json",
+      "sha256": "9383a6b0438a26ad75897a59ea77d64a8a280a373ef6303d5a607847052624f9",
+      "bytes": 17814
+    },
+    {
+      "path": "package.json",
+      "sha256": "45b54db3d6cb452127fab13e3b2af39e343394fb91ac26bc32e4c3e1f2c25725",
+      "bytes": 2565
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257",
+      "bytes": 376481
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8",
+      "bytes": 2390
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "c3473d6c9cb56bf4a4126867948d95f67f7f12a7693f4dc7a85fb5732c3d8d80",
+      "bytes": 625
+    }
+  ]
+}

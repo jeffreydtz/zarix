@@ -1,0 +1,17 @@
+{
+  "name": "mp-nominal",
+  "pid": 89310,
+  "port": 61339,
+  "argv": [
+    "node",
+    "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/mp-nominal-http.mjs"
+  ],
+  "cwd": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix",
+  "startedAt": "2026-10-15T08:14:17.803531+00:00",
+  "sourceSha256": "d0e96bc3afce805a1b82af51a66fa1398a1088e8b97ff410bc824a91cf11c723",
+  "rawOutputDisposition": "discarded-before-filesystem",
+  "realProvider": false,
+  "oldProvider61329Changed": false,
+  "newCredentialsCreated": false,
+  "status": "READY_PROVIDER_DOUBLE_ONLY"
+}

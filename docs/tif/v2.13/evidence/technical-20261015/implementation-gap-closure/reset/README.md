@@ -1,0 +1,21 @@
+# Recuperación de contraseña — implementación local mínima
+
+Implementado y verificado focalmente: **30 pruebas únicas PASS** (14 de lógica con dobles de Auth, ocho de React SSR/guardas de página y ocho del callback con Auth controlado). No se ejecutaron llamadas reales de Auth, correo, DB ni navegador. Esto no aprueba CNF-06 visual ni el recorrido completo nuevo de recuperación.
+
+RF13/CU002 A05 ya contempla recuperación segura y CNF-06 pide login/reset. Se añadió el enlace desde login a `/auth/forgot-password`, una solicitud de email con `resetPasswordForEmail` del cliente existente, el único destino permitido `/auth/update-password` en el callback PKCE y un formulario protegido por `getUser`. Antes de enviar `updateUser`, se comprueba la misma identidad que autorizó la página. El mínimo de seis caracteres y la confirmación reproducen el registro existente; no se creó una política de contraseña nueva. Los errores se vinculan a sus campos y las respuestas de solicitud no distinguen emails conocidos de desconocidos. No hay cliente administrativo ni cambios de esquema, credenciales, preferencias, SMTP o allowlists.
+
+El callback conserva sus destinos exitosos previos. Sólo el parámetro `next` exactamente igual a `/auth/update-password` habilita ese destino; URLs externas y otras rutas mantienen Dashboard. La rama de recuperación rechaza códigos ausentes/vencidos con un mensaje fijo, `no-store` y `no-referrer`. Tras revisión del coordinador también se eliminaron mensajes y objetos crudos del proveedor en errores del callback normal, conservando el rechazo y su destino login.
+
+Se retuvieron los intentos, sin sobrescribirlos:
+
+- `callback-before.json`: tres FAIL/tres PASS sobre el callback anterior; la fuente inicial se recupera de Git con revisión declarada en el manifiesto.
+- `focused-after.json`: veinte PASS de helper/callback. La configuración sólo incluye `*.test.ts`, de modo que la prueba de páginas originalmente nombrada `.test.tsx` no se recogió y no se cuenta allí.
+- `pages-after.json`: ocho PASS tras renombrar ese archivo a `.test.ts` sin JSX ni cambio de contenido. Son renders reales de React con Auth/navegación doblados; no interacción de navegador.
+- `callback-privacy-before.json`: dos FAIL/seis PASS por el marcador crudo del proveedor; se conserva la fuente exacta anterior al ajuste.
+- `callback-privacy-after.json`: ocho PASS finales. Estas ocho reemplazan las seis del primer after al contar **30 pruebas únicas**, no se suman todas las corridas.
+
+Comandos de pruebas: `node22 node_modules/vitest/vitest.mjs run <archivo(s)> --reporter=json --outputFile=<reporte>`, con Node instalado 22.17.0. Los nombres de archivos y resultados están en [manifest.json](manifest.json), junto con las seis fuentes de producto y tres tests finales. Las validaciones anteriores al refinamiento se conservan por fase; el typecheck completo y lint focal posterior también pasaron con salida0 sobre el callback final. La suite global anterior de 913 pruebas no se atribuye a este delta; la verificación global/build nuevos quedan a cargo del coordinador.
+
+La implementación usa el flujo oficial existente de [recuperación por contraseña](https://supabase.com/docs/guides/auth/passwords) y la API [resetPasswordForEmail](https://supabase.com/docs/reference/javascript/auth-resetpasswordforemail), consultadas el 15/10/2026, y las firmas del SDK instalado. El fetch inicial de `https://supabase.com/changelog.md` falló en la herramienta por tipo de contenido Markdown no soportado; no se afirma haber revisado ese índice. El correo requiere SMTP y el redirect debe estar permitido en la configuración existente. No se modificó ninguna configuración externa ni se probó un enlace real: el servidor local previamente usado tiene una ruta de verificación declarada por su configuración, cuya compatibilidad con el nuevo recorrido deberá comprobarse en una ejecución posterior autorizada.
+
+La instrucción humana vigente exige Arc y su ventana anterior aún no tiene cierre confirmado. No se abrió Chrome/Arc, no se habilitaron permisos y no se reetiquetó el CP2-10 API anterior como prueba de esta pantalla. El código está implementado; la aceptación visual y la integración real del nuevo recorrido siguen separadas.

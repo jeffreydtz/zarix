@@ -1,0 +1,340 @@
+{
+  "status": "PASS_INDEPENDENT_NATIVE_DELTA_REVIEW_SCOPED_WITH_EVIDENCE_CLARIFICATION",
+  "reviewedAt": "2026-10-15T08:07:11.179881+00:00",
+  "reviewer": "dependency_audit",
+  "revision": "730767b1723502b495d371e69c44df31eb230b56",
+  "cloneSchemaRevision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "reviewMethod": "Only existing public report/source snapshots, JSON, SHA256 and frozen Git blob comparisons were read. No private file, runtime Native, SQL, Auth, HTTP request, browser, gate, npm command or network query was executed by this review.",
+  "productDefectsFound": [],
+  "evidenceFindings": [
+    {
+      "id": "NATIVE-DELTA-LOGOUT-STATUS-DERIVED",
+      "priority": "P2",
+      "location": {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/sources/native-cases.test-source.ts",
+        "line": 544
+      },
+      "finding": "The preserved report contains three 204 logout markers and its README calls them returned statuses, but the snapshot maps SDK error:null to 204 rather than recording response.status. These are derived SDK-success markers, not three independently observed HTTP 204 responses.",
+      "impact": "This does not invalidate cleanup: the executed SQL oracles separately require auth.sessions=0 and auth.refresh_tokens=0 in the fresh clone. It limits the claimed HTTP logout evidence.",
+      "recommendation": "Keep immutable execution/raw snapshots. Add a documentation clarification or later actual HTTP observation; do not silently relabel these derived markers as captured transport statuses."
+    }
+  ],
+  "verifiedCounts": {
+    "groupsPassed": 14,
+    "groupsTotal": 14,
+    "checksPassed": 159,
+    "checksTotal": 159,
+    "observationsTotal": 60,
+    "fixedCnf13CorrelationCount": 9,
+    "fixedCnf13ObservationCount": 54,
+    "cp1_08AutomaticCorrelationObservationCount": 6,
+    "unitCounterSamples": 30,
+    "groups": [
+      {
+        "id": "CP2-11/CP3-17",
+        "checks": 13,
+        "status": "PASS"
+      },
+      {
+        "id": "CP2-12",
+        "checks": 14,
+        "status": "PASS"
+      },
+      {
+        "id": "CP1-08",
+        "checks": 17,
+        "status": "PASS"
+      },
+      {
+        "id": "CU004-read-position",
+        "checks": 6,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-01",
+        "checks": 6,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-02",
+        "checks": 6,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-03",
+        "checks": 8,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-04",
+        "checks": 11,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-05",
+        "checks": 5,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-06",
+        "checks": 14,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-07",
+        "checks": 6,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-08",
+        "checks": 5,
+        "status": "PASS"
+      },
+      {
+        "id": "corr-cnf13-09",
+        "checks": 7,
+        "status": "PASS"
+      },
+      {
+        "id": "CNF13-observation-contract",
+        "checks": 41,
+        "status": "PASS"
+      }
+    ]
+  },
+  "sourceProof": {
+    "executorReportedStable": true,
+    "executorReportedWorkerStable": true,
+    "trackedSourceRows": 514,
+    "all514MatchFrozenGit730": true,
+    "sourceListCompactSha256": "e1e3d2c6cef6f6f1389f36ed263b897b6a700faa6bcc5db41fd38bbe69157433",
+    "schemaRevisionDifferencePaths": [
+      "scripts/test-atomic-account-recompute.mjs"
+    ],
+    "schemaSqlUnchangedBetweenDeclaredRevisions": true,
+    "workerSnapshotsVerified": 4,
+    "publicationArtifactPinsVerified": 7,
+    "checkoutMismatchesObservedDuringReview": [
+      "app/api/telegram/webhook/route.ts",
+      "app/api/telegram/webhook/u/[secret]/route.ts",
+      "lib/telegram/bot.ts"
+    ],
+    "meaning": "Execution is accepted only at the immutable 730 source hashes. The three newer checkout Telegram files are not credited with this historical run; no acceptance is inferred for those modified bytes."
+  },
+  "authAndPreferences": {
+    "normalSessions": {
+      "total": 3,
+      "ownerASessions": 2,
+      "ownerBSessions": 1,
+      "newUsersCreated": 0,
+      "sessionPersistenceDisabled": true,
+      "timing": "Both A sessions and B are logged in before the preference PUT. The second A session is independent and reads the persisted DB setting; re-login after saving is not exercised."
+    },
+    "nativeScope": [
+      "Normal GoTrue password sessions through anon client, real PostgREST/RLS and column grants.",
+      "Strict preference PUT invalid currency/manipulated owner fields400; stale owner header403; B foreign read/write returns zero rows; normal direct SQL currency guard23514.",
+      "Actual services compute USD200/ARS240000 using included ARS120000 and USD100 with HTTP fixture FX1200; six-table financial/history fingerprint is unchanged by preference changes."
+    ],
+    "presentationScope": "Actual preference handlers/services are invoked through the substituted Next cookie/session adapter. No compiled Next HTTP request, browser cookie flow, dashboard rendering or widget visibility acceptance is established by these groups."
+  },
+  "cp1_08": {
+    "passedChecks": 17,
+    "scope": "Real normal-session source POST/DELETE handlers, real native transaction RPC/PostgREST and deletion trigger. Opening 10000, expense 1500 gives 8500, deletion restores 10000; same transaction absent operationally, one audit row preserves exact OLD JSONB, owner and actual authenticated actor. Foreign B cannot delete/read audit or fabricate an audit; retry does not duplicate it. No Next HTTP routing or UI claim."
+  },
+  "positionRead": {
+    "passedChecks": 6,
+    "ownArchived": 200,
+    "foreign": 404,
+    "invalidId": 400,
+    "cacheControl": "no-store",
+    "financialHistoryFingerprintUnchanged": true,
+    "scope": "Direct current handler invocation with real normal-session JWT/RLS; no quote refresh or compiled Next HTTP acceptance."
+  },
+  "cnf13": {
+    "requestTerminals": [
+      {
+        "correlationId": "corr-cnf13-01",
+        "channel": "manual",
+        "outcome": "success",
+        "failureClass": null,
+        "status": 201,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "correlationId": "corr-cnf13-02",
+        "channel": "manual",
+        "outcome": "rejected",
+        "failureClass": "validation",
+        "status": 400,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "correlationId": "corr-cnf13-03",
+        "channel": "manual",
+        "outcome": "error",
+        "failureClass": "consistency",
+        "status": 500,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "correlationId": "corr-cnf13-04",
+        "channel": "cron",
+        "outcome": "success",
+        "failureClass": null,
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "correlationId": "corr-cnf13-05",
+        "channel": "cron",
+        "outcome": "rejected",
+        "failureClass": "authentication",
+        "status": 401,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "correlationId": "corr-cnf13-06",
+        "channel": "cron",
+        "outcome": "error",
+        "failureClass": "provider",
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "correlationId": "corr-cnf13-07",
+        "channel": "payment",
+        "outcome": "success",
+        "failureClass": null,
+        "status": 200,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "correlationId": "corr-cnf13-08",
+        "channel": "payment",
+        "outcome": "rejected",
+        "failureClass": "authentication",
+        "status": 401,
+        "metric": "zarix_operation_total",
+        "value": 1
+      },
+      {
+        "correlationId": "corr-cnf13-09",
+        "channel": "payment",
+        "outcome": "error",
+        "failureClass": "provider",
+        "status": 500,
+        "metric": "zarix_operation_total",
+        "value": 1
+      }
+    ],
+    "allObservationFieldsAllowlisted": true,
+    "allTerminalCounterSamplesAreUnitValues": true,
+    "sender": "sendTelegramDm is an explicit rejecting transport double invoked once for the synthetic chat. The actual outbox worker/native claim remains real; finance stays committed, attempt 1 is pending, no delivery ACK and safe last_error. No real Telegram outage/delivery claim.",
+    "mpAndQuotes": "Real HTTP to the loopback fixture only: HMAC valid200, forged401 and provider503\u2192handler500. No Mercado Pago sandbox, external provider or payment acceptance.",
+    "literalAcceptanceLimits": [
+      {
+        "case": "CNF-13",
+        "detail": "The correlated manual success fixture uses expense 1 on 10000\u21929999. Original CSV requires expense 1500\u21928500. CP1-08 separately proves1500\u21928500, but that is a different automatically correlated request and is not silently substituted for corr-cnf13-01."
+      },
+      {
+        "case": "CNF-13",
+        "detail": "The run scans its CNF13_PRIVATE_DESCRIPTION/NOTE/PROVIDER_ERROR sentinels and selected real runtime secrets in captured console, rather than injecting all three exact original CSV sensitive markers including the image marker. Full literal CNF13 is not accepted from this package alone."
+      },
+      {
+        "case": "CP2-11/CP3-17",
+        "detail": "Independent-session persisted reads and financial calculation are real; post-save fresh login and compiled dashboard/preference presentation remain separate HTTP/SSR work."
+      }
+    ]
+  },
+  "cleanup": {
+    "sourceSqlSessionCountOracle": 0,
+    "sourceSqlRefreshTokenCountOracle": 0,
+    "reportedSessionsClosed": true,
+    "reportedRefreshGrantsClosed": true,
+    "controlledCloneConstraintRemoved": true,
+    "fixtureMutatedProfileColumnsRestoredReported": true,
+    "reportedLogoutMarkers": [
+      204,
+      204,
+      204
+    ],
+    "logoutMarkerInterpretation": "Derived from SDK result.error null, not captured HTTP status. signOut(scope:global) targets only the newly cloned identities in the fresh isolated DB, whose session table started empty; no original Auth server is targeted.",
+    "profileRestorationScope": "Only fixture-mutated selected profile columns are restored through the real service client. No claim of full original users-row hash equality or unchanged updated_at is made."
+  },
+  "privacy": {
+    "publicationCheckReportedPass": true,
+    "allowlistedCandidateFiles": 7,
+    "selectedPrivateValuesReported": 8,
+    "exactMatchesReported": 0,
+    "jwtLikeMatchesReported": 0,
+    "scannerReexecutedByReviewer": false,
+    "privateValuesReadByReviewer": false,
+    "rawConsolePublished": false,
+    "scope": "Existing publication-check metadata and its seven file pins were verified; no universal credential-absence assertion is added."
+  },
+  "scopeLimits": [
+    "The 159 checks are this separately configured focal Native test, not additional tests inside the 1008/102 required-gates report.",
+    "Normal Auth/RLS/PostgREST/PostgreSQL and current source handlers/services are real, while the Next cookie/session adapter is substituted. Source response.status values do not prove a listening Next HTTP endpoint.",
+    "No UI, browser, hydration, real provider, load, availability or complete backup-restoration acceptance is promoted.",
+    "All original matrix statuses remain untouched by this review. Next 730 compiled HTTP/SSR and the original literal acceptance gaps remain separate."
+  ],
+  "evidencePins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/verification.json",
+      "sha256": "a602708a02ee68760e71015b81baae5f774b5f5a9f36d70a2b6a565c5190038c",
+      "bytes": 43427
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/execution.json",
+      "sha256": "dfa10e03ec3af313afb44ea1ccb611c869abbc23b9dc24075109f735fcb58424",
+      "bytes": 78374
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/publication-check.json",
+      "sha256": "4639ef254022988df62fd1bf9de3018b48b2761ade1846d6799c954da25bbebe",
+      "bytes": 1646
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/sources/manifest.json",
+      "sha256": "66fdd85cf7a5d93d10a1ee617a30441b207715511d1af970be0559c7c3f69ca1",
+      "bytes": 723
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/README.md",
+      "sha256": "92f6dd258b447f463a0a0e3f48cc45cf79c7a1eb6be5a1bfd15570d097f68fac",
+      "bytes": 2896
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/sources/run-native-cases.py",
+      "sha256": "849be9fee4c44d67b0475d1949a6c0e6c32cc0ac6f8a27c4b62450db37041c95",
+      "bytes": 8978
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/sources/native-cases.vitest.config.mjs",
+      "sha256": "14c295065fb3336d88f3708b0cd13e06d8b0c364312259a01876089638fa51ef",
+      "bytes": 573
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/sources/native-cases.test-source.ts",
+      "sha256": "cfa43972a904300ed4add0e770b898621a33ee968244dbdadda251c4a9812a5d",
+      "bytes": 45416
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/runnernative/executed-attempt-1/sources/README.md",
+      "sha256": "7b6ecd486d8877d10e184ae0c5d03b0e9d94c1ad2a372400114fd38551a38ba6",
+      "bytes": 4441
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+      "bytes": 231190
+    }
+  ]
+}

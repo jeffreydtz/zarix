@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 1,
+  "reviewKind": "independent-source-and-preserved-evidence-review",
+  "reviewer": "/root/remaining_scope",
+  "reviewedAtUtc": "2026-10-15T08:31:42.626500+00:00",
+  "baselineRevision": "b055ac83107175c29418b8d8ed664d0e6395651a",
+  "reviewedRevision": "f5f362ee9dbb81da5268049cab41b357d90eccf1",
+  "status": "PASS_REVIEWED_FOCAL_EVIDENCE",
+  "materialFindings": [],
+  "scope": "Only investment-sell POST/GET raw exception logging removal, its three privacy tests, preserved sources/reports and declared checks. This review does not promote any system-case matrix.",
+  "changeAssessment": {
+    "productFilesChanged": [
+      "app/api/investments/[id]/sell/route.ts"
+    ],
+    "newTestFiles": [
+      "__tests__/investment-sell-log-privacy.test.ts"
+    ],
+    "exactProductChange": "Two existing console.error calls now receive only their fixed label. Both catches still pass the original exception to the same errorResponse function.",
+    "preservedBehavior": [
+      "Auth and verified owner source",
+      "Idempotency key and queue-owner checks",
+      "Quantity/price parsing and sale inputs",
+      "Exactly one sell or listSales dispatch in the tested branch",
+      "Existing response statuses and public bodies"
+    ]
+  },
+  "evidenceChecks": [
+    {
+      "id": "git-diff-scope",
+      "result": "PASS",
+      "detail": "The complete b055ac83→f5f362ee changed-path list contains only the product route and new privacy test. Product hunks remove exactly the two raw-error arguments."
+    },
+    {
+      "id": "source-provenance",
+      "result": "PASS",
+      "detail": "Both before route snapshots equal the Git b055 baseline. The before-with-read test snapshot and after test snapshot are byte-identical. After product/test snapshots equal current files and Git f5f362 bytes."
+    },
+    {
+      "id": "manifest-integrity",
+      "result": "PASS",
+      "artifactHashesVerified": 12,
+      "headSourceHashesVerified": 2,
+      "contextSourceHashesVerified": 3,
+      "historicalSnapshotHashesVerified": 4,
+      "mismatches": 0
+    },
+    {
+      "id": "prior-post-only-run",
+      "result": "PRESERVED_EXPECTED_FAILURE",
+      "report": "before.json",
+      "passed": 0,
+      "failed": 2,
+      "detail": "Both failures are the expected absence-of-canary assertions, not import/setup failures."
+    },
+    {
+      "id": "matching-before-after",
+      "result": "PASS",
+      "before": "before-with-read.json",
+      "beforePassed": 0,
+      "beforeFailed": 3,
+      "after": "after.json",
+      "afterPassed": 3,
+      "afterFailed": 0,
+      "uniqueFinalTests": 3,
+      "detail": "All three matching before failures show the synthetic secret in formatted captured logs. The same three tests pass after the two-line product change. Initial POST-only two failures are not added as extra unique tests."
+    },
+    {
+      "id": "public-contract",
+      "result": "PASS_SOURCE_AND_RECORDED_ASSERTIONS",
+      "detail": "Known oversell ApiError remains400 with its fixed public message; unknown sale and list failures remain generic500. GET invokes only listSales(owner,position) and never sell. POST dispatch preserves its owner/idempotency/financial arguments."
+    },
+    {
+      "id": "typecheck-lint",
+      "result": "RECORDED_EXIT_ZERO",
+      "checks": [
+        {
+          "command": "node node_modules/typescript/bin/tsc --noEmit",
+          "exitCode": 0,
+          "toolSessionId": 76637
+        },
+        {
+          "command": "node node_modules/next/dist/bin/next lint --file 'app/api/investments/[id]/sell/route.ts' --file __tests__/investment-sell-log-privacy.test.ts",
+          "exitCode": 0,
+          "toolSessionId": 77434,
+          "result": "No ESLint warnings or errors"
+        }
+      ],
+      "independentlyExecuted": false,
+      "standaloneOutputLogArtifactsPresent": false,
+      "detail": "Commands, session references and exit0 are recorded in verification.json. This reviewer read those metadata and the sources; did not re-run either gate or independently witness their tool sessions."
+    }
+  ],
+  "errorCaptureAssessment": {
+    "formatter": "formatWithOptions({ showHidden: true, depth: 8 }, ...call)",
+    "capturedMethods": [
+      "console.error",
+      "console.warn",
+      "console.info",
+      "console.log"
+    ],
+    "fixtureFields": [
+      "Error.message",
+      "non-enumerable Error.stack",
+      "non-enumerable Error.cause",
+      "non-enumerable Error.request with Authorization and notes"
+    ],
+    "result": "Adequate to expose and reject the controlled hidden-field leak exercised by these three tests; the baseline failures demonstrate the oracle detects the original product behavior.",
+    "testDoubles": [
+      "Auth client/getUser",
+      "investmentsService.sell/listSales",
+      "console sinks",
+      "global fetch rejected if used"
+    ],
+    "limitations": [
+      "Depth8 and the controlled Error fixtures are bounded inspection, not a claim of inspecting every possible Error/custom formatter/nested object.",
+      "Only error/warn/info/log arguments are captured; console.debug/trace, service-internal logs, transport collectors and access logs are not covered.",
+      "The actual investment service and DB/provider boundaries are mocked; unchanged real service dispatch is inferred from source and checked against the doubles.",
+      "ApiError messages intentionally remain public under the existing response contract; arbitrary tainted ApiError messages are not sanitized or proved safe by this patch.",
+      "The historical Native730 JSON.stringify(Error) capture is not reclassified by this later formatter or test."
+    ]
+  },
+  "executionLimitations": [
+    "No tests, linters, typecheck, application, Auth, native database, quote provider, browser or scanner were executed by this reviewer. Only file/Git reads and metadata/hash comparison were performed.",
+    "No PostgreSQL rollback, external side-effect guarantee, collector inspection, UI acceptance, global logging privacy or system-case promotion is established by this local focal packet.",
+    "No product, preserved report, source snapshot, existing manifest or matrix was edited by the reviewer."
+  ],
+  "matrixPromoted": false,
+  "reviewerRuntimeOrScannersExecuted": false,
+  "pins": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/manifest.json",
+      "sha256": "e57c31587ee6da0b77c5700def24928a5c1bddc15e66f945123a2cd1219069fe"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/README.md",
+      "sha256": "996b387a0a8d96b2a739930f99c0b2bb8809a347cd9f15d60ee15c4d5a68c574"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/after-sources/__tests__/investment-sell-log-privacy.test-source.ts",
+      "sha256": "b46145a2c67b4ccde369ce4c29078f7646e8efabe32862f36e00034b491e7755"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/after-sources/app/api/investments/[id]/sell/route.ts",
+      "sha256": "884c3de8b1610027caf590f6256c5dd11878e3ef3dc54cb82e3ed9ecca8a64f3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/after.json",
+      "sha256": "544992863e5895bd755909a58f0b4b331b2e92468069b650fe757ace0f8570bf"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-manifest.json",
+      "sha256": "add6aadc30d61f7a135ee419f415c47e92bce7a57fcaa767e56c8f672200b382"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-read-manifest.json",
+      "sha256": "870c0dbd6c17f0a3b765e2fa456cc8a1c96d30f6f54a3b0af2b04fc482fc2153"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-read-sources/__tests__/investment-sell-log-privacy.test-source.ts",
+      "sha256": "b46145a2c67b4ccde369ce4c29078f7646e8efabe32862f36e00034b491e7755"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-read-sources/app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-sources/__tests__/investment-sell-log-privacy.test-source.ts",
+      "sha256": "e7a0fe7280e9a6b617aa982c29fc20a5f4ab2abf4a970392289f18f2ef637b7b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-sources/app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before-with-read.json",
+      "sha256": "a3ae8fe3015df70311ad07b138cd2ca8691f57ed592fdfc5b2684c7c366b7bce"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/before.json",
+      "sha256": "9428b045e5f8ed615a0997caf69d0446b66da01ecfbf0d04fdb6ad6c7620f3f1"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/investment-sell-privacy/verification.json",
+      "sha256": "f82361551eed4af2f4646886eeb0c4cf14d4b6d0bde7978f28d58dc6f965fedc"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "884c3de8b1610027caf590f6256c5dd11878e3ef3dc54cb82e3ed9ecca8a64f3"
+    },
+    {
+      "path": "__tests__/investment-sell-log-privacy.test.ts",
+      "sha256": "b46145a2c67b4ccde369ce4c29078f7646e8efabe32862f36e00034b491e7755"
+    },
+    {
+      "path": "lib/api-handler.ts",
+      "sha256": "b1b19b1ca9e26e0471f4c40ed5f2a12470a89dfabf181e233b8ea089f0d2de7d"
+    },
+    {
+      "path": "lib/transaction-idempotency.ts",
+      "sha256": "7335b7e1d226aa1b20ba49c0c251afe9669222f1ef19d3ae3bc9c35a80045fa9"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8"
+    }
+  ]
+}

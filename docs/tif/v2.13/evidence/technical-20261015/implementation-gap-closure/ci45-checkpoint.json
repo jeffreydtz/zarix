@@ -1,0 +1,117 @@
+{
+  "status": "REMOTE_CI_SUCCESS_WITH_NONBLOCKING_AUDIT_FINDINGS",
+  "recordedAt": "2026-10-15T07:27:38.240988+00:00",
+  "repository": "jeffreydtz/zarix",
+  "pullRequest": 12,
+  "headSha": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "workflow": {
+    "name": "CI",
+    "runNumber": 45,
+    "runId": 38698189163,
+    "url": "https://github.com/jeffreydtz/zarix/actions/runs/38698189163",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "job": {
+    "id": 116299664949,
+    "name": "Lint, typecheck, test & build",
+    "url": "https://github.com/jeffreydtz/zarix/actions/runs/38698189163/job/116299664949",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "checkout": {
+    "ref": "refs/remotes/pull/12/merge",
+    "sha": "8d383a5367ed91bbd2d8a8f3769da78517389445",
+    "baseSha": "5cbd7ac984782b5f50e19f72ba7e0c3c8b5304fd",
+    "headSha": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+    "kind": "GitHub pull-request synthetic merge checkout",
+    "actualPullRequestMergePerformed": false
+  },
+  "runtime": {
+    "runner": "ubuntu-latest",
+    "node": "v22.23.3",
+    "npm": "10.9.9"
+  },
+  "requiredNpmGates": [
+    {
+      "step": "Install dependencies",
+      "command": "npm ci",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "step": "Lint",
+      "command": "npm run lint",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "step": "Typecheck",
+      "command": "npm run typecheck",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "step": "Test",
+      "command": "npm run test:coverage",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "step": "Database regression tests",
+      "command": "npm run test:db",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "step": "Build",
+      "command": "npm run build",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "vitest": {
+    "passedTests": 913,
+    "passedFiles": 92,
+    "totalTests": 913,
+    "totalFiles": 92,
+    "source": "Remote job log Test Files92 passed(92) and Tests913 passed(913)"
+  },
+  "audit": {
+    "step": "Audit (non-blocking)",
+    "command": "npm audit --audit-level=high || true",
+    "stepStatus": "completed",
+    "stepConclusion": "success",
+    "failureMaskedByShell": true,
+    "observedSummary": "7 high severity vulnerabilities",
+    "highSeverityPackageEntriesReported": 7,
+    "advisory": {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns"
+    },
+    "cleanAuditClaimed": false,
+    "productionOnlyAuditResultClaimed": false
+  },
+  "provenance": {
+    "method": "Previously completed read-only authorized GitHub connector calls for commit workflow runs, combined status, run jobs and job logs; plus prior local read of the workflow at headSha. This checkpoint reuses those observations without new GitHub, advisory or registry queries.",
+    "rawJobLogsIncluded": false,
+    "secretValuesIncluded": false,
+    "remoteLogEvidenceTimesUTC": {
+      "checkoutSha": "2026-10-15T07:21:31.8028388Z",
+      "node": "2026-10-15T07:21:32.3383938Z",
+      "npm": "2026-10-15T07:21:32.3395193Z",
+      "testFiles": "2026-10-15T07:22:31.5091554Z",
+      "tests": "2026-10-15T07:22:31.5092392Z",
+      "auditSummary": "2026-10-15T07:23:42.6688561Z"
+    }
+  },
+  "scopeLimits": [
+    "CI is associated with the recorded head, but actions/checkout tested the synthetic merge commit, not a pure checkout of headSha and not an actual merge of PR12.",
+    "The audit step conclusion is success because its shell command masks a nonzero audit result; the observed seven high findings remain unresolved by this checkpoint.",
+    "Remote Node/npm versions differ from the previous local Node22.17.0 gates; their environments are not conflated.",
+    "No installation, audit, browser, load test, native API/DB operation, workflow modification, PR mutation, deployment or test rerun was performed by this checkpoint task.",
+    "Existing native/API/UI/restore evidence retains its own recorded revision, build and scope; remote CI success does not replace those acceptances."
+  ]
+}

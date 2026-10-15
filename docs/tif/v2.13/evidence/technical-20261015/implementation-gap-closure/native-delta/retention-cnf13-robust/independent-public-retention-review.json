@@ -1,0 +1,184 @@
+{
+  "reviewedAt": "2026-10-15T08:42:53.927Z",
+  "status": "PASS_WITH_SCOPE_LIMITS",
+  "reviewMethod": "Public metadata, hash-pinned sources and comparison with the prior reviewed retainer only. No private artifacts, live process state, database, socket or secret scanner was opened or run.",
+  "publicArtifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/verification.json",
+      "sha256": "445633adfabedc1e4ea1d054affbcebe7a2afb9ccb07ba6a22b10543fab83da3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/reopen-readiness.sanitized.json",
+      "sha256": "88989c0c67a6800a30e2f3e9884c1dc9ede94d94c13d460eea735161974ee50d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/services.metadata.json",
+      "sha256": "9417f56ab387aefbd1c9e7f3851f7945dbebaacdb3593d295ad150da2da9857e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/targets.metadata.json",
+      "sha256": "82ad1d849c402605fc8d80f205a4068a8c2d6db7d88d5cadf46908ba758b8895"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/README.md",
+      "sha256": "494b2a9c3af827071eb94b70461d21d3cb8172a69c9a59f716cace435d09d6b3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/native-delta-manifest.json",
+      "sha256": "e44065ecae1fce88b50bb35edcec030d7ed2ff6ebe8a088aaea16198c9c64b3c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "sha256": "bab8ac98200fde1eea5bbce532ef28e97348e7976c02adf434bef0d42db48688"
+    }
+  ],
+  "executedSources": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/sources/reopen-existing-clone.py",
+      "sha256": "f076145641f7748e9b7c1ff8944d00e57aec132839db71b494d6a8ec291bb066"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/sources/launch-services.py",
+      "sha256": "945cb4a1a0150184d73973aeaaaebdc5f1264eb8eb9b886b96a0dc57a93de614"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/sources/retain-and-stop-robust.py",
+      "sha256": "6425e634a273b3b130f2faa91fea4f99011c54ae7edf751826b046a22a08989e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta/retention-cnf13-robust/sources/local-http.mjs",
+      "sha256": "dca2d230c162345be5dd15d0ace1860e2277badb456619711dce05b78c6b4e33"
+    }
+  ],
+  "sourceBinding": {
+    "retainerMatchesExecutedReport": true,
+    "reopenerMatchesExecutedReadiness": true,
+    "httpSourceMatchesServiceMetadata": true,
+    "launcherMatchesExistingPublicSourceManifestPin": true,
+    "applicationExecutionRevision": "730767b1723502b495d371e69c44df31eb230b56",
+    "legacyMetadataRevisionField": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+    "revisionScope": "executionRevision/sourceRevision identify the referenced730 application baseline; inherited metadata revision is an earlier bootstrap field, not a new application-build assertion."
+  },
+  "guardReview": {
+    "parentReleaseRequired": true,
+    "existingProofStackAndExistingCloneOnly": true,
+    "noDatabaseUsersRolesOrKeysCreatedByReopener": true,
+    "onlyReadonlyClosureQueries": true,
+    "temporaryProcessChecks": [
+      "All four recorded actors checked before first signal",
+      "Recorded PID and current UID",
+      "Start timestamp within2 seconds",
+      "Recorded cwd",
+      "Exact own127.0.0.1 listener",
+      "Same ps identity snapshot rechecked immediately before SIGTERM",
+      "Bounded wait and listener absence after exit"
+    ],
+    "noForceSignalsOrDropResetDestroy": true,
+    "proofPreflightPinsOwnerPostmasterStateConfigDataDirectoryAndPublicPorts": true,
+    "officialStopArgvCheckedByHashPinnedHelper": true,
+    "priorCheckpointF378PriorProofDumpB200AndPriorDeltaA9fHashesCheckedBeforeAndAfterStop": true,
+    "originalPGVersion17DataDirectoryAndCloneRetained": true,
+    "rawFailureDiagnosticsSuppressed": true
+  },
+  "reportedExecutedResults": {
+    "status": "RETAIN_AND_STOP_PASS",
+    "reopen": {
+      "newDatabaseCreated": false,
+      "newUsersCreated": 0,
+      "newCredentialFiles": 0,
+      "sqlWrites": 0,
+      "existingCloneReused": true
+    },
+    "archive": {
+      "format": "PostgreSQL custom(-Fc)",
+      "bytes": 554859,
+      "sha256": "1f958b0273576ef9bd488a5ffde575f93f12f5eae3e67ce2114862a19726deaf",
+      "tablesInventoried": 65,
+      "tocValidated": true,
+      "payloadDecoded": true,
+      "AuthAndApplicationDataIncluded": true,
+      "newRestoreClaimed": false
+    },
+    "authBeforeAndAfter": {
+      "sessions": 0,
+      "refreshTokens": 0
+    },
+    "originalIntegrity": {
+      "tables": 39,
+      "allReportedUnchanged": true,
+      "scope": {
+        "public": 27,
+        "auth": 2,
+        "storage": 10
+      },
+      "baselineAfterOriginalProofStartup": true
+    },
+    "temporaryActorStops": [
+      {
+        "name": "provider",
+        "pid": 94915,
+        "port": 61329,
+        "status": "STOP_PASS"
+      },
+      {
+        "name": "gateway",
+        "pid": 94910,
+        "port": 61321,
+        "status": "STOP_PASS"
+      },
+      {
+        "name": "auth",
+        "pid": 94902,
+        "port": 61327,
+        "status": "STOP_PASS"
+      },
+      {
+        "name": "postgrest",
+        "pid": 94894,
+        "port": 61323,
+        "status": "STOP_PASS"
+      }
+    ],
+    "officialProofCliExitCode": 0,
+    "originalNativeActorsReportedExited": true,
+    "priorDeltaArchiveSha256": "a9f03e0b2c4e91b30212fe8acda7267c64483d982b0b9971b3bf6317ef440bd1"
+  },
+  "networkScope": {
+    "fourTemporaryServiceListenersReportedExactLoopback": true,
+    "nativePublicPorts58321_58322Loopback": true,
+    "nativeInternalWildcardListenersDocumented": [
+      {
+        "pid": 94494,
+        "address": "*:24888"
+      },
+      {
+        "pid": 94521,
+        "address": "*:20366"
+      }
+    ],
+    "allNativeListenersLoopbackClaimed": false,
+    "noNewExternalProviderOrNextOrBrowserInThisReopen": true
+  },
+  "sensitiveDataScope": {
+    "credentialAndSigningMaterialPassedViaRamOrEphemeralEnvironmentAccordingToLauncherSource": true,
+    "newCredentialOrSessionConfigFilesClaimed": false,
+    "rawServiceOutputDiscardedBeforeFilesystem": true,
+    "syntheticPngBase64WasPersistedAsPrivateCloneNote": true,
+    "sourceOfPersistedNoteClarification": "Direct parent/runtime-owner disclosure; this reviewer does not query the private note.",
+    "privateArchiveContainsSensitiveAuthAndApplicationData": true,
+    "doesNotClaimAllFixtureDataWasRamOnly": true,
+    "doesNotClaimHistoricalExactCollectorComparedNewRamValuesOrPersistedPngNote": true,
+    "newStorageObjectCoverageClaimed": false
+  },
+  "findings": [],
+  "limits": [
+    "The review pins and reconciles public metadata with source guards; it does not independently inspect private dumps, baselines, credentials, process state or database contents.",
+    "TOC validation and payload decoding do not execute a restoration or prove complete CNF-12, deployed-provider recovery or RPO/RTO.",
+    "The39 protected original tables are27public+2Auth+10Storage; this is not a claim of unchanged rows in every Auth table or all65 archived tables. Startup housekeeping is not declared absent.",
+    "Zero Auth sessions/refresh rows is not proof that every stateless access JWT string was cryptographically invalidated.",
+    "Temporary service listeners are loopback; two historical Native internal wildcard bindings are explicitly recorded, not relabeled as loopback.",
+    "The synthetic PNG note is persisted private data and remains in the authorized private backup. credentialsCopied:false does not mean the Auth/application dump is nonsensitive.",
+    "Functional worker claims9PASS/42assertions/54observations/55consolecalls/13selectedvalues and positive Error canary are reviewed separately by E2E; this retention review neither promotes them nor reexecutes them.",
+    "The retained runtime references730767b and does not prove later application deltas. No publication scanners were executed."
+  ]
+}

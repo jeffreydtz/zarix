@@ -1,0 +1,92 @@
+{
+  "createdAt": "2026-10-15T08:04:14.900708+00:00",
+  "baselineRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "sources": [
+    {
+      "path": "app/api/telegram/webhook/route.ts",
+      "sha256": "3ca93c16e9033784b42f1c98838c49897d27700057d85c827ec1adb9d0a88b47",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/after-sources/app/api/telegram/webhook/route.ts"
+    },
+    {
+      "path": "app/api/telegram/webhook/u/[secret]/route.ts",
+      "sha256": "4c29f7e530f64ad54495c0a963d98dc64cf9de20020a40bc1989fb93e20673c6",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/after-sources/app/api/telegram/webhook/u/[secret]/route.ts"
+    },
+    {
+      "path": "lib/telegram/bot.ts",
+      "sha256": "ec41bcb77f8fde55069aafae44be99b17214b0723ff60be73d9ba1ff0e119d57",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/after-sources/lib/telegram/bot.ts"
+    },
+    {
+      "path": "__tests__/channel-secrets-routes.test.ts",
+      "sha256": "0bfd4c54d32802082d90aca03756f94d75e829a372858238a32a06ff0ee42c69",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/after-sources/__tests__/channel-secrets-routes.test-source.ts"
+    },
+    {
+      "path": "__tests__/telegram-error-log-privacy.test.ts",
+      "sha256": "07f00b34954177866c4afb256e173a380282e8abcb59aa7c490a25c81e91ecd9",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/channel-secrets/after-sources/__tests__/telegram-error-log-privacy.test-source.ts"
+    }
+  ],
+  "contextSources": [
+    {
+      "path": "lib/cron/cron-job.ts",
+      "sha256": "b5ea16d8b8c5129b1ccbc7a85b28b890cd79f15f62e35d415916e19e8c012d39"
+    },
+    {
+      "path": "lib/cron-auth.ts",
+      "sha256": "32d0617dd5e9c197fc3b501725c671c5d31c73f672044485867104b9ac92d699"
+    },
+    {
+      "path": "lib/telegram/webhook-auth.ts",
+      "sha256": "a04686fc1885c8c687f4fb8847cbbce6ca73bcc3eed99bf57277538f96cf47ad"
+    },
+    {
+      "path": "lib/secure-compare.ts",
+      "sha256": "144cae6b6014db58687f4b262808b38e702cfa8ec10d54fd94ef776181936471"
+    },
+    {
+      "path": "lib/observability/correlation.ts",
+      "sha256": "293698d8b7bda0a643db1ecfea17be4e1215d7f69b27323ba8eba0a53ea33a80"
+    },
+    {
+      "path": "__tests__/webhook-auth.test.ts",
+      "sha256": "2ae08d6e6de704b9e107a7e0781d36aa77db7dd847f948e5dd78129a3bb1c886"
+    },
+    {
+      "path": "__tests__/cron-auth.test.ts",
+      "sha256": "91f37b1915530d2dd3d194c121d6d332397548901e2bfdff9d4c18ac55daf0b7"
+    },
+    {
+      "path": "__tests__/cron-job-structural.test.ts",
+      "sha256": "510f450bf6e02a7a27c0d941297ce135e8a2f1f8d083dbba18c4fd76415d3094"
+    },
+    {
+      "path": "__tests__/notification-outbox-route.test.ts",
+      "sha256": "9a9bcce005757ed241585d3e8890c7018cd9596d52b16263ed9c037bbec6c68e"
+    },
+    {
+      "path": "__tests__/billing-nonbilling-telegram-isolation.test.ts",
+      "sha256": "07b1c5e8219cc4b8bff8b467747b5c7e4ef837de8c9dfc3b4dfe43d9d1b9054b"
+    },
+    {
+      "path": "package.json",
+      "sha256": "45b54db3d6cb452127fab13e3b2af39e343394fb91ac26bc32e4c3e1f2c25725"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8"
+    }
+  ],
+  "verificationSha256": "e40340aac1d2c6e072d050a55d6e77834bad68dc6c06039b5b13f8befd37f4e0",
+  "reports": {
+    "focused-before.json": "b9a5acbb4085d7602459a89fb96734257071d717487dc817362816c90284503c",
+    "focused-after.json": "33779dc2a881bbc570e92d3616c3e7a35d60e20a49a9a444802d74fc16f804cf",
+    "related-after.json": "aebd8716d9fc2e702cf4e72bf9474633aa4de1060d926cc1f30111b93aa9defe"
+  },
+  "snapshotTestsAreNotDiscoverable": "Historical snapshots use .test-source.ts rather than .test.ts; they are evidence, not extra global tests."
+}

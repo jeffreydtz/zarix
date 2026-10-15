@@ -1,0 +1,851 @@
+import { downloadTelegramMedia } from '@/lib/telegram/download-media';
+import { ApiError } from '@/lib/api-handler';
+import { withPlanQuota, AmbiguousPlanWorkError } from '@/lib/plans/service';
+import { Telegraf, Context } from 'telegraf';
+import { Markup } from 'telegraf';
+import { message } from 'telegraf/filters';
+import { withFinancialRequestContext } from '@/lib/financial-request-context';
+import {
+  getGeminiForUser,
+  GeminiMissingKeyError,
+} from '@/lib/ai/gemini';
+import { transactionsService, excludedCurrenciesNote } from '@/lib/services/transactions';
+import { accountsService } from '@/lib/services/accounts';
+import { cotizacionesService } from '@/lib/services/cotizaciones';
+import { createServiceClientSync } from '@/lib/supabase/server';
+import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
+import { sanitizeForPrompt, type FinancialContext } from '@/lib/ai/prompts';
+import type { User } from '@/types/database';
+import {
+  appendBotTurn,
+  clearBotSession,
+  getStoredTurns,
+  storedTurnsToGeminiHistory,
+} from '@/lib/services/botSessions';
+import { subscriptionsService } from '@/lib/services/subscriptions';
+import {
+  processInternalAiChatMessage,
+} from '@/lib/services/internal-ai-chat';
+import { escapeMd } from '@/lib/telegram/markdown';
+import { buildTelegramSummaryScheduleLines } from '@/lib/notification-schedule';
+import type { SubscriptionStatus } from '@/types/database';
+import type { InternalAiChatHistoryItem } from '@/types/internal-ai-chat';
+
+interface BotContext extends Context {
+  userId?: string;
+}
+
+// Estado por-update inyectado por el guard de bots propios (ver más abajo).
+interface CustomBotState {
+  forcedUserId?: string;
+  /** Dueño del bot propio (secret del webhook). Sin chat vinculado no se fuerza. */
+  ownerUserId?: string;
+}
+
+const GEMINI_SETUP_MSG =
+  'No tenés configurada tu API Key de Google Gemini. Entrá a la app web → Configuración → Google Gemini y seguí el instructivo.';
+
+function getSubscriptionBlockedMessage(status: SubscriptionStatus | null | undefined): string {
+  if (status === 'PAST_DUE') {
+    return 'Tu suscripción está vencida por falta de pago. Actualizá tu método de pago para volver a usar el asistente de IA.';
+  }
+  if (status === 'CANCELED') {
+    return 'Tu suscripción está cancelada. Reactivala para volver a usar el asistente de IA.';
+  }
+  return 'No encontramos una suscripción activa para esta cuenta.';
+}
+
+async function getUserFromTelegramId(telegramChatId: number) {
+  const supabase = createServiceClientSync();
+
+  const { data: user, error } = await supabase
+    .from('users')
+    .select(USER_CLIENT_SAFE_COLUMNS)
+    .eq('telegram_chat_id', telegramChatId)
+    .single();
+
+  if (error || !user) return null;
+  return user as unknown as User;
+}
+
+async function getUserById(userId: string) {
+  const supabase = createServiceClientSync();
+  const { data: user, error } = await supabase
+    .from('users')
+    .select(USER_CLIENT_SAFE_COLUMNS)
+    .eq('id', userId)
+    .single();
+  if (error || !user) return null;
+  return user as unknown as User;
+}
+
+// Resuelve el usuario que actúa en este update.
+//
+// SEGURIDAD (fix cross-tenant): en un bot PROPIO (custom) el dueño está fijado
+// por el secret del webhook, no por el `chat.id` del payload (que es controlable
+// por el atacante). Si el guard fijó `forcedUserId`, actuamos SIEMPRE como ese
+// dueño. En el bot compartido no hay dueño fijo: se resuelve por chat.id (cada
+// usuario habla con el mismo bot), que ya está vinculado con prueba de posesión.
+async function resolveActingUser(ctx: BotContext) {
+  const state = ctx.state as CustomBotState | undefined;
+  const forcedId = state?.forcedUserId;
+  if (forcedId) return getUserById(forcedId);
+  // Un bot propio sin vincular solo puede canjear el código de su dueño.
+  // Nunca hereda la identidad de un chat ya vinculado al bot compartido.
+  if (state?.ownerUserId) return null;
+  const chatId = ctx.chat?.id;
+  if (chatId == null) return null;
+  return getUserFromTelegramId(chatId);
+}
+
+// Canje del código de vinculación de un solo uso (prueba de posesión del chat:
+// quien envía el código controla este chat_id porque Telegram lo entregó).
+async function redeemLinkCode(
+  code: string,
+  telegramChatId: number,
+  username?: string,
+  expectedUserId?: string
+): Promise<'ok' | 'invalid' | 'taken'> {
+  const supabase = createServiceClientSync();
+  const normalized = code.toUpperCase().trim();
+  const { data: match } = await supabase
+    .from('users')
+    .select('id')
+    .eq('telegram_link_code', normalized)
+    .gt('telegram_link_code_expires_at', new Date().toISOString())
+    .maybeSingle();
+
+  if (!match) return 'invalid';
+  if (expectedUserId && match.id !== expectedUserId) return 'invalid';
+
+  const { error } = await supabase
+    .from('users')
+    .update({
+      telegram_chat_id: telegramChatId,
+      telegram_username: username || null,
+      telegram_link_code: null,
+      telegram_link_code_expires_at: null,
+    })
+    .eq('id', match.id);
+
+  if (error) {
+    // UNIQUE(telegram_chat_id): el chat ya está vinculado a otra cuenta.
+    if ((error as { code?: string }).code === '23505') return 'taken';
+    throw error;
+  }
+  return 'ok';
+}
+
+const LINK_CODE_RE = /^[A-F0-9]{8}$|^[A-F0-9]{12}$/;
+
+function summaryPrefsKeyboard(weekly: boolean, monthly: boolean) {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback(`📅 Semanal ${weekly ? '✅' : '⬜'}`, 'sum:weekly'),
+      Markup.button.callback(`📆 Mensual ${monthly ? '✅' : '⬜'}`, 'sum:monthly'),
+    ],
+  ]);
+}
+
+function coerceSummaryBool(v: unknown, fallback: boolean): boolean {
+  if (v === null || v === undefined) return fallback;
+  return Boolean(v);
+}
+
+async function getFinancialContext(userId: string): Promise<FinancialContext> {
+  const supabase = createServiceClientSync();
+
+  // El asistente consulta gastos/saldos vía tools (get_spending, get_accounts…),
+  // así que el contexto base solo necesita usuario + cuentas + categorías.
+  const [userResult, accounts, categories] = await Promise.all([
+    supabase.from('users').select(USER_CLIENT_SAFE_COLUMNS).eq('id', userId).single(),
+    accountsService.list(userId),
+    supabase.from('categories').select('*').or(`user_id.eq."${userId.replace(/"/g, '\\"')}",is_system.eq.true`),
+  ]);
+
+  if (userResult.error) throw userResult.error;
+  if (categories.error) throw categories.error;
+
+  return {
+    user: userResult.data as unknown as User,
+    accounts,
+    categories: categories.data || [],
+  };
+}
+
+function toInternalHistoryItems(history: Array<{ role?: string; parts?: Array<{ text?: string }> }>): InternalAiChatHistoryItem[] {
+  return history
+    .map((h) => {
+      const text = h.parts?.map((p) => p.text || '').join(' ').trim() || '';
+      const role = h.role === 'model' ? 'model' : 'user';
+      return text ? { role, text } : null;
+    })
+    .filter((item): item is InternalAiChatHistoryItem => item !== null);
+}
+
+function registerBotHandlers(bot: Telegraf) {
+  // Una vinculación pertenece a una persona, no a todos los miembros de un grupo.
+  // No leer datos ni canjear códigos desde grupos, supergrupos o canales.
+  bot.use(async (ctx, next) => {
+    if (ctx.chat?.type !== 'private') return;
+    return withFinancialRequestContext(
+      `telegram:${ctx.botInfo.id}:${ctx.update.update_id}`,
+      next
+    );
+  });
+
+  bot.command('start', async (ctx) => {
+  const existingUser = await resolveActingUser(ctx);
+
+  if (existingUser) {
+    return ctx.reply(
+      `¡Ya estás vinculado! 🎉\n\n` +
+        `Escribime natural:\n` +
+        `• "gasté 5000 en el super"\n` +
+        `• "cuánto gasté en comida este mes?"\n` +
+        `• "cómo va mi cartera?"\n\n` +
+        `O usá /help para ver todo lo que puedo hacer.`
+    );
+  }
+
+  return ctx.reply(
+    `¡Hola! Soy el asistente de Zarix.\n\n` +
+      `Para vincular tu cuenta de forma segura:\n` +
+      `1️⃣ Entrá a la app web → Configuración → Telegram → *Generar código*.\n` +
+      `2️⃣ Pegá acá el código (8 caracteres, vale 10 minutos).\n\n` +
+      `Cuando lo mandes, quedás vinculado al toque.`,
+    { parse_mode: 'Markdown' }
+  );
+});
+
+bot.command('cuentas', async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    return ctx.reply('No estás vinculado. Usá /start primero.');
+  }
+  if (!subscriptionsService.hasOrchestratorAccess(user)) return ctx.reply(getSubscriptionBlockedMessage(user.status));
+
+  const accounts = await accountsService.list(user.id);
+  const total = await accountsService.getTotalBalance(user.id);
+
+  let message = `💰 *TUS CUENTAS*\n\n`;
+
+  accounts.forEach((acc) => {
+    const sign = acc.is_debt ? '-' : '';
+    message += `${acc.icon || '💳'} *${escapeMd(acc.name)}*\n`;
+    message += `   ${sign}$${acc.balance.toLocaleString('es-AR', { minimumFractionDigits: 2 })} ${acc.currency}\n`;
+
+    if (acc.currency !== 'ARS') {
+      message += `   ≈ $${acc.balance_ars_blue?.toLocaleString('es-AR') || 0} ARS\n`;
+    }
+    message += `\n`;
+  });
+
+  message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+  message += `📊 *TOTAL PATRIMONIO*\n`;
+  message += `💵 $${total.totalARSBlue.toLocaleString('es-AR')} ARS (blue)\n`;
+  message += `💵 USD ${total.totalUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}\n`;
+
+  ctx.reply(message, { parse_mode: 'Markdown' });
+});
+
+bot.command('cotizaciones', async (ctx) => {
+  try {
+    const quotes = await cotizacionesService.getAllQuotes();
+
+    let message = `💱 *COTIZACIONES* (actualizadas ahora)\n\n`;
+    message += `🇦🇷 *DÓLAR*\n`;
+    message += `💵 Blue: $${quotes.dolar.blue.sell.toFixed(2)}\n`;
+    message += `🏛️ Oficial: $${quotes.dolar.oficial.sell.toFixed(2)}\n`;
+    message += `📊 MEP: $${quotes.dolar.mep.sell.toFixed(2)}\n`;
+    message += `📈 CCL: $${quotes.dolar.ccl.sell.toFixed(2)}\n\n`;
+
+    message += `₿ *CRYPTO*\n`;
+    message += `BTC: USD ${quotes.crypto.btc.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 0 })} `;
+    message += `(${quotes.crypto.btc.change24h >= 0 ? '+' : ''}${quotes.crypto.btc.change24h.toFixed(2)}%)\n`;
+    message += `ETH: USD ${quotes.crypto.eth.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 0 })} `;
+    message += `(${quotes.crypto.eth.change24h >= 0 ? '+' : ''}${quotes.crypto.eth.change24h.toFixed(2)}%)\n`;
+    message += `USDT: USD ${quotes.crypto.usdt.priceUSD.toFixed(4)}\n`;
+
+    ctx.reply(message, { parse_mode: 'Markdown' });
+  } catch (error) {
+    ctx.reply('Error obteniendo cotizaciones. Probá de nuevo en un rato.');
+  }
+});
+
+bot.command('resumen', async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    return ctx.reply('No estás vinculado. Usá /start primero.');
+  }
+  if (!subscriptionsService.hasOrchestratorAccess(user)) return ctx.reply(getSubscriptionBlockedMessage(user.status));
+
+  const summary = await transactionsService.getMonthSummary(user.id, new Date());
+
+  let message = `📊 *RESUMEN DEL MES*\n\n`;
+  message += `💸 Gastos: $${summary.totalExpenses.toLocaleString('es-AR')}\n`;
+  message += `💰 Ingresos: $${summary.totalIncome.toLocaleString('es-AR')}\n`;
+  message += `📈 Balance: $${summary.balance.toLocaleString('es-AR')}\n\n`;
+
+  if (summary.topCategories.length > 0) {
+    message += `*Top categorías:*\n`;
+    summary.topCategories.forEach((cat, i) => {
+      message += `${i + 1}. ${cat.icon} ${escapeMd(cat.name)}: $${cat.amount.toLocaleString('es-AR')}\n`;
+    });
+  }
+
+  const excludedNote = excludedCurrenciesNote(summary.excludedCurrencies);
+  if (excludedNote) {
+    message += `\n${excludedNote}\n`;
+  }
+
+  ctx.reply(message, { parse_mode: 'Markdown' });
+});
+
+bot.command('help', async (ctx) => {
+  const message = `🤖 *ASISTENTE DE ZARIX*
+
+*Comandos rápidos:*
+/cuentas → saldos de todas tus cuentas
+/cotizaciones → dólar blue, MEP, CCL, BTC, ETH
+/resumen → resumen del mes (al instante)
+/resumenes → avisos semanal y mensual por Telegram
+/reset → borrar la memoria del chat (no borra tus movimientos)
+/help → esta ayuda
+
+*Hablame natural — registro:*
+• "gasté 5000 en el super"
+• "me depositaron el sueldo, 800 lucas"
+• "pagué netflix con la visa, 15 dólares"
+• "compré 100 dólares a 1250"
+• "500 en el súper, 200 de nafta y 80 de café"
+• 📷 Mandame la *foto de un ticket* o un 🎤 *audio*
+
+*Hablame natural — consultas:*
+• "cuánto gasté en comida este mes?"
+• "mostrame mis últimos gastos"
+• "cómo voy con el presupuesto?"
+• "cómo va mi cartera?"
+• "cuánto tengo en total?"
+• "a cómo está el blue?"
+
+*Corregir:* "borrá el último" · "eran 5000 no 500"
+
+Solo me ocupo de tus finanzas en Zarix. 🚀`;
+
+  ctx.reply(message, { parse_mode: 'Markdown' });
+});
+
+bot.command('reset', async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    return ctx.reply('No estás vinculado. Usá /start primero.');
+  }
+  await clearBotSession(user.id, ctx.chat.id);
+  return ctx.reply('Listo, borré el contexto de esta conversación. Tus movimientos no se tocaron.');
+});
+
+bot.command('resumenes', async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    return ctx.reply('No estás vinculado. Usá /start y vinculá tu chat desde la app.');
+  }
+  const weekly = coerceSummaryBool(user.weekly_summary_enabled, true);
+  const monthly = coerceSummaryBool(user.monthly_summary_enabled, true);
+  const header =
+    '📬 *Resúmenes automáticos por Telegram*\n\n' +
+    'Tocá *Semanal* o *Mensual* para activar o desactivar. Se guarda al toque.\n\n';
+  const body = buildTelegramSummaryScheduleLines(weekly, monthly, user.timezone);
+  return ctx.reply(header + body, {
+    parse_mode: 'Markdown',
+    ...summaryPrefsKeyboard(weekly, monthly),
+  });
+});
+
+bot.command('notificaciones', async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    return ctx.reply('No estás vinculado. Usá /start y vinculá tu chat desde la app.');
+  }
+  const weekly = coerceSummaryBool(user.weekly_summary_enabled, true);
+  const monthly = coerceSummaryBool(user.monthly_summary_enabled, true);
+  const header =
+    '📬 *Resúmenes automáticos por Telegram*\n\n' +
+    'Tocá para activar o desactivar.\n\n';
+  const body = buildTelegramSummaryScheduleLines(weekly, monthly, user.timezone);
+  return ctx.reply(header + body, {
+    parse_mode: 'Markdown',
+    ...summaryPrefsKeyboard(weekly, monthly),
+  });
+});
+
+bot.action(/^sum:(weekly|monthly)$/, async (ctx) => {
+  const chatId = ctx.chat?.id;
+  if (!chatId) {
+    await ctx.answerCbQuery('Error de chat');
+    return;
+  }
+
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    await ctx.answerCbQuery('No vinculado');
+    return;
+  }
+
+  const kind = ctx.match[1];
+  const field =
+    kind === 'weekly' ? 'weekly_summary_enabled' : 'monthly_summary_enabled';
+  const current =
+    kind === 'weekly'
+      ? coerceSummaryBool(user.weekly_summary_enabled, true)
+      : coerceSummaryBool(user.monthly_summary_enabled, true);
+  const nextVal = !current;
+
+  const supabase = createServiceClientSync();
+  const { error } = await supabase
+    .from('users')
+    .update({ [field]: nextVal })
+    .eq('id', user.id);
+
+  if (error) {
+    await ctx.answerCbQuery('No se pudo guardar');
+    return;
+  }
+
+  await ctx.answerCbQuery(nextVal ? 'Activado' : 'Desactivado');
+
+  const fresh = await resolveActingUser(ctx);
+  if (!fresh) return;
+
+  const weekly = coerceSummaryBool(fresh.weekly_summary_enabled, true);
+  const monthly = coerceSummaryBool(fresh.monthly_summary_enabled, true);
+  const header =
+    '📬 *Resúmenes automáticos por Telegram*\n\n' +
+    'Tocá *Semanal* o *Mensual* para activar o desactivar. Se guarda al toque.\n\n';
+  const body = buildTelegramSummaryScheduleLines(weekly, monthly, fresh.timezone);
+  const text = header + body;
+
+  try {
+    if (ctx.callbackQuery?.message && 'message_id' in ctx.callbackQuery.message) {
+      await ctx.telegram.editMessageText(
+        chatId,
+        ctx.callbackQuery.message.message_id,
+        undefined,
+        text,
+        {
+          parse_mode: 'Markdown',
+          reply_markup: summaryPrefsKeyboard(weekly, monthly).reply_markup,
+        }
+      );
+    }
+  } catch {
+    await ctx.reply(text, {
+      parse_mode: 'Markdown',
+      ...summaryPrefsKeyboard(weekly, monthly),
+    });
+  }
+});
+
+bot.on(message('photo'), async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
+  }
+  if (!subscriptionsService.hasOrchestratorAccess(user)) {
+    return ctx.reply(getSubscriptionBlockedMessage(user.status));
+  }
+
+  try {
+    let gPhoto;
+    try {
+      gPhoto = await getGeminiForUser(user.id);
+    } catch (e) {
+      if (e instanceof GeminiMissingKeyError) {
+        return ctx.reply(GEMINI_SETUP_MSG);
+      }
+      throw e;
+    }
+
+    await ctx.reply('📷 Analizando la imagen...');
+
+    const photo = ctx.message.photo[ctx.message.photo.length - 1];
+    const arrayBuffer = await downloadTelegramMedia(ctx.telegram, photo.file_id, 10 * 1024 * 1024);
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    
+    const financialContext = await getFinancialContext(user.id);
+    
+    const prompt = `Analizá esta imagen de un ticket, factura o comprobante de compra.
+
+Extraé la siguiente información:
+- Monto total (el más grande/final)
+- Comercio/tienda
+- Fecha (si aparece)
+- Categoría sugerida (basándote en el comercio: supermercado=Comida, farmacia=Salud, etc.)
+- Moneda (ARS por defecto, USD si dice dólares o $US)
+
+CUENTAS DEL USUARIO:
+${financialContext.accounts.map((a) => `- ${sanitizeForPrompt(String(a.icon || ''))} ${sanitizeForPrompt(a.name)} (${sanitizeForPrompt(a.currency)})`).join('\n')}
+
+CATEGORÍAS DISPONIBLES:
+${financialContext.categories.filter((c) => c.type === 'expense').map((c) => `- ${sanitizeForPrompt(String(c.icon || ''))} ${sanitizeForPrompt(c.name)}`).join('\n')}
+
+Respondé en JSON:
+{
+  "found": true/false,
+  "amount": número,
+  "currency": "ARS" o "USD",
+  "merchant": "nombre del comercio",
+  "date": "YYYY-MM-DD" o null,
+  "category": "nombre de categoría sugerida",
+  "suggestedAccount": "nombre de cuenta sugerida",
+  "confidence": "high" | "medium" | "low",
+  "description": "descripción corta para la transacción"
+}
+
+Si no es un ticket/factura o no podés extraer información:
+{
+  "found": false,
+  "message": "razón"
+}`;
+
+    const result = await withPlanQuota({ userId: user.id, feature: 'ocr',
+      requestKey: `telegram:${ctx.botInfo.id}:${ctx.update.update_id}:ocr`, fingerprint: photo.file_unique_id,
+    }, () => gPhoto.chatWithImage(
+      prompt,
+      base64,
+      'image/jpeg',
+      { maxTokens: 1024 }
+    ));
+
+    let parsed;
+    try {
+      const cleaned = result.trim().replace(/^```json\s*/, '').replace(/```\s*$/, '');
+      parsed = JSON.parse(cleaned);
+    } catch (e) {
+      return ctx.reply('No pude analizar la imagen. ¿Es un ticket o comprobante de compra?');
+    }
+
+    if (!parsed.found) {
+      return ctx.reply(parsed.message || 'No encontré información de gasto en la imagen. ¿Es un ticket de compra?');
+    }
+
+    const amount = Number(parsed.amount);
+    if (!amount || amount <= 0) {
+      return ctx.reply('Detecté un ticket pero no pude leer el monto. ¿Me lo escribís?');
+    }
+
+    const currency = String(parsed.currency || 'ARS').toUpperCase();
+    const merchant = parsed.merchant || 'comercio';
+    const description = parsed.description || merchant;
+    const category = parsed.category || null;
+    const suggestedAccount = parsed.suggestedAccount || null;
+    const confidenceEmoji =
+      parsed.confidence === 'high' ? '✅' : parsed.confidence === 'medium' ? '⚠️' : '❓';
+
+    const confirmMessage =
+      `${confidenceEmoji} *Encontré este gasto:*\n\n` +
+      `💰 Monto: $${amount.toLocaleString('es-AR')} ${currency}\n` +
+      `🏪 Comercio: ${escapeMd(merchant)}\n` +
+      `📅 Fecha: ${escapeMd(parsed.date || 'hoy')}\n` +
+      `🏷️ Categoría: ${escapeMd(category || 'a definir')}\n` +
+      (suggestedAccount ? `💳 Cuenta: ${escapeMd(suggestedAccount)}\n` : '') +
+      `\n¿Lo registro? Respondé *sí* para confirmar, o corregime cualquier dato.`;
+
+    // Guardamos la propuesta en la memoria de la conversación. Si el usuario
+    // responde "sí" (o corrige algo), el modelo la lee del historial y la
+    // registra con create_transaction. Sin estado en `global` (no sobrevive a
+    // serverless: cada request puede ser una instancia distinta).
+    const memoryTurn =
+      `Analicé la foto de un ticket y detecté un gasto para confirmar: ` +
+      `monto ${amount} ${currency}` +
+      (suggestedAccount ? `, cuenta sugerida "${suggestedAccount}"` : '') +
+      (category ? `, categoría "${category}"` : '') +
+      `, descripción "${description}"` +
+      (parsed.date ? `, fecha ${parsed.date}` : '') +
+      `. Le pregunté al usuario si lo registro; si confirma, registrá este gasto con estos datos.`;
+    try {
+      await appendBotTurn(user.id, ctx.chat.id, '[Foto de un ticket de compra]', memoryTurn);
+    } catch {
+      console.error('[telegram] receipt proposal persistence failed');
+      return ctx.reply('No pude guardar los datos del ticket para confirmarlos. Todavía no registré el gasto. Mandame de nuevo la foto o escribime los datos completos.');
+    }
+
+    return ctx.reply(confirmMessage, { parse_mode: 'Markdown' });
+
+  } catch (error) {
+    console.error('Photo processing error:');
+    if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
+    if (error instanceof GeminiMissingKeyError) {
+      return ctx.reply(GEMINI_SETUP_MSG);
+    }
+    return ctx.reply('Hubo un error procesando la imagen. ¿Podés intentar con otra foto o escribirme el gasto?');
+  }
+});
+
+bot.on(message('voice'), async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    return ctx.reply('No estás vinculado todavía. Usá /start para vincular tu cuenta.');
+  }
+  if (!subscriptionsService.hasOrchestratorAccess(user)) {
+    return ctx.reply(getSubscriptionBlockedMessage(user.status));
+  }
+
+  try {
+    let gVoice;
+    try {
+      gVoice = await getGeminiForUser(user.id);
+    } catch (e) {
+      if (e instanceof GeminiMissingKeyError) {
+        return ctx.reply(GEMINI_SETUP_MSG);
+      }
+      throw e;
+    }
+
+    await ctx.reply('🎤 Transcribiendo audio...');
+
+    const voice = ctx.message.voice;
+    const audioBuffer = await downloadTelegramMedia(ctx.telegram, voice.file_id, 20 * 1024 * 1024);
+    const audioBase64 = Buffer.from(audioBuffer).toString('base64');
+
+    let transcribed = '[Mensaje de voz]';
+    const prepareMessage = async () => {
+      const transcriptResult = await gVoice.chatWithImage(
+        `Transcribí exactamente este mensaje de voz en español.
+        El usuario está hablando sobre sus finanzas personales.
+        Solo devolvé el texto transcripto, sin explicaciones ni formato JSON.
+        Si no podés transcribir, devolvé "ERROR".`,
+        audioBase64,
+        'audio/ogg',
+        { maxTokens: 512, json: false }
+      );
+
+      // Clean JSON wrapper if Gemini returns it
+      transcribed = transcriptResult.trim();
+      try {
+        const parsed = JSON.parse(transcribed);
+        transcribed = parsed.text || parsed.transcript || parsed.response || transcribed;
+      } catch {
+        // not JSON, use as-is
+      }
+
+      if (!transcribed || transcribed === 'ERROR' || transcribed.length < 3) {
+        throw new ApiError('No pude entender el audio. ¿Podés escribirme el gasto?');
+      }
+
+      await ctx.reply(`🎤 Escuché: _"${escapeMd(transcribed)}"_`, { parse_mode: 'Markdown' });
+
+      return transcribed;
+    };
+
+    const financialContext = await getFinancialContext(user.id);
+    const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
+    const history = toInternalHistoryItems(storedTurnsToGeminiHistory(storedTurns));
+    let rawResponse = '';
+    try {
+      const result = await processInternalAiChatMessage({
+        userId: user.id,
+        requestKey: `telegram:${ctx.botInfo.id}:${ctx.update.update_id}:chat`,
+        eventFingerprint: JSON.stringify({ botId: ctx.botInfo.id, updateId: ctx.update.update_id, message: ctx.message }),
+        message: `voice:${voice.file_unique_id}`,
+        prepareMessage,
+        allowLegacyWriteFallback: true,
+        history,
+        financialContext,
+      });
+      rawResponse = result.raw_response || '';
+      return ctx.reply(result.assistant_message);
+    } finally {
+      if (rawResponse) {
+        await appendBotTurn(user.id, ctx.chat.id, transcribed, rawResponse).catch(async () => {
+          console.error('[telegram] appendBotTurn failed');
+          await ctx.reply('No pude guardar el contexto de esta conversación. Para el próximo mensaje, escribime los datos completos.').catch(() => {});
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Voice processing error:');
+    if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
+    if (error instanceof GeminiMissingKeyError) {
+      return ctx.reply(GEMINI_SETUP_MSG);
+    }
+    return ctx.reply('No pude procesar el audio. ¿Podés escribirme el gasto?');
+  }
+});
+
+bot.on(message('text'), async (ctx) => {
+  const user = await resolveActingUser(ctx);
+  if (!user) {
+    // Usuario no vinculado en el bot compartido: intentamos canjear un código
+    // de vinculación (prueba de posesión del chat). Acepta "/vincular ABCD1234"
+    // o el código pelado.
+    const candidate = ctx.message.text
+      .trim()
+      .replace(/^\/vincular\s+/i, '')
+      .trim()
+      .toUpperCase();
+    if (LINK_CODE_RE.test(candidate)) {
+      const expectedUserId = (ctx.state as CustomBotState | undefined)?.ownerUserId;
+      const result = await redeemLinkCode(
+        candidate,
+        ctx.chat.id,
+        ctx.from?.username,
+        expectedUserId
+      );
+      if (result === 'ok') {
+        return ctx.reply(
+          '✅ ¡Listo! Tu cuenta quedó vinculada. Escribime "gasté 500 en el súper" para empezar.'
+        );
+      }
+      if (result === 'taken') {
+        return ctx.reply('Ese chat de Telegram ya está vinculado a otra cuenta.');
+      }
+      return ctx.reply(
+        'Código inválido o vencido. Generá uno nuevo en la app → Configuración → Telegram.'
+      );
+    }
+    return ctx.reply(
+      'No estás vinculado todavía. Entrá a la app → Configuración → Telegram, generá un código y pegámelo acá.'
+    );
+  }
+  if (!subscriptionsService.hasOrchestratorAccess(user)) {
+    return ctx.reply(getSubscriptionBlockedMessage(user.status));
+  }
+
+  const userMessage = ctx.message.text;
+
+  // El alcance (solo finanzas) y la confirmación de tickets las maneja el modelo
+  // con su system prompt + memoria de conversación. No hay blocklist de keywords
+  // (daba falsos positivos) ni estado de confirmación en `global`.
+
+  try {
+    const financialContext = await getFinancialContext(user.id);
+
+    try {
+      await getGeminiForUser(user.id);
+    } catch (e) {
+      if (e instanceof GeminiMissingKeyError) {
+        return ctx.reply(GEMINI_SETUP_MSG);
+      }
+      throw e;
+    }
+
+    const storedTurns = await getStoredTurns(user.id, ctx.chat.id);
+    const history = toInternalHistoryItems(storedTurnsToGeminiHistory(storedTurns));
+    let rawResponse = '';
+    try {
+      const result = await processInternalAiChatMessage({
+        userId: user.id,
+        requestKey: `telegram:${ctx.botInfo.id}:${ctx.update.update_id}:chat`,
+        eventFingerprint: JSON.stringify({ botId: ctx.botInfo.id, updateId: ctx.update.update_id, message: ctx.message }),
+        message: userMessage,
+        history,
+        financialContext,
+        allowLegacyWriteFallback: true,
+      });
+      rawResponse = result.raw_response || '';
+      return ctx.reply(result.assistant_message);
+    } finally {
+      if (rawResponse) {
+        await appendBotTurn(user.id, ctx.chat.id, userMessage, rawResponse).catch(async () => {
+          console.error('[telegram] appendBotTurn failed');
+          await ctx.reply('No pude guardar el contexto de esta conversación. Para el próximo mensaje, escribime los datos completos.').catch(() => {});
+        });
+      }
+    }
+  } catch (error: any) {
+    console.error('Bot error:');
+
+    if (error instanceof ApiError || error instanceof AmbiguousPlanWorkError) return ctx.reply(error.message);
+    if (error instanceof GeminiMissingKeyError) {
+      return ctx.reply(GEMINI_SETUP_MSG);
+    }
+
+    if (error.message?.includes('404') || error.message?.includes('not found')) {
+      return ctx.reply('El servicio de IA no está disponible temporalmente. Probá de nuevo en unos minutos.');
+    }
+    
+    if (error.message?.includes('account')) {
+      return ctx.reply('No encontré esa cuenta. Usá /cuentas para ver cuáles tenés disponibles.');
+    }
+    
+    return ctx.reply('Hubo un error procesando tu mensaje. ¿Podés reformularlo? Por ejemplo: "gasté 500 en almacén"');
+  }
+});
+
+  // Red de captura global: cualquier error no manejado en un handler cae acá.
+  bot.catch(async (_err, ctx) => {
+    console.error('Telegram handler error:');
+    try {
+      await ctx.reply('Uy, algo falló de mi lado. Probá de nuevo en un toque.');
+    } catch {
+      // ignorar: no podemos responder
+    }
+  });
+}
+
+const sharedToken = process.env.TELEGRAM_BOT_TOKEN;
+const sharedBot = sharedToken
+  ? (() => {
+      const t = new Telegraf(sharedToken);
+      registerBotHandlers(t);
+      return t;
+    })()
+  : null;
+
+const customBots = new Map<string, Telegraf>();
+
+// Contexto del dueño por token de bot propio (un token = un dueño). Se refresca
+// en cada update porque el chat vinculado del dueño puede cambiar con el tiempo.
+interface CustomBotOwner {
+  userId: string;
+  chatId: number | null;
+}
+const customBotOwners = new Map<string, CustomBotOwner>();
+
+function getBotForTelegramToken(token: string): Telegraf {
+  if (!customBots.has(token)) {
+    const t = new Telegraf(token);
+    // Guard de aislamiento por dueño (fix cross-tenant): un bot propio SOLO
+    // atiende a su dueño. El usuario actuante se fija por el secret del webhook
+    // (customBotOwners), nunca por el chat.id del payload.
+    t.use(async (ctx, next) => {
+      const owner = customBotOwners.get(token);
+      if (!owner) return;
+      const chatId = ctx.chat?.id;
+      if (chatId == null) return;
+      (ctx.state as CustomBotState).ownerUserId = owner.userId;
+      // Chat ya vinculado: solo el dueño. El acting user lo fija el secret,
+      // nunca el chat.id del payload.
+      if (owner.chatId != null) {
+        if (chatId !== owner.chatId) return;
+        (ctx.state as CustomBotState).forcedUserId = owner.userId;
+        return next();
+      }
+      // Sin chat vinculado: no auto-link. Solo se acepta el código de un solo uso
+      // (misma prueba de posesión que el bot compartido).
+      return next();
+    });
+    registerBotHandlers(t);
+    customBots.set(token, t);
+  }
+  return customBots.get(token)!;
+}
+
+export async function handleTelegramUpdate(update: any) {
+  if (!sharedBot) {
+    console.error('TELEGRAM_BOT_TOKEN no configurado');
+    return;
+  }
+  await sharedBot.handleUpdate(update);
+}
+
+export async function handleCustomTelegramUpdate(
+  update: any,
+  botToken: string,
+  owner: CustomBotOwner
+) {
+  customBotOwners.set(botToken, owner);
+  const b = getBotForTelegramToken(botToken);
+  await b.handleUpdate(update);
+}

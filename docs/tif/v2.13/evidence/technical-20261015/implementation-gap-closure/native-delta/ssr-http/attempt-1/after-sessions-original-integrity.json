@@ -1,0 +1,166 @@
+{
+  "status": "PASS",
+  "revision": "730767b1723502b495d371e69c44df31eb230b56",
+  "authSessionsRemaining": 0,
+  "authRefreshTokensRemaining": 0,
+  "originalIntegrity": [
+    {
+      "table": "auth.identities",
+      "unchanged": true
+    },
+    {
+      "table": "auth.users",
+      "unchanged": true
+    },
+    {
+      "table": "public.account_creation_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.accounts",
+      "unchanged": true
+    },
+    {
+      "table": "public.bot_sessions",
+      "unchanged": true
+    },
+    {
+      "table": "public.budget_alerts",
+      "unchanged": true
+    },
+    {
+      "table": "public.budgets",
+      "unchanged": true
+    },
+    {
+      "table": "public.categories",
+      "unchanged": true
+    },
+    {
+      "table": "public.exchange_rates",
+      "unchanged": true
+    },
+    {
+      "table": "public.import_batches",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_create_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_sale_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_sales",
+      "unchanged": true
+    },
+    {
+      "table": "public.investments",
+      "unchanged": true
+    },
+    {
+      "table": "public.market_data_cache",
+      "unchanged": true
+    },
+    {
+      "table": "public.net_worth_snapshots",
+      "unchanged": true
+    },
+    {
+      "table": "public.notification_outbox",
+      "unchanged": true
+    },
+    {
+      "table": "public.plan_usage_cycles",
+      "unchanged": true
+    },
+    {
+      "table": "public.plan_usage_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.portfolio_performance_snapshots",
+      "unchanged": true
+    },
+    {
+      "table": "public.recurring_rules",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expense_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expense_splits",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expenses",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_group_members",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_groups",
+      "unchanged": true
+    },
+    {
+      "table": "public.transaction_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.transactions",
+      "unchanged": true
+    },
+    {
+      "table": "public.users",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets_analytics",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets_vectors",
+      "unchanged": true
+    },
+    {
+      "table": "storage.iceberg_namespaces",
+      "unchanged": true
+    },
+    {
+      "table": "storage.iceberg_tables",
+      "unchanged": true
+    },
+    {
+      "table": "storage.migrations",
+      "unchanged": true
+    },
+    {
+      "table": "storage.objects",
+      "unchanged": true
+    },
+    {
+      "table": "storage.s3_multipart_uploads",
+      "unchanged": true
+    },
+    {
+      "table": "storage.s3_multipart_uploads_parts",
+      "unchanged": true
+    },
+    {
+      "table": "storage.vector_indexes",
+      "unchanged": true
+    }
+  ],
+  "backupCheckpointUnchanged": true,
+  "scope": "Read-only closure immediately after SSR38 and before additional CNF11/CNF13 fixtures; SDK logout did not itself record HTTP response statuses."
+}

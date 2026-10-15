@@ -1,0 +1,143 @@
+{
+  "recordedAt": "2026-10-15T07:38:55.574207+00:00",
+  "status": "IMPLEMENTED_FOCALLY_TESTED_NOT_BROWSER_ACCEPTED",
+  "baseRevision": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "product": [
+    {
+      "path": "app/login/page.tsx",
+      "sha256": "a90b0c362b826e97b2c48610744170d2e37afd9bd782cd8c269b78935877f571",
+      "snapshot": "final-sources/app/login/page.tsx"
+    },
+    {
+      "path": "app/auth/callback/route.ts",
+      "sha256": "c33e531a0611618d782252ff3bff7912d21034c8183240698ffb68caaa34a7bc",
+      "snapshot": "final-sources/app/auth/callback/route.ts"
+    },
+    {
+      "path": "app/auth/forgot-password/page.tsx",
+      "sha256": "3e29f313473e4c9b222a216a18d3d2452cd7b5b644f76904abaf9453766ec27d",
+      "snapshot": "final-sources/app/auth/forgot-password/page.tsx"
+    },
+    {
+      "path": "app/auth/update-password/page.tsx",
+      "sha256": "9945da5e7840a6a206f688724d42b28a08effd8d0b420bc877526edec01c5d61",
+      "snapshot": "final-sources/app/auth/update-password/page.tsx"
+    },
+    {
+      "path": "components/auth/PasswordRecoveryForm.tsx",
+      "sha256": "dc38b38e6ca19dd0ca5a90ba2b3debaff9ac0db41783c2ccc6e79d68f6b8d3d0",
+      "snapshot": "final-sources/components/auth/PasswordRecoveryForm.tsx"
+    },
+    {
+      "path": "lib/auth/password-recovery.ts",
+      "sha256": "090f726030ba407304ffbb5563567ba5beb02a841d4cd32b2e517efea4cb5b94",
+      "snapshot": "final-sources/lib/auth/password-recovery.ts"
+    }
+  ],
+  "tests": [
+    {
+      "path": "__tests__/password-recovery-callback.test.ts",
+      "sha256": "9e86c3d4656c0698821151137ad86101b0951f1a385f2a5d8562feef96e15ec4",
+      "snapshot": "final-sources/__tests__/password-recovery-callback.test-source.ts"
+    },
+    {
+      "path": "__tests__/password-recovery-flow.test.ts",
+      "sha256": "42c20c4a86061f51683caea0e3240f9e032a69d85f74675fe3a5faefea8e397b",
+      "snapshot": "final-sources/__tests__/password-recovery-flow.test-source.ts"
+    },
+    {
+      "path": "__tests__/password-recovery-pages.test.ts",
+      "sha256": "4d4771c16b598f8a551731d5eec4a96913f04f75ff4d8ad1da2036e999383f4c",
+      "snapshot": "final-sources/__tests__/password-recovery-pages.test-source.ts"
+    }
+  ],
+  "results": [
+    {
+      "path": "callback-before.json",
+      "sha256": "5346756f26bd2b05db4d059f1ca7c65eae3b7295fda838b2034722c7a9734610",
+      "scope": "Original callback lacks recovery destination/safe recovery rejection",
+      "tests": 6,
+      "passed": 3,
+      "failed": 3,
+      "success": false
+    },
+    {
+      "path": "focused-after.json",
+      "sha256": "c06bca33402c7cc4e528788932504eb713d1c2675e2221c294a7d3777b4ed41d",
+      "scope": "14SDK-helper+6callback; pages .test.tsx was excluded by repository include glob, not counted",
+      "tests": 20,
+      "passed": 20,
+      "failed": 0,
+      "success": true
+    },
+    {
+      "path": "pages-after.json",
+      "sha256": "8bb3b5da12a4ee4cc212b3ddbd0d9e7b3e821d89e11394658b11e5cd9950f240",
+      "scope": "8 real React SSR/server-page tests after rename .test.ts; no hydration/Auth",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "success": true
+    },
+    {
+      "path": "callback-privacy-before.json",
+      "sha256": "c7c90f81d818085af97b3c32f7149f905705aeaa41fd221a806f2fb717d32f81",
+      "scope": "6existingcallbackPASS+2ordinarycallbackprivacymarkerFAIL",
+      "tests": 8,
+      "passed": 6,
+      "failed": 2,
+      "success": false
+    },
+    {
+      "path": "callback-privacy-after.json",
+      "sha256": "6ac2356d5ff24e54ee59c811e1311d519bf4870c7e1a70ec6cc79b76ccd4d6f0",
+      "scope": "8 final callback tests; replaces prior6 for final unique total",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "success": true
+    }
+  ],
+  "finalUniqueTests": 30,
+  "finalUniquePartition": {
+    "SDKRequestLogic": 14,
+    "realReactServerMarkupAndPageGuards": 8,
+    "callbackRouteWithAuthDouble": 8
+  },
+  "sourceChangedAfterOldCoreClosure84": true,
+  "oldGlobal913TestsDoNotCoverThisDelta": true,
+  "authBrowserDatabaseCallsByTheseTests": 0,
+  "schemaOrCredentialChanges": 0,
+  "commitCreated": false,
+  "validation": [
+    {
+      "name": "typecheck",
+      "command": "node22 node_modules/typescript/bin/tsc --noEmit",
+      "exitCode": 0,
+      "phase": "After reset implementation/owner guard, before two-line ordinary callback privacy refinement; no final global claim",
+      "toolSession": 42399
+    },
+    {
+      "name": "scopedLint",
+      "command": "node22 node_modules/next/dist/bin/next lint --file <six owned product paths and three test paths>",
+      "exitCode": 0,
+      "phase": "Before ordinary callback privacy refinement; pages test filename subsequently changed .tsx→.ts with identical contents",
+      "toolSession": 94737
+    },
+    {
+      "name": "finalTypecheck",
+      "command": "node22 node_modules/typescript/bin/tsc --noEmit",
+      "exitCode": 0,
+      "toolSession": 82992,
+      "scope": "Current worktree after final reset privacy correction and investment GET addition; no Auth/DB/browser"
+    },
+    {
+      "name": "finalScopedLint",
+      "command": "node22 node_modules/next/dist/bin/next lint --file app/api/investments/[id]/route.ts --file __tests__/investment-individual-read.test.ts --file app/auth/callback/route.ts --file __tests__/password-recovery-callback.test.ts --file __tests__/password-recovery-pages.test.ts",
+      "exitCode": 0,
+      "toolSession": 25073,
+      "scope": "Changed final route/test paths; unchanged reset component/helper had already passed earlier scoped lint"
+    }
+  ],
+  "scope": "SDK doubles and real React static markup/server guard only; no actual recovery email/link, Auth call, browser, keyboard, viewport, production settings or UI acceptance."
+}

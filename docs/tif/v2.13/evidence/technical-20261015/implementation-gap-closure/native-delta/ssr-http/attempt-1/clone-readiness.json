@@ -1,0 +1,61 @@
+{
+  "status": "CLONE_READY_NOT_ACCEPTED",
+  "revision": "faae3a7858a6d4349e24880fc4858b826b9463bd",
+  "run": "db3cf513-b7ad-4f2b-abcd-a2a44aeed27b",
+  "privateDirectory": "/tmp/zarix-runtime-20261015/implementation-delta-db3cf513-b7ad-4f2b-abcd-a2a44aeed27b",
+  "newDatabaseName": "zarix_delta_e4bd026f703549bfa24de940134184b8",
+  "clonedIdentities": 2,
+  "newUsersCreated": 0,
+  "newKeysCreated": 0,
+  "sqlWritesInThisResume": 0,
+  "originalTablesCompared": 39,
+  "originalRowsUnchanged": true,
+  "nativeOriginalBindingsUnchanged": true,
+  "nativeOwnedListeners": [
+    {
+      "pid": 80446,
+      "address": "127.0.0.1:58321"
+    },
+    {
+      "pid": 80446,
+      "address": "127.0.0.1:58322"
+    },
+    {
+      "pid": 80446,
+      "address": "127.0.0.1:59583"
+    },
+    {
+      "pid": 80478,
+      "address": "*:29929"
+    },
+    {
+      "pid": 80494,
+      "address": "127.0.0.1:32150"
+    },
+    {
+      "pid": 80510,
+      "address": "*:22031"
+    }
+  ],
+  "originalComparisonStartsAfterStackStartup": true,
+  "originalAuthStartupHousekeepingNotClaimedAbsent": true,
+  "backupUnchanged": true,
+  "financialTablesInitiallyEmpty": true,
+  "deltaMigrations": [
+    {
+      "path": "supabase/migrations/20261015072636_audit_transaction_deletions.sql",
+      "sha256": "f5e9ecde74f98b62233aada534206df22655361a661b6b1963a537b221f1b355"
+    },
+    {
+      "path": "supabase/migrations/20261015072807_presentation_preferences.sql",
+      "sha256": "ca6aefd4b6c61e4a60f4b4dd075f5fd6bbbe27dd6e72e7ecddd024544c421309"
+    }
+  ],
+  "resumeSourceSha256": "e85e5a4e94fdb024c5df5bce80b633e5ad750adb21c2ff195545ad2d6ed66b15",
+  "originalFailedSourceSha256": "a4b3cae575e127a01e80c1ed1f48dc408d3ea3aafbc9f40ee2c15e6925a976a6",
+  "temporaryHttpServicesStarted": 0,
+  "browserUsed": false,
+  "completeAuthStorageRestoreClaimed": false,
+  "credentialValuesCopied": false,
+  "finishedAt": "2026-10-15T07:51:47.874573+00:00"
+}

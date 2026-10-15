@@ -1,0 +1,201 @@
+{
+  "status": "EXISTING_CLONE_REOPEN_READY",
+  "run": "a29a07a8-3b5a-4b66-a16e-bebf2f974cfe",
+  "privateDirectory": "/tmp/zarix-runtime-20261015/implementation-delta-a29a07a8-3b5a-4b66-a16e-bebf2f974cfe",
+  "newDatabaseName": "zarix_delta_e4bd026f703549bfa24de940134184b8",
+  "newDatabaseCreated": false,
+  "newUsersCreated": 0,
+  "newCredentialFiles": 0,
+  "sqlWrites": 0,
+  "originalIntegrity": [
+    {
+      "table": "auth.identities",
+      "unchanged": true
+    },
+    {
+      "table": "auth.users",
+      "unchanged": true
+    },
+    {
+      "table": "public.account_creation_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.accounts",
+      "unchanged": true
+    },
+    {
+      "table": "public.bot_sessions",
+      "unchanged": true
+    },
+    {
+      "table": "public.budget_alerts",
+      "unchanged": true
+    },
+    {
+      "table": "public.budgets",
+      "unchanged": true
+    },
+    {
+      "table": "public.categories",
+      "unchanged": true
+    },
+    {
+      "table": "public.exchange_rates",
+      "unchanged": true
+    },
+    {
+      "table": "public.import_batches",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_create_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_sale_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.investment_sales",
+      "unchanged": true
+    },
+    {
+      "table": "public.investments",
+      "unchanged": true
+    },
+    {
+      "table": "public.market_data_cache",
+      "unchanged": true
+    },
+    {
+      "table": "public.net_worth_snapshots",
+      "unchanged": true
+    },
+    {
+      "table": "public.notification_outbox",
+      "unchanged": true
+    },
+    {
+      "table": "public.plan_usage_cycles",
+      "unchanged": true
+    },
+    {
+      "table": "public.plan_usage_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.portfolio_performance_snapshots",
+      "unchanged": true
+    },
+    {
+      "table": "public.recurring_rules",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expense_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expense_splits",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_expenses",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_group_members",
+      "unchanged": true
+    },
+    {
+      "table": "public.shared_groups",
+      "unchanged": true
+    },
+    {
+      "table": "public.transaction_requests",
+      "unchanged": true
+    },
+    {
+      "table": "public.transactions",
+      "unchanged": true
+    },
+    {
+      "table": "public.users",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets_analytics",
+      "unchanged": true
+    },
+    {
+      "table": "storage.buckets_vectors",
+      "unchanged": true
+    },
+    {
+      "table": "storage.iceberg_namespaces",
+      "unchanged": true
+    },
+    {
+      "table": "storage.iceberg_tables",
+      "unchanged": true
+    },
+    {
+      "table": "storage.migrations",
+      "unchanged": true
+    },
+    {
+      "table": "storage.objects",
+      "unchanged": true
+    },
+    {
+      "table": "storage.s3_multipart_uploads",
+      "unchanged": true
+    },
+    {
+      "table": "storage.s3_multipart_uploads_parts",
+      "unchanged": true
+    },
+    {
+      "table": "storage.vector_indexes",
+      "unchanged": true
+    }
+  ],
+  "authSessionsRemaining": 0,
+  "authRefreshTokensRemaining": 0,
+  "priorArchiveUnchanged": true,
+  "nativeOwnerPid": 94461,
+  "nativeListeners": [
+    {
+      "pid": 94461,
+      "address": "127.0.0.1:58321"
+    },
+    {
+      "pid": 94461,
+      "address": "127.0.0.1:58322"
+    },
+    {
+      "pid": 94461,
+      "address": "127.0.0.1:62096"
+    },
+    {
+      "pid": 94494,
+      "address": "*:24888"
+    },
+    {
+      "pid": 94510,
+      "address": "127.0.0.1:22019"
+    },
+    {
+      "pid": 94521,
+      "address": "*:20366"
+    }
+  ],
+  "sourceSha256": "f076145641f7748e9b7c1ff8944d00e57aec132839db71b494d6a8ec291bb066",
+  "executionRevision": "730767b1723502b495d371e69c44df31eb230b56",
+  "observedAt": "2026-10-15T08:32:06.974054+00:00"
+}

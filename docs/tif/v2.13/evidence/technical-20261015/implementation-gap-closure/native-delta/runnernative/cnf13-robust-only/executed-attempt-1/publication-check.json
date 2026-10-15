@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "candidateFiles": 8,
+  "selectedPrivateValues": 8,
+  "exactCredentialMatches": 0,
+  "literalSentinelMatches": 0,
+  "jwtLikeMatches": 0,
+  "rawConsoleCopied": false,
+  "imageFilesCopied": false,
+  "scope": "Selected existing environment credentials/passwords and this local MP placeholder derivation against eight proposed report/source files only. Runtime-issued sessions, cookie and generated image remained in memory except the intentional synthetic private fixture note. Only safe results and allowlisted observations were copied.",
+  "files": [
+    {
+      "path": "cnf13-nine-robust.json",
+      "sha256": "79bd41d00594122547dd429c0e74efc86ab4e2b8ef9825c07c2170ed4f41a984"
+    },
+    {
+      "path": "privacy-and-cleanup.json",
+      "sha256": "7c573af45aa9777adfa91efbef5d1838422001c53be3415d406b0dc88a6dd5f0"
+    },
+    {
+      "path": "canary-calibration.json",
+      "sha256": "f4a5cccf9390007da151bdc3b93b6636f6263c487c909ff23bd1a979243faa60"
+    },
+    {
+      "path": "execution.json",
+      "sha256": "a647e14907483affdd27675cd7a609d2ccebcad446630000341e69dae1f67890"
+    },
+    {
+      "path": "sources/manifest.json",
+      "sha256": "d39424b54d8cc88d940818ec7e1c160e076405544036321b2b8242418294b786"
+    },
+    {
+      "path": "sources/run-robust.py",
+      "sha256": "d3bb64f74486ada1484beb2f7855129d2b25f06830482c35fba2cc35a22e0eeb"
+    },
+    {
+      "path": "sources/vitest.config.mjs",
+      "sha256": "7131665ef331ca55a0f4b0a13644b46f31159d568ee24b9489ea629591cae3ef"
+    },
+    {
+      "path": "sources/robust.test-source.ts",
+      "sha256": "a69316cfc50bc9226322cfd792bab4393b71ac165ce39d83d72e7b9f229670f6"
+    }
+  ]
+}

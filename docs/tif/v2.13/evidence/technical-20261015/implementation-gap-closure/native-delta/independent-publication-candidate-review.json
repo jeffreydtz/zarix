@@ -1,0 +1,765 @@
+{
+  "schemaVersion": 1,
+  "reviewType": "INDEPENDENT_PUBLIC_SOURCE_CANDIDATE_ADJUDICATION",
+  "status": "PASS_WITH_SCOPE_LIMITS",
+  "reviewedAtUtc": "2026-10-15T08:54:56.143199+00:00",
+  "scope": {
+    "publicPackage": "docs/tif/v2.13/evidence/technical-20261015/implementation-gap-closure/native-delta",
+    "reportedMatchingFiles": 30,
+    "reportedLineLocations": 60,
+    "firstAttemptMatchingFiles": 29,
+    "authorComparedFiles": 100,
+    "authorSelectedPrivateValues": 9,
+    "privateFilesRead": false,
+    "privateValueHashesComputedOrPublished": false,
+    "scannerExecutedByReviewer": false,
+    "runtimeStartedOrContacted": false,
+    "productOrMatrixModified": false
+  },
+  "result": {
+    "materialPublicationIssueObservedInReportedLocations": false,
+    "rawExactComparisonStatusRetained": "FAIL",
+    "initialRawStatusRetained": "FAIL",
+    "currentRawStatusRetained": "EXACT_MATCH_CANDIDATES",
+    "contextualSupplementCredentialMatches": 0,
+    "contextualSupplementIsReplacementForRawExactComparison": false,
+    "allReportedLocationsAdjudicated": true,
+    "genericWhitelistCreated": false
+  },
+  "method": [
+    "Read only the public candidate reports and their explicitly listed public source or metadata files.",
+    "Derived a unique common eight-character substring solely from those public reported lines, kept it in memory, and did not read selected private material.",
+    "Parsed Python and JSON string/byte literals; checked each reported location and its immediate structural context. Parsed the eight TypeScript line locations with the installed TypeScript parser.",
+    "Classified database identifiers, service or tool labels, module paths, route guards, URI protocol membership guards and the two classifier-source literals. No reported location was a password assignment or credential URI.",
+    "Validated immutable first-attempt pins and current scanner source, and recorded whole-file SHA-256 only. The guard against writing the matched substring is applied to this review itself."
+  ],
+  "comparison": {
+    "currentPathsEqualInitialPathsPlusCurrentScanner": true,
+    "additionalCurrentPath": "publication-native-check.py",
+    "additionalCurrentPathExplanation": "The new scanner source contains an explicit local-default membership literal and a field-name regex. These two source occurrences are separately classified; the scanner remains an exact-match candidate.",
+    "firstAttemptAndCurrentRawEvidencePreserved": true,
+    "pinnedArtifacts": {
+      "publication-attempt-1-ambiguous-token/publication-native-check.py": "7805fba19518f7d21b25052ff7a4d0725948aaeb0f9cd7dc11c704fa27929231",
+      "publication-attempt-1-ambiguous-token/publication-selected-private-values.json": "d442b97573bd446ba21c5b47c315ae69c991f2699b704026f931e946172ffdbc",
+      "publication-attempt-1-ambiguous-token/native-delta-manifest.json": "5cb1aeec3e19fe99ccae594da06d5646341023a03a7f1ba6b8dd4b12b8eaa4c0",
+      "publication-native-check.py": "6a30394641ef277ac5ecb171c701cc8fc1d33e0de9225e084ec0652188bd42ef",
+      "publication-selected-private-values.json": "33c7bb1272eda9cbc2888ba03d96f9ffca804f8a2b2479254e7ac632f72704c4",
+      "publication-contextual-candidates.json": "138e4e3b4f8af79c4b682906c5eed143af2ca48d28389d14b97c124f23d665ea"
+    }
+  },
+  "candidates": [
+    {
+      "path": "attempt-1/prepare-native.py",
+      "sha256": "a4b3cae575e127a01e80c1ed1f48dc408d3ea3aafbc9f40ee2c15e6925a976a6",
+      "reportedLines": [
+        {
+          "line": 77,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 139,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 143,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 166,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 167,
+          "classification": [
+            "MAINTENANCE_DATABASE_CLI_ARGUMENT"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "build-app.py",
+      "sha256": "04c5e4759c358e681a67346e74c9df2d70df459c5e86d5eb7d1333ebfa712f3e",
+      "reportedLines": [
+        {
+          "line": 92,
+          "classification": [
+            "LOCAL_TOOLCHAIN_OR_MODULE_PATH"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "launch-services.py",
+      "sha256": "945cb4a1a0150184d73973aeaaaebdc5f1264eb8eb9b886b96a0dc57a93de614",
+      "reportedLines": [
+        {
+          "line": 36,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 69,
+          "classification": [
+            "DATABASE_DRIVER_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 77,
+          "classification": [
+            "LOCAL_TOOLCHAIN_OR_MODULE_PATH"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 111,
+          "classification": [
+            "SERVICE_TOOL_OR_PROTOCOL_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "prepare-native.py",
+      "sha256": "08e09095b706c90fb2b23b453617148ecfef265221f6a928404382f9edf9391c",
+      "reportedLines": [
+        {
+          "line": 77,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 139,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 143,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 166,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 167,
+          "classification": [
+            "MAINTENANCE_DATABASE_CLI_ARGUMENT"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "publication-native-check.py",
+      "sha256": "6a30394641ef277ac5ecb171c701cc8fc1d33e0de9225e084ec0652188bd42ef",
+      "reportedLines": [
+        {
+          "line": 31,
+          "classification": [
+            "CLASSIFIER_MEMBERSHIP_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 63,
+          "classification": [
+            "CLASSIFIER_FIELD_NAME_REGEX"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "reopen-existing-clone.py",
+      "sha256": "f076145641f7748e9b7c1ff8944d00e57aec132839db71b494d6a8ec291bb066",
+      "reportedLines": [
+        {
+          "line": 67,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 79,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "resume-readiness.py",
+      "sha256": "e85e5a4e94fdb024c5df5bce80b633e5ad750adb21c2ff195545ad2d6ed66b15",
+      "reportedLines": [
+        {
+          "line": 69,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 88,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retain-and-stop-robust.py",
+      "sha256": "6425e634a273b3b130f2faa91fea4f99011c54ae7edf751826b046a22a08989e",
+      "reportedLines": [
+        {
+          "line": 58,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 74,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retain-and-stop.py",
+      "sha256": "35769269562d00f5562a7d85bcc0c2456e34d7fb16c5ff0da11184d24b9f6392",
+      "reportedLines": [
+        {
+          "line": 58,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 74,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention/independent-public-retention-review.json",
+      "sha256": "034672207419561b6636d6911612e0933294d818b6a7cb8897317724513d4f1e",
+      "reportedLines": [
+        {
+          "line": 115,
+          "classification": [
+            "SERVICE_TOOL_OR_PROTOCOL_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention/sources/retain-and-stop.py",
+      "sha256": "35769269562d00f5562a7d85bcc0c2456e34d7fb16c5ff0da11184d24b9f6392",
+      "reportedLines": [
+        {
+          "line": 58,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 74,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention/verification.json",
+      "sha256": "9659a2e3b1714ee266d1d5f955b5bb2a1f89fa6fdaa76f4f589328da151f73b6",
+      "reportedLines": [
+        {
+          "line": 210,
+          "classification": [
+            "SERVICE_TOOL_OR_PROTOCOL_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/services.metadata.json",
+      "sha256": "9417f56ab387aefbd1c9e7f3851f7945dbebaacdb3593d295ad150da2da9857e",
+      "reportedLines": [
+        {
+          "line": 5,
+          "classification": [
+            "SERVICE_TOOL_OR_PROTOCOL_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 9,
+          "classification": [
+            "LOCAL_TOOLCHAIN_OR_MODULE_PATH"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/sources/launch-services.py",
+      "sha256": "945cb4a1a0150184d73973aeaaaebdc5f1264eb8eb9b886b96a0dc57a93de614",
+      "reportedLines": [
+        {
+          "line": 36,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 69,
+          "classification": [
+            "DATABASE_DRIVER_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 77,
+          "classification": [
+            "LOCAL_TOOLCHAIN_OR_MODULE_PATH"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 111,
+          "classification": [
+            "SERVICE_TOOL_OR_PROTOCOL_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/sources/reopen-existing-clone.py",
+      "sha256": "f076145641f7748e9b7c1ff8944d00e57aec132839db71b494d6a8ec291bb066",
+      "reportedLines": [
+        {
+          "line": 67,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 79,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/sources/retain-and-stop-robust.py",
+      "sha256": "6425e634a273b3b130f2faa91fea4f99011c54ae7edf751826b046a22a08989e",
+      "reportedLines": [
+        {
+          "line": 58,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 74,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/targets.metadata.json",
+      "sha256": "82ad1d849c402605fc8d80f205a4068a8c2d6db7d88d5cadf46908ba758b8895",
+      "reportedLines": [
+        {
+          "line": 11,
+          "classification": [
+            "LOCAL_TOOLCHAIN_OR_MODULE_PATH"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "retention-cnf13-robust/verification.json",
+      "sha256": "445633adfabedc1e4ea1d054affbcebe7a2afb9ccb07ba6a22b10543fab83da3",
+      "reportedLines": [
+        {
+          "line": 198,
+          "classification": [
+            "SERVICE_TOOL_OR_PROTOCOL_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/cnf11-final-local/executed-attempt-1/sources/focal.test-source.ts",
+      "sha256": "60911deccf76819b168bbac35bf48bd79357c8ec91097a4b226ab97ca5c20b4e",
+      "reportedLines": [
+        {
+          "line": 186,
+          "classification": "DATABASE_URL_PATH_GUARD",
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "TypeScript AST: string literals are route equality or URI protocol membership guards; no credential property assignment."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/cnf11-final-local/focal.test-source.ts",
+      "sha256": "60911deccf76819b168bbac35bf48bd79357c8ec91097a4b226ab97ca5c20b4e",
+      "reportedLines": [
+        {
+          "line": 186,
+          "classification": "DATABASE_URL_PATH_GUARD",
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "TypeScript AST: string literals are route equality or URI protocol membership guards; no credential property assignment."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/cnf13-robust-only/executed-attempt-1/sources/robust.test-source.ts",
+      "sha256": "a69316cfc50bc9226322cfd792bab4393b71ac165ce39d83d72e7b9f229670f6",
+      "reportedLines": [
+        {
+          "line": 188,
+          "classification": "DATABASE_URL_PATH_GUARD",
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "TypeScript AST: string literals are route equality or URI protocol membership guards; no credential property assignment."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/cnf13-robust-only/robust.test-source.ts",
+      "sha256": "a69316cfc50bc9226322cfd792bab4393b71ac165ce39d83d72e7b9f229670f6",
+      "reportedLines": [
+        {
+          "line": 188,
+          "classification": "DATABASE_URL_PATH_GUARD",
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "TypeScript AST: string literals are route equality or URI protocol membership guards; no credential property assignment."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/executed-attempt-1/sources/native-cases.test-source.ts",
+      "sha256": "cfa43972a904300ed4add0e770b898621a33ee968244dbdadda251c4a9812a5d",
+      "reportedLines": [
+        {
+          "line": 150,
+          "classification": "DATABASE_URL_PATH_GUARD",
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "TypeScript AST: string literals are route equality or URI protocol membership guards; no credential property assignment."
+        },
+        {
+          "line": 174,
+          "classification": "DATABASE_URI_SCHEME_MEMBERSHIP_GUARD",
+          "matchedLiteralOccurrences": 2,
+          "reviewBasis": "TypeScript AST: string literals are route equality or URI protocol membership guards; no credential property assignment."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/executed-attempt-1/sources/run-native-cases.py",
+      "sha256": "849be9fee4c44d67b0475d1949a6c0e6c32cc0ac6f8a27c4b62450db37041c95",
+      "reportedLines": [
+        {
+          "line": 71,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/native-cases.test-source.ts",
+      "sha256": "cfa43972a904300ed4add0e770b898621a33ee968244dbdadda251c4a9812a5d",
+      "reportedLines": [
+        {
+          "line": 150,
+          "classification": "DATABASE_URL_PATH_GUARD",
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "TypeScript AST: string literals are route equality or URI protocol membership guards; no credential property assignment."
+        },
+        {
+          "line": 174,
+          "classification": "DATABASE_URI_SCHEME_MEMBERSHIP_GUARD",
+          "matchedLiteralOccurrences": 2,
+          "reviewBasis": "TypeScript AST: string literals are route equality or URI protocol membership guards; no credential property assignment."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "runnernative/run-native-cases.py",
+      "sha256": "849be9fee4c44d67b0475d1949a6c0e6c32cc0ac6f8a27c4b62450db37041c95",
+      "reportedLines": [
+        {
+          "line": 71,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "ssr-http/attempt-1/services-metadata.json",
+      "sha256": "42dab77553a9c534aa7eeb442eb0dbb3221d87f037adc9c757a3226a4ab5060b",
+      "reportedLines": [
+        {
+          "line": 5,
+          "classification": [
+            "SERVICE_TOOL_OR_PROTOCOL_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 9,
+          "classification": [
+            "LOCAL_TOOLCHAIN_OR_MODULE_PATH"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "ssr-http/attempt-1/sources/build-app.py",
+      "sha256": "04c5e4759c358e681a67346e74c9df2d70df459c5e86d5eb7d1333ebfa712f3e",
+      "reportedLines": [
+        {
+          "line": 92,
+          "classification": [
+            "LOCAL_TOOLCHAIN_OR_MODULE_PATH"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "ssr-http/attempt-1/sources/launch-services.py",
+      "sha256": "945cb4a1a0150184d73973aeaaaebdc5f1264eb8eb9b886b96a0dc57a93de614",
+      "reportedLines": [
+        {
+          "line": 36,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 69,
+          "classification": [
+            "DATABASE_DRIVER_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 77,
+          "classification": [
+            "LOCAL_TOOLCHAIN_OR_MODULE_PATH"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 111,
+          "classification": [
+            "SERVICE_TOOL_OR_PROTOCOL_IDENTIFIER"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    },
+    {
+      "path": "ssr-http/attempt-1/sources/resume-readiness.py",
+      "sha256": "e85e5a4e94fdb024c5df5bce80b633e5ad750adb21c2ff195545ad2d6ed66b15",
+      "reportedLines": [
+        {
+          "line": 69,
+          "classification": [
+            "DATABASE_URL_PATH_GUARD"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        },
+        {
+          "line": 88,
+          "classification": [
+            "DATABASE_NAME_OR_ROLE_LITERAL"
+          ],
+          "matchedLiteralOccurrences": 1,
+          "reviewBasis": "Python/JSON AST literal and immediate assignment, argument, path, SQL or identifier context."
+        }
+      ],
+      "disposition": "REPORTED_LOCATIONS_ARE_IDENTIFIERS_PATHS_SCHEMES_OR_CLASSIFIER_LITERALS",
+      "valueOrExcerptPublished": false
+    }
+  ],
+  "limitations": [
+    "The raw exact comparison still reports matching files and FAIL. Semantic classification does not change or replace it.",
+    "The author selected nine existing local values and compared 100 package files before this review. This independent review does not read those private values, re-execute the comparison, establish coverage of tokens held only in memory, or prove absence of other values.",
+    "The contextual regex result of zero credential assignments or URLs is a supplementary signal. The classification here is confined to the 60 reported public line locations.",
+    "This new review and any subsequent README or manifest edit were outside the pinned 100-file comparison. Broader publication scanning is controlled separately by the parent task.",
+    "Binary images and all other binary bytes were not visually or semantically inspected in this adjudication; no universal absence-of-secrets claim is made.",
+    "Private backup contents, raw logs, signing material, environment files, cookies and session files were not opened."
+  ],
+  "evidenceUnchangedAfterReviewPreparation": true
+}

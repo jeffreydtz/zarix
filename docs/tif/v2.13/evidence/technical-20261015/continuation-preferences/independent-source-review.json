@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "reviewKind": "independent-source-review",
+  "reviewer": "/root/remaining_scope/preferences_contracts",
+  "reviewedAtUtc": "2026-10-15 07:38:05 UTC",
+  "baseCommit": "7f71f2757a4decb0e0becbafb82860008b2f9185",
+  "workingTreeSources": true,
+  "result": "PASS_SOURCE_ONLY",
+  "caseIds": [
+    "CP2-11",
+    "CP2-12",
+    "CP3-17"
+  ],
+  "materialFindings": [],
+  "resolvedFindings": [
+    {
+      "id": "P2-legacy-partial-write",
+      "priorProblem": "A partial visibility update could commit for a preserved legacy unsupported base, then fail response parsing with HTTP 500.",
+      "resolution": "PUT validates the complete strict two-field ARS/USD and boolean state before UPDATE. Partial, invalid and caller-owned identity fields are rejected before accessing users.",
+      "references": [
+        "app/api/user/preferences/route.ts:14",
+        "lib/presentation-preferences.ts:4",
+        "__tests__/presentation-preferences.test.ts:188"
+      ],
+      "verification": "Source inspection only; the added legacy-state test was read, not executed by this reviewer."
+    }
+  ],
+  "inspectedChecks": [
+    {
+      "id": "literal-minimum",
+      "result": "PASS_SOURCE",
+      "detail": "Only the authorized base currency ARS/USD and Patrimonio visibility are persisted. The literal cases require saved base/visibility, owner isolation and unchanged balances/history. No widget catalog, new financial policy or additional preference was introduced."
+    },
+    {
+      "id": "owner-isolation",
+      "result": "PASS_SOURCE",
+      "detail": "withAuth derives the owner from verified Auth; users queries filter user.id; strict input rejects user_id/id and other properties. The existing users ownership RLS is preserved, and the migration adds only column SELECT/UPDATE for the new boolean."
+    },
+    {
+      "id": "stale-form-owner-guard",
+      "result": "PASS_SOURCE",
+      "detail": "Settings sends its rendered user.id in X-Preferences-Owner. After verified Auth, PUT rejects a present mismatching owner with 403 before body parsing or users access. A matching or absent optional header retains normal verified-owner behavior; the header never selects the target owner. The old-tab A/current-session B rejection and matching/absent test sources were inspected.",
+      "references": [
+        "app/api/user/preferences/route.ts:15",
+        "components/settings/SettingsForm.tsx:194",
+        "__tests__/presentation-preferences.test.ts:150"
+      ]
+    },
+    {
+      "id": "auth-db-failure",
+      "result": "PASS_SOURCE",
+      "detail": "Auth rejection/unavailability uses existing 401/503 handling; DB errors propagate to generic 500 and Dashboard unavailable. Saved preferences are parsed strictly without fabricated successful defaults after a failed read."
+    },
+    {
+      "id": "financial-preservation",
+      "result": "PASS_SOURCE",
+      "detail": "Preference writes update only the two users columns. Dashboard removes its recordNetWorthSnapshot call and retains skipDailySnapshot for portfolio reading. History is read and re-expressed without an added financial write."
+    },
+    {
+      "id": "owner-ui-lifecycle",
+      "result": "PASS_SOURCE",
+      "detail": "SettingsForm and Dashboard Hero/Sticky are keyed by user.id so a different owner remounts their client state. Hero initializes and synchronizes its currency from saved props; the global zarix.networth.view persistence was removed. Visibility suppresses both Patrimonio displays."
+    },
+    {
+      "id": "schema-and-projection",
+      "result": "PASS_SOURCE",
+      "detail": "The migration keeps the existing owner policies/column grants, gives the new boolean a true default and rejects new invalid base writes. Its mirrored schema section, safe projection and User/generated types include the boolean; no new credential column is projected."
+    },
+    {
+      "id": "test-source-scope",
+      "result": "PASS_SOURCE",
+      "detail": "Read the focused PGlite handler/RLS, Settings handler, real Hero SSR and Dashboard failure test sources. Their declared doubles and execution limits remain explicit. No test result is independently attested here."
+    }
+  ],
+  "limitations": [
+    "This is static review of the pinned working-tree sources, not executed evidence or promotion of any original system case.",
+    "No tests, native PostgreSQL, GoTrue, PostgREST, browser, network request or running application were invoked by this reviewer.",
+    "Final focused test reports and later runtime evidence are intentionally not pinned or certified.",
+    "An existing unsupported legacy base remains unchanged and strict Dashboard reads remain unavailable until its owner explicitly saves a supported full preference state through Settings; the change does not silently normalize historical configuration.",
+    "The shared schema and generated-type file hashes identify their current complete bytes; only their presentation-preference changes were in this review's product scope."
+  ],
+  "sourceSnapshots": [
+    {
+      "path": "app/api/user/preferences/route.ts",
+      "sha256": "8d94371ce53ffb057b287455d05215e7534bc829bf9d80d407d35c6c4a3cf3dc"
+    },
+    {
+      "path": "lib/presentation-preferences.ts",
+      "sha256": "1eb0393f16e16f48c73aa494fe5b53e8a423a7bd8bd76aaa3a1a7201efcfe6ca"
+    },
+    {
+      "path": "lib/services/presentation-preferences.ts",
+      "sha256": "4ae0e9274a9777ca33cff97984c3a8fb9c9182d297417637d116bf5ae1555fff"
+    },
+    {
+      "path": "components/settings/SettingsForm.tsx",
+      "sha256": "29a459d0bd04cc0ef89cc2aee5f2c9218e0721b22928dbc124e63e0ccd7b3166"
+    },
+    {
+      "path": "app/(authenticated)/settings/page.tsx",
+      "sha256": "4412dcd1cc6a243cc8e4565b4e5eee3e583d9d49a845ae70870bd6746ad7d102"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "67250643d94bf35c533f569c8e2019c40f30aa15e2a66ee7d4287b6454da85bd"
+    },
+    {
+      "path": "components/dashboard/NetWorthHero.tsx",
+      "sha256": "ad4f57203212a56bd9ce41981ea09e9b2d3d50a690e639da37e23602e0debe4d"
+    },
+    {
+      "path": "components/dashboard/StickyNetWorthBar.tsx",
+      "sha256": "79698b8aa3b9968f5d62d8e191d6299e3620cd71fa4e5375f41382f1de05ee7a"
+    },
+    {
+      "path": "supabase/migrations/20261015072807_presentation_preferences.sql",
+      "sha256": "ca6aefd4b6c61e4a60f4b4dd075f5fd6bbbe27dd6e72e7ecddd024544c421309"
+    },
+    {
+      "path": "lib/constants/user-columns.ts",
+      "sha256": "bcf1544bd81a77aa690f7147757b1e4af65641908d9b863d69484fe3d13ff1ad"
+    },
+    {
+      "path": "types/database.ts",
+      "sha256": "a7711e2131e9c73833832d2102561dc50dbb78bcce16f585bedcf2ab985c1126"
+    },
+    {
+      "path": "types/supabase-generated.ts",
+      "sha256": "5bb7017d68d5126f8c2e1bbf3cf1a0aae7d561040c7d64ef79e8b6448bad43ba"
+    },
+    {
+      "path": "__tests__/presentation-preferences.test.ts",
+      "sha256": "b2b0c2ebf5d74c85c544cc2478d6476989c53cd443d3ea0be17b3ecfc3b1d494"
+    },
+    {
+      "path": "__tests__/presentation-preferences-ui.test.ts",
+      "sha256": "247afb5c06bb0cf6ed1c8977c5a40ea87272ab15742622b0bd5bc82ee4d43dcc"
+    },
+    {
+      "path": "__tests__/presentation-preferences-hero.test.ts",
+      "sha256": "10d40afa61a950570c1eaa6808117964f22310f0fed2a4fb0ba873a3e70f604b"
+    },
+    {
+      "path": "__tests__/dashboard-read-failures.test.ts",
+      "sha256": "8eb6652b8f2e5fcc637e060ebc51c7c387c5d281ffa51fa3f1e04f6c7facf93e"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "83b4b2c5c33495bfaf7a43da233f1925a58d3806a214edf93a37ac637d9a74a8"
+    },
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/plan.md",
+      "sha256": "e2bc8dad2bda2c3915337189000fdd8a980b4d8e6e703e83d9036141be740393"
+    }
+  ]
+}
