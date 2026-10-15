@@ -1,0 +1,407 @@
+{
+  "status": "PASS_INDEPENDENT_REVIEW_WITH_RETAINED_AUDIT_FINDINGS",
+  "reviewedAt": "2026-10-15T05:25:09.571704+00:00",
+  "method": "File-only independent review: JSON/log/source inspection, hashes and exact frozen Git blob comparisons. No new tests, Node/app imports, builds, browser, API, database, network or financial runtime operations.",
+  "findings": [],
+  "core": {
+    "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+    "verification": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/verification.json",
+      "sha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7"
+    },
+    "readmeFinal": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/README.md",
+      "sha256": "cc0bb872ac3305f966dcf9a25697b6a865357fc059b67e0a1029f056d2d75de3"
+    },
+    "manifestSha256": "3ab8395f04e43db22c6909b3c01e08783801c753d4930edb4375d1e1ff51522f",
+    "manifestEntries": 458,
+    "versionedBlobsIndependentlyVerifiedAgainstPinnedGit": 457,
+    "manifestOnlyMetadata": [
+      "supabase/.temp/cli-latest"
+    ],
+    "all458CurrentFilesMatchManifest": true,
+    "sourceWorkingTreeCleanDuringRun": true,
+    "sourceStableDuringRun": true,
+    "commands": {
+      "total": 17,
+      "PASS": 16,
+      "FAIL": 1
+    },
+    "commandStatuses": [
+      {
+        "name": "npm-ci",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "typecheck",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "lint",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "coverage",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "native-harness-syntax",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "traceability-regression",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "test-db",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "build",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "dependency-audit",
+        "exitCode": 1,
+        "status": "FAIL"
+      },
+      {
+        "name": "balance-sql",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "shared-sql",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "plan-sql",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "durable-sql",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "import-sql",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "account-recompute-sql",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "full-schema-sql",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "performance",
+        "exitCode": 0,
+        "status": "PASS"
+      }
+    ]
+  },
+  "unitTests": {
+    "passed": 913,
+    "failed": 0,
+    "pending": 0,
+    "physicalTestFiles": 92,
+    "internalSuiteCount": 235,
+    "all913AssertionResultsIndividuallyChecked": true
+  },
+  "coverage": {
+    "instrumentedFiles": 37,
+    "selection": "Risk-focused include list from frozen vitest.config.ts, not whole-application coverage or acceptance of273 original cases.",
+    "totals": {
+      "lines": {
+        "total": 2501,
+        "covered": 1824,
+        "skipped": 0,
+        "pct": 72.93
+      },
+      "statements": {
+        "total": 2904,
+        "covered": 2029,
+        "skipped": 0,
+        "pct": 69.86
+      },
+      "functions": {
+        "total": 416,
+        "covered": 283,
+        "skipped": 0,
+        "pct": 68.02
+      },
+      "branches": {
+        "total": 2531,
+        "covered": 1617,
+        "skipped": 0,
+        "pct": 63.88
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    }
+  },
+  "sql": {
+    "checkedResultObjects": 238,
+    "suites": {
+      "balance": 28,
+      "shared": 11,
+      "plans": 18,
+      "durability": 25,
+      "import": 10,
+      "accountRecompute": 18,
+      "fullSchemaAndRecovery": 128
+    },
+    "all238ReportedResultStatusesIndividuallyChecked": true,
+    "overlap": "test:db repeats some separately reported suites; repeated invocations are not additional unique checks.",
+    "engine": "PGlite, separately scoped from native GoTrue/PostgREST, JWT validation and independent PostgreSQL connections."
+  },
+  "build": {
+    "buildId": "BAR1dYoRts_6TgTNSboep",
+    "actualRootBuildIdFileReadAndMatched": true,
+    "browserSecretScan": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/browser-secret-scan.json",
+      "sha256": "1a2919c314bfe6f62b63ba9e713b8ae17f9d21c99c90c75dd407d614f5bc3c0f"
+    },
+    "ownerScanAssetCount": 135,
+    "ownerScanExactMatchCounts": {
+      "SUPABASE_SERVICE_ROLE_KEY": 0,
+      "CRON_SECRET": 0
+    },
+    "scanScope": "Owner scan compares exact two private local values against static assets; reviewer inspected report, not private credentials or a universal/encoded-secret scan.",
+    "nativeClosureCopyHasSeparateBuildIdAndBinding": true
+  },
+  "dependencies": {
+    "assessment": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/assessment.json",
+      "sha256": "545ddc979611ce45839c058bb36b3c9beafa88f02095213b5d9bbaa6b9372a37"
+    },
+    "originalCoreAudit": {
+      "evidence": {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/dependency-audit.json",
+        "sha256": "abcf9a393d63fc0f7562b87bb163684d54549d4b96c7775e2ebc24f8633e15d6"
+      },
+      "classification": "Retained ENOTFOUND advisory-query error. No vulnerability count inferred from this failed original response."
+    },
+    "freshRetryCommands": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/audit-commands.json",
+      "sha256": "186b3a7c6927305d05f1b898b28714fb6000411064576cac1687fd1e2ff354d7"
+    },
+    "validFullAudit": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/audit-full.json",
+      "sha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf"
+    },
+    "validProductionOmitDevAudit": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/audit-production.json",
+      "sha256": "e7a71ea70895f12bb3d991264928cb23b141117439bf1be02bbc7907e4b92910"
+    },
+    "fullVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "productionVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "allEightAffectedLockNodesIndependentlyCheckedDevTrue": true,
+    "currentPackageAndLockHashesMatchAssessment": true,
+    "sixPrimarySnapshotHashesAndHttp200Exit0RecordsChecked": true,
+    "firstPrimaryPythonCaFailurePreserved": {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/primary-attempt-1.json",
+      "sha256": "4c15e08f90902bcdab49bb0dea718cd3bb7406d8a4a0c17f61c3c50645222107"
+    },
+    "patchAvailabilityScope": "Captured official npm latest/upstream and GitHub advisory evidence at2026-10-15T05:17:44–45Z. Braces3.0.3 still affected<=3.0.3, firstPatchedVersion null in current captured advisory; no blanket future no-patch claim or forced major/downgrade applied.",
+    "rootNftTrace": {
+      "evidence": {
+        "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/root-build-traces.json",
+        "sha256": "01e305e255b28483bfeb818e687afd3c78110b27863ed80a08645294cae79a36"
+      },
+      "traces": 85,
+      "all85PhysicalTraceHashesIndependentlyMatched": true,
+      "affectedReferencesIndependentlyRecomputed": 0,
+      "scope": "Static root-build NFT references only; does not cover every browser/runtime/deployment path or remove development/build risk."
+    }
+  },
+  "versionBoundaries": [
+    "This is the source/build gate for84df929 only. Actual closure API/SSR retests have their own copied build, process and native proof; they are not inferred from these gates.",
+    "CI5 records and their CP3-06 display/CP3-18 partial-valuation failures remain immutable and are not overwritten by this successful new source gate.",
+    "Twelve partial-valuation/precision product changes and their regression tests are present in the independently matched freeze.",
+    "Microbenchmark remains one PGlite connection with10accounts/5000transactions/100positions; no HTTP/browser/concurrent-user SLO or monthly availability acceptance."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/README.md",
+      "sha256": "cc0bb872ac3305f966dcf9a25697b6a865357fc059b67e0a1029f056d2d75de3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/verification.json",
+      "sha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/final-vitest.json",
+      "sha256": "32f376cc3687dc3b737ccc4cc823fe5eaf9b951b123100338ab7abaab50651f0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/coverage-summary.json",
+      "sha256": "40e7832140e565c1f5aa16ffb1e1e8a16d2f9a03746bd2e57dd6e66bb36caf69"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/coverage.log",
+      "sha256": "21dcf3602104a6659d7fd8d8cdbf269b139f97390eb69265ddcd3802c8b18d8b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/npm-ci.log",
+      "sha256": "925564562a7970427053c2526d73f3b1bf461b9714606c71b7d0fbae535c94c9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/typecheck.log",
+      "sha256": "469f7b7deaf0603039d0351d61b584c9c9a9f9e495a3dde5eeb847324a9e7e24"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/lint.log",
+      "sha256": "e961f726b387de7cc537facff218c77151a54d399b56e20dbeee1350973ee70c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/test-db.log",
+      "sha256": "541948fe32bf8469d3757b752653a9ae48249927678015cab6e6c04470df384e"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/build.log",
+      "sha256": "16c198a74b104712c5ee4310df94bd35c0a953b143258cac16bd5d67183796c3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/dependency-audit.json",
+      "sha256": "abcf9a393d63fc0f7562b87bb163684d54549d4b96c7775e2ebc24f8633e15d6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/browser-secret-scan.json",
+      "sha256": "1a2919c314bfe6f62b63ba9e713b8ae17f9d21c99c90c75dd407d614f5bc3c0f"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/balance-sql.json",
+      "sha256": "a5ab7fc5adc96be890821d74dbc3c7bf8dc70e1483a68f8950956de1c186dab6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/shared-sql.json",
+      "sha256": "aeb86abdb1f94d63a3442cd85e54d861a55ca2b2f27eaa192ba594fca1f13c29"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/plan-sql.json",
+      "sha256": "d3340ba93cc00957e91614249261279490e90f3b169ef51d1c277ba069952a6a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/durable-sql.json",
+      "sha256": "68715328ca39864fdbb7aa248aa24a29163fa9c3081fd7920f939d682a9e6790"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/import-sql.json",
+      "sha256": "b7f5dbe2fcaa7d8834c26669be3c7dc69598b2c1d4ba6b0520f14bf24c39c650"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/account-recompute-sql.json",
+      "sha256": "a90b917e9b0f6f337a6c0f995dcea9540ed0bb60a2ac4b1e85a6730cab7caf7a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/database-verification.json",
+      "sha256": "3a4f34150a2a82b5f67607637be320f57a6500a7056c38b73acd8450a4adff08"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/performance.json",
+      "sha256": "99b01931983c015d4ab3a75ebe21e21eede6eacff51dcdb59374d493eb68cab2"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/README.md",
+      "sha256": "efa68dc800c8be7af0fd0b8c3d0171b0bd9e1b5d5036efc2e3f9167a0fde0394"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/assessment.json",
+      "sha256": "545ddc979611ce45839c058bb36b3c9beafa88f02095213b5d9bbaa6b9372a37"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/audit-commands.json",
+      "sha256": "186b3a7c6927305d05f1b898b28714fb6000411064576cac1687fd1e2ff354d7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/audit-full.json",
+      "sha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/audit-production.json",
+      "sha256": "e7a71ea70895f12bb3d991264928cb23b141117439bf1be02bbc7907e4b92910"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/primary-attempt-1.json",
+      "sha256": "4c15e08f90902bcdab49bb0dea718cd3bb7406d8a4a0c17f61c3c50645222107"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/primary-retrieval.json",
+      "sha256": "80307971f943e1ddbf938a207316c0182331ca145d68ea0811c7ca252460f148"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/root-build-traces.json",
+      "sha256": "01e305e255b28483bfeb818e687afd3c78110b27863ed80a08645294cae79a36"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/braces-latest.json",
+      "sha256": "8fd4c1db771542ab5456bb4806408fea9cdb5bf77f6cb9d5d563a3bd0ebb0b13"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/micromatch-latest.json",
+      "sha256": "a65635515e4deb07ace263a33105cf4a10056affd438d48818b5368e27b05906"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/fast-glob-latest.json",
+      "sha256": "a336b6b77121af80e04a369080634b32e6bf269a08c1d5f0a09a6c1457011f7a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/tailwind-3.json",
+      "sha256": "80fafa132f0b60c00c4b43978ce3464cedadfccad993354af7cf5a86ea603777"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/next-plugin-15.json",
+      "sha256": "a5ffa1c2ea097e9974568922be0eec905d949f5ee5b0c4cc1e6475b5dd570af6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci6-current/github-advisory.json",
+      "sha256": "2ddb4a23a2b060e6b8b7c1a4dbf8693153be4ff8f5a2c478120ea6d8044c7bcb"
+    },
+    {
+      "path": "scripts/run-technical-verification.mjs",
+      "sha256": "57f0a2935ee1e9dd4586d2256415e5b6b8d55b4b18a4b3cca213cf1752b51244"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "af3a701d083a8296a2af93767dae24abbed0a1a24b04893d9b7270825d21dfe8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/closure-final-preparation/run-core-closure.py",
+      "sha256": "8e590751d879bafbc1fabdea848d8ef79e59f6b8974b09c8946cbf07a626d22e"
+    }
+  ]
+}

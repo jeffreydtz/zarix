@@ -1,0 +1,27 @@
+Investments page error: Error: Dynamic server usage: Route /investments couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at s (.next/server/chunks/3897.js:1:30928)
+    at n (.next/server/chunks/1152.js:14:58628)
+    at f (.next/server/chunks/2583.js:1:9989)
+    at <unknown> (.next/server/chunks/9645.js:1:6742)
+    at l (.next/server/chunks/9645.js:1:5194) {
+  description: "Route /investments couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Categories page error: Error: Dynamic server usage: Route /categories couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at s (.next/server/chunks/3897.js:1:30928)
+    at n (.next/server/chunks/1152.js:14:58628)
+    at f (.next/server/chunks/2583.js:1:9989)
+    at i (.next/server/app/(authenticated)/categories/page.js:1:11590)
+    at stringify (<anonymous>) {
+  description: "Route /categories couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Accounts page error: Error: Dynamic server usage: Route /accounts couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at s (.next/server/chunks/3897.js:1:30928)
+    at n (.next/server/chunks/1152.js:14:58628)
+    at f (.next/server/chunks/2583.js:1:9989)
+    at o (.next/server/app/(authenticated)/accounts/page.js:2:41074)
+    at stringify (<anonymous>) {
+  description: "Route /accounts couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
