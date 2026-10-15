@@ -1,9 +1,10 @@
 """Rebuild scoped documentation from public reports; never changes the original cases."""
 from pathlib import Path
-import csv, datetime, hashlib, json
+import csv, datetime, hashlib, json, runpy
 OUT = Path(__file__).resolve().parent
 BASE = OUT.parent
 ROOT = OUT.parents[5]
+runpy.run_path(str(OUT/'reconcile-blocker-reasons.py'),run_name='__main__')
 rows, inputs = [], {}
 def read(rel):
     file = BASE / rel
@@ -115,6 +116,8 @@ for file in sorted(BASE.glob('e2e/ui-*/e2e-verification.json')):
         'Fase/harness previo separado. La causa debe leerse en el informe y README E2E, sin borrar observaciones',
         '../'+rel,revision=item.get('revision',''))
 binding=read('e2e/ui/build-binding.json')
+read('consolidated/blocked-contract-reasons.json')
+read('e2e/browser-preflight/current-user-browser-steering.json')
 reviewed_system=read('review/verified-system-case-results.json')
 accepted_system=read('system-case-results.json')
 if accepted_system:
@@ -316,8 +319,39 @@ if full_retry and prod_retry and 'metadata' in full_retry and 'metadata' in prod
         'npm audit --omit=dev solamente; no cambiaFAILcompleto ni prueba ausencia universal de código vulnerable.',
         '../dependencies/ci5-current/audit-production.json',revision='7c3e8722d8fcdc5d95d205e9a12eb856647e0e06')
 
+# Current CI6 and later infrastructure are separate scoped evidence, never original-case promotion.
+ci6_assessment=read('dependencies/ci6-current/assessment.json')
+if ci6_assessment:
+    for label,key in [('FULL','freshFullAudit'),('PRODUCTION','freshProductionAudit')]:
+        count=ci6_assessment[key]['vulnerabilities']
+        add('CI6-AUDIT-RETRY-'+label,'FAIL' if count['total'] else 'PASS',json.dumps(count),
+            'Fresh valid audit after the preserved CI6 query failure; same exact package/lock. Production omission does not change the full FAIL.',
+            '../dependencies/ci6-current/assessment.json',revision=ci6_assessment['revision'])
+ci6_copy=read('closure-final-preparation/clock-executed/closure-proof-build-proof.json')
+ci6_auth=read('closure-final-preparation/clock-executed/closure-proof-clock-auth-ready.json')
+if ci6_copy and ci6_auth:
+    ok=ci6_copy['exitCode']==0 and ci6_copy['browserAssetSecretScan']['status']=='PASS'and ci6_auth['status']=='PASS_SCOPED_READINESS'
+    add('CI6-COPY-READINESS','PASS'if ok else'FAIL','483 exact frozen sources; two normal Auth/API200;135assets service/cron0',
+        ci6_auth['scope']+' Acceptance requests are separate compiled SSR reports, not inferred from startup.',
+        '../closure-final-preparation/clock-executed/README.md',revision=ci6_copy['revision'])
+nominal=read('cnf12-nominal/summary.json')
+if nominal:
+    read('cnf12-nominal/independent-review.json');read('cnf12-nominal/original-preservation-final.json')
+    add('CNF12-NOMINAL-SQL-SUBSCOPE','PASS'if nominal['status']=='PASS_NOMINAL_SQL_SUBSCOPE_ORIGINAL_CNF12_BLOCKED'else'BLOCKED',
+        '20pass before harness parser failure;19resumePASS; actual restore0.469s; source21/target20; Storage34B',
+        nominal['counting']+' No nominal HTTPAuth/Storage or four-UI claim. Timestamp RPO/RTO boundaries are models, not observed hours. FullCNF12 staysBLOCKED.',
+        '../cnf12-nominal/summary.json')
+empty=read('empty-account-runtime/executed/readiness.json')
+if empty:
+    add('EMPTY-REPLICA-READINESS','PASS'if empty['status']=='READY_SCOPED_NEW_EMPTY_REPLICA'else'BLOCKED',
+        'Same two identities/keys; normal Auth/API200/RLSownerforeignanon;14tables0/provider0 before cases',
+        empty['scope']+' New cached GoTrue/PostgREST, local SMTP and quote doubles; exact CI6 copy/build. Readiness does not accept subsequent original contracts.',
+        '../empty-account-runtime/executed/readiness.json',revision=empty['revision'])
+for review in ['account-analysis-contracts/independent-closure-review.json','remaining-seven-contracts/independent-review.json','remaining-cu001/independent-recurring-amount-review.json','notification-timeout-contract/independent-review.json']:
+    read(review)
+
 for key,cu,scope,blocker in [
- ('CNF-01-INTEGRAL','CU001–CU004','Carga canónica equivalente al despliegue','No equivalencia hardware/topología/dispositivo; intento localwarm100FAIL/cold60FAIL preservado,40celdasCold+outage sinobservar. No perfilesPASS integrales ni repetición masiva autorizada'),
+ ('CNF-01-INTEGRAL','CU001–CU004','Carga canónica equivalente al despliegue','No equivalencia hardware/topología/dispositivo; tanda cálida100 con p95 incumplido y tanda fría60observadas/40sin observar preservadas;outage sin completar. No perfilesPASS integrales ni repetición masiva autorizada'),
  ('CNF-02','CU001–CU004','Disponibilidad mensual≥99,5%; sonda autenticada5min','Sin serie real mensual; las muestras ausentes no cuentan satisfactorias'),
  ('CNF-03','CU001–CU004','HTTPS/TLS/certificado/redirect en solicitudes financieras','EntornoHTTPloopback; no endpointHTTPS de prueba identificado/verificado'),
  ('CNF-04','CU001–CU004','Contrato original cifrado/aislamiento integral','FileVault local observado aparte; falta aceptación exacta del contrato provider/config y CP2-19 API/JWT completo' if at_rest else 'Sin evidencia del cifrado de esta instancia; RLS es control separado'),
@@ -325,10 +359,10 @@ for key,cu,scope,blocker in [
  ('CNF-06','CU002','Contrato visual original cuentas/perfil/exportación','Falta suite exacta completa con controles y descarga operables; lecturas no la sustituyen'),
  ('CNF-07','CU003','Contrato visual original análisis/chat/números/fechas','Falta suite exacta completa de análisis y chat, incluidos proveedores necesarios'),
  ('CNF-08','CU004','Contrato visual original inversiones/operaciones/simulación','Falta suite exacta completa en los viewports/acciones originales'),
- ('CNF-09','CU001–CU004','Chrome/Firefox/Safari/Edge reales versionados, actual/anterior','Matriz crítica completa no ejecutada; usuario rechazó instalarFirefox/Edge; SafariWebDriverdisabled; Arc autorizado pero AutomationCodex→Arc denegada -1744 sin nueva autorización; WebKit no es Safari'),
+ ('CNF-09','CU001–CU004','Chrome/Firefox/Safari/Edge reales con versiones estables exactas al ensayo y perfil fresco (CSV no exige versión anterior adicional)','Matriz crítica completa no ejecutada; usuario rechazó instalarFirefox/Edge; SafariWebDriverdisabled; Arc AutomationCodex→Arc autorizada/habilitada por intervención humana, pero primera ventana con cierre UNKNOWN; no aceptación UI ni nuevas acciones sobre perfil personal; WebKit no es Safari'),
  ('CNF-10','CU001–CU004','Credenciales en todos los canales originales, sin efectos no autorizados','Auth/grants y guards parciales tienen evidencia separada; faltan todos los canales/proveedores y fixture original exacto'),
  ('CNF-11','CU001–CU004','Idempotencia/rollback/concurrencia manual/bot/importación/cron/venta/pago originales','Recibos/locks/rollback nativos y dobles tienen evidencia separada; no todos los canales originales incluidos pago/proveedor real'),
- ('CNF-12-ORIGINAL','CU001–CU004','Fixture2cuentas/20movimientos/3lotes/1regla/1grupo; snapshot y gasto1500 posterior; RPO23h/RTO3h30/fronteras24h/4h/+1s y lectura4CU restaurados','Recuperación64tablas/Auth/Storage y cuatro lecturas UI restauradas acotadas probadas aparte, con ocho FX auxiliares posteriores declaradas. Fixture nominal/timing/fronteras originales todavía no ejecutados; backup del plan realmente contratado no acreditado por el mecanismo manual local'),
+ ('CNF-12-ORIGINAL','CU001–CU004','Fixture2cuentas/20movimientos/3lotes/1regla/1grupo; snapshot y gasto1500 posterior; RPO23h/RTO3h30/fronteras24h/4h/+1s y lectura4CU restaurados','Recuperación64tablas/Auth/Storage y cuatro lecturas UI restauradas acotadas probadas aparte, con ocho FX auxiliares posteriores declaradas. Fixture nominal/snapshot/gasto1500/restoreSQL y fronteras modelo ya ejecutados aparte; faltan respaldo del plan real contratado, cuatro lecturas UI nominales y RTO3h30 observado. No confundir modelos de timestamps con tiempo transcurrido real'),
  ('CNF-13','CU001–CU004','Correlación request→servicio→efecto/rechazo y ausencia de marcadores secretos originales','Scan heurístico no prueba fixture completo de correlación, errores de proveedores y ausencia de los marcadores de datos privados originales'),
  ('CP3-19-ORIGINAL','CU003','MEP seleccionable original','ContradiceRN08blue.sell; evidencia derivada blue no aprueba fixtureMEP'),
  ('PROVIDER-GEMINI','CU001;CU003','OCR y IA reales','GEMINI_API_KEY ausente; dobles no validan proveedor/cuota real. CP3-09 requiere proveedor'),

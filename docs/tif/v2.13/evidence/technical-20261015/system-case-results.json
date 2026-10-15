@@ -1,5 +1,45 @@
 [
   {
+    "case_id": "CP1-01",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Actual normal account API201",
+      "Normal category list200",
+      "Own literal Alimentos category201",
+      "New account has exactly its opening adjustment",
+      "Normal literal expense API201",
+      "Exactly one economic row persists",
+      "Literal expense leaves8500",
+      "Actual list API contains same1500 identity",
+      "Actual normal dashboard SSR200",
+      "Actual server global top5 contains the exact own1500 row",
+      "Actual global recent payload has only the three known own rows",
+      "Actual dashboard aggregate includes original50000 plus new8500",
+      "Actual server HTML formats the expense1500 ARS",
+      "Actual server HTML includes recent movements",
+      "Only the exact prior harness-owned snapshot is updated",
+      "Observed own snapshot completion liquid_usd",
+      "Observed own snapshot completion investments_usd",
+      "Observed own snapshot completion total_usd",
+      "Observed own snapshot completion total_ars_blue",
+      "Owned snapshot preserves identity id",
+      "Owned snapshot preserves identity user_id",
+      "Owned snapshot preserves identity snapshot_date",
+      "Owned snapshot preserves identity created_at"
+    ],
+    "evidence": "empty-followup-contracts/executed/cp1-01/verification.json; empty-followup-contracts/executed/cp1-01/execution.json; empty-followup-contracts/manifest.json; empty-followup-contracts/executed/cp1-01/dashboard.html; empty-followup-contracts/independent-executed-review.json",
+    "scope": "Actual new-fixture normalAuth API/SQL and compiledSSRDashboard top5/HTML, not a composition that assumes historical membership. The newly owned account opening adjustment10000 is kept separate from exactly one economic expense1500 ARS, category Alimentos and date6Oct; real normal transaction POST201 and native balance8500. Actual authenticated list contains the same economic UUID and1500. Actual retained Dashboard HTML hashes to05614ebc13ef0da80ba1b9b13f71ddfb59654094a0680e6560c7038b4e76288b and formats minus1500ARS under recent movements. Independent JSON-only extraction from retained HTML finds exactly one RecentTransactions80237 payload and one Hero48648 payload; both match the reported props. Three actual own recent rows include this exact expense, alongside two documented opening adjustments; no hypothetical older top5 membership is substituted. Actual Hero total58500 includes prior50000 plus new8500. Only the previously proved harness-owned snapshot UUID4f8abad4-1c2d-49a2-8bab-032bc71a288d changes values; ID/owner/date/createdAt remain equal. ",
+    "executed_revision": {
+      "product": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "buildId": "Yi9bH3FttO71PxvY-EwCH",
+      "appOrigin": "http://127.0.0.1:3004",
+      "apiOrigin": "http://127.0.0.1:60321"
+    },
+    "source_review_sha256": "9d640a07d730b11a3718953c60214a3d1d12c2f670e4cbfc6968c45cde5f3d8d",
+    "adapter_scope": "Independently reviewed new-replica API/native/compiledSSR scope. CP307 explicitly composes the preserved fifteen empty observations and frozen real componentSSR/wiring, not another native rerun. CP124 worker uses real local service client and a provider captor double, not Telegram. No browser acceptance inferred."
+  },
+  {
     "case_id": "CP1-02",
     "status": "PASS",
     "complete_original_contract": true,
@@ -124,6 +164,100 @@
       "scope": "Current checkout BlueFX528 and export route changes are explicitly executedByThisBuild:false; this report does not approve them."
     },
     "source_review_sha256": "303e5b13a56b1ee614468494c209a61862dd6617cecbe74c876da629905cc5ba"
+  },
+  {
+    "case_id": "CP1-07",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "SQL-01 gasto INSERT",
+      "SQL-06 UPDATE tipo gasto a ingreso",
+      "ordinary financial writes run actual triggers and reject another tenant account",
+      "own transaction CRUD and type edit preserve balance"
+    ],
+    "evidence": "remaining-cu001/cp1-07-sql-composite-review.json; core-closure/balance-sql.json; core-closure/database-verification.json; core-closure/verification.json; native-full/native-verification.json; native-full/manifest.json; native-full/README.md",
+    "scope": "Explicit composite: the exact numeric SQL fixture is executed by the isolated PostgreSQL trigger suite; actual ordinary GoTrue/PostgREST sessions separately execute the same type-only UPDATE under the complete current schema. These executions remain distinct. No new runtime was executed. The exact1500 SQL fixture and the native100 ordinary-session fixture are separate reports/engines/revisions; this review does not merge them into one observed1500 native execution. PGlite exact SQL-06 uses a minimal schema and no RLS. Native ordinary-session coverage uses the complete27-migration schema and real Auth/PostgREST. Full-schema PGlite roles are synthetic Auth fixtures. Existing raw assertions and results are retained unchanged. This is one original-case acceptance by explicit composition, not new unique tests or an addition to the913-test CI6 total. No browser behavior, new API type-edit capability, external provider, hosted database, or production behavior is claimed. Literal is Normal UPDATE SQL; API type immutability was not a blocker. SQL1500→11500 and actual nativeJWT100→10100 remain separate fixtures.",
+    "executed_revision": {
+      "exactSql": {
+        "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "sourceStable": true,
+        "sourceWorkingTreeClean": true,
+        "sourceManifestSha256": "3ab8395f04e43db22c6909b3c01e08783801c753d4930edb4375d1e1ff51522f",
+        "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+        "passed": 28,
+        "total": 28,
+        "commands": [
+          {
+            "name": "balance-sql",
+            "command": [
+              "node",
+              "scripts/test-balance-trigger.mjs"
+            ],
+            "startedAt": "2026-10-15T05:15:33.389Z",
+            "finishedAt": "2026-10-15T05:15:34.269Z",
+            "durationMs": 880,
+            "exitCode": 0,
+            "status": "PASS"
+          },
+          {
+            "name": "full-schema-sql",
+            "command": [
+              "node",
+              "scripts/test-isolated-database.mjs",
+              "--output-dir=/tmp/zarix-isolated-verification-H7CwmC"
+            ],
+            "startedAt": "2026-10-15T05:15:39.947Z",
+            "finishedAt": "2026-10-15T05:15:44.485Z",
+            "durationMs": 4538,
+            "exitCode": 0,
+            "status": "PASS"
+          }
+        ]
+      },
+      "native": {
+        "revision": "1872f2209aca4c3d9506394c07d4e6ec5cd6f18a",
+        "runAt": "2026-10-15T00:40:27.624Z",
+        "engine": "PostgreSQL 17.11 on aarch64-apple-darwin25.3.0, compiled by clang version 21.1.7, 64-bit",
+        "harnessSha256": "877b2b7a29c16752bd726f3d75303a49c5175fef7c4d66e5d0a50ea84c8de71f",
+        "resultGroup": "ordinary financial writes run actual triggers and reject another tenant account",
+        "command": "node scripts/test-isolated-native-supabase.mjs (documented private local runtime env; existing local supabase_admin only for bootstrap/dump, ordinary a-client for this financial group)",
+        "manifestEntriesVerified": 34,
+        "allManifestFilesMatchCurrentBytes": true,
+        "migrations": 27
+      },
+      "currentSource": {
+        "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+        "sourceFrozenGitChecks": [
+          {
+            "path": "scripts/test-balance-trigger.mjs",
+            "matchesFrozenGit": true
+          },
+          {
+            "path": "scripts/test-isolated-native-supabase.mjs",
+            "matchesFrozenGit": true
+          },
+          {
+            "path": "scripts/test-isolated-database.mjs",
+            "matchesFrozenGit": true
+          },
+          {
+            "path": "scripts/lib/test-isolated-database.mjs",
+            "matchesFrozenGit": true
+          },
+          {
+            "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+            "matchesFrozenGit": true
+          },
+          {
+            "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+            "matchesFrozenGit": true
+          }
+        ],
+        "triggerComparison": "The 20261015 update_account_balance body is exactly the 20261007 body after removing only the two OLD/NEW transfer-destination round(...,8) wrappers. Expense/income OLD removal and NEW application branches are byte-identical. These two new wrappers do not execute for the expense→income case."
+      }
+    },
+    "source_review_sha256": "4976c53613f15b0082c0b9a2e160396f44d599604b589fc406b59dea8ea31e93",
+    "adapter_scope": "Explicit independently reviewed SQL numeric plus separate native session composite only; no new runtime or new API support."
   },
   {
     "case_id": "CP1-09",
@@ -393,6 +527,36 @@
     },
     "source_review_sha256": "fd305dfcc8541485ed44323ba4a6d692ed1ce1848d5ac2e2d229cfa147e3b340",
     "adapter_scope": "Explicit independent semantic/native plus source-control-flow composite; no browser required by CSV, no rendered schedule assertion or additional runtime invented. CP124/125 remain unpromoted; CP127 has a separate later reviewed packet."
+  },
+  {
+    "case_id": "CP1-24",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Synthetic cloned B has no external Telegram credential or existing link",
+      "Only exact authorized synthetic B profile fixture updated",
+      "Actual normal account API201",
+      "Normal owned recurring rule201",
+      "Normal RLS initializes only owned new rule last5Oct",
+      "Literal active daily rule precondition",
+      "Both actual HTTP calls started before first response",
+      "Two concurrent cron calls plus same-date retry200",
+      "No hidden cron item error",
+      "One exact recurring expense, marker, balance and outbox",
+      "Outbox identity matches one own committed occurrence",
+      "Actual worker focal with same real service-role DB exits0",
+      "Provider double accepts one notice without new financial effect"
+    ],
+    "evidence": "empty-followup-contracts/executed/cp1-24/verification.json; empty-followup-contracts/executed/cp1-24/execution.json; empty-followup-contracts/manifest.json; empty-followup-contracts/executed/cp1-24/worker-observation.json; empty-followup-contracts/executed/cp1-24/worker-result.json; empty-followup-contracts/independent-executed-review.json",
+    "scope": "Actual normalAuth/cron/API/nativeSQL plus currentworker/realserviceclient/localTelegramcaptor; not realTelegram or a user-RLS delivery test. Real normal API account10000 and active daily recurring expense1000 start1Oct/last5Oct; notification enabled, fictional linked chat, bot token remainsNULL. Only five exact cloned B profile fields are intentionally configured, with different full-profile hashes explicitly retained. Two actual cron HTTP dispatches overlap in time and both return200/errors0. Same-day retry200 processes0. Native state has one expense1000, balance9000, last6Oct and one durable outbox keyed rule+6Oct bound to the exact transaction UUID. Actual notification-outbox service, byte-equal to Git84/current/physical app copy, operates via real Supabase service-role client and PostgREST against the same UUID DB. Only sendTelegramDm is replaced by a local capturing double. Worker raw observation equals the nested report, exactly one acceptance/delivery, replay0delivery/0failures and identical account/transactions/rule/receipts financial hashes. Durable outbox retains attempts1 and delivered_at. No real Telegram delivery asserted. ",
+    "executed_revision": {
+      "product": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "buildId": "Yi9bH3FttO71PxvY-EwCH",
+      "appOrigin": "http://127.0.0.1:3004",
+      "apiOrigin": "http://127.0.0.1:60321"
+    },
+    "source_review_sha256": "9d640a07d730b11a3718953c60214a3d1d12c2f670e4cbfc6968c45cde5f3d8d",
+    "adapter_scope": "Independently reviewed new-replica API/native/compiledSSR scope. CP307 explicitly composes the preserved fifteen empty observations and frozen real componentSSR/wiring, not another native rerun. CP124 worker uses real local service client and a provider captor double, not Telegram. No browser acceptance inferred."
   },
   {
     "case_id": "CP1-27",
@@ -735,6 +899,40 @@
     "new_execution": false
   },
   {
+    "case_id": "CP2-01",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "CP2-01 literal first account precondition includes archived rows",
+      "Actual normal account API201",
+      "Actual normal-authenticated dashboard SSR status",
+      "Actual server aggregate total ARS",
+      "Known valid fixture never becomes partial",
+      "No safe-error alert on this valid-FX empty/account dashboard",
+      "Actual own SSR snapshot completion observed before any fixture cleanup",
+      "Own snapshot liquid_usd",
+      "Own snapshot investments_usd",
+      "Own snapshot total_usd",
+      "Own snapshot total_ars_blue",
+      "Only the same newly owned empty-dashboard snapshot was updated",
+      "CP2-01 exactly one own active bank account exists",
+      "CP2-01 account is active and ARS",
+      "CP2-01 literal BancoARS is a bank account",
+      "CP2-01 bank account balance",
+      "CP2-01 one explicit opening adjustment documents the 50000 origin"
+    ],
+    "evidence": "empty-account-contracts/attempt-2/verification.json; empty-account-contracts/independent-composed-review.json",
+    "scope": "Actual normal account API result plus independent SQL and authenticated server-calculated patrimony increase0→50000ARS; no browser claim. 17 actual assertions retain literal zero-account precondition, one normal POST201 for BancoARS, owned active ARS bank account50000 and one explicit Saldo inicial adjustment50000. Actual server patrimony increases0→50000ARS; only newly created own snapshot UUID4f8abad4-1c2d-49a2-8bab-032bc71a288d is updated. No browser or client animation proof.",
+    "executed_revision": {
+      "product": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "buildId": "Yi9bH3FttO71PxvY-EwCH",
+      "appOrigin": "http://127.0.0.1:3004",
+      "apiOrigin": "http://127.0.0.1:60321"
+    },
+    "source_review_sha256": "2c366dd562d1fe889988cd37b8da9381a742ae8f9e468479817ad1b076a0ef91",
+    "adapter_scope": "Independently reviewed new-replica API/native/compiledSSR scope. CP307 explicitly composes the preserved fifteen empty observations and frozen real componentSSR/wiring, not another native rerun. CP124 worker uses real local service client and a provider captor double, not Telegram. No browser acceptance inferred."
+  },
+  {
     "case_id": "CP2-02",
     "status": "PASS",
     "complete_original_contract": true,
@@ -1030,6 +1228,60 @@
     "adapter_scope": "Original recorded FAIL and independent complete negative execution preserved. No HTTP remapping, vendor change, browser claim or acceptance PASS."
   },
   {
+    "case_id": "CP2-10",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Original password accepts before the one reset request",
+      "Successful ordinary Auth response belongs to the same existing identity",
+      "The same retained real recovery request200 and private SMTP input are verified before continuation",
+      "Continuation dispatches no second recovery request or new SMTP message",
+      "The exact new recovery token came from the requested local SMTP message",
+      "Delivered valid recovery token yields a real authenticated session",
+      "Successful ordinary Auth response belongs to the same existing identity",
+      "Recovery session replaces the password for the same identity",
+      "Old password is denied after recovery",
+      "New password accepts after recovery",
+      "Successful ordinary Auth response belongs to the same existing identity",
+      "The same delivered recovery token is consumed and cannot create another session",
+      "Original password is restored and accepts on the isolated clone",
+      "Successful ordinary Auth response belongs to the same existing identity",
+      "Temporary replacement password is denied after restoration",
+      "All newly owned Auth sessions and their refresh grants are closed",
+      "No original/replacement password or issued token appears in ordinary Auth/SMTP logs",
+      "Original and fixture public rows remain unchanged"
+    ],
+    "evidence": "auth-recovery-valid/resume/verification.json; auth-recovery-valid/recovery-attempt-1/verification.json; auth-recovery-valid/independent-executed-review.json; auth-recovery-valid/independent-executed-review-addendum.json",
+    "scope": "Original API Auth recovery contract with declared local SMTP transport double, same existing identity and exact retained email/token. Does not establish email-link click/UI routing, reset UI or external email delivery. File-only review of exported exact sources, results, MIME-parser policy, retained-message provenance and preservation/cleanup evidence. No API/SMTP/SQL/Auth/browser request, private credential/MIME/checkpoint read, individual-secret hash or new experiment by reviewer. No UI/email-link routing or external-email delivery acceptance. Password restoration confirmed: original200 and temporary400. Four own sessions have zero rows/unrevoked refresh grants; logoutHTTP403/403/204/204, not four204. One real localSMTP message only; no second recover, browser/UI reset, email-link routing or external-mail acceptance.",
+    "executed_revision": {
+      "authImplementation": "cached official GoTrue2.197.0; same existing signing material",
+      "binding": {
+        "nativeTargetsSha256": "64ca4f44129c0cabcefabcf81ac80780ddad3d151797cf9430c875b49e375bf5",
+        "apiOrigin": "http://127.0.0.1:60321",
+        "authUpstream": "http://127.0.0.1:60327",
+        "authPid": 57390,
+        "authConfigSha256": "a7b4370c98c36b7fa097233f98c97aba11661514c95b6a571cd8a9571a8e3d16",
+        "authLauncherSha256": "2814745719ac5830d28152874dfe23d2bd703c1c985569115d9568d6b9345115",
+        "authExecutableSha256": "04606de0bd299c575f2459daa8768e2529c95334ef1af878d21bb93e358bebba",
+        "authRuntimeProfileSha256": "8269c5167fa1730f82618ec100053ca84ff2256e8bde19b53e9190bd39a5aef8",
+        "authReadinessSha256": "1e848dfdc955a43476465a94f8b15488eb064cee05d32595851d400ae2a7f952",
+        "gatewayConfigSha256": "db92508bdd9410df6f9003615ff4ac2f47eba3f678ce2fdccc3796c1057e748a",
+        "exactListenerAndExecutableOwnershipVerified": true,
+        "databaseName": "zarix_empty_6cec9d4e61f043adb07a6f1e1241906a",
+        "smtpPid": 57372,
+        "smtpScriptSha256": "0c1d72411a5204e9f7483b0c494364a920ba0ce25775ac9c749a775afae20342",
+        "smtpConfigSha256": "9e7b723996cd862ef6687b455e3197babb132c620dbc20266b8deffa20d3b61b",
+        "ownerId": "172273ed-7c48-427d-a55b-742069a4d9de",
+        "identitiesAdded": 0,
+        "newExternalCredentials": 0
+      },
+      "nextProductCodeExecutedForThisProtocol": false
+    },
+    "source_review_sha256": "1cd5b17c09ddf293be5dac6d1421e2b6b7011897a2ab97335d8ac49c2d608d4b",
+    "source_review_addendum_sha256": "356f8a3842c5f0b71582c4a25228f3594a27e442d5872d6da6609b783f736435",
+    "adapter_scope": "Explicit complete original API/Auth recovery acceptance only; one changed scan pin is accepted solely through the separately pinned addendum, preserving the original review.  failed preflight/parser phases remain preserved. Native GoTrue/source hashes are binding; no current Git-head Next execution or UI acceptance inferred."
+  },
+  {
     "case_id": "CP2-20",
     "status": "PASS",
     "complete_original_contract": true,
@@ -1158,6 +1410,42 @@
     },
     "source_review_sha256": "d473740e0a48dc78ecaee1f0017fb9cb6a508571331f8ddd1730247a6c8344a6",
     "adapter_scope": "Explicit composite acceptance of original service/fixture/visible-label contract; no new service/SQL execution or claim that old Next836 contains formatter528. Historical FAIL artifacts preserved."
+  },
+  {
+    "case_id": "CP3-03",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "Actual new fixture has no persisted quote cache",
+      "Actual normal account API201",
+      "Actual normal account API201",
+      "No-cache unavailable quote returns the bound API500 rather than an Auth rejection",
+      "Unavailable quote response contains only an explicit safe error",
+      "Mixed wealth returns the bound safe500 rather than fabricated rates or an Auth rejection",
+      "CP3-03 fixture DB has no persisted quote cache before request",
+      "CP3-03 actual authenticated safe-error page status",
+      "CP3-03 actual safe error explicitly declares financial unavailability",
+      "CP3-03 actual retry is an anchor to dashboard, not an invented button",
+      "CP3-03 no financial hero fabricates a consolidated zero or unit rate",
+      "CP3-03 actual Flight contains no financial Hero aggregate",
+      "CP3-03 failed quote requests persisted no0 or1 fallback",
+      "CP3-03 unavailable read does not create or overwrite any snapshot",
+      "Unavailable reads preserve both complete account rows",
+      "Mixed original balances remain120000ARS and100USD",
+      "Cold provider journal is append-only",
+      "This exact failed read observed new real503 provider requests",
+      "Every cold provider sample failed with the exact unavailable control"
+    ],
+    "evidence": "empty-account-contracts/attempt-2/verification.json; empty-account-contracts/independent-composed-review.json",
+    "scope": "Real failed synthetic HTTP provider/cold-cache integration, normal Auth/API/SSR/native oracles. No external provider outage asserted. 19 actual normal Auth/API/native/SSR assertions. Cold exchange_rates0, no-cache quote/wealth safe500, SSR explicit unavailable alert without consolidated Hero or rate0/1; original balances120000ARS/100USD unchanged; no snapshot persisted. Append-only journal retains20 real synthetic503 requests,18 new since initial preflight, before control switched1200. The unavailable provider is a declared local HTTP double, not an observed public-provider outage. No browser or hydration proof.",
+    "executed_revision": {
+      "product": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "buildId": "Yi9bH3FttO71PxvY-EwCH",
+      "appOrigin": "http://127.0.0.1:3004",
+      "apiOrigin": "http://127.0.0.1:60321"
+    },
+    "source_review_sha256": "2c366dd562d1fe889988cd37b8da9381a742ae8f9e468479817ad1b076a0ef91",
+    "adapter_scope": "Independently reviewed new-replica API/native/compiledSSR scope. CP307 explicitly composes the preserved fifteen empty observations and frozen real componentSSR/wiring, not another native rerun. CP124 worker uses real local service client and a provider captor double, not Telegram. No browser acceptance inferred."
   },
   {
     "case_id": "CP3-04",
@@ -1359,6 +1647,41 @@
     },
     "source_review_sha256": "92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826",
     "adapter_scope": "Explicit independently reviewed packet only. Closure replaces CI5 FAIL306/318 with new CI6 evidence, while immutable CI5 raw failures and phase totals remain unchanged. Other packets may compose earlier native execution and current SSR/unit proofs; they are not attributed to one build."
+  },
+  {
+    "case_id": "CP3-07",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      "CP3-07 literal absence includes archived accounts and all own history/positions",
+      "CP3-07 no prior synthetic history is presented as existing history",
+      "Actual normal-authenticated dashboard SSR status",
+      "Actual server aggregate total ARS",
+      "Known valid fixture never becomes partial",
+      "No safe-error alert on this valid-FX empty/account dashboard",
+      "Actual own SSR snapshot completion observed before any fixture cleanup",
+      "Own snapshot liquid_usd",
+      "Own snapshot investments_usd",
+      "Own snapshot total_usd",
+      "Own snapshot total_ars_blue",
+      "CP3-07 liquid zero",
+      "CP3-07 portfolio zero",
+      "CP3-07 total USD zero",
+      "CP3-07 actual server returned no invented historic points",
+      "CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR preserves the actual empty request, all15 observed assertions and exact frozen component wiring",
+      "CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR renders the real empty accounts explanation and CU002 create-account help",
+      "CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR renders the real empty movements explanation and CU001 expense-registration help"
+    ],
+    "evidence": "empty-account-contracts/cp307-composition/verification.json; empty-account-contracts/independent-composed-review.json",
+    "scope": "Composition explicitly authorized by coordinator:15 actual empty native/API/SSR observations plus real frozen empty-component SSR and Dashboard wiring The fifteen actual empty observations match exactly the preserved failed phase: no accounts including archived, no transactions/positions/prior snapshots, real authenticated HTTP200, Hero aggregates0/history[], no financial error, own snapshot0. Two real frozen SSR renders add literal empty accounts help /accounts and expense-registration help; a third focal checks exact Dashboard dynamic wiring/provenance. Full original HTTP HTML/Flight was not retained, so there is no offline reparse claim. Supplemental component renders are offline SSR, not another native Dashboard request, browser, hydration, animation or viewport. Planned projections endpoint assertion was never executed and is not used. B now has the first account created by CP2-01; no empty fixture was recreated.",
+    "executed_revision": {
+      "product": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "buildId": "Yi9bH3FttO71PxvY-EwCH",
+      "appOrigin": "http://127.0.0.1:3004",
+      "apiOrigin": "http://127.0.0.1:60321"
+    },
+    "source_review_sha256": "2c366dd562d1fe889988cd37b8da9381a742ae8f9e468479817ad1b076a0ef91",
+    "adapter_scope": "Independently reviewed new-replica API/native/compiledSSR scope. CP307 explicitly composes the preserved fifteen empty observations and frozen real componentSSR/wiring, not another native rerun. CP124 worker uses real local service client and a provider captor double, not Telegram. No browser acceptance inferred."
   },
   {
     "case_id": "CP3-08",

@@ -372,7 +372,7 @@ def selected_artifacts(plan):
         if child.is_file():
             selected.add(p)
         elif child.is_dir():
-            full = any(tag in child.name.lower() for tag in PRIVATE_TAGS) or child.name.startswith(('proof-', 'import-target-', 'final-proof-', 'closure-proof-', 'empty-proof-'))
+            full = child.name == 'full-native-evidence' or any(tag in child.name.lower() for tag in PRIVATE_TAGS) or child.name.startswith(('proof-', 'import-target-', 'final-proof-', 'closure-proof-', 'empty-proof-'))
             for file in walk_files(p):
                 if full or any(tag in str(file.relative_to(RUNTIME.resolve())).lower() for tag in SENSITIVE_TAGS):
                     selected.add(file)

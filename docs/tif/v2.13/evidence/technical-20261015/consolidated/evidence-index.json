@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T06:04:06.885408+00:00",
+  "generated_at_utc": "2026-10-15T06:48:05.148811+00:00",
   "draft": true,
   "original_cases": {
     "path": "../../../casos_prueba.csv",
@@ -388,13 +388,21 @@
       "sha256": "324dc87edef1b1f68b632e649a8940e73d5bd6142158954f8d15a1cda05e0fe4",
       "bytes": 1041
     },
+    "consolidated/blocked-contract-reasons.json": {
+      "sha256": "6426fb27211f1547f5997076f71a0e1f2e0ed42032f20ded0c62a6d4cc5f45eb",
+      "bytes": 24713
+    },
+    "e2e/browser-preflight/current-user-browser-steering.json": {
+      "sha256": "d47bb546d38ede2ecfaf13deed36e7f467a1b49355871549ecb8716b60021307",
+      "bytes": 1853
+    },
     "review/verified-system-case-results.json": {
       "sha256": "b81544f3d718d35f69ccf1c51e5ce5cf1e554d7d427f5bf24aa85fb930d4dd20",
       "bytes": 5749
     },
     "system-case-results.json": {
-      "sha256": "68d7ab35c3429aaeb871c9d6c61397235c6763eae34dd28183d53309bcfffc3e",
-      "bytes": 135441
+      "sha256": "d413223ed3c4d9ead23628a813c7ac97880086abe39d5fb82bba750ce42ac837",
+      "bytes": 160215
     },
     "security-matrix/review-reconciliation-before-http-fix.json": {
       "sha256": "032d73b3535150fe3d279dedbd0170d30eba5ed5e791c1ea0361b6d973f2e53f",
@@ -548,14 +556,58 @@
       "sha256": "e7a71ea70895f12bb3d991264928cb23b141117439bf1be02bbc7907e4b92910",
       "bytes": 367
     },
+    "dependencies/ci6-current/assessment.json": {
+      "sha256": "545ddc979611ce45839c058bb36b3c9beafa88f02095213b5d9bbaa6b9372a37",
+      "bytes": 5370
+    },
+    "closure-final-preparation/clock-executed/closure-proof-build-proof.json": {
+      "sha256": "f9098109a6c0fb4ec2e8ce510e344a35ff0b8f4eab095bcb46a50f0a3a8751e5",
+      "bytes": 76071
+    },
+    "closure-final-preparation/clock-executed/closure-proof-clock-auth-ready.json": {
+      "sha256": "ab91501d6ad6a054383b61cb0f28543d4e6f97b2912d3c1206a8e17a5fd8587b",
+      "bytes": 1630
+    },
+    "cnf12-nominal/summary.json": {
+      "sha256": "ac275357b1721bfc5e9184918f46facbb680051bbce2d1497496710c5d5573a3",
+      "bytes": 6272
+    },
+    "cnf12-nominal/independent-review.json": {
+      "sha256": "f187a069e309fe2ff83a6a0e6afe1265a9715c1b22fa103883b6cc7531693a67",
+      "bytes": 11335
+    },
+    "cnf12-nominal/original-preservation-final.json": {
+      "sha256": "74c62aa458939626b41e9f52e1121f8583e2deb284d25ac81b98fd75fb02ebda",
+      "bytes": 9684
+    },
+    "empty-account-runtime/executed/readiness.json": {
+      "sha256": "6d44ba9ecc0756c715e781f65707c7092df663b9c7d51e3d07178387776cc4ab",
+      "bytes": 3586
+    },
+    "account-analysis-contracts/independent-closure-review.json": {
+      "sha256": "92a5304c2f3687016f1171e80aacf25adf85c74af614f34e82a00f7e07fba826",
+      "bytes": 20177
+    },
+    "remaining-seven-contracts/independent-review.json": {
+      "sha256": "9996d46627752a6ff86df1ed703045f28ca02c97503979ea6ed8bd1adb74ab0f",
+      "bytes": 22986
+    },
+    "remaining-cu001/independent-recurring-amount-review.json": {
+      "sha256": "fd305dfcc8541485ed44323ba4a6d692ed1ce1848d5ac2e2d229cfa147e3b340",
+      "bytes": 13593
+    },
+    "notification-timeout-contract/independent-review.json": {
+      "sha256": "6fa05e94d7ebf623cc86f197121aa23dc545ad1d48afb371bd48aab60a1267b8",
+      "bytes": 6905
+    },
     "traceability-summary.json": {
-      "sha256": "62de5578c219ed72b27f3bca3736d22ca1945a535d95edccb6b2ef958c99a7a8",
+      "sha256": "53fe0cd3c90e231b2b34208994f6e1af7b4bc8c39315fed24b9af6474241ca42",
       "bytes": 407
     }
   },
-  "technical_rows": 352,
+  "technical_rows": 364,
   "original_derived_summary": {
-    "generated_at": "2026-10-15T06:04:06.750601+00:00",
+    "generated_at": "2026-10-15T06:47:58.744047+00:00",
     "core_directory": "core-closure",
     "original_cases": 273,
     "use_cases": [
@@ -565,9 +617,9 @@
       "CU004"
     ],
     "counts": {
-      "PASS": 225,
+      "PASS": 232,
       "FAIL": 1,
-      "BLOCKED": 47
+      "BLOCKED": 40
     },
     "rule": "PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence."
   },

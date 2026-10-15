@@ -1,0 +1,386 @@
+{
+  "generatedAt": "2026-10-15T06:48:05.045836+00:00",
+  "status": "BLOCKER_REASONS_REFINED_NO_STATUS_CHANGE",
+  "originalCsvSha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+  "matrixSha256": "5b9634e7c2668347c2f08bc67d5c2c8f3d8f9edaca819f72e503124f5d8aca92",
+  "caseCount": 273,
+  "refinedBlockedCases": [
+    {
+      "case_id": "CP1-08",
+      "classification": "IMPLEMENTATION_GAP",
+      "reason": "La reversión de saldo al eliminar tiene pruebas separadas; no se identificó el rastro de auditoría exigido con identidad del movimiento, actor y valor previo después del DELETE físico. No es una falta de credenciales.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../lib/services/transactions.ts"
+      ]
+    },
+    {
+      "case_id": "CP1-14",
+      "classification": "PROVIDER_PREREQUISITE_AND_PARTIAL_LOCAL_COVERAGE",
+      "reason": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET existentes autorizados para el flujo real. Los contratos exigen preview/confirmación duplicada o cancelación y rechazo de callback antiguo tras unlink. Las rutas/dobles locales cubren partes; no hay aceptación completa de captura Telegram con identidad propia y sin efectos indebidos.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../lib/telegram"
+      ]
+    },
+    {
+      "case_id": "CP1-15",
+      "classification": "PROVIDER_PREREQUISITE_AND_PARTIAL_LOCAL_COVERAGE",
+      "reason": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET existentes autorizados para el flujo real. Los contratos exigen preview/confirmación duplicada o cancelación y rechazo de callback antiguo tras unlink. Las rutas/dobles locales cubren partes; no hay aceptación completa de captura Telegram con identidad propia y sin efectos indebidos.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../lib/telegram"
+      ]
+    },
+    {
+      "case_id": "CP1-16",
+      "classification": "PROVIDER_PREREQUISITE_AND_PARTIAL_LOCAL_COVERAGE",
+      "reason": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET existentes autorizados para el flujo real. Los contratos exigen preview/confirmación duplicada o cancelación y rechazo de callback antiguo tras unlink. Las rutas/dobles locales cubren partes; no hay aceptación completa de captura Telegram con identidad propia y sin efectos indebidos.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../lib/telegram"
+      ]
+    },
+    {
+      "case_id": "CP1-17",
+      "classification": "PROVIDER_PREREQUISITE_AND_PARTIAL_VALIDATION",
+      "reason": "Falta GEMINI_API_KEY válida de pruebas para extracción OCR real. Corrección 1500→1600, preview sin alta y PNG ilegible no están aceptados íntegramente; validación MIME/tamaño/cancelación local es un alcance separado. No se exige contratar proveedor nuevo.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "documented-gaps/README.md"
+      ]
+    },
+    {
+      "case_id": "CP1-18",
+      "classification": "PROVIDER_PREREQUISITE_AND_PARTIAL_VALIDATION",
+      "reason": "Falta GEMINI_API_KEY válida de pruebas para extracción OCR real. Corrección 1500→1600, preview sin alta y PNG ilegible no están aceptados íntegramente; validación MIME/tamaño/cancelación local es un alcance separado. No se exige contratar proveedor nuevo.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "documented-gaps/README.md"
+      ]
+    },
+    {
+      "case_id": "CP1-25",
+      "classification": "CONTRACT_ATOMIC_ARCHITECTURE_MISMATCH",
+      "reason": "La variante real antes del INSERT tiene evidencia. La segunda variante literal INSERT confirmado/marca fallida/retry 23505 contradice la transacción atómica actual de movimiento/marca/outbox y su replay durable: ese interleaving nativo no está disponible. Los mocks del recovery 23505 son otro alcance. No se deshabilitan triggers ni se borran recibos para fabricar ese estado; requiere reconciliación de contrato/arquitectura, no credenciales externas.",
+      "evidence": [
+        "remaining-cu001/independent-recurring-amount-review.json",
+        "remaining-cu001/cron-contract-review.json"
+      ]
+    },
+    {
+      "case_id": "CP1-26",
+      "classification": "CONTRACT_CONTRADICTION",
+      "reason": "El literal original afirma que no existe outbox durable ni reentrega persistente; el código actual sí los implementa. Requiere reconciliación explícita de ese contrato, sin aprobar una afirmación histórica contradictoria. Las pruebas durables actuales no borran el literal.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "durability/reconciled-contracts.json",
+        "../../../../../supabase/migrations/20261009034852_durable_financial_requests_outbox.sql"
+      ]
+    },
+    {
+      "case_id": "CP1-32",
+      "classification": "ABSENT_INPUT_SURFACE",
+      "reason": "El modelo/API de presupuestos usa un mes, no un intervalo inicio/fin. La variante fin anterior a inicio del contrato no tiene entrada equivalente. Tope cero, categoría ajena y exclusión de meses/usuarios no bastan para aprobar todo el caso.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../app/api/budgets/route.ts",
+        "../../../../../lib/services/budgets.ts"
+      ]
+    },
+    {
+      "case_id": "CP2-04",
+      "classification": "CONTRACT_BEHAVIOR_MISMATCH",
+      "reason": "El servicio archiva cuentas para conservar historial; no implementa el hard-delete de cuenta vacía con rechazo por dependencias que exige el contrato. No se agrega eliminación destructiva para fingir esa aceptación.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../lib/services/accounts.ts"
+      ]
+    },
+    {
+      "case_id": "CP2-08",
+      "classification": "UNEXECUTED_IDENTITY_LIFECYCLE",
+      "reason": "Los logins de usuarios sintéticos existentes y logout/JWT se probaron por separado; no se ejecutó el contrato completo registrar una identidad nueva, verificar correo si procede y entrar/salir. La réplica nueva tiene signup deshabilitado y reutiliza identidades existentes; no se atribuye ese setup a registro de usuario.",
+      "evidence": [
+        "fresh-proof/auth-negative-contract/independent-review.json",
+        "empty-account-runtime/README.md"
+      ]
+    },
+    {
+      "case_id": "CP2-11",
+      "classification": "IMPLEMENTATION_GAP",
+      "reason": "Falta la superficie de preferencias base/widget persistidas por propietario: el selector de moneda de SettingsForm no guarda/onChange y la vista localStorage de patrimonio no equivale a preferencia guardada por usuario. Por eso tampoco se acredita rechazo de base inválida o edición ajena en esa superficie. La API de notificaciones es otro contrato.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../components/settings/SettingsForm.tsx",
+        "../../../../../components/dashboard/NetWorthHero.tsx",
+        "../../../../../app/api/user/notification-preferences/route.ts"
+      ]
+    },
+    {
+      "case_id": "CP2-12",
+      "classification": "IMPLEMENTATION_GAP",
+      "reason": "Falta la superficie de preferencias base/widget persistidas por propietario: el selector de moneda de SettingsForm no guarda/onChange y la vista localStorage de patrimonio no equivale a preferencia guardada por usuario. Por eso tampoco se acredita rechazo de base inválida o edición ajena en esa superficie. La API de notificaciones es otro contrato.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../components/settings/SettingsForm.tsx",
+        "../../../../../components/dashboard/NetWorthHero.tsx",
+        "../../../../../app/api/user/notification-preferences/route.ts"
+      ]
+    },
+    {
+      "case_id": "CP2-13",
+      "classification": "SANDBOX_PROVIDER_PREREQUISITE",
+      "reason": "Faltan MP_ACCESS_TOKEN de sandbox, MP_WEBHOOK_SECRET y recurso controlado con importe/moneda/período para verificar estado del proveedor, firma y asociación de orden. Gates Free/Premium, firma inválida y downgrade histórico/exportación locales se prueban aparte; no equivalen a aprobación/cancelación/replay del recurso MercadoPago real.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "investment-contracts/README.md"
+      ]
+    },
+    {
+      "case_id": "CP2-14",
+      "classification": "SANDBOX_PROVIDER_PREREQUISITE",
+      "reason": "Faltan MP_ACCESS_TOKEN de sandbox, MP_WEBHOOK_SECRET y recurso controlado con importe/moneda/período para verificar estado del proveedor, firma y asociación de orden. Gates Free/Premium, firma inválida y downgrade histórico/exportación locales se prueban aparte; no equivalen a aprobación/cancelación/replay del recurso MercadoPago real.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "investment-contracts/README.md"
+      ]
+    },
+    {
+      "case_id": "CP2-15",
+      "classification": "SANDBOX_PROVIDER_PREREQUISITE",
+      "reason": "Faltan MP_ACCESS_TOKEN de sandbox, MP_WEBHOOK_SECRET y recurso controlado con importe/moneda/período para verificar estado del proveedor, firma y asociación de orden. Gates Free/Premium, firma inválida y downgrade histórico/exportación locales se prueban aparte; no equivalen a aprobación/cancelación/replay del recurso MercadoPago real.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "investment-contracts/README.md"
+      ]
+    },
+    {
+      "case_id": "CP2-16",
+      "classification": "SANDBOX_PROVIDER_PREREQUISITE",
+      "reason": "Faltan MP_ACCESS_TOKEN de sandbox, MP_WEBHOOK_SECRET y recurso controlado con importe/moneda/período para verificar estado del proveedor, firma y asociación de orden. Gates Free/Premium, firma inválida y downgrade histórico/exportación locales se prueban aparte; no equivalen a aprobación/cancelación/replay del recurso MercadoPago real.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "investment-contracts/README.md"
+      ]
+    },
+    {
+      "case_id": "CP2-17",
+      "classification": "TELEGRAM_LINK_PROVIDER_PREREQUISITE",
+      "reason": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET para handoff/vinculación/unlink reales. Las variantes locales de token vencido/reusado/alterado y mapping ajeno no acreditan por sí solas la confirmación física del chat ni su revocación completa.",
+      "evidence": [
+        "review/blocked-case-triage.json"
+      ]
+    },
+    {
+      "case_id": "CP2-18",
+      "classification": "TELEGRAM_LINK_PROVIDER_PREREQUISITE",
+      "reason": "Faltan bot/chat/HTTPS de pruebas y TELEGRAM_BOT_TOKEN/TELEGRAM_WEBHOOK_SECRET para handoff/vinculación/unlink reales. Las variantes locales de token vencido/reusado/alterado y mapping ajeno no acreditan por sí solas la confirmación física del chat ni su revocación completa.",
+      "evidence": [
+        "review/blocked-case-triage.json"
+      ]
+    },
+    {
+      "case_id": "CP2-19",
+      "classification": "ABSENT_ENDPOINTS_AND_INCOMPLETE_SECURITY_MATRIX",
+      "reason": "La matriz compuesta tiene 42 PASS/6 BLOCKED: faltan el GET individual de inversión y operaciones privadas de perfil no soportadas. El contrato exige SELECT/INSERTasU2/UPDATE/DELETE vía API y JWT DB en cuentas/movimientos/posiciones/reglas/presupuestos/preferencias. Las operaciones soportadas y el scan service-key están probados aparte; no se extrapola a las seis celdas ausentes.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "security-matrix/cp2-19-composite.json"
+      ]
+    },
+    {
+      "case_id": "CP2-21",
+      "classification": "UNEXECUTED_DRAFT_REAUTH_FLOW",
+      "reason": "Se probaron expiración realJWT60, refresh válido y rechazo 401 con refresh revocado por separado. Falta el recorrido exacto de draft conservado tras 401 y reconfirmación única después de reautenticar a la misma identidad. Los cuatro controles offline acotados no sustituyen ese contrato completo. El steering humano más reciente exige Arc y no permite suplirlo con más Chrome; la ventana Arc creada sigue con cierre UNKNOWN, por lo que nuevas acciones quedan pendientes de reconciliación humana.",
+      "evidence": [
+        "fresh-proof/auth-negative-contract/independent-review.json",
+        "offline-durability/README.md",
+        "e2e/browser-preflight/current-user-browser-steering.json"
+      ]
+    },
+    {
+      "case_id": "CP3-09",
+      "classification": "AI_PROVIDER_PREREQUISITE_AND_PARTIAL_TOOL_SCOPE",
+      "reason": "Falta GEMINI_API_KEY de pruebas para semántica real 2000 ARS/período/categoría, aclaración de ambigüedad y resistencia a petición de datos/edición ajenos; CP3-10 requiere además Telegram de pruebas vinculado. Allowlist/lectura/dobles 503/no-mutación locales no acreditan todas esas respuestas del modelo.",
+      "evidence": [
+        "review/blocked-case-triage.json"
+      ]
+    },
+    {
+      "case_id": "CP3-10",
+      "classification": "AI_PROVIDER_PREREQUISITE_AND_PARTIAL_TOOL_SCOPE",
+      "reason": "Falta GEMINI_API_KEY de pruebas para semántica real 2000 ARS/período/categoría, aclaración de ambigüedad y resistencia a petición de datos/edición ajenos; CP3-10 requiere además Telegram de pruebas vinculado. Allowlist/lectura/dobles 503/no-mutación locales no acreditan todas esas respuestas del modelo.",
+      "evidence": [
+        "review/blocked-case-triage.json"
+      ]
+    },
+    {
+      "case_id": "CP3-11",
+      "classification": "AI_PROVIDER_PREREQUISITE_AND_PARTIAL_TOOL_SCOPE",
+      "reason": "Falta GEMINI_API_KEY de pruebas para semántica real 2000 ARS/período/categoría, aclaración de ambigüedad y resistencia a petición de datos/edición ajenos; CP3-10 requiere además Telegram de pruebas vinculado. Allowlist/lectura/dobles 503/no-mutación locales no acreditan todas esas respuestas del modelo.",
+      "evidence": [
+        "review/blocked-case-triage.json"
+      ]
+    },
+    {
+      "case_id": "CP3-12",
+      "classification": "AI_PROVIDER_PREREQUISITE_AND_PARTIAL_TOOL_SCOPE",
+      "reason": "Falta GEMINI_API_KEY de pruebas para semántica real 2000 ARS/período/categoría, aclaración de ambigüedad y resistencia a petición de datos/edición ajenos; CP3-10 requiere además Telegram de pruebas vinculado. Allowlist/lectura/dobles 503/no-mutación locales no acreditan todas esas respuestas del modelo.",
+      "evidence": [
+        "review/blocked-case-triage.json"
+      ]
+    },
+    {
+      "case_id": "CP3-17",
+      "classification": "IMPLEMENTATION_GAP",
+      "reason": "Falta la superficie de preferencias base/widget persistidas por propietario: el selector de moneda de SettingsForm no guarda/onChange y la vista localStorage de patrimonio no equivale a preferencia guardada por usuario. Por eso tampoco se acredita rechazo de base inválida o edición ajena en esa superficie. La API de notificaciones es otro contrato.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../../../../components/settings/SettingsForm.tsx",
+        "../../../../../components/dashboard/NetWorthHero.tsx",
+        "../../../../../app/api/user/notification-preferences/route.ts"
+      ]
+    },
+    {
+      "case_id": "CP3-19",
+      "classification": "CONTRACT_POLICY_CONTRADICTION",
+      "reason": "El contrato exige MEP seleccionable 1250 y total 125000; RN08 y la implementación fijan blue.sell. Las pruebas de consistencia blue no aprueban selección MEP ni sustituyen la política literal.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../plan.md",
+        "../../../../../lib/blue-fx-reference.ts"
+      ]
+    },
+    {
+      "case_id": "CNF-01",
+      "classification": "FAILED_LOCAL_LOAD_AND_DEPLOYMENT_EQUIVALENCE",
+      "reason": "El intento local conserva una tanda cálida de 100 navegaciones con umbral p 95 incumplido y una tanda fría con 60 observadas/40 sin observar, además de outage no completado; no hay serie canónica completa p 95<2000 ms con 20 sesiones/20 Mbps/50 ms equivalente a despliegue. REST504/PGRST003 y Auth 504 no tienen causa aislada demostrada. No se repite carga masiva sin nueva ventana.",
+      "evidence": [
+        "load/browser-attempt-1-interrupted/interruption.json",
+        "load/browser-diagnostics/README.md",
+        "environment/load-native-log-aggregate.json"
+      ]
+    },
+    {
+      "case_id": "CNF-02",
+      "classification": "REAL_MONTH_OBSERVATION",
+      "reason": "Falta una serie mensual real de sondas autenticadas cada 5 min con éxito/falla/timeout/ausencias y módulo financiero separado. Una corrida breve o el modelo 43/44 fallas sobre 8640 no prueba disponibilidad mensual≥99.5%. No es un bloqueo por credenciales de IA.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../casos_prueba.csv"
+      ]
+    },
+    {
+      "case_id": "CNF-03",
+      "classification": "TEST_TLS_ENDPOINT_PREREQUISITE",
+      "reason": "Las solicitudes de prueba usan HTTPloopback. No hay endpoint financiero HTTPS/certificado vigente/redirect autorizado y verificado. El scan cliente service-role/CRON0 no prueba cifrado TLS; RESTinterno Nativewildcard tampoco prueba aislamientoLAN.",
+      "evidence": [
+        "environment/native-lifecycle-inspection.md",
+        "closure-final-preparation/clock-executed/README.md"
+      ]
+    },
+    {
+      "case_id": "CNF-04",
+      "classification": "DEPLOYMENT_ENCRYPTION_AND_SECURITY_MATRIX",
+      "reason": "FileVault local está observado, pero falta configuración/evidencia de cifrado en reposo del proveedor de despliegue. RLS es control separado y CP2-19 mantiene 42 PASS/6 BLOCKED por operaciones ausentes, no por falta de sockets locales.",
+      "evidence": [
+        "environment/at-rest.json",
+        "security-matrix/cp2-19-composite.json"
+      ]
+    },
+    {
+      "case_id": "CNF-05",
+      "classification": "INCOMPLETE_ACTION_ACCESSIBILITY_AND_OCR",
+      "reason": "Las 32 celdas/40 PNG Chrome y cuatroCU acotados no completan todos los flujos originales de gasto/OCRpreview/regla/presupuesto con teclado, scroll/modal y estados de error. OCR real requiere Gemini; las tareas locales no se declaran ejecutadas sólo por una captura.",
+      "evidence": [
+        "e2e/visual/visual-verification.json",
+        "review/blocked-case-triage.json"
+      ]
+    },
+    {
+      "case_id": "CNF-06",
+      "classification": "ABSENT_RESET_UI_AND_INCOMPLETE_ACTION_ACCESSIBILITY",
+      "reason": "La UI de login ofrece contraseña/magic-link pero no el flujo de reset solicitado. CP2-10 ya tiene reset completo real GoTrue/SMTP local revisado, con clave restaurada; ese alcance API no equivale a la UI de reset ausente. Restan las tareas de cuenta/exportación/login con teclado, errores junto al campo y descarga en la matriz requerida; no se añade una función UI para fabricar aceptación. El último steering exige Arc; cierre de ventana UNKNOWN impide continuar esas tareas con Arc y no se sustituye por Chrome.",
+      "evidence": [
+        "e2e/visual/visual-verification.json",
+        "review/blocked-case-triage.json",
+        "../../../../../app/login/page.tsx",
+        "e2e/browser-preflight/current-user-browser-steering.json"
+      ]
+    },
+    {
+      "case_id": "CNF-07",
+      "classification": "INCOMPLETE_ANALYSIS_CHAT_ACCESSIBILITY",
+      "reason": "Dashboard/detalle/anomalías tienen lecturas SSR y capturas acotadas; falta la suite completa de números/unidades/fechas y respuesta/scroll/chat accesible en todos los estados. El chat semántico real requiere Gemini; no se oculta ese límite bajo un PASS de SSR.",
+      "evidence": [
+        "account-analysis-contracts/independent-closure-review.json",
+        "e2e/visual/visual-verification.json"
+      ]
+    },
+    {
+      "case_id": "CNF-08",
+      "classification": "INCOMPLETE_INVESTMENT_RESPONSIVE_TASK_FLOW",
+      "reason": "El contrato literal es responsive de inversiones: faltan las tareas completas compra/venta/simulación, con cantidad/costo/P&L legibles y sin clipping en anchos/zooms/estados originales. Las 40 capturas estáticas sólo acreditan lecturas acotadas. No se atribuye a este CSV un bloqueo por estudio con participantes; los permisos/ausencias de otros navegadores se registran enCNF09. El steering más reciente exige Arc y prohíbe suplirlo con Chrome; nuevas tareas Arc esperan reconciliar el cierre de su ventana UNKNOWN.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "e2e/visual/visual-verification.json",
+        "../../plan.md",
+        "e2e/browser-preflight/current-user-browser-steering.json"
+      ]
+    },
+    {
+      "case_id": "CNF-09",
+      "classification": "BROWSER_AUTHORIZATION_AND_COVERAGE",
+      "reason": "Sólo Chrome 146 tiene UI real ejecutada. El usuario rechazó instalar Firefox/Edge; SafariWebDriver está disabled. ArcAutomation fue autorizada/habilitada por el humano, pero su ventana creada quedó con cierreUNKNOWN y no hay aceptaciónUI; no se toca perfil/tabs/sesiones personales. Falta la suite crítica enChrome/Firefox/Safari/Edge con versiones estables exactas al ensayo y perfiles frescos; el CSV no exige versión anterior adicional. WebKit no es Safari.",
+      "evidence": [
+        "browser-compat/current-status.json",
+        "browser-compat/README.md"
+      ]
+    },
+    {
+      "case_id": "CNF-10",
+      "classification": "INCOMPLETE_AUTHENTICATED_CHANNEL_MATRIX",
+      "reason": "Hay rechazos y controles cron/Auth/RPC parciales; falta comparar inválido/válido antes de efectos en todos los canales del contrato (cron y webhookbot incluidos), con secretos ausentes de todos sus logs. Los dobles y la ausencia de Telegram/MP real no aprueban esa matriz completa.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "remaining-cu001/README.md"
+      ]
+    },
+    {
+      "case_id": "CNF-11",
+      "classification": "INCOMPLETE_EXACT_CONCURRENCY_CHANNEL_MATRIX",
+      "reason": "Recibos/restarts/locks/rollback/outbox ya están probados en alcances explícitos, pero falta la matriz literal 2 replays+10 concurrentes del mismo comando para gasto/transferencia/importación/cron/venta/pago, con cada fixture/saldo y fallos después de commit. Pago requiere sandboxMP; incertidumbre de entrega Telegram se documenta aparte. No se suman ensayos distintos como esa serie completa.",
+      "evidence": [
+        "native-full/README.md",
+        "investment-contracts/independent-restart-review.json",
+        "notification-timeout-contract/independent-review.json",
+        "review/blocked-case-triage.json"
+      ]
+    },
+    {
+      "case_id": "CNF-12",
+      "classification": "REAL_PLAN_AND_UNOBSERVED_NOMINAL_SERVICE_RECOVERY",
+      "reason": "El fixture nominal 2 cuentas/20 movimientos/3 lotes/1 regla/1 grupo, snapshot 05→06 Oct, gasto 1500 posterior ausente y restoreSQL0.469 s ya se ejecutaron en DBs nuevas; Storage 34 B y 64 tablas originales intactos. Fronteras 23 h/3 h 30/24 h/4 h/+1 s son modelos de timestamps. Faltan respaldo del plan real contratado, cuatrolecturasUI del fixture nominal y RTO 3 h 30 realmente observado. Las cuatroUIRESTORE anteriores tienen otra fixture y ochoFX auxiliares declaradas.",
+      "evidence": [
+        "cnf12-nominal/summary.json",
+        "cnf12-nominal/independent-review.json",
+        "cnf12-nominal/original-preservation-final.json",
+        "restored-ui/README.md"
+      ]
+    },
+    {
+      "case_id": "CNF-13",
+      "classification": "IMPLEMENTATION_OBSERVABILITY_TARGET_GAP",
+      "reason": "RNF08 declara una meta, no una capacidad ya implementada. No se identificó correlación universal request→servicio→efecto/rechazo/error para nueve resultados manual/cron/pago con los tres marcadores señuelo. Scanners/logs/canary locales no sustituyen IDs y métricas de todos esos caminos; faltan además proveedores reales en sus variantes.",
+      "evidence": [
+        "review/blocked-case-triage.json",
+        "../../plan.md",
+        "../../../../../lib/api-handler.ts",
+        "../../../../../lib/cron/cron-job.ts"
+      ]
+    }
+  ],
+  "triageContractDiscrepanciesSha256": "0895afd5e90948b2081b6de273eb426db3a126a33417b4ae4d4d67a9e9c92c9a",
+  "scope": "Existing triage/source/report interpretation only. No tests/runtime execution, status promotion or originalCSV mutation. Pending reviewed packets are identified explicitly and may later replace their reason through acceptance metadata."
+}

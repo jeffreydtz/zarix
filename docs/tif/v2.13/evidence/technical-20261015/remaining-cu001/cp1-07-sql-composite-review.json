@@ -1,0 +1,229 @@
+{
+  "status": "PASS_INDEPENDENT_COMPOSITE_REVIEW_SCOPED",
+  "reviewedAt": "2026-10-15T06:20:12.301645Z",
+  "reviewer": "sql_security",
+  "method": "File-only review of literal CSV, already-executed SQL/native reports, exact harness code, frozen Git objects and current migration bytes. No new module import, test, SQL, Auth, API, browser, or process operation.",
+  "originalCases": [
+    {
+      "id": "CP1-07",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "literalContract": {
+        "channel": "Normal UPDATE SQL",
+        "fixture": "Fixture fresco: A inicial10000; gasto1500→A8500",
+        "input": "UPDATE tipo gasto→ingreso conservando1500",
+        "expected": "A=11500; reversión gasto+1500 y nuevo ingreso+1500",
+        "requestedEvidence": "Snapshot SQL antes/después, respuesta, contador de filas y fixture."
+      },
+      "basis": "Explicit composite: the exact numeric SQL fixture is executed by the isolated PostgreSQL trigger suite; actual ordinary GoTrue/PostgREST sessions separately execute the same type-only UPDATE under the complete current schema. These executions remain distinct.",
+      "assertions": [
+        {
+          "id": "SQL-01 gasto INSERT",
+          "observed": {
+            "id": "SQL-01 gasto INSERT",
+            "status": "PASS",
+            "expected": [
+              8500,
+              2000,
+              3000,
+              -10000
+            ],
+            "obtained": [
+              8500,
+              2000,
+              3000,
+              -10000
+            ]
+          },
+          "scope": "Executed PGlite minimal schema with only the real update_account_balance trigger: fresh A10000, single expense1500 yields8500."
+        },
+        {
+          "id": "SQL-06 UPDATE tipo gasto a ingreso",
+          "observed": {
+            "id": "SQL-06 UPDATE tipo gasto a ingreso",
+            "status": "PASS",
+            "expected": [
+              11500,
+              2000,
+              3000,
+              -10000
+            ],
+            "obtained": [
+              11500,
+              2000,
+              3000,
+              -10000
+            ]
+          },
+          "scope": "Executed PGlite exact fresh fixture: single expense1500 then UPDATE transactions SET type=income, with amount and amount_in_account_currency conserved1500, yields11500. Other three account balances remain2000/3000/-10000."
+        },
+        {
+          "id": "ordinary financial writes run actual triggers and reject another tenant account",
+          "observed": "PASS",
+          "scope": "Native PostgreSQL17.11 + actual ordinary GoTrue/PostgREST userA: new account10000, expense100→9900, UPDATE only type→income→10100, DELETE→10000. Amount is100, not1500; this supplies live normal-session/RLS/grant/full-schema coverage, not a second execution of the literal1500 fixture."
+        },
+        {
+          "id": "own transaction CRUD and type edit preserve balance",
+          "observed": [
+            {
+              "profile": "explicit-grants-only",
+              "name": "own transaction CRUD and type edit preserve balance",
+              "status": "PASS"
+            },
+            {
+              "profile": "legacy-default-grants",
+              "name": "own transaction CRUD and type edit preserve balance",
+              "status": "PASS"
+            }
+          ],
+          "scope": "Additional full-schema PGlite authenticated-role coverage in explicit-grants-only and legacy-default-grants profiles. This changes expense100 to income150; it is supporting coverage and is not presented as the type-only1500 input."
+        }
+      ],
+      "rowCountAndSnapshots": "The exact SQL harness resets with TRUNCATE transactions RESTART IDENTITY and account balances before each case. Its SQL-06 executes one INSERT with a single VALUES tuple and one UPDATE over that one-row table; accounts are read with SELECT balance ORDER BY id. One affected economic row is established by the exact executed SQL trace, not by a separately serialized SQL command-tag/count assertion. Native coverage obtains one inserted transaction ID via select(id).single() and updates that primary-key ID. No raw report is rewritten to invent an observed row-count field.",
+      "arithmeticOracle": "Remove OLD expense impact:8500+1500=10000; apply NEW income impact:+1500=11500. The final stored balance is observed; the intermediate reversal is explained from the exact trigger body rather than claimed as a separately sampled transaction state.",
+      "apiRouteRestriction": "The application PATCH route need not accept type for this original case: the literal CSV explicitly requests Normal UPDATE SQL, and the permitted ordinary database channel is exercised. No application function or endpoint is added."
+    }
+  ],
+  "executionBindings": {
+    "exactSql": {
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "sourceStable": true,
+      "sourceWorkingTreeClean": true,
+      "sourceManifestSha256": "3ab8395f04e43db22c6909b3c01e08783801c753d4930edb4375d1e1ff51522f",
+      "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+      "passed": 28,
+      "total": 28,
+      "commands": [
+        {
+          "name": "balance-sql",
+          "command": [
+            "node",
+            "scripts/test-balance-trigger.mjs"
+          ],
+          "startedAt": "2026-10-15T05:15:33.389Z",
+          "finishedAt": "2026-10-15T05:15:34.269Z",
+          "durationMs": 880,
+          "exitCode": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "full-schema-sql",
+          "command": [
+            "node",
+            "scripts/test-isolated-database.mjs",
+            "--output-dir=/tmp/zarix-isolated-verification-H7CwmC"
+          ],
+          "startedAt": "2026-10-15T05:15:39.947Z",
+          "finishedAt": "2026-10-15T05:15:44.485Z",
+          "durationMs": 4538,
+          "exitCode": 0,
+          "status": "PASS"
+        }
+      ]
+    },
+    "native": {
+      "revision": "1872f2209aca4c3d9506394c07d4e6ec5cd6f18a",
+      "runAt": "2026-10-15T00:40:27.624Z",
+      "engine": "PostgreSQL 17.11 on aarch64-apple-darwin25.3.0, compiled by clang version 21.1.7, 64-bit",
+      "harnessSha256": "877b2b7a29c16752bd726f3d75303a49c5175fef7c4d66e5d0a50ea84c8de71f",
+      "resultGroup": "ordinary financial writes run actual triggers and reject another tenant account",
+      "command": "node scripts/test-isolated-native-supabase.mjs (documented private local runtime env; existing local supabase_admin only for bootstrap/dump, ordinary a-client for this financial group)",
+      "manifestEntriesVerified": 34,
+      "allManifestFilesMatchCurrentBytes": true,
+      "migrations": 27
+    },
+    "currentSource": {
+      "revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+      "sourceFrozenGitChecks": [
+        {
+          "path": "scripts/test-balance-trigger.mjs",
+          "matchesFrozenGit": true
+        },
+        {
+          "path": "scripts/test-isolated-native-supabase.mjs",
+          "matchesFrozenGit": true
+        },
+        {
+          "path": "scripts/test-isolated-database.mjs",
+          "matchesFrozenGit": true
+        },
+        {
+          "path": "scripts/lib/test-isolated-database.mjs",
+          "matchesFrozenGit": true
+        },
+        {
+          "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+          "matchesFrozenGit": true
+        },
+        {
+          "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+          "matchesFrozenGit": true
+        }
+      ],
+      "triggerComparison": "The 20261015 update_account_balance body is exactly the 20261007 body after removing only the two OLD/NEW transfer-destination round(...,8) wrappers. Expense/income OLD removal and NEW application branches are byte-identical. These two new wrappers do not execute for the expense→income case."
+    }
+  },
+  "findings": [],
+  "limits": [
+    "No new runtime was executed. The exact1500 SQL fixture and the native100 ordinary-session fixture are separate reports/engines/revisions; this review does not merge them into one observed1500 native execution.",
+    "PGlite exact SQL-06 uses a minimal schema and no RLS. Native ordinary-session coverage uses the complete27-migration schema and real Auth/PostgREST. Full-schema PGlite roles are synthetic Auth fixtures.",
+    "Existing raw assertions and results are retained unchanged. This is one original-case acceptance by explicit composition, not new unique tests or an addition to the913-test CI6 total.",
+    "No browser behavior, new API type-edit capability, external provider, hosted database, or production behavior is claimed."
+  ],
+  "matrixEdited": false,
+  "newRuntimeExecuted": false,
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/balance-sql.json",
+      "sha256": "a5ab7fc5adc96be890821d74dbc3c7bf8dc70e1483a68f8950956de1c186dab6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/database-verification.json",
+      "sha256": "3a4f34150a2a82b5f67607637be320f57a6500a7056c38b73acd8450a4adff08"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/core-closure/verification.json",
+      "sha256": "95af10b0ab898f9d4259146cb41e58e8968c4e92d3500da1ae9889b3a71eaba7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/native-full/native-verification.json",
+      "sha256": "8a5aa0b3f894b6d88ff899e6de5052ab4d12bb5000efdc2989a509c22de706e6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/native-full/manifest.json",
+      "sha256": "b7122fefd444be338b82d8e8d026cddf90dc739a008e436dcbe88a3d9c244a5b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/native-full/README.md",
+      "sha256": "2b7527151d8b52e6164ea9ca40a8246d48830e5d5ca99fb8c2edd0944542a6a3"
+    },
+    {
+      "path": "scripts/test-balance-trigger.mjs",
+      "sha256": "99d0a0ed0fc5c3bac01a898df7a56b2fd2255e6a77c9dcf3562d04405cf50646"
+    },
+    {
+      "path": "scripts/test-isolated-native-supabase.mjs",
+      "sha256": "877b2b7a29c16752bd726f3d75303a49c5175fef7c4d66e5d0a50ea84c8de71f"
+    },
+    {
+      "path": "scripts/test-isolated-database.mjs",
+      "sha256": "db72f678bebf0059fbcd45e3b23ef06079f341c709421577a3a7c62d8afc481a"
+    },
+    {
+      "path": "scripts/lib/test-isolated-database.mjs",
+      "sha256": "395514d590d118c4b7b40a6ceca974db36fc2684a68447c857600be40e22da9b"
+    },
+    {
+      "path": "supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql",
+      "sha256": "a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ]
+}

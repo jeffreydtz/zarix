@@ -1,7 +1,8 @@
 """Guarded final stop of nine exact task-owned HTTP processes. No native PG/Arc."""
-import datetime,hashlib,importlib.util,json,os,pathlib,signal,subprocess,sys,time
+import datetime,hashlib,importlib.util,json,os,pathlib,signal,subprocess,sys,time,shlex
 sys.dont_write_bytecode=True
 REPO=pathlib.Path('/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix');R=pathlib.Path('/tmp/zarix-runtime-20261015')
+WRAPPED_MATERIAL={'auth': {'/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/auth/v2.197.0-r0/darwin-arm64/bin/auth': '2814745719ac5830d28152874dfe23d2bd703c1c985569115d9568d6b9345115', '/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/auth/v2.197.0-r0/darwin-arm64/bin/.auth-wrapped': '04606de0bd299c575f2459daa8768e2529c95334ef1af878d21bb93e358bebba', '/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/auth/v2.197.0-r0/darwin-arm64/bin/.runtime-env.sh': '8269c5167fa1730f82618ec100053ca84ff2256e8bde19b53e9190bd39a5aef8'}, 'postgrest': {'/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgrest/v16.4-r0/darwin-arm64/bin/postgrest': '5ad4c1b59bfa74dcd9ed37038c18f7ce1b091990e1930fc367b6d77a56463af9', '/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgrest/v16.4-r0/darwin-arm64/bin/.postgrest-wrapped': 'b7abbdfa383f6c2039f919b3b442fa6598319314f360e0c90575c07faa8583e4', '/tmp/zarix-runtime-20261015/home/cache/stack/slim-services/postgrest/v16.4-r0/darwin-arm64/bin/.runtime-env.sh': '6cce1989c6320397596088f5506cbf9566da748605c8df8ff931369c0d661b8a'}}
 def sha(p):return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
 def main():
  assert os.environ.get('ZARIX_FINAL_FRONTENDS_STOP_CONFIRM')=='parent-released-all-final-writers'
@@ -25,7 +26,14 @@ def main():
  expected={'smtp':(57372,60325),'postgrest':(57381,60323),'auth':(57390,60327),'gateway':(57398,60321),'quote':(57404,57914)}
  for row in services['children']:
   assert(row['pid'],row['port'])==expected[row['name']]
-  targets.append({'kind':row['name'],'pid':row['pid'],'port':row['port'],'cwd':str(REPO),'startedAt':row['startedAt'],'commandMarker':row['command'][0]if row['name']in['postgrest','auth']else row['command'][1]})
+  marker=row['command'][0]if row['name']in['postgrest','auth']else row['command'][1]
+  binary=None
+  if row['name']in['postgrest','auth']:
+   wrapped_expected=WRAPPED_MATERIAL[row['name']]
+   for path,expected_sha in wrapped_expected.items():assert sha(path)==expected_sha
+   launcher=pathlib.Path(row['command'][0]);binary=launcher.with_name('.'+launcher.name+'-wrapped');assert str(launcher)in wrapped_expected and str(binary)in wrapped_expected
+   marker=str(binary)
+  targets.append({'kind':row['name'],'pid':row['pid'],'port':row['port'],'cwd':str(REPO),'startedAt':row['startedAt'],'commandMarker':marker,'mappedBinary':str(binary)if binary else None})
  assert len(targets)==9
  def identify(target,allow_absent):
   identity=m.processes().get(target['pid'])
@@ -37,7 +45,18 @@ def main():
   cwd=subprocess.check_output(['/usr/sbin/lsof','-a','-p',str(target['pid']),'-d','cwd','-Fn'],text=True)
   assert any(x.startswith('n')and pathlib.Path(x[1:]).resolve()==pathlib.Path(target['cwd']).resolve()for x in cwd.splitlines())
   listeners=m.listeners(pids=[target['pid']],port=target['port']);assert listeners and all(x['address']=='127.0.0.1:'+str(target['port'])for x in listeners)
-  command=subprocess.check_output(['/bin/ps','-p',str(target['pid']),'-o','command='],text=True);assert target['commandMarker']in command
+  command=subprocess.check_output(['/bin/ps','-p',str(target['pid']),'-o','command='],text=True)
+  if target['commandMarker']not in command:
+   # The observed original Node launch used this exact relative script argument.
+   assert target['kind']=='quotes'and target['pid']==53373 and target['port']==57910
+   argv=shlex.split(command);relative='docs/tif/v2.13/evidence/technical-20261015/fresh-proof/quote-fixture-server.mjs'
+   assert len(argv)>=2 and pathlib.Path(argv[0]).name=='node'and argv[1]==relative
+   script=pathlib.Path(target['cwd'])/argv[1]
+   assert script.resolve()==pathlib.Path(target['commandMarker']).resolve()
+   assert sha(script)=='fafb616944489fbc58592137e99b2c925c49494529a73348dfd8d6994b9ddee7'
+   target['exactRelativeNodeScriptValidated']=True
+  if target.get('mappedBinary'):
+   mapped=subprocess.check_output(['/usr/sbin/lsof','-a','-p',str(target['pid']),'-d','txt','-Fn'],text=True);assert any(line.startswith('n')and pathlib.Path(line[1:]).resolve()==pathlib.Path(target['mappedBinary']).resolve()for line in mapped.splitlines())
   return identity
  for target in targets:
   identity=identify(target,True);target.update(identity=identity,status='IDENTIFIED'if identity else'ALREADY_ABSENT',signalSent=False)

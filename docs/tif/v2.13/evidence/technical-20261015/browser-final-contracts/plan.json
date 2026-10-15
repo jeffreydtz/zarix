@@ -1,0 +1,106 @@
+{
+  "status": "SUPERSEDED_NOT_EXECUTED",
+  "purpose": "CP2-21 and Chrome-only CNF-06/CNF-08 remaining local contracts",
+  "productRevision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
+  "target": {
+    "appOrigin": "http://127.0.0.1:3004",
+    "apiOrigin": "http://127.0.0.1:60321",
+    "authOrigin": "http://127.0.0.1:60327",
+    "databasePort": 55322,
+    "databaseNameSource": "Existing Native empty-account-private/targets.json; no reset or new identity/database/service"
+  },
+  "releaseGates": [
+    "CP2-10 owner must explicitly release its Auth/password window",
+    "Root must release the exact prepared source manifest",
+    "Normal cloned B must still be Premium; no plan mutation by this harness"
+  ],
+  "browser": {
+    "product": "Existing installed Google Chrome",
+    "profile": "Dedicated new directory retained inside chrome-contracts-private-UUID0700",
+    "parallelContexts": 1,
+    "externalBrowsers": false,
+    "newSoftwareOrPermissions": false,
+    "viewportScreenshot": "fullPage:false; IHDR equals configured physical viewport",
+    "zoom": "Actual Chrome appearance setting in the dedicated profile, not CSS zoom or pinch"
+  },
+  "matrix": {
+    "viewports": [
+      [
+        320,
+        568
+      ],
+      [
+        375,
+        812
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "zoomPercent": [
+      100,
+      200
+    ],
+    "cellsPerCnf": 8
+  },
+  "cp2_21": {
+    "steps": [
+      "Normal UI login as existing B, create only own synthetic bank account via normal API, open movement draft and fill a unique expense",
+      "Click actual Guardar; retain only its real outgoing POST unchanged at the network boundary, after actual UI durable intent creation",
+      "Revoke only this issued session via normal local-scope Auth logout, keep credentials private, wait for the actual signed JWT exp without changing clocks or tokens",
+      "Release the original POST with unchanged headers/body; assert real API401 and zero matching financial rows/receipts",
+      "Observe original form fields and durable IndexedDB payload/owner/intent separately; no assumption that an identity-change reset preserves form text",
+      "Normal UI reauthentication as the same identity; use the exact saved queue intent, verify same idempotency key, one financial result and account balance",
+      "Retain raw failed outcomes; do not replace a missing draft/401 with a simulated response or new intent"
+    ],
+    "scope": "Controlled request latency plus actual JWT expiry and real Auth revocation/API rejection; no fabricated JWT, mocked401, altered browser Auth implementation or clock change"
+  },
+  "cnf_06": {
+    "perCell": [
+      "Actual UI password login, empty/invalid login-field observation and keyboard focus",
+      "Create one own synthetic ARS bank account through actual account modal/UI; independently verify POST201, owner and initial balance",
+      "Download CSV and JSON through actual export panel with keyboard activation; keep files private and compare complete owner transaction IDs and amounts to native SQL",
+      "Inspect actual login DOM for a supported password-reset control; preserve exact absent/available observation"
+    ],
+    "knownSourceFinding": "Current app has password/Magic Link login, with no reset route/form/link or resetPasswordForEmail/PASSWORD_RECOVERY flow. Auth API CP2-10 does not substitute reset UI. No new UI feature will be invented.",
+    "errors": "Record actual field validity/message, error geometry and association; do not invent amount validation or force disabled controls.",
+    "capture": "Login before secrets or with email/password masked; only ExportImport panel, never entire settings containing integration capabilities."
+  },
+  "cnf_08": {
+    "perCell": [
+      "Own normal-API investment account, UI manual other-asset purchase quantity10 atUSD100/reference110",
+      "Verify exact UI/DB quantity10, cost1000, current1100 and PnL100/10%; record legibility bounds",
+      "Actual UI sale4 atUSD120; verify201, one sale, remaining6 and realized80, cash credit480",
+      "Actual UI pure simulation+10%: USD660→USD726; invalid lower-than-minus100 shows existing associated error, no financial mutation",
+      "Check every used control through keyboard/focus/scroll and hit tests, numeric text bounds and global overflow; retain local scroll geometry separately"
+    ],
+    "externalTrading": false,
+    "marketPrice": "Explicit synthetic manual fixture; no external quote or trading acceptance"
+  },
+  "preservation": {
+    "originalRestore": "13 full original public tables count/hash before/after; no new original rows permitted",
+    "existingTarget": "All baseline rows in13 public tables; only exact previously harness-created B snapshot4f8abad4-1c2d-49a2-8bab-032bc71a288d may receive documented normal Dashboard upserts",
+    "fixtures": "Only new owned accounts/categories/positions/sales/expense intents. Archive only own new accounts and positions through normal APIs; retain ledger/sales/receipts/history.",
+    "auth": "Only own normal sessions, local-scope logout; no passwords changed by Chrome harness"
+  },
+  "privateArtifacts": {
+    "root": "/tmp/zarix-runtime-20261015/chrome-contracts-private-UUID",
+    "mode": "0700 root/profile;0600 files",
+    "secretRegistry": "session-secrets.private.json: issuedSessions[{accessToken,refreshToken}],cookies[{name,value}], optional recoveryHash; never copied to Git",
+    "retained": [
+      "dedicated Chrome profile",
+      "downloads",
+      "raw HTML",
+      "cookies/checkpoints"
+    ]
+  },
+  "cleanup": "Close only the context/browser created by this harness, confirm its process and descendants exited; retain its profile and private artifacts. No personal windows, listeners, processes or Arc/Safari settings touched.",
+  "acceptance": "No PASS until actual execution, native oracles and screenshot review. Each original case and action has its own result; missing reset UI and observed clipping/errors remain concrete failures or scoped limitations, never browser equivalence.",
+  "supersededBy": "../e2e/browser-preflight/current-user-browser-steering.json",
+  "executionReleaseReceived": false
+}

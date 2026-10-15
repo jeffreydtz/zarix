@@ -199,7 +199,8 @@
     "Complete private checkpoint and every retained file digest, bound to controller/plan hashes; all six dumps must PASS before any stop.",
     "Unreadable directory enumeration fails closed; all retained file/directory entries fsynced before the complete private checkpoint. Process start probes use TZ=Etc/UTC and locale C.",
     "Two exact isolated application copies CI5+CI6: own core revision, manifest/source bytes, private env digest and BUILD_ID checked before/after retention and before stop; archive only declared sources and build ID metadata, without node_modules or .next binaries.",
-    "Three additional UUID databases in RESTORE55322: full custom schema/data/Auth/Storage dumps,64table/catalog read-only hashes stable,TOC+payloaddecode; no new restore acceptance. CNF12 private binary backups and SMTP/Auth artifacts retained in complete private directories."
+    "Three additional UUID databases in RESTORE55322: full custom schema/data/Auth/Storage dumps,64table/catalog read-only hashes stable,TOC+payloaddecode; no new restore acceptance. CNF12 private binary backups and SMTP/Auth artifacts retained in complete private directories.",
+    "Retain the exact full-native-evidence directory recursively, including the original560313B Native22 dump; existing source data is preserved, with no new operational restore claim."
   ],
   "stopRequirements": [
     "Separate invocation and explicit root release after all writers/browsers/harnesses have stopped.",
@@ -210,7 +211,7 @@
   ],
   "artifactSelection": {
     "allTopLevelRuntimeRegularFiles": true,
-    "completeNestedDirectories": "Names containing private/auth/session or starting proof-/import-target-/final-proof-/closure-proof-, excluding caches/binaries/app builds.; also empty-proof- prefix.",
+    "completeNestedDirectories": "Names containing private/auth/session or starting proof-/import-target-/final-proof-/closure-proof-, excluding caches/binaries/app builds.; also empty-proof- prefix. Exact full-native-evidence/ directory is also retained, including the original Native22 archive and historical Auth/Storage materials.",
     "otherNestedSensitiveNames": [
       "cookie",
       "session",
@@ -282,5 +283,10 @@
       "stack": "restore",
       "postgresPort": 55322
     }
-  ]
+  ],
+  "historicalPreparationSnapshot": {
+    "controller": "prepared-sources/preserve-final-retainer-9921d9bc.py",
+    "sha256": "9921d9bc196efa5b3828bbdcefe23f7db2b56163bdf8846661c6f5f94706e7d1",
+    "scope": "Prior prepared controller, never operationally executed; preserved before the exact full-native-evidence selection addition."
+  }
 }

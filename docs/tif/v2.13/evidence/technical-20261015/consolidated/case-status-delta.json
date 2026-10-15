@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-15T06:04:42.663544+00:00",
+  "generated_at_utc": "2026-10-15T06:48:05.045836+00:00",
   "original_case_count": 273,
   "historical": {
     "path": "../../technical-20261009/case-traceability.csv",
@@ -24,15 +24,24 @@
     "path": "../case-traceability.csv",
     "core_directory": "core-closure",
     "source_revision": "84df929ab2f169251a49f3e95d0e0c148dfcb87c",
-    "sha256": "b41b74c0c10e20dfae2bdb0a086771bb083d411af2a8772dd24dffb894d40a4e",
+    "sha256": "5b9634e7c2668347c2f08bc67d5c2c8f3d8f9edaca819f72e503124f5d8aca92",
     "counts": {
-      "PASS": 225,
-      "BLOCKED": 47,
+      "PASS": 232,
+      "BLOCKED": 40,
       "FAIL": 1
     },
     "artifact_line_endings": "LF normalized for Git;273rows exact named contracts/independent semantic review"
   },
   "changed_statuses": [
+    {
+      "case_id": "CP1-01",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Actual normal account API201 | Normal category list200 | Own literal Alimentos category201 | New account has exactly its opening adjustment | Normal literal expense API201 | Exactly one economic row persists | Literal expense leaves8500 | Actual list API contains same1500 identity | Actual normal dashboard SSR200 | Actual server global top5 contains the exact own1500 row | Actual global recent payload has only the three known own rows | Actual dashboard aggregate includes original50000 plus new8500 | Actual server HTML formats the expense1500 ARS | Actual server HTML includes recent movements | Only the exact prior harness-owned snapshot is updated | Observed own snapshot completion liquid_usd | Observed own snapshot completion investments_usd | Observed own snapshot completion total_usd | Observed own snapshot completion total_ars_blue | Owned snapshot preserves identity id | Owned snapshot preserves identity user_id | Owned snapshot preserves identity snapshot_date | Owned snapshot preserves identity created_at",
+      "contract_revision": "Original case contract",
+      "evidence": "empty-followup-contracts/executed/cp1-01/verification.json; empty-followup-contracts/executed/cp1-01/execution.json; empty-followup-contracts/manifest.json; empty-followup-contracts/executed/cp1-01/dashboard.html; empty-followup-contracts/independent-executed-review.json",
+      "scope": "Actual new-fixture normalAuth API/SQL and compiledSSRDashboard top5/HTML, not a composition that assumes historical membership. The newly owned account opening adjustment10000 is kept separate from exactly one economic expense1500 ARS, category Alimentos and date6Oct; real normal transaction POST201 and native balance8500. Actual authenticated list contains the same economic UUID and1500. Actual retained Dashboard HTML hashes to05614ebc13ef0da80ba1b9b13f71ddfb59654094a0680e6560c7038b4e76288b and formats minus1500ARS under recent movements. Independent JSON-only extraction from retained HTML finds exactly one RecentTransactions80237 payload and one Hero48648 payload; both match the reported props. Three actual own recent rows include this exact expense, alongside two documented opening adjustments; no hypothetical older top5 membership is substituted. Actual Hero total58500 includes prior50000 plus new8500. Only the previously proved harness-owned snapshot UUID4f8abad4-1c2d-49a2-8bab-032bc71a288d changes values; ID/owner/date/createdAt remain equal. "
+    },
     {
       "case_id": "CP1-02",
       "historical_status": "BLOCKED",
@@ -77,6 +86,15 @@
       "contract_revision": "Original case contract",
       "evidence": "focal-contracts/attempt-2-fresh-proof/verification.json; focal-contracts/fresh-proof-review.json; focal-contracts/attempt-2-fresh-proof/executed-run.mjs",
       "scope": "Selected exact original integration contracts. Normal password Auth -> SSR cookies -> actual Next HTTP APIs -> independent native PostgreSQL. No browser/UI-suite, provider-acceptance or new-identity claim; no product edits. Existing pricing paths may consult configured providers/doubles or database cache. Independent exact-contract review and protected original rows preserved; no later formatter/export-fix acceptance."
+    },
+    {
+      "case_id": "CP1-07",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "SQL-01 gasto INSERT | SQL-06 UPDATE tipo gasto a ingreso | ordinary financial writes run actual triggers and reject another tenant account | own transaction CRUD and type edit preserve balance",
+      "contract_revision": "Original case contract",
+      "evidence": "remaining-cu001/cp1-07-sql-composite-review.json; core-closure/balance-sql.json; core-closure/database-verification.json; core-closure/verification.json; native-full/native-verification.json; native-full/manifest.json; native-full/README.md",
+      "scope": "Explicit composite: the exact numeric SQL fixture is executed by the isolated PostgreSQL trigger suite; actual ordinary GoTrue/PostgREST sessions separately execute the same type-only UPDATE under the complete current schema. These executions remain distinct. No new runtime was executed. The exact1500 SQL fixture and the native100 ordinary-session fixture are separate reports/engines/revisions; this review does not merge them into one observed1500 native execution. PGlite exact SQL-06 uses a minimal schema and no RLS. Native ordinary-session coverage uses the complete27-migration schema and real Auth/PostgREST. Full-schema PGlite roles are synthetic Auth fixtures. Existing raw assertions and results are retained unchanged. This is one original-case acceptance by explicit composition, not new unique tests or an addition to the913-test CI6 total. No browser behavior, new API type-edit capability, external provider, hosted database, or production behavior is claimed. Literal is Normal UPDATE SQL; API type immutability was not a blocker. SQL1500→11500 and actual nativeJWT100→10100 remain separate fixtures."
     },
     {
       "case_id": "CP1-09",
@@ -169,6 +187,15 @@
       "scope": "NormalAPI creation201, owned daily start01Oct/end06Oct/amount1000; suspend/reactivate/edit1200 preserve owner/date; exact full ledger unchanged across every save operation. The earlier Free-actor403 attempt remains preserved; this successful independent retry uses the already existing Premium actor without changing original profiles. No nonexistent next-date API field, rendered recurring page, browser or click is asserted. Source control flow is explicitly composed with native state/SQL evidence; this is not a claim of one served UI journey.  {'path': 'app/(authenticated)/recurring/page.tsx', 'sha256': 'dbf1b2a7452118269d85bbb60cb188fb00dc66427f5658d57ae80365a3aadf05', 'identicalGit836And84': True, 'functions': 'getNextRenewalDate lines148–181; getStatusTag lines184–193', 'fixture': 'Daily start2026-10-01/end2026-10-06 and today06Oct at the documented fixed clock; no occurrence is created by rule saving.', 'derivation': ['For the daily rule, local calendar-day difference from01Oct to06Oct is5, so next=start+5days=06Oct. The while loop does not advance a date equal to today.', 'The end comparison is next>end, so equality on06Oct is admitted. This establishes the inclusive end for this exact fixture.', 'Inactive state returns Pausada before date formatting; reactivation on06Oct returns Se renueva hoy. Editing only amount1000→1200 does not change the schedule.', 'With today07Oct, next07Oct>end06Oct returns null and the active status is Finalizada.'], 'evaluation': 'Symbolic reading of the exact existing product function; no new execution or rendered UI asserted.'}"
     },
     {
+      "case_id": "CP1-24",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Synthetic cloned B has no external Telegram credential or existing link | Only exact authorized synthetic B profile fixture updated | Actual normal account API201 | Normal owned recurring rule201 | Normal RLS initializes only owned new rule last5Oct | Literal active daily rule precondition | Both actual HTTP calls started before first response | Two concurrent cron calls plus same-date retry200 | No hidden cron item error | One exact recurring expense, marker, balance and outbox | Outbox identity matches one own committed occurrence | Actual worker focal with same real service-role DB exits0 | Provider double accepts one notice without new financial effect",
+      "contract_revision": "Original case contract",
+      "evidence": "empty-followup-contracts/executed/cp1-24/verification.json; empty-followup-contracts/executed/cp1-24/execution.json; empty-followup-contracts/manifest.json; empty-followup-contracts/executed/cp1-24/worker-observation.json; empty-followup-contracts/executed/cp1-24/worker-result.json; empty-followup-contracts/independent-executed-review.json",
+      "scope": "Actual normalAuth/cron/API/nativeSQL plus currentworker/realserviceclient/localTelegramcaptor; not realTelegram or a user-RLS delivery test. Real normal API account10000 and active daily recurring expense1000 start1Oct/last5Oct; notification enabled, fictional linked chat, bot token remainsNULL. Only five exact cloned B profile fields are intentionally configured, with different full-profile hashes explicitly retained. Two actual cron HTTP dispatches overlap in time and both return200/errors0. Same-day retry200 processes0. Native state has one expense1000, balance9000, last6Oct and one durable outbox keyed rule+6Oct bound to the exact transaction UUID. Actual notification-outbox service, byte-equal to Git84/current/physical app copy, operates via real Supabase service-role client and PostgREST against the same UUID DB. Only sendTelegramDm is replaced by a local capturing double. Worker raw observation equals the nested report, exactly one acceptance/delivery, replay0delivery/0failures and identical account/transactions/rule/receipts financial hashes. Durable outbox retains attempts1 and delivered_at. No real Telegram delivery asserted. "
+    },
+    {
       "case_id": "CP1-27",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
@@ -241,6 +268,15 @@
       "scope": "Actual fixed-clock empty cron returns total0/processed0/errors0. Independent three-rule mixed fixture has one success,one inactive,one injectedSQL failure; summary total2/processed1/errors1 because only active rules are fetched. SQL counts/balances prove good1/9000,inactive0/10000,bad0/10000. No skipped field is invented; omission is reconciled against the three-rule fixture. Owned fault catalog returns to exact prior hash/count. Independent file-only review of exactly10 original CSV cases; no harness import/evaluation, tests, runtime/process/socket checks, API/DB/network calls, credential reads, stage or commit. New files are this review plus exact Git-recovered executed harness snapshot. Exact historical836 binding, not finalCI5 compiled acceptance."
     },
     {
+      "case_id": "CP2-01",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CP2-01 literal first account precondition includes archived rows | Actual normal account API201 | Actual normal-authenticated dashboard SSR status | Actual server aggregate total ARS | Known valid fixture never becomes partial | No safe-error alert on this valid-FX empty/account dashboard | Actual own SSR snapshot completion observed before any fixture cleanup | Own snapshot liquid_usd | Own snapshot investments_usd | Own snapshot total_usd | Own snapshot total_ars_blue | Only the same newly owned empty-dashboard snapshot was updated | CP2-01 exactly one own active bank account exists | CP2-01 account is active and ARS | CP2-01 literal BancoARS is a bank account | CP2-01 bank account balance | CP2-01 one explicit opening adjustment documents the 50000 origin",
+      "contract_revision": "Original case contract",
+      "evidence": "empty-account-contracts/attempt-2/verification.json; empty-account-contracts/independent-composed-review.json",
+      "scope": "Actual normal account API result plus independent SQL and authenticated server-calculated patrimony increase0→50000ARS; no browser claim. 17 actual assertions retain literal zero-account precondition, one normal POST201 for BancoARS, owned active ARS bank account50000 and one explicit Saldo inicial adjustment50000. Actual server patrimony increases0→50000ARS; only newly created own snapshot UUID4f8abad4-1c2d-49a2-8bab-032bc71a288d is updated. No browser or client animation proof."
+    },
+    {
       "case_id": "CP2-02",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
@@ -295,6 +331,15 @@
       "scope": "Original integration negative contract executed over five input classes: wrong password, altered current normal JWT, genuinely expired JWT, expired recovery, reused recovery. Ten named checks include anti-enumeration, A/B ordinary Auth/API controls, expired-access+revoked-refresh ZARIX401, and unchanged12financialtables/two previous normal sessions. complete_original_contract denotes execution coverage; FAIL retains GoTrue400 invalid_credentials versus required401/403. No browser, SMTP, whole-Auth-zero-writes or full-CU acceptance."
     },
     {
+      "case_id": "CP2-10",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Original password accepts before the one reset request | Successful ordinary Auth response belongs to the same existing identity | The same retained real recovery request200 and private SMTP input are verified before continuation | Continuation dispatches no second recovery request or new SMTP message | The exact new recovery token came from the requested local SMTP message | Delivered valid recovery token yields a real authenticated session | Successful ordinary Auth response belongs to the same existing identity | Recovery session replaces the password for the same identity | Old password is denied after recovery | New password accepts after recovery | Successful ordinary Auth response belongs to the same existing identity | The same delivered recovery token is consumed and cannot create another session | Original password is restored and accepts on the isolated clone | Successful ordinary Auth response belongs to the same existing identity | Temporary replacement password is denied after restoration | All newly owned Auth sessions and their refresh grants are closed | No original/replacement password or issued token appears in ordinary Auth/SMTP logs | Original and fixture public rows remain unchanged",
+      "contract_revision": "Original case contract",
+      "evidence": "auth-recovery-valid/resume/verification.json; auth-recovery-valid/recovery-attempt-1/verification.json; auth-recovery-valid/independent-executed-review.json; auth-recovery-valid/independent-executed-review-addendum.json",
+      "scope": "Original API Auth recovery contract with declared local SMTP transport double, same existing identity and exact retained email/token. Does not establish email-link click/UI routing, reset UI or external email delivery. File-only review of exported exact sources, results, MIME-parser policy, retained-message provenance and preservation/cleanup evidence. No API/SMTP/SQL/Auth/browser request, private credential/MIME/checkpoint read, individual-secret hash or new experiment by reviewer. No UI/email-link routing or external-email delivery acceptance. Password restoration confirmed: original200 and temporary400. Four own sessions have zero rows/unrevoked refresh grants; logoutHTTP403/403/204/204, not four204. One real localSMTP message only; no second recover, browser/UI reset, email-link routing or external-mail acceptance."
+    },
+    {
       "case_id": "CP2-20",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
@@ -322,6 +367,15 @@
       "scope": "Independent processes establish299hit/300refresh/301refresh and300failure with retained1200/T0. Same actual captured fallback quote passes through real helper and corrected component: savedquote/unknownoriginalprovider/dateTimeT0/visible16:00UTC. Read-only review of exact original CP3-01/02 CSV contracts, executed service/DB evidence and later captured-quote SSR. No API/SQL/Auth/browser/process/test execution by reviewer. The CSV does not require a browser for these two cases; no browser or single compiled Next build acceptance is inferred. Service836 and presentation528 are explicitly separate. This does not assert that old PROOF Next836 contained528, that one compiled Next executed both, or that finalCI5/currentcompiledUI was verified here."
     },
     {
+      "case_id": "CP3-03",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "Actual new fixture has no persisted quote cache | Actual normal account API201 | Actual normal account API201 | No-cache unavailable quote returns the bound API500 rather than an Auth rejection | Unavailable quote response contains only an explicit safe error | Mixed wealth returns the bound safe500 rather than fabricated rates or an Auth rejection | CP3-03 fixture DB has no persisted quote cache before request | CP3-03 actual authenticated safe-error page status | CP3-03 actual safe error explicitly declares financial unavailability | CP3-03 actual retry is an anchor to dashboard, not an invented button | CP3-03 no financial hero fabricates a consolidated zero or unit rate | CP3-03 actual Flight contains no financial Hero aggregate | CP3-03 failed quote requests persisted no0 or1 fallback | CP3-03 unavailable read does not create or overwrite any snapshot | Unavailable reads preserve both complete account rows | Mixed original balances remain120000ARS and100USD | Cold provider journal is append-only | This exact failed read observed new real503 provider requests | Every cold provider sample failed with the exact unavailable control",
+      "contract_revision": "Original case contract",
+      "evidence": "empty-account-contracts/attempt-2/verification.json; empty-account-contracts/independent-composed-review.json",
+      "scope": "Real failed synthetic HTTP provider/cold-cache integration, normal Auth/API/SSR/native oracles. No external provider outage asserted. 19 actual normal Auth/API/native/SSR assertions. Cold exchange_rates0, no-cache quote/wealth safe500, SSR explicit unavailable alert without consolidated Hero or rate0/1; original balances120000ARS/100USD unchanged; no snapshot persisted. Append-only journal retains20 real synthetic503 requests,18 new since initial preflight, before control switched1200. The unavailable provider is a declared local HTTP double, not an observed public-provider outage. No browser or hydration proof."
+    },
+    {
       "case_id": "CP3-04",
       "historical_status": "BLOCKED",
       "current_status": "PASS",
@@ -347,6 +401,15 @@
       "contract_revision": "Original case contract",
       "evidence": "account-analysis-contracts/executed-closure/cp3-06.json; account-analysis-contracts/executed-closure/manifest.json; account-analysis-contracts/independent-closure-review.json",
       "scope": "Complete original integration/system contract via ordinary Auth API/SQL and actual server HTML/Flight props bound to compiled modules. No browser, animation, hydration or visual compatibility acceptance inferred. Independently reviewed exact original contract; accepted scopes and version distinctions in the pinned review remain binding. Historical failures are preserved; no new execution, browser or real-provider claim."
+    },
+    {
+      "case_id": "CP3-07",
+      "historical_status": "BLOCKED",
+      "current_status": "PASS",
+      "current_assertions": "CP3-07 literal absence includes archived accounts and all own history/positions | CP3-07 no prior synthetic history is presented as existing history | Actual normal-authenticated dashboard SSR status | Actual server aggregate total ARS | Known valid fixture never becomes partial | No safe-error alert on this valid-FX empty/account dashboard | Actual own SSR snapshot completion observed before any fixture cleanup | Own snapshot liquid_usd | Own snapshot investments_usd | Own snapshot total_usd | Own snapshot total_ars_blue | CP3-07 liquid zero | CP3-07 portfolio zero | CP3-07 total USD zero | CP3-07 actual server returned no invented historic points | CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR preserves the actual empty request, all15 observed assertions and exact frozen component wiring | CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR renders the real empty accounts explanation and CU002 create-account help | CP3-07 composed actual empty dashboard observations plus real frozen empty-component SSR renders the real empty movements explanation and CU001 expense-registration help",
+      "contract_revision": "Original case contract",
+      "evidence": "empty-account-contracts/cp307-composition/verification.json; empty-account-contracts/independent-composed-review.json",
+      "scope": "Composition explicitly authorized by coordinator:15 actual empty native/API/SSR observations plus real frozen empty-component SSR and Dashboard wiring The fifteen actual empty observations match exactly the preserved failed phase: no accounts including archived, no transactions/positions/prior snapshots, real authenticated HTTP200, Hero aggregates0/history[], no financial error, own snapshot0. Two real frozen SSR renders add literal empty accounts help /accounts and expense-registration help; a third focal checks exact Dashboard dynamic wiring/provenance. Full original HTTP HTML/Flight was not retained, so there is no offline reparse claim. Supplemental component renders are offline SSR, not another native Dashboard request, browser, hydration, animation or viewport. Planned projections endpoint assertion was never executed and is not used. B now has the first account created by CP2-01; no empty fixture was recreated."
     },
     {
       "case_id": "CP3-08",
@@ -603,22 +666,17 @@
     "CB-P08",
     "CB-P09",
     "CB-P10",
-    "CP1-01",
-    "CP1-07",
     "CP1-08",
     "CP1-14",
     "CP1-15",
     "CP1-16",
     "CP1-17",
     "CP1-18",
-    "CP1-24",
     "CP1-25",
     "CP1-26",
     "CP1-32",
-    "CP2-01",
     "CP2-04",
     "CP2-08",
-    "CP2-10",
     "CP2-11",
     "CP2-12",
     "CP2-13",
@@ -629,8 +687,6 @@
     "CP2-18",
     "CP2-19",
     "CP2-21",
-    "CP3-03",
-    "CP3-07",
     "CP3-09",
     "CP3-10",
     "CP3-11",
@@ -827,8 +883,8 @@
     "artifact_line_endings": "LF normalized for Git;273rows exact named contracts/independent semantic review",
     "summary": "phases/core-reliability-pre-local-contracts-summary.json"
   },
-  "number_of_changed_cases": 58,
-  "number_of_unchanged_cases": 215,
+  "number_of_changed_cases": 65,
+  "number_of_unchanged_cases": 208,
   "phase4_reviewed_before_ci5": {
     "path": "phases/core-reliability-reviewed-189-1-83.csv",
     "summary": "phases/core-reliability-reviewed-189-1-83-summary.json",

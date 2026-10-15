@@ -344,5 +344,79 @@ if (BASE/recurring_review_path).exists():
           'evidence':str(path.relative_to(BASE))+'; '+recurring_review_path,'scope':row['provedRuntime']+' '+ ' '.join(row['limits'])+' '+row.get('nanTransport','')+' '+str(row.get('nextOccurrenceSourceProof',{})),
           'executed_revision':{'product':entry['revision'],'buildId':entry['buildId']},'source_review_sha256':expected,'adapter_scope':'Explicit independent semantic/native plus source-control-flow composite; no browser required by CSV, no rendered schedule assertion or additional runtime invented. CP124/125 remain unpromoted; CP127 has a separate later reviewed packet.'}
 
+# Newly completed empty-replica contracts: exact review/artifact pins, no status prediction.
+empty_reviewed_packets=[
+ ('empty-account-contracts','independent-composed-review.json','2c366dd562d1fe889988cd37b8da9381a742ae8f9e468479817ad1b076a0ef91','verified-system-case-result.json',{'CP2-01','CP3-03','CP3-07'}),
+ ('empty-followup-contracts','independent-executed-review.json','9d640a07d730b11a3718953c60214a3d1d12c2f670e4cbfc6968c45cde5f3d8d','system-case-results.json',{'CP1-01','CP1-24'}),
+]
+for directory,review_file,expected,metadata_file,ids in empty_reviewed_packets:
+    review_path=directory+'/'+review_file;review=checked_json(review_path,expected)
+    assert not review['materialFindings']
+    for artifact in review['artifacts']:assert hashlib.sha256((BASE/directory/artifact['path']).read_bytes()).hexdigest()==artifact['sha256']
+    assert {r['case_id']for r in review['cases']}==ids and all(r['opinion'].startswith('PASS')for r in review['cases'])
+    packet=checked_json(directory+'/'+metadata_file);rows=packet.get('results',packet.get('cases'))
+    assert {r['case_id']for r in rows}==ids
+    for row in rows:
+        assert row['status']=='PASS'and row['complete_original_contract']
+        evidence=row['evidence']if isinstance(row['evidence'],list)else[directory+'/'+row['evidence']]
+        assert all((BASE/f).is_file()for f in evidence)
+        assertions=row.get('assertion_names',row.get('assertions'))
+        if row['case_id']=='CP3-07':
+            component=checked_json(directory+'/cp307-composition/verification.json');assert component['status']=='PASS'and component['complete_original_contract']and len(component['actualEmptyAssertions'])==15
+            assert all(r['status']=='PASS'for r in component['actualEmptyAssertions'])
+            ssr=checked_json(directory+'/cp307-composition/ssr-results.json');assert ssr['numPassedTests']==ssr['numTotalTests']==3
+            assertions=[r['name']for r in component['actualEmptyAssertions']]+[a['fullName']for t in ssr['testResults']for a in t['assertionResults']if a['status']=='passed']
+        assert isinstance(assertions,list)and assertions
+        opinion=next(r for r in review['cases']if r['case_id']==row['case_id'])
+        merged[row['case_id']]={'case_id':row['case_id'],'status':'PASS','complete_original_contract':True,'assertions':assertions,
+          'evidence':'; '.join(evidence)+'; '+review_path,'scope':row['scope']+' '+opinion.get('basis',' '.join(opinion.get('proof',[])))+' '+ ' '.join(opinion.get('limits',[])),
+          'executed_revision':{'product':'84df929ab2f169251a49f3e95d0e0c148dfcb87c','buildId':'Yi9bH3FttO71PxvY-EwCH','appOrigin':'http://127.0.0.1:3004','apiOrigin':'http://127.0.0.1:60321'},
+          'source_review_sha256':expected,'adapter_scope':'Independently reviewed new-replica API/native/compiledSSR scope. CP307 explicitly composes the preserved fifteen empty observations and frozen real componentSSR/wiring, not another native rerun. CP124 worker uses real local service client and a provider captor double, not Telegram. No browser acceptance inferred.'}
+cp107='remaining-cu001/cp1-07-sql-composite-review.json'
+if(BASE/cp107).exists():
+    expected='4976c53613f15b0082c0b9a2e160396f44d599604b589fc406b59dea8ea31e93';review=checked_json(cp107,expected)
+    assert not review['findings']and len(review['originalCases'])==1
+    for artifact in review['artifacts']:
+        path=ROOT/artifact['path'];assert hashlib.sha256(path.read_bytes()).hexdigest()==artifact['sha256']
+    row=review['originalCases'][0];assert row['id']=='CP1-07'and row['status']=='PASS'and row['complete_original_contract']
+    merged['CP1-07']={'case_id':'CP1-07','status':'PASS','complete_original_contract':True,'assertions':[a['id']for a in row['assertions']],
+      'evidence':cp107+'; '+ '; '.join(str((ROOT/a['path']).relative_to(BASE))for a in review['artifacts']if (ROOT/a['path']).is_relative_to(BASE)),
+      'scope':row['basis']+' '+ ' '.join(review['limits'])+' Literal is Normal UPDATE SQL; API type immutability was not a blocker. SQL1500→11500 and actual nativeJWT100→10100 remain separate fixtures.',
+      'executed_revision':review['executionBindings'],'source_review_sha256':expected,'adapter_scope':'Explicit independently reviewed SQL numeric plus separate native session composite only; no new runtime or new API support.'}
+
+auth_recovery_review_path='auth-recovery-valid/independent-executed-review.json'
+if(BASE/auth_recovery_review_path).exists():
+    expected='1cd5b17c09ddf293be5dac6d1421e2b6b7011897a2ab97335d8ac49c2d608d4b';review=checked_json(auth_recovery_review_path,expected)
+    assert review['status']=='PASS_INDEPENDENT_API_RECOVERY_REVIEW_SCOPED'and review['case_id']=='CP2-10'and review['complete_original_contract']and not review['findings']
+    addon_path='auth-recovery-valid/independent-executed-review-addendum.json'
+    addon=checked_json(addon_path,'356f8a3842c5f0b71582c4a25228f3594a27e442d5872d6da6609b783f736435')
+    assert addon['status']=='PASS_EXPLICIT_SCAN_METADATA_ADDENDUM'and addon['originalReview']['sha256']==expected and addon['originalReview']['preservedUnchanged']
+    change=addon['detectedChange'];assert change['path']=='docs/tif/v2.13/evidence/technical-20261015/auth-recovery-valid/private-value-scan.json'
+    assert change['originalPeerExpectedSha256']=='4af2e16c9f3b6a14cc2d34f3eea34ce927d97b42974bb050d9cc7b8d521b0cf7'and change['currentSha256']=='195321ee6e92baba3adab242ab06a1112215647c01786edeefda768411b6055c'
+    changed=[]
+    for pin in review['pins']:
+        actual=hashlib.sha256((ROOT/pin['path']).read_bytes()).hexdigest()
+        if actual!=pin['sha256']:
+            assert pin['path']==change['path']and pin['sha256']==change['originalPeerExpectedSha256']and actual==change['currentSha256'];changed.append(pin['path'])
+    assert changed==[change['path']]
+    assert len(addon['currentPins'])==17
+    for pin in addon['currentPins']:assert hashlib.sha256((ROOT/pin['path']).read_bytes()).hexdigest()==pin['sha256']
+    entry=addon['revalidation']['finalAuthManifest'];manifest_path=ROOT/entry['path'];assert hashlib.sha256(manifest_path.read_bytes()).hexdigest()==entry['sha256']=='8b938c940cb62d2c84f0dee0ae69eb62147eea000888887850e0bfca8884e07e'
+    manifest=__import__('json').loads(manifest_path.read_text());assert len(manifest['artifacts'])==34
+    for artifact in manifest['artifacts']:assert hashlib.sha256((manifest_path.parent/artifact['path']).read_bytes()).hexdigest()==artifact['sha256']
+    result=review['result'];assert result['assertionsPassed']==18 and result['smtpAcceptedTotal']==1 and result['sameRetainedMessageNoSecondRecover']
+    assert result['originalRestored200']and result['temporaryDenied400']and result['remainingOwnSessions']==result['unrevokedOwnRefreshGrants']==result['ordinaryLogSecretMatches']==0
+    assert result['logoutHttpStatuses']==[403,403,204,204]
+    row=checked_json('auth-recovery-valid/verified-system-case-result.json','24944198b4df1f834613fd12ed28cc70efbcbd79909f2899c556f037d32d0665')
+    report=checked_json('auth-recovery-valid/resume/verification.json','ae3c4747fd9da45af01ce9cb7000e95aa027fec906931451730230c866402b9e')
+    assert row['status']==report['status']=='PASS'and row['complete_original_contract']and report['complete_original_contract']
+    assert row['passwordRestorationConfirmed']and report['passwordRestorationConfirmed']and report['sourceStable']
+    assert len(report['assertions'])==18 and all(a['status']=='PASS'for a in report['assertions'])and row['assertions']==[a['name']for a in report['assertions']]
+    merged['CP2-10']={'case_id':'CP2-10','status':'PASS','complete_original_contract':True,'assertions':row['assertions'],
+      'evidence':'auth-recovery-valid/resume/verification.json; auth-recovery-valid/recovery-attempt-1/verification.json; '+auth_recovery_review_path+'; '+addon_path,
+      'scope':row['scope']+' '+review['scope']+' Password restoration confirmed: original200 and temporary400. Four own sessions have zero rows/unrevoked refresh grants; logoutHTTP403/403/204/204, not four204. One real localSMTP message only; no second recover, browser/UI reset, email-link routing or external-mail acceptance.',
+      'executed_revision':{'authImplementation':'cached official GoTrue2.197.0; same existing signing material','binding':report['binding'],'nextProductCodeExecutedForThisProtocol':False},
+      'source_review_sha256':expected,'source_review_addendum_sha256':'356f8a3842c5f0b71582c4a25228f3594a27e442d5872d6da6609b783f736435','adapter_scope':'Explicit complete original API/Auth recovery acceptance only; one changed scan pin is accepted solely through the separately pinned addendum, preserving the original review.  failed preflight/parser phases remain preserved. Native GoTrue/source hashes are binding; no current Git-head Next execution or UI acceptance inferred.'}
+
 target.write_text(json.dumps([merged[key] for key in sorted(merged)], indent=2, ensure_ascii=False) + '\n')
 print(json.dumps({'historical_reviewed_contracts': sorted(item['case_id'] for item in reviewed), 'reviewed_contracts': sorted(merged), 'total_reviewed_entries': len(merged), 'negative_contract_failures': [key for key in merged if merged[key]['status']=='FAIL'], 'source_review_sha256': source_hash, 'new_execution': False}))

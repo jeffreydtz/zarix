@@ -1,0 +1,42 @@
+{
+  "status": "PASS_STATIC_EXACT_RELATIVE_ARGUMENT_SUPPLEMENT_PENDING_RETRY",
+  "reviewedAt": "2026-10-15T06:54:53.453809Z",
+  "reviewer": "sql_security; independent of controller author",
+  "method": "File-only diff/hash review and AST parsing without controller import. No process/listener inspection, signal, browser, database, network, retention or stop command executed by reviewer.",
+  "reviewedDelta": [
+    "Only shlex import and one guarded fallback for the originally launched relative Node script argument were added to identify().",
+    "The fallback runs only when the existing absolute command marker is absent, and only for kind quotes, PID53373, port57910. It requires argv0 basename node and argv1 equal to the literal task script path.",
+    "That literal path is resolved against the target cwd that was already verified by lsof. Its result must equal the existing absolute expected marker and the current script SHA must match the fixed expected value.",
+    "The process UID/start/cwd/listener checks execute before this branch; the same process is reidentified immediately before SIGTERM. All nine targets, other binary/launcher checks, root gate, absent-only-if-port-free behavior, bounded wait and SIGTERM-only signal remain unchanged.",
+    "The earlier6f223 source is retained exactly as a separate snapshot. Historical independent reviews remain unchanged and retain their own pinned scope."
+  ],
+  "findings": [],
+  "limits": [
+    "This review permits no broader argument equivalence, new PID, executable, script, process set or browser fallback.",
+    "The author reported that the previous preflight aborted before signals; this reviewer did not independently execute or inspect that operational attempt. Its report must be preserved separately.",
+    "Actual process ownership and successful stop/retention remain operational claims requiring the authorized retry report. A static review does not establish those outcomes."
+  ],
+  "executionPerformed": false,
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/stop-owned-final-http-services.py",
+      "sha256": "edced5d0c7210ed0b930e9a1588ad255be5792bf4faf96217493b94dcce5f6a8"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/prepared-sources/stop-owned-final-http-6f223de9.py",
+      "sha256": "6f223de901d7c11e34969f8cf3a6324a8013868b8de4a6d76f8c5c3e3cef7cd3"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/fresh-proof/quote-fixture-server.mjs",
+      "sha256": "fafb616944489fbc58592137e99b2c925c49494529a73348dfd8d6994b9ddee7"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/preserve-six-native-stacks-final.py",
+      "sha256": "bab8ac98200fde1eea5bbce532ef28e97348e7976c02adf434bef0d42db48688"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/environment/native-retention-final-plan.json",
+      "sha256": "a1c79c47a8853dc33d6f553b07c3112fe16821f929faae08b06d1c7ded29bbbb"
+    }
+  ]
+}

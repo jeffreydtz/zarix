@@ -1,3 +1,5 @@
+> Actualización técnica 15/10/2026: [verificación local, revisiones exactas, matriz y límites](VERIFICACION-TECNICA-20261015.md). La matriz actual es 232 PASS/1 FAIL/40 BLOCKED; se distinguen runtime CI6 y revalidación final de empaquetado. La evidencia histórica 09/10 y las cifras de la entrega original se conservan sin reescribir; la aceptación actual es parcial.
+
 > Actualización técnica 09/10/2026: ver [verificación aislada y bloqueos](VERIFICACION-TECNICA-20261009.md). Las cifras anteriores son evidencia histórica, no aceptación integral nueva.
 
 # ZARIX v2.13 — Nota de entrega

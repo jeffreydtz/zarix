@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T06:04:06.750601+00:00",
+  "generated_at": "2026-10-15T06:47:58.744047+00:00",
   "core_directory": "core-closure",
   "original_cases": 273,
   "use_cases": [
@@ -9,9 +9,9 @@
     "CU004"
   ],
   "counts": {
-    "PASS": 225,
+    "PASS": 232,
     "FAIL": 1,
-    "BLOCKED": 47
+    "BLOCKED": 40
   },
   "rule": "PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence."
 }
