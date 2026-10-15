@@ -1,0 +1,196 @@
+{
+  "scenario": "hit299",
+  "status": "PASS",
+  "t0": "2026-10-06T13:00:00.000Z",
+  "counters": {
+    "primary": 1,
+    "secondary": 0,
+    "crypto": {
+      "bitcoin": 0,
+      "ethereum": 0,
+      "tether": 0
+    }
+  },
+  "served": [
+    {
+      "path": "/dolar",
+      "status": 200,
+      "bodySha256": "f30308923e97f5918907eacde4b0aaaca1a7e93fdc05629cbbe200219af62564",
+      "sourceTimestamp": "2026-10-06T13:00:00.000Z"
+    }
+  ],
+  "assertions": [
+    {
+      "name": "hit299 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "hit299 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "hit299 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "hit299 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "hit299 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "hit299 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "hit299 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "hit299 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T13:00:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "hit299 provider request counters",
+      "status": "PASS",
+      "actual": {
+        "primary": 1,
+        "secondary": 0
+      },
+      "expected": {
+        "primary": 1,
+        "secondary": 0
+      }
+    }
+  ],
+  "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+  "initialQuote": {
+    "type": "blue",
+    "buy": 1200,
+    "sell": 1200,
+    "timestamp": "2026-10-06T13:00:00.000Z",
+    "provider": "criptoya",
+    "origin": "provider"
+  },
+  "returnedQuote": {
+    "type": "blue",
+    "buy": 1200,
+    "sell": 1200,
+    "timestamp": "2026-10-06T13:00:00.000Z",
+    "provider": "criptoya",
+    "origin": "provider"
+  },
+  "offsetSeconds": 299,
+  "expectedNewFxRows": 8,
+  "transportRequests": [
+    {
+      "origin": "http://127.0.0.1:57911",
+      "path": "/dolar",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:58321",
+      "path": "/rest/v1/exchange_rates",
+      "method": "POST"
+    }
+  ],
+  "fakeClockScope": "Date only in this worker; OS clock, timers and database clock unchanged"
+}

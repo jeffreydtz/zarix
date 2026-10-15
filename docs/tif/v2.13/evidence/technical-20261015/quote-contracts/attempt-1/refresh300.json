@@ -1,0 +1,212 @@
+{
+  "scenario": "refresh300",
+  "status": "PASS",
+  "t0": "2026-10-06T14:00:00.000Z",
+  "counters": {
+    "primary": 2,
+    "secondary": 0,
+    "crypto": {
+      "bitcoin": 0,
+      "ethereum": 0,
+      "tether": 0
+    }
+  },
+  "served": [
+    {
+      "path": "/dolar",
+      "status": 200,
+      "bodySha256": "0bfbfcabf58aa9bcb81958ef6851750d8efd46af4c52054c160439049ccaaa9e",
+      "sourceTimestamp": "2026-10-06T14:00:00.000Z"
+    },
+    {
+      "path": "/dolar",
+      "status": 200,
+      "bodySha256": "f399ac1a2d94cdea1d23b2bce34afc3d5d6a7c8d5864d7701289d7e6452cfbb8",
+      "sourceTimestamp": "2026-10-06T14:05:00.000Z"
+    }
+  ],
+  "assertions": [
+    {
+      "name": "refresh300 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T14:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T14:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "refresh300 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T14:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T14:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "refresh300 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T14:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T14:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "refresh300 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T14:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T14:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "refresh300 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1300,
+        "sell": 1300,
+        "time": "2026-10-06T14:05:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "buy": 1300,
+        "sell": 1300,
+        "time": "2026-10-06T14:05:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "refresh300 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1300,
+        "sell": 1300,
+        "time": "2026-10-06T14:05:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "buy": 1300,
+        "sell": 1300,
+        "time": "2026-10-06T14:05:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "refresh300 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1300,
+        "sell": 1300,
+        "time": "2026-10-06T14:05:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "buy": 1300,
+        "sell": 1300,
+        "time": "2026-10-06T14:05:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "refresh300 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1300,
+        "sell": 1300,
+        "time": "2026-10-06T14:05:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      },
+      "expected": {
+        "buy": 1300,
+        "sell": 1300,
+        "time": "2026-10-06T14:05:00.000Z",
+        "provider": "criptoya",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "refresh300 provider request counters",
+      "status": "PASS",
+      "actual": {
+        "primary": 2,
+        "secondary": 0
+      },
+      "expected": {
+        "primary": 2,
+        "secondary": 0
+      }
+    }
+  ],
+  "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+  "initialQuote": {
+    "type": "blue",
+    "buy": 1200,
+    "sell": 1200,
+    "timestamp": "2026-10-06T14:00:00.000Z",
+    "provider": "criptoya",
+    "origin": "provider"
+  },
+  "returnedQuote": {
+    "type": "blue",
+    "buy": 1300,
+    "sell": 1300,
+    "timestamp": "2026-10-06T14:05:00.000Z",
+    "provider": "criptoya",
+    "origin": "provider"
+  },
+  "offsetSeconds": 300,
+  "expectedNewFxRows": 16,
+  "transportRequests": [
+    {
+      "origin": "http://127.0.0.1:57911",
+      "path": "/dolar",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:58321",
+      "path": "/rest/v1/exchange_rates",
+      "method": "POST"
+    },
+    {
+      "origin": "http://127.0.0.1:57911",
+      "path": "/dolar",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:58321",
+      "path": "/rest/v1/exchange_rates",
+      "method": "POST"
+    }
+  ],
+  "fakeClockScope": "Date only in this worker; OS clock, timers and database clock unchanged"
+}

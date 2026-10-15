@@ -1,0 +1,200 @@
+{
+  "scenario": "failure300",
+  "status": "FAIL",
+  "t0": "2026-10-06T16:00:00.000Z",
+  "counters": {
+    "primary": 2,
+    "secondary": 1,
+    "crypto": {
+      "bitcoin": 0,
+      "ethereum": 0,
+      "tether": 0
+    }
+  },
+  "served": [
+    {
+      "path": "/dolar",
+      "status": 200,
+      "bodySha256": "5a5bfe619df92ccb7f735e9fb66b679a865699d44d3aab9306ac58f470290a1e",
+      "sourceTimestamp": "2026-10-06T16:00:00.000Z"
+    },
+    {
+      "path": "/dolar",
+      "status": 503,
+      "bodySha256": "28e61b9eddb58b0d0025063ad912aab8a266a1e8f6124bf463dd8146eafbd530",
+      "sourceTimestamp": "2026-10-06T16:05:00.000Z"
+    },
+    {
+      "path": "/dolares",
+      "status": 503,
+      "bodySha256": "28e61b9eddb58b0d0025063ad912aab8a266a1e8f6124bf463dd8146eafbd530",
+      "sourceTimestamp": "2026-10-06T16:05:00.000Z"
+    }
+  ],
+  "assertions": [
+    {
+      "name": "failure300 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "failure300 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "failure300 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "failure300 initial persisted provider sample",
+      "status": "PASS",
+      "actual": {
+        "rate": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "origin": "provider"
+      },
+      "expected": {
+        "rate": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "origin": "provider"
+      }
+    },
+    {
+      "name": "failure300 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "provider": null,
+        "origin": "persisted"
+      },
+      "expected": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "provider": null,
+        "origin": "persisted"
+      }
+    },
+    {
+      "name": "failure300 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "provider": null,
+        "origin": "persisted"
+      },
+      "expected": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "provider": null,
+        "origin": "persisted"
+      }
+    },
+    {
+      "name": "failure300 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "provider": null,
+        "origin": "persisted"
+      },
+      "expected": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "provider": null,
+        "origin": "persisted"
+      }
+    },
+    {
+      "name": "failure300 returned quote",
+      "status": "PASS",
+      "actual": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "provider": null,
+        "origin": "persisted"
+      },
+      "expected": {
+        "buy": 1200,
+        "sell": 1200,
+        "time": "2026-10-06T16:00:00.000Z",
+        "provider": null,
+        "origin": "persisted"
+      }
+    },
+    {
+      "name": "failure300 provider request counters",
+      "status": "PASS",
+      "actual": {
+        "primary": 2,
+        "secondary": 1
+      },
+      "expected": {
+        "primary": 2,
+        "secondary": 1
+      }
+    }
+  ],
+  "scope": "Actual CI4 quote service and Supabase persistence, explicit loopback HTTP provider doubles. No Next HTTP route, browser, real provider or OS-clock test.",
+  "initialQuote": {
+    "type": "blue",
+    "buy": 1200,
+    "sell": 1200,
+    "timestamp": "2026-10-06T16:00:00.000Z",
+    "provider": "criptoya",
+    "origin": "provider"
+  },
+  "returnedQuote": {
+    "type": "blue",
+    "buy": 1200,
+    "sell": 1200,
+    "timestamp": "2026-10-06T16:00:00.000Z",
+    "provider": null,
+    "origin": "persisted"
+  },
+  "offsetSeconds": 300,
+  "expectedNewFxRows": 8,
+  "failure": {
+    "type": "ReferenceError",
+    "code": null,
+    "context": "Quote contract assertion/import/provider/persistence failed; raw details remain private"
+  }
+}

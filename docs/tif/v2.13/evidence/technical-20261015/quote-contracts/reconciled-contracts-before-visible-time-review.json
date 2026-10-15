@@ -1,0 +1,110 @@
+{
+  "reconciledAt": "2026-10-15T03:40:09.909309+00:00",
+  "status": "PASS_COMPOSITE",
+  "scope": "Two exact original quote contracts at service-integration scope, using real CI4 service/Supabase persistence and explicit loopback HTTP doubles. Original runtime attempt and offline SSR followup remain separate. No UI/browser/Next-HTTP/real-provider/monthly-availability acceptance.",
+  "revision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "originalCases": [
+    {
+      "id": "CP3-01",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "attempt-1/mapping.json",
+        "attempt-1/verification.json"
+      ],
+      "scope": "Exact06Oct12Z rates/units/source-time fixture and8FXactualDB rows. Crypto source is demonstrated by fixture HTTP binding, not fabricated metadata."
+    },
+    {
+      "id": "CP3-02",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "evidence": [
+        "attempt-1/hit299.json",
+        "attempt-1/refresh300.json",
+        "attempt-1/refresh301.json",
+        "attempt-1/failure300.json",
+        "attempt-1/verification.json",
+        "ssr-followup.json"
+      ],
+      "scope": "Four independent cache fixtures at299/300/301/failure300. Last fixture DB/provenance passed in runtime; actual saved-quote SSR assertion completed offline from that exact captured result."
+    }
+  ],
+  "runtimeAttempt": {
+    "status": "FAIL",
+    "path": "attempt-1/verification.json",
+    "sha256": "7463e8281a23f47f6af9b07127a0fdd32225d1788b5ca6f04a1f9354526434b4",
+    "workerResults": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS",
+      "FAIL"
+    ],
+    "failedStep": "Harness SSR ReferenceError: classic JSX needed the real React global; no product failure inferred. All9 fallback service assertions already passed.",
+    "preservedExecutedSourceHashes": [
+      {
+        "path": "run.mjs",
+        "sha256": "638f4047a33c19f02a5e00206d2a79e25bdc933f6a3b6001c191af21c4da0bf0"
+      },
+      {
+        "path": "worker.mjs",
+        "sha256": "3f54d3d83d87715c901e5e01d942a285ea8b54d2451a1a0a122d46f7cf00b65b"
+      },
+      {
+        "path": "clock-guard.mjs",
+        "sha256": "8debca2d9eadd21147042995ff5a37067257198874df0a65070d028b424159e1"
+      }
+    ]
+  },
+  "offlineSsrFollowup": {
+    "status": "PASS",
+    "path": "ssr-followup.json",
+    "sha256": "0d11625d474311aa696e645e61938d22575121f7164498799750e46887b9042b",
+    "httpRequests": 0,
+    "sqlCalls": 0,
+    "newFxRows": 0,
+    "assertions": 4,
+    "noServiceOrInsertRetry": true
+  },
+  "assertionScope": {
+    "workerAssertionsPassed": 45,
+    "offlineSsrAssertionsPassed": 4,
+    "notAdditionalUniqueMatrixCases": true
+  },
+  "persistence": {
+    "newFxRowsByScenario": [
+      8,
+      8,
+      16,
+      16,
+      8
+    ],
+    "newFxRows": 56,
+    "baselineFxRows": 0,
+    "finalFxRows": 56,
+    "allOriginalFxRowsPreserved": true,
+    "eachPreviousScenarioFxPreserved": true,
+    "canonical25Unchanged": true,
+    "marketDataCacheUnchanged": true,
+    "hashScope": "PostgreSQL canonical JSONB text before NUMERIC parsing, and exact per-ID row text preservation. Auth is outside canonical25; native Auth-only tests were permitted separately."
+  },
+  "currentHarnessScope": "worker.mjs now supplies the actual React runtime for the classic JSX transform. The fix is exercised by the offline renderer; the complete five-worker sequence has not been rerun with these changed harness bytes. The preserved original sequence is authoritative for service/DB behavior. No application sources changed.",
+  "artifacts": [
+    {
+      "path": "attempt-1/verification.json",
+      "sha256": "7463e8281a23f47f6af9b07127a0fdd32225d1788b5ca6f04a1f9354526434b4"
+    },
+    {
+      "path": "attempt-1/failure300.json",
+      "sha256": "6b1dd029f6c71d5cb29723076118a05b095f7757aadc8f7995e0a809f68981dd"
+    },
+    {
+      "path": "ssr-followup.json",
+      "sha256": "0d11625d474311aa696e645e61938d22575121f7164498799750e46887b9042b"
+    },
+    {
+      "path": "ssr-captured.mjs",
+      "sha256": "27b07a6b015c1a971dae972aaa291c8ef3714615fab4dfe0650bcd942db40822"
+    }
+  ]
+}

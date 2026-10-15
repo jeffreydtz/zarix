@@ -1,0 +1,54 @@
+{
+  "verifiedAt": "2026-10-15T03:45:00.170Z",
+  "status": "PASS",
+  "scope": "Offline SSR of the exact returnedQuote from the original actual DB fallback. Actual helper and corrected component match the recorded committed Git revision after CI4. The existing PROOF836 Next build is not changed or executed. Real React runtime provided for classic JSX; no service rerun, HTTP, DB, new FX, browser or application source change.",
+  "revision": "528116753d2f13c4d705b7e2a3ed0d4808e1d9a9",
+  "capturedArtifact": {
+    "path": "docs/tif/v2.13/evidence/technical-20261015/quote-contracts/attempt-1/failure300.json",
+    "sha256": "6b1dd029f6c71d5cb29723076118a05b095f7757aadc8f7995e0a809f68981dd"
+  },
+  "sourceManifest": [
+    {
+      "path": "lib/blue-fx-reference.ts",
+      "sha256": "7c8893713db0ad9f15d27ad6e2c6ea53aef19f9b4ae572f60199872956edd88c"
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "sha256": "674fe1139550b084a8e9afbce04bb9fea42e7de060f582512219586ef3d6c2bd"
+    }
+  ],
+  "rendererSha256": "346d7f427b70b4646d2c6ec54d1a294afb0d7519cedd703a65b533992ce1ed61",
+  "tsxConfigSha256": "5e8e5f1470936888f2e6da7f2e2e46cefc662072aa005cee194a6682e45516d5",
+  "reactVersion": "18.3.1",
+  "reference": {
+    "type": "blue",
+    "side": "sell",
+    "rate": 1200,
+    "observedAt": "2026-10-06T16:00:00.000Z",
+    "provider": null,
+    "origin": "persisted"
+  },
+  "ssrHtml": "<p class=\"\" data-testid=\"blue-fx-reference\">Referencia USD/ARS: dólar blue venta · 1 USD = ARS 1.200,00 · Fuente: Cotización guardada · proveedor original no informado · Fecha: <time dateTime=\"2026-10-06T16:00:00.000Z\">6/10/2026, 16:00:00 UTC</time>. Referencia indicativa.</p>",
+  "assertions": [
+    {
+      "name": "Actual persisted BlueFxReference keeps1200/T0/null provider",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual component labels saved quote",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual component does not fabricate provider",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual component time attribute preservesT0",
+      "status": "PASS"
+    },
+    {
+      "name": "Visible UTC clock shows original16:00 instead of04:00",
+      "status": "PASS"
+    }
+  ]
+}
