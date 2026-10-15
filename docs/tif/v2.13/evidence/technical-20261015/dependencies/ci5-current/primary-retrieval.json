@@ -1,0 +1,52 @@
+[
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/braces-latest.json",
+    "url": "https://registry.npmjs.org/braces/latest",
+    "at": "2026-10-15T04:45:53.313498+00:00",
+    "sha256": "8fd4c1db771542ab5456bb4806408fea9cdb5bf77f6cb9d5d563a3bd0ebb0b13",
+    "version": "3.0.3",
+    "firstPatchedVersions": []
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/micromatch-latest.json",
+    "url": "https://registry.npmjs.org/micromatch/latest",
+    "at": "2026-10-15T04:45:53.652011+00:00",
+    "sha256": "a65635515e4deb07ace263a33105cf4a10056affd438d48818b5368e27b05906",
+    "version": "4.0.8",
+    "firstPatchedVersions": []
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/fast-glob-latest.json",
+    "url": "https://registry.npmjs.org/fast-glob/latest",
+    "at": "2026-10-15T04:45:54.061885+00:00",
+    "sha256": "a336b6b77121af80e04a369080634b32e6bf269a08c1d5f0a09a6c1457011f7a",
+    "version": "3.3.3",
+    "firstPatchedVersions": []
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/tailwind-3.json",
+    "url": "https://registry.npmjs.org/tailwindcss/3.4.19",
+    "at": "2026-10-15T04:45:54.428057+00:00",
+    "sha256": "80fafa132f0b60c00c4b43978ce3464cedadfccad993354af7cf5a86ea603777",
+    "version": "3.4.19",
+    "firstPatchedVersions": []
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/next-plugin-15.json",
+    "url": "https://registry.npmjs.org/@next%2feslint-plugin-next/15.5.28",
+    "at": "2026-10-15T04:45:54.801749+00:00",
+    "sha256": "a5ffa1c2ea097e9974568922be0eec905d949f5ee5b0c4cc1e6475b5dd570af6",
+    "version": "15.5.28",
+    "firstPatchedVersions": []
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci5-current/github-advisory.json",
+    "url": "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+    "at": "2026-10-15T04:45:55.322017+00:00",
+    "sha256": "27a2ee7ec058cb9e53d6fe6d82bf7c5e982174fa61e958a19acdf6defc75c9da",
+    "version": null,
+    "firstPatchedVersions": [
+      null
+    ]
+  }
+]

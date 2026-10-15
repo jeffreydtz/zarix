@@ -1,0 +1,1549 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T04:50:28.419Z",
+  "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD.",
+  "results": [
+    {
+      "case_id": "CP2-20",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "LiteralFree3accountprecondition",
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        },
+        {
+          "name": "Freefourthrejects4xx",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Rejectedfourthcreatesnoaccount",
+          "actual": [
+            {
+              "id": "eea0acbc-f16b-481f-bb32-90fc43f65a66"
+            },
+            {
+              "id": "ea242d27-a46b-42b1-8267-15ef088d9c57"
+            },
+            {
+              "id": "85fdae28-a60b-47a4-925f-f8a42cf82fca"
+            },
+            {
+              "id": "74454e43-3d60-4a03-82eb-150c8eb5fe65"
+            },
+            {
+              "id": "f79412e5-7964-4f58-9d11-b4fd8699ee1e"
+            },
+            {
+              "id": "210a1d9f-650e-4b87-8235-c11c6806ed2f"
+            },
+            {
+              "id": "95af1729-80ee-4ebe-be81-5534d388a59b"
+            },
+            {
+              "id": "c093d54f-4abe-4af4-8ade-fb1a734cb971"
+            },
+            {
+              "id": "89915bb9-0ba8-40c0-949f-8b8f78b56394"
+            },
+            {
+              "id": "0594686e-0798-4481-b61f-887739dc9778"
+            },
+            {
+              "id": "fcc34447-22d1-4b48-aec5-c03f8a0123f0"
+            },
+            {
+              "id": "55f672a5-d529-4e8f-a1c9-6125c9be1f80"
+            },
+            {
+              "id": "325735e7-4d02-4ac8-9e96-fa68a31892b5"
+            },
+            {
+              "id": "3e1932b5-0679-4a68-be5e-d89b422410bd"
+            },
+            {
+              "id": "2af9c5db-8910-4c81-84fd-9214f2b0b0e2"
+            },
+            {
+              "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3"
+            },
+            {
+              "id": "0a564310-4098-47b3-9b48-527c89c1e60c"
+            },
+            {
+              "id": "37c53b67-92b5-418c-b649-97d982b2ebdb"
+            },
+            {
+              "id": "20276f40-3ce3-40b0-8207-76450e661d73"
+            },
+            {
+              "id": "232e5153-6abe-4e6c-8d4e-d4280446bf92"
+            },
+            {
+              "id": "7e1299f2-dfa5-4cd4-9719-7bf3e811726f"
+            },
+            {
+              "id": "0022aff3-1d21-40ad-af5b-e1d8f5a87d6e"
+            },
+            {
+              "id": "ee4b0e73-42d8-4f4f-8d19-f54e786ee5b2"
+            },
+            {
+              "id": "7e6a75f4-fbe2-455b-9870-26537c8615d3"
+            },
+            {
+              "id": "e49d2eb7-def5-4b52-9578-e24fda67c3a6"
+            },
+            {
+              "id": "7ffe9748-53a4-4b9d-8cd4-4991d6f19037"
+            },
+            {
+              "id": "4c110a41-3efa-49fe-8535-599dda04e471"
+            },
+            {
+              "id": "90d29843-0d88-4c9c-b8f5-44c251dcd0b9"
+            },
+            {
+              "id": "e60fba45-fbad-4eff-85d0-90fb6d4a306c"
+            },
+            {
+              "id": "617a7527-1ec0-4ef6-b141-8bd1a05030dc"
+            },
+            {
+              "id": "0b80632f-b7ea-4733-9868-0383c04392b6"
+            },
+            {
+              "id": "685d4bf0-eb98-4662-862b-877a95bafe8c"
+            },
+            {
+              "id": "b87cd3b3-e8c7-450f-a5c2-a15c94e70e10"
+            },
+            {
+              "id": "4b24c057-bd16-4795-998c-57f1047acfa7"
+            },
+            {
+              "id": "f87409fc-741b-4b2d-8c5a-051b212de1c5"
+            },
+            {
+              "id": "96ced97c-55ac-4dd8-911b-82a69ed53d5b"
+            },
+            {
+              "id": "9397690a-ec42-4997-8e69-c220c7e74acc"
+            },
+            {
+              "id": "5f643f69-bcf1-4c73-83c8-bc8d4527d009"
+            },
+            {
+              "id": "bb013536-f9a9-4979-9ead-bed4aabf7ef9"
+            },
+            {
+              "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b"
+            },
+            {
+              "id": "1e485846-536d-40dc-bc78-9873a755f1fa"
+            },
+            {
+              "id": "77462fd8-af35-4ae5-9a40-72c39a5ec0d5"
+            },
+            {
+              "id": "c42a1e7a-4415-4881-826f-87fb66fd2868"
+            },
+            {
+              "id": "6c513299-fe0a-476b-b807-ec15576282c3"
+            },
+            {
+              "id": "ff8c72ae-c5e2-4229-8afe-e98c9df5216d"
+            },
+            {
+              "id": "e74d717f-7654-4112-a54a-8df6f50bd1fd"
+            },
+            {
+              "id": "031cc86d-b0b9-45a7-85f5-bbc86e5d71de"
+            },
+            {
+              "id": "3765b89b-f3e7-4b5f-820b-990d4f28079a"
+            },
+            {
+              "id": "c7e37ede-3603-4b46-bed4-c670bc2f4f64"
+            },
+            {
+              "id": "4ad77e4d-fe95-40fb-9cd7-2d0b6207fc8e"
+            },
+            {
+              "id": "9fa8bb1c-6d46-4f45-a563-60ab36b05955"
+            },
+            {
+              "id": "27d83dba-c922-45cf-89b4-f65653f2ed6e"
+            },
+            {
+              "id": "e7755f73-d18f-4932-a975-f719ced06b25"
+            },
+            {
+              "id": "ad27c9c8-6a53-45a3-8449-9f3dde392448"
+            },
+            {
+              "id": "11ef599c-c1d7-46aa-b9f3-5723e4a9b0c2"
+            },
+            {
+              "id": "2eb64a45-e7e1-4eaa-9dce-280f94856984"
+            },
+            {
+              "id": "754ca020-3259-49d8-a913-48521b30b890"
+            }
+          ],
+          "expected": [
+            {
+              "id": "eea0acbc-f16b-481f-bb32-90fc43f65a66"
+            },
+            {
+              "id": "ea242d27-a46b-42b1-8267-15ef088d9c57"
+            },
+            {
+              "id": "85fdae28-a60b-47a4-925f-f8a42cf82fca"
+            },
+            {
+              "id": "74454e43-3d60-4a03-82eb-150c8eb5fe65"
+            },
+            {
+              "id": "f79412e5-7964-4f58-9d11-b4fd8699ee1e"
+            },
+            {
+              "id": "210a1d9f-650e-4b87-8235-c11c6806ed2f"
+            },
+            {
+              "id": "95af1729-80ee-4ebe-be81-5534d388a59b"
+            },
+            {
+              "id": "c093d54f-4abe-4af4-8ade-fb1a734cb971"
+            },
+            {
+              "id": "89915bb9-0ba8-40c0-949f-8b8f78b56394"
+            },
+            {
+              "id": "0594686e-0798-4481-b61f-887739dc9778"
+            },
+            {
+              "id": "fcc34447-22d1-4b48-aec5-c03f8a0123f0"
+            },
+            {
+              "id": "55f672a5-d529-4e8f-a1c9-6125c9be1f80"
+            },
+            {
+              "id": "325735e7-4d02-4ac8-9e96-fa68a31892b5"
+            },
+            {
+              "id": "3e1932b5-0679-4a68-be5e-d89b422410bd"
+            },
+            {
+              "id": "2af9c5db-8910-4c81-84fd-9214f2b0b0e2"
+            },
+            {
+              "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3"
+            },
+            {
+              "id": "0a564310-4098-47b3-9b48-527c89c1e60c"
+            },
+            {
+              "id": "37c53b67-92b5-418c-b649-97d982b2ebdb"
+            },
+            {
+              "id": "20276f40-3ce3-40b0-8207-76450e661d73"
+            },
+            {
+              "id": "232e5153-6abe-4e6c-8d4e-d4280446bf92"
+            },
+            {
+              "id": "7e1299f2-dfa5-4cd4-9719-7bf3e811726f"
+            },
+            {
+              "id": "0022aff3-1d21-40ad-af5b-e1d8f5a87d6e"
+            },
+            {
+              "id": "ee4b0e73-42d8-4f4f-8d19-f54e786ee5b2"
+            },
+            {
+              "id": "7e6a75f4-fbe2-455b-9870-26537c8615d3"
+            },
+            {
+              "id": "e49d2eb7-def5-4b52-9578-e24fda67c3a6"
+            },
+            {
+              "id": "7ffe9748-53a4-4b9d-8cd4-4991d6f19037"
+            },
+            {
+              "id": "4c110a41-3efa-49fe-8535-599dda04e471"
+            },
+            {
+              "id": "90d29843-0d88-4c9c-b8f5-44c251dcd0b9"
+            },
+            {
+              "id": "e60fba45-fbad-4eff-85d0-90fb6d4a306c"
+            },
+            {
+              "id": "617a7527-1ec0-4ef6-b141-8bd1a05030dc"
+            },
+            {
+              "id": "0b80632f-b7ea-4733-9868-0383c04392b6"
+            },
+            {
+              "id": "685d4bf0-eb98-4662-862b-877a95bafe8c"
+            },
+            {
+              "id": "b87cd3b3-e8c7-450f-a5c2-a15c94e70e10"
+            },
+            {
+              "id": "4b24c057-bd16-4795-998c-57f1047acfa7"
+            },
+            {
+              "id": "f87409fc-741b-4b2d-8c5a-051b212de1c5"
+            },
+            {
+              "id": "96ced97c-55ac-4dd8-911b-82a69ed53d5b"
+            },
+            {
+              "id": "9397690a-ec42-4997-8e69-c220c7e74acc"
+            },
+            {
+              "id": "5f643f69-bcf1-4c73-83c8-bc8d4527d009"
+            },
+            {
+              "id": "bb013536-f9a9-4979-9ead-bed4aabf7ef9"
+            },
+            {
+              "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b"
+            },
+            {
+              "id": "1e485846-536d-40dc-bc78-9873a755f1fa"
+            },
+            {
+              "id": "77462fd8-af35-4ae5-9a40-72c39a5ec0d5"
+            },
+            {
+              "id": "c42a1e7a-4415-4881-826f-87fb66fd2868"
+            },
+            {
+              "id": "6c513299-fe0a-476b-b807-ec15576282c3"
+            },
+            {
+              "id": "ff8c72ae-c5e2-4229-8afe-e98c9df5216d"
+            },
+            {
+              "id": "e74d717f-7654-4112-a54a-8df6f50bd1fd"
+            },
+            {
+              "id": "031cc86d-b0b9-45a7-85f5-bbc86e5d71de"
+            },
+            {
+              "id": "3765b89b-f3e7-4b5f-820b-990d4f28079a"
+            },
+            {
+              "id": "c7e37ede-3603-4b46-bed4-c670bc2f4f64"
+            },
+            {
+              "id": "4ad77e4d-fe95-40fb-9cd7-2d0b6207fc8e"
+            },
+            {
+              "id": "9fa8bb1c-6d46-4f45-a563-60ab36b05955"
+            },
+            {
+              "id": "27d83dba-c922-45cf-89b4-f65653f2ed6e"
+            },
+            {
+              "id": "e7755f73-d18f-4932-a975-f719ced06b25"
+            },
+            {
+              "id": "ad27c9c8-6a53-45a3-8449-9f3dde392448"
+            },
+            {
+              "id": "11ef599c-c1d7-46aa-b9f3-5723e4a9b0c2"
+            },
+            {
+              "id": "2eb64a45-e7e1-4eaa-9dce-280f94856984"
+            },
+            {
+              "id": "754ca020-3259-49d8-a913-48521b30b890"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Deactivateonlynewownedfirstaccount204",
+          "actual": 204,
+          "expected": 204,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Freereplacementkeeps3active",
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Premiumacceptsfourth",
+          "actual": 4,
+          "expected": 4,
+          "status": "PASS"
+        },
+        {
+          "name": "OwnexportremainsFree200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        }
+      ],
+      "original_contract": {
+        "precondiciones": "Canon v2.13: Free máximo3 cuentas activas; U1 con3 activas",
+        "entrada": "crear cuarta; desactivar una e intentar; usuario Premium crear cuarta",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Free bloquea cuarta activa; tras desactivar acepta hasta3; Premium acepta cuarta según contrato; exportación propia permanece gratuita",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "startedAt": "2026-10-15T04:50:31.152Z",
+      "apiSqlScope": {
+        "status": "PASS",
+        "assertions": 15
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "b35ea169-84ef-46d9-85fe-6d6580636f66",
+      "startedAt": "2026-10-15T04:50:31.453Z",
+      "status": 201,
+      "responseSha256": "74dce60db5e8a0e6497d28182c17e4aec4e9c1aff33d601c1e3cebc4567fd79e",
+      "endedAt": "2026-10-15T04:50:31.553Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "62ff77b4-8499-4253-a9d5-c3ef15deb5c8",
+      "startedAt": "2026-10-15T04:50:31.704Z",
+      "status": 201,
+      "responseSha256": "fe9ed2897019915da845415e13dff7e097edbc4bdb2cbf4a5dab78592e0df88e",
+      "endedAt": "2026-10-15T04:50:31.789Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "6c74051d-7baa-484d-ab52-53c4ae73fe43",
+      "startedAt": "2026-10-15T04:50:31.947Z",
+      "status": 201,
+      "responseSha256": "f68e603633b8f9b82dc68537fb1d56205dbed6ba45e6ffbacaa43f4363267a06",
+      "endedAt": "2026-10-15T04:50:32.037Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "8209389c-7ba5-426e-af62-4dbfa4b50149",
+      "startedAt": "2026-10-15T04:50:32.190Z",
+      "status": 201,
+      "responseSha256": "00750acd3869856793776350cac508d743fb8360571892031d9aeafcde244000",
+      "endedAt": "2026-10-15T04:50:32.271Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "3025a640-b03b-4e3a-95d2-cf95bc968ffc",
+      "startedAt": "2026-10-15T04:50:32.422Z",
+      "status": 201,
+      "responseSha256": "cd6f04adbeb84d889c44664fbc645af3ca2be4176693fb7fc9b308b252afba69",
+      "endedAt": "2026-10-15T04:50:32.510Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "2e5cb339-5ee5-448c-9e73-6cd0686ae424",
+      "startedAt": "2026-10-15T04:50:32.662Z",
+      "status": 201,
+      "responseSha256": "f4e16fa742358c3edce0a7e69df1e60687f1ebf766a3c43706595f0c7ba53248",
+      "endedAt": "2026-10-15T04:50:32.749Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "877654ba-f27f-4b71-b399-d03e715504b2",
+      "startedAt": "2026-10-15T04:50:32.974Z",
+      "status": 403,
+      "responseSha256": "183e589af5f3c9e01b0337a7951d7cd479dbf874b5282ad7809fd61d4f5a1202",
+      "endedAt": "2026-10-15T04:50:33.061Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/11ef599c-c1d7-46aa-b9f3-5723e4a9b0c2",
+      "requestId": "2e0cf821-549a-4baa-81cf-875394f2dab5",
+      "startedAt": "2026-10-15T04:50:33.137Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:33.220Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "9e96d394-04a5-4908-9436-8287a9997608",
+      "startedAt": "2026-10-15T04:50:33.297Z",
+      "status": 201,
+      "responseSha256": "00dad136475ac2e2d1f53ded8eb112def98ece2acd8755613841d95b1f186477",
+      "endedAt": "2026-10-15T04:50:33.385Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "071e46a3-3690-4ec9-bacb-9372c239459d",
+      "startedAt": "2026-10-15T04:50:33.614Z",
+      "status": 201,
+      "responseSha256": "d32ca0dad3250670b26da665d4ef9a46e6ba2bf5ee8b2b06c6e8917f546a1927",
+      "endedAt": "2026-10-15T04:50:33.700Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "656c3892-a677-4503-9175-6d9a7c9654f5",
+      "startedAt": "2026-10-15T04:50:33.858Z",
+      "status": 200,
+      "responseSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "endedAt": "2026-10-15T04:50:33.947Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/11ef599c-c1d7-46aa-b9f3-5723e4a9b0c2",
+      "requestId": "60c74e2c-7b4d-47e2-8d7f-4a4fa3b39351",
+      "startedAt": "2026-10-15T04:50:34.025Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:34.110Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/360968e1-f5b2-455b-a500-b8529e40ea07",
+      "requestId": "87aab038-bb6b-44ae-8397-0f8c8e7136f2",
+      "startedAt": "2026-10-15T04:50:34.186Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:34.269Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/2eb64a45-e7e1-4eaa-9dce-280f94856984",
+      "requestId": "6ce2033e-7848-4ba0-89d6-27dbcfcd52f5",
+      "startedAt": "2026-10-15T04:50:34.346Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:34.429Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/24ec5989-482b-490e-8903-d6c25649fed8",
+      "requestId": "e5fa560f-fe78-4518-a057-bbc6d67ff8ea",
+      "startedAt": "2026-10-15T04:50:34.505Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:34.589Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/754ca020-3259-49d8-a913-48521b30b890",
+      "requestId": "e8b03085-85e2-446d-b5b7-0ee163d2c19e",
+      "startedAt": "2026-10-15T04:50:34.666Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:34.748Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/bde23ba4-a51e-465d-b802-68a540563274",
+      "requestId": "9a3031cc-3b11-4fa9-9b8b-058368b45417",
+      "startedAt": "2026-10-15T04:50:34.825Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:34.911Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/23589cd2-3b86-4354-bc29-82e96c279061",
+      "requestId": "dd75ae17-ac58-4a65-a0f1-da21fe5189b2",
+      "startedAt": "2026-10-15T04:50:34.988Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:35.078Z"
+    },
+    {
+      "caseId": "CP2-20",
+      "method": "DELETE",
+      "path": "/api/accounts/fd0d98c9-9192-4c82-aeab-9d1ac630dbbd",
+      "requestId": "bf601591-b6fd-4af0-bd7c-839c1d919b83",
+      "startedAt": "2026-10-15T04:50:35.155Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:50:35.239Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "11ef599c-c1d7-46aa-b9f3-5723e4a9b0c2",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP2-20"
+    },
+    {
+      "kind": "account",
+      "id": "360968e1-f5b2-455b-a500-b8529e40ea07",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "CP2-20"
+    },
+    {
+      "kind": "account",
+      "id": "2eb64a45-e7e1-4eaa-9dce-280f94856984",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP2-20"
+    },
+    {
+      "kind": "account",
+      "id": "24ec5989-482b-490e-8903-d6c25649fed8",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "CP2-20"
+    },
+    {
+      "kind": "account",
+      "id": "754ca020-3259-49d8-a913-48521b30b890",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP2-20"
+    },
+    {
+      "kind": "account",
+      "id": "bde23ba4-a51e-465d-b802-68a540563274",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "CP2-20"
+    },
+    {
+      "kind": "account",
+      "id": "23589cd2-3b86-4354-bc29-82e96c279061",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP2-20"
+    },
+    {
+      "kind": "account",
+      "id": "fd0d98c9-9192-4c82-aeab-9d1ac630dbbd",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "CP2-20"
+    }
+  ],
+  "executionCount": 1,
+  "case": {
+    "case_id": "CP2-20",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "LiteralFree3accountprecondition",
+        "actual": 3,
+        "expected": 3,
+        "status": "PASS"
+      },
+      {
+        "name": "Freefourthrejects4xx",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Rejectedfourthcreatesnoaccount",
+        "actual": [
+          {
+            "id": "eea0acbc-f16b-481f-bb32-90fc43f65a66"
+          },
+          {
+            "id": "ea242d27-a46b-42b1-8267-15ef088d9c57"
+          },
+          {
+            "id": "85fdae28-a60b-47a4-925f-f8a42cf82fca"
+          },
+          {
+            "id": "74454e43-3d60-4a03-82eb-150c8eb5fe65"
+          },
+          {
+            "id": "f79412e5-7964-4f58-9d11-b4fd8699ee1e"
+          },
+          {
+            "id": "210a1d9f-650e-4b87-8235-c11c6806ed2f"
+          },
+          {
+            "id": "95af1729-80ee-4ebe-be81-5534d388a59b"
+          },
+          {
+            "id": "c093d54f-4abe-4af4-8ade-fb1a734cb971"
+          },
+          {
+            "id": "89915bb9-0ba8-40c0-949f-8b8f78b56394"
+          },
+          {
+            "id": "0594686e-0798-4481-b61f-887739dc9778"
+          },
+          {
+            "id": "fcc34447-22d1-4b48-aec5-c03f8a0123f0"
+          },
+          {
+            "id": "55f672a5-d529-4e8f-a1c9-6125c9be1f80"
+          },
+          {
+            "id": "325735e7-4d02-4ac8-9e96-fa68a31892b5"
+          },
+          {
+            "id": "3e1932b5-0679-4a68-be5e-d89b422410bd"
+          },
+          {
+            "id": "2af9c5db-8910-4c81-84fd-9214f2b0b0e2"
+          },
+          {
+            "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3"
+          },
+          {
+            "id": "0a564310-4098-47b3-9b48-527c89c1e60c"
+          },
+          {
+            "id": "37c53b67-92b5-418c-b649-97d982b2ebdb"
+          },
+          {
+            "id": "20276f40-3ce3-40b0-8207-76450e661d73"
+          },
+          {
+            "id": "232e5153-6abe-4e6c-8d4e-d4280446bf92"
+          },
+          {
+            "id": "7e1299f2-dfa5-4cd4-9719-7bf3e811726f"
+          },
+          {
+            "id": "0022aff3-1d21-40ad-af5b-e1d8f5a87d6e"
+          },
+          {
+            "id": "ee4b0e73-42d8-4f4f-8d19-f54e786ee5b2"
+          },
+          {
+            "id": "7e6a75f4-fbe2-455b-9870-26537c8615d3"
+          },
+          {
+            "id": "e49d2eb7-def5-4b52-9578-e24fda67c3a6"
+          },
+          {
+            "id": "7ffe9748-53a4-4b9d-8cd4-4991d6f19037"
+          },
+          {
+            "id": "4c110a41-3efa-49fe-8535-599dda04e471"
+          },
+          {
+            "id": "90d29843-0d88-4c9c-b8f5-44c251dcd0b9"
+          },
+          {
+            "id": "e60fba45-fbad-4eff-85d0-90fb6d4a306c"
+          },
+          {
+            "id": "617a7527-1ec0-4ef6-b141-8bd1a05030dc"
+          },
+          {
+            "id": "0b80632f-b7ea-4733-9868-0383c04392b6"
+          },
+          {
+            "id": "685d4bf0-eb98-4662-862b-877a95bafe8c"
+          },
+          {
+            "id": "b87cd3b3-e8c7-450f-a5c2-a15c94e70e10"
+          },
+          {
+            "id": "4b24c057-bd16-4795-998c-57f1047acfa7"
+          },
+          {
+            "id": "f87409fc-741b-4b2d-8c5a-051b212de1c5"
+          },
+          {
+            "id": "96ced97c-55ac-4dd8-911b-82a69ed53d5b"
+          },
+          {
+            "id": "9397690a-ec42-4997-8e69-c220c7e74acc"
+          },
+          {
+            "id": "5f643f69-bcf1-4c73-83c8-bc8d4527d009"
+          },
+          {
+            "id": "bb013536-f9a9-4979-9ead-bed4aabf7ef9"
+          },
+          {
+            "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b"
+          },
+          {
+            "id": "1e485846-536d-40dc-bc78-9873a755f1fa"
+          },
+          {
+            "id": "77462fd8-af35-4ae5-9a40-72c39a5ec0d5"
+          },
+          {
+            "id": "c42a1e7a-4415-4881-826f-87fb66fd2868"
+          },
+          {
+            "id": "6c513299-fe0a-476b-b807-ec15576282c3"
+          },
+          {
+            "id": "ff8c72ae-c5e2-4229-8afe-e98c9df5216d"
+          },
+          {
+            "id": "e74d717f-7654-4112-a54a-8df6f50bd1fd"
+          },
+          {
+            "id": "031cc86d-b0b9-45a7-85f5-bbc86e5d71de"
+          },
+          {
+            "id": "3765b89b-f3e7-4b5f-820b-990d4f28079a"
+          },
+          {
+            "id": "c7e37ede-3603-4b46-bed4-c670bc2f4f64"
+          },
+          {
+            "id": "4ad77e4d-fe95-40fb-9cd7-2d0b6207fc8e"
+          },
+          {
+            "id": "9fa8bb1c-6d46-4f45-a563-60ab36b05955"
+          },
+          {
+            "id": "27d83dba-c922-45cf-89b4-f65653f2ed6e"
+          },
+          {
+            "id": "e7755f73-d18f-4932-a975-f719ced06b25"
+          },
+          {
+            "id": "ad27c9c8-6a53-45a3-8449-9f3dde392448"
+          },
+          {
+            "id": "11ef599c-c1d7-46aa-b9f3-5723e4a9b0c2"
+          },
+          {
+            "id": "2eb64a45-e7e1-4eaa-9dce-280f94856984"
+          },
+          {
+            "id": "754ca020-3259-49d8-a913-48521b30b890"
+          }
+        ],
+        "expected": [
+          {
+            "id": "eea0acbc-f16b-481f-bb32-90fc43f65a66"
+          },
+          {
+            "id": "ea242d27-a46b-42b1-8267-15ef088d9c57"
+          },
+          {
+            "id": "85fdae28-a60b-47a4-925f-f8a42cf82fca"
+          },
+          {
+            "id": "74454e43-3d60-4a03-82eb-150c8eb5fe65"
+          },
+          {
+            "id": "f79412e5-7964-4f58-9d11-b4fd8699ee1e"
+          },
+          {
+            "id": "210a1d9f-650e-4b87-8235-c11c6806ed2f"
+          },
+          {
+            "id": "95af1729-80ee-4ebe-be81-5534d388a59b"
+          },
+          {
+            "id": "c093d54f-4abe-4af4-8ade-fb1a734cb971"
+          },
+          {
+            "id": "89915bb9-0ba8-40c0-949f-8b8f78b56394"
+          },
+          {
+            "id": "0594686e-0798-4481-b61f-887739dc9778"
+          },
+          {
+            "id": "fcc34447-22d1-4b48-aec5-c03f8a0123f0"
+          },
+          {
+            "id": "55f672a5-d529-4e8f-a1c9-6125c9be1f80"
+          },
+          {
+            "id": "325735e7-4d02-4ac8-9e96-fa68a31892b5"
+          },
+          {
+            "id": "3e1932b5-0679-4a68-be5e-d89b422410bd"
+          },
+          {
+            "id": "2af9c5db-8910-4c81-84fd-9214f2b0b0e2"
+          },
+          {
+            "id": "6860e947-e82d-4c76-8fe7-8eb5f951ddf3"
+          },
+          {
+            "id": "0a564310-4098-47b3-9b48-527c89c1e60c"
+          },
+          {
+            "id": "37c53b67-92b5-418c-b649-97d982b2ebdb"
+          },
+          {
+            "id": "20276f40-3ce3-40b0-8207-76450e661d73"
+          },
+          {
+            "id": "232e5153-6abe-4e6c-8d4e-d4280446bf92"
+          },
+          {
+            "id": "7e1299f2-dfa5-4cd4-9719-7bf3e811726f"
+          },
+          {
+            "id": "0022aff3-1d21-40ad-af5b-e1d8f5a87d6e"
+          },
+          {
+            "id": "ee4b0e73-42d8-4f4f-8d19-f54e786ee5b2"
+          },
+          {
+            "id": "7e6a75f4-fbe2-455b-9870-26537c8615d3"
+          },
+          {
+            "id": "e49d2eb7-def5-4b52-9578-e24fda67c3a6"
+          },
+          {
+            "id": "7ffe9748-53a4-4b9d-8cd4-4991d6f19037"
+          },
+          {
+            "id": "4c110a41-3efa-49fe-8535-599dda04e471"
+          },
+          {
+            "id": "90d29843-0d88-4c9c-b8f5-44c251dcd0b9"
+          },
+          {
+            "id": "e60fba45-fbad-4eff-85d0-90fb6d4a306c"
+          },
+          {
+            "id": "617a7527-1ec0-4ef6-b141-8bd1a05030dc"
+          },
+          {
+            "id": "0b80632f-b7ea-4733-9868-0383c04392b6"
+          },
+          {
+            "id": "685d4bf0-eb98-4662-862b-877a95bafe8c"
+          },
+          {
+            "id": "b87cd3b3-e8c7-450f-a5c2-a15c94e70e10"
+          },
+          {
+            "id": "4b24c057-bd16-4795-998c-57f1047acfa7"
+          },
+          {
+            "id": "f87409fc-741b-4b2d-8c5a-051b212de1c5"
+          },
+          {
+            "id": "96ced97c-55ac-4dd8-911b-82a69ed53d5b"
+          },
+          {
+            "id": "9397690a-ec42-4997-8e69-c220c7e74acc"
+          },
+          {
+            "id": "5f643f69-bcf1-4c73-83c8-bc8d4527d009"
+          },
+          {
+            "id": "bb013536-f9a9-4979-9ead-bed4aabf7ef9"
+          },
+          {
+            "id": "dbbc2582-c7d4-4196-a023-5e3833c3c95b"
+          },
+          {
+            "id": "1e485846-536d-40dc-bc78-9873a755f1fa"
+          },
+          {
+            "id": "77462fd8-af35-4ae5-9a40-72c39a5ec0d5"
+          },
+          {
+            "id": "c42a1e7a-4415-4881-826f-87fb66fd2868"
+          },
+          {
+            "id": "6c513299-fe0a-476b-b807-ec15576282c3"
+          },
+          {
+            "id": "ff8c72ae-c5e2-4229-8afe-e98c9df5216d"
+          },
+          {
+            "id": "e74d717f-7654-4112-a54a-8df6f50bd1fd"
+          },
+          {
+            "id": "031cc86d-b0b9-45a7-85f5-bbc86e5d71de"
+          },
+          {
+            "id": "3765b89b-f3e7-4b5f-820b-990d4f28079a"
+          },
+          {
+            "id": "c7e37ede-3603-4b46-bed4-c670bc2f4f64"
+          },
+          {
+            "id": "4ad77e4d-fe95-40fb-9cd7-2d0b6207fc8e"
+          },
+          {
+            "id": "9fa8bb1c-6d46-4f45-a563-60ab36b05955"
+          },
+          {
+            "id": "27d83dba-c922-45cf-89b4-f65653f2ed6e"
+          },
+          {
+            "id": "e7755f73-d18f-4932-a975-f719ced06b25"
+          },
+          {
+            "id": "ad27c9c8-6a53-45a3-8449-9f3dde392448"
+          },
+          {
+            "id": "11ef599c-c1d7-46aa-b9f3-5723e4a9b0c2"
+          },
+          {
+            "id": "2eb64a45-e7e1-4eaa-9dce-280f94856984"
+          },
+          {
+            "id": "754ca020-3259-49d8-a913-48521b30b890"
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Deactivateonlynewownedfirstaccount204",
+        "actual": 204,
+        "expected": 204,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Freereplacementkeeps3active",
+        "actual": 3,
+        "expected": 3,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Premiumacceptsfourth",
+        "actual": 4,
+        "expected": 4,
+        "status": "PASS"
+      },
+      {
+        "name": "OwnexportremainsFree200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      }
+    ],
+    "original_contract": {
+      "precondiciones": "Canon v2.13: Free máximo3 cuentas activas; U1 con3 activas",
+      "entrada": "crear cuarta; desactivar una e intentar; usuario Premium crear cuarta",
+      "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+      "resultado_esperado": "Free bloquea cuarta activa; tras desactivar acepta hasta3; Premium acepta cuarta según contrato; exportación propia permanece gratuita",
+      "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+    },
+    "startedAt": "2026-10-15T04:50:31.152Z",
+    "apiSqlScope": {
+      "status": "PASS",
+      "assertions": 15
+    }
+  },
+  "runtimeProfile": "final-core-acceptance",
+  "runtimeMode": "clock",
+  "executionMode": "api-sql-only",
+  "logicalOwner": "A",
+  "pendingScopes": [],
+  "run": "2a81ef74-a855-4e4c-848c-f437c54f13d8",
+  "nativePreparation": {
+    "sha256": "b94b67366b193af018f973d7e3689a32b9f59b0e7436d5e762ea72db1cd31bc4",
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "normalAuthIdsBound": true
+  },
+  "buildBinding": {
+    "profile": "final-core-acceptance",
+    "runtimeMode": "clock",
+    "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+    "buildId": "vPLjt1QViugJhUWR62DPp",
+    "nextPid": 17292,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
+    "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
+    "physicalSourceCount": 480,
+    "frozenGitSourceCount": 479,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "privateEnvBoundToExactNativeProject": true,
+    "ownedListenerAndCwdVerified": true,
+    "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+  },
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "87d0678b6b7754a83b474a4940907d5fc121003937611cf684fecde75cda54c2"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "1ecfdaa46817344bbd18493c3dae430eb191b8fabd4672f101120e2f5a9a2d95"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "32c1e61918a3457c8ac0e3d9b1570291e5c7cb3acc43f8b3fa2bed3d9164c4ba"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    }
+  ],
+  "workingSourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "87d0678b6b7754a83b474a4940907d5fc121003937611cf684fecde75cda54c2"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "1ecfdaa46817344bbd18493c3dae430eb191b8fabd4672f101120e2f5a9a2d95"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "32c1e61918a3457c8ac0e3d9b1570291e5c7cb3acc43f8b3fa2bed3d9164c4ba"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "unbuiltCurrentDeltas": [],
+  "clockProof": {
+    "path": "final-proof-clock-observation.json",
+    "sha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118",
+    "fixedTime": "2026-10-06T12:00:00.000Z",
+    "observedApplicationTime": "2026-10-06T12:00:00.000Z",
+    "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+  },
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "users": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "logicalRole": "selected-owner",
+      "physicalLabel": "A",
+      "normalAuth": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "logicalRole": "other-owner",
+      "physicalLabel": "B",
+      "normalAuth": true
+    }
+  ],
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 85,
+      "beforeMd5": "26c0ccf8e5cd1f7f77bcd1f1bb624dd6",
+      "afterMd5": "26c0ccf8e5cd1f7f77bcd1f1bb624dd6",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 123,
+      "beforeMd5": "01d2f62a92d8d8fbd1cd5a44d1621503",
+      "afterMd5": "01d2f62a92d8d8fbd1cd5a44d1621503",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 20,
+      "beforeMd5": "af9c2e255379d2a580fdcefd86b50ad5",
+      "afterMd5": "af9c2e255379d2a580fdcefd86b50ad5",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 8,
+      "beforeMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "afterMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 36,
+      "beforeMd5": "6948feaf8555d556454d7f0257052521",
+      "afterMd5": "6948feaf8555d556454d7f0257052521",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 10,
+      "beforeMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "afterMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "servedBuildStable": true,
+  "finishedAt": "2026-10-15T04:50:36.354Z"
+}

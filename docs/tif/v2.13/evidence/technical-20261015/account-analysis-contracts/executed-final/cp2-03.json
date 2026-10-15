@@ -1,0 +1,1160 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T04:48:57.953Z",
+  "scope": "One exact selected original account/analysis contract. Existing ordinary Auth A/B; no new identities/plans/credentials. Prepared separately from CI3 and LOAD.",
+  "results": [
+    {
+      "case_id": "CP2-03",
+      "status": "PASS",
+      "complete_original_contract": true,
+      "assertions": [
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture manual position API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Rename/deactivate200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "New name and inactive state",
+          "actual": {
+            "name": "Renamed cb16f66f-0d49-4931-970a-d676171b42cd",
+            "is_active": false
+          },
+          "expected": {
+            "name": "Renamed cb16f66f-0d49-4931-970a-d676171b42cd",
+            "is_active": false
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Existing movements retained",
+          "actual": [
+            {
+              "id": "386de945-6ddf-47cd-9d44-841cff2dc33e",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1500,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:01.085326+00:00",
+              "updated_at": "2026-10-15T04:49:01.085326+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1500,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "c1f5fb82-d243-4b1e-b4f5-f925ced8ca04",
+              "tags": null,
+              "type": "adjustment",
+              "notes": null,
+              "amount": 10000,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:00.914064+00:00",
+              "updated_at": "2026-10-15T04:49:00.914064+00:00",
+              "category_id": null,
+              "description": "Saldo inicial",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-15T04:49:00.914064+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10000,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "386de945-6ddf-47cd-9d44-841cff2dc33e",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1500,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:01.085326+00:00",
+              "updated_at": "2026-10-15T04:49:01.085326+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1500,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "c1f5fb82-d243-4b1e-b4f5-f925ced8ca04",
+              "tags": null,
+              "type": "adjustment",
+              "notes": null,
+              "amount": 10000,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:00.914064+00:00",
+              "updated_at": "2026-10-15T04:49:00.914064+00:00",
+              "category_id": null,
+              "description": "Saldo inicial",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-15T04:49:00.914064+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10000,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Existing positions retained",
+          "actual": [
+            {
+              "id": "6020ec8e-a486-439b-97f3-3a33ff42b896",
+              "name": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+              "type": "stock_us",
+              "notes": null,
+              "ticker": null,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "quantity": 2,
+              "is_active": true,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:01.178022+00:00",
+              "updated_at": "2026-10-15T04:49:01.178022+00:00",
+              "current_price": 110,
+              "interest_rate": null,
+              "maturity_date": null,
+              "purchase_date": "2026-10-01",
+              "purchase_price": 100,
+              "is_manual_price": true,
+              "market_currency": "USD",
+              "purchase_currency": "USD",
+              "current_price_change_pct": null,
+              "current_price_updated_at": "2026-10-06T12:00:00+00:00"
+            }
+          ],
+          "expected": [
+            {
+              "id": "6020ec8e-a486-439b-97f3-3a33ff42b896",
+              "name": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+              "type": "stock_us",
+              "notes": null,
+              "ticker": null,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "quantity": 2,
+              "is_active": true,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:01.178022+00:00",
+              "updated_at": "2026-10-15T04:49:01.178022+00:00",
+              "current_price": 110,
+              "interest_rate": null,
+              "maturity_date": null,
+              "purchase_date": "2026-10-01",
+              "purchase_price": 100,
+              "is_manual_price": true,
+              "market_currency": "USD",
+              "purchase_currency": "USD",
+              "current_price_change_pct": null,
+              "current_price_updated_at": "2026-10-06T12:00:00+00:00"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Inactive account operation is denied (CSV does not mandate4xx)",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Rejected operation has no ledger effect",
+          "actual": [
+            {
+              "id": "386de945-6ddf-47cd-9d44-841cff2dc33e",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1500,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:01.085326+00:00",
+              "updated_at": "2026-10-15T04:49:01.085326+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1500,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "c1f5fb82-d243-4b1e-b4f5-f925ced8ca04",
+              "tags": null,
+              "type": "adjustment",
+              "notes": null,
+              "amount": 10000,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:00.914064+00:00",
+              "updated_at": "2026-10-15T04:49:00.914064+00:00",
+              "category_id": null,
+              "description": "Saldo inicial",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-15T04:49:00.914064+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10000,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "386de945-6ddf-47cd-9d44-841cff2dc33e",
+              "tags": null,
+              "type": "expense",
+              "notes": null,
+              "amount": 1500,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:01.085326+00:00",
+              "updated_at": "2026-10-15T04:49:01.085326+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 1500,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "c1f5fb82-d243-4b1e-b4f5-f925ced8ca04",
+              "tags": null,
+              "type": "adjustment",
+              "notes": null,
+              "amount": 10000,
+              "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+              "currency": "ARS",
+              "location": null,
+              "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+              "created_at": "2026-10-15T04:49:00.914064+00:00",
+              "updated_at": "2026-10-15T04:49:00.914064+00:00",
+              "category_id": null,
+              "description": "Saldo inicial",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-15T04:49:00.914064+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10000,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "status": "PASS"
+        }
+      ],
+      "original_contract": {
+        "precondiciones": "U1 A activa con historial",
+        "entrada": "renombrar y desactivar",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "nombre nuevo; historial intacto; nuevas operaciones bloqueadas; no borrar posiciones ni movimientos",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "startedAt": "2026-10-15T04:49:00.673Z",
+      "apiSqlScope": {
+        "status": "PASS",
+        "assertions": 9
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "CP2-03",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "8ecdfc84-3766-4d78-98f2-fdd76f997e0f",
+      "startedAt": "2026-10-15T04:49:00.823Z",
+      "status": 201,
+      "responseSha256": "af9633c9888d01b7c79151bd00367f90b0f666097c45211cf99796c822b8b576",
+      "endedAt": "2026-10-15T04:49:00.918Z"
+    },
+    {
+      "caseId": "CP2-03",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "dde9a24d-f1da-406f-bcb8-53add393e245",
+      "startedAt": "2026-10-15T04:49:00.996Z",
+      "status": 201,
+      "responseSha256": "5ec216901aec1f3876654d7ecddc3653e24d6d08b61efea0d1ebbc18e0572f25",
+      "endedAt": "2026-10-15T04:49:01.088Z"
+    },
+    {
+      "caseId": "CP2-03",
+      "method": "POST",
+      "path": "/api/investments",
+      "requestId": "d1a4c50a-a70f-416d-9a70-22978a0a0a66",
+      "startedAt": "2026-10-15T04:49:01.088Z",
+      "status": 201,
+      "responseSha256": "e588ee1f11e82c0fd6fb471d3843659c442ada180ce869a386bb2e72eb126d65",
+      "endedAt": "2026-10-15T04:49:01.182Z"
+    },
+    {
+      "caseId": "CP2-03",
+      "method": "PATCH",
+      "path": "/api/accounts/e7755f73-d18f-4932-a975-f719ced06b25",
+      "requestId": "4848d8f9-5a49-404a-83fc-18d39a9102c2",
+      "startedAt": "2026-10-15T04:49:01.335Z",
+      "status": 200,
+      "responseSha256": "8190d1e30b696799220d7cf1efbf5f079b10f8efaaa4ef914c60e2875723878d",
+      "endedAt": "2026-10-15T04:49:01.427Z"
+    },
+    {
+      "caseId": "CP2-03",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "7545ab9a-1f52-4d86-929a-82ef1efc8203",
+      "startedAt": "2026-10-15T04:49:01.660Z",
+      "status": 500,
+      "responseSha256": "c8f8ff3ce518ac6e531ecb029403817fa9d0d50f4a8cc97ff9fdc99faa484cb5",
+      "endedAt": "2026-10-15T04:49:01.748Z"
+    },
+    {
+      "caseId": "CP2-03",
+      "method": "DELETE",
+      "path": "/api/investments/6020ec8e-a486-439b-97f3-3a33ff42b896",
+      "requestId": "5a0921b7-00d0-4f47-b811-5fc7e1d65dd2",
+      "startedAt": "2026-10-15T04:49:01.826Z",
+      "status": 200,
+      "responseSha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93",
+      "endedAt": "2026-10-15T04:49:01.910Z"
+    },
+    {
+      "caseId": "CP2-03",
+      "method": "DELETE",
+      "path": "/api/accounts/e7755f73-d18f-4932-a975-f719ced06b25",
+      "requestId": "c5e312ec-5285-4ec0-8ca8-ba17d104a5fb",
+      "startedAt": "2026-10-15T04:49:01.987Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:49:02.077Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "e7755f73-d18f-4932-a975-f719ced06b25",
+      "userId": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "caseId": "CP2-03"
+    }
+  ],
+  "executionCount": 1,
+  "case": {
+    "case_id": "CP2-03",
+    "status": "PASS",
+    "complete_original_contract": true,
+    "assertions": [
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture manual position API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Rename/deactivate200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "New name and inactive state",
+        "actual": {
+          "name": "Renamed cb16f66f-0d49-4931-970a-d676171b42cd",
+          "is_active": false
+        },
+        "expected": {
+          "name": "Renamed cb16f66f-0d49-4931-970a-d676171b42cd",
+          "is_active": false
+        },
+        "status": "PASS"
+      },
+      {
+        "name": "Existing movements retained",
+        "actual": [
+          {
+            "id": "386de945-6ddf-47cd-9d44-841cff2dc33e",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1500,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:01.085326+00:00",
+            "updated_at": "2026-10-15T04:49:01.085326+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1500,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "c1f5fb82-d243-4b1e-b4f5-f925ced8ca04",
+            "tags": null,
+            "type": "adjustment",
+            "notes": null,
+            "amount": 10000,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:00.914064+00:00",
+            "updated_at": "2026-10-15T04:49:00.914064+00:00",
+            "category_id": null,
+            "description": "Saldo inicial",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-15T04:49:00.914064+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10000,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "386de945-6ddf-47cd-9d44-841cff2dc33e",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1500,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:01.085326+00:00",
+            "updated_at": "2026-10-15T04:49:01.085326+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1500,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "c1f5fb82-d243-4b1e-b4f5-f925ced8ca04",
+            "tags": null,
+            "type": "adjustment",
+            "notes": null,
+            "amount": 10000,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:00.914064+00:00",
+            "updated_at": "2026-10-15T04:49:00.914064+00:00",
+            "category_id": null,
+            "description": "Saldo inicial",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-15T04:49:00.914064+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10000,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Existing positions retained",
+        "actual": [
+          {
+            "id": "6020ec8e-a486-439b-97f3-3a33ff42b896",
+            "name": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+            "type": "stock_us",
+            "notes": null,
+            "ticker": null,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "quantity": 2,
+            "is_active": true,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:01.178022+00:00",
+            "updated_at": "2026-10-15T04:49:01.178022+00:00",
+            "current_price": 110,
+            "interest_rate": null,
+            "maturity_date": null,
+            "purchase_date": "2026-10-01",
+            "purchase_price": 100,
+            "is_manual_price": true,
+            "market_currency": "USD",
+            "purchase_currency": "USD",
+            "current_price_change_pct": null,
+            "current_price_updated_at": "2026-10-06T12:00:00+00:00"
+          }
+        ],
+        "expected": [
+          {
+            "id": "6020ec8e-a486-439b-97f3-3a33ff42b896",
+            "name": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+            "type": "stock_us",
+            "notes": null,
+            "ticker": null,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "quantity": 2,
+            "is_active": true,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:01.178022+00:00",
+            "updated_at": "2026-10-15T04:49:01.178022+00:00",
+            "current_price": 110,
+            "interest_rate": null,
+            "maturity_date": null,
+            "purchase_date": "2026-10-01",
+            "purchase_price": 100,
+            "is_manual_price": true,
+            "market_currency": "USD",
+            "purchase_currency": "USD",
+            "current_price_change_pct": null,
+            "current_price_updated_at": "2026-10-06T12:00:00+00:00"
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Inactive account operation is denied (CSV does not mandate4xx)",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Rejected operation has no ledger effect",
+        "actual": [
+          {
+            "id": "386de945-6ddf-47cd-9d44-841cff2dc33e",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1500,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:01.085326+00:00",
+            "updated_at": "2026-10-15T04:49:01.085326+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1500,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "c1f5fb82-d243-4b1e-b4f5-f925ced8ca04",
+            "tags": null,
+            "type": "adjustment",
+            "notes": null,
+            "amount": 10000,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:00.914064+00:00",
+            "updated_at": "2026-10-15T04:49:00.914064+00:00",
+            "category_id": null,
+            "description": "Saldo inicial",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-15T04:49:00.914064+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10000,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "386de945-6ddf-47cd-9d44-841cff2dc33e",
+            "tags": null,
+            "type": "expense",
+            "notes": null,
+            "amount": 1500,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:01.085326+00:00",
+            "updated_at": "2026-10-15T04:49:01.085326+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis CP2-03 cb16f66f-0d49-4931-970a-d676171b42cd",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 1500,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "c1f5fb82-d243-4b1e-b4f5-f925ced8ca04",
+            "tags": null,
+            "type": "adjustment",
+            "notes": null,
+            "amount": 10000,
+            "user_id": "172273ed-7c48-427d-a55b-742069a4d9de",
+            "currency": "ARS",
+            "location": null,
+            "account_id": "e7755f73-d18f-4932-a975-f719ced06b25",
+            "created_at": "2026-10-15T04:49:00.914064+00:00",
+            "updated_at": "2026-10-15T04:49:00.914064+00:00",
+            "category_id": null,
+            "description": "Saldo inicial",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-15T04:49:00.914064+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10000,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "status": "PASS"
+      }
+    ],
+    "original_contract": {
+      "precondiciones": "U1 A activa con historial",
+      "entrada": "renombrar y desactivar",
+      "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+      "resultado_esperado": "nombre nuevo; historial intacto; nuevas operaciones bloqueadas; no borrar posiciones ni movimientos",
+      "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+    },
+    "startedAt": "2026-10-15T04:49:00.673Z",
+    "apiSqlScope": {
+      "status": "PASS",
+      "assertions": 9
+    }
+  },
+  "runtimeProfile": "final-core-acceptance",
+  "runtimeMode": "clock",
+  "executionMode": "api-sql-only",
+  "logicalOwner": "A",
+  "pendingScopes": [],
+  "run": "cb16f66f-0d49-4931-970a-d676171b42cd",
+  "nativePreparation": {
+    "sha256": "b94b67366b193af018f973d7e3689a32b9f59b0e7436d5e762ea72db1cd31bc4",
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "normalAuthIdsBound": true
+  },
+  "buildBinding": {
+    "profile": "final-core-acceptance",
+    "runtimeMode": "clock",
+    "revision": "7c3e8722d8fcdc5d95d205e9a12eb856647e0e06",
+    "copyRoot": "/tmp/zarix-app-acceptance-final-20261015",
+    "buildId": "vPLjt1QViugJhUWR62DPp",
+    "nextPid": 17292,
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "coreVerificationSha256": "95bbb1c6112ec2fcfad10b0459369a073ea4ef00600965fac19b5c2dbcbbfdfc",
+    "buildProofSha256": "7e012b35a2ab09c24778201d82e6896033948a13e5b90a30c31d3d746c45e976",
+    "physicalSourceCount": 480,
+    "frozenGitSourceCount": 479,
+    "allPhysicalSourcesVerified": true,
+    "allVersionedSourcesMatchFrozenGit": true,
+    "privateEnvBoundToExactNativeProject": true,
+    "ownedListenerAndCwdVerified": true,
+    "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e"
+  },
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "87d0678b6b7754a83b474a4940907d5fc121003937611cf684fecde75cda54c2"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "1ecfdaa46817344bbd18493c3dae430eb191b8fabd4672f101120e2f5a9a2d95"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "32c1e61918a3457c8ac0e3d9b1570291e5c7cb3acc43f8b3fa2bed3d9164c4ba"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "scope": "Frozen7c3e8722d8fcdc5d95d205e9a12eb856647e0e06 clock build; current checkout differences disclosed separately"
+    }
+  ],
+  "workingSourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/profiles.json",
+      "sha256": "880564464f9d49f5715214a0639de1bbc8fe0666ce21eca14262957368e46655"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/clock-preload.mjs",
+      "sha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/acceptance-final/gemini-unavailable-preload.mjs",
+      "sha256": "607ca7510a47853dd9e6fff46d90727c389a687ae3112790a3d8c2bf82df68c0"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "87d0678b6b7754a83b474a4940907d5fc121003937611cf684fecde75cda54c2"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "1ecfdaa46817344bbd18493c3dae430eb191b8fabd4672f101120e2f5a9a2d95"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/profile-binding.mjs",
+      "sha256": "32c1e61918a3457c8ac0e3d9b1570291e5c7cb3acc43f8b3fa2bed3d9164c4ba"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "53f7d1e24eae170f92a3974be68a02d427d0e55f683a29e9fdcc8a5458a1c0c6"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "unbuiltCurrentDeltas": [],
+  "clockProof": {
+    "path": "final-proof-clock-observation.json",
+    "sha256": "4365234077aa34502b1b2c83ccdba9b00225a29d3408bd353a411d2b30548118",
+    "fixedTime": "2026-10-06T12:00:00.000Z",
+    "observedApplicationTime": "2026-10-06T12:00:00.000Z",
+    "preloadSha256": "888d1b41ec7108af7acd9368b19cad84c6b2628d0ee86d4dd1c995f72d8900bc"
+  },
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "users": [
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "logicalRole": "selected-owner",
+      "physicalLabel": "A",
+      "normalAuth": true
+    },
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "logicalRole": "other-owner",
+      "physicalLabel": "B",
+      "normalAuth": true
+    }
+  ],
+  "inactiveOperationObservedStatus": 500,
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 83,
+      "beforeMd5": "3944b79956493be5f32f779cc320b407",
+      "afterMd5": "3944b79956493be5f32f779cc320b407",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 118,
+      "beforeMd5": "d7fe4340c31a728244c52efe992ea816",
+      "afterMd5": "d7fe4340c31a728244c52efe992ea816",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 19,
+      "beforeMd5": "09167c8a67ba0766607832e91b8a587c",
+      "afterMd5": "09167c8a67ba0766607832e91b8a587c",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 8,
+      "beforeMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "afterMd5": "a7fec2a0ec58c1549a1c04c3c212eb3b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 36,
+      "beforeMd5": "6948feaf8555d556454d7f0257052521",
+      "afterMd5": "6948feaf8555d556454d7f0257052521",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 10,
+      "beforeMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "afterMd5": "b96cde8a4956792b86064e2a45d874e7",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "sourceStable": true,
+  "servedBuildStable": true,
+  "finishedAt": "2026-10-15T04:49:03.187Z"
+}

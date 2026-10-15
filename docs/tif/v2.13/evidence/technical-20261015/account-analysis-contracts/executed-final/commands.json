@@ -1,0 +1,358 @@
+{
+  "commands": [
+    {
+      "report": "cp2-02.json",
+      "run": "e2a04774-6d39-4157-9dcd-3b65d5a2dd43",
+      "reportSha256": "7cf863fdca0856d5b36b7443d9db5753b332d8fe1f3cebcbca49fcb84074ace7",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP2-02",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PASS",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp2-03.json",
+      "run": "cb16f66f-0d49-4931-970a-d676171b42cd",
+      "reportSha256": "2ab79adfdcb72d8b364166cbda08204ad23123e656354192139720a88e9d8c6a",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP2-03",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PASS",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp2-05-ssr.json",
+      "run": "7f2cb2cc-f8b6-4889-8feb-ae3f85044127",
+      "reportSha256": "a51d6eb1d88bf94eb70587683197d492da909fe7516a6b26275d5f7a7ea27e38",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_SSR_OWNERSHIP_SOURCE": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP2-05",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "FAIL",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp2-05.json",
+      "run": "9efb8935-b133-40ff-a0cd-34e08ed75e7e",
+      "reportSha256": "ce72ffbcc8f85f11174eeda35fdcabc2703c639be902ef28ea37930825c3d83b",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP2-05",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PARTIAL",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp2-06.json",
+      "run": "dc1c0012-296e-41af-84c7-f89ff5291d4a",
+      "reportSha256": "72a32e6cfad02bde9763fabaa927a5cb132e998b93ed74071b446c21a4c751f2",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP2-06",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PASS",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp2-20.json",
+      "run": "2a81ef74-a855-4e4c-848c-f437c54f13d8",
+      "reportSha256": "50c12d2427b41c1c76b7720ada50ee285b6e70c277e332e189a304b3a6ec6d09",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP2-20",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PASS",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-04-ssr.json",
+      "run": "339ac8dd-da4f-48c2-a8b8-ca15735b66ac",
+      "reportSha256": "48d805b7fd69c0ba140d16fac1a3e84d715f69fdc1ec0cdd91ea3daf5c8730de",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_SSR_OWNERSHIP_SOURCE": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-04",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PASS",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-04.json",
+      "run": "a02dcc84-1a97-4903-8e93-c48b32424a22",
+      "reportSha256": "db8c9442add69341a2de4c23ba9b4ce801b12e4e834bab22bbd33327092ebba2",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-04",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PARTIAL",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-05-fixture-oracle-attempt-1.json",
+      "run": "e100b02a-353b-495b-b9c2-e08a5258f073",
+      "reportSha256": "20090bcc69978f3b506c00fbf3f262e93d7339c5fa044c7efd5067c13a37d21b",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-05",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "FAIL",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-05-ssr.json",
+      "run": "56423408-b755-44b5-8045-45e1a6b925ee",
+      "reportSha256": "2b4c0159294c54d7b3a5c66aed125059fdebad7c2daf3500c64d7b98d286edf3",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-05",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PASS",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-06-ssr.json",
+      "run": "eb8dab0c-c417-449f-8fb9-932e6487f2b9",
+      "reportSha256": "350053178d193a19a6be5b685a0fb335f9a107e78af9d9feab9ea817b9398364",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only",
+        "ZARIX_ACCOUNT_ANALYSIS_SSR_OWNERSHIP_SOURCE": "/tmp/zarix-runtime-20261015/account-analysis-56423408-b755-44b5-8045-45e1a6b925ee/verification.json"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-06",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-wealth"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "FAIL",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-06.json",
+      "run": "7005d0fa-704e-4ce7-b8cd-d2c27979acc7",
+      "reportSha256": "a447e9900b5e2b1437d732175bdf4ad72c2da62aa355f1861e0203e8224ee57f",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-06",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PARTIAL",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-08-ssr.json",
+      "run": "e21c7537-f0f2-424c-89f1-44a34e30a30a",
+      "reportSha256": "3e8bb09928c7cab681ff4012d2f0ea7b16cb01b76ac1485ff3d7c600bd4973f6",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-08",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only",
+        "--ssr-analysis"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PASS",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-08.json",
+      "run": "fb029015-672b-4726-a19f-dc4dc993a868",
+      "reportSha256": "aa7a35598e806b32dd3073476d66c398e92b77852764fa08a0a69b81cfb0326c",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-08",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "PARTIAL",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    },
+    {
+      "report": "cp3-18.json",
+      "run": "fdc5c1af-753a-49da-a2ef-875eea93cb08",
+      "reportSha256": "076c2ecc22c93e0d62ea0301eda3089dc1dc80e4bd63480cc832b94218d83be7",
+      "environment": {
+        "ZARIX_ACCOUNT_ANALYSIS_WINDOW": "after-load-quotes-focal-finance",
+        "ZARIX_ISOLATED_DATABASE_CONFIRM": "synthetic-only"
+      },
+      "argv": [
+        "node",
+        "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+        "--case",
+        "CP3-18",
+        "--profile",
+        "final-core-acceptance",
+        "--runtime-mode",
+        "clock",
+        "--api-only"
+      ],
+      "nodeVersion": "v22.17.0",
+      "status": "FAIL",
+      "scope": "Each command was executed once in its recorded serial window. Credentials are read privately, never embedded. Relative node alias represents the Node22.17.0 binary used."
+    }
+  ]
+}

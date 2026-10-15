@@ -1,0 +1,398 @@
+{
+  "prepared_at": "2026-10-15T02:44:06.758444+00:00",
+  "scope": "Preparation only:10CU002+13CU003 literal original cases; CP3-02root-ownedTTLfix deferred, CP2-19excluded. No runtime execution, user creation, plan changes, installs or source edits.",
+  "original_csv_sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+  "case_count": 23,
+  "cases": [
+    {
+      "case_id": "CP2-01",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 autenticado; sin cuentas",
+        "entrada": "crear BancoARS saldo inicial50000",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "cuenta propia activa; saldo50000; origen de saldo documentado; patrimonio aumenta50000ARS",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "extra_execution_preconditions": [
+        "Owner A must have literally zero accounts, transactions and positions; current populated A/B cannot be archived/reset to satisfy this."
+      ],
+      "ui_opening_when_required": "/accounts → Nueva cuenta → Banco ARS/saldo50000; /dashboard → Patrimonio total before/after.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-02",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 autenticado",
+        "entrada": "nombre vacío; moneda desconocida; saldoNaN; campos tarjeta inválidos por variante",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "cada entrada inválida rechazada; sin cuenta incompleta",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "extra_execution_preconditions": [],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-03",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 A activa con historial",
+        "entrada": "renombrar y desactivar",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "nombre nuevo; historial intacto; nuevas operaciones bloqueadas; no borrar posiciones ni movimientos",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "extra_execution_preconditions": [],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-05",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "Tarjeta bimoneda, deudaARS10000 yUSD100",
+        "entrada": "consultar ambas y abonarUSD10 mediante operación explícita",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "deudaUSD90,ARS10000; patrimonio resta ambas deudas convertidas; sin aplicarUSD alledgerARS",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "extra_execution_preconditions": [
+        "Owner A must have no prior active wealth, quote fixtureUSD/ARS1200 and exact documented accounts/positions only; no preexisting original mutation."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-06",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 dos movimientos gasto500/ingreso700 y transferencia propia; U2 posee otras filas",
+        "entrada": "exportCSV períodooctubre2026",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "sóloU1; amounts/currencies/types/dates/categories/accounts/transferrelationships preserved; formato/version/zona informados",
+        "evidencia_requerida": "Archivo exportado/hash, comparación fila a fila con snapshot propietario"
+      },
+      "extra_execution_preconditions": [
+        "Exact owner/period fixture without other eligible rows; empty target context for roundtrip; preserve all original rows."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-07",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "Mismo fixture frescoCP2-06",
+        "entrada": "exportJSON e importar en U1vacío controlado según mapa IDs",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "contenido semántico equivalente; cuenta origen/destino remapeadas sin huérfanos; fechas/precisión preservadas",
+        "evidencia_requerida": "JSON/hash, mapa IDs y comparación normalizada independiente"
+      },
+      "extra_execution_preconditions": [
+        "Exact owner/period fixture without other eligible rows; empty target context for roundtrip; preserve all original rows."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-08",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "Correo de fixture controlado; sesiones aisladas",
+        "entrada": "registrar, verificar correo si requerido, iniciar y cerrar sesión",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "sesión sólo tras identidad validada; logout invalida acceso protegido; no evidencia de correos reales hasta ejecución",
+        "evidencia_requerida": "Logs/estado Auth y respuestas; buzón sandbox del proveedor si disponible"
+      },
+      "extra_execution_preconditions": [
+        "Registration requires a not-yet-registered controlled identity; existing A/BAuth records are protected and must not be deleted/recreated. No new identity is generated automatically."
+      ],
+      "ui_opening_when_required": "/register → existing controlled fixture email only if this identity does not already exist in this replica; verify local mailbox if required; /login → login; sign out → protected URL denied.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-09",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "Fixture usuario existente",
+        "entrada": "password erróneo; JWTalterado; JWTexpirado; reset tokenexpirado/reutilizado",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "401/403 consistente; sin datos ni cambios; tokenreset no reutilizable; no enumeración sensible de existencia",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "extra_execution_preconditions": [
+        "Expired-valid-JWT and expired/reused recovery-token fixtures must be supplied privately or authorized locally; no fake expired token with invalid signature counted as genuine expiry."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-20",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "Canon v2.13: Free máximo3 cuentas activas; U1 con3 activas",
+        "entrada": "crear cuarta; desactivar una e intentar; usuario Premium crear cuarta",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Free bloquea cuarta activa; tras desactivar acepta hasta3; Premium acepta cuarta según contrato; exportación propia permanece gratuita",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "extra_execution_preconditions": [
+        "A configuredFree with exactly3active/movement-enabled accounts and B configuredPremium with3; require actual spare allowed capacity. Do not change original plans, selections or archive original accounts."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP2-21",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 formulario movimiento sinconfirmar; JWTexpira",
+        "entrada": "confirmar con sesiónexpirada, recuperar sesión misma identidad",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "primero401ceroalta; draft conservado sin divulgación; tras reauth confirmación única bajo clave idempotente",
+        "evidencia_requerida": "Respuesta API/UI, fixture y snapshot SQL antes/después."
+      },
+      "extra_execution_preconditions": [
+        "Real installed Chrome, actual normal Auth401thenreauth preserving selected intent; API-only response-loss test is insufficient."
+      ],
+      "ui_opening_when_required": "/expenses → Nuevo movimiento → fill1500 without submitting; invalidate only the current test session, leave unsaved form; submit must return401 and retain draft; /login in another page samecontext, return selected original draft and submit same intent exactly once.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-01",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "Proveedoresmock con reloj2026-10-06T12:00Z; fixture firmado/hash",
+        "entrada": "dólaroficial1000,blue1300,MEP1250,CCL1280ARS/USD; BTC60000,ETH2500,USDT1USD",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "cada tipo conserva valor/unidad/fuente/hora; no intercambia rates; crypto enUSD; todos datos sintéticos",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Controlled local quote-provider/configuration phase coordinated with root, isolated cache and captured source timestamps; never mutate shared exchange_rates to simulate no-cache."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-02",
+      "preparation_status": "DEFERRED_ROOT_TTL_FIX",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "cache quote=1200ARS/USD registradoT0; TTL300s",
+        "entrada": "consultarT0+299s, +300s,+301s en fixturesindependientes",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "299hit;300/301solicitanrefresco; si falla conservan1200 fechaT0 etiquetaanterior; política frescasi age<300s",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Controlled local quote-provider/configuration phase coordinated with root, isolated cache and captured source timestamps; never mutate shared exchange_rates to simulate no-cache."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-03",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "sin caché y proveedoroffline",
+        "entrada": "obtener cotizaciónUSD y patrimoniodatosmixtos",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "cotización indisponible; total consolidado marcado parcial/no disponible; no rate0/1inventada",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Controlled local quote-provider/configuration phase coordinated with root, isolated cache and captured source timestamps; never mutate shared exchange_rates to simulate no-cache."
+      ],
+      "ui_opening_when_required": "/dashboard → Patrimonio total: actual unavailable/partial notice and unavailable consolidated total; no fake0/1FX reference.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-04",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 A=120000ARS B=100USD; nocartera; fixture1USD=1200ARS",
+        "entrada": "consultar patrimonioARS/USD",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "líquido=total=240000ARS=200USD; original120000/100 intacto",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Owner A must have no prior active wealth, quote fixtureUSD/ARS1200 and exact documented accounts/positions only; no preexisting original mutation."
+      ],
+      "ui_opening_when_required": "/dashboard → Patrimonio total: ARS240000/USD200, stored balances120000/100 unchanged.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-05",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 efectivo inversión100USD y posición6×110USD; sin saldo duplicado",
+        "entrada": "consultar líquido y total con FX1200",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "líquido100USD=120000ARS; total760USD=912000ARS; posición660 incluidauna vez",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Owner A must have no prior active wealth, quote fixtureUSD/ARS1200 and exact documented accounts/positions only; no preexisting original mutation."
+      ],
+      "ui_opening_when_required": "/dashboard → Patrimonio total760USD/912000ARS; existing liquidity surface must prove100USD cash independently; no invented endpoint.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-06",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 efectivo120000ARS+100USD; tarjeta deuda10000ARS+10USD; FX1200",
+        "entrada": "consultar patrimonio neto",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "240000-10000-12000=218000ARS;181.666666…USD, display181.67; deuda con signo negativo",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Owner A must have no prior active wealth, quote fixtureUSD/ARS1200 and exact documented accounts/positions only; no preexisting original mutation."
+      ],
+      "ui_opening_when_required": "/dashboard → Patrimonio total218000ARS/USD181.67 rendered; negative carddebt original values unchanged.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-07",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 sin cuentas/movimientos/posiciones",
+        "entrada": "dashboard",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "estado vacío y total0; ayudas CU001/002; no errores, no análisis histórico ficticio",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Owner A must have literally zero accounts, transactions and positions; current populated A/B cannot be archived/reset to satisfy this."
+      ],
+      "ui_opening_when_required": "/dashboard as entirely empty U1: zero, empty guidance toward movement/account, no invented history/error.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-08",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "U1 gastos500oct1,700oct3,800oct6; ingreso5000oct2; transfer900oct3; gasto100sept30; U2gasto999oct3",
+        "entrada": "período10-01 a10-06inclusive categoríaAlimentosU1",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "gasto2000; ingreso según filtro categoríalógica; transferencia excluida de ingresos/gastos; U2yseptiembre excluidos",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Exact owner/period fixture without other eligible rows; empty target context for roundtrip; preserve all original rows."
+      ],
+      "ui_opening_when_required": "/analysis?period=custom&startDate=2026-10-01&endDate=2026-10-06 → select exact ownedAlimentos, visible expenses2000 and transfer/U2/Sept excluded.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-13",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "Corte06/10/2026 Argentina; categoría Alimentos, gastos históricos1000 en julio/agosto/septiembre; promedio1000ARS",
+        "entrada": "Gasto octubre1999ARS y, en fixture independiente,2000ARS",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "1999/1000=1.999: sin alerta;2000/1000=2: alerta, extraAmount1000ARS. Umbral>=2, sin Gemini ni extrapolar gasto parcial del mes.",
+        "evidencia_requerida": "Fixture/tabla cálculo manual, salida lista con umbral/meses y prueba proveedorIA noinvocado"
+      },
+      "extra_execution_preconditions": [
+        "Actual server clock bound to2026-10-06Argentina by independently recorded test-process proof; no reinterpretation of2026-10-15as06."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-14",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "Categoría nueva sin gasto histórico; corte06/10/2026; fixtures independientes",
+        "entrada": "Gasto actual5000ARS y5000.01ARS; tercer fixture sin movimientos elegibles",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "5000: sin alerta;5000.01: alerta categoría nueva con ratio=null; sin datos: lista vacía y proyección hasData=false. No existe mínimo5días/6gastos.",
+        "evidencia_requerida": "Fixture de meses presentes vsausentes; cálculo independiente"
+      },
+      "extra_execution_preconditions": [
+        "Actual server clock bound to2026-10-06Argentina by independently recorded test-process proof; no reinterpretation of2026-10-15as06."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-15",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "3meses completos: ingresos30000,33000,36000; gastos10000,12000,14000; líquidoactual50000ARS",
+        "entrada": "proyectarpróximomes",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Promedio ingresos33000ARS, gastos12000, ahorro21000; efectivo ARS50000; proyección3m113000,6m176000,12m302000. Se promedian los tres meses completos observados, no ventana90d/30d.",
+        "evidencia_requerida": "Seriefixture y cálculo manual=(sumas/3); salida horizonte/metodología"
+      },
+      "extra_execution_preconditions": [
+        "Exact three prior complete months and cash50000ARS, own isolated active account rows; transfer/current/future/U2 exclusions explicitly injected."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-16",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "FixtureCP3-15; añade transfer99999, ingresoU2 y octubreincompleto; Gemini offline",
+        "entrada": "Recalcular agregando transferencia99999, movimientoU2, octubre actual y noviembre futuro; Gemini caído",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "Se conservan promedios33000/12000 y proyecciones113000/176000/302000; registros no elegibles excluidos. Algoritmo determinista sin Gemini.",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Exact three prior complete months and cash50000ARS, own isolated active account rows; transfer/current/future/U2 exclusions explicitly injected."
+      ],
+      "ui_opening_when_required": null,
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    },
+    {
+      "case_id": "CP3-18",
+      "preparation_status": "PREPARED_NOT_EXECUTED",
+      "complete_original_contract": false,
+      "original_contract": {
+        "precondiciones": "SaldosARS120000 y monedaZZZ10 sinrate",
+        "entrada": "calcular total",
+        "pasos": "Restaurar fixture; aplicar la entrada una vez, salvo reintento explícito; observar respuesta y estado persistido; comparar con oráculo independiente.",
+        "resultado_esperado": "ARS120000 conocido; exclusiónZZZ con causa; totalparcial; no sumar10comoARS",
+        "evidencia_requerida": "Respuesta/fixture independiente, timestamps y aserciones del contenido financiero."
+      },
+      "extra_execution_preconditions": [
+        "Owner A must have no prior active wealth, quote fixtureUSD/ARS1200 and exact documented accounts/positions only; no preexisting original mutation."
+      ],
+      "ui_opening_when_required": "/dashboard → Patrimonio total: known120000ARS plus explicit missingZZZ reference/exclusion/partial notice; no adding10asARS.",
+      "allowed_target": "separate loopback synthetic account-analysis replica or explicitly released E2E57321/57322 with strict per-case guards; SOURCE/RESTORE/LOAD and all remote hosts refused"
+    }
+  ],
+  "case_execution_results": [],
+  "execution_count": 0,
+  "status": "PREPARED_NOT_EXECUTED"
+}
