@@ -1,0 +1,48 @@
+{
+  "scope": "Distinct derived10HTTPclient experiment; not a retry with a lowered ten-PG threshold, not CNF-load or ten-PG PASS. Previous18PASS/1FAIL retained unchanged.",
+  "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "status": "PASS",
+  "complete_original_contract": false,
+  "sourceSnapshots": [
+    {
+      "executedPath": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "sha256": "d6812a2cc5201fb6c0f048dd63a43a8fdc25684fad60140cbd86b4698c0c36a6",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/d6812a2cc5201fb6c0f048dd63a43a8fdc25684fad60140cbd86b4698c0c36a6.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "sha256": "ab65ef44b70e9b7c550f7ff323d212f481265ee04bd0492ebeab23f7690fbbf9",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/ab65ef44b70e9b7c550f7ff323d212f481265ee04bd0492ebeab23f7690fbbf9.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "sha256": "114a3f8c5728e75648112f33386a5fba80f80c0b7122b7dcc4992ea7e18d562c",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/114a3f8c5728e75648112f33386a5fba80f80c0b7122b7dcc4992ea7e18d562c.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+      "sha256": "8e378365a73f6dd89732d9a0b19e93a2255882b238c6154538e8f3565ac5aedf",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/8e378365a73f6dd89732d9a0b19e93a2255882b238c6154538e8f3565ac5aedf.txt"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/restart-replay.json",
+      "sha256": "4cc0453c40f442a91080efb0300d94d2c7ee282ca1d12ca19c0ab04f5af6c01b"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-concurrent-http/verification.json",
+      "sha256": "9ae8047a29465d8068d36ae360ed79b97e6dfe9b23302f81000f93e8cd928031"
+    }
+  ]
+}

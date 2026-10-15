@@ -1,0 +1,38 @@
+{
+  "startedAt": "2026-10-15T04:06:20.401Z",
+  "scope": "Existing explicitly synthetic local57910 fixture only; no provider or financial DML in phase controller",
+  "ownerPid": 53373,
+  "serverSourceSha256": "fafb616944489fbc58592137e99b2c925c49494529a73348dfd8d6994b9ddee7",
+  "originalModeSha256": "6c2adb6f65825e2af9f6941e966d9f6e519f9f8917d5e76a67df16378def5109",
+  "steps": [
+    {
+      "script": "prepare-quote-proof.mjs",
+      "exitCode": 0,
+      "result": {
+        "output": "investment-quote-proof.json",
+        "status": "PASS_LOCAL_DOUBLE_PROOF",
+        "observedStatus": 503,
+        "buildId": "a2WBtszbvrpoT9GHwToED"
+      }
+    },
+    {
+      "script": "run.mjs",
+      "exitCode": 1,
+      "result": {
+        "output": "investment-contracts-494e0ea0-0cfb-4b4b-9be5-736877a9d1fd",
+        "status": "FAIL",
+        "case": "CP4-07",
+        "executionCount": 1,
+        "scope": "prepared contract runner; no full-CU/CI/provider acceptance inferred"
+      }
+    }
+  ],
+  "restored": true,
+  "controlBefore": {
+    "status": 200,
+    "responseSha256": "5d1a50a3b5c196e79eb8915f8fd3f703be1d85c5e7e67dd065c665d2bd5c9256",
+    "classification": "Observed200 is not an offline503 proof"
+  },
+  "finalModeSha256": "6c2adb6f65825e2af9f6941e966d9f6e519f9f8917d5e76a67df16378def5109",
+  "finishedAt": "2026-10-15T04:06:26.768Z"
+}

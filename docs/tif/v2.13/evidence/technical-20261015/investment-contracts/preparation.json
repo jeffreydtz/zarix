@@ -1,0 +1,94 @@
+{
+  "preparedAt": "2026-10-15T03:41:12.061467+00:00",
+  "status": "PREPARED_NOT_EXECUTED",
+  "productRevisionScope": "CI4 source836fd18; this harness is a later independent unexecuted phase",
+  "originalCases": [
+    "CP4-01",
+    "CP4-02",
+    "CP4-04",
+    "CP4-05",
+    "CP4-06",
+    "CP4-07",
+    "CP4-10",
+    "CP4-11",
+    "CP4-12"
+  ],
+  "derivedProbes": [
+    "DERIVED-INV-CONCURRENCY",
+    "DERIVED-INV-RESTART-RESUME",
+    "DERIVED-PLAN-DOWNGRADE"
+  ],
+  "runtimeExecutions": 0,
+  "caseResults": [],
+  "networkCalls": 0,
+  "sqlCalls": 0,
+  "browserLaunches": 0,
+  "temporaryDdlExecuted": false,
+  "applicationEdits": false,
+  "globalHarnessEdits": false,
+  "matrixEdits": false,
+  "syntaxChecks": [
+    {
+      "command": "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node --check docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "exitCode": 0,
+      "scope": "parse only; no imports or runner execution"
+    },
+    {
+      "command": "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node --check docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "exitCode": 0,
+      "scope": "parse only; no imports or runner execution"
+    },
+    {
+      "command": "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node --check docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "exitCode": 0,
+      "scope": "parse only; no imports or runner execution"
+    },
+    {
+      "command": "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node --check docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "exitCode": 0,
+      "scope": "parse only; no imports or runner execution"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/README.md",
+      "sha256": "1ea70eacff7b40e05244c822aa515fea0ccd7b4f54c3dbfa9087e1a9ccef8f6a",
+      "bytes": 13650
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+      "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+      "bytes": 8098
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "sha256": "601efbfed6d5153359bc6b7aa9f7ad3ee4d540a86508aa4c5f8e40ac0f5a033a",
+      "bytes": 29079
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+      "bytes": 22035
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+      "bytes": 8019
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "sha256": "a5aa281b43f76bce20f0aad00dffcbe2cf3995296bcc59ddd6a0d79437528472",
+      "bytes": 8323
+    }
+  ],
+  "limitations": [
+    "Prepared adapters are not executed case results or a whole-CU PASS.",
+    "Arc UI permission pending; API-only preserves explicit partial scope.",
+    "Exact fresh58321/58322 project/data-root/build/listener/source manifests are mandatory.",
+    "CP4-11 must precede any historical sale; existing original sales are never deleted.",
+    "CP4-05 declares actual position\u2192durable-receipt architecture mapping, not an invented operation table.",
+    "Restart replay requires actual root-performed official restart; this runner never restarts processes.",
+    "No provider integration acceptance from manual fixtures or controlled local503.",
+    "Derived downgrade only sixth59321/59322 cloned B0literal; authorized plan/updated_at change is intentional, all other B/Auth/A/original financial fields preserved; no forced hash restoration or paid provider claim."
+  ]
+}

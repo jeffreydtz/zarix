@@ -1,0 +1,78 @@
+{
+  "preparedAt": "2026-10-15T03:47:34.557836+00:00",
+  "status": "PREPARED_NOT_EXECUTED",
+  "originalCases": 23,
+  "preparedExecutionAdapters": 20,
+  "unregisteredIdentityPrerequisiteOnly": [
+    "CP2-08"
+  ],
+  "contractConflictOnly": [
+    "CP3-05"
+  ],
+  "reservedParentFix": [
+    "CP3-02"
+  ],
+  "runtimeCaseExecutions": 0,
+  "caseResults": [],
+  "applicationEdits": false,
+  "globalHarnessEdits": false,
+  "matrixEdits": false,
+  "installations": 0,
+  "networkCalls": 0,
+  "sqlCalls": 0,
+  "browserLaunches": 0,
+  "syntaxChecks": [
+    {
+      "command": "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node --check docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "exitCode": 0,
+      "scope": "parse only; no imports or runner execution"
+    },
+    {
+      "command": "/Users/jeffreydietz/.nvm/versions/node/v22.17.0/bin/node --check docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "exitCode": 0,
+      "scope": "parse only; no imports or runner execution"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/README.md",
+      "sha256": "cbd3087681394cfade7062e1915cde98ae024d7833ce226e8b21bcb38226f223",
+      "bytes": 10262
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/plan.json",
+      "sha256": "83b65a0203f9a9f53dff77742458258bb82f80add1d9f87ca94a38fd7b5b184e",
+      "bytes": 29000
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs",
+      "sha256": "3c42f5bcded6ed9adeeab1f7b2bbb2d79c14f0b8d1e54831955bd56b3dd2c56a",
+      "bytes": 24154
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/scenarios.mjs",
+      "sha256": "c11ae53515a9b604f7b65bef274bb9db5e182293bbf3ed81ac645fe65365d1e9",
+      "bytes": 35382
+    }
+  ],
+  "limitations": [
+    "20writtenadapters are not20testedcontracts; all execution awaits parent release and exact own fixtures.",
+    "CP2-07fullPASSneeds2actualphaseswithsameU1identityandseparateemptytarget; exportaloneispartial.",
+    "CP2-08existingA/Bcannotregisteragain; noautomaticthirdidentity.",
+    "CP2-21requiresgenuineexpiredlocalnormal-ownerJWT/cookies, thenactualauthorizedbrowser401andreauthsameintent; noHTTPdouble.",
+    "CP3-13/14requireactual06Octisolatedserverclockproof; no current-date reinterpretation.",
+    "Nooriginalplan,selections,accounts,usersorquoteshistoryarechangedtofitpreconditions.",
+    "AnyexecutedHTTP/oraclefailureisFAIL,notaccessBLOCKED; missingexactenvironmentfixturesgetexplicitpreconditionBLOCKED.",
+    "CP3-03 safe error accepted; CP3-18 safe unavailable is not equivalent to explicit knownsubtotal/ZZZpartial contract.",
+    "Specific Automation permission Codex\u2192Arc unavailable (-1744); supported private-window route exists, isolated profile not required; no UI executed."
+  ],
+  "revisionScope": "CI4 product836fd18; prepared harness is a later independent unexecuted phase",
+  "mode": {
+    "apiOnly": "--api-only executes independent API/SQL; UI waits for specific Automation permission Codex\u2192Arc after native AE ask=false -1744. Private-window route supported; isolated profile is not required.",
+    "owner": "--owner A|B, selected ordinary owner explicitly recorded",
+    "freshTargets": [
+      "58321/58322",
+      "59321/59322"
+    ]
+  }
+}

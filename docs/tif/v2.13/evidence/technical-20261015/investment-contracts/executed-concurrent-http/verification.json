@@ -1,0 +1,1810 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T04:16:18.473Z",
+  "scope": "One selected original investment contract or separately labeled derived concurrency probe. Existing normal AuthB is logicalU1Premium; A is logicalU2. Fresh authorized58321replica only; no original plans/identities modified.",
+  "results": [
+    {
+      "case_id": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "status": "PASS",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal-owner investment create201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "All ten HTTP clients dispatched before gate release",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "At least two actual linked PG sessions overlapped before release",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "No response observed before all ten starts and release",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly ten distinct HTTP attempts",
+          "actual": 10,
+          "expected": 10,
+          "status": "PASS"
+        },
+        {
+          "name": "No sale commits while own row gate is held",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "Ten concurrent HTTP acknowledgements all201",
+          "actual": [
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201
+          ],
+          "expected": [
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Ten HTTP acknowledgements share one original sale ID",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Persisted exact quantity",
+          "actual": true,
+          "expected": true,
+          "numericActual": 6,
+          "numericExpected": 6,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Persisted exact remaining cost",
+          "actual": true,
+          "expected": true,
+          "numericActual": 600,
+          "numericExpected": 600,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Ten HTTP attempts have exactly one sale",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Ten HTTP attempts have exactly one durable receipt",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Prior ten-PG experiment remains a preserved FAIL",
+          "actual": "FAIL",
+          "expected": "FAIL",
+          "status": "PASS"
+        },
+        {
+          "name": "Prior experiment original integrity and stable source confirmed",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly two prior observed HTTP500 attempts selected",
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "name": "Prior failed attempts share their original idempotency key",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Prior synthetic row has same existing owner",
+          "actual": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "expected": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "status": "PASS"
+        },
+        {
+          "name": "Prior synthetic row recorded in original report",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Prior committed receipt exists exactly once",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Prior HTTP500 same-key retry now acknowledges original201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Prior500 retry returns existing durable sale",
+          "actual": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+          "expected": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+          "status": "PASS"
+        },
+        {
+          "name": "Prior HTTP500 same-key retry now acknowledges original201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Prior500 retry returns existing durable sale",
+          "actual": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+          "expected": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+          "status": "PASS"
+        },
+        {
+          "name": "Prior500 retries do not change any old position/sales/cash/receipt row",
+          "actual": {
+            "position": {
+              "id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+              "name": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+              "type": "stock_us",
+              "notes": null,
+              "ticker": "AAPL",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "quantity": 6,
+              "is_active": false,
+              "account_id": "10ce83f6-5bcf-4952-9b7e-e0806d109dd1",
+              "created_at": "2026-10-15T04:01:42.167686+00:00",
+              "updated_at": "2026-10-15T04:01:55.316139+00:00",
+              "current_price": 110,
+              "interest_rate": null,
+              "maturity_date": null,
+              "purchase_date": "2026-10-06",
+              "purchase_price": 100,
+              "is_manual_price": true,
+              "market_currency": "USD",
+              "purchase_currency": "USD",
+              "current_price_change_pct": null,
+              "current_price_updated_at": "2026-10-15T04:01:42.166+00:00"
+            },
+            "sales": [
+              {
+                "id": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+                "notes": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+                "price": 120,
+                "sold_at": "2026-10-06",
+                "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                "currency": "USD",
+                "quantity": 4,
+                "created_at": "2026-10-15T04:01:50.553973+00:00",
+                "ars_per_usd": 1200,
+                "investment_id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+                "realized_pnl_usd": 80,
+                "realized_pnl_native": 80,
+                "purchase_price_at_sale": 100
+              }
+            ],
+            "cash": {
+              "account": [
+                {
+                  "id": "10ce83f6-5bcf-4952-9b7e-e0806d109dd1",
+                  "icon": null,
+                  "name": "AccountAnalysis DERIVED-INV-CONCURRENCY 1 c4ae3619-a287-473b-b17a-e15770d0cabf",
+                  "type": "investment",
+                  "color": "#3B82F6",
+                  "balance": 0,
+                  "due_day": null,
+                  "is_debt": false,
+                  "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                  "currency": "USD",
+                  "is_active": false,
+                  "created_at": "2026-10-15T04:01:39.654792+00:00",
+                  "sort_order": 15,
+                  "updated_at": "2026-10-15T04:01:55.552433+00:00",
+                  "closing_day": null,
+                  "min_balance": null,
+                  "credit_limit": null,
+                  "last_4_digits": null,
+                  "include_in_total": true,
+                  "is_multicurrency": false,
+                  "movement_enabled": true,
+                  "include_in_liquid": true,
+                  "secondary_currency": null
+                }
+              ],
+              "ledger": []
+            },
+            "receipts": [
+              {
+                "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                "response": {
+                  "sale": {
+                    "id": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+                    "notes": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+                    "price": 120,
+                    "sold_at": "2026-10-06",
+                    "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                    "currency": "USD",
+                    "quantity": 4,
+                    "created_at": "2026-10-15T04:01:50.553973+00:00",
+                    "ars_per_usd": 1200,
+                    "investment_id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+                    "realized_pnl_usd": 80,
+                    "realized_pnl_native": 80,
+                    "purchase_price_at_sale": 100
+                  },
+                  "position_closed": false,
+                  "remaining_quantity": 6
+                },
+                "created_at": "2026-10-15T04:01:50.553973+00:00",
+                "request_id": "62fecf1c-2b76-4f14-9a81-92da5105addc",
+                "request_hash": "38cf98f8326ca5d25c2ab5287680913bc55322a75eb680c49f02cf5673ece571"
+              }
+            ]
+          },
+          "expected": {
+            "position": {
+              "id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+              "name": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+              "type": "stock_us",
+              "notes": null,
+              "ticker": "AAPL",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "quantity": 6,
+              "is_active": false,
+              "account_id": "10ce83f6-5bcf-4952-9b7e-e0806d109dd1",
+              "created_at": "2026-10-15T04:01:42.167686+00:00",
+              "updated_at": "2026-10-15T04:01:55.316139+00:00",
+              "current_price": 110,
+              "interest_rate": null,
+              "maturity_date": null,
+              "purchase_date": "2026-10-06",
+              "purchase_price": 100,
+              "is_manual_price": true,
+              "market_currency": "USD",
+              "purchase_currency": "USD",
+              "current_price_change_pct": null,
+              "current_price_updated_at": "2026-10-15T04:01:42.166+00:00"
+            },
+            "sales": [
+              {
+                "id": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+                "notes": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+                "price": 120,
+                "sold_at": "2026-10-06",
+                "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                "currency": "USD",
+                "quantity": 4,
+                "created_at": "2026-10-15T04:01:50.553973+00:00",
+                "ars_per_usd": 1200,
+                "investment_id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+                "realized_pnl_usd": 80,
+                "realized_pnl_native": 80,
+                "purchase_price_at_sale": 100
+              }
+            ],
+            "cash": {
+              "account": [
+                {
+                  "id": "10ce83f6-5bcf-4952-9b7e-e0806d109dd1",
+                  "icon": null,
+                  "name": "AccountAnalysis DERIVED-INV-CONCURRENCY 1 c4ae3619-a287-473b-b17a-e15770d0cabf",
+                  "type": "investment",
+                  "color": "#3B82F6",
+                  "balance": 0,
+                  "due_day": null,
+                  "is_debt": false,
+                  "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                  "currency": "USD",
+                  "is_active": false,
+                  "created_at": "2026-10-15T04:01:39.654792+00:00",
+                  "sort_order": 15,
+                  "updated_at": "2026-10-15T04:01:55.552433+00:00",
+                  "closing_day": null,
+                  "min_balance": null,
+                  "credit_limit": null,
+                  "last_4_digits": null,
+                  "include_in_total": true,
+                  "is_multicurrency": false,
+                  "movement_enabled": true,
+                  "include_in_liquid": true,
+                  "secondary_currency": null
+                }
+              ],
+              "ledger": []
+            },
+            "receipts": [
+              {
+                "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                "response": {
+                  "sale": {
+                    "id": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+                    "notes": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+                    "price": 120,
+                    "sold_at": "2026-10-06",
+                    "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                    "currency": "USD",
+                    "quantity": 4,
+                    "created_at": "2026-10-15T04:01:50.553973+00:00",
+                    "ars_per_usd": 1200,
+                    "investment_id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+                    "realized_pnl_usd": 80,
+                    "realized_pnl_native": 80,
+                    "purchase_price_at_sale": 100
+                  },
+                  "position_closed": false,
+                  "remaining_quantity": 6
+                },
+                "created_at": "2026-10-15T04:01:50.553973+00:00",
+                "request_id": "62fecf1c-2b76-4f14-9a81-92da5105addc",
+                "request_hash": "38cf98f8326ca5d25c2ab5287680913bc55322a75eb680c49f02cf5673ece571"
+              }
+            ]
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal-owner investment create201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual sale201 headers received before discarding body",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Persisted exact quantity",
+          "actual": true,
+          "expected": true,
+          "numericActual": 5,
+          "numericExpected": 5,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Persisted exact remaining cost",
+          "actual": true,
+          "expected": true,
+          "numericActual": 500,
+          "numericExpected": 500,
+          "tolerance": 1e-8,
+          "status": "PASS"
+        },
+        {
+          "name": "Same-key retry after discarded response body201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Discarded-body retry has exactly one sale",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Discarded-body retry has exactly one durable receipt",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        }
+      ],
+      "original_contract": null,
+      "startedAt": "2026-10-15T04:16:21.333Z",
+      "apiSqlScope": {
+        "status": "PASS",
+        "assertions": 32
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "f04910a0-2ca4-464f-a2d2-7322fbb571d4",
+      "httpAttemptId": "7b05820d-18dd-4396-8661-5072c2d151a9",
+      "startedAt": "2026-10-15T04:16:21.561Z",
+      "dispatchedAt": "2026-10-15T04:16:21.612Z",
+      "responseHeadersAt": "2026-10-15T04:16:21.715Z",
+      "status": 201,
+      "responseSha256": "0a558866511c37832b18d21855238e78c9c4a8370d40c7320f7bc02e6d7734b2",
+      "endedAt": "2026-10-15T04:16:21.715Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments",
+      "requestId": "90979de2-c415-45aa-b25a-18e08a03448f",
+      "httpAttemptId": "40cbdd69-06e9-4b41-9f88-0b9a52aa0563",
+      "startedAt": "2026-10-15T04:16:21.791Z",
+      "dispatchedAt": "2026-10-15T04:16:21.842Z",
+      "responseHeadersAt": "2026-10-15T04:16:21.949Z",
+      "status": 201,
+      "responseSha256": "2da1748153bdade6e50a30f3cb76220db45d9bdfeac3cd64f07ff73a4829d881",
+      "endedAt": "2026-10-15T04:16:21.949Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "ef0c779e-72d1-41b5-a50b-5c1ee0e14a8a",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.392Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.614Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.614Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "99fcba27-1f0c-4685-9410-764717631fa2",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.392Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.613Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.613Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "155ec0b9-f3c3-491e-8626-c14df56830a8",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.392Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.610Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.610Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "0f4114a9-7b4f-4899-9c84-aab7d7222f78",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.392Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.612Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.613Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "c901e211-a081-4a44-acc8-9d02df247c1c",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.392Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.612Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.612Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "a74533cb-1fef-43c9-be2a-678e9cc3bb73",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.392Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.612Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.612Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "71ce0b56-843c-4a3b-86e2-259c4a01f519",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.392Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.611Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.611Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "e7f41732-9161-41a0-b2e1-b629af692db8",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.392Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.614Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.614Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "a7fe6c48-6ec4-49bf-8033-c893cd2d88b9",
+      "startedAt": "2026-10-15T04:16:22.183Z",
+      "dispatchedAt": "2026-10-15T04:16:22.393Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.610Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.610Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813/sell",
+      "requestId": "cc074a08-eb41-4887-9795-7a4f10b93c4f",
+      "httpAttemptId": "e8b73691-2d84-47d1-9300-d4568c1e7d15",
+      "startedAt": "2026-10-15T04:16:22.184Z",
+      "dispatchedAt": "2026-10-15T04:16:22.393Z",
+      "responseHeadersAt": "2026-10-15T04:16:22.611Z",
+      "status": 201,
+      "responseSha256": "6e6dac2ca879fced8dc67ba1045121fb2ffc4783d305ddf1c3ed616cc685dedd",
+      "endedAt": "2026-10-15T04:16:22.611Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/06cca37d-e5e4-4a91-a80b-2132964dada2/sell",
+      "requestId": "62fecf1c-2b76-4f14-9a81-92da5105addc",
+      "httpAttemptId": "b4b23d73-5b23-4b2e-8034-9248aaa36aa8",
+      "startedAt": "2026-10-15T04:16:23.420Z",
+      "dispatchedAt": "2026-10-15T04:16:23.470Z",
+      "responseHeadersAt": "2026-10-15T04:16:23.557Z",
+      "status": 201,
+      "responseSha256": "7bfe4c3d295d2f17c7703428bcec475514e65c9d1f683951b3109940522c1898",
+      "endedAt": "2026-10-15T04:16:23.557Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/06cca37d-e5e4-4a91-a80b-2132964dada2/sell",
+      "requestId": "62fecf1c-2b76-4f14-9a81-92da5105addc",
+      "httpAttemptId": "16c1c91a-7747-4fb8-a894-477c25cd0e1c",
+      "startedAt": "2026-10-15T04:16:23.558Z",
+      "dispatchedAt": "2026-10-15T04:16:23.605Z",
+      "responseHeadersAt": "2026-10-15T04:16:23.687Z",
+      "status": 201,
+      "responseSha256": "7bfe4c3d295d2f17c7703428bcec475514e65c9d1f683951b3109940522c1898",
+      "endedAt": "2026-10-15T04:16:23.687Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments",
+      "requestId": "7f6c2761-b7a0-4b21-9de0-0b6b1fae1b43",
+      "httpAttemptId": "b6cd1f82-b784-487e-81ea-0aad39364d7e",
+      "startedAt": "2026-10-15T04:16:24.066Z",
+      "dispatchedAt": "2026-10-15T04:16:24.116Z",
+      "responseHeadersAt": "2026-10-15T04:16:24.207Z",
+      "status": 201,
+      "responseSha256": "ed35fbb2f645c3d663392656a64bfdccc548bf7221bfdfa3dbbb0df0f216d9e1",
+      "endedAt": "2026-10-15T04:16:24.207Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "POST",
+      "path": "/api/investments/64fa0fb8-c724-4686-a7fb-34cd24c8a666/sell",
+      "requestId": "63fecc88-9ccd-49a3-896b-06df67e11d74",
+      "httpAttemptId": "f0d67061-e8f3-448a-823a-c0c26552a430",
+      "startedAt": "2026-10-15T04:16:24.564Z",
+      "dispatchedAt": "2026-10-15T04:16:24.674Z",
+      "responseHeadersAt": "2026-10-15T04:16:24.760Z",
+      "status": 201,
+      "responseSha256": "c57d5ed70fa56096ed850c64678ec04194f6a46745b6d6884bab9dbbbf5b0e21",
+      "endedAt": "2026-10-15T04:16:24.760Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "DELETE",
+      "path": "/api/investments/9f01bb75-1f8c-4c90-84e7-20903046e813",
+      "requestId": "f266f11b-4757-469d-bf10-57af95b57baf",
+      "httpAttemptId": "ff16019b-cbb0-47fc-b87d-4a5e82685bbd",
+      "startedAt": "2026-10-15T04:16:25.075Z",
+      "dispatchedAt": "2026-10-15T04:16:25.125Z",
+      "responseHeadersAt": "2026-10-15T04:16:25.214Z",
+      "status": 200,
+      "responseSha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93",
+      "endedAt": "2026-10-15T04:16:25.214Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "DELETE",
+      "path": "/api/investments/64fa0fb8-c724-4686-a7fb-34cd24c8a666",
+      "requestId": "c874a1a0-2956-43e2-9ab8-c6874c215bd3",
+      "httpAttemptId": "6d4c3f0f-6bd3-44f3-ac30-e2360ec547b9",
+      "startedAt": "2026-10-15T04:16:25.293Z",
+      "dispatchedAt": "2026-10-15T04:16:25.344Z",
+      "responseHeadersAt": "2026-10-15T04:16:25.436Z",
+      "status": 200,
+      "responseSha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93",
+      "endedAt": "2026-10-15T04:16:25.436Z"
+    },
+    {
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+      "method": "DELETE",
+      "path": "/api/accounts/0f366da8-6d2a-4916-8fa2-17c507c2fb1b",
+      "requestId": "04aacf22-bca7-4d7d-9a01-a0724b9a3bb1",
+      "httpAttemptId": "d2faee57-8221-4dce-a865-433df0569acc",
+      "startedAt": "2026-10-15T04:16:25.514Z",
+      "dispatchedAt": "2026-10-15T04:16:25.564Z",
+      "responseHeadersAt": "2026-10-15T04:16:25.652Z",
+      "status": 204,
+      "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "endedAt": "2026-10-15T04:16:25.652Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "0f366da8-6d2a-4916-8fa2-17c507c2fb1b",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "DERIVED-CONCURRENT-10-HTTPCLIENTS"
+    },
+    {
+      "kind": "position",
+      "id": "9f01bb75-1f8c-4c90-84e7-20903046e813",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b"
+    },
+    {
+      "kind": "position",
+      "id": "64fa0fb8-c724-4686-a7fb-34cd24c8a666",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b"
+    }
+  ],
+  "executionCount": 1,
+  "case": {
+    "case_id": "DERIVED-CONCURRENT-10-HTTPCLIENTS",
+    "status": "PASS",
+    "complete_original_contract": false,
+    "assertions": [
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual normal-owner investment create201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "All ten HTTP clients dispatched before gate release",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "At least two actual linked PG sessions overlapped before release",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "No response observed before all ten starts and release",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Exactly ten distinct HTTP attempts",
+        "actual": 10,
+        "expected": 10,
+        "status": "PASS"
+      },
+      {
+        "name": "No sale commits while own row gate is held",
+        "actual": 0,
+        "expected": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "Ten concurrent HTTP acknowledgements all201",
+        "actual": [
+          201,
+          201,
+          201,
+          201,
+          201,
+          201,
+          201,
+          201,
+          201,
+          201
+        ],
+        "expected": [
+          201,
+          201,
+          201,
+          201,
+          201,
+          201,
+          201,
+          201,
+          201,
+          201
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Ten HTTP acknowledgements share one original sale ID",
+        "actual": 1,
+        "expected": 1,
+        "status": "PASS"
+      },
+      {
+        "name": "Persisted exact quantity",
+        "actual": true,
+        "expected": true,
+        "numericActual": 6,
+        "numericExpected": 6,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "Persisted exact remaining cost",
+        "actual": true,
+        "expected": true,
+        "numericActual": 600,
+        "numericExpected": 600,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "Ten HTTP attempts have exactly one sale",
+        "actual": 1,
+        "expected": 1,
+        "status": "PASS"
+      },
+      {
+        "name": "Ten HTTP attempts have exactly one durable receipt",
+        "actual": 1,
+        "expected": 1,
+        "status": "PASS"
+      },
+      {
+        "name": "Prior ten-PG experiment remains a preserved FAIL",
+        "actual": "FAIL",
+        "expected": "FAIL",
+        "status": "PASS"
+      },
+      {
+        "name": "Prior experiment original integrity and stable source confirmed",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Exactly two prior observed HTTP500 attempts selected",
+        "actual": 2,
+        "expected": 2,
+        "status": "PASS"
+      },
+      {
+        "name": "Prior failed attempts share their original idempotency key",
+        "actual": 1,
+        "expected": 1,
+        "status": "PASS"
+      },
+      {
+        "name": "Prior synthetic row has same existing owner",
+        "actual": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "expected": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "status": "PASS"
+      },
+      {
+        "name": "Prior synthetic row recorded in original report",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Prior committed receipt exists exactly once",
+        "actual": 1,
+        "expected": 1,
+        "status": "PASS"
+      },
+      {
+        "name": "Prior HTTP500 same-key retry now acknowledges original201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Prior500 retry returns existing durable sale",
+        "actual": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+        "expected": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+        "status": "PASS"
+      },
+      {
+        "name": "Prior HTTP500 same-key retry now acknowledges original201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Prior500 retry returns existing durable sale",
+        "actual": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+        "expected": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+        "status": "PASS"
+      },
+      {
+        "name": "Prior500 retries do not change any old position/sales/cash/receipt row",
+        "actual": {
+          "position": {
+            "id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+            "name": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+            "type": "stock_us",
+            "notes": null,
+            "ticker": "AAPL",
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "quantity": 6,
+            "is_active": false,
+            "account_id": "10ce83f6-5bcf-4952-9b7e-e0806d109dd1",
+            "created_at": "2026-10-15T04:01:42.167686+00:00",
+            "updated_at": "2026-10-15T04:01:55.316139+00:00",
+            "current_price": 110,
+            "interest_rate": null,
+            "maturity_date": null,
+            "purchase_date": "2026-10-06",
+            "purchase_price": 100,
+            "is_manual_price": true,
+            "market_currency": "USD",
+            "purchase_currency": "USD",
+            "current_price_change_pct": null,
+            "current_price_updated_at": "2026-10-15T04:01:42.166+00:00"
+          },
+          "sales": [
+            {
+              "id": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+              "notes": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+              "price": 120,
+              "sold_at": "2026-10-06",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "quantity": 4,
+              "created_at": "2026-10-15T04:01:50.553973+00:00",
+              "ars_per_usd": 1200,
+              "investment_id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+              "realized_pnl_usd": 80,
+              "realized_pnl_native": 80,
+              "purchase_price_at_sale": 100
+            }
+          ],
+          "cash": {
+            "account": [
+              {
+                "id": "10ce83f6-5bcf-4952-9b7e-e0806d109dd1",
+                "icon": null,
+                "name": "AccountAnalysis DERIVED-INV-CONCURRENCY 1 c4ae3619-a287-473b-b17a-e15770d0cabf",
+                "type": "investment",
+                "color": "#3B82F6",
+                "balance": 0,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                "currency": "USD",
+                "is_active": false,
+                "created_at": "2026-10-15T04:01:39.654792+00:00",
+                "sort_order": 15,
+                "updated_at": "2026-10-15T04:01:55.552433+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "ledger": []
+          },
+          "receipts": [
+            {
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "response": {
+                "sale": {
+                  "id": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+                  "notes": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+                  "price": 120,
+                  "sold_at": "2026-10-06",
+                  "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                  "currency": "USD",
+                  "quantity": 4,
+                  "created_at": "2026-10-15T04:01:50.553973+00:00",
+                  "ars_per_usd": 1200,
+                  "investment_id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+                  "realized_pnl_usd": 80,
+                  "realized_pnl_native": 80,
+                  "purchase_price_at_sale": 100
+                },
+                "position_closed": false,
+                "remaining_quantity": 6
+              },
+              "created_at": "2026-10-15T04:01:50.553973+00:00",
+              "request_id": "62fecf1c-2b76-4f14-9a81-92da5105addc",
+              "request_hash": "38cf98f8326ca5d25c2ab5287680913bc55322a75eb680c49f02cf5673ece571"
+            }
+          ]
+        },
+        "expected": {
+          "position": {
+            "id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+            "name": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+            "type": "stock_us",
+            "notes": null,
+            "ticker": "AAPL",
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "quantity": 6,
+            "is_active": false,
+            "account_id": "10ce83f6-5bcf-4952-9b7e-e0806d109dd1",
+            "created_at": "2026-10-15T04:01:42.167686+00:00",
+            "updated_at": "2026-10-15T04:01:55.316139+00:00",
+            "current_price": 110,
+            "interest_rate": null,
+            "maturity_date": null,
+            "purchase_date": "2026-10-06",
+            "purchase_price": 100,
+            "is_manual_price": true,
+            "market_currency": "USD",
+            "purchase_currency": "USD",
+            "current_price_change_pct": null,
+            "current_price_updated_at": "2026-10-15T04:01:42.166+00:00"
+          },
+          "sales": [
+            {
+              "id": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+              "notes": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+              "price": 120,
+              "sold_at": "2026-10-06",
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "quantity": 4,
+              "created_at": "2026-10-15T04:01:50.553973+00:00",
+              "ars_per_usd": 1200,
+              "investment_id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+              "realized_pnl_usd": 80,
+              "realized_pnl_native": 80,
+              "purchase_price_at_sale": 100
+            }
+          ],
+          "cash": {
+            "account": [
+              {
+                "id": "10ce83f6-5bcf-4952-9b7e-e0806d109dd1",
+                "icon": null,
+                "name": "AccountAnalysis DERIVED-INV-CONCURRENCY 1 c4ae3619-a287-473b-b17a-e15770d0cabf",
+                "type": "investment",
+                "color": "#3B82F6",
+                "balance": 0,
+                "due_day": null,
+                "is_debt": false,
+                "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                "currency": "USD",
+                "is_active": false,
+                "created_at": "2026-10-15T04:01:39.654792+00:00",
+                "sort_order": 15,
+                "updated_at": "2026-10-15T04:01:55.552433+00:00",
+                "closing_day": null,
+                "min_balance": null,
+                "credit_limit": null,
+                "last_4_digits": null,
+                "include_in_total": true,
+                "is_multicurrency": false,
+                "movement_enabled": true,
+                "include_in_liquid": true,
+                "secondary_currency": null
+              }
+            ],
+            "ledger": []
+          },
+          "receipts": [
+            {
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "response": {
+                "sale": {
+                  "id": "2b355505-3f53-4025-a36c-ffea66a3fbf2",
+                  "notes": "InvestmentContracts c4ae3619-a287-473b-b17a-e15770d0cabf",
+                  "price": 120,
+                  "sold_at": "2026-10-06",
+                  "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+                  "currency": "USD",
+                  "quantity": 4,
+                  "created_at": "2026-10-15T04:01:50.553973+00:00",
+                  "ars_per_usd": 1200,
+                  "investment_id": "06cca37d-e5e4-4a91-a80b-2132964dada2",
+                  "realized_pnl_usd": 80,
+                  "realized_pnl_native": 80,
+                  "purchase_price_at_sale": 100
+                },
+                "position_closed": false,
+                "remaining_quantity": 6
+              },
+              "created_at": "2026-10-15T04:01:50.553973+00:00",
+              "request_id": "62fecf1c-2b76-4f14-9a81-92da5105addc",
+              "request_hash": "38cf98f8326ca5d25c2ab5287680913bc55322a75eb680c49f02cf5673ece571"
+            }
+          ]
+        },
+        "status": "PASS"
+      },
+      {
+        "name": "Actual normal-owner investment create201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual sale201 headers received before discarding body",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Persisted exact quantity",
+        "actual": true,
+        "expected": true,
+        "numericActual": 5,
+        "numericExpected": 5,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "Persisted exact remaining cost",
+        "actual": true,
+        "expected": true,
+        "numericActual": 500,
+        "numericExpected": 500,
+        "tolerance": 1e-8,
+        "status": "PASS"
+      },
+      {
+        "name": "Same-key retry after discarded response body201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Discarded-body retry has exactly one sale",
+        "actual": 1,
+        "expected": 1,
+        "status": "PASS"
+      },
+      {
+        "name": "Discarded-body retry has exactly one durable receipt",
+        "actual": 1,
+        "expected": 1,
+        "status": "PASS"
+      }
+    ],
+    "original_contract": null,
+    "startedAt": "2026-10-15T04:16:21.333Z",
+    "apiSqlScope": {
+      "status": "PASS",
+      "assertions": 32
+    }
+  },
+  "pendingScopes": [],
+  "executionMode": "api-sql-only",
+  "run": "78e3c532-f80f-4b76-9d8c-1e31132818b5",
+  "nativePreparation": {
+    "sha256": "b94b67366b193af018f973d7e3689a32b9f59b0e7436d5e762ea72db1cd31bc4",
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "normalAuthIdsBound": true
+  },
+  "unbuiltCurrentDeltas": [
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "servedSha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "currentSha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "servedMatchesFrozenGit": true
+    },
+    {
+      "path": "components/budgets/BudgetCard.tsx",
+      "servedSha256": "25cc6294a8b2d4312e4ea4cdc394aa3f816aa987457da74402da86fd76296d5b",
+      "currentSha256": "b4a66c24408997fdc90656b02d16ca574090302b0288aaebb3cbdae4a2b21a74",
+      "servedMatchesFrozenGit": true
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "servedSha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+      "currentSha256": "674fe1139550b084a8e9afbce04bb9fea42e7de060f582512219586ef3d6c2bd",
+      "servedMatchesFrozenGit": true
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "servedSha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8",
+      "currentSha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401",
+      "servedMatchesFrozenGit": true
+    }
+  ],
+  "targetBinding": {
+    "projectId": "5429b7fb-a0c0-4b8d-9bcf-d30130c005cb",
+    "stackId": "c23a7df7600999c31f2d8435146f55289db07f9f62dfc5d6f08b2562a1529a09",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "databasePort": "58322",
+    "targetManifestSha256": "b94b67366b193af018f973d7e3689a32b9f59b0e7436d5e762ea72db1cd31bc4",
+    "nativeStateSha256": "33b915ba3ac02550152d35ba82bce137a0fcc660fb2f47c215c55745d821b8dc",
+    "dataDirectorySha256": "c42726c4e297b3306d95f2b7cda1365e8166e4036358fc23f701543a7cfe710e",
+    "buildProofSha256": "e0a202f3730025b49176337afbf0e8b517e039aac1600412535087ac88cc7201",
+    "buildIdSha256": "4cbf26bf600d4058d6c2503e8ad49857cb86b8d7c4902bfcb82eaefc672a0194",
+    "listenerPidVerified": true,
+    "realNativeMetadata": true
+  },
+  "buildBinding": {
+    "appOrigin": "http://127.0.0.1:3002",
+    "apiOrigin": "http://127.0.0.1:58321",
+    "buildId": "a2WBtszbvrpoT9GHwToED",
+    "nextPid": 52579
+  },
+  "workingSourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "sha256": "d6812a2cc5201fb6c0f048dd63a43a8fdc25684fad60140cbd86b4698c0c36a6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "sha256": "ab65ef44b70e9b7c550f7ff323d212f481265ee04bd0492ebeab23f7690fbbf9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "sha256": "114a3f8c5728e75648112f33386a5fba80f80c0b7122b7dcc4992ea7e18d562c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+      "sha256": "8e378365a73f6dd89732d9a0b19e93a2255882b238c6154538e8f3565ac5aedf"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "b11b93dc508d5d58611dd2d9eb4e3d254d9246f540ea6e922734657cb900c401"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6"
+    },
+    {
+      "path": "app/api/accounts/movement-selection/route.ts",
+      "sha256": "a1cc859f83123a1e432fa07fa19e8562138cda2734db029445ff64e667d6257a"
+    },
+    {
+      "path": "app/api/user/subscription/route.ts",
+      "sha256": "a90915772ca3889a5129d24222008cf561bd23491e7ab5f50cbae358af8d2d13"
+    },
+    {
+      "path": "lib/plans/rules.ts",
+      "sha256": "c37543f1572292c3d5a40635033182a3c1fa3dcc21aa7899a03991df77eeef85"
+    },
+    {
+      "path": "lib/plans/service.ts",
+      "sha256": "9054b957e945cb49b14f269cf32fe8209571b116b9529eaf6a77e01f4efb3e87"
+    },
+    {
+      "path": "lib/services/subscriptions.ts",
+      "sha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264"
+    },
+    {
+      "path": "types/database.ts",
+      "sha256": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982"
+    },
+    {
+      "path": "components/investments/InvestmentsList.tsx",
+      "sha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7"
+    },
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "sha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "sha256": "d6812a2cc5201fb6c0f048dd63a43a8fdc25684fad60140cbd86b4698c0c36a6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "sha256": "ab65ef44b70e9b7c550f7ff323d212f481265ee04bd0492ebeab23f7690fbbf9"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "sha256": "114a3f8c5728e75648112f33386a5fba80f80c0b7122b7dcc4992ea7e18d562c"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+      "sha256": "8e378365a73f6dd89732d9a0b19e93a2255882b238c6154538e8f3565ac5aedf"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/accounts/movement-selection/route.ts",
+      "sha256": "a1cc859f83123a1e432fa07fa19e8562138cda2734db029445ff64e667d6257a",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/user/subscription/route.ts",
+      "sha256": "a90915772ca3889a5129d24222008cf561bd23491e7ab5f50cbae358af8d2d13",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/plans/rules.ts",
+      "sha256": "c37543f1572292c3d5a40635033182a3c1fa3dcc21aa7899a03991df77eeef85",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/plans/service.ts",
+      "sha256": "9054b957e945cb49b14f269cf32fe8209571b116b9529eaf6a77e01f4efb3e87",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/subscriptions.ts",
+      "sha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "types/database.ts",
+      "sha256": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "components/investments/InvestmentsList.tsx",
+      "sha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "sha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    }
+  ],
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "users": [
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "label": "sourceB/logicalU1",
+      "normalAuth": true
+    },
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "label": "sourceA/logicalU2",
+      "normalAuth": true
+    }
+  ],
+  "httpClientConcurrency": {
+    "scope": "Ten dispatched HTTP clients, minimum two actual overlapping PG sessions; not ten PG sessions or a load requirement",
+    "barrierPid": 96058,
+    "investmentId": "9f01bb75-1f8c-4c90-84e7-20903046e813",
+    "dispatched": [
+      {
+        "client": 0,
+        "httpAttemptId": "ef0c779e-72d1-41b5-a50b-5c1ee0e14a8a",
+        "at": "2026-10-15T04:16:22.392Z"
+      },
+      {
+        "client": 1,
+        "httpAttemptId": "99fcba27-1f0c-4685-9410-764717631fa2",
+        "at": "2026-10-15T04:16:22.392Z"
+      },
+      {
+        "client": 2,
+        "httpAttemptId": "155ec0b9-f3c3-491e-8626-c14df56830a8",
+        "at": "2026-10-15T04:16:22.392Z"
+      },
+      {
+        "client": 3,
+        "httpAttemptId": "0f4114a9-7b4f-4899-9c84-aab7d7222f78",
+        "at": "2026-10-15T04:16:22.392Z"
+      },
+      {
+        "client": 4,
+        "httpAttemptId": "c901e211-a081-4a44-acc8-9d02df247c1c",
+        "at": "2026-10-15T04:16:22.392Z"
+      },
+      {
+        "client": 5,
+        "httpAttemptId": "a74533cb-1fef-43c9-be2a-678e9cc3bb73",
+        "at": "2026-10-15T04:16:22.392Z"
+      },
+      {
+        "client": 6,
+        "httpAttemptId": "71ce0b56-843c-4a3b-86e2-259c4a01f519",
+        "at": "2026-10-15T04:16:22.392Z"
+      },
+      {
+        "client": 7,
+        "httpAttemptId": "e7f41732-9161-41a0-b2e1-b629af692db8",
+        "at": "2026-10-15T04:16:22.392Z"
+      },
+      {
+        "client": 8,
+        "httpAttemptId": "a7fe6c48-6ec4-49bf-8033-c893cd2d88b9",
+        "at": "2026-10-15T04:16:22.393Z"
+      },
+      {
+        "client": 9,
+        "httpAttemptId": "e8b73691-2d84-47d1-9300-d4568c1e7d15",
+        "at": "2026-10-15T04:16:22.393Z"
+      }
+    ],
+    "observedConnections": [
+      {
+        "pid": 95984,
+        "state": "active",
+        "blockers": [
+          96030
+        ],
+        "wait_event": "advisory",
+        "wait_event_type": "Lock"
+      },
+      {
+        "pid": 96030,
+        "state": "active",
+        "blockers": [
+          96058
+        ],
+        "wait_event": "transactionid",
+        "wait_event_type": "Lock"
+      }
+    ],
+    "observedPgCount": 2,
+    "gateReleaseStartedAt": "2026-10-15T04:16:22.526Z",
+    "headers": [
+      {
+        "client": 2,
+        "at": "2026-10-15T04:16:22.610Z",
+        "status": 201
+      },
+      {
+        "client": 8,
+        "at": "2026-10-15T04:16:22.610Z",
+        "status": 201
+      },
+      {
+        "client": 6,
+        "at": "2026-10-15T04:16:22.611Z",
+        "status": 201
+      },
+      {
+        "client": 9,
+        "at": "2026-10-15T04:16:22.611Z",
+        "status": 201
+      },
+      {
+        "client": 5,
+        "at": "2026-10-15T04:16:22.612Z",
+        "status": 201
+      },
+      {
+        "client": 4,
+        "at": "2026-10-15T04:16:22.612Z",
+        "status": 201
+      },
+      {
+        "client": 3,
+        "at": "2026-10-15T04:16:22.612Z",
+        "status": 201
+      },
+      {
+        "client": 1,
+        "at": "2026-10-15T04:16:22.613Z",
+        "status": 201
+      },
+      {
+        "client": 7,
+        "at": "2026-10-15T04:16:22.614Z",
+        "status": 201
+      },
+      {
+        "client": 0,
+        "at": "2026-10-15T04:16:22.614Z",
+        "status": 201
+      }
+    ],
+    "salesWhileBlocked": 0,
+    "proofReady": true
+  },
+  "priorHttp500Recovery": {
+    "priorReportSha256": "2315fc1c62f3fe88bdfe8b82e7411dc4739f93c32c12c04ac5af6d1f2d096886",
+    "priorCaseStatus": "FAIL",
+    "recovered": [
+      {
+        "priorStatus": 500,
+        "status": 201,
+        "saleId": "2b355505-3f53-4025-a36c-ffea66a3fbf2"
+      },
+      {
+        "priorStatus": 500,
+        "status": 201,
+        "saleId": "2b355505-3f53-4025-a36c-ffea66a3fbf2"
+      }
+    ],
+    "rewrites": 0
+  },
+  "durableBodyLoss": {
+    "phase": "actual201headers/bodydiscarded",
+    "saleId": "0332bec5-2cb3-46d8-a81c-ac93569a9d91",
+    "requestId": "63fecc88-9ccd-49a3-896b-06df67e11d74",
+    "effects": 1,
+    "restartReplayArtifact": "restart-replay.json",
+    "restartExecuted": false
+  },
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "afterMd5": "936c8f68d07ff7ca5dce2a928d92dc02",
+      "unchanged": true
+    },
+    {
+      "table": "accounts",
+      "rows": 46,
+      "beforeMd5": "058e04bb85c9b718ad34c325e628aa4b",
+      "afterMd5": "058e04bb85c9b718ad34c325e628aa4b",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 43,
+      "beforeMd5": "4d9f4d88fcc7ea6d9ef4f8d5a2b8da77",
+      "afterMd5": "4d9f4d88fcc7ea6d9ef4f8d5a2b8da77",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 17,
+      "beforeMd5": "d3d00bea65c432549b21e1b70a19d488",
+      "afterMd5": "d3d00bea65c432549b21e1b70a19d488",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 6,
+      "beforeMd5": "73ebb169ac7f063ead81b7b08292b56b",
+      "afterMd5": "73ebb169ac7f063ead81b7b08292b56b",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 29,
+      "beforeMd5": "0081d31f5bf9f83807d261220eabdd36",
+      "afterMd5": "0081d31f5bf9f83807d261220eabdd36",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "workingSourceStable": true,
+  "servedSourceStable": true,
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T04:16:26.793Z"
+}

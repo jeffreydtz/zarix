@@ -1,0 +1,44 @@
+[
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci4-current/braces.json",
+    "source": "https://registry.npmjs.org/braces",
+    "sha256": "35e56f0f449c6c7041baa1dfdd9cc4534bca5e694d021ad6384823a50d3ef5a2",
+    "at": "2026-10-15T03:28:35.054219+00:00",
+    "status": 200
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci4-current/micromatch.json",
+    "source": "https://registry.npmjs.org/micromatch",
+    "sha256": "79be5b7f7589ddf185e60f899559537969def9cb8fc80a0b6e9999d40c7de02b",
+    "at": "2026-10-15T03:28:35.167552+00:00",
+    "status": 200
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci4-current/fast-glob.json",
+    "source": "https://registry.npmjs.org/fast-glob",
+    "sha256": "e969f07c45552e96c2537f0e5e35a564357f16f1ae150d44009f4ce4d51a4d64",
+    "at": "2026-10-15T03:28:35.256129+00:00",
+    "status": 200
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci4-current/tailwindcss.json",
+    "source": "https://registry.npmjs.org/tailwindcss",
+    "sha256": "d35ad57b884616a8c366e65ebd57292e26c9682fa8a2df9dc3ac32e56e470456",
+    "at": "2026-10-15T03:28:35.364671+00:00",
+    "status": 200
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci4-current/next-eslint-plugin.json",
+    "source": "https://registry.npmjs.org/@next%2feslint-plugin-next",
+    "sha256": "37ac9ecc1695c45ec2c600c40bfb7be0195feb8df155d22b8dd962910600dc1d",
+    "at": "2026-10-15T03:28:35.749808+00:00",
+    "status": 200
+  },
+  {
+    "file": "docs/tif/v2.13/evidence/technical-20261015/dependencies/ci4-current/github-advisory.json",
+    "source": "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+    "sha256": "0fed4689a6555a98c7dd0285943ab7972c5003fd3c2cb4fcb07c817df55747fc",
+    "at": "2026-10-15T03:28:36.055713+00:00",
+    "status": 200
+  }
+]

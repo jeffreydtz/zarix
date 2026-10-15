@@ -1,0 +1,49 @@
+// Synthetic fresh58321replica ONLY. No product SQL/migration or original row is changed.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { spawn } from 'node:child_process';
+const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const ident=s=>{assert.match(s,/^zic_[0-9a-f]{32}_[a-z]+$/);return `public."${s}"`;};
+export function catalog(c){return c.sql("SELECT md5(COALESCE(string_agg(def,E'\\n' ORDER BY ident),'')) FROM (SELECT 'f:'||p.oid::regprocedure::text AS ident,pg_get_functiondef(p.oid)||COALESCE(p.proacl::text,'') AS def FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prokind IN('f','p') UNION ALL SELECT 't:'||t.tgrelid::regclass::text||':'||t.tgname,pg_get_triggerdef(t.oid)||t.tgenabled::text FROM pg_trigger t JOIN pg_class r ON r.oid=t.tgrelid JOIN pg_namespace n ON n.oid=r.relnamespace WHERE n.nspname='public' AND NOT t.tgisinternal)s");}
+function guard(c){assert.equal(c.apiUrl.origin,'http://127.0.0.1:58321');assert.equal(String(c.targetManifest.databasePort),'58322');assert.equal(c.targetManifest.purpose,'isolated-account-analysis-replica');assert.equal(c.targetManifest.syntheticOnly,true);assert.match(c.targetManifest.projectId,/^[0-9a-f-]{36}$/i);assert.equal(process.env.ZARIX_INVESTMENT_FAULT_DDL,'authorized-own-fresh-replica','Parent explicitly authorized only temporaryown58321DDL');}
+async function tail(file,offset){const h=await fs.open(file,'r');try{const size=(await h.stat()).size;const length=Math.min(Math.max(size-offset,0),65536);const b=Buffer.alloc(length);await h.read(b,0,length,offset);return b.toString();}finally{await h.close();}}
+export async function installFault(c,{accountId,requestId,phase}){
+ guard(c);assert.ok(['position','receipt'].includes(phase));assert.ok(c.own.accounts.some(x=>x.id===accountId&&x.userId===c.a.id));
+ const logs=[c.buildProof.serverLogPath,c.targetManifest.postgresLogPath].filter(Boolean);assert.ok(logs.length,'Actual privateboundserverlog required to prove the fault executed');
+ const offsets=[];for(const file of logs){assert.ok(path.resolve(file).startsWith('/tmp/zarix-runtime-20261015/'));offsets.push({file,offset:(await fs.stat(file)).size});}
+ const name=`zic_${c.run.replaceAll('-','')}_${phase}`, table=phase==='position'?'investments':'investment_create_requests';
+ const marker=`ZIC_FAULT_${c.run}_${phase}`;
+ const receiptPredicate=`NEW.user_id=${c.lit(c.a.id)}::uuid AND NEW.request_id=${c.lit(requestId)} AND (NEW.response->>'account_id')::uuid=${c.lit(accountId)}::uuid`;
+ const positionPredicate=`NEW.user_id=${c.lit(c.a.id)}::uuid AND NEW.account_id=${c.lit(accountId)}::uuid AND NEW.name=${c.lit(`InvestmentContracts ${c.run}`)}`;
+ const bothWritten=phase==='receipt'?`IF NOT EXISTS(SELECT 1 FROM public.investments WHERE id=(NEW.response->>'id')::uuid AND user_id=NEW.user_id AND account_id=${c.lit(accountId)}::uuid) THEN RAISE EXCEPTION 'Unexpected missing own position'; END IF;`:'';
+ const entry={name,table,accountId,requestId,phase,marker,status:'PLANNED',targetProjectId:c.targetManifest.projectId};c.report.temporaryDdl||=[];c.report.temporaryDdl.push(entry);await c.checkpoint();
+ let installed=false;
+ const remove=async()=>{if(!installed)return;guard(c);c.sql(`BEGIN;SET LOCAL statement_timeout='17s';SET LOCAL lock_timeout='3s';DROP TRIGGER IF EXISTS "${name}" ON public.${table};DROP FUNCTION IF EXISTS ${ident(name)}();COMMIT;`);installed=false;entry.status='REMOVED';await c.checkpoint();};
+ c.extraCleanup.push(remove);
+ // Mark cleanup required BEFORE installation: a transport failure may occur after COMMIT.
+ installed=true;
+ // CREATE+REVOKE+TRIGGER commit together; no public executable helper is exposed.
+ c.sql(`BEGIN;SET LOCAL statement_timeout='17s';SET LOCAL lock_timeout='3s';CREATE FUNCTION ${ident(name)}() RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $zic$ BEGIN IF ${phase==='position'?positionPredicate:receiptPredicate} THEN ${bothWritten} RAISE EXCEPTION ${c.lit(marker)}; END IF;RETURN NEW;END $zic$;REVOKE ALL ON FUNCTION ${ident(name)}() FROM PUBLIC,anon,authenticated,service_role;CREATE TRIGGER "${name}" AFTER INSERT ON public.${table} FOR EACH ROW EXECUTE FUNCTION ${ident(name)}();COMMIT;`);
+ installed=true;entry.status='INSTALLED';await c.checkpoint();
+ return {remove,async proveHit(){let found=false;for(let i=0;i<25&&!found;i++){for(const {file,offset}of offsets)if((await tail(file,offset)).includes(marker)){found=true;break;}if(!found)await pause(100);}c.check(`Actual${phase}faultmarkerobservedinboundprivatelog`,found,true);entry.observed=true;await c.checkpoint();}};
+}
+export async function rowGate(c,investmentId){
+ guard(c);assert.ok(c.own.positions.some(x=>x.id===investmentId&&x.user.id===c.a.id));
+ const child=spawn(c.psql,['-X','-q','-A','-t','-v','ON_ERROR_STOP=1'],{env:{...c.pgEnv,PGAPPNAME:`investment-gate-${c.run}`},stdio:['pipe','pipe','pipe']});let text='',exitCode=null,processError;
+ child.stdout.on('data',b=>{text+=b.toString();});child.stderr.on('data',()=>{});child.on('error',e=>{processError=e;});child.stdin.on('error',()=>{});child.on('exit',code=>{exitCode=code;});
+ child.stdin.write(`BEGIN;SET LOCAL statement_timeout='17s';SET LOCAL lock_timeout='3s';SET LOCAL idle_in_transaction_session_timeout='17s';SELECT id FROM investments WHERE id=${c.lit(investmentId)} AND user_id=${c.lit(c.a.id)} FOR UPDATE;SELECT 'ZIC_READY:'||pg_backend_pid();\n`);
+ const until=Date.now()+3000;while(!text.includes('ZIC_READY:')&&exitCode===null&&!processError&&Date.now()<until)await pause(50);
+ let released=false;const release=async()=>{if(released)return;released=true;if(exitCode===null){try{child.stdin.end('ROLLBACK;\n\\q\n');}catch{}const end=Date.now()+2000;while(exitCode===null&&Date.now()<end)await pause(50);if(exitCode===null){child.kill('SIGTERM');throw new Error('Own gate process failed to exit');}}assert.equal(exitCode,0,'Own gate failed or expired; no concurrency claim');};
+ c.extraCleanup.push(release);assert.ok(text.includes('ZIC_READY:')&&!processError,'Own fresh-position gate must become ready');
+ const pid=Number(text.match(/ZIC_READY:(\d+)/)[1]);return{pid,release};
+}
+export async function overlap(c,{investmentId,payload,keys}){
+ const gate=await rowGate(c,investmentId);let proof,responses,releaseFailure;
+ // Immediately attach both success/error handlers; no unhandled deferred HTTP promise.
+ const pending=keys.map(key=>c.request('POST',`/api/investments/${investmentId}/sell`,payload,{key}).then(value=>({state:'fulfilled',value}),error=>({state:'rejected',error})));
+ try{const until=Date.now()+12000;while(Date.now()<until){const waiters=c.rows("SELECT pid,state,wait_event_type,wait_event,pg_blocking_pids(pid)AS blockers FROM pg_stat_activity WHERE pid<>pg_backend_pid() AND datname=current_database() AND state='active' AND wait_event_type='Lock' AND query LIKE '%sell_investment_once%' ORDER BY pid");let linked=new Set([gate.pid]);for(let pass=0;pass<keys.length+1;pass++)for(const row of waiters)if(row.blockers.some(x=>linked.has(x)))linked.add(row.pid);const owned=waiters.filter(x=>linked.has(x.pid));if(owned.length>=keys.length){proof={barrierPid:gate.pid,investmentId,expectedConcurrent:keys.length,observedConnections:owned,at:new Date().toISOString(),salesWhileBlocked:Number(c.sql(`SELECT count(*) FROM investment_sales WHERE investment_id=${c.lit(investmentId)}`))};break;}await pause(100);}}
+ finally{try{await gate.release();}catch(e){releaseFailure=e;}const settled=await Promise.all(pending);if(releaseFailure)throw releaseFailure;const bad=settled.find(x=>x.state==='rejected');if(bad)throw bad.error;responses=settled.map(x=>x.value);}
+ c.check(`${keys.length}nativeconnectionsactuallyoverlapped`,new Set(proof?.observedConnections.map(x=>x.pid)||[]).size>=keys.length,true);c.check('Zeronewsaleswhilegated',proof.salesWhileBlocked,0);
+ c.report.nativeConcurrency||=[];c.report.nativeConcurrency.push(proof);await c.checkpoint();return responses;
+}

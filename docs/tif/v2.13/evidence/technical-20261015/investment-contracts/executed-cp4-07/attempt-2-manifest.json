@@ -1,0 +1,62 @@
+{
+  "scope": "Second authorized diagnostic uses a new UUID asset and a fresh cache timestamp; previous executed BTC60000 failure remains unchanged. Effective API price/source/timestamp are recorded before financial assertions. Every source snapshot is exact executed bytes. All numerical tolerance values are unchanged1e-8. No real provider claim.",
+  "case_id": "CP4-07",
+  "status": "PASS",
+  "complete_original_contract": true,
+  "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+  "sourceStable": true,
+  "sourceSnapshots": [
+    {
+      "executedPath": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "sha256": "fbc01fdfa5f7acd9cc3554962fbea70b3246d26f96ea2b1f815ac4c0be925a1c",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/fbc01fdfa5f7acd9cc3554962fbea70b3246d26f96ea2b1f815ac4c0be925a1c.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "sha256": "7d299536b3ed525075efb5aeb7d78f631b01781ecce90e3783b71722f5b80256",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/7d299536b3ed525075efb5aeb7d78f631b01781ecce90e3783b71722f5b80256.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "sha256": "20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+    },
+    {
+      "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+      "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+      "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-2-readonly-receipts-and-positions.json",
+      "sha256": "7c7459dafae026e66fced5ee0bbb18383c0e2c9c727826c69b01e17e70e9c686"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/attempt-2-unique-fresh-cache-pass.json",
+      "sha256": "855680c0c7c70c4bb19bdc830547da8c4460ff2dbc046e7bc185e28ea4d94439"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/phase-2-control-restored.json",
+      "sha256": "c58f68ebf634ccc9463776e54c04cf88cd775a62e348258680a9051d8e62cd52"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/phase-2-offline-proof.json",
+      "sha256": "0767044201c14df833097c942aeafc05376406a689ffa19c790c0107fc2add85"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-cp4-07/readonly-receipts-proof.mjs.executed.txt",
+      "sha256": "9f3b672a39c97dc0dea8ff7c03e62ce84eab2c687f98d3208ff8a9f615b7c1a3"
+    }
+  ]
+}

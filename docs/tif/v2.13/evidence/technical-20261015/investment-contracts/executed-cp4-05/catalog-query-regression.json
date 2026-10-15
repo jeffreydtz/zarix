@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-15T03:59:21.589660+00:00",
+  "scope": "Readonly nativePG58322 oracle query only; no DDL or financial operation",
+  "before": {
+    "exitCode": 1,
+    "sqlState": "42725",
+    "helperSha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a"
+  },
+  "castOnlyAfter": {
+    "exitCode": 0,
+    "md5Result": true,
+    "helperSha256": "20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd"
+  },
+  "change": "Explicit ::text on pg_trigger.tgenabled in text concatenation; real PostgreSQL reported ambiguous operator without cast",
+  "oldAttempt": {
+    "fixtureAccountCreatedAndArchived": true,
+    "original12TablesUnchanged": true,
+    "faultTriggerCreated": false,
+    "purchaseAttempted": false,
+    "classification": "HARNESS_SQL_CATALOG_FAIL_NOT_PRODUCT"
+  }
+}

@@ -1,0 +1,4276 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-10-15T03:55:01.882Z",
+  "scope": "Derived sixth local cloned-B Premium→Free lifecycle only, ordinary Auth APIs plus explicitly authorized fixture plan expiry; intended B plan/updated_at delta, no MercadoPago/provider claim or original CSV promotion",
+  "results": [
+    {
+      "case_id": "DERIVED-PLAN-DOWNGRADE",
+      "status": "PASS",
+      "complete_original_contract": false,
+      "assertions": [
+        {
+          "name": "Only new sixth synthetic rate row inserted",
+          "actual": "fb1f12e0-b62e-4963-8378-4a189510f86a",
+          "expected": "fb1f12e0-b62e-4963-8378-4a189510f86a",
+          "status": "PASS"
+        },
+        {
+          "name": "FX fixture setup preserves all original financial rows including imported A",
+          "actual": "8f1257b8c8cae0ccfe66a253903e23fe",
+          "expected": "8f1257b8c8cae0ccfe66a253903e23fe",
+          "status": "PASS"
+        },
+        {
+          "name": "Sixth cloned B has no preexisting account rows",
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "Local fixture has no MercadoPago subscription capability",
+          "actual": null,
+          "expected": null,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture account API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual normal-owner investment create201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Premium fixture has exactly four active enabled accounts",
+          "actual": 4,
+          "expected": 4,
+          "status": "PASS"
+        },
+        {
+          "name": "Premium own history export200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Premium export exact own history row",
+          "actual": [
+            "ac2910c3-0fc2-4194-8372-2d5d951abb0a"
+          ],
+          "expected": [
+            "ac2910c3-0fc2-4194-8372-2d5d951abb0a"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Premium own history export200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Premium export exact own history row",
+          "actual": [
+            "080c1468-757e-4c2e-bb90-1574a8f2ec7c"
+          ],
+          "expected": [
+            "080c1468-757e-4c2e-bb90-1574a8f2ec7c"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Premium own history export200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Premium export exact own history row",
+          "actual": [
+            "7d78157d-042a-491d-b9bb-a9066eb8a53f"
+          ],
+          "expected": [
+            "7d78157d-042a-491d-b9bb-a9066eb8a53f"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Premium own history export200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Premium export exact own history row",
+          "actual": [
+            "7c40d55d-75b0-402a-ba23-82a80a540043"
+          ],
+          "expected": [
+            "7c40d55d-75b0-402a-ba23-82a80a540043"
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Exactly one authorized cloned B plan fixture row updated",
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "name": "Actual ordinary Auth subscription reports Free200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Effective Free allowance and orchestrator gate",
+          "actual": {
+            "plan": "free",
+            "accounts": 3,
+            "orchestrator": false
+          },
+          "expected": {
+            "plan": "free",
+            "accounts": 3,
+            "orchestrator": false
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Local SQL agrees with actual Free allowance",
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        },
+        {
+          "name": "Over-cap four enabled accounts require selection403",
+          "actual": 403,
+          "expected": 403,
+          "status": "PASS"
+        },
+        {
+          "name": "Over-cap rejection changes no history",
+          "actual": [
+            {
+              "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "created_at": "2026-10-15T03:55:06.380645+00:00",
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "created_at": "2026-10-15T03:55:06.865967+00:00",
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "85159915-d090-4d16-a667-111ad253e282",
+              "created_at": "2026-10-15T03:55:06.625412+00:00",
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "created_at": "2026-10-15T03:55:06.127626+00:00",
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "created_at": "2026-10-15T03:55:06.380645+00:00",
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "created_at": "2026-10-15T03:55:06.865967+00:00",
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "85159915-d090-4d16-a667-111ad253e282",
+              "created_at": "2026-10-15T03:55:06.625412+00:00",
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "created_at": "2026-10-15T03:55:06.127626+00:00",
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Free fifth account rejected403",
+          "actual": 403,
+          "expected": 403,
+          "status": "PASS"
+        },
+        {
+          "name": "Rejected fifth creates no partial account",
+          "actual": [
+            {
+              "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "investment",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.742772+00:00",
+              "sort_order": 3,
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.253091+00:00",
+              "sort_order": 1,
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "85159915-d090-4d16-a667-111ad253e282",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.50161+00:00",
+              "sort_order": 2,
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:05.994761+00:00",
+              "sort_order": 0,
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "investment",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.742772+00:00",
+              "sort_order": 3,
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.253091+00:00",
+              "sort_order": 1,
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "85159915-d090-4d16-a667-111ad253e282",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.50161+00:00",
+              "sort_order": 2,
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:05.994761+00:00",
+              "sort_order": 0,
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Selecting four on Free rejected403",
+          "actual": 403,
+          "expected": 403,
+          "status": "PASS"
+        },
+        {
+          "name": "Rejected selection changes no account columns",
+          "actual": [
+            {
+              "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "investment",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.742772+00:00",
+              "sort_order": 3,
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.253091+00:00",
+              "sort_order": 1,
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "85159915-d090-4d16-a667-111ad253e282",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.50161+00:00",
+              "sort_order": 2,
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:05.994761+00:00",
+              "sort_order": 0,
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "investment",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.742772+00:00",
+              "sort_order": 3,
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.253091+00:00",
+              "sort_order": 1,
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "85159915-d090-4d16-a667-111ad253e282",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:06.50161+00:00",
+              "sort_order": 2,
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            },
+            {
+              "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "icon": null,
+              "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "type": "bank",
+              "color": "#3B82F6",
+              "balance": 10,
+              "due_day": null,
+              "is_debt": false,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "is_active": true,
+              "created_at": "2026-10-15T03:55:05.994761+00:00",
+              "sort_order": 0,
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "closing_day": null,
+              "min_balance": null,
+              "credit_limit": null,
+              "last_4_digits": null,
+              "include_in_total": true,
+              "is_multicurrency": false,
+              "movement_enabled": true,
+              "include_in_liquid": true,
+              "secondary_currency": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Normal Auth explicitly selects three own new accounts200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Four retained accounts with exactly selected three enabled",
+          "actual": [
+            {
+              "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "active": true,
+              "enabled": false
+            },
+            {
+              "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "active": true,
+              "enabled": true
+            },
+            {
+              "id": "85159915-d090-4d16-a667-111ad253e282",
+              "active": true,
+              "enabled": true
+            },
+            {
+              "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "active": true,
+              "enabled": true
+            }
+          ],
+          "expected": [
+            {
+              "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "active": true,
+              "enabled": false
+            },
+            {
+              "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "active": true,
+              "enabled": true
+            },
+            {
+              "id": "85159915-d090-4d16-a667-111ad253e282",
+              "active": true,
+              "enabled": true
+            },
+            {
+              "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "active": true,
+              "enabled": true
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Unselected fourth rejects movement403",
+          "actual": 403,
+          "expected": 403,
+          "status": "PASS"
+        },
+        {
+          "name": "Disabled-account rejection preserves full history",
+          "actual": [
+            {
+              "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "created_at": "2026-10-15T03:55:06.380645+00:00",
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "created_at": "2026-10-15T03:55:06.865967+00:00",
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "85159915-d090-4d16-a667-111ad253e282",
+              "created_at": "2026-10-15T03:55:06.625412+00:00",
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "created_at": "2026-10-15T03:55:06.127626+00:00",
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "created_at": "2026-10-15T03:55:06.380645+00:00",
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "created_at": "2026-10-15T03:55:06.865967+00:00",
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "85159915-d090-4d16-a667-111ad253e282",
+              "created_at": "2026-10-15T03:55:06.625412+00:00",
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "created_at": "2026-10-15T03:55:06.127626+00:00",
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Fixture transaction API201",
+          "actual": 201,
+          "expected": 201,
+          "status": "PASS"
+        },
+        {
+          "name": "Selected account accepts one new movement201",
+          "actual": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "expected": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "status": "PASS"
+        },
+        {
+          "name": "Free reads history including disabled account200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Every original own history row remains readable",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Free export including disabled account200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Original exported rows remain semantically identical",
+          "actual": [
+            {
+              "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+              "type": "income",
+              "amount": 10,
+              "currency": "USD",
+              "amountInAccountCurrency": 10,
+              "exchangeRate": null,
+              "destinationAmountInAccountCurrency": null,
+              "accountCurrency": "USD",
+              "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "destinationAccount": "",
+              "category": "",
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "notes": "",
+              "date": "2026-10-06T12:00:00+00:00",
+              "isRecurring": false,
+              "installmentNumber": null,
+              "installmentTotal": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+              "type": "income",
+              "amount": 10,
+              "currency": "USD",
+              "amountInAccountCurrency": 10,
+              "exchangeRate": null,
+              "destinationAmountInAccountCurrency": null,
+              "accountCurrency": "USD",
+              "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "destinationAccount": "",
+              "category": "",
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "notes": "",
+              "date": "2026-10-06T12:00:00+00:00",
+              "isRecurring": false,
+              "installmentNumber": null,
+              "installmentTotal": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Free reads history including disabled account200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Every original own history row remains readable",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Free export including disabled account200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Original exported rows remain semantically identical",
+          "actual": [
+            {
+              "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+              "type": "income",
+              "amount": 10,
+              "currency": "USD",
+              "amountInAccountCurrency": 10,
+              "exchangeRate": null,
+              "destinationAmountInAccountCurrency": null,
+              "accountCurrency": "USD",
+              "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "destinationAccount": "",
+              "category": "",
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "notes": "",
+              "date": "2026-10-06T12:00:00+00:00",
+              "isRecurring": false,
+              "installmentNumber": null,
+              "installmentTotal": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+              "type": "income",
+              "amount": 10,
+              "currency": "USD",
+              "amountInAccountCurrency": 10,
+              "exchangeRate": null,
+              "destinationAmountInAccountCurrency": null,
+              "accountCurrency": "USD",
+              "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "destinationAccount": "",
+              "category": "",
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "notes": "",
+              "date": "2026-10-06T12:00:00+00:00",
+              "isRecurring": false,
+              "installmentNumber": null,
+              "installmentTotal": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Free reads history including disabled account200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Every original own history row remains readable",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Free export including disabled account200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Original exported rows remain semantically identical",
+          "actual": [
+            {
+              "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+              "type": "income",
+              "amount": 10,
+              "currency": "USD",
+              "amountInAccountCurrency": 10,
+              "exchangeRate": null,
+              "destinationAmountInAccountCurrency": null,
+              "accountCurrency": "USD",
+              "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "destinationAccount": "",
+              "category": "",
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "notes": "",
+              "date": "2026-10-06T12:00:00+00:00",
+              "isRecurring": false,
+              "installmentNumber": null,
+              "installmentTotal": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+              "type": "income",
+              "amount": 10,
+              "currency": "USD",
+              "amountInAccountCurrency": 10,
+              "exchangeRate": null,
+              "destinationAmountInAccountCurrency": null,
+              "accountCurrency": "USD",
+              "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "destinationAccount": "",
+              "category": "",
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "notes": "",
+              "date": "2026-10-06T12:00:00+00:00",
+              "isRecurring": false,
+              "installmentNumber": null,
+              "installmentTotal": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Free reads history including disabled account200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Every original own history row remains readable",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "Free export including disabled account200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Original exported rows remain semantically identical",
+          "actual": [
+            {
+              "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+              "type": "income",
+              "amount": 10,
+              "currency": "USD",
+              "amountInAccountCurrency": 10,
+              "exchangeRate": null,
+              "destinationAmountInAccountCurrency": null,
+              "accountCurrency": "USD",
+              "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "destinationAccount": "",
+              "category": "",
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "notes": "",
+              "date": "2026-10-06T12:00:00+00:00",
+              "isRecurring": false,
+              "installmentNumber": null,
+              "installmentTotal": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+              "type": "income",
+              "amount": 10,
+              "currency": "USD",
+              "amountInAccountCurrency": 10,
+              "exchangeRate": null,
+              "destinationAmountInAccountCurrency": null,
+              "accountCurrency": "USD",
+              "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "destinationAccount": "",
+              "category": "",
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "notes": "",
+              "date": "2026-10-06T12:00:00+00:00",
+              "isRecurring": false,
+              "installmentNumber": null,
+              "installmentTotal": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Original four full history rows retained unchanged",
+          "actual": [
+            {
+              "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "created_at": "2026-10-15T03:55:06.380645+00:00",
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "created_at": "2026-10-15T03:55:06.865967+00:00",
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "85159915-d090-4d16-a667-111ad253e282",
+              "created_at": "2026-10-15T03:55:06.625412+00:00",
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "created_at": "2026-10-15T03:55:06.127626+00:00",
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "expected": [
+            {
+              "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+              "created_at": "2026-10-15T03:55:06.380645+00:00",
+              "updated_at": "2026-10-15T03:55:06.380645+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+              "created_at": "2026-10-15T03:55:06.865967+00:00",
+              "updated_at": "2026-10-15T03:55:06.865967+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "85159915-d090-4d16-a667-111ad253e282",
+              "created_at": "2026-10-15T03:55:06.625412+00:00",
+              "updated_at": "2026-10-15T03:55:06.625412+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            },
+            {
+              "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+              "tags": null,
+              "type": "income",
+              "notes": null,
+              "amount": 10,
+              "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+              "currency": "USD",
+              "location": null,
+              "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+              "created_at": "2026-10-15T03:55:06.127626+00:00",
+              "updated_at": "2026-10-15T03:55:06.127626+00:00",
+              "category_id": null,
+              "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+              "receipt_url": null,
+              "is_recurring": false,
+              "exchange_rate": null,
+              "transaction_date": "2026-10-06T12:00:00+00:00",
+              "installment_total": null,
+              "recurring_rule_id": null,
+              "installment_number": null,
+              "installment_group_id": null,
+              "destination_account_id": null,
+              "amount_in_account_currency": 10,
+              "destination_amount_in_account_currency": null
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "Downgrade never deletes or rewrites original new position",
+          "actual": {
+            "id": "dbaf7109-4ffd-44ab-af5d-619b54703d3e",
+            "name": "InvestmentContracts d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "stock_us",
+            "notes": null,
+            "ticker": "FOOFIX",
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "quantity": 2,
+            "is_active": true,
+            "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "created_at": "2026-10-15T03:55:06.910844+00:00",
+            "updated_at": "2026-10-15T03:55:06.910844+00:00",
+            "current_price": 55,
+            "interest_rate": null,
+            "maturity_date": null,
+            "purchase_date": "2026-10-06",
+            "purchase_price": 50,
+            "is_manual_price": true,
+            "market_currency": "USD",
+            "purchase_currency": "USD",
+            "current_price_change_pct": null,
+            "current_price_updated_at": "2026-10-15T03:55:06.91+00:00"
+          },
+          "expected": {
+            "id": "dbaf7109-4ffd-44ab-af5d-619b54703d3e",
+            "name": "InvestmentContracts d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "stock_us",
+            "notes": null,
+            "ticker": "FOOFIX",
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "quantity": 2,
+            "is_active": true,
+            "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "created_at": "2026-10-15T03:55:06.910844+00:00",
+            "updated_at": "2026-10-15T03:55:06.910844+00:00",
+            "current_price": 55,
+            "interest_rate": null,
+            "maturity_date": null,
+            "purchase_date": "2026-10-06",
+            "purchase_price": 50,
+            "is_manual_price": true,
+            "market_currency": "USD",
+            "purchase_currency": "USD",
+            "current_price_change_pct": null,
+            "current_price_updated_at": "2026-10-15T03:55:06.91+00:00"
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "Actual owner portfolio200",
+          "actual": 200,
+          "expected": 200,
+          "status": "PASS"
+        },
+        {
+          "name": "Free retains investment read",
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "name": "All other B profile/user columns unchanged",
+          "actual": "12f1ef1cf9e3f8957edc6db2cf8a7d96",
+          "expected": "12f1ef1cf9e3f8957edc6db2cf8a7d96",
+          "status": "PASS"
+        },
+        {
+          "name": "All original Auth user columns for A/B unchanged",
+          "actual": "db268e853ab392cbe104dc4e38f68347",
+          "expected": "db268e853ab392cbe104dc4e38f68347",
+          "status": "PASS"
+        }
+      ],
+      "original_contract": null,
+      "startedAt": "2026-10-15T03:55:04.750Z",
+      "apiSqlScope": {
+        "status": "PASS",
+        "assertions": 60
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "ec212537-071c-494a-bcd9-f8ec110bffd4",
+      "startedAt": "2026-10-15T03:55:05.944Z",
+      "status": 201,
+      "responseSha256": "ec2889f26441292602c5c4b6762cdfab4efcb9c90c892ad127e5d3e11a2e60bb",
+      "endedAt": "2026-10-15T03:55:06.002Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "72f92b95-53b8-41ff-9b1d-80acd5d28f97",
+      "startedAt": "2026-10-15T03:55:06.082Z",
+      "status": 201,
+      "responseSha256": "fbdaa2e88ecf7cbfffbda1b91370987fc90ac658c0f9051dcb8fdcc57282dfd3",
+      "endedAt": "2026-10-15T03:55:06.134Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "e5b2fcfa-0c45-43a2-9a95-f0f1e9e0f2dd",
+      "startedAt": "2026-10-15T03:55:06.215Z",
+      "status": 201,
+      "responseSha256": "d0221fa7843426b23d3701cf776befc52751cd6e73bfaef2d8a2906e3007747c",
+      "endedAt": "2026-10-15T03:55:06.256Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "c0854475-b278-4f06-9b9a-6ba8934dd3e0",
+      "startedAt": "2026-10-15T03:55:06.335Z",
+      "status": 201,
+      "responseSha256": "b20cad4adbc9349a0551370934c83507e9b318e24867827884a6a462ccb30ef4",
+      "endedAt": "2026-10-15T03:55:06.383Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "95680163-cb4c-4ebc-b460-8e957da0057e",
+      "startedAt": "2026-10-15T03:55:06.463Z",
+      "status": 201,
+      "responseSha256": "cd403aa8b9fc1450664b7f5e94edc841a8ba4f46a83ebafaa0e00329aefc51a9",
+      "endedAt": "2026-10-15T03:55:06.505Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "9d7a3bdc-6179-4cd0-a0fa-c5c8e95f7f52",
+      "startedAt": "2026-10-15T03:55:06.584Z",
+      "status": 201,
+      "responseSha256": "55609d13868d01812b1978fb6ef5eb94e054c77ef168b73553961f32204e32a5",
+      "endedAt": "2026-10-15T03:55:06.628Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "16fcf25b-a6e4-48fc-a0bf-e322ff0ed01e",
+      "startedAt": "2026-10-15T03:55:06.707Z",
+      "status": 201,
+      "responseSha256": "3775e9a4829578e62ddff3600c0688820f3248ca333c79f11a1f6958a644973c",
+      "endedAt": "2026-10-15T03:55:06.745Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "144a718c-f68b-4460-bfdf-ce38178515eb",
+      "startedAt": "2026-10-15T03:55:06.824Z",
+      "status": 201,
+      "responseSha256": "3039daeb7235948a3ab7049214d7b82f32f8db540d9243d1347499f2fae28b3b",
+      "endedAt": "2026-10-15T03:55:06.868Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/investments",
+      "requestId": "e7136eaa-35df-4e7d-9908-7755f4fb6edc",
+      "startedAt": "2026-10-15T03:55:06.869Z",
+      "status": 201,
+      "responseSha256": "a072bf59c25c457f0ac3848597a092b2921c5f4dd62a28bb07418703daff384c",
+      "endedAt": "2026-10-15T03:55:06.916Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "c7d10255-b1e3-4165-9e88-99db30084bf3",
+      "startedAt": "2026-10-15T03:55:07.238Z",
+      "status": 200,
+      "responseSha256": "a6a4acfcd248f58e77b2201445c4f95609eb7c30d0b0bbc34369aefca62435d5",
+      "endedAt": "2026-10-15T03:55:07.279Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "1379d87f-a596-492b-a9aa-927fd6aa6ab9",
+      "startedAt": "2026-10-15T03:55:07.279Z",
+      "status": 200,
+      "responseSha256": "5e79a8f6f78cb5627c87a98c84b53ab81234edbc0c08d88492a0a2cc4c4fb024",
+      "endedAt": "2026-10-15T03:55:07.318Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "750e3f4a-fef8-464b-ae1c-cded1022bd67",
+      "startedAt": "2026-10-15T03:55:07.319Z",
+      "status": 200,
+      "responseSha256": "7308f5ec0223044515134fd819307886eef48bd9f8487027981f9753091c79b3",
+      "endedAt": "2026-10-15T03:55:07.357Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "0d9438a9-ad87-4b51-b598-aa082a6ef6d1",
+      "startedAt": "2026-10-15T03:55:07.358Z",
+      "status": 200,
+      "responseSha256": "43c557e7ea5ccdecc37cf2c39bdf9fb432743f5600c661623638fb25547b4adf",
+      "endedAt": "2026-10-15T03:55:07.397Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/user/subscription",
+      "requestId": "f68a15c7-3ccb-4c9c-9133-b381fde0add8",
+      "startedAt": "2026-10-15T03:55:07.562Z",
+      "status": 200,
+      "responseSha256": "a27d392fb3b85fe34c9bbcd6cab4ca4933621e6a0a334c2df76bc60260d12f4e",
+      "endedAt": "2026-10-15T03:55:07.604Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "f5fc08b3-9047-4820-8dff-8d25ee322a50",
+      "startedAt": "2026-10-15T03:55:07.690Z",
+      "status": 403,
+      "responseSha256": "0019119fbc7eed1d9c44c1256e74e31dc465dac28036ac658b9fb1aabb329374",
+      "endedAt": "2026-10-15T03:55:07.850Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/accounts",
+      "requestId": "c179ffc6-bace-491a-a51a-34033be1c9d0",
+      "startedAt": "2026-10-15T03:55:08.044Z",
+      "status": 403,
+      "responseSha256": "183e589af5f3c9e01b0337a7951d7cd479dbf874b5282ad7809fd61d4f5a1202",
+      "endedAt": "2026-10-15T03:55:08.084Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "PUT",
+      "path": "/api/accounts/movement-selection",
+      "requestId": "8870441c-5173-419f-bbee-e1fd2c450732",
+      "startedAt": "2026-10-15T03:55:08.166Z",
+      "status": 403,
+      "responseSha256": "183e589af5f3c9e01b0337a7951d7cd479dbf874b5282ad7809fd61d4f5a1202",
+      "endedAt": "2026-10-15T03:55:08.206Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "PUT",
+      "path": "/api/accounts/movement-selection",
+      "requestId": "6e251728-d084-4277-b3a2-5373034fdd29",
+      "startedAt": "2026-10-15T03:55:08.287Z",
+      "status": 200,
+      "responseSha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93",
+      "endedAt": "2026-10-15T03:55:08.328Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "ebd20edb-d1b8-4b35-9018-a8f5c399089d",
+      "startedAt": "2026-10-15T03:55:08.418Z",
+      "status": 403,
+      "responseSha256": "f76d4ca756b6a0e706fb7fec45d4ba44996de51adaf021e837200c3965dcb62f",
+      "endedAt": "2026-10-15T03:55:08.461Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "POST",
+      "path": "/api/transactions",
+      "requestId": "c4f904a3-d9ea-423b-89ed-22120fa8e335",
+      "startedAt": "2026-10-15T03:55:08.544Z",
+      "status": 201,
+      "responseSha256": "3b655784f7d14adbe24d59f91f558b25e6a304b698c8b4de41151282540fae6a",
+      "endedAt": "2026-10-15T03:55:08.603Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/transactions",
+      "requestId": "72449c9b-09c7-495d-8d01-63297fbff162",
+      "startedAt": "2026-10-15T03:55:08.604Z",
+      "status": 200,
+      "responseSha256": "3fb42df56a81ce5979fbff446ee623496229d6582f30facbc7d571c4bb0997e5",
+      "endedAt": "2026-10-15T03:55:08.652Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "567a8aa6-2e30-4574-9a36-26fbecff4ec5",
+      "startedAt": "2026-10-15T03:55:08.653Z",
+      "status": 200,
+      "responseSha256": "29c65eb4815ab09acc6397a5784de109e053c3f8b40cefed1d09687acfbd00db",
+      "endedAt": "2026-10-15T03:55:08.704Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/transactions",
+      "requestId": "3c9d24f5-2676-4cc0-8786-b7aa8cba63c8",
+      "startedAt": "2026-10-15T03:55:08.704Z",
+      "status": 200,
+      "responseSha256": "1af89d7784e8deb5fb5626cd6eae5d6e9b6ad60cb07b405e7a53aa0b1f696fc3",
+      "endedAt": "2026-10-15T03:55:08.749Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "29b1c355-3e50-4ed1-96b5-188f0cd13c82",
+      "startedAt": "2026-10-15T03:55:08.750Z",
+      "status": 200,
+      "responseSha256": "5e79a8f6f78cb5627c87a98c84b53ab81234edbc0c08d88492a0a2cc4c4fb024",
+      "endedAt": "2026-10-15T03:55:08.793Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/transactions",
+      "requestId": "7d95b1dc-147e-4f2f-8da7-144dc7e697eb",
+      "startedAt": "2026-10-15T03:55:08.793Z",
+      "status": 200,
+      "responseSha256": "607100253d56ee53047c125b1a5abf214d9d2994eead8b5a4792bbf31dd92d2c",
+      "endedAt": "2026-10-15T03:55:08.830Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "d6680521-9cdb-4d77-8d18-bb9ef9947a6a",
+      "startedAt": "2026-10-15T03:55:08.830Z",
+      "status": 200,
+      "responseSha256": "7308f5ec0223044515134fd819307886eef48bd9f8487027981f9753091c79b3",
+      "endedAt": "2026-10-15T03:55:08.869Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/transactions",
+      "requestId": "38b3afab-a10d-4de7-8221-5f515732efd6",
+      "startedAt": "2026-10-15T03:55:08.870Z",
+      "status": 200,
+      "responseSha256": "da3c0523f70ff50fb5b80d46ac2f849b1abce93da90af461ca6b05651fa8485f",
+      "endedAt": "2026-10-15T03:55:08.909Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/export/transactions",
+      "requestId": "a99b29ce-5977-417d-9281-02571263a9b9",
+      "startedAt": "2026-10-15T03:55:08.910Z",
+      "status": 200,
+      "responseSha256": "43c557e7ea5ccdecc37cf2c39bdf9fb432743f5600c661623638fb25547b4adf",
+      "endedAt": "2026-10-15T03:55:08.952Z"
+    },
+    {
+      "caseId": "DERIVED-PLAN-DOWNGRADE",
+      "method": "GET",
+      "path": "/api/investments/portfolio",
+      "requestId": "0022b8a0-7815-4a92-976c-3e92b0da820e",
+      "startedAt": "2026-10-15T03:55:09.153Z",
+      "status": 200,
+      "responseSha256": "28ae9a1b5d955b6e693c68c591c3da5b2bddfb9741dccd76bcc4db12b8049db6",
+      "endedAt": "2026-10-15T03:55:09.204Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "account",
+      "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "DERIVED-PLAN-DOWNGRADE"
+    },
+    {
+      "kind": "account",
+      "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "DERIVED-PLAN-DOWNGRADE"
+    },
+    {
+      "kind": "account",
+      "id": "85159915-d090-4d16-a667-111ad253e282",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "DERIVED-PLAN-DOWNGRADE"
+    },
+    {
+      "kind": "account",
+      "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "caseId": "DERIVED-PLAN-DOWNGRADE"
+    },
+    {
+      "kind": "position",
+      "id": "dbaf7109-4ffd-44ab-af5d-619b54703d3e",
+      "userId": "0ed8880e-3f8c-41e3-a009-ce03e342994b"
+    }
+  ],
+  "executionCount": 1,
+  "case": {
+    "case_id": "DERIVED-PLAN-DOWNGRADE",
+    "status": "PASS",
+    "complete_original_contract": false,
+    "assertions": [
+      {
+        "name": "Only new sixth synthetic rate row inserted",
+        "actual": "fb1f12e0-b62e-4963-8378-4a189510f86a",
+        "expected": "fb1f12e0-b62e-4963-8378-4a189510f86a",
+        "status": "PASS"
+      },
+      {
+        "name": "FX fixture setup preserves all original financial rows including imported A",
+        "actual": "8f1257b8c8cae0ccfe66a253903e23fe",
+        "expected": "8f1257b8c8cae0ccfe66a253903e23fe",
+        "status": "PASS"
+      },
+      {
+        "name": "Sixth cloned B has no preexisting account rows",
+        "actual": 0,
+        "expected": 0,
+        "status": "PASS"
+      },
+      {
+        "name": "Local fixture has no MercadoPago subscription capability",
+        "actual": null,
+        "expected": null,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture account API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual normal-owner investment create201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Premium fixture has exactly four active enabled accounts",
+        "actual": 4,
+        "expected": 4,
+        "status": "PASS"
+      },
+      {
+        "name": "Premium own history export200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Premium export exact own history row",
+        "actual": [
+          "ac2910c3-0fc2-4194-8372-2d5d951abb0a"
+        ],
+        "expected": [
+          "ac2910c3-0fc2-4194-8372-2d5d951abb0a"
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Premium own history export200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Premium export exact own history row",
+        "actual": [
+          "080c1468-757e-4c2e-bb90-1574a8f2ec7c"
+        ],
+        "expected": [
+          "080c1468-757e-4c2e-bb90-1574a8f2ec7c"
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Premium own history export200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Premium export exact own history row",
+        "actual": [
+          "7d78157d-042a-491d-b9bb-a9066eb8a53f"
+        ],
+        "expected": [
+          "7d78157d-042a-491d-b9bb-a9066eb8a53f"
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Premium own history export200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Premium export exact own history row",
+        "actual": [
+          "7c40d55d-75b0-402a-ba23-82a80a540043"
+        ],
+        "expected": [
+          "7c40d55d-75b0-402a-ba23-82a80a540043"
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Exactly one authorized cloned B plan fixture row updated",
+        "actual": 1,
+        "expected": 1,
+        "status": "PASS"
+      },
+      {
+        "name": "Actual ordinary Auth subscription reports Free200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Effective Free allowance and orchestrator gate",
+        "actual": {
+          "plan": "free",
+          "accounts": 3,
+          "orchestrator": false
+        },
+        "expected": {
+          "plan": "free",
+          "accounts": 3,
+          "orchestrator": false
+        },
+        "status": "PASS"
+      },
+      {
+        "name": "Local SQL agrees with actual Free allowance",
+        "actual": 3,
+        "expected": 3,
+        "status": "PASS"
+      },
+      {
+        "name": "Over-cap four enabled accounts require selection403",
+        "actual": 403,
+        "expected": 403,
+        "status": "PASS"
+      },
+      {
+        "name": "Over-cap rejection changes no history",
+        "actual": [
+          {
+            "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "created_at": "2026-10-15T03:55:06.380645+00:00",
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "created_at": "2026-10-15T03:55:06.865967+00:00",
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "85159915-d090-4d16-a667-111ad253e282",
+            "created_at": "2026-10-15T03:55:06.625412+00:00",
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "created_at": "2026-10-15T03:55:06.127626+00:00",
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "created_at": "2026-10-15T03:55:06.380645+00:00",
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "created_at": "2026-10-15T03:55:06.865967+00:00",
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "85159915-d090-4d16-a667-111ad253e282",
+            "created_at": "2026-10-15T03:55:06.625412+00:00",
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "created_at": "2026-10-15T03:55:06.127626+00:00",
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Free fifth account rejected403",
+        "actual": 403,
+        "expected": 403,
+        "status": "PASS"
+      },
+      {
+        "name": "Rejected fifth creates no partial account",
+        "actual": [
+          {
+            "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "investment",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.742772+00:00",
+            "sort_order": 3,
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.253091+00:00",
+            "sort_order": 1,
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "85159915-d090-4d16-a667-111ad253e282",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.50161+00:00",
+            "sort_order": 2,
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:05.994761+00:00",
+            "sort_order": 0,
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "investment",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.742772+00:00",
+            "sort_order": 3,
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.253091+00:00",
+            "sort_order": 1,
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "85159915-d090-4d16-a667-111ad253e282",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.50161+00:00",
+            "sort_order": 2,
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:05.994761+00:00",
+            "sort_order": 0,
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Selecting four on Free rejected403",
+        "actual": 403,
+        "expected": 403,
+        "status": "PASS"
+      },
+      {
+        "name": "Rejected selection changes no account columns",
+        "actual": [
+          {
+            "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "investment",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.742772+00:00",
+            "sort_order": 3,
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.253091+00:00",
+            "sort_order": 1,
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "85159915-d090-4d16-a667-111ad253e282",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.50161+00:00",
+            "sort_order": 2,
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:05.994761+00:00",
+            "sort_order": 0,
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "investment",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.742772+00:00",
+            "sort_order": 3,
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.253091+00:00",
+            "sort_order": 1,
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "85159915-d090-4d16-a667-111ad253e282",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:06.50161+00:00",
+            "sort_order": 2,
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          },
+          {
+            "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "icon": null,
+            "name": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "type": "bank",
+            "color": "#3B82F6",
+            "balance": 10,
+            "due_day": null,
+            "is_debt": false,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "is_active": true,
+            "created_at": "2026-10-15T03:55:05.994761+00:00",
+            "sort_order": 0,
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "closing_day": null,
+            "min_balance": null,
+            "credit_limit": null,
+            "last_4_digits": null,
+            "include_in_total": true,
+            "is_multicurrency": false,
+            "movement_enabled": true,
+            "include_in_liquid": true,
+            "secondary_currency": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Normal Auth explicitly selects three own new accounts200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Four retained accounts with exactly selected three enabled",
+        "actual": [
+          {
+            "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "active": true,
+            "enabled": false
+          },
+          {
+            "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "active": true,
+            "enabled": true
+          },
+          {
+            "id": "85159915-d090-4d16-a667-111ad253e282",
+            "active": true,
+            "enabled": true
+          },
+          {
+            "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "active": true,
+            "enabled": true
+          }
+        ],
+        "expected": [
+          {
+            "id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "active": true,
+            "enabled": false
+          },
+          {
+            "id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "active": true,
+            "enabled": true
+          },
+          {
+            "id": "85159915-d090-4d16-a667-111ad253e282",
+            "active": true,
+            "enabled": true
+          },
+          {
+            "id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "active": true,
+            "enabled": true
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Unselected fourth rejects movement403",
+        "actual": 403,
+        "expected": 403,
+        "status": "PASS"
+      },
+      {
+        "name": "Disabled-account rejection preserves full history",
+        "actual": [
+          {
+            "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "created_at": "2026-10-15T03:55:06.380645+00:00",
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "created_at": "2026-10-15T03:55:06.865967+00:00",
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "85159915-d090-4d16-a667-111ad253e282",
+            "created_at": "2026-10-15T03:55:06.625412+00:00",
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "created_at": "2026-10-15T03:55:06.127626+00:00",
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "created_at": "2026-10-15T03:55:06.380645+00:00",
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "created_at": "2026-10-15T03:55:06.865967+00:00",
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "85159915-d090-4d16-a667-111ad253e282",
+            "created_at": "2026-10-15T03:55:06.625412+00:00",
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "created_at": "2026-10-15T03:55:06.127626+00:00",
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Fixture transaction API201",
+        "actual": 201,
+        "expected": 201,
+        "status": "PASS"
+      },
+      {
+        "name": "Selected account accepts one new movement201",
+        "actual": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "expected": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+        "status": "PASS"
+      },
+      {
+        "name": "Free reads history including disabled account200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Every original own history row remains readable",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Free export including disabled account200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Original exported rows remain semantically identical",
+        "actual": [
+          {
+            "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+            "type": "income",
+            "amount": 10,
+            "currency": "USD",
+            "amountInAccountCurrency": 10,
+            "exchangeRate": null,
+            "destinationAmountInAccountCurrency": null,
+            "accountCurrency": "USD",
+            "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "destinationAccount": "",
+            "category": "",
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "notes": "",
+            "date": "2026-10-06T12:00:00+00:00",
+            "isRecurring": false,
+            "installmentNumber": null,
+            "installmentTotal": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+            "type": "income",
+            "amount": 10,
+            "currency": "USD",
+            "amountInAccountCurrency": 10,
+            "exchangeRate": null,
+            "destinationAmountInAccountCurrency": null,
+            "accountCurrency": "USD",
+            "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 1 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "destinationAccount": "",
+            "category": "",
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "notes": "",
+            "date": "2026-10-06T12:00:00+00:00",
+            "isRecurring": false,
+            "installmentNumber": null,
+            "installmentTotal": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Free reads history including disabled account200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Every original own history row remains readable",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Free export including disabled account200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Original exported rows remain semantically identical",
+        "actual": [
+          {
+            "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+            "type": "income",
+            "amount": 10,
+            "currency": "USD",
+            "amountInAccountCurrency": 10,
+            "exchangeRate": null,
+            "destinationAmountInAccountCurrency": null,
+            "accountCurrency": "USD",
+            "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "destinationAccount": "",
+            "category": "",
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "notes": "",
+            "date": "2026-10-06T12:00:00+00:00",
+            "isRecurring": false,
+            "installmentNumber": null,
+            "installmentTotal": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+            "type": "income",
+            "amount": 10,
+            "currency": "USD",
+            "amountInAccountCurrency": 10,
+            "exchangeRate": null,
+            "destinationAmountInAccountCurrency": null,
+            "accountCurrency": "USD",
+            "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 2 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "destinationAccount": "",
+            "category": "",
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "notes": "",
+            "date": "2026-10-06T12:00:00+00:00",
+            "isRecurring": false,
+            "installmentNumber": null,
+            "installmentTotal": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Free reads history including disabled account200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Every original own history row remains readable",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Free export including disabled account200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Original exported rows remain semantically identical",
+        "actual": [
+          {
+            "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+            "type": "income",
+            "amount": 10,
+            "currency": "USD",
+            "amountInAccountCurrency": 10,
+            "exchangeRate": null,
+            "destinationAmountInAccountCurrency": null,
+            "accountCurrency": "USD",
+            "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "destinationAccount": "",
+            "category": "",
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "notes": "",
+            "date": "2026-10-06T12:00:00+00:00",
+            "isRecurring": false,
+            "installmentNumber": null,
+            "installmentTotal": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+            "type": "income",
+            "amount": 10,
+            "currency": "USD",
+            "amountInAccountCurrency": 10,
+            "exchangeRate": null,
+            "destinationAmountInAccountCurrency": null,
+            "accountCurrency": "USD",
+            "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 3 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "destinationAccount": "",
+            "category": "",
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "notes": "",
+            "date": "2026-10-06T12:00:00+00:00",
+            "isRecurring": false,
+            "installmentNumber": null,
+            "installmentTotal": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Free reads history including disabled account200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Every original own history row remains readable",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "Free export including disabled account200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Original exported rows remain semantically identical",
+        "actual": [
+          {
+            "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+            "type": "income",
+            "amount": 10,
+            "currency": "USD",
+            "amountInAccountCurrency": 10,
+            "exchangeRate": null,
+            "destinationAmountInAccountCurrency": null,
+            "accountCurrency": "USD",
+            "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "destinationAccount": "",
+            "category": "",
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "notes": "",
+            "date": "2026-10-06T12:00:00+00:00",
+            "isRecurring": false,
+            "installmentNumber": null,
+            "installmentTotal": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+            "type": "income",
+            "amount": 10,
+            "currency": "USD",
+            "amountInAccountCurrency": 10,
+            "exchangeRate": null,
+            "destinationAmountInAccountCurrency": null,
+            "accountCurrency": "USD",
+            "account": "AccountAnalysis DERIVED-PLAN-DOWNGRADE 4 d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "destinationAccount": "",
+            "category": "",
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "notes": "",
+            "date": "2026-10-06T12:00:00+00:00",
+            "isRecurring": false,
+            "installmentNumber": null,
+            "installmentTotal": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Original four full history rows retained unchanged",
+        "actual": [
+          {
+            "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "created_at": "2026-10-15T03:55:06.380645+00:00",
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "created_at": "2026-10-15T03:55:06.865967+00:00",
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "85159915-d090-4d16-a667-111ad253e282",
+            "created_at": "2026-10-15T03:55:06.625412+00:00",
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "created_at": "2026-10-15T03:55:06.127626+00:00",
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "expected": [
+          {
+            "id": "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "7d607804-ca4f-4224-af92-4aa1bac48c86",
+            "created_at": "2026-10-15T03:55:06.380645+00:00",
+            "updated_at": "2026-10-15T03:55:06.380645+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7c40d55d-75b0-402a-ba23-82a80a540043",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+            "created_at": "2026-10-15T03:55:06.865967+00:00",
+            "updated_at": "2026-10-15T03:55:06.865967+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "85159915-d090-4d16-a667-111ad253e282",
+            "created_at": "2026-10-15T03:55:06.625412+00:00",
+            "updated_at": "2026-10-15T03:55:06.625412+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          },
+          {
+            "id": "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+            "tags": null,
+            "type": "income",
+            "notes": null,
+            "amount": 10,
+            "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+            "currency": "USD",
+            "location": null,
+            "account_id": "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+            "created_at": "2026-10-15T03:55:06.127626+00:00",
+            "updated_at": "2026-10-15T03:55:06.127626+00:00",
+            "category_id": null,
+            "description": "AccountAnalysis DERIVED-PLAN-DOWNGRADE d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+            "receipt_url": null,
+            "is_recurring": false,
+            "exchange_rate": null,
+            "transaction_date": "2026-10-06T12:00:00+00:00",
+            "installment_total": null,
+            "recurring_rule_id": null,
+            "installment_number": null,
+            "installment_group_id": null,
+            "destination_account_id": null,
+            "amount_in_account_currency": 10,
+            "destination_amount_in_account_currency": null
+          }
+        ],
+        "status": "PASS"
+      },
+      {
+        "name": "Downgrade never deletes or rewrites original new position",
+        "actual": {
+          "id": "dbaf7109-4ffd-44ab-af5d-619b54703d3e",
+          "name": "InvestmentContracts d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+          "type": "stock_us",
+          "notes": null,
+          "ticker": "FOOFIX",
+          "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "quantity": 2,
+          "is_active": true,
+          "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+          "created_at": "2026-10-15T03:55:06.910844+00:00",
+          "updated_at": "2026-10-15T03:55:06.910844+00:00",
+          "current_price": 55,
+          "interest_rate": null,
+          "maturity_date": null,
+          "purchase_date": "2026-10-06",
+          "purchase_price": 50,
+          "is_manual_price": true,
+          "market_currency": "USD",
+          "purchase_currency": "USD",
+          "current_price_change_pct": null,
+          "current_price_updated_at": "2026-10-15T03:55:06.91+00:00"
+        },
+        "expected": {
+          "id": "dbaf7109-4ffd-44ab-af5d-619b54703d3e",
+          "name": "InvestmentContracts d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+          "type": "stock_us",
+          "notes": null,
+          "ticker": "FOOFIX",
+          "user_id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+          "quantity": 2,
+          "is_active": true,
+          "account_id": "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d",
+          "created_at": "2026-10-15T03:55:06.910844+00:00",
+          "updated_at": "2026-10-15T03:55:06.910844+00:00",
+          "current_price": 55,
+          "interest_rate": null,
+          "maturity_date": null,
+          "purchase_date": "2026-10-06",
+          "purchase_price": 50,
+          "is_manual_price": true,
+          "market_currency": "USD",
+          "purchase_currency": "USD",
+          "current_price_change_pct": null,
+          "current_price_updated_at": "2026-10-15T03:55:06.91+00:00"
+        },
+        "status": "PASS"
+      },
+      {
+        "name": "Actual owner portfolio200",
+        "actual": 200,
+        "expected": 200,
+        "status": "PASS"
+      },
+      {
+        "name": "Free retains investment read",
+        "actual": true,
+        "expected": true,
+        "status": "PASS"
+      },
+      {
+        "name": "All other B profile/user columns unchanged",
+        "actual": "12f1ef1cf9e3f8957edc6db2cf8a7d96",
+        "expected": "12f1ef1cf9e3f8957edc6db2cf8a7d96",
+        "status": "PASS"
+      },
+      {
+        "name": "All original Auth user columns for A/B unchanged",
+        "actual": "db268e853ab392cbe104dc4e38f68347",
+        "expected": "db268e853ab392cbe104dc4e38f68347",
+        "status": "PASS"
+      }
+    ],
+    "original_contract": null,
+    "startedAt": "2026-10-15T03:55:04.750Z",
+    "apiSqlScope": {
+      "status": "PASS",
+      "assertions": 60
+    }
+  },
+  "pendingScopes": [],
+  "executionMode": "api-sql-only",
+  "run": "d0bd1f39-91d8-4ab2-b812-ddbb439ebb71",
+  "nativePreparation": {
+    "sha256": "cce5dd1d50cbfafcb4de3ff11da8d3fae640433064f644c8f63d724be5cc703b",
+    "projectId": "d9c6a4f6-9881-4790-adce-f052ccf391ca",
+    "normalAuthIdsBound": true
+  },
+  "unbuiltCurrentDeltas": [
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "servedSha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "currentSha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886",
+      "servedMatchesFrozenGit": true
+    },
+    {
+      "path": "components/ui/BlueFxReferenceDetails.tsx",
+      "servedSha256": "8bc68cd828834866de1418227932ba0b6faf101297f0d5f7607e355f7fc2b207",
+      "currentSha256": "674fe1139550b084a8e9afbce04bb9fea42e7de060f582512219586ef3d6c2bd",
+      "servedMatchesFrozenGit": true
+    }
+  ],
+  "targetBinding": {
+    "projectId": "d9c6a4f6-9881-4790-adce-f052ccf391ca",
+    "stackId": "464ddf6b0b5a668c62673d1cd02948d93a11b7007d902ee0d40388058ac95f44",
+    "apiOrigin": "http://127.0.0.1:59321",
+    "databasePort": "59322",
+    "targetManifestSha256": "cce5dd1d50cbfafcb4de3ff11da8d3fae640433064f644c8f63d724be5cc703b",
+    "nativeStateSha256": "96eaa4ff5408ec39d167b3128f19c93755f5bd5108aa294d89551eb361e1036a",
+    "dataDirectorySha256": "faa755d07805eaf068b90194499ed4b550dc2fead56228ac28d09ec66f806776",
+    "buildProofSha256": "edf1664050e20c16b1dd1804b75c511449f561c968c3aded0b26e8b6b9d1a757",
+    "buildIdSha256": "2e4d4aa1c4c80376600443b3c5b976079ffaf45b0095f195b3443b5901e19176",
+    "listenerPidVerified": true,
+    "realNativeMetadata": true
+  },
+  "buildBinding": {
+    "appOrigin": "http://127.0.0.1:3003",
+    "apiOrigin": "http://127.0.0.1:59321",
+    "buildId": "-zDTe86_KX6NVCcsRaWOj",
+    "nextPid": 56597
+  },
+  "workingSourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+      "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "efc1d241a9a07d82f245102360db205e19d70a28c911e1ebd3dec08defe73886"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6"
+    },
+    {
+      "path": "app/api/accounts/movement-selection/route.ts",
+      "sha256": "a1cc859f83123a1e432fa07fa19e8562138cda2734db029445ff64e667d6257a"
+    },
+    {
+      "path": "app/api/user/subscription/route.ts",
+      "sha256": "a90915772ca3889a5129d24222008cf561bd23491e7ab5f50cbae358af8d2d13"
+    },
+    {
+      "path": "lib/plans/rules.ts",
+      "sha256": "c37543f1572292c3d5a40635033182a3c1fa3dcc21aa7899a03991df77eeef85"
+    },
+    {
+      "path": "lib/plans/service.ts",
+      "sha256": "9054b957e945cb49b14f269cf32fe8209571b116b9529eaf6a77e01f4efb3e87"
+    },
+    {
+      "path": "lib/services/subscriptions.ts",
+      "sha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264"
+    },
+    {
+      "path": "types/database.ts",
+      "sha256": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982"
+    },
+    {
+      "path": "components/investments/InvestmentsList.tsx",
+      "sha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7"
+    },
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "sha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce"
+    }
+  ],
+  "sourceManifest": [
+    {
+      "path": "docs/tif/v2.13/casos_prueba.csv",
+      "sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+      "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+      "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+      "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+      "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+      "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf"
+    },
+    {
+      "path": "scripts/lib/test-isolated-native-target.mjs",
+      "sha256": "1502eba6281f098c2d7cff8c6cbeb60a795dc0ef16b11239c8b6132af0ee7362"
+    },
+    {
+      "path": "app/api/accounts/route.ts",
+      "sha256": "daf8f667c467c6de29d0d6c74207c28d640588f0df68bb84e4665d03e7dd7cf4",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/accounts/[id]/route.ts",
+      "sha256": "2d9a66af9e0ba502fa4bbff9c4462ee9fa032fbcc8f8c238b81f52816f8303fd",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/accounts/[id]/adjust-secondary-balance/route.ts",
+      "sha256": "d3bdc2b52d3d379761ec05a7ff641fdae93c5e325ac1f9b980af3b52d7cf0a99",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/transactions/route.ts",
+      "sha256": "97d2caa8c1e05cfc731d644347a3aa50b2d308adef4ba71d1a820c4c96eb9cbc",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/import/transactions/route.ts",
+      "sha256": "06227ee0d993e38ee517cfbc574b79f783b8a2e01fccdf51337c9a3425b5a444",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/export/transactions/route.ts",
+      "sha256": "2916263fd7290d96aa264bae8e88f64dc3103200594a47aa2ad7a61a3a880a0e",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/investments/portfolio/route.ts",
+      "sha256": "194e4e635e531c3104e48d1ac1eae19956971411bc43c3f7c819e11b43324ebb",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/ai/anomalies/route.ts",
+      "sha256": "b12282447c4d6a88c10719ddca5a5f591661a8af1b86b1d16e978f458007816f",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/ai/projections/route.ts",
+      "sha256": "cfa94df15973270b70d75efafa83862b62dcd578977c869317bff7d163f2c629",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/(authenticated)/dashboard/page.tsx",
+      "sha256": "17d7edd73a9ef0d81ba07835aab5806790f506ea4fb95f38f748e561a5ae0336",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/accounts.ts",
+      "sha256": "9d94ac7d29280ca44fcb236a3f325a1350e7dbc5d64799e62e00ba9f5a16b3c8",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/cotizaciones.ts",
+      "sha256": "b524acdf27c9f9d66c3828e79bd8aeef12fd26e97ef22c9e8a75081ca7d08f21",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/financial-anomalies.ts",
+      "sha256": "3cca66c8eb933f8b0974f6f46c8c6856fb8037527fc7a96ffd55e54f74220dc3",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/financial-projections.ts",
+      "sha256": "a9aa1b4570ad237b084d393d99f3a174d2d811532847f32cf8010486c9b1d1a6",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/accounts/movement-selection/route.ts",
+      "sha256": "a1cc859f83123a1e432fa07fa19e8562138cda2734db029445ff64e667d6257a",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/user/subscription/route.ts",
+      "sha256": "a90915772ca3889a5129d24222008cf561bd23491e7ab5f50cbae358af8d2d13",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/plans/rules.ts",
+      "sha256": "c37543f1572292c3d5a40635033182a3c1fa3dcc21aa7899a03991df77eeef85",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/plans/service.ts",
+      "sha256": "9054b957e945cb49b14f269cf32fe8209571b116b9529eaf6a77e01f4efb3e87",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/subscriptions.ts",
+      "sha256": "57f42cbe26e885b3cecd3e7279a5c109435844d9945e0d54e57b842273f0eb10",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/investments/route.ts",
+      "sha256": "f12bc72055e7ed37135ce6b5da09211f6206dfea2693b18c21cf424a21bd6264",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "types/database.ts",
+      "sha256": "965254582a8442ed8cfb4bd7383c00ea791084a14f96b941157b7bc434958982",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "components/investments/InvestmentsList.tsx",
+      "sha256": "6e610a10e3ca6b072eadf610776cfb3747b8e23f26b4bf0b829f7ee93be9f7b5",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/investments/[id]/route.ts",
+      "sha256": "c95b886fa17fe48f0084eb7c92796733e23b642d1ddb30e45eddc5fa58c8b755",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "app/api/investments/[id]/sell/route.ts",
+      "sha256": "04b714f7850ef517b07a8af4d22d6b0a08f073a66d28f062784ca329006be3ff",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/migrations/20260702120000_atomic_investment_sell.sql",
+      "sha256": "7efdacd2da569fd69b5c32384adf8eb8c5c6860860bd5fd0bfcaa7755ee189a3",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/migrations/20261009035715_durable_sales_shared_expenses.sql",
+      "sha256": "db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/schema.sql",
+      "sha256": "5a59226be992015aeb60760d77fb1b833d25e15fcd4138669f3b8d801b5c6a25",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/migrations/20261009034943_enforce_plan_allowances.sql",
+      "sha256": "62fa1cc189406f205c79f20ccd83fec8d26f907cfbe1dd7353699fffebb02b71",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    },
+    {
+      "path": "supabase/migrations/20261015000402_atomic_account_balance_recompute.sql",
+      "sha256": "7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce",
+      "scope": "served frozen build; working-tree deltas are separately disclosed"
+    }
+  ],
+  "versions": {
+    "node": "v22.17.0",
+    "postgres": "17.11"
+  },
+  "users": [
+    {
+      "id": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "label": "sourceB/logicalU1",
+      "normalAuth": true
+    },
+    {
+      "id": "172273ed-7c48-427d-a55b-742069a4d9de",
+      "label": "sourceA/logicalU2",
+      "normalAuth": true
+    }
+  ],
+  "intendedMutationPolicy": {
+    "case": "DERIVED-PLAN-DOWNGRADE",
+    "targetApi": "http://127.0.0.1:59321",
+    "targetUserId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+    "allowedFields": [
+      "status",
+      "current_period_end",
+      "grace_period_end",
+      "updated_at"
+    ],
+    "scope": "Local sixth cloned B fixture only; all other user/profile/Auth fields and original rows must remain intact; final Free is intended"
+  },
+  "adminFixtureOperations": [
+    {
+      "type": "INSERT_NEW_SYNTHETIC_FX",
+      "id": "fb1f12e0-b62e-4963-8378-4a189510f86a",
+      "status": "PASS",
+      "target": "sixth59322"
+    }
+  ],
+  "syntheticFxSetup": {
+    "id": "fb1f12e0-b62e-4963-8378-4a189510f86a",
+    "source": "blue",
+    "fromCurrency": "USD",
+    "toCurrency": "ARS",
+    "rate": 1200,
+    "timestamp": "2026-10-15T03:55:05.230822+00:00",
+    "previousRateRows": 0,
+    "actualProvider": false,
+    "originalFinancialBeforeAfterHash": "8f1257b8c8cae0ccfe66a253903e23fe"
+  },
+  "planTransition": {
+    "scope": "Only sixth cloned B administrative fixture, no MercadoPago operation, paid event, webhook or provider-entitlement acceptance",
+    "before": {
+      "status": "ACTIVE",
+      "currentPeriodEnd": "2026-11-14T03:18:49.375618+00:00",
+      "gracePeriodEnd": null
+    },
+    "newAccountIds": [
+      "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+      "7d607804-ca4f-4224-af92-4aa1bac48c86",
+      "85159915-d090-4d16-a667-111ad253e282",
+      "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d"
+    ],
+    "newHistoryIds": [
+      "ac2910c3-0fc2-4194-8372-2d5d951abb0a",
+      "080c1468-757e-4c2e-bb90-1574a8f2ec7c",
+      "7d78157d-042a-491d-b9bb-a9066eb8a53f",
+      "7c40d55d-75b0-402a-ba23-82a80a540043"
+    ],
+    "positionId": "dbaf7109-4ffd-44ab-af5d-619b54703d3e",
+    "originalUserHash": "8e20233fe7468a7e6a51085795e6f42b",
+    "historyBeforeSha256": "5f7d4558d070596208702c35c5bb15307453a5e1338cc793d670da4c10f461e5",
+    "intendedChanges": [
+      "B.status",
+      "B.current_period_end",
+      "B.grace_period_end",
+      "B.updated_at",
+      "movement_enabled/updated_at of only four newly created B accounts"
+    ],
+    "restorationAttempted": false,
+    "after": {
+      "plan": "free",
+      "status": "CANCELED",
+      "currentPeriodEnd": "2026-10-15T03:55:06.476187+00:00",
+      "gracePeriodEnd": null,
+      "userRowHash": "0082763de0bde9e23d0bcc710dfc6fdc",
+      "otherProfileHash": "12f1ef1cf9e3f8957edc6db2cf8a7d96",
+      "authUsersUnchanged": true
+    },
+    "preservedScope": "A and all preexisting financial rows plus all other B profile/Auth fields; B plan fields/updated_at intentionally differ. This is not all-twelve-tables-byte-identical."
+  },
+  "fixtureRetention": {
+    "accountIds": [
+      "ce793478-cb64-4b7d-9916-8dd3d4f41837",
+      "7d607804-ca4f-4224-af92-4aa1bac48c86",
+      "85159915-d090-4d16-a667-111ad253e282",
+      "61a2a2e8-3c38-4c0e-84d1-c63d7d02f92d"
+    ],
+    "positionIds": [
+      "dbaf7109-4ffd-44ab-af5d-619b54703d3e"
+    ],
+    "activeAccounts": 4,
+    "enabledMovementAccounts": 3,
+    "finalPlan": "free",
+    "reason": "Intended final sixth-clone fixture outcome for review; no old accounts existed or were archived/edited"
+  },
+  "originalIntegrity": [
+    {
+      "table": "users",
+      "rows": 2,
+      "beforeMd5": "d7d80516269a212a678e667f3c806997",
+      "afterMd5": "10f1098f77ce29248f4cdf57b496eccf",
+      "unchanged": false,
+      "expectedMutation": true,
+      "preservedOtherColumns": true,
+      "expectedChangedUserId": "0ed8880e-3f8c-41e3-a009-ce03e342994b",
+      "allowedFields": [
+        "status",
+        "current_period_end",
+        "grace_period_end",
+        "updated_at"
+      ]
+    },
+    {
+      "table": "accounts",
+      "rows": 2,
+      "beforeMd5": "0129e1cc2d88276fd01f31480cafd6dc",
+      "afterMd5": "0129e1cc2d88276fd01f31480cafd6dc",
+      "unchanged": true
+    },
+    {
+      "table": "transactions",
+      "rows": 3,
+      "beforeMd5": "84c45d85920becd5abbb73a728500522",
+      "afterMd5": "84c45d85920becd5abbb73a728500522",
+      "unchanged": true
+    },
+    {
+      "table": "investments",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "investment_sales",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "categories",
+      "rows": 26,
+      "beforeMd5": "e0242fec3efb4da15305522bacf73cd9",
+      "afterMd5": "e0242fec3efb4da15305522bacf73cd9",
+      "unchanged": true
+    },
+    {
+      "table": "budgets",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "recurring_rules",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_groups",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_group_members",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expenses",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    },
+    {
+      "table": "shared_expense_splits",
+      "rows": 0,
+      "beforeMd5": "d751713988987e9331980363e24189ce",
+      "afterMd5": "d751713988987e9331980363e24189ce",
+      "unchanged": true
+    }
+  ],
+  "workingSourceStable": true,
+  "servedSourceStable": true,
+  "sourceStable": true,
+  "finishedAt": "2026-10-15T03:55:10.709Z"
+}

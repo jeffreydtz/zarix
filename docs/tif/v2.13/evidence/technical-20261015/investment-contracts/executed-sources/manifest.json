@@ -1,0 +1,355 @@
+{
+  "scope": "Exact bytes matched against each already executed workingSourceManifest; served application is frozen836 and declared separately in report, no equivalence substitution",
+  "reports": [
+    {
+      "case_id": "CP4-01",
+      "status": "PARTIAL",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-01-partial.json",
+      "reportSha256": "e93c2031277f225c9699ed7eccf94d564aa95ab337e0b50186ee1397c8ebbf29",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "DERIVED-INV-CONCURRENCY",
+      "status": "FAIL",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/derived-inv-concurrency-fail.json",
+      "reportSha256": "2315fc1c62f3fe88bdfe8b82e7411dc4739f93c32c12c04ac5af6d1f2d096886",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP4-02",
+      "status": "PASS",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-02-pass.json",
+      "reportSha256": "b5a101a171944cb8e952cc0688ed5d5ce95f34668ee93d23629236dae7890491",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": true,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP4-11",
+      "status": "PASS",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-11-pass.json",
+      "reportSha256": "2e26d469b65d73e9c3561d24ba6e4d2a113c7ddef8579a807305244f416e0181",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": true,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP4-12",
+      "status": "PASS",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-12-pass.json",
+      "reportSha256": "3ae981f8ee75e374ca71d60f1d3b06cbe8775ad9c8dbb276f692a87553c8f500",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": true,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP4-10",
+      "status": "PASS",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-10-pass.json",
+      "reportSha256": "3a053462c67922414c9785f5e91d772f6a567b4328e2dc1cf23b8b38a2eb2b92",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": true,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "DERIVED-PLAN-DOWNGRADE",
+      "status": "PASS",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/derived-plan-downgrade-pass.json",
+      "reportSha256": "fe23e50ea95a3a9aaf804a6b567dacb27f0eddc1629307bb7c0d6c1a866f454e",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP4-05",
+      "status": "PASS",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-05-pass.json",
+      "reportSha256": "c27f39d3be9bd961632a3ee6667e5b6d91f2b5f69fb9a50de05b0d3e9baaea08",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": true,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/20ced75cbec5e9116a5af7efdec52d245b1ec7c5a61bdecb1d45e649f0148edd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP4-06",
+      "status": "PARTIAL",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-06-partial.json",
+      "reportSha256": "921f2e7f404b8c063883820f861c2b825d61952be5ce56aa9dc5a144ee1a99ac",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": false,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    },
+    {
+      "case_id": "CP4-04",
+      "status": "PASS",
+      "report": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed/cp4-04-pass.json",
+      "reportSha256": "fa6d04a47b5b12b45ea378fcb8121c8856ac77d1dac18d507c2a45621a6e420d",
+      "sourceRevision": "836fd18b310a51cced9074b372a80ce5d7e1a870",
+      "complete_original_contract": true,
+      "sourceSnapshots": [
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/run.mjs",
+          "sha256": "288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/288e713690d4e81cf998f960e738f28a350171487a05171587fa9dd7821e2fcd.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/scenarios.mjs",
+          "sha256": "75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/75447618440bbfe0e40406a845a9c582a8f1c883d02f8aa4b684a0cd1c02ad2a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/faults-and-concurrency.mjs",
+          "sha256": "6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/6fd4cf18c3f706e850e357e22ae2f3bc46c83d0c872b6c08f4c08a67b945cc4a.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan-transition.mjs",
+          "sha256": "5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/5168403b0d43c8786677e5a70a6d24af1d31b9bb61d401a4b60f4202b2bd8cf6.txt"
+        },
+        {
+          "executedPath": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/plan.json",
+          "sha256": "7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf",
+          "snapshot": "docs/tif/v2.13/evidence/technical-20261015/investment-contracts/executed-sources/7bcee9d137767d653db33b8f0f3065b444fa44533b4e87f0a56664fb29054bbf.txt"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+# Cuentas y análisis: preparación de contratos originales
+
+Este documento conserva la preparación de23contratos literales: diezCU002 y treceCU003. Después se ejecutaron fases concretas coordinadas; la preparación y sus `node --check` no se presentan como resultados financieros. `executed-cp2-07/` ya contiene el roundtrip real completo PASS, en dos réplicas separadas de la misma identidad. Los demás resultados coordinados conservan sus informes individuales: por ejemplo CP2-06 falló inicialmente sólo por metadatos de versión/zona, y CP2-02 observó tres altas inválidas reales. Los fixes de producto posteriores y su futura prueba compilada son otra fase; no se atribuyen al build836 aquí servido. El CSV principal y la matriz derivada no se modifican en este directorio.
+
+`run.mjs` ejecuta un único `--case` explícito después de la ventana autorizada. `scenarios.mjs` contiene veinte adaptadores de ejecución preparados, uno reservado al arregloTTL del coordinador y dos restricciones específicas: CP2-08 necesita una identidad todavía no registrada en una réplica aparte; CP3-05 tiene conflicto entre líquido100USD del contrato y la separación del cash investment de `aggregateAccountTotals`. Ninguno se promueve por un resultado vecino. Los veinte adaptadores restantes están escritos, pero todavía requieren sus fixtures/precondiciones y revisión/ejecución real; no se presentan como veinte contratos completos probados.
+
+| Contratos | Alcance preparado y requisitos |
+| --- | --- |
+| CP2-01/03/05 | API normal, snapshot SQL y patrimonio UI cuando hace falta; apertura50000, historial conservado, deuda bimoneda y pago secundario explícito. |
+| CP2-02 | Seis variantes API independientes. Se observa rechazo real y ausencia de altas; si acepta nombre vacío/ZZZ/cierre0 y crea una cuenta, el contrato falla. Un500 que rechaza la entrada sin alta se registra como rechazo observado: el CSV no exige4xx. No se añaden validaciones al producto. NaN se envía como cadena numérica inválida; no se sustituye por JSONnull. |
+| CP2-06 | CSV de tres filas propias, contraparteU2 y comparación de15columnas/semántica; versión/zona explícitas son un oráculo por verificar, no un campo que se inventa en API. |
+| CP2-07 | Dos fases, export/import. Import exige réplica vacía de la MISMA identidad y mapa de cuentas/nombres nuevos. Se preserva la fuente, se compara JSON normalizado y se comprueba que no hay referencias huérfanas. No se sustituye U1 porU2. |
+| CP2-08 | Receta literal `/register → verificación local si corresponde → /login → logout → URL protegida`. A/B existentes no se borran ni se vuelven a registrar, y no se crea automáticamente una tercera identidad. |
+| CP2-09 | Password erróneo, JWT alterado y genuinamente expirado, reset expirado/reutilizado. Los tokens privados de prueba deben existir en un archivo0600; una firma inválida no se declara expiración auténtica. |
+| CP2-20 | Crea las tres cuentas de precondición sólo en AFree/BPremium inicialmente vacíos, comprueba cuarta/baja/reposición/cuartaPremium/exportFree. No cambia planes ni selecciona/archiva originales. Si faltan tres huecosB, registra la precondición y espera una réplica aislada. |
+| CP2-21 | Navegador real autorizado: formulario1500 sin confirmar, cookies SSR con JWT genuinamente expirado deA, POST401/ceroalta, borradorIndexedDB con mismo dueño/ID, reauth normalA y un recibo/efecto8500. Cookies/tokens sólo en memoria, no se imprimen. No se simula401 con interceptaciónHTTP. |
+| CP3-01/03 | Fases controladas del proveedor sintético/caché, coordinadas con el trabajo de cotizaciones del padre. No reconfiguran proveedor ni borran caché compartida. |
+| CP3-02 | Reservado al arregloTTL del padre; no se duplica. |
+| CP3-04/06/07/08/18 | Totales y estados vacíos/parciales en la UI existente más API/SQL propios. CP3-08 tieneAlimentos como única categoría de gasto elegible: no se inventa selector visual de categoría. |
+| CP3-05 | El total760USD/912000ARS es verificable; líquido100USD contradice clasificación actual. No se agrega endpoint de liquidez ni se aprueba por total solamente. |
+| CP3-13/14 | Reloj real del proceso de prueba fijado al06Oct con proof de PID/build/preload; variantes independientes mediante restaurar sólo la nueva fila propia por DELETEAPI y cotejar baseline antes de cada variante. Nunca se borran originales. |
+| CP3-15/16 | Tres meses completos33000/12000, cash50000 y horizontes113000/176000/302000; ruido de transfer/U2/actual/futuro y prueba del procesoGemini configurado indisponible. Ajustes explícitos afectan sólo cuentas nuevas para mantener el cash original del fixture. |
+
+Las cuentas/posiciones y datos anteriores se conservan. Los snapshots protegen todas las columnas de filas preexistentes en doce tablas. Las sesiones nuevas de login de la prueba y los snapshots derivados del dashboard se informan por su alcance propio. Al terminar, sólo se archivan posiciones y cuentas creadas en esta corrida; no se cambia plan, selección, recursos originales ni identidades. No hay DML administrativa de fixtures en este arnés: las mutaciones financieras entran por API normal, y categorías por JWT normal. SQL se usa para lectura/oráculos.
+
+Importar `focal-contracts/run.mjs` dispararía su ejecución top-level; por eso no se importa ni se altera. Sólo se reutiliza el patrón pequeño de cookiesSSR, guards de loopback, snapshot y checkpoint en este directorio.
+
+Comando **futuro**, sólo tras liberar explícitamente la ventana posterior a LOAD/cotizaciones/focales/finanzas y publicar el nuevo buildCI4:
+
+```sh
+ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only \
+ZARIX_ACCOUNT_ANALYSIS_WINDOW=after-load-quotes-focal-finance \
+node docs/tif/v2.13/evidence/technical-20261015/account-analysis-contracts/run.mjs --case CP2-03 --owner B --api-only
+```
+
+Por defecto se leen `e2e.env`, `e2e-logins.json` y `e2e-app-state.json` privados ya existentes bajo `/tmp/zarix-runtime-20261015`. Se admiten sólo57321/57322 o réplicas separadas58321/58322 y59321/59322 ya provisionada, Next3000/3002 y host127.0.0.1. SOURCE, RESTORE, LOAD, hosts remotos y redirecciones se rechazan. No se crea esa réplica automáticamente. Config/logins alternativos necesitan paths privados bajo el mismo runtime y permisos0600; dos usuarios normales ya existentes. Cada salida usa un directorio nuevo0700 y archivos0600.
+
+Prerequisitos adicionales, si corresponden: `ZARIX_ACCOUNT_ANALYSIS_CLOCK_PROOF` une reloj06Oct al PID/build/preload efectivo; `ZARIX_ACCOUNT_ANALYSIS_QUOTE_PROOF` identifica la fase sintética/indisponible sin credenciales; `ZARIX_ACCOUNT_ANALYSIS_AUTH_NEGATIVE_FIXTURE` y `ZARIX_ACCOUNT_ANALYSIS_EXPIRED_BROWSER_FIXTURE` contienen únicamente fixtures privados de expiración real; `ZARIX_ACCOUNT_ANALYSIS_GEMINI_OFFLINE_PROOF` une el proveedor bloqueado al PID/build e instrumentación. No basta una variable para afirmar que se ejecutó un proveedor real.
+
+CP2-07 usa `ZARIX_ACCOUNT_ANALYSIS_ROUNDTRIP_PHASE=export` para conservar `roundtrip-source.json`, y después `=import` con `ZARIX_ACCOUNT_ANALYSIS_ROUNDTRIP_SOURCE` cuando el coordinador haya provisto la réplica vacía deU1. La fase exportada sola permanece parcial. El import coteja además que la fuente terminó estable y con originales intactos.
+
+Una precondición imposible en el entorno elegido se registra como BLOCKED con su razón concreta; un HTTP/oráculo ejecutado que falla se registra FAIL. Las pruebas parciales y las fases no se convierten automáticamente en PASS de toda la matriz, los cuatroCU, CI4 o los proveedores reales.
+
+Actualización para CI4 y la réplica vacía: `--owner A|B` selecciona explícitamente el dueño lógico mediante las dos sesiones normales existentes; el informe conserva dueño físico/lógico. CP3-03 debe ejecutarse primero en B en la fase sin caché; CP3-07 y CP2-01 conservan A literalmente vacío después. Las cuentas archivadas se excluyen de la precondición de movimientos elegibles conforme al filtro real del servicio; los dos casos de vacío literal siguen comprobando todas las filas. Los requests refrescan mediante el SDK Auth normal cuando faltan menos de10s de la sesión local60s. No se cambia TTL ni se generan credenciales.
+
+Automatización Codex→Arc ya fue concedida y el preflight nativo terminó0. El bloqueo actual es−1728 al resolver la referencia devuelta de la nueva ventana privada y el cierre propio no está confirmado. Se espera la respuesta humana del chat principal antes de crear otra ventana o cerrar una no identificada. LittleArc está preparado/revisado, no ejecutado; AX/ScreenCapture/ajusteJavaScript siguen sin habilitar. El perfil aislado no es requisito. Los−1744 de la preparación y reportes anteriores permanecen como historia, sin reescritura. Este arnés no solicita permisos, no ejecuta Arc ni abre puertos de depuración/fallback. Sin `--api-only`, un tramo UI necesario bloquea antes de escribir su fixture; con `--api-only` se ejecutan API/SQL y se registran los scopes UI como BLOCKED al final. El resultado combinado queda PARTIAL y `complete_original_contract:false`; una fila sin aserciones queda BLOCKED/NOT_EXECUTED. Los contratos cuyo texto admite API/UI y cuyos oráculos completos son API/SQL pueden terminar PASS en ese alcance. No hay UI simulada ni capturas fabricadas.
+
+CP3-03 acepta el error seguro real de CI4: alerta “No pudimos cargar tus datos financieros”, reintento y ausencia de hero falso, además del estado parcial explícito. CP3-18 conserva su oráculo literal más estricto: indisponibilidad segura por falta de ZZZ se anota como seguridad preservada, pero no sustituye la exigencia de subtotal conocido120000ARS y causa explícita de exclusiónZZZ; puede registrar FAIL por esa diferencia.
+
+CP2-07 entrega directamente JSON al endpoint existente, que dispone de una rama `.json`; no se convierte a CSV. Requiere59321/59322 separado, misma identidad U1, vacío literal y nuevas relaciones remapeadas.
+
+Los guards de las réplicas siguen sus metadatos reales:58321 exige `fifth-isolated-acceptance-replica` y59321 `sixth-isolated-acceptance-replica`; sus dos IDs deben coincidir exactamente con `proof-private/preparation.json` o `import-target-private/preparation.json` PASS_PREPARED y sus verificaciones Auth normales. Los correos conservan el patrón sintético `zarix-…@example.invalid` de SOURCE native; no se renombra su purpose ni se crean credenciales para satisfacer un guard antiguo. Un fallo técnico informa sólo ubicación archivo/línea/columna, nunca texto privado del error.
+
+Delta de import autorizado tras finalizar export: la sexta usa directamente `import-target.env` y sus prefijos IMPORT_* (incluido PG_BIN), normalizados únicamente en memoria. API59321 exige Next3003/estado purpose import-target-proof y build proof real import-target-build-proof: BUILD_ID físico, fuente revisada/copias, lista/hash, PID listener y cwd. No se reescriben credenciales ni se usa la quinta réplica durante la importación.

@@ -1,0 +1,21 @@
+// Only a controlled local provider response; never a real CoinGecko integration claim.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import dotenv from 'dotenv';
+const hash=x=>createHash('sha256').update(x).digest('hex');
+assert.equal(process.env.ZARIX_INVESTMENT_QUOTE_PROBE,'authorized-fifth-local-double-only');
+const runtime='/tmp/zarix-runtime-20261015';
+const state=JSON.parse(await fs.readFile(path.join(runtime,'proof-app-state.json'),'utf8'));
+const buildBytes=await fs.readFile(path.join(runtime,'proof-build-proof.json')),build=JSON.parse(buildBytes);
+const envBytes=await fs.readFile(path.join(runtime,'proof-app.env')),env=dotenv.parse(envBytes);
+assert.equal(state.purpose,'account-analysis-proof');assert.equal(state.appOrigin,'http://127.0.0.1:3002');assert.equal(state.apiOrigin,'http://127.0.0.1:58321');
+assert.equal(build.exitCode,0);assert.equal(hash(envBytes),build.privateEnvSha256);assert.equal(build.buildId,state.buildId);assert.equal(build.copyRoot,state.copyRoot);
+const url=new URL(`${env.COINGECKO_API_URL.replace(/\/$/,'')}/simple/price?ids=bitcoin&vs_currencies=usd,ars&include_24hr_change=true&include_last_updated_at=true`);
+assert.equal(url.protocol,'http:');assert.equal(url.hostname,'127.0.0.1');assert.equal(url.port,'57910');assert.ok(!url.username&&!url.password);
+const verify=async()=>{assert.equal((await fs.readFile(path.join(build.copyRoot,'.next/BUILD_ID'),'utf8')).trim(),state.buildId);for(const source of build.sources){assert.ok(!path.isAbsolute(source.path)&&!source.path.split('/').includes('..'));assert.equal(hash(await fs.readFile(path.join(build.copyRoot,source.path))),source.sha256);}};
+await verify();const response=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(5000)});const body=await response.text();assert.equal(response.status,503);await verify();
+const report={checkedAt:new Date().toISOString(),mode:'crypto-unavailable-fiat1200',buildId:state.buildId,nextPid:state.nextPid,revision:build.revision,sourceStable:true,buildProofSha256:hash(buildBytes),privateEnvSha256:hash(envBytes),upstreamOrigins:[url.origin],providerClassification:'controlled local test double, not live CoinGecko',probe:{method:'GET',path:url.pathname,status:response.status,responseSha256:hash(body)},scope:'Actual503 at the exact configured local upstream and unchanged physical completed build before/after. Contract runner independently checks fiat1200 and observes cache/purchase fallback through normal API. No database mutation here.'};
+await fs.writeFile(path.join(runtime,'investment-quote-proof.json'),JSON.stringify(report,null,2)+'\n',{mode:0o600});
+console.log(JSON.stringify({output:'investment-quote-proof.json',status:'PASS_LOCAL_DOUBLE_PROOF',observedStatus:response.status,buildId:state.buildId}));
