@@ -1,0 +1,5 @@
+{
+  "recordedAt": "2026-10-15T04:44:01.934303+00:00",
+  "scope": "Executed runner bytes reconstructed from preserved attempt3 plus the exact actorB-only delta, then verified against attempt4 recorded runtime SHA; scenario bytes copied unchanged and hash verified. No raw report or runtime result changed.",
+  "runnerSha256": "6b9c4edf7e52906ba269bc578d769fb6b846901c713d3e6a405690e981aa6639"
+}

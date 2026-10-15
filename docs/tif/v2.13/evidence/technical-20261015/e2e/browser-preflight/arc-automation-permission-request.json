@@ -1,0 +1,10 @@
+{
+  "startedAt": "2026-10-15T03:40:46.340496+00:00",
+  "finishedAt": "2026-10-15T03:40:46.341963+00:00",
+  "humanAuthorization": "Explicit Codex-to-Arc Automation approval relayed by parent at2026-10-15T03:39Z",
+  "askedUser": true,
+  "requestOsStatus": -600,
+  "passiveVerificationOsStatus": -600,
+  "allowed": false,
+  "scope": "Only supported macOS Automation consent request for Arc. No AppleEvent sent, TCC database edit, Accessibility/ScreenRecording permission or browser/profile/tab operation."
+}

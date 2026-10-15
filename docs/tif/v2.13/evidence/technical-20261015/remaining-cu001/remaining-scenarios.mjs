@@ -70,8 +70,9 @@ export async function runScenarios(c) {
     const r = await importFile(c, { text, extension }); c.check('Partial valid local import200', r.status, 200);
     c.check('Exactly two economic writes and balance10200', { rows: c.movements([a]).length, balance: c.balance(a), amounts: c.movements([a]).map(x => Number(x.amount)).sort((x, y) => x - y) }, { rows: 2, balance: 10200, amounts: [500, 700] });
     c.check('Raw current importer counters', { imported: r.body.imported, skipped: r.body.skipped, pending: r.body.pending, total: r.body.total }, { imported: 2, skipped: 1, pending: 0, total: 3 });
+    c.check('Exactly one documented invalid-amount rejection detail',r.body.skippedDetails?.map(x=>x.title),['Fila omitida — monto inválido']);
     c.observe('Literal classification versus current response schema', { literal: { imported: 2, rejected: 1, omittedDuplicates: 0, total: 3 }, observedRaw: { imported: r.body.imported, skipped: r.body.skipped, pending: r.body.pending, total: r.body.total }, skipTitles: r.body.skippedDetails?.map(x => x.title) || [] });
-    c.pending('Import counter nomenclature contract review', 'The current API groups invalid-row rejection under skipped=1. The CSV says rejected1/omitted0; semantic classification is recorded, not silently substituted or promoted to original PASS.');
+    c.observe('Explicit reviewed semantic adapter',{review:'cp1-19-semantic-review.json',reviewSha256:'72a4f1cc27dbd7b64054876a4a65a59b2505af8ca6a768242306ccc32600a355',parentDecision:'Applied to CP1-20 only after actual HTTP200/two writes/one invalid detail/no pending/total3/balance10200, all asserted above.',closedPartition:{validImports:2,invalidAmountRejections:1,otherOmissionsIncludingDuplicates:0,unconfirmed:0,total:3},notApiProperties:['invalidAmountRejections','otherOmissionsIncludingDuplicates'],duplicateOmissionSelected:false});
   });
 
   await c.exact('CP1-21', async () => {

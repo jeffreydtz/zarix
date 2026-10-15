@@ -8,6 +8,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
 import { runScenarios } from './remaining-scenarios.mjs';
+import { runOriginalCp120Replay } from './remaining-cp120-replay.mjs';
 import dotenv from 'dotenv';
 import { createServerClient } from '@supabase/ssr';
 import { isolatedNativeTargets, isolatedPgEnvironment, isolatedApiFetch } from '../../../../../../scripts/lib/test-isolated-native-target.mjs';
@@ -17,15 +18,16 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const runtime = '/tmp/zarix-runtime-20261015';
 const appOrigin = 'http://127.0.0.1:3002';
 const ids = ['CP1-04','CP1-12','CP1-19','CP1-20','CP1-21','CP1-22','CP1-23','CP1-24','CP1-25','CP1-28','CP1-29','CP1-30','CP1-31','CP1-35'];
-const options = parseArgs({ options: { cases: { type: 'string' }, profile: { type: 'string', default: 'intermediate-core-reliability-clock' } }, strict: true, allowPositionals: false }).values;
+const options = parseArgs({ options: { cases: { type: 'string' }, profile: { type: 'string', default: 'intermediate-core-reliability-clock-retry' }, 'replay-original-cp120': { type: 'boolean', default: false } }, strict: true, allowPositionals: false }).values;
 const profiles={
-  'intermediate-core-reliability-clock':{copyRoot:'/tmp/zarix-app-contract-clock-20261015',core:'core-reliability',appEnv:'contract-clock-app.env',state:'contract-clock-app-state.json',proof:'contract-clock-build-proof.json',observation:'contract-clock-observation.json'},
-  'final-core-acceptance':{copyRoot:'/tmp/zarix-app-acceptance-final-20261015',core:'core-acceptance',appEnv:'final-proof-app.env',state:'final-proof-clock-app-state.json',proof:'final-proof-build-proof.json',observation:'final-proof-clock-observation.json'},
+  'intermediate-core-reliability-clock-retry':{copyRoot:'/tmp/zarix-app-contract-clock-20261015',core:'core-reliability',appEnv:'contract-clock-app.env',state:'contract-clock-retry-app-state.json',proof:'contract-clock-build-proof.json',buildProfile:'intermediate-core-reliability-clock',observation:'contract-clock-retry-observation.json'},
+  'final-core-acceptance':{copyRoot:'/tmp/zarix-app-acceptance-final-20261015',core:'core-acceptance',appEnv:'final-proof-app.env',state:'final-proof-clock-app-state.json',proof:'final-proof-build-proof.json',buildProfile:'final-core-acceptance',observation:'final-proof-clock-observation.json'},
 };
 assert.ok(Object.hasOwn(profiles,options.profile),'Only the two named local clock profiles are supported');
 const profile=profiles[options.profile];
 const selectedIds = options.cases ? options.cases.split(',') : ids;
 assert.ok(selectedIds.length > 0 && new Set(selectedIds).size === selectedIds.length && selectedIds.every(id => ids.includes(id)), 'Select only distinct declared original case IDs');
+if(options['replay-original-cp120'])assert.ok(options.profile==='final-core-acceptance'&&selectedIds.length===1&&selectedIds[0]==='CP1-20','Original archived-batch replay is allowed only alongside the final CP1-20 retry');
 const digest = value => createHash('sha256').update(value).digest('hex');
 const lit = value => `'${String(value).replaceAll("'", "''")}'`;
 const sqlIds = values => values.length ? values.map(lit).join(',') : 'NULL';
@@ -50,7 +52,7 @@ const ledgerRows = accountIds => rows(`SELECT id,user_id,account_id,destination_
 const movements = accountIds => ledgerRows(accountIds).filter(row => row.type !== 'adjustment');
 
 async function manifest() {
-  const sourcePaths = [path.relative(root, fileURLToPath(import.meta.url)), 'docs/tif/v2.13/casos_prueba.csv', path.relative(root,path.join(here,'remaining-scenarios.mjs')), 'app/api/import/transactions/route.ts','app/api/recurring/route.ts','app/api/recurring/[id]/route.ts','app/api/cron/recurring/route.ts','app/api/budgets/route.ts','app/api/budgets/[id]/route.ts','app/api/budgets/status/route.ts','app/api/accounts/[id]/adjust-secondary-balance/route.ts','lib/cron/recurring-job.ts','lib/cron/cron-job.ts','lib/cron/recurring-schedule.ts','lib/services/budgets.ts','lib/observability/alert.ts', 'scripts/lib/test-isolated-native-target.mjs', 'app/api/accounts/route.ts', 'app/api/accounts/[id]/route.ts', 'app/api/categories/route.ts', 'app/api/transactions/route.ts', 'app/api/transactions/[id]/route.ts', 'app/api/transactions/summary/route.ts', 'lib/services/accounts.ts', 'lib/services/transactions.ts', 'supabase/schema.sql'];
+  const sourcePaths = [path.relative(root, fileURLToPath(import.meta.url)), 'docs/tif/v2.13/casos_prueba.csv', ...['remaining-scenarios.mjs','remaining-cp120-replay.mjs'].map(file=>path.relative(root,path.join(here,file))), 'app/api/import/transactions/route.ts','app/api/recurring/route.ts','app/api/recurring/[id]/route.ts','app/api/cron/recurring/route.ts','app/api/budgets/route.ts','app/api/budgets/[id]/route.ts','app/api/budgets/status/route.ts','app/api/accounts/[id]/adjust-secondary-balance/route.ts','lib/cron/recurring-job.ts','lib/cron/cron-job.ts','lib/cron/recurring-schedule.ts','lib/services/budgets.ts','lib/observability/alert.ts', 'scripts/lib/test-isolated-native-target.mjs', 'app/api/accounts/route.ts', 'app/api/accounts/[id]/route.ts', 'app/api/categories/route.ts', 'app/api/transactions/route.ts', 'app/api/transactions/[id]/route.ts', 'app/api/transactions/summary/route.ts', 'lib/services/accounts.ts', 'lib/services/transactions.ts', 'supabase/schema.sql'];
   for (const name of (await fs.readdir(path.join(root, 'supabase/migrations'))).filter(name => name.endsWith('.sql')).sort()) sourcePaths.push(`supabase/migrations/${name}`);
   return Promise.all(sourcePaths.map(async file => ({ path: file, sha256: digest(await fs.readFile(path.join(root, file))) })));
 }
@@ -58,14 +60,14 @@ async function buildBinding(state) {
   const corePath = path.join(root,'docs/tif/v2.13/evidence/technical-20261015',profile.core,'verification.json');
   const coreRaw = await fs.readFile(corePath), core = JSON.parse(coreRaw);
   assert.equal(core.sourceStable, true); assert.equal(core.sourceWorkingTreeClean, true);
-  if(options.profile==='intermediate-core-reliability-clock')assert.equal(core.codeRevision,'836fd18b310a51cced9074b372a80ce5d7e1a870');
+  if(profile.core==='core-reliability')assert.equal(core.codeRevision,'836fd18b310a51cced9074b372a80ce5d7e1a870');
   assert.equal(state.runtimeProfile,options.profile);assert.equal(state.coreDirectory,profile.core);assert.equal(state.clockProfile,'fixed-20261006T120000Z');assert.equal(state.fixedTime,'2026-10-06T12:00:00.000Z');assert.equal(state.adminAlertsDisabled,true);
   assert.match(core.codeRevision, /^[a-f0-9]{40}$/); assert.equal(state.revision, core.codeRevision);
   assert.equal(state.appOrigin, appOrigin); assert.equal(state.apiOrigin, 'http://127.0.0.1:58321'); assert.equal(state.purpose, 'account-analysis-proof');
   assert.equal(state.copyRoot,profile.copyRoot);
   assert.equal(await fs.realpath(state.copyRoot), path.join(await fs.realpath('/tmp'),path.basename(profile.copyRoot)));
   const proofPath = path.join(runtime,profile.proof), proofRaw = await fs.readFile(proofPath), proof = JSON.parse(proofRaw);
-  assert.equal(proof.runtimeProfile,options.profile);assert.equal(proof.coreDirectory,profile.core);assert.equal(proof.adminAlertsDisabled,true);assert.equal(proof.exitCode, 0); assert.equal(proof.revision, core.codeRevision); assert.equal(proof.copyRoot, state.copyRoot); assert.equal(proof.buildId, state.buildId);
+  assert.equal(proof.runtimeProfile,profile.buildProfile);assert.equal(proof.coreDirectory,profile.core);assert.equal(proof.adminAlertsDisabled,true);assert.equal(proof.exitCode, 0); assert.equal(proof.revision, core.codeRevision); assert.equal(proof.copyRoot, state.copyRoot); assert.equal(proof.buildId, state.buildId);
   assert.equal((await fs.readFile(path.join(state.copyRoot, '.next/BUILD_ID'), 'utf8')).trim(), state.buildId);
   assert.equal(digest(JSON.stringify(proof.sources)), state.sourceManifestSha256);
   servedCopySources=proof.sources; const copied = new Set();
@@ -100,7 +102,7 @@ async function buildBinding(state) {
     currentCheckoutDifferences.push({path:file,currentCheckoutSha256:currentSha256,servedGitSha256:old.status===0?digest(old.stdout):null,executedByThisBuild:false});
   }
   report.currentCheckoutDifferences=currentCheckoutDifferences;
-  return { revision: core.codeRevision, buildId: state.buildId, nextPid: state.nextPid, appOrigin, apiOrigin: state.apiOrigin, copyRoot: state.copyRoot, copiedSources: proof.sources.length, allCopiedSourcesMatchGitOrDeclaredCliMetadata: true, ownedListenerAndCwdConfirmed: true, privateEnvBoundToNative: true, coreVerificationSha256: digest(coreRaw), buildProofSha256: digest(proofRaw) };
+  return { revision: core.codeRevision, buildId: state.buildId, nextPid: state.nextPid, appOrigin, apiOrigin: state.apiOrigin, copyRoot: state.copyRoot, runtimeProfile:options.profile,buildProfile:profile.buildProfile,stateFile:profile.state,clockObservationFile:profile.observation,copiedSources: proof.sources.length, allCopiedSourcesMatchGitOrDeclaredCliMetadata: true, ownedListenerAndCwdConfirmed: true, privateEnvBoundToNative: true, coreVerificationSha256: digest(coreRaw), buildProofSha256: digest(proofRaw) };
 }
 async function request(method, endpoint, payload, user = users[0], requestId = randomUUID()) {
   assert.ok(endpoint.startsWith('/api/') && !endpoint.includes('://'));
@@ -141,11 +143,11 @@ async function category(name, type) {
   return row.id;
 }
 async function summary() { const r = await request('GET', '/api/transactions/summary?month=2026-10-01T12:00:00Z'); check('October summary200', r.status, 200); return r.body; }
-async function exact(id, fn) {
-  if (!selectedIds.includes(id)) return;
-  active = { id, status: 'RUNNING', complete_original_contract: false, assertions: [], observations: [], pendingScopes: [], startedAt: new Date().toISOString() }; report.results.push(active);
+async function exact(id, fn, {derived=false}={}) {
+  if (!derived&&!selectedIds.includes(id)) return;
+  active = { id, status: 'RUNNING', complete_original_contract: false, assertions: [], observations: [], pendingScopes: [], startedAt: new Date().toISOString() }; (derived?(report.derivedResults||=[]):report.results).push(active);
   const ownedStart = ownedAccounts.length, cleanupStart = cleanupActions.length;
-  try { await fn(); active.status = active.pendingScopes.length ? 'PARTIAL' : 'PASS'; active.complete_original_contract = active.status === 'PASS'; }
+  try { await fn(); active.status = active.pendingScopes.length ? 'PARTIAL' : 'PASS'; active.complete_original_contract = !derived&&active.status === 'PASS'; }
   catch (error) { active.status = error instanceof Blocked ? (active.assertions.some(x => x.status === 'PASS') ? 'PARTIAL' : 'BLOCKED') : 'FAIL'; active.blocker = error instanceof Blocked ? error.message : undefined; if (!(error instanceof Blocked)) active.failure = { type: error.name, sourceLine: error.stack?.match(/run-remaining\.mjs:(\d+):\d+/)?.[1] || null, reason: 'Named assertion/prerequisite failed; raw errors withheld' }; }
   finally {
     for (const action of cleanupActions.slice(cleanupStart).reverse()) { try { await action(); } catch { active.cleanupFailure = true; active.status = 'FAIL'; active.complete_original_contract = false; } }
@@ -187,7 +189,10 @@ try {
 
 
   const physicalUsers = [...users];
-  const premiumCases = new Set(['CP1-24','CP1-25','CP1-28','CP1-29','CP1-30','CP1-35']);
+  // CP1-23 uses the already-Premium identity as RF09 requires. The first run's
+  // Free-A403 is preserved; this changes only the retry fixture actor, no plan.
+  const premiumCases = new Set(['CP1-23','CP1-24','CP1-25','CP1-28','CP1-29','CP1-30','CP1-35']);
+  const cronCases = new Set(['CP1-24','CP1-25','CP1-28','CP1-29','CP1-30','CP1-35']);
   const currentUser = () => users[0];
   const registerCleanup = action => cleanupActions.push(action);
   async function clock() {
@@ -247,7 +252,8 @@ try {
   const pending=(name,reason)=>active.pendingScopes.push({name,status:'BLOCKED',reason});
   const observe=(name,value)=>active.observations.push({name,...value});
   const c={run,ids,sql,rows,lit,sqlIds,digest,check,balance,accountRows,ledgerRows,movements,request,account,transaction,category,newCategory,slots,registerCleanup,clock,cron,rule,fault,premium,noActiveOriginalRules,block,pending,observe,user:currentUser,other:()=>users[1],report,current:()=>active,output,
-    async exact(id,fn){await exact(id,async()=>{const actor=premiumCases.has(id)?physicalUsers[1]:physicalUsers[0];users.splice(0,2,actor,physicalUsers.find(x=>x!==actor));active.physicalOwner=actor===physicalUsers[0]?'A':'B';if(premiumCases.has(id)){await clock();premium();noActiveOriginalRules();}await fn(c);});}};
+    async exact(id,fn){await exact(id,async()=>{const actor=premiumCases.has(id)?physicalUsers[1]:physicalUsers[0];users.splice(0,2,actor,physicalUsers.find(x=>x!==actor));active.physicalOwner=actor===physicalUsers[0]?'A':'B';if(premiumCases.has(id)){await clock();premium();}if(cronCases.has(id))noActiveOriginalRules();await fn(c);});}};
+  if(options['replay-original-cp120'])await exact('DERIVED-CP1-20-ARCHIVED-BATCH-REPLAY',()=>runOriginalCp120Replay(c),{derived:true});
   await runScenarios(c);
 
 } catch (error) {
@@ -260,7 +266,7 @@ try {
   if (initialSources) { try { report.sourceStable = JSON.stringify(initialSources) === JSON.stringify(await manifest()); } catch { report.sourceStable = false; } }
   if(servedCopySources){try{report.servedCopyStable=(await Promise.all(servedCopySources.map(async item=>digest(await fs.readFile(path.join(profile.copyRoot,item.path)))===item.sha256))).every(Boolean);}catch{report.servedCopyStable=false;}}
 
-  if (report.results.length) report.status = report.results.some(x => x.status === 'FAIL') || report.originalIntegrity?.some(x => !x.unchanged) || report.originalIntegrityUnavailable || report.authSessionCleanupFailed || !report.sourceStable || report.servedCopyStable===false ? 'FAIL' : report.results.length === selectedIds.length ? (report.results.some(x => x.status !== 'PASS') ? 'PARTIAL' : 'PASS') : 'BLOCKED';
+  if (report.results.length) report.status = [...report.results,...(report.derivedResults||[])].some(x => x.status === 'FAIL') || report.originalIntegrity?.some(x => !x.unchanged) || report.originalIntegrityUnavailable || report.authSessionCleanupFailed || !report.sourceStable || report.servedCopyStable===false ? 'FAIL' : report.results.length === selectedIds.length ? ([...report.results,...(report.derivedResults||[])].some(x => x.status !== 'PASS') ? 'PARTIAL' : 'PASS') : 'BLOCKED';
   report.finishedAt = new Date().toISOString(); await save();
   console.log(JSON.stringify({ output: output ? path.basename(output) : null, status: report.status, cases: report.results.map(({ id, status }) => ({ id, status })), browserExecution: false }));
   if (report.status === 'FAIL') process.exitCode = 1;

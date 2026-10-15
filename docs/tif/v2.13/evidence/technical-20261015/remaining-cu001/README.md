@@ -63,21 +63,52 @@ El [primer intento](attempt-1-eight-cases/verification.json) se conserva íntegr
 
 CP1-01 queda parcial por UI, CP1-05 por interpretación de la columna SQL y CP1-34 por la diferencia entre NaN convertido en la API y un input real del navegador. La observación `amount` solo dejó saldo 8500 con canónico 1500; actualizar ambos importes produjo 8000 exactamente. Ambas observaciones siguen visibles.
 
-## Catorce adaptadores restantes, sin ejecutar
+## Catorce adaptadores y primera ejecución con reloj fijo
 
-[run-remaining.mjs](run-remaining.mjs) y [remaining-scenarios.mjs](remaining-scenarios.mjs) preparan CP1-04/12/19/20/21/22/23/24/25/28/29/30/31/35. [remaining-preparation.json](remaining-preparation.json) conserva hashes y sintaxis; no hay resultado runtime todavía.
+[run-remaining.mjs](run-remaining.mjs) y [remaining-scenarios.mjs](remaining-scenarios.mjs) preparan CP1-04/12/19/20/21/22/23/24/25/28/29/30/31/35. [remaining-preparation.json](remaining-preparation.json) conserva el checkpoint previo, sus hashes y sintaxis. La ejecución posterior se conserva por separado.
 
 El perfil intermedio fija Git 836/core-reliability en una copia física nueva de Next 3002 contra 58321/58322. El perfil final exige su propia copia/core-acceptance. Ambos tienen nombres y rutas cerrados: no aceptan un destino arbitrario. La copia completa se compara con Git y el manifiesto de build; los cambios actuales no compilados se enumeran como no ejecutados. El reloj sólo se instala en Next, fijado a 2026-10-06T12:00:00Z, y se contrasta con PID/build/hash/preload observados; runner, OS y Auth conservan tiempo real. No se inventa un parámetro de fecha en cron.
 
-La ejecución necesita liberación serial explícita del padre y estos gates; el ejemplo **no fue ejecutado**:
+La ejecución necesita liberación serial explícita del padre y estos gates; el ejemplo corresponde al perfil cerrado usado posteriormente:
 
 ```sh
 ZARIX_CU001_REMAINING_WINDOW=released-clock-proof-58321 \
 ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only \
 node docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs \
-  --profile intermediate-core-reliability-clock
+  --profile intermediate-core-reliability-clock-retry
 ```
 
 `--cases` permite repetir únicamente casos afectados. Los cron usan B con Premium ya configurado, CRON_SECRET local existente y alertas de administración explícitamente deshabilitadas. No cambian planes ni claves. Las reglas propias se desactivan y las cuentas nuevas se archivan; los hooks SQL temporales sólo coinciden con IDs de fixtures propios, registran el punto de falla en una secuencia de prueba y se eliminan en finally. Los nombres exactos y su cleanup se registran antes de instalar el hook para cubrir una respuesta perdida tras CREATE; se conservan las definiciones y ACL instaladas y se compara el catálogo público completo antes/después. Cada sesión SQL acota statement/lock a17s/3s. No se reemplazan funciones del producto ni se alteran migraciones.
 
 Se conservan como alcances pendientes: nomenclatura importadas/rechazadas/omitidas frente a `skipped` del API; criterios de duplicado y estados visibles en UI; siguiente fecha visible; identidad del bot si falta; rama histórica 23505 que la transacción actual ya hace atómica; observación instrumentada de acceso previo a DB; aceptación real de Telegram. No se fuerzan esos pendientes para obtener PASS.
+
+El intento inicial del reloj se conserva aparte: el shim de prueba perdía `Date.parse/UTC` al ser envuelto por Next. Native corrigió únicamente el preload y verificó el envoltorio real de Next. La ejecución de estos casos consume sólo el perfil cerrado `intermediate-core-reliability-clock-retry`, su nuevo state/observation y el build836 original; no reutiliza el estado fallido ni recompila el producto.
+
+## Resultado intermedio de los14
+
+[attempt-3-fourteen-clock/verification.json](attempt-3-fourteen-clock/verification.json) conserva íntegramente **5 PASS,7 PARTIAL y2 FAIL**, con139 aserciones PASS y2 FAIL. Corresponde exclusivamente a Git836fd18/core-reliability, build `aqWYS3F5R_VxiHxD3LpJV` y el perfil de reloj retry;477 fuentes copiadas coinciden con Git/core y permanecieron estables. Las12 tablas originales no cambiaron, no hubo cleanup fallido y los3 hooks recuperaron exactamente su catálogo público de definiciones/ACL, sin objetos propios remanentes. No es un resultado de CI5 ni una aceptación UI.
+
+CP1-20 devolvió HTTP503 donde se esperaba200 al importar el JSON equivalente a CP1-19. El intento se conserva como FAIL de backend, sin convertirlo en PARTIAL por la UI pendiente. Los valores posteriores de filas/saldo/contadores no se infieren de esa respuesta: la aserción detuvo el caso allí y su SELECT independiente espera ventana autorizada. El JSON y su hash se conservaron en inputs.
+
+CP1-23 devolvió HTTP403 al crear la regla con A Free. El enforcement existente y RF09 documentado requieren Premium; no se cambió el plan ni el producto. El padre autorizó preparar un reintento únicamente de CP1-23 con B Premium ya existente y su categoría propia. [retry-cp1-23-preparation.json](retry-cp1-23-preparation.json) registra ese delta de fixture y su hash. La preparación no ejecutaba el reintento. La liberación posterior y su resultado se conservan en una fase separada; el intento previo mantiene su FAIL histórico.
+
+[attempt-4-cp1-23-premium/verification.json](attempt-4-cp1-23-premium/verification.json) registra el reintento autorizado:9 aserciones backend PASS, PARTIAL únicamente por la próxima ejecución visible no probada en UI. B ya era Premium y no se cambió su plan; su categoría es propia. Se comprobó creación201, suspensión/reactivación/edición200, fin inclusiva06Oct y ledger completo intacto al guardar. La cuenta se archivó y la regla se desactivó al terminar; las12 tablas originales y todas las fuentes permanecieron estables.
+
+Antes de la reconciliación semántica posterior, la selección del reintento de CP1-23 y el resto del intento3 produjo **5 PASS,8 PARTIAL y1 FAIL**, con145 aserciones PASS y1 FAIL en los casos seleccionados. CP1-20 sigue FAIL. Su [SELECT posterior independiente](attempt-3-fourteen-clock/cp1-20-post-run-readonly.json) observó saldo10200, dos movimientos económicos500/700 y dos recibos durables; la fila de importe0 no tiene recibo. El contador `pending` de la respuesta no fue capturado y no se infiere de ese SELECT. No se modificó la matriz de aceptación.
+
+## Revisión semántica y preparación final de CP1-20
+
+El padre aceptó expresamente [cp1-19-semantic-review.json](cp1-19-semantic-review.json): en CP1-19, imported2/skipped1/pending0/total3 y el único detalle observado “monto inválido”, con duplicados desactivados, prueban dos altas, un rechazo inválido y cero otras omisiones. Es una partición del resultado observado; sus etiquetas no son propiedades nuevas del API. El raw PARTIAL no se modificó. [fourteen-verification.json](fourteen-verification.json) incluye esta revisión como fase separada y queda en **6 PASS,7 PARTIAL y1 FAIL**; CP1-20 permanece FAIL503 hasta una nueva ejecución exitosa.
+
+[final-cp1-20-preparation.json](final-cp1-20-preparation.json) prepara exclusivamente el build final CI5/core-acceptance con reloj06Oct. Primero, [remaining-cp120-replay.mjs](remaining-cp120-replay.mjs) reenvía el mismo archivo/batch/owner del intento3: comprueba la cuenta archivada10200, las dos filas y sus recibos0/1, y compara snapshots completos de cuenta, ledger, recibos y lote después del reintento. No reactiva cuentas ni borra recibos. El derivado tiene resultado separado del CP original. Después se ejecuta un CP1-20 nuevo con dos altas500/700, una fila0 y saldo10200; la revisión semántica sólo aplica si las observaciones reales de HTTP200, dos filas, un detalle inválido, cero pendientes y total3 coinciden.
+
+Sólo después de CI5/final-clock READY y liberación explícita:
+
+```sh
+ZARIX_CU001_REMAINING_WINDOW=released-clock-proof-58321 \
+ZARIX_ISOLATED_DATABASE_CONFIRM=synthetic-only \
+node docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs \
+  --profile final-core-acceptance --cases CP1-20 --replay-original-cp120
+```
+
+La sintaxis de los tres módulos fue comprobada; el perfil final todavía no fue ejecutado. Los862 tests de CI4 u otros gates del producto no se atribuyen a estos bytes de harness posteriores.

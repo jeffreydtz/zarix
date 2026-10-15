@@ -1,0 +1,72 @@
+{
+  "observedAt": "2026-10-15T00:51:31.227Z",
+  "status": "PREFLIGHT_ONLY",
+  "revision": "5109eaeefd8e3d16ce347a0dade9d3697ccfbd5c",
+  "host": {
+    "system": "macOS",
+    "version": "27.0.1",
+    "build": "26A434",
+    "architecture": "arm64"
+  },
+  "installed": {
+    "safari": {
+      "version": "27.0.1",
+      "officialDriverPresent": true,
+      "automation": "Human authorization reported by parent; E2E owner alone manages activation/restore. No session started here."
+    },
+    "chrome": {
+      "version": "146.0.7680.165",
+      "scope": "Owned by separate E2E/visual runner; not exercised here"
+    },
+    "firefox": {
+      "version": null,
+      "status": "BLOCKED",
+      "reason": "Not installed; explicit authorization for official temporary download/use under Firefox Terms is pending"
+    },
+    "edge": {
+      "version": null,
+      "status": "BLOCKED",
+      "reason": "Not installed; Edge terms treat download/use as acceptance; explicit authorization pending"
+    }
+  },
+  "plannedOfficialVersions": {
+    "firefox": "158.0",
+    "edge": "155.0.4283.45",
+    "geckodriver": "v0.37.1",
+    "edgeDriver": "155.0.4283.45"
+  },
+  "downloadedBinaries": false,
+  "publisherSignaturesVerified": false,
+  "appRequests": 0,
+  "browserSessions": 0,
+  "cnf09": {
+    "status": "BLOCKED",
+    "reason": "No browser execution in preflight. Original critical matrix, four products and stable current/previous requirement must be evaluated per actual cell."
+  },
+  "sourceManifest": [
+    {
+      "path": "preflight.mjs",
+      "sha256": "639c027f7ae194b8449538d6de628b2d7a278227033b5c14a932e11a6f5f5460"
+    },
+    {
+      "path": "run-browser-read.mjs",
+      "sha256": "dd11d5e0f3de5de118c312cdb75f50aff5e5b07066b5062b9b7a8eeaebb3df1b"
+    },
+    {
+      "path": "official-software-metadata.json",
+      "sha256": "ad93904853f7f4b444ca83e46727fdc512b6e35ffdb78ec1fef9cdfb3807538b"
+    },
+    {
+      "path": "mozilla-selected-checksums.txt",
+      "sha256": "095d2ee61801e138c8935f7b3f617cea0996e8def3c73196a8d233d57c5fb1c8"
+    },
+    {
+      "path": "firefox-versions.json",
+      "sha256": "ef57afc0582b513a5236de5e955ce044588160fa3bbad86159cdbb4353f7488e"
+    },
+    {
+      "path": "edge-driver-head.txt",
+      "sha256": "127dc581a7e2482f5170ac382a7562ab538663b031e906b60c0f1a2ef81415bc"
+    }
+  ]
+}

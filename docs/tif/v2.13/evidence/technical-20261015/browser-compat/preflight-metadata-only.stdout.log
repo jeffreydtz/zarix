@@ -1,0 +1,33 @@
+{
+  "status": "PREFLIGHT_ONLY",
+  "output": "/Users/jeffreydietz/Documents/Codex/2026-10-13/task/zarix/docs/tif/v2.13/evidence/technical-20261015/browser-compat/preflight.json",
+  "installed": {
+    "safari": {
+      "version": "27.0.1",
+      "officialDriverPresent": true,
+      "automation": "Human authorization reported by parent; E2E owner alone manages activation/restore. No session started here."
+    },
+    "chrome": {
+      "version": "146.0.7680.165",
+      "scope": "Owned by separate E2E/visual runner; not exercised here"
+    },
+    "firefox": {
+      "version": null,
+      "status": "BLOCKED",
+      "reason": "Not installed; explicit authorization for official temporary download/use under Firefox Terms is pending"
+    },
+    "edge": {
+      "version": null,
+      "status": "BLOCKED",
+      "reason": "Not installed; Edge terms treat download/use as acceptance; explicit authorization pending"
+    }
+  },
+  "plannedOfficialVersions": {
+    "firefox": "158.0",
+    "edge": "155.0.4283.45",
+    "geckodriver": "v0.37.1",
+    "edgeDriver": "155.0.4283.45"
+  },
+  "appRequests": 0,
+  "browserSessions": 0
+}

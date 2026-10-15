@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-10-15T04:21:37.071378+00:00",
+  "recordedAt": "2026-10-15T04:33:07.297501+00:00",
   "status": "PREPARED_NOT_EXECUTED",
   "cases": [
     "CP1-04",
@@ -20,7 +20,7 @@
   "sourceFiles": [
     {
       "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/run-remaining.mjs",
-      "sha256": "16e333a2afdc3a47d6b951c8f9d1000668a7f6c400975965c66634563d291b14"
+      "sha256": "705836c65727ee65b146f060f83db6e4798545c969afcf402b3d5d4fe7d5c323"
     },
     {
       "path": "docs/tif/v2.13/evidence/technical-20261015/remaining-cu001/remaining-scenarios.mjs",
@@ -34,8 +34,8 @@
     "scope": "Parse only; modules never evaluated"
   },
   "profiles": {
-    "intermediate-core-reliability-clock": "Immutable Git836fd18b310a51cced9074b372a80ce5d7e1a870,core-reliability,copycontract-clock,API58321/PG58322/Next3002",
-    "final-core-acceptance": "Future frozen core-acceptance,own freshcopyfinal-proof,same isolated native backend; not implicitly selected"
+    "final-core-acceptance": "Future frozen core-acceptance,own freshcopyfinal-proof,same isolated native backend; not implicitly selected",
+    "intermediate-core-reliability-clock-retry": "Immutable Git836fd18b310a51cced9074b372a80ce5d7e1a870,core-reliability,copycontract-clock,API58321/PG58322/Next3002"
   },
   "writerGuard": "ZARIX_CU001_REMAINING_WINDOW=released-clock-proof-58321 and synthetic-only, only after parent explicit serial release",
   "financialActor": "A for normal/import/budget/secondary cases; existing PremiumB for cron only. No plan mutation,new identities,realTelegramdelivery or administrator messages.",
@@ -57,5 +57,15 @@
     "reviewer": "/root/dependency_audit",
     "scope": "Read-only full14 scenarios and delta fault cleanup; no runtime or Node by reviewer. Runtime DDL/catalog parity remains unexecuted. Last edit after review changes only report scope wording to distinguish intermediate/final builds."
   },
-  "buildBinding": "Every served copy source matches immutable selected Git/core proof, env/backend and owned PID/listener/cwd; current product differences recorded executedByThisBuild:false; served copy rehashed after tests. Intermediate revision pinned836fd18."
+  "buildBinding": "Every served copy source matches immutable selected Git/core proof, env/backend and owned PID/listener/cwd; current product differences recorded executedByThisBuild:false; served copy rehashed after tests. Intermediate revision pinned836fd18.",
+  "runtimeRetryBinding": {
+    "runtimeProfile": "intermediate-core-reliability-clock-retry",
+    "buildProfile": "intermediate-core-reliability-clock",
+    "appState": "contract-clock-retry-app-state.json",
+    "observation": "contract-clock-retry-observation.json",
+    "buildProof": "contract-clock-build-proof.json",
+    "privateEnv": "contract-clock-app.env",
+    "sameImmutableBuild": true,
+    "reason": "Native preserved first Date shim failure and validated retry of corrected test-only preload; original build/copy836 unchanged. The runner accepts only this exact named retry path."
+  }
 }
