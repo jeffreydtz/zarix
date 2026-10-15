@@ -1,0 +1,21 @@
+{
+  "startedAt": "2026-10-15T01:16:36.612Z",
+  "status": "FAIL",
+  "scope": "Exactly CU001-CU004; ordinary password login; actual UI writes and separate PostgreSQL assertions. Each check has its own scope; partial coverage never approves a complete CU or original CP automatically.",
+  "environment": {
+    "node": "v22.17.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0"
+  },
+  "cases": [],
+  "requests": [],
+  "screenshots": [],
+  "blockers": [
+    {
+      "reason": "Harness prerequisite or assertion failed; raw error withheld to prevent credential leakage",
+      "errorType": "TypeError"
+    }
+  ],
+  "finishedAt": "2026-10-15T01:16:36.613Z"
+}

@@ -223,7 +223,7 @@ try {
     await pageA.goto(new URL('/investments', appUrl).href);
     await pageA.getByRole('button', { name: 'Agregar posición', exact: true }).click();
     const form = pageA.locator('form');
-    await form.getByLabel('Cuenta', { exact: true }).selectOption(investmentAccount);
+    await form.locator('select').filter({ has: pageA.locator(`option[value="${investmentAccount}"]`) }).selectOption(investmentAccount);
     await form.getByLabel('Ticker guardado', { exact: true }).fill('FOOFIX');
     await form.getByLabel('Nombre', { exact: true }).fill(`Posición sintética ${run}`);
     await form.getByLabel('Cantidad', { exact: true }).fill('10');
@@ -236,8 +236,8 @@ try {
     const position = await purchased.json();
     await pageA.locator('div.card').filter({ has: pageA.getByText(`Posición sintética ${run}`, { exact: true }) }).getByRole('button', { name: 'Vender posición', exact: true }).click();
     const dialog = pageA.getByRole('dialog');
-    await dialog.getByLabel('Cantidad a vender', { exact: true }).fill('4');
-    await dialog.getByLabel('Precio por unidad', { exact: true }).fill('120');
+    await dialog.locator('label').filter({ has: pageA.getByText('Cantidad a vender', { exact: true }) }).locator('input').fill('4');
+    await dialog.locator('label').filter({ has: pageA.getByText('Precio por unidad', { exact: true }) }).locator('input').fill('120');
     const saleResponse = pageA.waitForResponse(r => new URL(r.url()).pathname === `/api/investments/${position.id}/sell` && r.request().method() === 'POST');
     await dialog.getByRole('button', { name: 'Confirmar venta', exact: true }).click();
     assert.equal((await saleResponse).status(), 201);
@@ -247,7 +247,7 @@ try {
     const beforeSimulation = financialHash();
     await pageA.getByRole('button', { name: 'Simular escenario', exact: true }).click();
     const simulation = pageA.locator('#investment-simulation-form');
-    await simulation.getByLabel('Posición a simular', { exact: true }).selectOption(position.id);
+    await simulation.locator('select').filter({ has: pageA.locator(`option[value="${position.id}"]`) }).selectOption(position.id);
     await simulation.getByLabel('Variación del precio (%)', { exact: true }).fill('10');
     await simulation.getByRole('button', { name: 'Simular', exact: true }).click();
     assert.equal(await pageA.getByTestId('simulation-hypothetical-value').innerText(), 'USD 726,00');
