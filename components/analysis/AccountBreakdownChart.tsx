@@ -40,7 +40,13 @@ export default function AccountBreakdownChart({ data }: Props) {
         <span className="story-chip">Cuenta dominante: {topAccount.icon} {topAccount.name} ({topAccount.percent.toFixed(0)}%)</span>
       </div>
 
-      <div className="h-48 chart-shell p-2">
+      <div
+        className="chart-shell overflow-x-auto p-2"
+        tabIndex={0}
+        role="region"
+        aria-label="Gráfico de gastos por cuenta, desplazable horizontalmente"
+      >
+        <div className="min-w-[280px]" style={{ height: Math.max(192, data.length * 52 + 48) }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={data} 
@@ -73,16 +79,17 @@ export default function AccountBreakdownChart({ data }: Props) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
       <div className="mt-4 space-y-2">
         {data.slice(0, 3).map((acc, index) => (
-          <div key={acc.name} className="flex items-center justify-between text-sm rounded-control px-2 py-1.5 hover:bg-surface-soft/70 transition-colors">
-            <div className="flex items-center gap-2">
-              <span>{acc.icon}</span>
-              <span className="font-medium">{acc.name}</span>
+          <div key={acc.name} className="flex flex-wrap items-center justify-between gap-2 text-sm rounded-control px-2 py-1.5 hover:bg-surface-soft/70 transition-colors">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="shrink-0">{acc.icon}</span>
+              <span className="font-medium break-words">{acc.name}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="font-semibold">${acc.amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
               <span className="text-xs text-muted-foreground w-12 text-right">({acc.percent.toFixed(0)}%)</span>
             </div>

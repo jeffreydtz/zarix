@@ -37,7 +37,7 @@ try{
     await document.fonts.ready;
     const title={CU001:'Nuevo movimiento',CU002:'Nueva Cuenta',CU003:'Análisis financiero',CU004:'Simulación'}[cu];
     const heading=()=>[...document.querySelectorAll('h1,h2,h3')].find(node=>node.textContent.trim()===title);
-    const anchors=()=>cu==='CU004'?[heading(),document.querySelector('[data-testid="investment-simulation-result"]')]:cu==='CU003'?[heading(),...document.querySelectorAll('main h2,main h3,main .recharts-wrapper')]:[heading()];
+    const anchors=()=>cu==='CU004'?[heading(),document.querySelector('[data-testid="investment-simulation-result"]')]:cu==='CU003'?[heading(),...document.querySelectorAll('.page-shell h2,.page-shell h3,.page-shell .recharts-wrapper')]:[heading()];
     const opaque=node=>{for(let current=node;current instanceof Element;current=current.parentElement){if(Number(getComputedStyle(current).opacity)<0.99)return false;}return true;};
     await new Promise((resolve,reject)=>{
      let previous='',stableFrames=0,done=false;
@@ -46,8 +46,9 @@ try{
       if(done)return;
       const nodes=anchors();
       const busyChart=cu==='CU003'&&document.querySelector('[aria-busy="true"][aria-label="Cargando gráfico"]');
-      const ready=!busyChart&&nodes.every(node=>node&&node.getBoundingClientRect().width>0&&node.getBoundingClientRect().height>0&&opaque(node));
-      const signature=ready?JSON.stringify({anchors:nodes.map(node=>{const b=node.getBoundingClientRect();return [Math.round(b.x),Math.round(b.y),Math.round(b.width),Math.round(b.height),node.textContent];}),svg:cu==='CU003'?[...document.querySelectorAll('main svg path,main svg rect,main svg g')].map(node=>['d','x','y','width','height','transform','style'].map(key=>node.getAttribute(key))):[]}):'';
+      const chartAnchorsPresent=cu!=='CU003'||document.querySelectorAll('.page-shell .recharts-wrapper').length>0;
+      const ready=chartAnchorsPresent&&!busyChart&&nodes.every(node=>node&&node.getBoundingClientRect().width>0&&node.getBoundingClientRect().height>0&&opaque(node));
+      const signature=ready?JSON.stringify({anchors:nodes.map(node=>{const b=node.getBoundingClientRect();return [Math.round(b.x),Math.round(b.y),Math.round(b.width),Math.round(b.height),node.textContent];}),svg:cu==='CU003'?[...document.querySelectorAll('.page-shell svg path,.page-shell svg rect,.page-shell svg g')].map(node=>['d','x','y','width','height','transform','style'].map(key=>node.getAttribute(key))):[]}):'';
       stableFrames=ready&&signature===previous?stableFrames+1:0;previous=signature;
       if(stableFrames>=6){done=true;clearTimeout(timeout);resolve(true);}else requestAnimationFrame(sample);
      };sample();

@@ -1,0 +1,15 @@
+{
+  "startedAt": "2026-10-15T02:48:58.976Z",
+  "scope": "Single ordinary Chrome context; read-only CU003 layout diagnosis at actual browser zoom. No visualacceptance claim or financialwrite.",
+  "cases": [],
+  "screenshots": [],
+  "financeBefore": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+  "browser": {
+    "version": "146.0.7680.165",
+    "profile": "Own ephemeral profile; removed after run"
+  },
+  "status": "FAIL",
+  "errorType": "Error",
+  "errorLocation": "10",
+  "finishedAt": "2026-10-15T02:49:12.899Z"
+}

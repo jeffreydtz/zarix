@@ -1,0 +1,5093 @@
+{
+  "startedAt": "2026-10-15T02:50:33.107Z",
+  "scope": "Single ordinary Chrome context; read-only CU003 layout diagnosis at actual browser zoom. No visualacceptance claim or financialwrite.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812,
+        "zoom": 1
+      },
+      "initial": {
+        "viewport": {
+          "innerWidth": 375,
+          "innerHeight": 812,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 375,
+          "clientWidth": 375,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 755,
+              "width": 375,
+              "height": 57,
+              "left": 0,
+              "right": 375,
+              "top": 755,
+              "bottom": 812
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": 715.90625,
+            "width": 309,
+            "height": 16,
+            "left": 33,
+            "right": 342,
+            "top": 715.90625,
+            "bottom": 731.90625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 4372.40625,
+            "width": 309,
+            "height": 28,
+            "left": 33,
+            "right": 342,
+            "top": 4372.40625,
+            "bottom": 4400.40625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 375,
+              "height": 698,
+              "left": 0,
+              "right": 375,
+              "top": 57,
+              "bottom": 755
+            },
+            "scrollTop": 0,
+            "maxScrollTop": 3966,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 3822.40625,
+            "width": 343,
+            "height": 509,
+            "left": 16,
+            "right": 359,
+            "top": 3822.40625,
+            "bottom": 4331.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": 3943.40625,
+            "width": 291,
+            "height": 174,
+            "left": 42,
+            "right": 333,
+            "top": 3943.40625,
+            "bottom": 4117.40625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 179.6328125,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 179.6328125,
+                "right": 199.8671875,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 227.3828125,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 227.3828125,
+                "right": 247.6171875,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 275.1328125,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 275.1328125,
+                "right": 295.3671875,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 312.765625,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 312.765625,
+                "right": 333,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": 3939.711181640625,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3939.711181640625,
+                "bottom": 3975.711181640625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": 3968.51123046875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3968.51123046875,
+                "bottom": 4004.51123046875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": 3997.311279296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3997.311279296875,
+                "bottom": 4033.311279296875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": 4026.111328125,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 4026.111328125,
+                "bottom": 4062.111328125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.625,
+                "y": 4060.4111328125,
+                "width": 94.375,
+                "height": 25,
+                "left": 39.625,
+                "right": 134,
+                "top": 4060.4111328125,
+                "bottom": 4085.4111328125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "averageNearest": {
+        "viewport": {
+          "innerWidth": 375,
+          "innerHeight": 812,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 375,
+          "clientWidth": 375,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 755,
+              "width": 375,
+              "height": 57,
+              "left": 0,
+              "right": 375,
+              "top": 755,
+              "bottom": 812
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": 715.90625,
+            "width": 309,
+            "height": 16,
+            "left": 33,
+            "right": 342,
+            "top": 715.90625,
+            "bottom": 731.90625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 4372.40625,
+            "width": 309,
+            "height": 28,
+            "left": 33,
+            "right": 342,
+            "top": 4372.40625,
+            "bottom": 4400.40625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 375,
+              "height": 698,
+              "left": 0,
+              "right": 375,
+              "top": 57,
+              "bottom": 755
+            },
+            "scrollTop": 0,
+            "maxScrollTop": 3966,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 3822.40625,
+            "width": 343,
+            "height": 509,
+            "left": 16,
+            "right": 359,
+            "top": 3822.40625,
+            "bottom": 4331.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": 3943.40625,
+            "width": 291,
+            "height": 174,
+            "left": 42,
+            "right": 333,
+            "top": 3943.40625,
+            "bottom": 4117.40625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 179.6328125,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 179.6328125,
+                "right": 199.8671875,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 227.3828125,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 227.3828125,
+                "right": 247.6171875,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 275.1328125,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 275.1328125,
+                "right": 295.3671875,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 312.765625,
+                "y": 4092.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 312.765625,
+                "right": 333,
+                "top": 4092.21630859375,
+                "bottom": 4106.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": 3939.711181640625,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3939.711181640625,
+                "bottom": 3975.711181640625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": 3968.51123046875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3968.51123046875,
+                "bottom": 4004.51123046875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": 3997.311279296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3997.311279296875,
+                "bottom": 4033.311279296875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": 4026.111328125,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 4026.111328125,
+                "bottom": 4062.111328125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.625,
+                "y": 4060.4111328125,
+                "width": 94.375,
+                "height": 25,
+                "left": 39.625,
+                "right": 134,
+                "top": 4060.4111328125,
+                "bottom": 4085.4111328125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "quickNearest": {
+        "viewport": {
+          "innerWidth": 375,
+          "innerHeight": 812,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 375,
+          "clientWidth": 375,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 755,
+              "width": 375,
+              "height": 57,
+              "left": 0,
+              "right": 375,
+              "top": 755,
+              "bottom": 812
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -3250.09375,
+            "width": 309,
+            "height": 16,
+            "left": 33,
+            "right": 342,
+            "top": -3250.09375,
+            "bottom": -3234.09375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 406.40625,
+            "width": 309,
+            "height": 28,
+            "left": 33,
+            "right": 342,
+            "top": 406.40625,
+            "bottom": 434.40625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "H3",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 375,
+              "height": 698,
+              "left": 0,
+              "right": 375,
+              "top": 57,
+              "bottom": 755
+            },
+            "scrollTop": 3966,
+            "maxScrollTop": 3966,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": -143.59375,
+            "width": 343,
+            "height": 509,
+            "left": 16,
+            "right": 359,
+            "top": -143.59375,
+            "bottom": 365.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": -22.59375,
+            "width": 291,
+            "height": 174,
+            "left": 42,
+            "right": 333,
+            "top": -22.59375,
+            "bottom": 151.40625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 179.6328125,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 179.6328125,
+                "right": 199.8671875,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 227.3828125,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 227.3828125,
+                "right": 247.6171875,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 275.1328125,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 275.1328125,
+                "right": 295.3671875,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 312.765625,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 312.765625,
+                "right": 333,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": -26.28874969482422,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": -26.28874969482422,
+                "bottom": 9.711250305175781
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": 2.511249542236328,
+                "width": 66.28125,
+                "height": 36.000003814697266,
+                "left": 67.71875,
+                "right": 134,
+                "top": 2.511249542236328,
+                "bottom": 38.511253356933594
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": 31.311248779296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 31.311248779296875,
+                "bottom": 67.31124877929688
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": 60.11125183105469,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 60.11125183105469,
+                "bottom": 96.11125183105469
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.625,
+                "y": 94.4112548828125,
+                "width": 94.375,
+                "height": 25,
+                "left": 39.625,
+                "right": 134,
+                "top": 94.4112548828125,
+                "bottom": 119.4112548828125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "maxScroll": {
+        "viewport": {
+          "innerWidth": 375,
+          "innerHeight": 812,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 375,
+          "clientWidth": 375,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 755,
+              "width": 375,
+              "height": 57,
+              "left": 0,
+              "right": 375,
+              "top": 755,
+              "bottom": 812
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -3250.09375,
+            "width": 309,
+            "height": 16,
+            "left": 33,
+            "right": 342,
+            "top": -3250.09375,
+            "bottom": -3234.09375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 406.40625,
+            "width": 309,
+            "height": 28,
+            "left": 33,
+            "right": 342,
+            "top": 406.40625,
+            "bottom": 434.40625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "H3",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 375,
+              "height": 698,
+              "left": 0,
+              "right": 375,
+              "top": 57,
+              "bottom": 755
+            },
+            "scrollTop": 3966,
+            "maxScrollTop": 3966,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": -143.59375,
+            "width": 343,
+            "height": 509,
+            "left": 16,
+            "right": 359,
+            "top": -143.59375,
+            "bottom": 365.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": -22.59375,
+            "width": 291,
+            "height": 174,
+            "left": 42,
+            "right": 333,
+            "top": -22.59375,
+            "bottom": 151.40625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 179.6328125,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 179.6328125,
+                "right": 199.8671875,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 227.3828125,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 227.3828125,
+                "right": 247.6171875,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 275.1328125,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 275.1328125,
+                "right": 295.3671875,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 312.765625,
+                "y": 126.21624755859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 312.765625,
+                "right": 333,
+                "top": 126.21624755859375,
+                "bottom": 140.21624755859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": -26.28874969482422,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": -26.28874969482422,
+                "bottom": 9.711250305175781
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": 2.511249542236328,
+                "width": 66.28125,
+                "height": 36.000003814697266,
+                "left": 67.71875,
+                "right": 134,
+                "top": 2.511249542236328,
+                "bottom": 38.511253356933594
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": 31.311248779296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 31.311248779296875,
+                "bottom": 67.31124877929688
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": 60.11125183105469,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 60.11125183105469,
+                "bottom": 96.11125183105469
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.625,
+                "y": 94.4112548828125,
+                "width": 94.375,
+                "height": 25,
+                "left": 39.625,
+                "right": 134,
+                "top": 94.4112548828125,
+                "bottom": 119.4112548828125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "chartInView": {
+        "viewport": {
+          "innerWidth": 375,
+          "innerHeight": 812,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 375,
+          "clientWidth": 375,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 755,
+              "width": 375,
+              "height": 57,
+              "left": 0,
+              "right": 375,
+              "top": 755,
+              "bottom": 812
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -2731.09375,
+            "width": 309,
+            "height": 16,
+            "left": 33,
+            "right": 342,
+            "top": -2731.09375,
+            "bottom": -2715.09375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 925.40625,
+            "width": 309,
+            "height": 28,
+            "left": 33,
+            "right": 342,
+            "top": 925.40625,
+            "bottom": 953.40625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 375,
+              "height": 698,
+              "left": 0,
+              "right": 375,
+              "top": 57,
+              "bottom": 755
+            },
+            "scrollTop": 3447,
+            "maxScrollTop": 3966,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 375.40625,
+            "width": 343,
+            "height": 509,
+            "left": 16,
+            "right": 359,
+            "top": 375.40625,
+            "bottom": 884.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": 496.40625,
+            "width": 291,
+            "height": 174,
+            "left": 42,
+            "right": 333,
+            "top": 496.40625,
+            "bottom": 670.40625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": 645.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": 645.2162475585938,
+                "bottom": 659.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 179.6328125,
+                "y": 645.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 179.6328125,
+                "right": 199.8671875,
+                "top": 645.2162475585938,
+                "bottom": 659.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 227.3828125,
+                "y": 645.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 227.3828125,
+                "right": 247.6171875,
+                "top": 645.2162475585938,
+                "bottom": 659.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 275.1328125,
+                "y": 645.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 275.1328125,
+                "right": 295.3671875,
+                "top": 645.2162475585938,
+                "bottom": 659.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 312.765625,
+                "y": 645.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 312.765625,
+                "right": 333,
+                "top": 645.2162475585938,
+                "bottom": 659.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": 492.71124267578125,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 492.71124267578125,
+                "bottom": 528.7112426757812
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": 521.51123046875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 521.51123046875,
+                "bottom": 557.51123046875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": 550.311279296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 550.311279296875,
+                "bottom": 586.311279296875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": 579.1112670898438,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 579.1112670898438,
+                "bottom": 615.1112670898438
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.625,
+                "y": 613.4112548828125,
+                "width": 94.375,
+                "height": 25,
+                "left": 39.625,
+                "right": 134,
+                "top": 613.4112548828125,
+                "bottom": 638.4112548828125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "tooltip": {
+        "hover": "completed",
+        "text": "Movimientos sintéticos 3481a1feGastos$2.000"
+      }
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568,
+        "zoom": 1
+      },
+      "initial": {
+        "viewport": {
+          "innerWidth": 320,
+          "innerHeight": 568,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 320,
+          "clientWidth": 320,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 511,
+              "width": 320,
+              "height": 57,
+              "left": 0,
+              "right": 320,
+              "top": 511,
+              "bottom": 568
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": 738.40625,
+            "width": 254,
+            "height": 16,
+            "left": 33,
+            "right": 287,
+            "top": 738.40625,
+            "bottom": 754.40625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 4589.40625,
+            "width": 254,
+            "height": 28,
+            "left": 33,
+            "right": 287,
+            "top": 4589.40625,
+            "bottom": 4617.40625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 320,
+              "height": 454,
+              "left": 0,
+              "right": 320,
+              "top": 57,
+              "bottom": 511
+            },
+            "scrollTop": 0,
+            "maxScrollTop": 4467,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 3979.40625,
+            "width": 288,
+            "height": 569,
+            "left": 16,
+            "right": 304,
+            "top": 3979.40625,
+            "bottom": 4548.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": 4100.40625,
+            "width": 236,
+            "height": 174,
+            "left": 42,
+            "right": 278,
+            "top": 4100.40625,
+            "bottom": 4274.40625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": 4249.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": 4249.21630859375,
+                "bottom": 4263.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 165.8828125,
+                "y": 4249.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 165.8828125,
+                "right": 186.1171875,
+                "top": 4249.21630859375,
+                "bottom": 4263.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 199.8828125,
+                "y": 4249.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 199.8828125,
+                "right": 220.1171875,
+                "top": 4249.21630859375,
+                "bottom": 4263.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 257.765625,
+                "y": 4249.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 257.765625,
+                "right": 278,
+                "top": 4249.21630859375,
+                "bottom": 4263.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": 4096.71142578125,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 4096.71142578125,
+                "bottom": 4132.71142578125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": 4125.51123046875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 4125.51123046875,
+                "bottom": 4161.51123046875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": 4154.31103515625,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 4154.31103515625,
+                "bottom": 4190.31103515625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": 4183.111328125,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 4183.111328125,
+                "bottom": 4219.111328125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cronsyntheticcash966d224c",
+              "rect": {
+                "x": 78.171875,
+                "y": 4206.4111328125,
+                "width": 55.828125,
+                "height": 47,
+                "left": 78.171875,
+                "right": 134,
+                "top": 4206.4111328125,
+                "bottom": 4253.4111328125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 4,
+              "b": 5
+            },
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "averageNearest": {
+        "viewport": {
+          "innerWidth": 320,
+          "innerHeight": 568,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 320,
+          "clientWidth": 320,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 511,
+              "width": 320,
+              "height": 57,
+              "left": 0,
+              "right": 320,
+              "top": 511,
+              "bottom": 568
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": 276.40625,
+            "width": 254,
+            "height": 16,
+            "left": 33,
+            "right": 287,
+            "top": 276.40625,
+            "bottom": 292.40625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 4127.40625,
+            "width": 254,
+            "height": 28,
+            "left": 33,
+            "right": 287,
+            "top": 4127.40625,
+            "bottom": 4155.40625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 320,
+              "height": 454,
+              "left": 0,
+              "right": 320,
+              "top": 57,
+              "bottom": 511
+            },
+            "scrollTop": 462,
+            "maxScrollTop": 4467,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 3517.40625,
+            "width": 288,
+            "height": 569,
+            "left": 16,
+            "right": 304,
+            "top": 3517.40625,
+            "bottom": 4086.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": 3638.40625,
+            "width": 236,
+            "height": 174,
+            "left": 42,
+            "right": 278,
+            "top": 3638.40625,
+            "bottom": 3812.40625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": 3787.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": 3787.21630859375,
+                "bottom": 3801.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 165.8828125,
+                "y": 3787.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 165.8828125,
+                "right": 186.1171875,
+                "top": 3787.21630859375,
+                "bottom": 3801.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 199.8828125,
+                "y": 3787.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 199.8828125,
+                "right": 220.1171875,
+                "top": 3787.21630859375,
+                "bottom": 3801.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 257.765625,
+                "y": 3787.21630859375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 257.765625,
+                "right": 278,
+                "top": 3787.21630859375,
+                "bottom": 3801.21630859375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": 3634.711181640625,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3634.711181640625,
+                "bottom": 3670.711181640625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": 3663.51123046875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3663.51123046875,
+                "bottom": 3699.51123046875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": 3692.311279296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3692.311279296875,
+                "bottom": 3728.311279296875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": 3721.111328125,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 3721.111328125,
+                "bottom": 3757.111328125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cronsyntheticcash966d224c",
+              "rect": {
+                "x": 78.171875,
+                "y": 3744.4111328125,
+                "width": 55.828125,
+                "height": 47,
+                "left": 78.171875,
+                "right": 134,
+                "top": 3744.4111328125,
+                "bottom": 3791.4111328125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 4,
+              "b": 5
+            },
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "quickNearest": {
+        "viewport": {
+          "innerWidth": 320,
+          "innerHeight": 568,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 320,
+          "clientWidth": 320,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 511,
+              "width": 320,
+              "height": 57,
+              "left": 0,
+              "right": 320,
+              "top": 511,
+              "bottom": 568
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -3580.59375,
+            "width": 254,
+            "height": 16,
+            "left": 33,
+            "right": 287,
+            "top": -3580.59375,
+            "bottom": -3564.59375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 270.40625,
+            "width": 254,
+            "height": 28,
+            "left": 33,
+            "right": 287,
+            "top": 270.40625,
+            "bottom": 298.40625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "SPAN",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 320,
+              "height": 454,
+              "left": 0,
+              "right": 320,
+              "top": 57,
+              "bottom": 511
+            },
+            "scrollTop": 4319,
+            "maxScrollTop": 4467,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": -339.59375,
+            "width": 288,
+            "height": 569,
+            "left": 16,
+            "right": 304,
+            "top": -339.59375,
+            "bottom": 229.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": -218.59375,
+            "width": 236,
+            "height": 174,
+            "left": 42,
+            "right": 278,
+            "top": -218.59375,
+            "bottom": -44.59375
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": -69.78375244140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": -69.78375244140625,
+                "bottom": -55.78375244140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 165.8828125,
+                "y": -69.78375244140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 165.8828125,
+                "right": 186.1171875,
+                "top": -69.78375244140625,
+                "bottom": -55.78375244140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 199.8828125,
+                "y": -69.78375244140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 199.8828125,
+                "right": 220.1171875,
+                "top": -69.78375244140625,
+                "bottom": -55.78375244140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 257.765625,
+                "y": -69.78375244140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 257.765625,
+                "right": 278,
+                "top": -69.78375244140625,
+                "bottom": -55.78375244140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": -222.28875732421875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": -222.28875732421875,
+                "bottom": -186.28875732421875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": -193.48875427246094,
+                "width": 66.28125,
+                "height": 36.00001525878906,
+                "left": 67.71875,
+                "right": 134,
+                "top": -193.48875427246094,
+                "bottom": -157.48873901367188
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": -164.68875122070312,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": -164.68875122070312,
+                "bottom": -128.68875122070312
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": -135.8887481689453,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": -135.8887481689453,
+                "bottom": -99.88874816894531
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cronsyntheticcash966d224c",
+              "rect": {
+                "x": 78.171875,
+                "y": -112.5887451171875,
+                "width": 55.828125,
+                "height": 47,
+                "left": 78.171875,
+                "right": 134,
+                "top": -112.5887451171875,
+                "bottom": -65.5887451171875
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 4,
+              "b": 5
+            },
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "maxScroll": {
+        "viewport": {
+          "innerWidth": 320,
+          "innerHeight": 568,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 320,
+          "clientWidth": 320,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 511,
+              "width": 320,
+              "height": 57,
+              "left": 0,
+              "right": 320,
+              "top": 511,
+              "bottom": 568
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -3728.59375,
+            "width": 254,
+            "height": 16,
+            "left": 33,
+            "right": 287,
+            "top": -3728.59375,
+            "bottom": -3712.59375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 122.40625,
+            "width": 254,
+            "height": 28,
+            "left": 33,
+            "right": 287,
+            "top": 122.40625,
+            "bottom": 150.40625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "SPAN",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 320,
+              "height": 454,
+              "left": 0,
+              "right": 320,
+              "top": 57,
+              "bottom": 511
+            },
+            "scrollTop": 4467,
+            "maxScrollTop": 4467,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": -487.59375,
+            "width": 288,
+            "height": 569,
+            "left": 16,
+            "right": 304,
+            "top": -487.59375,
+            "bottom": 81.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": -366.59375,
+            "width": 236,
+            "height": 174,
+            "left": 42,
+            "right": 278,
+            "top": -366.59375,
+            "bottom": -192.59375
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": -217.78375244140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": -217.78375244140625,
+                "bottom": -203.78375244140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 165.8828125,
+                "y": -217.78375244140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 165.8828125,
+                "right": 186.1171875,
+                "top": -217.78375244140625,
+                "bottom": -203.78375244140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 199.8828125,
+                "y": -217.78375244140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 199.8828125,
+                "right": 220.1171875,
+                "top": -217.78375244140625,
+                "bottom": -203.78375244140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 257.765625,
+                "y": -217.78375244140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 257.765625,
+                "right": 278,
+                "top": -217.78375244140625,
+                "bottom": -203.78375244140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": -370.28875732421875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": -370.28875732421875,
+                "bottom": -334.28875732421875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": -341.4887390136719,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": -341.4887390136719,
+                "bottom": -305.4887390136719
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": -312.6887512207031,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": -312.6887512207031,
+                "bottom": -276.6887512207031
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": -283.88873291015625,
+                "width": 66.28125,
+                "height": 35.99998474121094,
+                "left": 67.71875,
+                "right": 134,
+                "top": -283.88873291015625,
+                "bottom": -247.8887481689453
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cronsyntheticcash966d224c",
+              "rect": {
+                "x": 78.171875,
+                "y": -260.5887451171875,
+                "width": 55.828125,
+                "height": 47,
+                "left": 78.171875,
+                "right": 134,
+                "top": -260.5887451171875,
+                "bottom": -213.5887451171875
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 4,
+              "b": 5
+            },
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "chartInView": {
+        "viewport": {
+          "innerWidth": 320,
+          "innerHeight": 568,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 320,
+          "clientWidth": 320,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 511,
+              "width": 320,
+              "height": 57,
+              "left": 0,
+              "right": 320,
+              "top": 511,
+              "bottom": 568
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -2987.59375,
+            "width": 254,
+            "height": 16,
+            "left": 33,
+            "right": 287,
+            "top": -2987.59375,
+            "bottom": -2971.59375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 863.40625,
+            "width": 254,
+            "height": 28,
+            "left": 33,
+            "right": 287,
+            "top": 863.40625,
+            "bottom": 891.40625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 320,
+              "height": 454,
+              "left": 0,
+              "right": 320,
+              "top": 57,
+              "bottom": 511
+            },
+            "scrollTop": 3726,
+            "maxScrollTop": 4467,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 253.40625,
+            "width": 288,
+            "height": 569,
+            "left": 16,
+            "right": 304,
+            "top": 253.40625,
+            "bottom": 822.40625
+          },
+          "svg": {
+            "x": 42,
+            "y": 374.40625,
+            "width": 236,
+            "height": 174,
+            "left": 42,
+            "right": 278,
+            "top": 374.40625,
+            "bottom": 548.40625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 131.8828125,
+                "y": 523.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 131.8828125,
+                "right": 152.1171875,
+                "top": 523.2162475585938,
+                "bottom": 537.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 165.8828125,
+                "y": 523.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 165.8828125,
+                "right": 186.1171875,
+                "top": 523.2162475585938,
+                "bottom": 537.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 199.8828125,
+                "y": 523.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 199.8828125,
+                "right": 220.1171875,
+                "top": 523.2162475585938,
+                "bottom": 537.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 257.765625,
+                "y": 523.2162475585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 257.765625,
+                "right": 278,
+                "top": 523.2162475585938,
+                "bottom": 537.2162475585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.71875,
+                "y": 370.71124267578125,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 370.71124267578125,
+                "bottom": 406.71124267578125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.71875,
+                "y": 399.5112609863281,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 399.5112609863281,
+                "bottom": 435.5112609863281
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.71875,
+                "y": 428.3112487792969,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 428.3112487792969,
+                "bottom": 464.3112487792969
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.71875,
+                "y": 457.11126708984375,
+                "width": 66.28125,
+                "height": 36,
+                "left": 67.71875,
+                "right": 134,
+                "top": 457.11126708984375,
+                "bottom": 493.11126708984375
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cronsyntheticcash966d224c",
+              "rect": {
+                "x": 78.171875,
+                "y": 480.4112548828125,
+                "width": 55.828125,
+                "height": 47,
+                "left": 78.171875,
+                "right": 134,
+                "top": 480.4112548828125,
+                "bottom": 527.4112548828125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 4,
+              "b": 5
+            },
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "tooltip": {
+        "hover": "completed",
+        "text": "Movimientos sintéticos 3481a1feGastos$2.000"
+      }
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812,
+        "zoom": 2
+      },
+      "initial": {
+        "viewport": {
+          "innerWidth": 187,
+          "innerHeight": 406,
+          "dpr": 2,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 187,
+          "clientWidth": 187,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 349,
+              "width": 187.5,
+              "height": 57,
+              "left": 0,
+              "right": 187.5,
+              "top": 349,
+              "bottom": 406
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": 850.921875,
+            "width": 121.5,
+            "height": 16,
+            "left": 33,
+            "right": 154.5,
+            "top": 850.921875,
+            "bottom": 866.921875
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 5810.921875,
+            "width": 121.5,
+            "height": 56,
+            "left": 33,
+            "right": 154.5,
+            "top": 5810.921875,
+            "bottom": 5866.921875
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 187.5,
+              "height": 292,
+              "left": 0,
+              "right": 187.5,
+              "top": 57,
+              "bottom": 349
+            },
+            "scrollTop": 0,
+            "maxScrollTop": 6019,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 5123.421875,
+            "width": 155.5,
+            "height": 646.5,
+            "left": 16,
+            "right": 171.5,
+            "top": 5123.421875,
+            "bottom": 5769.921875
+          },
+          "svg": {
+            "x": 42,
+            "y": 5321.921875,
+            "width": 103.5,
+            "height": 174,
+            "left": 42,
+            "right": 145.5,
+            "top": 5321.921875,
+            "bottom": 5495.921875
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 125.36504364013672,
+                "y": 5470.8818359375,
+                "width": 20.13282012939453,
+                "height": 13,
+                "left": 125.36504364013672,
+                "right": 145.49786376953125,
+                "top": 5470.8818359375,
+                "bottom": 5483.8818359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 5319.10986328125,
+                "width": 65.93751525878906,
+                "height": 34.89453125,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 5319.10986328125,
+                "bottom": 5354.00439453125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 5347.771484375,
+                "width": 65.93751525878906,
+                "height": 34.89453125,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 5347.771484375,
+                "bottom": 5382.666015625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 5376.43310546875,
+                "width": 65.93751525878906,
+                "height": 34.89404296875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 5376.43310546875,
+                "bottom": 5411.3271484375
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 5405.0947265625,
+                "width": 65.93751525878906,
+                "height": 34.89404296875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 5405.0947265625,
+                "bottom": 5439.98876953125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.65925598144531,
+                "y": 5439.22998046875,
+                "width": 93.89845275878906,
+                "height": 23.94677734375,
+                "left": 39.65925598144531,
+                "right": 133.55770874023438,
+                "top": 5439.22998046875,
+                "bottom": 5463.1767578125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 1,
+              "b": 2
+            },
+            {
+              "a": 2,
+              "b": 3
+            },
+            {
+              "a": 3,
+              "b": 4
+            },
+            {
+              "a": 4,
+              "b": 5
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "averageNearest": {
+        "viewport": {
+          "innerWidth": 187,
+          "innerHeight": 406,
+          "dpr": 2,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 187,
+          "clientWidth": 187,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 349,
+              "width": 187.5,
+              "height": 57,
+              "left": 0,
+              "right": 187.5,
+              "top": 349,
+              "bottom": 406
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": 194.921875,
+            "width": 121.5,
+            "height": 16,
+            "left": 33,
+            "right": 154.5,
+            "top": 194.921875,
+            "bottom": 210.921875
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 5154.921875,
+            "width": 121.5,
+            "height": 56,
+            "left": 33,
+            "right": 154.5,
+            "top": 5154.921875,
+            "bottom": 5210.921875
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 187.5,
+              "height": 292,
+              "left": 0,
+              "right": 187.5,
+              "top": 57,
+              "bottom": 349
+            },
+            "scrollTop": 656,
+            "maxScrollTop": 6019,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 4467.421875,
+            "width": 155.5,
+            "height": 646.5,
+            "left": 16,
+            "right": 171.5,
+            "top": 4467.421875,
+            "bottom": 5113.921875
+          },
+          "svg": {
+            "x": 42,
+            "y": 4665.921875,
+            "width": 103.5,
+            "height": 174,
+            "left": 42,
+            "right": 145.5,
+            "top": 4665.921875,
+            "bottom": 4839.921875
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 125.36504364013672,
+                "y": 4814.8818359375,
+                "width": 20.13282012939453,
+                "height": 13,
+                "left": 125.36504364013672,
+                "right": 145.49786376953125,
+                "top": 4814.8818359375,
+                "bottom": 4827.8818359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 4663.10986328125,
+                "width": 65.93751525878906,
+                "height": 34.89453125,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 4663.10986328125,
+                "bottom": 4698.00439453125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 4691.771484375,
+                "width": 65.93751525878906,
+                "height": 34.89453125,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 4691.771484375,
+                "bottom": 4726.666015625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 4720.43310546875,
+                "width": 65.93751525878906,
+                "height": 34.89404296875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 4720.43310546875,
+                "bottom": 4755.3271484375
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 4749.0947265625,
+                "width": 65.93751525878906,
+                "height": 34.89404296875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 4749.0947265625,
+                "bottom": 4783.98876953125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.65925598144531,
+                "y": 4783.22998046875,
+                "width": 93.89845275878906,
+                "height": 23.94677734375,
+                "left": 39.65925598144531,
+                "right": 133.55770874023438,
+                "top": 4783.22998046875,
+                "bottom": 4807.1767578125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 1,
+              "b": 2
+            },
+            {
+              "a": 2,
+              "b": 3
+            },
+            {
+              "a": 3,
+              "b": 4
+            },
+            {
+              "a": 4,
+              "b": 5
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "quickNearest": {
+        "viewport": {
+          "innerWidth": 187,
+          "innerHeight": 406,
+          "dpr": 2,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 187,
+          "clientWidth": 187,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 349,
+              "width": 187.5,
+              "height": 57,
+              "left": 0,
+              "right": 187.5,
+              "top": 349,
+              "bottom": 406
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -4785.078125,
+            "width": 121.5,
+            "height": 16,
+            "left": 33,
+            "right": 154.5,
+            "top": -4785.078125,
+            "bottom": -4769.078125
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 174.921875,
+            "width": 121.5,
+            "height": 56,
+            "left": 33,
+            "right": 154.5,
+            "top": 174.921875,
+            "bottom": 230.921875
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "SPAN",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 187.5,
+              "height": 292,
+              "left": 0,
+              "right": 187.5,
+              "top": 57,
+              "bottom": 349
+            },
+            "scrollTop": 5636,
+            "maxScrollTop": 6019,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": -512.578125,
+            "width": 155.5,
+            "height": 646.5,
+            "left": 16,
+            "right": 171.5,
+            "top": -512.578125,
+            "bottom": 133.921875
+          },
+          "svg": {
+            "x": 42,
+            "y": -314.078125,
+            "width": 103.5,
+            "height": 174,
+            "left": 42,
+            "right": 145.5,
+            "top": -314.078125,
+            "bottom": -140.078125
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 125.36504364013672,
+                "y": -165.1181640625,
+                "width": 20.13282012939453,
+                "height": 13,
+                "left": 125.36504364013672,
+                "right": 145.49786376953125,
+                "top": -165.1181640625,
+                "bottom": -152.1181640625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": -316.8899841308594,
+                "width": 65.93751525878906,
+                "height": 34.894256591796875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": -316.8899841308594,
+                "bottom": -281.9957275390625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": -288.22845458984375,
+                "width": 65.93751525878906,
+                "height": 34.89424133300781,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": -288.22845458984375,
+                "bottom": -253.33421325683594
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": -259.56689453125,
+                "width": 65.93751525878906,
+                "height": 34.89422607421875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": -259.56689453125,
+                "bottom": -224.67266845703125
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": -230.90536499023438,
+                "width": 65.93751525878906,
+                "height": 34.89424133300781,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": -230.90536499023438,
+                "bottom": -196.01112365722656
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.65925598144531,
+                "y": -196.770263671875,
+                "width": 93.89845275878906,
+                "height": 23.947128295898438,
+                "left": 39.65925598144531,
+                "right": 133.55770874023438,
+                "top": -196.770263671875,
+                "bottom": -172.82313537597656
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 1,
+              "b": 2
+            },
+            {
+              "a": 2,
+              "b": 3
+            },
+            {
+              "a": 3,
+              "b": 4
+            },
+            {
+              "a": 4,
+              "b": 5
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "maxScroll": {
+        "viewport": {
+          "innerWidth": 187,
+          "innerHeight": 406,
+          "dpr": 2,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 187,
+          "clientWidth": 187,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 349,
+              "width": 187.5,
+              "height": 57,
+              "left": 0,
+              "right": 187.5,
+              "top": 349,
+              "bottom": 406
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -5168.078125,
+            "width": 121.5,
+            "height": 16,
+            "left": 33,
+            "right": 154.5,
+            "top": -5168.078125,
+            "bottom": -5152.078125
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": -208.078125,
+            "width": 121.5,
+            "height": 56,
+            "left": 33,
+            "right": 154.5,
+            "top": -208.078125,
+            "bottom": -152.078125
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 187.5,
+              "height": 292,
+              "left": 0,
+              "right": 187.5,
+              "top": 57,
+              "bottom": 349
+            },
+            "scrollTop": 6019,
+            "maxScrollTop": 6019,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": -895.578125,
+            "width": 155.5,
+            "height": 646.5,
+            "left": 16,
+            "right": 171.5,
+            "top": -895.578125,
+            "bottom": -249.078125
+          },
+          "svg": {
+            "x": 42,
+            "y": -697.078125,
+            "width": 103.5,
+            "height": 174,
+            "left": 42,
+            "right": 145.5,
+            "top": -697.078125,
+            "bottom": -523.078125
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 125.36504364013672,
+                "y": -548.1181640625,
+                "width": 20.13282012939453,
+                "height": 13,
+                "left": 125.36504364013672,
+                "right": 145.49786376953125,
+                "top": -548.1181640625,
+                "bottom": -535.1181640625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": -699.8899536132812,
+                "width": 65.93751525878906,
+                "height": 34.89422607421875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": -699.8899536132812,
+                "bottom": -664.9957275390625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": -671.2284545898438,
+                "width": 65.93751525878906,
+                "height": 34.89422607421875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": -671.2284545898438,
+                "bottom": -636.334228515625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": -642.56689453125,
+                "width": 65.93751525878906,
+                "height": 34.89422607421875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": -642.56689453125,
+                "bottom": -607.6726684570312
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": -613.9053955078125,
+                "width": 65.93751525878906,
+                "height": 34.894287109375,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": -613.9053955078125,
+                "bottom": -579.0111083984375
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.65925598144531,
+                "y": -579.770263671875,
+                "width": 93.89845275878906,
+                "height": 23.9471435546875,
+                "left": 39.65925598144531,
+                "right": 133.55770874023438,
+                "top": -579.770263671875,
+                "bottom": -555.8231201171875
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 1,
+              "b": 2
+            },
+            {
+              "a": 2,
+              "b": 3
+            },
+            {
+              "a": 3,
+              "b": 4
+            },
+            {
+              "a": 4,
+              "b": 5
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "chartInView": {
+        "viewport": {
+          "innerWidth": 187,
+          "innerHeight": 406,
+          "dpr": 2,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 187,
+          "clientWidth": 187,
+          "scrollTop": 0,
+          "maxScrollTop": 0
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 349,
+              "width": 187.5,
+              "height": 57,
+              "left": 0,
+              "right": 187.5,
+              "top": 349,
+              "bottom": 406
+            },
+            "position": "static"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 33,
+            "y": -4114.578125,
+            "width": 121.5,
+            "height": 16,
+            "left": 33,
+            "right": 154.5,
+            "top": -4114.578125,
+            "bottom": -4098.578125
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 33,
+            "y": 845.421875,
+            "width": 121.5,
+            "height": 56,
+            "left": 33,
+            "right": 154.5,
+            "top": 845.421875,
+            "bottom": 901.421875
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "A",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "ancestors": [
+          {
+            "index": 3,
+            "tag": "DIV",
+            "rect": {
+              "x": 0,
+              "y": 57,
+              "width": 187.5,
+              "height": 292,
+              "left": 0,
+              "right": 187.5,
+              "top": 57,
+              "bottom": 349
+            },
+            "scrollTop": 4965.5,
+            "maxScrollTop": 6019,
+            "overflowY": "auto"
+          }
+        ],
+        "accountChart": {
+          "card": {
+            "x": 16,
+            "y": 157.921875,
+            "width": 155.5,
+            "height": 646.5,
+            "left": 16,
+            "right": 171.5,
+            "top": 157.921875,
+            "bottom": 804.421875
+          },
+          "svg": {
+            "x": 42,
+            "y": 356.421875,
+            "width": 103.5,
+            "height": 174,
+            "left": 42,
+            "right": 145.5,
+            "top": 356.421875,
+            "bottom": 530.421875
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 125.36504364013672,
+                "y": 505.3818359375,
+                "width": 20.13282012939453,
+                "height": 13,
+                "left": 125.36504364013672,
+                "right": 145.49786376953125,
+                "top": 505.3818359375,
+                "bottom": 518.3818359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 353.6100158691406,
+                "width": 65.93751525878906,
+                "height": 34.894256591796875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 353.6100158691406,
+                "bottom": 388.5042724609375
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 382.27154541015625,
+                "width": 65.93751525878906,
+                "height": 34.894256591796875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 382.27154541015625,
+                "bottom": 417.1658020019531
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 410.93310546875,
+                "width": 65.93751525878906,
+                "height": 34.89422607421875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 410.93310546875,
+                "bottom": 445.82733154296875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 67.62019348144531,
+                "y": 439.5946350097656,
+                "width": 65.93751525878906,
+                "height": 34.894256591796875,
+                "left": 67.62019348144531,
+                "right": 133.55770874023438,
+                "top": 439.5946350097656,
+                "bottom": 474.4888916015625
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 39.65925598144531,
+                "y": 473.729736328125,
+                "width": 93.89845275878906,
+                "height": 23.9471435546875,
+                "left": 39.65925598144531,
+                "right": 133.55770874023438,
+                "top": 473.729736328125,
+                "bottom": 497.6768798828125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 1,
+              "b": 2
+            },
+            {
+              "a": 2,
+              "b": 3
+            },
+            {
+              "a": 3,
+              "b": 4
+            },
+            {
+              "a": 4,
+              "b": 5
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "tooltip": {
+        "hover": "completed",
+        "text": "Movimientos sintéticos 3481a1feGastos$2.000"
+      }
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "zoom": 1
+      },
+      "initial": {
+        "viewport": {
+          "innerWidth": 1440,
+          "innerHeight": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "scrollTop": 0,
+          "maxScrollTop": 2172
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 57,
+              "left": 0,
+              "right": 1440,
+              "top": 0,
+              "bottom": 57
+            },
+            "position": "sticky"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 1041,
+            "y": 461.890625,
+            "width": 234,
+            "height": 16,
+            "left": 1041,
+            "right": 1275,
+            "top": 461.890625,
+            "bottom": 477.890625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 165,
+            "y": 2831.390625,
+            "width": 1110,
+            "height": 28,
+            "left": 165,
+            "right": 1275,
+            "top": 2831.390625,
+            "bottom": 2859.390625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [],
+        "accountChart": {
+          "card": {
+            "x": 732,
+            "y": 1811.890625,
+            "width": 564,
+            "height": 966.5,
+            "left": 732,
+            "right": 1296,
+            "top": 1811.890625,
+            "bottom": 2778.390625
+          },
+          "svg": {
+            "x": 766,
+            "y": 1924.390625,
+            "width": 496,
+            "height": 174,
+            "left": 766,
+            "right": 1262,
+            "top": 1924.390625,
+            "bottom": 2098.390625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 855.8828125,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 855.8828125,
+                "right": 876.1171875,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 954.8828125,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 954.8828125,
+                "right": 975.1171875,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 1053.8828125,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1053.8828125,
+                "right": 1074.1171875,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1152.8828125,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1152.8828125,
+                "right": 1173.1171875,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1241.765625,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1241.765625,
+                "right": 1262,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 791.71875,
+                "y": 1920.6956787109375,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 1920.6956787109375,
+                "bottom": 1956.6956787109375
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 791.71875,
+                "y": 1949.49560546875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 1949.49560546875,
+                "bottom": 1985.49560546875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 791.71875,
+                "y": 1978.295654296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 1978.295654296875,
+                "bottom": 2014.295654296875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 791.71875,
+                "y": 2007.0955810546875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 2007.0955810546875,
+                "bottom": 2043.0955810546875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 763.625,
+                "y": 2041.3956298828125,
+                "width": 94.375,
+                "height": 24.9998779296875,
+                "left": 763.625,
+                "right": 858,
+                "top": 2041.3956298828125,
+                "bottom": 2066.3955078125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "averageNearest": {
+        "viewport": {
+          "innerWidth": 1440,
+          "innerHeight": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "scrollTop": 0,
+          "maxScrollTop": 2172
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 57,
+              "left": 0,
+              "right": 1440,
+              "top": 0,
+              "bottom": 57
+            },
+            "position": "sticky"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 1041,
+            "y": 461.890625,
+            "width": 234,
+            "height": 16,
+            "left": 1041,
+            "right": 1275,
+            "top": 461.890625,
+            "bottom": 477.890625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "quick": {
+          "rect": {
+            "x": 165,
+            "y": 2831.390625,
+            "width": 1110,
+            "height": 28,
+            "left": 165,
+            "right": 1275,
+            "top": 2831.390625,
+            "bottom": 2859.390625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [],
+        "accountChart": {
+          "card": {
+            "x": 732,
+            "y": 1811.890625,
+            "width": 564,
+            "height": 966.5,
+            "left": 732,
+            "right": 1296,
+            "top": 1811.890625,
+            "bottom": 2778.390625
+          },
+          "svg": {
+            "x": 766,
+            "y": 1924.390625,
+            "width": 496,
+            "height": 174,
+            "left": 766,
+            "right": 1262,
+            "top": 1924.390625,
+            "bottom": 2098.390625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 855.8828125,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 855.8828125,
+                "right": 876.1171875,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 954.8828125,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 954.8828125,
+                "right": 975.1171875,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 1053.8828125,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1053.8828125,
+                "right": 1074.1171875,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1152.8828125,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1152.8828125,
+                "right": 1173.1171875,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1241.765625,
+                "y": 2073.20068359375,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1241.765625,
+                "right": 1262,
+                "top": 2073.20068359375,
+                "bottom": 2087.20068359375
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 791.71875,
+                "y": 1920.6956787109375,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 1920.6956787109375,
+                "bottom": 1956.6956787109375
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 791.71875,
+                "y": 1949.49560546875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 1949.49560546875,
+                "bottom": 1985.49560546875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 791.71875,
+                "y": 1978.295654296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 1978.295654296875,
+                "bottom": 2014.295654296875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 791.71875,
+                "y": 2007.0955810546875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 2007.0955810546875,
+                "bottom": 2043.0955810546875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 763.625,
+                "y": 2041.3956298828125,
+                "width": 94.375,
+                "height": 24.9998779296875,
+                "left": 763.625,
+                "right": 858,
+                "top": 2041.3956298828125,
+                "bottom": 2066.3955078125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "quickNearest": {
+        "viewport": {
+          "innerWidth": 1440,
+          "innerHeight": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "scrollTop": 2172,
+          "maxScrollTop": 2172
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 57,
+              "left": 0,
+              "right": 1440,
+              "top": 0,
+              "bottom": 57
+            },
+            "position": "sticky"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 1041,
+            "y": -1710.109375,
+            "width": 234,
+            "height": 16,
+            "left": 1041,
+            "right": 1275,
+            "top": -1710.109375,
+            "bottom": -1694.109375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "quick": {
+          "rect": {
+            "x": 165,
+            "y": 659.390625,
+            "width": 1110,
+            "height": 28,
+            "left": 165,
+            "right": 1275,
+            "top": 659.390625,
+            "bottom": 687.390625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "H3",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [],
+        "accountChart": {
+          "card": {
+            "x": 732,
+            "y": -360.109375,
+            "width": 564,
+            "height": 966.5,
+            "left": 732,
+            "right": 1296,
+            "top": -360.109375,
+            "bottom": 606.390625
+          },
+          "svg": {
+            "x": 766,
+            "y": -247.609375,
+            "width": 496,
+            "height": 174,
+            "left": 766,
+            "right": 1262,
+            "top": -247.609375,
+            "bottom": -73.609375
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 855.8828125,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 855.8828125,
+                "right": 876.1171875,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 954.8828125,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 954.8828125,
+                "right": 975.1171875,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 1053.8828125,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1053.8828125,
+                "right": 1074.1171875,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1152.8828125,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1152.8828125,
+                "right": 1173.1171875,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1241.765625,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1241.765625,
+                "right": 1262,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 791.71875,
+                "y": -251.30438232421875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": -251.30438232421875,
+                "bottom": -215.30438232421875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 791.71875,
+                "y": -222.50437927246094,
+                "width": 66.28125,
+                "height": 36.00001525878906,
+                "left": 791.71875,
+                "right": 858,
+                "top": -222.50437927246094,
+                "bottom": -186.50436401367188
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 791.71875,
+                "y": -193.70437622070312,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": -193.70437622070312,
+                "bottom": -157.70437622070312
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 791.71875,
+                "y": -164.9043731689453,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": -164.9043731689453,
+                "bottom": -128.9043731689453
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 763.625,
+                "y": -130.6043701171875,
+                "width": 94.375,
+                "height": 25,
+                "left": 763.625,
+                "right": 858,
+                "top": -130.6043701171875,
+                "bottom": -105.6043701171875
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "maxScroll": {
+        "viewport": {
+          "innerWidth": 1440,
+          "innerHeight": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "scrollTop": 2172,
+          "maxScrollTop": 2172
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 57,
+              "left": 0,
+              "right": 1440,
+              "top": 0,
+              "bottom": 57
+            },
+            "position": "sticky"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 1041,
+            "y": -1710.109375,
+            "width": 234,
+            "height": 16,
+            "left": 1041,
+            "right": 1275,
+            "top": -1710.109375,
+            "bottom": -1694.109375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "quick": {
+          "rect": {
+            "x": 165,
+            "y": 659.390625,
+            "width": 1110,
+            "height": 28,
+            "left": 165,
+            "right": 1275,
+            "top": 659.390625,
+            "bottom": 687.390625
+          },
+          "centerWithinViewport": true,
+          "centerUnobscured": true,
+          "hitTag": "H3",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [],
+        "accountChart": {
+          "card": {
+            "x": 732,
+            "y": -360.109375,
+            "width": 564,
+            "height": 966.5,
+            "left": 732,
+            "right": 1296,
+            "top": -360.109375,
+            "bottom": 606.390625
+          },
+          "svg": {
+            "x": 766,
+            "y": -247.609375,
+            "width": 496,
+            "height": 174,
+            "left": 766,
+            "right": 1262,
+            "top": -247.609375,
+            "bottom": -73.609375
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 855.8828125,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 855.8828125,
+                "right": 876.1171875,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 954.8828125,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 954.8828125,
+                "right": 975.1171875,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 1053.8828125,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1053.8828125,
+                "right": 1074.1171875,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1152.8828125,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1152.8828125,
+                "right": 1173.1171875,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1241.765625,
+                "y": -98.79937744140625,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1241.765625,
+                "right": 1262,
+                "top": -98.79937744140625,
+                "bottom": -84.79937744140625
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 791.71875,
+                "y": -251.30438232421875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": -251.30438232421875,
+                "bottom": -215.30438232421875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 791.71875,
+                "y": -222.50437927246094,
+                "width": 66.28125,
+                "height": 36.00001525878906,
+                "left": 791.71875,
+                "right": 858,
+                "top": -222.50437927246094,
+                "bottom": -186.50436401367188
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 791.71875,
+                "y": -193.70437622070312,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": -193.70437622070312,
+                "bottom": -157.70437622070312
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 791.71875,
+                "y": -164.9043731689453,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": -164.9043731689453,
+                "bottom": -128.9043731689453
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 763.625,
+                "y": -130.6043701171875,
+                "width": 94.375,
+                "height": 25,
+                "left": 763.625,
+                "right": 858,
+                "top": -130.6043701171875,
+                "bottom": -105.6043701171875
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "chartInView": {
+        "viewport": {
+          "innerWidth": 1440,
+          "innerHeight": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "document": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "scrollTop": 1401,
+          "maxScrollTop": 2172
+        },
+        "nav": [
+          {
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 57,
+              "left": 0,
+              "right": 1440,
+              "top": 0,
+              "bottom": 57
+            },
+            "position": "sticky"
+          }
+        ],
+        "average": {
+          "rect": {
+            "x": 1041,
+            "y": -939.109375,
+            "width": 234,
+            "height": 16,
+            "left": 1041,
+            "right": 1275,
+            "top": -939.109375,
+            "bottom": -923.109375
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": true
+        },
+        "quick": {
+          "rect": {
+            "x": 165,
+            "y": 1430.390625,
+            "width": 1110,
+            "height": 28,
+            "left": 165,
+            "right": 1275,
+            "top": 1430.390625,
+            "bottom": 1458.390625
+          },
+          "centerWithinViewport": false,
+          "centerUnobscured": false,
+          "hitTag": "DIV",
+          "hitRole": null,
+          "hitNav": false
+        },
+        "ancestors": [],
+        "accountChart": {
+          "card": {
+            "x": 732,
+            "y": 410.890625,
+            "width": 564,
+            "height": 966.5,
+            "left": 732,
+            "right": 1296,
+            "top": 410.890625,
+            "bottom": 1377.390625
+          },
+          "svg": {
+            "x": 766,
+            "y": 523.390625,
+            "width": 496,
+            "height": 174,
+            "left": 766,
+            "right": 1262,
+            "top": 523.390625,
+            "bottom": 697.390625
+          },
+          "svgOverflow": "hidden",
+          "ticks": [
+            {
+              "text": "$0k",
+              "rect": {
+                "x": 855.8828125,
+                "y": 672.2006225585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 855.8828125,
+                "right": 876.1171875,
+                "top": 672.2006225585938,
+                "bottom": 686.2006225585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 954.8828125,
+                "y": 672.2006225585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 954.8828125,
+                "right": 975.1171875,
+                "top": 672.2006225585938,
+                "bottom": 686.2006225585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$1k",
+              "rect": {
+                "x": 1053.8828125,
+                "y": 672.2006225585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1053.8828125,
+                "right": 1074.1171875,
+                "top": 672.2006225585938,
+                "bottom": 686.2006225585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1152.8828125,
+                "y": 672.2006225585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1152.8828125,
+                "right": 1173.1171875,
+                "top": 672.2006225585938,
+                "bottom": 686.2006225585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "$2k",
+              "rect": {
+                "x": 1241.765625,
+                "y": 672.2006225585938,
+                "width": 20.234375,
+                "height": 14,
+                "left": 1241.765625,
+                "right": 1262,
+                "top": 672.2006225585938,
+                "bottom": 686.2006225585938
+              },
+              "axis": "x"
+            },
+            {
+              "text": "Movimientossintéticos3481a1fe",
+              "rect": {
+                "x": 791.71875,
+                "y": 519.6956176757812,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 519.6956176757812,
+                "bottom": 555.6956176757812
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosdad6a156",
+              "rect": {
+                "x": 791.71875,
+                "y": 548.49560546875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 548.49560546875,
+                "bottom": 584.49560546875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticosad350677",
+              "rect": {
+                "x": 791.71875,
+                "y": 577.295654296875,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 577.295654296875,
+                "bottom": 613.295654296875
+              },
+              "axis": "y"
+            },
+            {
+              "text": "Movimientossintéticos7d2ce559",
+              "rect": {
+                "x": 791.71875,
+                "y": 606.0956420898438,
+                "width": 66.28125,
+                "height": 36,
+                "left": 791.71875,
+                "right": 858,
+                "top": 606.0956420898438,
+                "bottom": 642.0956420898438
+              },
+              "axis": "y"
+            },
+            {
+              "text": "API cron syntheticcash 966d224c",
+              "rect": {
+                "x": 763.625,
+                "y": 640.3956298828125,
+                "width": 94.375,
+                "height": 25,
+                "left": 763.625,
+                "right": 858,
+                "top": 640.3956298828125,
+                "bottom": 665.3956298828125
+              },
+              "axis": "y"
+            }
+          ],
+          "overlaps": [
+            {
+              "a": 5,
+              "b": 6
+            },
+            {
+              "a": 6,
+              "b": 7
+            },
+            {
+              "a": 7,
+              "b": 8
+            },
+            {
+              "a": 8,
+              "b": 9
+            }
+          ],
+          "rows": [
+            "Movimientos sintéticos 3481a1fe",
+            "Movimientos sintéticos dad6a156",
+            "Movimientos sintéticos ad350677"
+          ]
+        }
+      },
+      "tooltip": {
+        "hover": "completed",
+        "text": "Movimientos sintéticos 3481a1feGastos$2.000"
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "average-375-zoom100.png",
+      "sha256": "c19f3d35a495bfae06e467aa4f71ac91e7c397d28fed648919420667e1a20f76",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "path": "max-scroll-375-zoom100.png",
+      "sha256": "9d6492bb83ece08211630e4461543845cc05ec6bd5495da70bf5995d1f1f1dd5",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "path": "account-chart-375-zoom100.png",
+      "sha256": "d3ade348b01c601d1a45c97a93b98d25166e2dd868c08c63ff9d1b2cac1027e9",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "path": "average-320-zoom100.png",
+      "sha256": "c65daae751a495747c481efc25a7cb350314208fd3615124eb260981b0e7240a",
+      "width": 320,
+      "height": 568
+    },
+    {
+      "path": "max-scroll-320-zoom100.png",
+      "sha256": "66cce3a62cc1361b3b9073b9f3bd0729f76158bfd855dcefda0c7c63e95b7ecd",
+      "width": 320,
+      "height": 568
+    },
+    {
+      "path": "account-chart-320-zoom100.png",
+      "sha256": "761e763f9e9e5508c311f2fe9aa38dc211d79ad708b438bd56901a622cad5e19",
+      "width": 320,
+      "height": 568
+    },
+    {
+      "path": "average-375-zoom200.png",
+      "sha256": "a02e3129069cdaddc23488c59ca15bae6a268a2f9bf9e3e087250856cc9d7ff6",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "path": "max-scroll-375-zoom200.png",
+      "sha256": "7e5d95513dbfd5bfcea1c33b4fc2e9d6c078e3bb67c1bdb2e07cf1b331440681",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "path": "account-chart-375-zoom200.png",
+      "sha256": "9ebdf2610c47baa98a281e3ce4ec9bc414313d1a43eb20f548e28884975291eb",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "path": "average-1440-zoom100.png",
+      "sha256": "ec03be180e4ed360ee0d7cde510ffa5a306820c92c3db4e2a4674a3d19c93ccf",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "max-scroll-1440-zoom100.png",
+      "sha256": "0457d2631f7a269a9e5759e14787f1254f00bb0f269c5fad291fd5c09514caf8",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "account-chart-1440-zoom100.png",
+      "sha256": "3af970e439580134f6d907b0926de5542e00218924c243b224950787f8680e4f",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "financeBefore": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+  "browser": {
+    "version": "146.0.7680.165",
+    "profile": "Own ephemeral profile; removed after run"
+  },
+  "financeAfter": "1a33f2a266cec5261e4445ed2fd283bd5ef5ec1cfed4557392c2b1dc2e1ec04c",
+  "financeUnchanged": true,
+  "status": "DIAGNOSTIC_COMPLETE",
+  "finishedAt": "2026-10-15T02:50:43.443Z"
+}
