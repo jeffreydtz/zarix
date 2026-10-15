@@ -1,0 +1,33 @@
+{
+  "capturedAt": "2026-10-15T01:22:20.121885+00:00",
+  "revision": "0c828ecdbcfab8842dcab071a4573ca6e91fd1d6",
+  "phase": "before-responsible-mappings",
+  "scope": "Route/Auth/DB doubles only; native prior negative observations retained by SQL_security",
+  "files": [
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "6088cdae1aa84644a1879bcba57dfd6f9c2c96254904a32b6a3390f9970c0358"
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "sha256": "ac665283107e18ab3f23f19631dd6986b8312a2ae577bc398fbce13e8b7a71df"
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "sha256": "b570351f5042e6cc5f1c6911d32131a42a7d47700c3b135bda4151b1ba43eca2"
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "f81cf24ac7eaded301b329e8b67c7917ba0690d60ce9434517698709df36681a"
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "efcda8eb87f3b7d790239166a9c1c4dadf1300dc8610bb0b24364d89900e494d"
+    },
+    {
+      "path": "__tests__/owner-scoped-http-errors.test.ts",
+      "sha256": "21f4679ae2ab39ab9fdee0ae7b1e0eae32391cb2f6f93429485976cb4a310ea8"
+    }
+  ],
+  "fixtureCorrection": "Readable parameterized case labels and console spy cleanup; acceptance assertions unchanged."
+}

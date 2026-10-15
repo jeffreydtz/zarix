@@ -1,0 +1,100 @@
+{
+  "observedAt": "2026-10-15T01:31:51.511759+00:00",
+  "codeRevision": "0169860016125480c19f1284890e2b578f3236af",
+  "coreReport": "../core-final/verification.json",
+  "auditReport": "../core-final/dependency-audit.json",
+  "auditReportSha256": "74f01b85d9feca70c3731db4242309ddbddcb80217a13f12131e4518b43079bf",
+  "auditCommand": {
+    "name": "dependency-audit",
+    "command": [
+      "npm",
+      "audit",
+      "--json"
+    ],
+    "startedAt": "2026-10-15T01:26:45.441Z",
+    "finishedAt": "2026-10-15T01:26:46.360Z",
+    "durationMs": 919,
+    "exitCode": 1,
+    "status": "FAIL"
+  },
+  "counts": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 7,
+    "critical": 0,
+    "total": 7
+  },
+  "sameAdvisoryGraphAsFirst15OctoberGlobal": true,
+  "installed": [
+    {
+      "name": "@next/eslint-plugin-next",
+      "path": "node_modules/@next/eslint-plugin-next",
+      "version": "15.5.27",
+      "dev": true
+    },
+    {
+      "name": "braces",
+      "path": "node_modules/braces",
+      "version": "3.0.3",
+      "dev": true
+    },
+    {
+      "name": "chokidar",
+      "path": "node_modules/chokidar",
+      "version": "3.6.0",
+      "dev": true
+    },
+    {
+      "name": "eslint-config-next",
+      "path": "node_modules/eslint-config-next",
+      "version": "15.5.27",
+      "dev": true
+    },
+    {
+      "name": "fast-glob",
+      "path": "node_modules/fast-glob",
+      "version": "3.3.1",
+      "dev": true
+    },
+    {
+      "name": "fast-glob",
+      "path": "node_modules/tailwindcss/node_modules/fast-glob",
+      "version": "3.3.3",
+      "dev": true
+    },
+    {
+      "name": "micromatch",
+      "path": "node_modules/micromatch",
+      "version": "4.0.8",
+      "dev": true
+    },
+    {
+      "name": "tailwindcss",
+      "path": "node_modules/tailwindcss",
+      "version": "3.4.19",
+      "dev": true
+    }
+  ],
+  "allFlaggedNodesDevOnly": true,
+  "sources": [
+    {
+      "path": "package.json",
+      "sha256": "847259b8435bf13a49ce114795fcd71fc7a7f81322b341c067682447de87772a",
+      "matchesEarlier15OctoberRegistryAssessment": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "55c20451ab9746815183814324501c39f26ea01e1a3d1618b37e3f093ee6f257",
+      "matchesEarlier15OctoberRegistryAssessment": true
+    }
+  ],
+  "publishedRemediationAssessment": {
+    "separateRegistryAndOfficialAdvisoryObservationAt": "2026-10-15T01:01:55.483Z",
+    "evidence": "metadata.json and registry-*.json",
+    "notRepeatedInGlobal2": true,
+    "scope": "The fresh01:26 global npm audit reports the same seven-high dev chain and only SemVer-major fixes. The registry/provider advisory assessment was performed separately at01:01 on the same date and package hashes; no statement relies only on13 October. No package updates or forced fixes applied."
+  },
+  "productionAudit": "The separate audit-production.json at the01:01 cut reports zero. Global2 did not repeat npm audit --omit=dev; its full-audit affected node flags are independently listed here.",
+  "buildTrace": "The earlier build-trace-inspection.json is bound to its stated zJ3... build and was not rerun for the new compiled app in this phase."
+}

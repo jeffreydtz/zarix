@@ -1,0 +1,33 @@
+{
+  "reviewedAt": "2026-10-15T01:35:41.374004+00:00",
+  "reviewer": "dependency_audit",
+  "method": "Direct view_image manual inspection of all six actual PNG files",
+  "files": [
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/prepare-offline-pending.png",
+      "sha256": "305c5c7e8b797ae7048a312a646b1224106c8ebf52cd0f3255fa5fc9a6a55e63"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/prepare-offline-recovered.png",
+      "sha256": "e25553291b38d8477b5d15a1bc87952a8c7a0d676267040dbea85bbe1555344d"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/prepare-response-lost-pending.png",
+      "sha256": "896ed2f6fb72d3f6cd5e0ab85a52788a157b6779c8dd65137f49aec6d64aab26"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/resume-response-lost-recovered.png",
+      "sha256": "c16fdb1a5071708e9d82042a4a628cead9aa1b205c7ff43bdfb2335f43ff23eb"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/resume-independent-equal-intents.png",
+      "sha256": "04576ca27fdffda50f66a30abb516ce99ebbc286cd028ef44405b10f1e2d22ca"
+    },
+    {
+      "path": "docs/tif/v2.13/evidence/technical-20261015/offline-durability/browser-real-20261015-02/diagnostic-owner-B.png",
+      "sha256": "95da98983009917dcb90c70311fc2dbc81d5991e17d8e43e41df1214cd1cfc75"
+    }
+  ],
+  "privacy": "No visible credentials, JWT/cookies, keys, capability paths or personal data. Only synthetic financial fixtures and ordinary queue-status UI.",
+  "scope": "Visible-pixel privacy review, not PNG metadata inspection or automated binary secret scanning. No reexecution or acceptance of offline/owner-isolation cases is inferred from filenames or these images. Several tall movement captures include transition opacity near the bottom; diagnostic-owner-B shows the movement list, not a form reset assertion."
+}

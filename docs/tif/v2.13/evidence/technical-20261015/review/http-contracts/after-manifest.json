@@ -1,0 +1,40 @@
+{
+  "capturedAt": "2026-10-15T01:25:45.028963+00:00",
+  "revision": "0169860016125480c19f1284890e2b578f3236af",
+  "fixCommit": "6815bdcd325f49564961368cef289d3d85f51597",
+  "phase": "after-responsible-mappings",
+  "files": [
+    {
+      "path": "lib/services/investments.ts",
+      "sha256": "427a19d99e90d28d2b6989faa5d903cda198620103d66d8d1f93aa4d44984fc7",
+      "matchesFixCommit": true
+    },
+    {
+      "path": "lib/services/budgets.ts",
+      "sha256": "32ff3118923983eb02e1bd79103bbde3461cd6efe1de2ac0302ec53ce831fd3e",
+      "matchesFixCommit": true
+    },
+    {
+      "path": "app/api/recurring/[id]/route.ts",
+      "sha256": "97e92a3a07335768ff4c5c0fb6c4576087ed0782cf7b7745feb0f496fbd058c8",
+      "matchesFixCommit": true
+    },
+    {
+      "path": "app/api/transactions/[id]/route.ts",
+      "sha256": "e29b2e408aa97f531aeae1cb9d5c11bd64c0ea28aafdc5a4e89f1bfef3532ee9",
+      "matchesFixCommit": true
+    },
+    {
+      "path": "lib/services/transactions.ts",
+      "sha256": "2002175076cfce758f08d8080b2bc8fd8135cf547483106806caa0ed38d374a8",
+      "matchesFixCommit": true
+    },
+    {
+      "path": "__tests__/owner-scoped-http-errors.test.ts",
+      "sha256": "21f4679ae2ab39ab9fdee0ae7b1e0eae32391cb2f6f93429485976cb4a310ea8",
+      "matchesFixCommit": true
+    }
+  ],
+  "allSourcesMatchFixCommit": true,
+  "scope": "Hashes captured after focal tests/typecheck/lint; source ownership exclusive, no source changes after test execution. Full source freeze/global verification and native HTTP rerun belong to root/SQL_security."
+}

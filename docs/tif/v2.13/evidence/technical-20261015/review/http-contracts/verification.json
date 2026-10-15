@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-15T01:25:45.038304+00:00",
+  "fixCommit": "6815bdcd325f49564961368cef289d3d85f51597",
+  "before": {
+    "file": "before-tests.json",
+    "total": 23,
+    "passed": 11,
+    "failed": 12,
+    "exitCode": 1,
+    "scope": "Same final 23 route-level tests against pre-fix sources; 12 expected HTTP-classification failures, 11 preserved controls"
+  },
+  "after": {
+    "file": "after-tests.json",
+    "total": 44,
+    "passed": 44,
+    "failed": 0,
+    "exitCode": 0,
+    "files": [
+      "__tests__/owner-scoped-http-errors.test.ts",
+      "__tests__/financial-validation-http.test.ts",
+      "__tests__/investment-retry-boundaries.test.ts",
+      "__tests__/investment-create-route.test.ts"
+    ],
+    "newTests": 23,
+    "existingTests": 21
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exitCode": 0
+  },
+  "environment": {
+    "node": "22.17.0",
+    "vitest": "5.0.3"
+  },
+  "independentStaticReview": {
+    "reviewer": "sql_security",
+    "result": "No material finding in the five source-file mappings; no SQL/grant changes or new investment GET endpoint"
+  },
+  "limitations": [
+    "Route tests execute real handlers/services with synthetic Auth/DB/provider doubles. They do not prove actual SQL rollback, row effects, RLS or normal Auth sessions.",
+    "Prior native foreign UPDATE snapshots prove B data unchanged but HTTP500 failed contract. They remain preserved and are reconciled FAIL, not BLOCKED.",
+    "Native three-route retest is pending a rebuilt app; old served app cannot validate this fix.",
+    "Root global verification and fresh build are pending for this source revision. The earlier 796-test run applies to b456c4 only."
+  ]
+}
