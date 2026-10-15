@@ -16,6 +16,7 @@ system={r['case_id']:r for r in json.loads(system_path.read_text())} if system_p
 native_evidence=next((name for name in ['native-full/native-verification.json','native/native-verification.json'] if (out/name).exists()),None)
 native_executed=native_evidence is not None
 environment_evidence='environment/runtime-manifest.json' if (out/'environment/runtime-manifest.json').exists() else 'environment-and-blockers.json'
+at_rest_evidence='environment/at-rest.json' if (out/'environment/at-rest.json').exists() else None
 rows=list(csv.DictReader((root/'docs/tif/v2.13/casos_prueba.csv').open(encoding='utf-8-sig')))
 result=[]
 oq=['removes only acknowledged items, in order']+[f'retains the queue on HTTP {status} and stops the batch' for status in [400,401,403,408,409,422,429,500,503]]+['retains an unconfirmed item after a connection failure','reports local storage failure after acknowledgment and stops before the next item']
@@ -45,7 +46,7 @@ for row in rows:
   elif id=='CNF-12':blocker='Native schema/data/Auth/Storage restore has separate evidence; this original timed snapshot fixture and complete post-restore browser journey have no exact executed assertion.' if native_executed else 'Full isolated SQL restore passed, but genuine Supabase Auth/Storage files and post-restore browser/API check require a socket-capable test runtime.'
   elif id=='CNF-01':blocker='Canonical 100 authenticated UI navigations with 20 sessions at 20Mbps/50ms in an equivalent deployment environment have no complete executed observation series. SQL/API measurements are separate.'
   elif id=='CNF-03':blocker='Native test stack uses HTTP loopback; no authorized HTTPS test endpoint/certificate and redirect verification for financial requests.'
-  elif id=='CNF-04':blocker='No encryption-at-rest evidence for this concrete temporary native instance; RLS isolation is a separate control.'
+  elif id=='CNF-04':blocker='Current local FileVault volume-encryption evidence exists separately; the complete original provider/configuration and CP2-19 API/JWT isolation fixture have no exact executed acceptance assertion.' if at_rest_evidence else 'No encryption-at-rest evidence for this concrete temporary native instance; RLS isolation is a separate control.'
   elif id=='CNF-09':blocker='Required real versioned Chrome/Firefox/Safari/Edge matrix has not been completed; WebKit is not Safari.'
   elif id=='CP3-19':blocker='Documented conflict: case requires selectable MEP whereas RN08 and implementation fix blue sell. Derived blue consistency evidence does not approve the original MEP fixture.'
   elif native_executed:blocker='Native Auth/PostgREST and independent-session evidence exists, but this complete original UI/API/system fixture has no exact executed assertion. Partial checks are reported separately.'
@@ -53,6 +54,7 @@ for row in rows:
   if 'IA' in row['entrada'] or 'OCR' in row['entrada'] or 'Telegram' in row['entrada'] or id in ['CP2-13','CP2-14','CP2-15','CP2-17','CP2-18','CP3-09']:
    blocker+=' Real provider sandbox credentials/configuration are also absent; provider doubles are reported separately.'
   evidence=f'{environment_evidence}; core/final-vitest.json; {native_evidence}' if native_executed else f'{environment_evidence}; final-vitest.json; database-verification.json'
+  if id=='CNF-04' and at_rest_evidence:evidence+=f'; {at_rest_evidence}'
   if id in system:
    executed=system[id]
    assert executed.get('complete_original_contract') is True, f'{id}: a partial check cannot promote a complete original case'

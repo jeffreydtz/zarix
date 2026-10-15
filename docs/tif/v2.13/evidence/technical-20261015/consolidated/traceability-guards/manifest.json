@@ -1,0 +1,59 @@
+{
+  "executed_at_utc": "2026-10-15T01:08:41.312729+00:00",
+  "revision_before_own_commit": "83ca5fc686259780d754a4c13dbbaf617e25266f",
+  "status": "PASS",
+  "python": "3.12.5",
+  "scope": "Synthetic traceability CLI regression only; no original case acceptance promoted by native/at-rest report existence",
+  "command": [
+    "python3",
+    "scripts/test-technical-traceability.py"
+  ],
+  "test_methods": 4,
+  "cases_checked": {
+    "native_layouts": [
+      "native-full",
+      "native"
+    ],
+    "without_exact_assertions": "273 BLOCKED",
+    "cnf04_local_at_rest": "BLOCKED; actual FileVault evidence cited, missing full provider/config and CP2-19 API/JWT fixture retained",
+    "cnf12": "Original timed snapshot/browser contract remains BLOCKED"
+  },
+  "source_manifest": [
+    {
+      "path": "scripts/build-technical-traceability.py",
+      "sha256": "c99dc5bd83ad60b557b3cabd7200c736dafa150386623d594552620fd1899bf7"
+    },
+    {
+      "path": "scripts/test-technical-traceability.py",
+      "sha256": "e9abfee8ce96d79f8afba1c1de1bb4d182f8d6299025af49d15ce41107d4d6f7"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "regression.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "regression.stderr.log",
+      "sha256": "4867ae47adb8ea623d4946c4b5a31b5c3b451e7281126e11988540e831fe685a"
+    }
+  ],
+  "at_rest_input_sha256": "fccdfa3c464531c2111df2aded9f22fe34f7b5480830b1ef29e1393ceb116dd3",
+  "derived_current_matrix": {
+    "generated_at": "2026-10-15T01:08:41.277019+00:00",
+    "original_cases": 273,
+    "use_cases": [
+      "CU001",
+      "CU002",
+      "CU003",
+      "CU004"
+    ],
+    "counts": {
+      "PASS": 170,
+      "FAIL": 0,
+      "BLOCKED": 103
+    },
+    "rule": "PASS requires an exact named executed contract assertion. Complete UI/API/system cases stay blocked despite related partial evidence."
+  },
+  "original_cases_sha256": "887adbef81be56f781133ced65bee1c92effcf9af9a3e0b1b389eed0e4e2717d"
+}

@@ -106,6 +106,11 @@ class TraceabilityStatusRegression(unittest.TestCase):
                 (environment / "runtime-manifest.json").write_text(json.dumps({
                     "scope": "Synthetic local runtime layout fixture only"
                 }))
+                if native_directory == "native-full":
+                    (environment / "at-rest.json").write_text(json.dumps({
+                        "status": "PASS_LOCAL_VOLUME_ENCRYPTION_OBSERVED",
+                        "scope": "Synthetic local encryption metadata; not complete original acceptance"
+                    }))
                 completed = subprocess.run(
                     [sys.executable, str(ROOT / "scripts/build-technical-traceability.py"),
                      "--evidence-dir", str(fixture)],
@@ -127,6 +132,14 @@ class TraceabilityStatusRegression(unittest.TestCase):
                         self.assertTrue((fixture / reference).is_file(), reference)
                 self.assertIn("original timed snapshot fixture", by_id["CNF-12"]["blocker"])
                 self.assertIn("post-restore browser journey", by_id["CNF-12"]["blocker"])
+                self.assertEqual(by_id["CNF-04"]["status"], "BLOCKED")
+                if native_directory == "native-full":
+                    self.assertNotIn("No encryption-at-rest evidence", by_id["CNF-04"]["blocker"])
+                    self.assertIn("FileVault", by_id["CNF-04"]["blocker"])
+                    self.assertIn("CP2-19 API/JWT", by_id["CNF-04"]["blocker"])
+                    self.assertIn("environment/at-rest.json", by_id["CNF-04"]["evidence"])
+                else:
+                    self.assertIn("No encryption-at-rest evidence", by_id["CNF-04"]["blocker"])
 
 
 if __name__ == "__main__":
