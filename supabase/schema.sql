@@ -3049,7 +3049,7 @@ REVOKE ALL ON FUNCTION create_balance_adjustment(UUID, UUID, NUMERIC) FROM PUBLI
 GRANT EXECUTE ON FUNCTION create_balance_adjustment(UUID, UUID, NUMERIC) TO service_role;
 -- END supabase/migrations/20260819120000_security_integrity_followup.sql
 
--- BEGIN supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql
+-- BEGIN supabase/migrations/20261015172320_fix_balance_update_old_new_impacts.sql
 -- SHA256 7d0c107a4836c1c88c07559fbee26c8187d621e52b838474ca9b6c76782ba296
 -- Revertir OLD y aplicar NEW de manera independiente también al cambiar
 -- tipo, origen o destino. No se aplica automáticamente a producción.
@@ -3129,9 +3129,9 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SET search_path = public;
--- END supabase/migrations/20261006235424_fix_balance_update_old_new_impacts.sql
+-- END supabase/migrations/20261015172320_fix_balance_update_old_new_impacts.sql
 
--- BEGIN supabase/migrations/20261006235955_atomic_shared_expense.sql
+-- BEGIN supabase/migrations/20261015172329_atomic_shared_expense.sql
 -- SHA256 dda45e83dc60cc9954068f6b8c610e1571bab34327069bb4d172400104335cb9
 -- Un gasto y su reparto son una sola operación; jamás dejar importe nuevo
 -- con reparto anterior si falla una escritura. Se ejecuta sólo desde backend.
@@ -3253,9 +3253,9 @@ $$;
 
 REVOKE ALL ON FUNCTION public.save_shared_expense(TEXT, UUID, UUID, TEXT, NUMERIC, DATE, UUID[], UUID) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.save_shared_expense(TEXT, UUID, UUID, TEXT, NUMERIC, DATE, UUID[], UUID) TO service_role;
--- END supabase/migrations/20261006235955_atomic_shared_expense.sql
+-- END supabase/migrations/20261015172329_atomic_shared_expense.sql
 
--- BEGIN supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql
+-- BEGIN supabase/migrations/20261015172339_preserve_transfer_destination_amount.sql
 -- SHA256 a67a04bdee629aeb6fff196f1a803d100bb35bb40d038204767d4181b2ccfa1f
 -- Importe destino confirmado: evita perder centavos por persistir tasas inversas con sólo8 decimales.
 -- No se recalculan saldos históricos; movimientos viejos mantienen el fallback anterior.
@@ -3550,9 +3550,9 @@ SELECT
 FROM multi_accounts ma
 LEFT JOIN latest l ON l.account_id = ma.id;
 $$;
--- END supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql
+-- END supabase/migrations/20261015172339_preserve_transfer_destination_amount.sql
 
--- BEGIN supabase/migrations/20261009034852_durable_financial_requests_outbox.sql
+-- BEGIN supabase/migrations/20261015172344_durable_financial_requests_outbox.sql
 -- SHA256 c25f0065d8fbd17145399219ad3db694e9b2d4931baf7c058dde2de9a0569eb1
 -- Financial effect, reply receipt and recurring notification commit together.
 -- These APIs are server-only; caller identity always comes from verified auth.
@@ -3706,9 +3706,9 @@ RETURNS VOID LANGUAGE sql SECURITY INVOKER SET search_path = public AS $$
 $$;
 REVOKE ALL ON FUNCTION public.release_notification_outbox(JSONB) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.release_notification_outbox(JSONB) TO service_role;
--- END supabase/migrations/20261009034852_durable_financial_requests_outbox.sql
+-- END supabase/migrations/20261015172344_durable_financial_requests_outbox.sql
 
--- BEGIN supabase/migrations/20261009034943_atomic_account_creation.sql
+-- BEGIN supabase/migrations/20261015172349_atomic_account_creation.sql
 -- SHA256 3b511ab53cdf19409eed70bdf661751cb82bc4ea322414f941c592fc175f7c38
 -- Atomic account creation with opening balance (extracted from the dropped plan-allowances migration, 2026-10-15). No plan limits.
 -- Separate receipt namespace prevents account/transaction request-key collisions.
@@ -3761,9 +3761,9 @@ END;
 $$;
 REVOKE ALL ON FUNCTION public.create_account_with_opening_balance(UUID,TEXT,TEXT,JSONB,NUMERIC) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.create_account_with_opening_balance(UUID,TEXT,TEXT,JSONB,NUMERIC) TO service_role;
--- END supabase/migrations/20261009034943_atomic_account_creation.sql
+-- END supabase/migrations/20261015172349_atomic_account_creation.sql
 
--- BEGIN supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql
+-- BEGIN supabase/migrations/20261015172355_explicit_grants_and_tenant_integrity.sql
 -- SHA256 05403aadbbd2a86673e2a00ef1b242e7c9c6162ed4fc11c5e4d9f7f24b0c850c
 -- Explicit privileges work with both old and new Supabase defaults.
 -- All affected tables already have RLS. Guests use the bounded backend API.
@@ -4199,9 +4199,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 REVOKE ALL ON FUNCTION create_balance_adjustment(UUID, UUID, NUMERIC) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION create_balance_adjustment(UUID, UUID, NUMERIC) TO service_role;
--- END supabase/migrations/20261009034950_explicit_grants_and_tenant_integrity.sql
+-- END supabase/migrations/20261015172355_explicit_grants_and_tenant_integrity.sql
 
--- BEGIN supabase/migrations/20261009035715_durable_sales_shared_expenses.sql
+-- BEGIN supabase/migrations/20261015172404_durable_sales_shared_expenses.sql
 -- SHA256 db67484f7515d80a4371679fdc225cabc287d06aa975b177c956998e750256ca
 -- Durable receipts for other financial mutation boundaries. No TTL or provider IO.
 CREATE TABLE public.investment_sale_requests (
@@ -4357,9 +4357,9 @@ END;
 $$;
 REVOKE ALL ON FUNCTION public.create_investment_once(UUID,TEXT,TEXT,JSONB) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.create_investment_once(UUID,TEXT,TEXT,JSONB) TO service_role;
--- END supabase/migrations/20261009035715_durable_sales_shared_expenses.sql
+-- END supabase/migrations/20261015172404_durable_sales_shared_expenses.sql
 
--- BEGIN supabase/migrations/20261009041100_durable_import_batches.sql
+-- BEGIN supabase/migrations/20261015172410_durable_import_batches.sql
 -- SHA256 7cd5974799151e9c12a3e4e76a652391247f0c7ea3de74769638b23366df9a88
 -- Import is intentionally partial per row. Bind the batch before any financial
 -- write; each row has an atomic transaction_requests receipt retained forever.
@@ -4448,9 +4448,9 @@ END;
 $$;
 REVOKE ALL ON FUNCTION public.create_import_transaction_once(UUID, UUID, TEXT, TEXT, JSONB, BOOLEAN) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.create_import_transaction_once(UUID, UUID, TEXT, TEXT, JSONB, BOOLEAN) TO service_role;
--- END supabase/migrations/20261009041100_durable_import_batches.sql
+-- END supabase/migrations/20261015172410_durable_import_batches.sql
 
--- BEGIN supabase/migrations/20261015000402_atomic_account_balance_recompute.sql
+-- BEGIN supabase/migrations/20261015172417_atomic_account_balance_recompute.sql
 -- SHA256 7f0a8bc2e23c3dfd43af5f01b9132b9daa44d48b6a38f5fe02524b837d0f4bce
 -- Reconciliation must hold the same account lock as the ledger balance trigger.
 -- A concurrent ledger write cannot commit its account impact between the sum
@@ -4601,9 +4601,9 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SET search_path = public;
--- END supabase/migrations/20261015000402_atomic_account_balance_recompute.sql
+-- END supabase/migrations/20261015172417_atomic_account_balance_recompute.sql
 
--- BEGIN supabase/migrations/20261015072636_audit_transaction_deletions.sql
+-- BEGIN supabase/migrations/20261015172422_audit_transaction_deletions.sql
 -- SHA256 f5e9ecde74f98b62233aada534206df22655361a661b6b1963a537b221f1b355
 -- CP1-08: retain the deleted movement without keeping an operational ledger row.
 -- No foreign keys: deleting the original row/profile must not erase its identity.
@@ -4657,9 +4657,9 @@ REVOKE ALL ON FUNCTION transaction_audit_private.record_transaction_deletion()
 CREATE TRIGGER trigger_audit_transaction_deletion
   AFTER DELETE ON public.transactions
   FOR EACH ROW EXECUTE FUNCTION transaction_audit_private.record_transaction_deletion();
--- END supabase/migrations/20261015072636_audit_transaction_deletions.sql
+-- END supabase/migrations/20261015172422_audit_transaction_deletions.sql
 
--- BEGIN supabase/migrations/20261015072807_presentation_preferences.sql
+-- BEGIN supabase/migrations/20261015172428_presentation_preferences.sql
 -- SHA256 ca6aefd4b6c61e4a60f4b4dd075f5fd6bbbe27dd6e72e7ecddd024544c421309
 -- RF14 / CP2-11, CP2-12, CP3-17. Presentation only; no financial rows change.
 ALTER TABLE public.users
@@ -4686,4 +4686,50 @@ REVOKE ALL ON FUNCTION public.validate_presentation_currency() FROM PUBLIC, anon
 CREATE TRIGGER trigger_validate_presentation_currency
   BEFORE INSERT OR UPDATE OF default_currency ON public.users
   FOR EACH ROW EXECUTE FUNCTION public.validate_presentation_currency();
--- END supabase/migrations/20261015072807_presentation_preferences.sql
+-- END supabase/migrations/20261015172428_presentation_preferences.sql
+
+-- BEGIN supabase/migrations/20261016213000_ai_daily_caps.sql
+-- SHA256 3c4b581cad44a091d17ab86d547f258994ff3072efbbe2e23f593d69ba42fa47
+-- Daily AI/OCR caps for accounts created after the v2.13 deploy (2026-10-15).
+-- Users created before the cutoff are grandfathered with unlimited access.
+-- Durable counter: one row per user/feature/day (America/Argentina/Buenos_Aires).
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS ai_unlimited BOOLEAN NOT NULL DEFAULT FALSE;
+UPDATE public.users SET ai_unlimited = TRUE
+ WHERE created_at < TIMESTAMPTZ '2026-10-15 17:23:00+00' AND NOT ai_unlimited;
+
+CREATE TABLE IF NOT EXISTS public.ai_daily_usage (
+ user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+ feature TEXT NOT NULL CHECK (feature IN ('ai','ocr')),
+ usage_date DATE NOT NULL,
+ used INTEGER NOT NULL DEFAULT 0 CHECK (used >= 0),
+ PRIMARY KEY (user_id, feature, usage_date)
+);
+ALTER TABLE public.ai_daily_usage ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.ai_daily_usage FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.ai_daily_usage TO service_role;
+
+-- Atomically consumes one unit. Returns allowed=false when the daily cap is reached.
+CREATE OR REPLACE FUNCTION public.consume_ai_daily_quota(p_user_id UUID, p_feature TEXT)
+RETURNS JSONB LANGUAGE plpgsql SECURITY INVOKER SET search_path = '' AS $$
+DECLARE cap INTEGER; unlimited BOOLEAN; day DATE; new_used INTEGER;
+BEGIN
+ cap := CASE p_feature WHEN 'ai' THEN 20 WHEN 'ocr' THEN 5 ELSE NULL END;
+ IF cap IS NULL THEN RAISE EXCEPTION 'ai_quota_invalid_feature'; END IF;
+ SELECT u.ai_unlimited INTO unlimited FROM public.users u WHERE u.id = p_user_id;
+ IF NOT FOUND THEN RAISE EXCEPTION 'ai_quota_unknown_user'; END IF;
+ IF unlimited THEN RETURN jsonb_build_object('allowed', TRUE, 'unlimited', TRUE); END IF;
+ day := (now() AT TIME ZONE 'America/Argentina/Buenos_Aires')::date;
+ INSERT INTO public.ai_daily_usage AS d (user_id, feature, usage_date, used)
+ VALUES (p_user_id, p_feature, day, 1)
+ ON CONFLICT (user_id, feature, usage_date) DO UPDATE SET used = d.used + 1
+   WHERE d.used < cap
+ RETURNING d.used INTO new_used;
+ IF new_used IS NULL THEN
+   RETURN jsonb_build_object('allowed', FALSE, 'limit', cap, 'used', cap);
+ END IF;
+ RETURN jsonb_build_object('allowed', TRUE, 'limit', cap, 'used', new_used);
+END;
+$$;
+REVOKE ALL ON FUNCTION public.consume_ai_daily_quota(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.consume_ai_daily_quota(UUID, TEXT) TO service_role;
+-- END supabase/migrations/20261016213000_ai_daily_caps.sql

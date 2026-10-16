@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import ts from 'typescript';
 import { asRole, bootDatabase, bootstrapSources, digest, ids, root, seedDatabase } from './lib/test-isolated-database.mjs';
 
-const migration = 'supabase/migrations/20261015072636_audit_transaction_deletions.sql';
+const migration = 'supabase/migrations/20261015172422_audit_transaction_deletions.sql';
 const withoutAudit = process.argv.includes('--without-audit');
 const sourceFiles = (await bootstrapSources()).filter(file => !withoutAudit || file.path !== migration);
 const sources = [...sourceFiles.map(({ path, sha256 }) => ({ path, sha256 })), ...await Promise.all([

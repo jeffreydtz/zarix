@@ -127,7 +127,7 @@ Las sugerencias deben ser acciones concretas para mejorar.
 
   try {
     const gemini = await getGeminiForUser(userId);
-    const result = await withPlanQuota({ userId, feature: 'ai', requestKey: quotaKey, fingerprint: quotaKey }, () => gemini.chat(prompt));
+    const result = await withPlanQuota({ userId, feature: 'ai', requestKey: quotaKey, fingerprint: quotaKey, source: 'cron' }, () => gemini.chat(prompt));
     const parsed = JSON.parse(result);
     insights = parsed.insights || [];
     sugerencias = parsed.sugerencias || [];

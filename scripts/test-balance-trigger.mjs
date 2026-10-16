@@ -11,7 +11,7 @@ const db = new PGlite();
 const original = process.argv.includes('--original');
 const source = await fs.readFile(path.join(root, original
   ? 'supabase/migrations/20260504105800_secondary_adjustment_no_primary_impact.sql'
-  : 'supabase/migrations/20261007000231_preserve_transfer_destination_amount.sql'), 'utf8');
+  : 'supabase/migrations/20261015172339_preserve_transfer_destination_amount.sql'), 'utf8');
 const ids = ['00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-00000000000b',
   '00000000-0000-0000-0000-00000000000c', '00000000-0000-0000-0000-00000000000d'];
 await db.exec(`

@@ -9,7 +9,7 @@ import { asRole, bootDatabase, bootstrapSources, digest } from './lib/test-isola
 const userA = '13131313-1313-4131-8131-131313131313';
 const userB = '24242424-2424-4242-8242-242424242424';
 const signature = 'public.recompute_account_balance(uuid,uuid)';
-const repairMigration = 'supabase/migrations/20261015000402_atomic_account_balance_recompute.sql';
+const repairMigration = 'supabase/migrations/20261015172417_atomic_account_balance_recompute.sql';
 const results = [];
 const report = {
   startedAt: new Date().toISOString(),

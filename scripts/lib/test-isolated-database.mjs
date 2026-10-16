@@ -60,7 +60,7 @@ export async function source(relative) {
 }
 export async function bootstrapSources(options = {}) {
   const migrations = (await fs.readdir(path.join(root, 'supabase/migrations')))
-    .filter(name => name.endsWith('.sql') && (options.includeNew !== false || name <= '20261007000231_preserve_transfer_destination_amount.sql'))
+    .filter(name => name.endsWith('.sql') && (options.includeNew !== false || name <= '20261015172339_preserve_transfer_destination_amount.sql'))
     .sort();
   return Promise.all([baselineSource, ...migrations.map(n => `supabase/migrations/${n}`)].map(source));
 }

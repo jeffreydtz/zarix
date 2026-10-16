@@ -8,7 +8,7 @@ import { isolatedNativeTargets, isolatedPgEnvironment } from './test-isolated-na
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 const literal = value => `'${String(value).replaceAll("'", "''")}'`;
-const canonical = ['account_creation_requests','accounts','bot_sessions','budget_alerts','budgets','categories','import_batches','investment_create_requests','investment_sale_requests','investment_sales','investments','net_worth_snapshots','notification_outbox','plan_usage_cycles','plan_usage_requests','portfolio_performance_snapshots','recurring_rules','shared_expense_requests','shared_expense_splits','shared_expenses','shared_group_members','shared_groups','transaction_requests','transactions','users'];
+const canonical = ['account_creation_requests','accounts','ai_daily_usage','bot_sessions','budget_alerts','budgets','categories','import_batches','investment_create_requests','investment_sale_requests','investment_sales','investments','net_worth_snapshots','notification_outbox','plan_usage_cycles','plan_usage_requests','portfolio_performance_snapshots','recurring_rules','shared_expense_requests','shared_expense_splits','shared_expenses','shared_group_members','shared_groups','transaction_requests','transactions','users'];
 const rowHashSql = alias => `encode(sha256(convert_to(to_jsonb(${alias})::text,'UTF8')),'hex')`;
 const auxSources = ['blue','blue_buy','oficial','oficial_buy','mep','mep_buy','ccl','ccl_buy'];
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

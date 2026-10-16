@@ -16,6 +16,7 @@ const sdkResponse=(calls:any[])=>new Response(JSON.stringify({candidates:[{conte
 beforeEach(()=>{
  vi.clearAllMocks();vi.stubGlobal('fetch',vi.fn());vi.stubEnv('GEMINI_TIMEOUT_MS','500');
  mocks.rpc.mockImplementation(async name=>{
+  if(name==='consume_ai_daily_quota')return {data:{allowed:true,unlimited:true},error:null};
   throw new Error(`Unexpected quota release or completion: ${name}`);
  });
 });
@@ -31,7 +32,7 @@ describe('ambiguous mutation aborts the complete real tool chain',()=>{
   await expect(processInternalAiChatMessage(input)).rejects.toBeInstanceOf(AmbiguousPlanWorkError);
   expect(ledger).toHaveLength(1);expect(ledger[0]).toMatch(/^ai:fixture-owner:[0-9a-f]{64}:0$/);
   expect(fetch).toHaveBeenCalledOnce();expect(mocks.create).toHaveBeenCalledOnce();
-  expect(mocks.rpc).not.toHaveBeenCalled();
+  expect(mocks.rpc.mock.calls.map(call=>call[0])).toEqual(['consume_ai_daily_quota']);
  });
  it('lost deletion response never reselects/deletes the next latest movement',async()=>{
   const ledger=[{id:'newest',type:'expense',amount:10},{id:'older',type:'expense',amount:20}];

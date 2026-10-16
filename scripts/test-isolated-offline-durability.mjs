@@ -29,8 +29,8 @@ const sourcePaths = [
   'lib/hooks/useFinancialOperation.ts', 'lib/hooks/useOfflineQueue.ts', 'lib/hooks/useServiceWorker.ts',
   'public/sw.js', 'app/api/accounts/route.ts', 'app/api/categories/route.ts', 'app/api/transactions/route.ts',
   'lib/services/accounts.ts', 'lib/services/transactions.ts', 'lib/transaction-idempotency.ts',
-  'supabase/migrations/20261009034852_durable_financial_requests_outbox.sql',
-  'supabase/migrations/20261015000402_atomic_account_balance_recompute.sql', 'package-lock.json',
+  'supabase/migrations/20261015172344_durable_financial_requests_outbox.sql',
+  'supabase/migrations/20261015172417_atomic_account_balance_recompute.sql', 'package-lock.json',
 ];
 const manifest = () => Promise.all(sourcePaths.map(async file => ({ path: file, sha256: sha(await fs.readFile(file)) })));
 const report = { startedAt: new Date().toISOString(), phase: mode, status: 'RUNNING',

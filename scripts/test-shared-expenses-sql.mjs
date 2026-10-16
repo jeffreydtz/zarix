@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { PGlite } = await import(process.env.ZARIX_PGLITE_MODULE || '@electric-sql/pglite');
 const db = new PGlite();
-const sql = await fs.readFile(path.join(root, 'supabase/migrations/20261006235955_atomic_shared_expense.sql'), 'utf8');
+const sql = await fs.readFile(path.join(root, 'supabase/migrations/20261015172329_atomic_shared_expense.sql'), 'utf8');
 const ids = ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002',
   '00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-00000000000b',
   '00000000-0000-0000-0000-00000000000c', '00000000-0000-0000-0000-00000000000d'];
