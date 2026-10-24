@@ -12,8 +12,8 @@ import { coerceTransactionCurrency } from '@/lib/constants/transaction-currencie
 import type { RecurrenceFrequency, RecurringRule } from '@/types/database';
 import type { ExecutedTransactionSummary } from '@/types/internal-ai-chat';
 import { asUntrustedData, maskSensitiveValue, UNTRUSTED_INSTRUCTION, UNTRUSTED_OPEN } from './mask';
-import { getRegistryTool, WRITE_TOOL_NAMES } from './catalog';
-import { MAX_TOOL_BATCH, TOOL_SCHEMAS } from './schemas';
+import { getRegistryTool, isRemoteWriteTool, WRITE_TOOL_NAMES } from './catalog';
+import { MAX_TOOL_BATCH, remoteConfirmHasExtraFields, remoteConfirmSchema, TOOL_SCHEMAS } from './schemas';
 import { rateLimitAllow } from '@/lib/rate-limit';
 import type { RegistryToolContext, RegistryToolResult, ToolArgs, WriteChannel } from './types';
 
@@ -200,7 +200,7 @@ async function parkCreate(
 }
 
 function durableRequestId(args: ToolArgs, requestId?: string): string | undefined {
-  return str(args.requestId) || requestId;
+  return requestId || str(args.requestId);
 }
 
 async function confirmRemoteWrite(userId: string, args: ToolArgs, source: WriteChannel | undefined) {
@@ -217,11 +217,6 @@ async function confirmRemoteWrite(userId: string, args: ToolArgs, source: WriteC
   const item = await confirmPendingItem({
     userId,
     itemId: ids[0],
-    amount: num(args.amount),
-    currency: str(args.currency),
-    merchant: str(args.description) || str(args.name),
-    accountId: str(args.accountId),
-    categoryId: str(args.categoryId),
     source,
   });
   return {
@@ -259,6 +254,52 @@ async function executeRegistryToolImpl(
     }
   }
 
+  const remoteWrite = source === 'mcp' || source === 'api';
+  if (remoteWrite && WRITE_TOOL_NAMES.has(name) && !isRemoteWriteTool(name)) {
+    return {
+      response: {
+        success: false,
+        error: 'Esta herramienta no está disponible por MCP/REST en v1. Usá la app o Telegram.',
+      },
+    };
+  }
+  if (remoteWrite && WRITE_TOOL_NAMES.has(name) && isConfirmed(args)) {
+    if (!ctx.canConfirmRemote) {
+      throw new ApiError(
+        'Este token no puede confirmar. Pedile a una persona en la bandeja, o creá un token con write:confirm.',
+        403
+      );
+    }
+    if (remoteConfirmHasExtraFields(args)) {
+      throw new ApiError('La confirmación remota solo acepta pendingId(s). El payload ya está congelado.', 400);
+    }
+    const frozen = remoteConfirmSchema.safeParse(args);
+    if (!frozen.success) {
+      return {
+        response: {
+          success: false,
+          error: 'Falta pendingId. Confirmá el pendiente; no escribas el ledger directo.',
+        },
+      };
+    }
+    if (name === 'create_transactions') {
+      const ids = pendingIdsFromArgs(frozen.data as ToolArgs);
+      const { confirmPendingItems } = await import('@/lib/services/pending-inbox');
+      const confirmed = await confirmPendingItems({ userId, itemIds: ids, source });
+      return {
+        response: {
+          success: true,
+          executedCount: confirmed.length,
+          total: ids.length,
+          pendingIds: confirmed.map((item) => item.id),
+          untrusted: true,
+          untrusted_instruction: UNTRUSTED_INSTRUCTION,
+        },
+      };
+    }
+    return confirmRemoteWrite(userId, frozen.data as ToolArgs, source);
+  }
+
   const schema = (TOOL_SCHEMAS as Record<string, { safeParse: (v: unknown) => { success: boolean; data?: ToolArgs } }>)[name];
   if (!schema) return { response: { success: false, error: `Herramienta desconocida: ${name}` } };
   const parsed = schema.safeParse(args);
@@ -266,7 +307,6 @@ async function executeRegistryToolImpl(
     return { response: { success: false, error: 'Argumentos inválidos.' } };
   }
   const safeArgs: ToolArgs = parsed.data;
-  const remoteWrite = source === 'mcp' || source === 'api';
 
   switch (name) {
     case 'create_transaction': {
@@ -281,6 +321,10 @@ async function executeRegistryToolImpl(
               type: safeArgs.type,
               amount: safeArgs.amount,
               currency: safeArgs.currency,
+              account: asUntrustedData(safeArgs.account),
+              accountId: safeArgs.accountId,
+              installments: safeArgs.installments ?? 1,
+              destinationAccountId: safeArgs.destinationAccountId,
               description: asUntrustedData(safeArgs.description),
             },
             untrusted: true,
@@ -371,9 +415,9 @@ async function executeRegistryToolImpl(
           txOptions(source, requestIdAt(requestId, i) ?? requestId)
         );
         if (res.kind === 'abort') {
-          results.push({ ok: false, detail: res.reply });
+          results.push({ ok: false, detail: asUntrustedData(res.reply) ?? res.reply });
         } else {
-          results.push({ ok: true, detail: res.reply });
+          results.push({ ok: true, detail: asUntrustedData(res.reply) ?? res.reply });
           if (res.executed) executed.push(res.executed);
         }
       }
@@ -613,10 +657,12 @@ async function executeRegistryToolImpl(
         return {
           response: {
             period: label,
-            category: c?.name ?? category,
+            category: asUntrustedData(c?.name ?? category),
             total: round(c?.amount ?? 0),
             count: c?.count ?? 0,
             found: Boolean(c),
+            untrusted: true,
+            untrusted_instruction: UNTRUSTED_INSTRUCTION,
           },
         };
       }
@@ -624,7 +670,13 @@ async function executeRegistryToolImpl(
         response: {
           period: label,
           total: round(total),
-          top: breakdown.slice(0, 6).map((c) => ({ category: c.name, amount: round(c.amount), count: c.count })),
+          top: breakdown.slice(0, 6).map((c) => ({
+            category: asUntrustedData(c.name),
+            amount: round(c.amount),
+            count: c.count,
+          })),
+          untrusted: true,
+          untrusted_instruction: UNTRUSTED_INSTRUCTION,
         },
       };
     }

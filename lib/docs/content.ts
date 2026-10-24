@@ -123,7 +123,7 @@ export const DOCS_PAGES: DocsPage[] = [
         heading: 'Tokens personales',
         body: [
           'Creás, listás y revocás tokens en Configuración → Integraciones. Caducan en 1 año (no se puede dejar sin vencimiento). Zarix guarda SHA-256 del token de 256 bits (hash_version=1). hash_version=2 queda reservado para un pepper dedicado; no está habilitado y no usa SUPABASE_JWT_SECRET. Nunca se guarda el valor.',
-          'Permisos: read, write, ingest. Podés revocar en cualquier momento. Cada uso queda en el registro de auditoría (IP hasheada).',
+          'Permisos: read, write, ingest, write:confirm. write estaciona un movimiento en la bandeja. write:confirm deja que MCP/REST confirme el pendiente por su cuenta (payload congelado). Está apagado por defecto: un token robado con write:confirm puede cargar gastos. Preferí confirmar en Pendientes o Telegram. Podés revocar en cualquier momento. Cada uso queda en el registro de auditoría (IP hasheada).',
         ],
       },
       {
@@ -135,9 +135,9 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'REST v1',
         body: [
-          'GET /api/v1/openapi.json describe las 14 herramientas. GET /api/v1/tools las lista según el token (un PAT de solo lectura no ve las de escritura). POST /api/v1/tools/{nombre} las ejecuta.',
-          'Idempotency-Key es muy recomendable en TODOS los POST de escritura (create, edit, delete, cuentas, recurrentes). Si no podés mandar el header (MCP hospedado), pasá requestId en el cuerpo. Reusar la misma clave con otro cuerpo devuelve 409. Confirmá con pendingId(s); confirm=true solo no escribe el libro.',
-          'create_transaction(s) no escriben el libro al toque: quedan en pendientes salvo confirm=true con pendingId(s) (el cliente tiene que pedírselo al usuario).',
+          'GET /api/v1/openapi.json describe las herramientas remotas. En v1 las únicas escrituras son create_transaction y create_transactions (borrar, editar, cuentas y recurrentes siguen en la app y Telegram). GET /api/v1/tools las lista según el token (un PAT de solo lectura no ve las de escritura). POST /api/v1/tools/{nombre} las ejecuta.',
+          'Idempotency-Key (header) gana sobre requestId del cuerpo; ambos valen 24 h. Reusar la misma clave con otro cuerpo devuelve 409. Confirmá SOLO con {confirm:true, pendingId} o pendingIds: campos extra (monto, cuenta) se rechazan y no escriben. Un PAT write estaciona; hace falta write:confirm para confirmar por API.',
+          'create_transaction(s) no escriben el libro al toque: quedan en pendientes. El payload estacionado se ejecuta tal cual (cuotas e destino incluidos).',
           'Ejemplo (dato de ejemplo): curl -X POST -H "Authorization: Bearer zrxp_…" -H "Content-Type: application/json" -H "Idempotency-Key: ejemplo-001" -d "{\\"type\\":\\"expense\\",\\"amount\\":10}" https://zarix-phi.vercel.app/api/v1/tools/create_transaction',
         ],
       },
@@ -151,7 +151,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'URL y token',
         body: [
-          'Servidor remoto: https://zarix-phi.vercel.app/api/mcp (Streamable HTTP). Authorization: Bearer zrxp_… con permiso read (y write si querés cargar movimientos). Idempotency-Key (o requestId en el cuerpo) es muy recomendable en escrituras.',
+          'Servidor remoto: https://zarix-phi.vercel.app/api/mcp (Streamable HTTP). Authorization: Bearer zrxp_… con permiso read (y write si querés estacionar movimientos). Para confirmar por MCP hace falta write:confirm; si no, una persona confirma en la bandeja. Idempotency-Key del header gana sobre requestId del cuerpo.',
           'Hoy el camino soportado es un PAT. Los conectores alojados de Claude y ChatGPT necesitan OAuth; esa vía está detrás de ZARIX_MCP_OAUTH_ENABLED y todavía no está disponible.',
           'Las escrituras se auditan con source mcp. Sin confirm=true quedan en la bandeja. Gemini debe mostrar el preview y solo reintentar con confirm=true si el usuario acepta.',
         ],

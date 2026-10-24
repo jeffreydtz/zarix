@@ -39,18 +39,24 @@ vi.mock('@/lib/services/accounts', () => ({
 }));
 
 import { executeRegistryTool } from '@/lib/ai/registry/execute';
+import { createTransactionSchema } from '@/lib/ai/registry/schemas';
 
 const FIXTURE_USER = '11111111-1111-4111-8111-111111111111';
+const ACCOUNT_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+const DEST_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa8';
+const PENDING_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9';
+
 const ctx = {
   userId: FIXTURE_USER,
   financialContext: {
     user: { default_currency: 'ARS' },
-    accounts: [{ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1', name: 'Banco', currency: 'ARS', type: 'bank', is_active: true }],
+    accounts: [{ id: ACCOUNT_ID, name: 'Banco', currency: 'ARS', type: 'bank', is_active: true }],
     categories: [],
   } as never,
   source: 'mcp' as const,
   allowedScopes: ['read', 'write'] as const,
   requestId: 'idem-park-fixture-001',
+  canConfirmRemote: true,
 };
 
 describe('MCP/REST park keeps full payload and consumes pendingIds', () => {
@@ -62,7 +68,7 @@ describe('MCP/REST park keeps full payload and consumes pendingIds', () => {
     }));
     mocks.confirm.mockResolvedValue({ id: 'pending-expense', merchant: 'Café' });
     mocks.confirmMany.mockResolvedValue([{ id: 'p1' }, { id: 'p2' }]);
-    mocks.listAccounts.mockResolvedValue([{ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1', name: 'Banco', currency: 'ARS' }]);
+    mocks.listAccounts.mockResolvedValue([{ id: ACCOUNT_ID, name: 'Banco', currency: 'ARS' }]);
   });
 
   it('parks income, transfer and expense with type/destination/account and confirms that payload', async () => {
@@ -87,7 +93,7 @@ describe('MCP/REST park keeps full payload and consumes pendingIds', () => {
 
     const expense = await executeRegistryTool(
       'create_transaction',
-      { type: 'expense', amount: 250, category: 'Comida', accountId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1' },
+      { type: 'expense', amount: 250, category: 'Comida', accountId: ACCOUNT_ID },
       ctx
     );
     expect(mocks.park.mock.calls[2][0].toolPayload).toMatchObject({ type: 'expense', category: 'Comida' });
@@ -95,82 +101,103 @@ describe('MCP/REST park keeps full payload and consumes pendingIds', () => {
 
     const confirmed = await executeRegistryTool(
       'create_transaction',
-      { type: 'income', amount: 1000, confirm: true, pendingId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9' },
+      { confirm: true, pendingId: PENDING_ID },
       ctx
     );
     expect(confirmed.response.success).toBe(true);
-    expect(mocks.confirm).toHaveBeenCalledWith(expect.objectContaining({ itemId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9' }));
+    expect(mocks.confirm).toHaveBeenCalledWith(expect.objectContaining({ itemId: PENDING_ID }));
+    expect(mocks.confirm.mock.calls[0][0].amount).toBeUndefined();
     expect(mocks.createTx).not.toHaveBeenCalled();
+  });
+
+  it('keeps installments and destinationAccountId through the schema and park', async () => {
+    await executeRegistryTool(
+      'create_transaction',
+      { type: 'expense', amount: 1200, accountId: ACCOUNT_ID, installments: 12 },
+      ctx
+    );
+    expect(mocks.park.mock.calls[0][0].toolPayload).toMatchObject({ installments: 12, amount: 1200 });
+
+    mocks.park.mockClear();
+    await executeRegistryTool(
+      'create_transaction',
+      { type: 'transfer', amount: 500, accountId: ACCOUNT_ID, destinationAccountId: DEST_ID },
+      ctx
+    );
+    expect(mocks.park.mock.calls[0][0].toolPayload).toMatchObject({
+      type: 'transfer',
+      destinationAccountId: DEST_ID,
+    });
+  });
+
+  it('rejects a frozen confirm that tries to change amount or account, and does not write', async () => {
+    await expect(
+      executeRegistryTool(
+        'create_transaction',
+        {
+          confirm: true,
+          pendingId: PENDING_ID,
+          amount: 999999,
+          accountId: DEST_ID,
+          type: 'expense',
+        },
+        ctx
+      )
+    ).rejects.toMatchObject({ status: 400 });
+    expect(mocks.confirm).not.toHaveBeenCalled();
+    expect(mocks.createTx).not.toHaveBeenCalled();
+  });
+
+  it('refuses remote confirm without write:confirm', async () => {
+    await expect(
+      executeRegistryTool(
+        'create_transaction',
+        { confirm: true, pendingId: PENDING_ID },
+        { ...ctx, canConfirmRemote: false }
+      )
+    ).rejects.toMatchObject({ status: 403 });
+    expect(mocks.confirm).not.toHaveBeenCalled();
   });
 
   it('refuses confirm=true without pendingIds and does not write the ledger', async () => {
     const single = await executeRegistryTool(
       'create_transaction',
-      { type: 'expense', amount: 10, confirm: true },
+      { confirm: true },
       ctx
     );
     expect(single.response.success).toBe(false);
     expect(String(single.response.error)).toMatch(/pendingId/i);
     expect(mocks.createTx).not.toHaveBeenCalled();
+    expect(mocks.confirm).not.toHaveBeenCalled();
 
     const batch = await executeRegistryTool(
       'create_transactions',
-      { transactions: [{ type: 'expense', amount: 10 }, { type: 'expense', amount: 20 }], confirm: true },
+      { confirm: true },
       ctx
     );
     expect(batch.response.success).toBe(false);
     expect(mocks.createTx).not.toHaveBeenCalled();
+    expect(mocks.confirmMany).not.toHaveBeenCalled();
   });
 
-  it('binds delete to the previewed transaction id, not whatever is last later', async () => {
-    const first = { id: 'tx-preview', type: 'expense', amount: 10, currency: 'ARS', description: 'Café', account: { name: 'Banco' } };
-    mocks.listTx.mockResolvedValue([first]);
-    const preview = await executeRegistryTool('delete_last_transaction', {}, ctx);
-    expect(preview.response.needs_confirm).toBe(true);
-    expect((preview.response.preview as { transactionId: string }).transactionId).toBe('tx-preview');
-    expect(mocks.park.mock.calls[0][0].toolPayload.transactionId).toBe('tx-preview');
-
-    mocks.listTx.mockResolvedValue([{ id: 'tx-newer', type: 'expense', amount: 99, currency: 'ARS', description: 'Otro' }]);
-    await executeRegistryTool(
-      'delete_last_transaction',
-      { confirm: true, pendingId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9' },
-      ctx
-    );
-    expect(mocks.confirm).toHaveBeenCalled();
-    expect(mocks.deleteTx).not.toHaveBeenCalled();
+  it('hides delete, edit, account and recurring from the MCP/REST write surface', async () => {
+    for (const name of ['delete_last_transaction', 'edit_last_transaction', 'create_account', 'create_recurring']) {
+      const result = await executeRegistryTool(name, { confirm: true, pendingId: PENDING_ID, name: 'X', description: 'Alquiler', amount: 10, frequency: 'monthly' }, ctx);
+      expect(result.response.success).toBe(false);
+      expect(String(result.response.error)).toMatch(/no está disponible/i);
+    }
+    expect(mocks.park).not.toHaveBeenCalled();
+    expect(mocks.confirm).not.toHaveBeenCalled();
+    expect(mocks.createTx).not.toHaveBeenCalled();
   });
 
-  it('parks create_account, create_recurring and edit with the full payload and requestId', async () => {
-    await executeRegistryTool('create_account', { name: 'Efectivo', type: 'cash' }, ctx);
-    expect(mocks.park.mock.calls[0][0].toolPayload).toMatchObject({
-      _tool: 'create_account',
-      name: 'Efectivo',
-      type: 'cash',
-    });
-    expect(mocks.park.mock.calls[0][0].ingestKey).toBe(ctx.requestId);
-
-    mocks.park.mockClear();
+  it('uses the header requestId over a body requestId', async () => {
     await executeRegistryTool(
-      'create_recurring',
-      { description: 'Alquiler', amount: 1000, frequency: 'monthly', type: 'expense' },
-      ctx
+      'create_transaction',
+      { type: 'expense', amount: 10, requestId: 'body-key-fixture' },
+      { ...ctx, requestId: 'header-key-fixture' }
     );
-    expect(mocks.park.mock.calls[0][0].toolPayload).toMatchObject({
-      _tool: 'create_recurring',
-      description: 'Alquiler',
-      frequency: 'monthly',
-    });
-
-    mocks.listTx.mockResolvedValue([
-      { id: 'tx-edit', type: 'expense', amount: 10, currency: 'ARS', description: 'Café', account: { name: 'Banco' } },
-    ]);
-    mocks.park.mockClear();
-    await executeRegistryTool('edit_last_transaction', { amount: 50, description: 'Cena' }, ctx);
-    expect(mocks.park.mock.calls[0][0].toolPayload).toMatchObject({
-      _tool: 'edit_last_transaction',
-      transactionId: 'tx-edit',
-      amount: 50,
-    });
+    expect(mocks.park.mock.calls[0][0].ingestKey).toBe('header-key-fixture');
   });
 
   it('rethrows 409 when the same Idempotency-Key is reused with a different body', async () => {
@@ -183,5 +210,18 @@ describe('MCP/REST park keeps full payload and consumes pendingIds', () => {
         ctx
       )
     ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('keeps 12 installments and a transfer destination in the Zod schema', () => {
+    expect(
+      createTransactionSchema.parse({ type: 'expense', amount: 1200, installments: 12 }).installments
+    ).toBe(12);
+    expect(
+      createTransactionSchema.parse({
+        type: 'transfer',
+        amount: 500,
+        destinationAccountId: DEST_ID,
+      }).destinationAccountId
+    ).toBe(DEST_ID);
   });
 });

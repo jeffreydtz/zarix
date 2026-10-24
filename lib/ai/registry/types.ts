@@ -19,8 +19,10 @@ export type RegistryToolContext = {
   source?: WriteChannel;
   /** If set, the executor rejects tools whose scopes are not a subset. */
   allowedScopes?: readonly ToolScope[];
-  /** Durable request id, e.g. wallet:{pendingItemId}. Never taken from tool args. */
+  /** Durable request id. Header Idempotency-Key wins over body requestId. */
   requestId?: string;
+  /** PAT has write:confirm. Default write tokens may only park remotely. */
+  canConfirmRemote?: boolean;
 };
 
 export type RegistryTool = {

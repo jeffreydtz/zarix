@@ -3,6 +3,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 
+type ToolPayload = {
+  type?: string;
+  amount?: number;
+  account?: string;
+  accountId?: string;
+  installments?: number;
+  destinationAccount?: string;
+  _tool?: string;
+};
+
 type Item = {
   id: string;
   amount: number | null;
@@ -13,6 +23,7 @@ type Item = {
   status: string;
   occurred_at: string | null;
   created_at: string;
+  tool_payload?: ToolPayload | null;
 };
 
 type Account = { id: string; name: string; currency: string };
@@ -94,8 +105,23 @@ export default function PendientesPage() {
         <ul className="space-y-3">
           {items.map((item) => {
             const draft = { ...item, ...editing[item.id] };
+            const parked = item.tool_payload || {};
+            const parkedType = parked.type || 'expense';
+            const parkedAmount = parked.amount ?? draft.amount;
+            const parkedAccount =
+              accounts.find((a) => a.id === (parked.accountId || draft.account_id))?.name ||
+              parked.account ||
+              'cuenta sin elegir';
+            const parkedInstallments = parked.installments && parked.installments > 1 ? parked.installments : 1;
             return (
               <li key={item.id} className="card space-y-3">
+                <p className="text-sm font-medium text-foreground">
+                  Al confirmar: {parkedType}
+                  {parkedAmount != null ? ` · ${parkedAmount} ${draft.currency}` : ''}
+                  {` · ${parkedAccount}`}
+                  {parkedInstallments > 1 ? ` · ${parkedInstallments} cuotas` : ''}
+                  {parked.destinationAccount ? ` → ${parked.destinationAccount}` : ''}
+                </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="text-sm">
                     Monto

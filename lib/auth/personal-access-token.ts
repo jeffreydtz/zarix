@@ -2,7 +2,7 @@ import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypt
 import { timingSafeStringEqual } from '@/lib/secure-compare';
 
 export const PAT_PREFIX = 'zrxp_';
-export const PAT_SCOPES = ['read', 'write', 'ingest'] as const;
+export const PAT_SCOPES = ['read', 'write', 'ingest', 'write:confirm'] as const;
 export type PatScope = (typeof PAT_SCOPES)[number];
 export const PAT_DEFAULT_TTL_MS = 365 * 24 * 60 * 60 * 1000;
 

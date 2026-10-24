@@ -9,6 +9,24 @@ const periodEnum = z
 
 const amountSchema = z.number().finite().positive().max(MAX_AMOUNT);
 
+export const FROZEN_CONFIRM_KEYS = new Set(['confirm', 'pendingId', 'pendingIds', 'requestId']);
+
+export const remoteConfirmSchema = z
+  .object({
+    confirm: z.literal(true),
+    pendingId: z.string().uuid().optional(),
+    pendingIds: z.array(z.string().uuid()).max(MAX_BATCH).optional(),
+    requestId: z.string().min(8).max(200).optional(),
+  })
+  .strict()
+  .refine((value) => Boolean(value.pendingId) || Boolean(value.pendingIds?.length), {
+    message: 'Falta pendingId',
+  });
+
+export function remoteConfirmHasExtraFields(args: Record<string, unknown>): boolean {
+  return Object.keys(args).some((key) => args[key] !== undefined && !FROZEN_CONFIRM_KEYS.has(key));
+}
+
 export const transactionFieldsSchema = z.object({
   type: z.enum(['expense', 'income', 'transfer']).optional(),
   amount: amountSchema.optional(),
@@ -19,6 +37,8 @@ export const transactionFieldsSchema = z.object({
   categoryId: z.string().uuid().optional().nullable(),
   description: z.string().max(500).optional(),
   destinationAccount: z.string().max(120).optional(),
+  destinationAccountId: z.string().uuid().optional(),
+  installments: z.number().int().min(1).max(36).optional(),
   transactionDate: z.string().max(32).optional(),
   date: z.string().max(32).optional(),
   confirm: z.boolean().optional(),

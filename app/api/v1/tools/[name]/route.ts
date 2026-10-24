@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiError, errorResponse } from '@/lib/api-handler';
 import { authenticatePersonalAccessToken } from '@/lib/services/personal-access-tokens';
-import { invokeRegistryForPat } from '@/lib/integrations/invoke-registry';
-import { getRegistryTool } from '@/lib/ai/registry';
+import { invokeRegistryForPat, resolveIdempotencyKey } from '@/lib/integrations/invoke-registry';
+import { getRegistryTool, isRemoteWriteTool } from '@/lib/ai/registry';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 import { hashClientIp } from '@/lib/integrations/audit';
 import { readLimitedJsonBody } from '@/lib/http/body-limit';
@@ -16,6 +16,9 @@ export async function POST(req: NextRequest, props: { params: Promise<{ name: st
     const { name } = await props.params;
     const tool = getRegistryTool(name);
     if (!tool) throw new ApiError('Herramienta desconocida.', 404);
+    if (!tool.readOnly && !isRemoteWriteTool(name)) {
+      throw new ApiError('Esta herramienta no está disponible por MCP/REST en v1.', 404);
+    }
     const needed = tool.readOnly ? 'read' : 'write';
     const auth = await authenticatePersonalAccessToken(req, needed, { source: 'api' });
     if (!rateLimitAllow(`v1-post:${auth.tokenId}:${ipHash}`, 60, 60_000)) {
@@ -25,15 +28,15 @@ export async function POST(req: NextRequest, props: { params: Promise<{ name: st
     if (parsed == null || typeof parsed !== 'object' || Array.isArray(parsed)) {
       throw new ApiError('JSON inválido.', 400);
     }
-    const idempotencyKey = req.headers.get('idempotency-key');
+    const args = parsed as Record<string, unknown>;
     const result = await invokeRegistryForPat({
       userId: auth.userId,
       scopes: auth.scopes,
       name,
-      args: parsed as Record<string, unknown>,
+      args,
       source: 'api',
       req,
-      requestId: idempotencyKey,
+      requestId: resolveIdempotencyKey(req.headers.get('idempotency-key'), args),
     });
     return NextResponse.json(result.response);
   } catch (error) {

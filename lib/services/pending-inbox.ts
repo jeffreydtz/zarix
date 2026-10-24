@@ -14,6 +14,7 @@ import type { ToolArgs, WriteChannel } from '@/lib/ai/registry/types';
 
 export const WALLET_CIVIL_TIMEZONE = 'America/Argentina/Cordoba';
 export const STALE_CONFIRMING_MS = 2 * 60 * 1000;
+export const IDEMPOTENCY_TTL_MS = 24 * 60 * 60 * 1000;
 
 export type ParkedToolPayload = {
   type?: string;
@@ -154,6 +155,12 @@ function isUniqueViolation(error: { code?: string; message?: string } | null | u
   return error?.code === '23505' || /duplicate key|unique constraint/i.test(error?.message || '');
 }
 
+function isFreshIdempotency(item: { created_at?: string } | null | undefined): boolean {
+  if (!item?.created_at) return false;
+  const ts = Date.parse(item.created_at);
+  return Number.isFinite(ts) && Date.now() - ts <= IDEMPOTENCY_TTL_MS;
+}
+
 async function loadByIngestKey(userId: string, ingestKey: string): Promise<PendingInboxItem | null> {
   const supabase = createServiceClientSync();
   const { data } = await supabase
@@ -162,7 +169,16 @@ async function loadByIngestKey(userId: string, ingestKey: string): Promise<Pendi
     .eq('user_id', userId)
     .eq('ingest_key', ingestKey)
     .maybeSingle();
-  return (data as PendingInboxItem | null) ?? null;
+  const item = (data as PendingInboxItem | null) ?? null;
+  if (item && !isFreshIdempotency(item)) {
+    await supabase
+      .from('pending_inbox_items')
+      .update({ ingest_key: `expired:${item.id}`, idempotency_key: null })
+      .eq('id', item.id)
+      .eq('user_id', userId);
+    return null;
+  }
+  return item;
 }
 
 async function loadByFingerprint(userId: string, fp: string): Promise<PendingInboxItem | null> {
@@ -542,7 +558,7 @@ async function confirmPendingItemUnlocked(input: {
     const args: ToolArgs = { ...parked, confirm: true };
     if (needsLedgerAmount) {
       args.type = txType;
-      args.amount = Number.isFinite(amount) && amount > 0 ? amount : parked.amount;
+      args.amount = amount != null && Number.isFinite(amount) && amount > 0 ? amount : parked.amount;
       args.currency =
         input.currency ||
         row.currency ||

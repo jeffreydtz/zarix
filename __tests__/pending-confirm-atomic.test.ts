@@ -507,6 +507,9 @@ describe('pending inbox confirm idempotency', () => {
       const self = q;
       q.select = () => self;
       q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
       q.update = (value: Record<string, unknown>) => {
         updates.push({ table: 'pending_inbox_items', value });
         return self;
@@ -541,6 +544,9 @@ describe('pending inbox confirm idempotency', () => {
       const self = q;
       q.select = () => self;
       q.eq = () => self;
+      q.or = () => self;
+      q.is = () => self;
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
       q.update = (value: Record<string, unknown>) => {
         updates.push({ table: 'pending_inbox_items', value });
         return self;

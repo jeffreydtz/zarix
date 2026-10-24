@@ -6,15 +6,14 @@ import type { Category, User } from '@/types/database';
 
 export async function loadRegistryFinancialContext(userId: string): Promise<FinancialContext> {
   const supabase = createServiceClientSync();
-  const [userProfile, accounts, userCategories, systemCategories] = await Promise.all([
+  const [userProfile, accounts, categories] = await Promise.all([
     supabase.from('users').select(USER_CLIENT_SAFE_COLUMNS).eq('id', userId).single(),
     accountsService.list(userId),
-    supabase.from('categories').select('*').eq('user_id', userId),
-    supabase.from('categories').select('*').eq('is_system', true),
+    supabase.from('categories').select('*').or(`user_id.eq.${userId},user_id.is.null`),
   ]);
   return {
     user: userProfile.data as unknown as User,
     accounts,
-    categories: [...((userCategories.data ?? []) as Category[]), ...((systemCategories.data ?? []) as Category[])],
+    categories: (categories.data ?? []) as Category[],
   };
 }

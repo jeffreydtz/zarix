@@ -25,7 +25,7 @@ import { GET as listTools } from '@/app/api/v1/tools/route';
 import { POST as callTool } from '@/app/api/v1/tools/[name]/route';
 import { GET as oauthMeta, OPTIONS as oauthOptions } from '@/app/.well-known/oauth-protected-resource/route';
 import { buildOpenApiDocument } from '@/lib/api/v1/openapi';
-import { TOOL_CATALOG } from '@/lib/ai/registry';
+import { remoteToolCatalog } from '@/lib/ai/registry';
 import * as rateLimit from '@/lib/rate-limit';
 
 function chain(result: unknown) {
@@ -49,12 +49,15 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); });
 
 describe('REST /api/v1', () => {
-  it('publishes OpenAPI for every registry tool without real user ids', () => {
+  it('publishes OpenAPI for remote v1 tools without real user ids', () => {
     const doc = buildOpenApiDocument('https://example.invalid');
     expect(doc.openapi).toBe('3.1.0');
-    for (const tool of TOOL_CATALOG) {
+    for (const tool of remoteToolCatalog()) {
       expect(doc.paths[`/api/v1/tools/${tool.name}`]).toBeTruthy();
     }
+    expect(doc.paths['/api/v1/tools/create_transaction']).toBeTruthy();
+    expect(doc.paths['/api/v1/tools/delete_last_transaction']).toBeUndefined();
+    expect(doc.paths['/api/v1/tools/create_recurring']).toBeUndefined();
     expect(JSON.stringify(doc)).not.toMatch(/hotmail/i);
     expect(JSON.stringify(doc)).not.toContain(FIXTURE_USER);
   });
@@ -64,7 +67,7 @@ describe('REST /api/v1', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null, expires_at: null,
+        revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
       },
       error: null,
     }));
@@ -82,7 +85,7 @@ describe('REST /api/v1', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null, expires_at: null,
+        revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
       },
       error: null,
     }));
@@ -158,7 +161,7 @@ describe('MCP /api/mcp', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
-        hash_version: 1, revoked_at: null, last_used_at: null, expires_at: null,
+        hash_version: 1, revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
       },
       error: null,
     }));
@@ -193,11 +196,11 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null, expires_at: null,
+        revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
       },
       error: null,
     }));
-    for (const tool of TOOL_CATALOG.filter((t) => !t.readOnly)) {
+    for (const tool of remoteToolCatalog().filter((t) => !t.readOnly)) {
       const res = await callTool(new NextRequest(`http://localhost/api/v1/tools/${tool.name}`, {
         method: 'POST',
         headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
@@ -213,7 +216,7 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null, expires_at: null,
+        revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
       },
       error: null,
     }));
@@ -222,7 +225,8 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
       expect(input.userId).not.toBe(OTHER);
       return { response: { ok: true, tool: input.name } };
     });
-    for (const tool of TOOL_CATALOG) {
+    const catalog = remoteToolCatalog();
+    for (const tool of catalog) {
       const res = await callTool(new NextRequest(`http://localhost/api/v1/tools/${tool.name}`, {
         method: 'POST',
         headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
@@ -230,7 +234,14 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
       }), { params: Promise.resolve({ name: tool.name }) });
       expect(res.status, tool.name).toBe(200);
     }
-    expect(mocks.invoke).toHaveBeenCalledTimes(TOOL_CATALOG.length);
+    expect(mocks.invoke).toHaveBeenCalledTimes(catalog.length);
+
+    const removed = await callTool(new NextRequest('http://localhost/api/v1/tools/delete_last_transaction', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ confirm: true }),
+    }), { params: Promise.resolve({ name: 'delete_last_transaction' }) });
+    expect(removed.status).toBe(404);
   });
 
   it('rejects malformed JSON and oversized bodies, and honors Idempotency-Key on retry', async () => {
@@ -238,7 +249,7 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null, expires_at: null,
+        revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
       },
       error: null,
     }));
@@ -290,7 +301,7 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null, expires_at: null,
+        revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
       },
       error: null,
     }));

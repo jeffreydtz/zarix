@@ -1,4 +1,4 @@
-import { TOOL_CATALOG, TOOL_SCHEMAS } from '@/lib/ai/registry';
+import { remoteToolCatalog, TOOL_SCHEMAS } from '@/lib/ai/registry';
 import { zodToJsonSchema } from '@/lib/ai/registry/json-schema';
 
 export function buildOpenApiDocument(origin = 'https://zarix-phi.vercel.app') {
@@ -16,7 +16,7 @@ export function buildOpenApiDocument(origin = 'https://zarix-phi.vercel.app') {
     },
   };
 
-  for (const tool of TOOL_CATALOG) {
+  for (const tool of remoteToolCatalog()) {
     paths[`/api/v1/tools/${tool.name}`] = {
       post: {
         operationId: tool.name,

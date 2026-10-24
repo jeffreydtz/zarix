@@ -137,6 +137,16 @@ describe('registry validation fails closed', () => {
     expect(visible.some((t) => t.name === 'create_transaction')).toBe(false);
   });
 
+  it('shows only create_transaction(s) as remote writes', () => {
+    const visible = toolsVisibleToScopes(['read', 'write']);
+    expect(visible.some((t) => t.name === 'create_transaction')).toBe(true);
+    expect(visible.some((t) => t.name === 'create_transactions')).toBe(true);
+    expect(visible.some((t) => t.name === 'delete_last_transaction')).toBe(false);
+    expect(visible.some((t) => t.name === 'create_account')).toBe(false);
+    expect(visible.some((t) => t.name === 'create_recurring')).toBe(false);
+    expect(visible.some((t) => t.name === 'edit_last_transaction')).toBe(false);
+  });
+
   it('uses the Vercel client IP and ignores raw X-Forwarded-For', () => {
     const req = new Request('http://localhost/api/mcp', {
       headers: {
