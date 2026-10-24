@@ -104,6 +104,26 @@ function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | n
   return null;
 }
 
+/** Inclusive band: peso vs USD cuotapartes differ by ~1000×, live USD FCIs stay near 1. */
+const FCI_UNKNOWN_USD_RATIO_MIN = 0.5;
+const FCI_UNKNOWN_USD_RATIO_MAX = 2;
+
+/**
+ * Unknown CAFCI + stored USD: accept the cuotaparte as USD only when a positive
+ * stored last price exists and new/stored is in [0.5, 2]. CONIOLA ~179.598 vs
+ * stored ~0.138 skips; IOLDOLD 1.098 vs stored ~1.09 accepts. 0/null/NaN skip.
+ */
+export function fciUnknownUsdPricePlausible(
+  sourcePrice: number | null | undefined,
+  storedPrice: number | null | undefined,
+): boolean {
+  const next = Number(sourcePrice);
+  const prev = Number(storedPrice);
+  if (!(next > 0) || !(prev > 0)) return false;
+  const ratio = next / prev;
+  return ratio >= FCI_UNKNOWN_USD_RATIO_MIN && ratio <= FCI_UNKNOWN_USD_RATIO_MAX;
+}
+
 /**
  * FCI cuotaparte currency: never assume ARS from the ticker.
  *
@@ -111,8 +131,9 @@ function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | n
  * ARS↔USD with the same MEP helper stocks/CEDEARs use (`adaptQuoteToMarketCurrency`).
  * A CAFCI/stored mismatch is not a skip at this layer.
  *
- * Unknown CAFCI + stored USD: skip. Falling back to the book would write a peso
- * cuotaparte as dollars (CONIOLA ~180 instead of ~0.14).
+ * Unknown CAFCI + stored USD: accept as USD only when the new cuotaparte is
+ * plausible vs the last stored USD price (`fciUnknownUsdPricePlausible`).
+ * Otherwise skip — a peso fund booked in USD must not be written as ~180 USD.
  *
  * Unknown CAFCI + stored ARS: keep main — accept stored ARS. A peso fund whose
  * ficha omitted moneda is still a peso cuotaparte; writing ARS as ARS is safe.
@@ -120,11 +141,16 @@ function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | n
 export function resolveFciQuoteCurrency(opts: {
   sourceCurrency: string | null | undefined;
   storedCurrency: string | null | undefined;
+  sourcePrice?: number | null;
+  storedPrice?: number | null;
 }): { currency: QuoteCurrency } | { currency: null; reason: 'disagree' | 'unknown' } {
   const source = knownQuoteCurrency(opts.sourceCurrency);
   const stored = knownQuoteCurrency(opts.storedCurrency);
   if (source) return { currency: source };
   if (stored === 'ARS') return { currency: 'ARS' };
+  if (stored === 'USD' && fciUnknownUsdPricePlausible(opts.sourcePrice, opts.storedPrice)) {
+    return { currency: 'USD' };
+  }
   return { currency: null, reason: 'unknown' };
 }
 

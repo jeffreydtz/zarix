@@ -261,6 +261,12 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'USD' })).toEqual({
       currency: null, reason: 'unknown',
     });
+    expect(resolveFciQuoteCurrency({
+      sourceCurrency: null, storedCurrency: 'USD', sourcePrice: 1.098, storedPrice: 1.09,
+    })).toEqual({ currency: 'USD' });
+    expect(resolveFciQuoteCurrency({
+      sourceCurrency: null, storedCurrency: 'USD', sourcePrice: 179.598, storedPrice: 0.138,
+    })).toEqual({ currency: null, reason: 'unknown' });
     expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
     expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'USD' })).toEqual({ currency: 'ARS' });
     expect(resolveFciQuoteCurrency({ sourceCurrency: 'USD', storedCurrency: 'ARS' })).toEqual({ currency: 'USD' });

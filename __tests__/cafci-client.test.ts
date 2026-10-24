@@ -4,6 +4,7 @@ import {
   CafciHttpError,
   fetchFciQuote,
   isCafciForbidden,
+  firstCurrencyLabel,
   parseCafciCurrencyLabel,
   resetCafciCatalogCacheForTest,
   resolveCafciCurrencySources,
@@ -204,6 +205,14 @@ describe('CAFCI client headers and 403', () => {
     ['USD', 'USD'],
     ['US', 'USD'],
     ['USS', 'USD'],
+    ['Dólar MEP', 'USD'],
+    ['Dólares MEP', 'USD'],
+    ['Dólar Cable', 'USD'],
+    ['Dólares Cable', 'USD'],
+    ['Dólar CCL', 'USD'],
+    ['USD MEP', 'USD'],
+    ['USD Cable', 'USD'],
+    ['USD CCL', 'USD'],
   ] as const)('maps CAFCI label %s to %s', (label, expected) => {
     expect(parseCafciCurrencyLabel(label)).toBe(expected);
   });
@@ -215,10 +224,94 @@ describe('CAFCI client headers and 403', () => {
     'Euro',
     'CAD',
     'MXN',
-    'Dólar MEP',
   ])('treats %s as unsupported instead of ARS/USD', (label) => {
     expect(parseCafciCurrencyLabel(label)).toBe('unsupported');
   });
+
+  it('treats mixed fields at one CAFCI level as a conflict skip', () => {
+    expect(firstCurrencyLabel('USD', 'EUR')).toBe('conflict');
+    expect(firstCurrencyLabel(undefined, 'USD', 'EUR')).toBe('conflict');
+    expect(firstCurrencyLabel('USD', 'Dólar')).toBe('USD');
+    expect(firstCurrencyLabel('Pesos', 'ARS')).toBe('ARS');
+    expect(firstCurrencyLabel(null, undefined, '')).toBeNull();
+    expect(firstCurrencyLabel('EUR')).toBe('unsupported');
+  });
+
+  it('skips when tipoMoneda USD disagrees with moneda EUR at the same ficha level', async () => {
+    expect(firstCurrencyLabel('USD', 'EUR')).toBe('conflict');
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: 1.098, tipoMoneda: 'USD', moneda: 'EUR' } }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      price: 1.098,
+      currency: null,
+      currencySkip: 'conflict',
+    });
+  });
+
+  it('keeps USD when tipoMoneda USD and moneda Dólar agree at the same ficha level', async () => {
+    expect(firstCurrencyLabel('USD', 'Dólar')).toBe('USD');
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: 1.098, tipoMoneda: 'USD', moneda: 'Dólar' } }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      price: 1.098,
+      currency: 'USD',
+    });
+  });
+
+  it.each(['Dólar MEP', 'Dólar Cable'] as const)(
+    'prices IOLDOLD 1.098 USD when CAFCI names %s',
+    async (moneda) => {
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{
+              id: 1,
+              nombre: 'IOL Dolar',
+              clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+            }],
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ data: { valorCuotaparte: 1.098, moneda, fecha: '2026-10-23' } }),
+        });
+      vi.stubGlobal('fetch', fetchMock);
+      await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+        ticker: 'IOLDOLD',
+        price: 1.098,
+        currency: 'USD',
+      });
+    }
+  );
 
   it('skips an explicit EUR CAFCI currency instead of treating it as unknown', async () => {
     expect(parseCafciCurrencyLabel('EUR')).toBe('unsupported');

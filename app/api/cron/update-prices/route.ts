@@ -16,6 +16,7 @@ interface PriceRow {
   ticker: string | null;
   market_currency: string | null;
   purchase_currency: string | null;
+  current_price: number | null;
   is_manual_price: boolean;
 }
 
@@ -43,7 +44,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
   protected async fetchItems(supabase: ServiceClient): Promise<PriceRow[]> {
     const { data: investments, error } = await supabase
       .from('investments')
-      .select('id, type, ticker, market_currency, purchase_currency, is_manual_price')
+      .select('id, type, ticker, market_currency, purchase_currency, current_price, is_manual_price')
       .eq('is_active', true)
       .eq('is_manual_price', false)
       .in('type', ['crypto', 'stock_us', 'etf', 'cedear', 'stock_arg', 'bond', 'on', 'fci']);

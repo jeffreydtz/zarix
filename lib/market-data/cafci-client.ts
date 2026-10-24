@@ -45,8 +45,8 @@ export interface FciQuote {
   source: 'cafci' | 'yahoo';
 }
 
-/** ARS/USD, an explicit other label (EUR), or missing. */
-export type CafciCurrencyLabel = 'ARS' | 'USD' | 'unsupported' | null;
+/** ARS/USD, an explicit other label (EUR), mixed fields at one level, or missing. */
+export type CafciCurrencyLabel = 'ARS' | 'USD' | 'unsupported' | 'conflict' | null;
 
 interface CafciClass {
   fondoId: string;
@@ -136,6 +136,14 @@ const CAFCI_USD_LABELS = new Set([
   'DOLARESESTADOUNIDENSES',
   'DOLLARESTADOUNIDENSE',
   'DOLLARSESTADOUNIDENSES',
+  'DOLARMEP',
+  'DOLARESMEP',
+  'DOLARCABLE',
+  'DOLARESCABLE',
+  'DOLARCCL',
+  'USDMEP',
+  'USDCABLE',
+  'USDCCL',
 ]);
 
 /** First explicit label: ARS/USD, unsupported (EUR, CAD, MXN, …), or missing. */
@@ -148,12 +156,25 @@ export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
   return 'unsupported';
 }
 
-function firstCurrencyLabel(...candidates: unknown[]): CafciCurrencyLabel {
+/**
+ * Every present field at one CAFCI level. Missing fields are ignored.
+ * Any unsupported label, or ARS vs USD, makes the whole level a skip.
+ */
+export function firstCurrencyLabel(...candidates: unknown[]): CafciCurrencyLabel {
+  const present: Array<'ARS' | 'USD' | 'unsupported'> = [];
   for (const c of candidates) {
     const parsed = parseCafciCurrencyLabel(c);
-    if (parsed != null) return parsed;
+    if (parsed === 'ARS' || parsed === 'USD' || parsed === 'unsupported') {
+      present.push(parsed);
+    }
   }
-  return null;
+  if (present.length === 0) return null;
+  const unique = new Set(present);
+  if (unique.has('unsupported')) {
+    return unique.size === 1 ? 'unsupported' : 'conflict';
+  }
+  if (unique.size > 1) return 'conflict';
+  return present[0];
 }
 
 function asArsUsd(label: CafciCurrencyLabel): 'ARS' | 'USD' | null {
@@ -196,6 +217,7 @@ export function resolveCafciCurrencySources(opts: {
   for (const label of ordered) {
     if (label == null) continue;
     if (label === 'unsupported') return { currency: null, reason: 'unsupported' };
+    if (label === 'conflict') return { currency: null, reason: 'conflict' };
     if (seen && seen !== label) return { currency: null, reason: 'conflict' };
     seen = label;
   }

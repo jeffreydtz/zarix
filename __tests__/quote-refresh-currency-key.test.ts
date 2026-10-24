@@ -203,17 +203,87 @@ describe('refreshQuotesForInvestments currency keys', () => {
     });
   });
 
-  it('skips a USD-booked FCI when CAFCI omits moneda instead of writing the cuotaparte as USD', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it('accepts IOLDOLD as USD when CAFCI omits moneda and the cuotaparte matches the stored USD price', async () => {
     mocks.fci.mockResolvedValue({
       ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
     });
     const map = await refreshQuotesForInvestments([
-      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD' },
+      {
+        type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: 1.09,
+      },
     ]);
-    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+    const hit = map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'));
+    expect(hit?.currency).toBe('USD');
+    expect(hit?.price).toBeCloseTo(1.098, 8);
+  });
+
+  it('skips CONIOLA when CAFCI omits moneda on a USD book and the peso cuotaparte is ~1000× the stored USD', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: 0.138,
+      },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'CONIOLA', 'USD'))).toBeUndefined();
     expect(warn.mock.calls.some((call) => String(call[0]).includes('skip FCI currency'))).toBe(true);
   });
+
+  it.each([
+    [1, 2],
+    [2, 1],
+  ])('accepts unknown CAFCI as USD at ratio boundary new=%s stored=%s', async (sourcePrice, storedPrice) => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: sourcePrice, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: storedPrice,
+      },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toMatchObject({
+      price: sourcePrice, currency: 'USD',
+    });
+  });
+
+  it.each([
+    [0.999, 2],
+    [2.001, 1],
+  ])('skips unknown CAFCI USD outside ratio band new=%s stored=%s', async (sourcePrice, storedPrice) => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: sourcePrice, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      {
+        type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+        current_price: storedPrice,
+      },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+  });
+
+  it.each([0, null, Number.NaN])(
+    'skips unknown CAFCI + stored USD when last price is %s',
+    async (current_price) => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      mocks.fci.mockResolvedValue({
+        ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+      });
+      const map = await refreshQuotesForInvestments([
+        {
+          type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD',
+          current_price,
+        },
+      ]);
+      expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+      expect(warn.mock.calls.some((call) => String(call[0]).includes('skip FCI currency'))).toBe(true);
+    }
+  );
 
   it('stores an ARS FCI cuotaparte in pesos', async () => {
     mocks.fci.mockResolvedValue({

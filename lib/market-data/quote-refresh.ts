@@ -28,6 +28,8 @@ export interface QuoteRefreshPosition {
   ticker: string | null;
   market_currency: string | null;
   purchase_currency: string | null;
+  /** Last stored cuotaparte; FCI unknown+USD plausibility vs this price. */
+  current_price?: number | null;
 }
 
 function quoteSourceTimestamp(quote: unknown): string | null {
@@ -229,7 +231,12 @@ export async function refreshQuotesForInvestments(
     set.add(cacheKey);
   };
   const cryptoSymbols = new Set<string>();
-  const fciTickers: Array<{ ticker: string; cacheKey: string; currency: string }> = [];
+  const fciTickers: Array<{
+    ticker: string;
+    cacheKey: string;
+    currency: string;
+    storedPrice: number | null;
+  }> = [];
   const argPositions: Array<{
     type: InvestmentType;
     ticker: string;
@@ -247,7 +254,7 @@ export async function refreshQuotesForInvestments(
       continue;
     }
     if (inv.type === 'fci') {
-      fciTickers.push({ ticker, cacheKey, currency });
+      fciTickers.push({ ticker, cacheKey, currency, storedPrice: inv.current_price ?? null });
       continue;
     }
     if (isArgentineListedType(inv.type)) {
@@ -332,6 +339,8 @@ export async function refreshQuotesForInvestments(
     const resolved = resolveFciQuoteCurrency({
       sourceCurrency: q.currency,
       storedCurrency: fci.currency,
+      sourcePrice: q.price,
+      storedPrice: fci.storedPrice,
     });
     if (!resolved.currency) {
       console.warn('[quotes] skip FCI currency', {

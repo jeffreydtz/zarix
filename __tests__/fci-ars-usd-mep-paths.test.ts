@@ -112,7 +112,7 @@ describe('interactive quote refresh (GET /api/investments/quote)', () => {
     expect(body.price).not.toBeCloseTo(CONIOLA_ARS, 5);
   });
 
-  it('keeps the stored quote when CAFCI omits moneda on a USD book', async () => {
+  it('keeps the stored quote when CAFCI omits moneda and the quote path has no last USD price', async () => {
     mocks.fci.mockResolvedValue({
       ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
     });
@@ -149,7 +149,8 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
     expect(mocks.updates[0].current_price_updated_at).toBe('2026-10-23T00:00:00.000Z');
   });
 
-  it('does not overwrite CONIOLA when CAFCI omits moneda on a USD book', async () => {
+  it('does not overwrite CONIOLA when CAFCI omits moneda and the peso cuotaparte fails the USD ratio guard', async () => {
+    mocks.investments[0].current_price = 0.138;
     mocks.fci.mockResolvedValue({
       ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
     });
@@ -157,6 +158,26 @@ describe('cron quote refresh (GET /api/cron/update-prices)', () => {
     const body = await response.json();
     expect(body.processed).toBe(0);
     expect(mocks.updates).toHaveLength(0);
+  });
+
+  it('writes IOLDOLD 1.098 USD when CAFCI omits moneda and the stored USD price is plausible', async () => {
+    mocks.investments = [{
+      id: 'fixture-fci-ioldold',
+      type: 'fci',
+      ticker: 'IOLDOLD',
+      market_currency: 'USD',
+      purchase_currency: 'USD',
+      current_price: 1.09,
+      is_manual_price: false,
+    }];
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await cronGet(cronRequest());
+    expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    expect(mocks.updates).toHaveLength(1);
+    expect(mocks.updates[0]).toMatchObject({ market_currency: 'USD' });
+    expect(mocks.updates[0].current_price).toBeCloseTo(1.098, 8);
   });
 
   it('does not overwrite CONIOLA when MEP is unavailable', async () => {
