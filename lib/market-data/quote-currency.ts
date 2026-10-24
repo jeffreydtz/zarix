@@ -96,6 +96,37 @@ export function inferListedCurrency(
   return resolveQuoteCurrency({ matchedSymbol, listed }) ?? 'ARS';
 }
 
+function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | null {
+  const tagged = (value || '').trim().toUpperCase();
+  if (tagged === 'USD' || tagged === 'ARS') return tagged;
+  return null;
+}
+
+/**
+ * FCI cuotaparte currency: never assume ARS. Prefer the CAFCI class/ficha
+ * moneda; fall back to the position's stored currency. Disagree or unknown → skip.
+ */
+export function resolveFciQuoteCurrency(opts: {
+  sourceCurrency: string | null | undefined;
+  storedCurrency: string | null | undefined;
+}): { currency: QuoteCurrency } | { currency: null; reason: 'disagree' | 'unknown' } {
+  const source = knownQuoteCurrency(opts.sourceCurrency);
+  const stored = knownQuoteCurrency(opts.storedCurrency);
+  if (source && stored && source !== stored) {
+    return { currency: null, reason: 'disagree' };
+  }
+  const currency = source ?? stored;
+  if (!currency) return { currency: null, reason: 'unknown' };
+  return { currency };
+}
+
+/** Yahoo/Stooq metadata is confirmation. A blank field is not inferred from the ticker. */
+export function confirmedSourceCurrency(
+  sourceCurrency: string | null | undefined
+): QuoteCurrency | null {
+  return knownQuoteCurrency(sourceCurrency);
+}
+
 export interface ListingCandidates {
   /** Símbolos a pedir, preferencia primero. */
   symbols: string[];

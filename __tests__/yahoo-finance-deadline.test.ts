@@ -9,7 +9,7 @@ vi.mock('yahoo-finance2', () => ({
   },
 }));
 
-import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
+import { fetchYahooStockQuotesMap, resolveYahooQuoteCurrency } from '@/lib/yahoo-finance-quotes';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -44,5 +44,20 @@ describe('Yahoo quote deadline abort', () => {
     expect(mocks.quote).toHaveBeenCalled();
     const moduleOpts = mocks.quote.mock.calls[0][2] as { fetchOptions?: { signal?: AbortSignal } };
     expect(moduleOpts.fetchOptions?.signal?.aborted).toBe(true);
+  });
+
+  it('treats Yahoo currency=USD as confirmation for GLD and does not infer from the D suffix', async () => {
+    mocks.quote.mockResolvedValue({
+      symbol: 'GLD',
+      regularMarketPrice: 380.12,
+      regularMarketChangePercent: 0.4,
+      currency: 'USD',
+      shortName: 'SPDR Gold Shares',
+    });
+    const map = await fetchYahooStockQuotesMap(['GLD']);
+    expect(map.get('GLD')?.currency).toBe('USD');
+    expect(resolveYahooQuoteCurrency('GLD', 'USD')).toBe('USD');
+    expect(resolveYahooQuoteCurrency('GLD', undefined)).toBe('');
+    expect(resolveYahooQuoteCurrency('GGAL.BA', undefined)).toBe('');
   });
 });

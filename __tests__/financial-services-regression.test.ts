@@ -251,16 +251,22 @@ describe('portfolio quote cache keeps provider observation time', () => {
     expect(position.current_price_updated_at).toBe(sourceTime);
     expect(writes[0].value.current_price_updated_at).toBe(sourceTime);
   });
-  it.each(['data912', 'yahoo', 'stooq'])('leaves unavailable %s observation time unknown rather than relabeling it now', async provider => {
+  it.each(['data912', 'yahoo', 'stooq'])('uses fetch time when %s omits an observation timestamp', async provider => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-24T18:30:00.000Z'));
     const type = provider === 'data912' ? 'stock_arg' : 'stock_us';
     replies = [{ data: [{ ...inv, type, ticker: 'AAPL', is_manual_price: false }] }, { data: [] }, { data: null }];
     const quote = { price: 120, changePct: 2, currency: 'USD' };
     if (provider === 'data912') mocks.arg.mockResolvedValue({ byStock: new Map([['AAPL', quote]]), byCedear: new Map(), byBond: new Map() });
     if (provider === 'yahoo') mocks.yahoo.mockResolvedValue(new Map([['AAPL', quote]]));
     if (provider === 'stooq') mocks.stooq.mockResolvedValue(quote);
-    const [position] = await investmentsService.list('U1', { forceRefreshQuotes: true });
-    expect(position.current_price_updated_at).toBeNull();
-    expect(writes[0].value.current_price_updated_at).toBeNull();
+    try {
+      const [position] = await investmentsService.list('U1', { forceRefreshQuotes: true });
+      expect(position.current_price_updated_at).toBe('2026-10-24T18:30:00.000Z');
+      expect(writes[0].value.current_price_updated_at).toBe('2026-10-24T18:30:00.000Z');
+    } finally {
+      vi.useRealTimers();
+    }
   });
   it('keeps manual prices and their user-edit timestamp without a provider refresh', async () => {
     replies = [{ data: [inv] }, { data: [] }];

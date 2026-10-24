@@ -1,7 +1,9 @@
 import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
+  confirmedSourceCurrency,
   listingCandidates,
+  resolveFciQuoteCurrency,
   resolveQuoteCurrency,
   type ConvertibleQuote,
 } from '@/lib/market-data/quote-currency';
@@ -36,6 +38,11 @@ function quoteSourceTimestamp(quote: unknown): string | null {
   const time = timestamp instanceof Date ? timestamp.getTime()
     : typeof timestamp === 'string' && timestamp ? Date.parse(timestamp) : Number.NaN;
   return Number.isFinite(time) ? new Date(time).toISOString() : null;
+}
+
+/** Prefer the source observation; if the feed omitted it, store the fetch time (UTC). */
+export function quoteTimestampOrFetchedAt(quote: unknown, fetchedAtIso: string): string {
+  return quoteSourceTimestamp(quote) ?? fetchedAtIso;
 }
 
 export function desiredQuoteCurrency(inv: QuoteRefreshPosition): string {
@@ -172,6 +179,14 @@ function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number
   return null;
 }
 
+function cafciLookupForbidden(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+  const status = 'status' in error ? Number((error as { status: unknown }).status) : NaN;
+  if (status === 403) return true;
+  const message = error instanceof Error ? error.message : String(error);
+  return /\bCAFCI\s+403\b/i.test(message);
+}
+
 /**
  * Precio de mercado en la moneda de cotización de cada posición.
  * data912 (ARG/CEDEAR/bono/ON) → Yahoo `.BA` / US → Stooq → CAFCI (FCI) → CoinGecko.
@@ -180,6 +195,11 @@ export async function refreshQuotesForInvestments(
   investments: QuoteRefreshPosition[],
   options?: { mepArsPerUsd?: number | null; fciBudgetMs?: number }
 ): Promise<Map<string, QuoteResult>> {
+  const fetchedAt = new Date().toISOString();
+  const stamp = (quote: ConvertibleQuote): QuoteResult => ({
+    ...quote,
+    timestamp: quoteTimestampOrFetchedAt(quote, fetchedAt),
+  });
   const out = new Map<string, QuoteResult>();
   const yahooSymbolToCacheKeys = new Map<string, Set<string>>();
   const addYahoo = (symbol: string, cacheKey: string) => {
@@ -248,7 +268,7 @@ export async function refreshQuotesForInvestments(
       if (lookedUp.status === 'hit') {
         const adapted = adapt(lookedUp.quote, pos.currency);
         if (adapted) {
-          out.set(pos.cacheKey, adapted);
+          out.set(pos.cacheKey, stamp(adapted));
           continue;
         }
       }
@@ -275,20 +295,43 @@ export async function refreshQuotesForInvestments(
     async (fci) => {
       try {
         return await fetchFciQuote(fci.ticker);
-      } catch {
+      } catch (error) {
+        if (cafciLookupForbidden(error)) return 'forbidden' as const;
         return null;
       }
     }
   );
   for (const [i, fci] of uniqueFci.entries()) {
     const q = fciQuotes[i];
+    if (q === 'forbidden') {
+      console.warn('[quotes] skip CAFCI 403', { ticker: fci.ticker });
+      continue;
+    }
     if (q && q.price > 0) {
+      const resolved = resolveFciQuoteCurrency({
+        sourceCurrency: q.currency,
+        storedCurrency: fci.currency,
+      });
+      if (!resolved.currency) {
+        console.warn('[quotes] skip FCI currency', {
+          ticker: fci.ticker,
+          reason: resolved.reason,
+          cafci: q.currency,
+          stored: fci.currency,
+        });
+        continue;
+      }
       const adapted = adapt(
-        { price: q.price, changePct: q.changePct, currency: q.currency, timestamp: q.timestamp },
-        fci.currency
+        {
+          price: q.price,
+          changePct: q.changePct,
+          currency: resolved.currency,
+          timestamp: q.timestamp,
+        },
+        fci.currency || resolved.currency,
       );
       if (adapted) {
-        out.set(fci.cacheKey, adapted);
+        out.set(fci.cacheKey, stamp(adapted));
         continue;
       }
     }
@@ -330,18 +373,26 @@ export async function refreshQuotesForInvestments(
       const q = yMap.get(ySym) ?? [...yMap.entries()].find(([k]) => k.toUpperCase() === ySym.toUpperCase())?.[1];
       let anyApplied = false;
       if (q && q.price > 0) {
-        for (const cacheKey of cacheKeys) {
-          if (out.has(cacheKey)) continue;
-          const desired = cacheKeyCurrency.get(cacheKey) || q.currency;
-          const adapted = adapt({
-            price: q.price,
-            changePct: Number.isFinite(q.changePct) ? q.changePct : null,
+        const confirmed = confirmedSourceCurrency(q.currency);
+        if (!confirmed) {
+          console.warn('[quotes] skip Yahoo unconfirmed currency', {
+            symbol: ySym,
             currency: q.currency,
-            timestamp: quoteSourceTimestamp(q),
-          }, desired);
-          if (adapted) {
-            out.set(cacheKey, adapted);
-            anyApplied = true;
+          });
+        } else {
+          for (const cacheKey of cacheKeys) {
+            if (out.has(cacheKey)) continue;
+            const desired = cacheKeyCurrency.get(cacheKey) || confirmed;
+            const adapted = adapt({
+              price: q.price,
+              changePct: Number.isFinite(q.changePct) ? q.changePct : null,
+              currency: confirmed,
+              timestamp: quoteSourceTimestamp(q),
+            }, desired);
+            if (adapted) {
+              out.set(cacheKey, stamp(adapted));
+              anyApplied = true;
+            }
           }
         }
       }
@@ -356,14 +407,16 @@ export async function refreshQuotesForInvestments(
         if (stooq && stooq.price > 0) {
           for (const cacheKey of cacheKeys) {
             if (out.has(cacheKey)) continue;
-            const desired = cacheKeyCurrency.get(cacheKey) || stooq.currency;
+            const confirmed = confirmedSourceCurrency(stooq.currency);
+            if (!confirmed) continue;
+            const desired = cacheKeyCurrency.get(cacheKey) || confirmed;
             const adapted = adapt({
               price: stooq.price,
               changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
-              currency: stooq.currency,
+              currency: confirmed,
               timestamp: quoteSourceTimestamp(stooq),
             }, desired);
-            if (adapted) out.set(cacheKey, adapted);
+            if (adapted) out.set(cacheKey, stamp(adapted));
           }
         }
       } catch {
@@ -376,12 +429,12 @@ export async function refreshQuotesForInvestments(
     try {
       const q = await cotizacionesService.getCryptoQuote(sym);
       if (Number.isFinite(q.priceUSD) && q.priceUSD > 0) {
-        out.set(quoteCacheKey('crypto', sym, 'USD'), {
+        out.set(quoteCacheKey('crypto', sym, 'USD'), stamp({
           price: q.priceUSD,
           changePct: Number.isFinite(q.change24h) ? q.change24h : null,
           currency: 'USD',
           timestamp: quoteSourceTimestamp(q),
-        });
+        }));
       }
     } catch {
       /* último precio guardado */

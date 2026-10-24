@@ -115,6 +115,108 @@ describe('refreshQuotesForInvestments currency keys', () => {
     await refreshQuotesForInvestments(positions);
     expect(mocks.fci).toHaveBeenCalledTimes(1);
   });
+
+  it('keeps a USD FCI cuotaparte when CAFCI omits moneda instead of dividing by MEP', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    const hit = map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'));
+    expect(hit?.currency).toBe('USD');
+    expect(hit?.price).toBeCloseTo(1.098, 8);
+    expect(hit?.price).not.toBeCloseTo(1.098 / 1300, 8);
+  });
+
+  it('stores an ARS FCI cuotaparte in pesos', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'COME', price: 12.5, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'COME', market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'COME', 'ARS'))).toMatchObject({
+      price: 12.5, currency: 'ARS',
+    });
+  });
+
+  it('skips an FCI update when CAFCI and the position disagree on currency', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'ARS'))).toBeUndefined();
+    expect(warn).toHaveBeenCalled();
+    expect(mocks.yahoo).not.toHaveBeenCalled();
+  });
+
+  it('skips an FCI update when currency is unknown', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'MYSTERY', price: 1.5, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'MYSTERY', market_currency: null, purchase_currency: null },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'MYSTERY', ''))).toBeUndefined();
+    expect(warn).toHaveBeenCalled();
+    expect(mocks.yahoo).not.toHaveBeenCalled();
+  });
+
+  it('skips CAFCI 403 and keeps the last price instead of guessing on Yahoo', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockRejectedValue(Object.assign(new Error('CAFCI 403'), { name: 'CafciHttpError', status: 403 }));
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+    expect(mocks.yahoo).not.toHaveBeenCalled();
+    expect(warn.mock.calls.some((call) => String(call[0]).includes('403'))).toBe(true);
+  });
+
+  it('updates GLD from Yahoo currency=USD without inferring USD from the D suffix', async () => {
+    mocks.yahoo.mockResolvedValue(new Map([
+      ['GLD', { ticker: 'GLD', name: 'SPDR Gold', price: 380.12, changePct: 0.4, currency: 'USD' }],
+    ]));
+    const map = await refreshQuotesForInvestments([
+      { type: 'etf', ticker: 'GLD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(map.get(quoteCacheKey('etf', 'GLD', 'USD'))).toMatchObject({
+      price: 380.12, currency: 'USD',
+    });
+  });
+
+  it('skips GLD when Yahoo omits the quote currency instead of inferring from the ticker', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.yahoo.mockResolvedValue(new Map([
+      ['GLD', { ticker: 'GLD', name: 'SPDR Gold', price: 380.12, changePct: 0.4, currency: '' }],
+    ]));
+    const map = await refreshQuotesForInvestments([
+      { type: 'etf', ticker: 'GLD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(map.get(quoteCacheKey('etf', 'GLD', 'USD'))).toBeUndefined();
+    expect(warn).toHaveBeenCalled();
+  });
+
+  it('stores fetch time in UTC when the source omits a timestamp', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-24T18:30:00.000Z'));
+    mocks.fci.mockResolvedValue({
+      ticker: 'COME', price: 12.5, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    try {
+      const map = await refreshQuotesForInvestments([
+        { type: 'fci', ticker: 'COME', market_currency: 'ARS', purchase_currency: 'ARS' },
+      ]);
+      expect(map.get(quoteCacheKey('fci', 'COME', 'ARS'))?.timestamp).toBe('2026-10-24T18:30:00.000Z');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe('mapWithLimit budget', () => {

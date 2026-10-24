@@ -34,7 +34,13 @@ import {
   rankGainersLosers,
 } from '@/lib/investments/portfolio-analytics';
 import { initialsForAsset, logoCandidateUrls } from '@/lib/investments/asset-logo';
-import { parseCafciFichaForTest, matchCafciClassForTest } from '@/lib/market-data/cafci-client';
+import {
+  parseCafciFichaForTest,
+  matchCafciClassForTest,
+  parseCafciCurrency,
+  cafciClassesFromCatalogForTest,
+} from '@/lib/market-data/cafci-client';
+import { resolveFciQuoteCurrency } from '@/lib/market-data/quote-currency';
 
 describe('USD quote adaptation for D tickers', () => {
   it('prefers the D board when the position is marked USD', () => {
@@ -200,15 +206,47 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     expect(parseCafciFichaForTest({ valorCuotaparte: 12.5, moneda: 'Pesos', fecha: '2026-10-20' })).toMatchObject({
       price: 12.5, currency: 'ARS',
     });
-    expect(matchCafciClassForTest('ALPHA', [{ fondoId: '1', claseId: '2', keys: ['ALPHA'] }])).toEqual({
-      fondoId: '1', claseId: '2', keys: ['ALPHA'],
+    expect(matchCafciClassForTest('ALPHA', [{ fondoId: '1', claseId: '2', keys: ['ALPHA'], currency: null }])).toEqual({
+      fondoId: '1', claseId: '2', keys: ['ALPHA'], currency: null,
     });
     const classes = [
-      { fondoId: '1', claseId: 'A', keys: ['ALPHA', 'ALPHAA'] },
-      { fondoId: '1', claseId: 'B', keys: ['ALPHA', 'ALPHAB'] },
+      { fondoId: '1', claseId: 'A', keys: ['ALPHA', 'ALPHAA'], currency: 'ARS' as const },
+      { fondoId: '1', claseId: 'B', keys: ['ALPHA', 'ALPHAB'], currency: 'ARS' as const },
     ];
     expect(matchCafciClassForTest('ALPHAB', classes)).toEqual(classes[1]);
     expect(matchCafciClassForTest('ALPHA', classes)).toBeNull();
+  });
+
+  it('reads USD from the class moneda and never assumes ARS when currency is missing', () => {
+    expect(parseCafciCurrency('Dólares')).toBe('USD');
+    expect(parseCafciCurrency('Pesos')).toBe('ARS');
+    expect(parseCafciCurrency(undefined)).toBeNull();
+    expect(parseCafciFichaForTest({
+      valorCuotaparte: 1.098,
+      clase: { moneda: 'Dolares' },
+      fecha: '2026-10-23',
+    })).toMatchObject({ price: 1.098, currency: 'USD' });
+    expect(parseCafciFichaForTest({ valorCuotaparte: 12.5 })).toMatchObject({
+      price: 12.5, currency: null,
+    });
+    const classes = cafciClassesFromCatalogForTest({
+      data: [{
+        id: 10,
+        nombre: 'IOL Dolar',
+        clases: [{ id: 20, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+      }],
+    });
+    expect(classes).toEqual([
+      expect.objectContaining({ fondoId: '10', claseId: '20', currency: 'USD' }),
+    ]);
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'USD' })).toEqual({ currency: 'USD' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'USD', storedCurrency: 'ARS' })).toEqual({
+      currency: null, reason: 'disagree',
+    });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: null })).toEqual({
+      currency: null, reason: 'unknown',
+    });
   });
 });
 

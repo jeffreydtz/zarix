@@ -51,11 +51,15 @@ function deadlineController(deadlineAt?: number): { signal?: AbortSignal; cancel
   };
 }
 
-function resolveCurrency(symbol: string, metaCurrency: string | undefined): string {
-  if (metaCurrency && metaCurrency.length > 0) return metaCurrency;
+/**
+ * Yahoo's `currency` field is confirmation. Never infer ARS/USD from a ticker
+ * suffix (`.BA`, trailing D/C). A missing field stays blank so callers skip.
+ */
+export function resolveYahooQuoteCurrency(symbol: string, metaCurrency: string | undefined): string {
+  const tagged = (metaCurrency || '').trim().toUpperCase();
+  if (tagged) return tagged;
   if (symbol === '^MERV') return 'PTS';
-  if (symbol.endsWith('.BA')) return 'ARS';
-  return 'USD';
+  return '';
 }
 
 function mapYahooQuoteRow(symbol: string, q: Record<string, unknown>): StockQuote | null {
@@ -102,7 +106,7 @@ function mapYahooQuoteRow(symbol: string, q: Record<string, unknown>): StockQuot
     price,
     change,
     changePct,
-    currency: resolveCurrency(symbol, typeof q.currency === 'string' ? q.currency : undefined),
+    currency: resolveYahooQuoteCurrency(symbol, typeof q.currency === 'string' ? q.currency : undefined),
     instrumentType,
     ...(logoUrl ? { logoUrl } : {}),
   };
