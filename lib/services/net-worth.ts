@@ -5,6 +5,7 @@ import {
   type PartialAccountValuation,
 } from '@/lib/services/accounts';
 import { investmentsService } from '@/lib/services/investments';
+import { cotizacionesService } from '@/lib/services/cotizaciones';
 import type { BlueFxComponentReference } from '@/lib/blue-fx-reference';
 import { composeLiquidNetWorth } from '@/lib/services/liquid-net-worth';
 
@@ -79,10 +80,16 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
       ? accountsService.aggregateAccountTotals(accounts)
       : EMPTY_BALANCES;
 
+  let blueRate = blueRateFromConvertedAccounts(balances, accounts);
+  if (!(blueRate > 0)) {
+    const dolar = await cotizacionesService.getDolarQuotes().catch(() => null);
+    blueRate = dolar?.blue?.sell ?? 0;
+  }
+
   return composeLiquidNetWorth({
     balances,
     portfolio,
-    blueRate: blueRateFromConvertedAccounts(balances, accounts),
+    blueRate,
   });
 }
 

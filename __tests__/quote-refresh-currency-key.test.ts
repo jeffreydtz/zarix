@@ -71,10 +71,28 @@ describe('refreshQuotesForInvestments currency keys', () => {
     expect(hit?.price).not.toBeCloseTo(92 / 1300, 8);
   });
 
-  it('does not reconvert an isolated IBMD D-listing when only IBMD is priced', async () => {
+  it('skips an unconfirmed IBMD ARS tag instead of dividing by MEP or guessing USD', async () => {
     mocks.arg.mockResolvedValue({
       byStock: new Map(),
       byCedear: new Map([['IBMD', { symbol: 'IBMD', price: 92, changePct: 0, currency: 'ARS' }]]),
+      byBond: new Map(),
+      byCorp: new Map(),
+    });
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const map = await refreshQuotesForInvestments([
+      { type: 'cedear', ticker: 'IBM', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(map.get(quoteCacheKey('cedear', 'IBM', 'USD'))).toBeUndefined();
+    expect(warn).toHaveBeenCalled();
+  });
+
+  it('keeps IBMD at 92 USD when the peso sibling is listed', async () => {
+    mocks.arg.mockResolvedValue({
+      byStock: new Map(),
+      byCedear: new Map([
+        ['IBM', { symbol: 'IBM', price: 119600, changePct: 0, currency: 'ARS' }],
+        ['IBMD', { symbol: 'IBMD', price: 92, changePct: 0, currency: 'ARS' }],
+      ]),
       byBond: new Map(),
       byCorp: new Map(),
     });
@@ -84,7 +102,6 @@ describe('refreshQuotesForInvestments currency keys', () => {
     const hit = map.get(quoteCacheKey('cedear', 'IBM', 'USD'));
     expect(hit?.currency).toBe('USD');
     expect(hit?.price).toBe(92);
-    expect(hit?.price).not.toBeCloseTo(92 / 1300, 8);
   });
 
   it('fetches each FCI ticker once even when many positions share it', async () => {

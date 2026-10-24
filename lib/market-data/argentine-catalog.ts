@@ -177,3 +177,19 @@ export function catalogLookup(type: CatalogEntry['type'], symbol: string): Catal
   const upper = symbol.toUpperCase();
   return list.find((e) => e.symbol.toUpperCase() === upper) || null;
 }
+
+const STOCK_AND_CEDEAR_SYMBOLS = new Set(
+  [...ARG_STOCK_CATALOG, ...CEDEAR_CATALOG].map((entry) => entry.symbol.toUpperCase())
+);
+const ALL_CATALOG_SYMBOLS = new Set(
+  [...ARG_STOCK_CATALOG, ...CEDEAR_CATALOG, ...BOND_CATALOG].map((entry) => entry.symbol.toUpperCase())
+);
+
+/** Acciones BYMA y CEDEARs del catálogo: rueda nativa, no rueda D/C de otro root. */
+export function isCatalogPesoListing(symbol: string): boolean {
+  return STOCK_AND_CEDEAR_SYMBOLS.has(symbol.trim().toUpperCase());
+}
+
+export function catalogHasSymbol(symbol: string): boolean {
+  return ALL_CATALOG_SYMBOLS.has(symbol.trim().toUpperCase());
+}

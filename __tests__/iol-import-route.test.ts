@@ -64,6 +64,41 @@ describe('IOL investment import conflicts', () => {
     }));
   });
 
+  it('asks for a number format instead of guessing 1.000 vs 1.000 decimal', async () => {
+    const body = new FormData();
+    body.set('file', new File(
+      ['Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo\nGGAL,Galicia,1.000,90.000,93.000,ARS,Accion\n'],
+      'portafolio.csv',
+      { type: 'text/csv' }
+    ));
+    body.set('accountId', FIXTURE_ACCOUNT);
+    const response = await POST(new NextRequest('http://localhost/api/import/investments', { method: 'POST', body }));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      status: 'needs-format-confirmation',
+      imported: 0,
+    });
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it('parses es-AR thousands after the user confirms the format', async () => {
+    mocks.create.mockResolvedValue({ id: 'inv-fixture', ticker: 'GGAL' });
+    const body = new FormData();
+    body.set('file', new File(
+      ['Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo\nGGAL,Galicia,1.000,90.000,93.000,ARS,Accion\n'],
+      'portafolio.csv',
+      { type: 'text/csv' }
+    ));
+    body.set('accountId', FIXTURE_ACCOUNT);
+    body.set('numberFormat', 'es-AR');
+    const response = await POST(new NextRequest('http://localhost/api/import/investments', { method: 'POST', body }));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ imported: 1 });
+    expect(mocks.create).toHaveBeenCalledWith(expect.objectContaining({
+      ticker: 'GGAL', quantity: 1000, purchasePrice: 90000,
+    }));
+  });
+
   it('counts an exact retry as imported when create reuses the existing row', async () => {
     mocks.create.mockResolvedValue({ id: 'inv-fixture', ticker: 'AL30D' });
     const response = await importCsv('92');

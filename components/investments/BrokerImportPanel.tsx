@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Loader2, Upload } from 'lucide-react';
 import type { Account } from '@/types/database';
 
+type NumberFormatChoice = 'es-AR' | 'decimal';
+
 interface BrokerImportPanelProps {
   accounts: Account[];
   onImported: () => void;
@@ -13,10 +15,12 @@ export default function BrokerImportPanel({ accounts, onImported }: BrokerImport
   const [accountId, setAccountId] = useState(accounts[0]?.id ?? '');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [ambiguousColumns, setAmbiguousColumns] = useState<string[]>([]);
 
   if (accounts.length === 0) return null;
 
-  const onFile = async (file: File | null) => {
+  const onFile = async (file: File | null, numberFormat?: NumberFormatChoice) => {
     if (!file || !accountId) return;
     setBusy(true);
     setMessage(null);
@@ -24,9 +28,18 @@ export default function BrokerImportPanel({ accounts, onImported }: BrokerImport
       const body = new FormData();
       body.set('file', file);
       body.set('accountId', accountId);
+      if (numberFormat) body.set('numberFormat', numberFormat);
       const r = await fetch('/api/import/investments', { method: 'POST', body });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.error || 'No se pudo importar');
+      if (data.status === 'needs-format-confirmation') {
+        setPendingFile(file);
+        setAmbiguousColumns(Array.isArray(data.ambiguousColumns) ? data.ambiguousColumns : []);
+        setMessage('Hay números ambiguos (1.000 vs 1,000). Elegí el formato del archivo.');
+        return;
+      }
+      setPendingFile(null);
+      setAmbiguousColumns([]);
       const conflicts = data.conflicts ?? data.updated ?? 0;
       setMessage(
         `Importadas ${data.imported ?? 0} posiciones` +
@@ -70,11 +83,39 @@ export default function BrokerImportPanel({ accounts, onImported }: BrokerImport
             onChange={(e) => {
               const file = e.target.files?.[0] ?? null;
               e.target.value = '';
+              setPendingFile(null);
+              setAmbiguousColumns([]);
               void onFile(file);
             }}
           />
         </label>
       </div>
+      {pendingFile ? (
+        <div className="flex flex-col gap-1.5 text-xs text-muted-foreground sm:items-end">
+          <p>
+            Formato de {ambiguousColumns.length ? ambiguousColumns.join(', ') : 'los números'} en{' '}
+            {pendingFile.name}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="btn btn-secondary text-xs py-1"
+              disabled={busy}
+              onClick={() => void onFile(pendingFile, 'es-AR')}
+            >
+              es-AR (1.000 = mil)
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary text-xs py-1"
+              disabled={busy}
+              onClick={() => void onFile(pendingFile, 'decimal')}
+            >
+              Decimal (1.000 = uno)
+            </button>
+          </div>
+        </div>
+      ) : null}
       {message ? <p className="text-xs text-muted-foreground">{message}</p> : null}
     </div>
   );

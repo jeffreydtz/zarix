@@ -1,8 +1,8 @@
 import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
-  inferListedCurrency,
   listingCandidates,
+  resolveQuoteCurrency,
   type ConvertibleQuote,
 } from '@/lib/market-data/quote-currency';
 import { loadArgentineQuotes, type ArgentineQuoteIndex, type Data912Quote } from '@/lib/market-data/data912-client';
@@ -108,21 +108,25 @@ function argKind(type: InvestmentType): 'stock_arg' | 'cedear' | 'bond' | 'on' |
   return 'other';
 }
 
+type ArgentineLookup =
+  | { status: 'hit'; quote: ConvertibleQuote }
+  | { status: 'unconfirmed' }
+  | { status: 'miss' };
+
 function quoteFromMap(
   map: Map<string, Data912Quote> | undefined,
-  symbol: string,
-  assumedCurrency?: ConvertibleQuote['currency']
-): ConvertibleQuote | null {
+  symbol: string
+): ConvertibleQuote | null | 'unconfirmed' {
   if (!map) return null;
   const hit = map.get(symbol.toUpperCase());
   if (!hit || hit.price <= 0) return null;
   const tagged = typeof hit.currency === 'string' ? hit.currency.trim().toUpperCase() : '';
-  // data912 tags every row ARS; an explicit non-ARS tag (tests / other feeds) wins.
-  // A D/C listing we asked for (IBM USD → IBMD) is already USD — do not reconvert.
-  const currency = tagged && tagged !== 'ARS'
-    ? tagged
-    : assumedCurrency
-      ?? inferListedCurrency(hit.symbol || symbol, map);
+  const currency = resolveQuoteCurrency({
+    matchedSymbol: hit.symbol || symbol,
+    listed: map,
+    sourceCurrency: tagged,
+  });
+  if (currency == null) return 'unconfirmed';
   return {
     price: hit.price,
     changePct: hit.changePct,
@@ -136,7 +140,7 @@ function lookupArgentineSymbol(
   type: InvestmentType,
   ticker: string,
   marketCurrency: string
-): ConvertibleQuote | null {
+): ArgentineLookup {
   const maps =
     type === 'stock_arg' ? [arg.byStock]
       : type === 'cedear' ? [arg.byCedear]
@@ -144,17 +148,20 @@ function lookupArgentineSymbol(
           : type === 'on' ? [arg.byCorp, arg.byBond]
             : [];
   const preferred = marketCurrency || 'ARS';
-  const { symbols, root } = listingCandidates(ticker, preferred, argKind(type));
+  const { symbols } = listingCandidates(ticker, preferred, argKind(type));
+  let unconfirmed = false;
   for (const map of maps) {
     for (const symbol of symbols) {
-      const dollarListing =
-        symbol === `${root}D` || symbol === `${root}C` || symbol.endsWith('.D');
-      const assumed = preferred === 'USD' && dollarListing ? 'USD' : undefined;
-      const hit = quoteFromMap(map, symbol, assumed);
-      if (hit) return hit;
+      const hit = quoteFromMap(map, symbol);
+      if (hit === 'unconfirmed') {
+        unconfirmed = true;
+        continue;
+      }
+      if (hit) return { status: 'hit', quote: hit };
     }
   }
-  return null;
+  if (unconfirmed) return { status: 'unconfirmed' };
+  return { status: 'miss' };
 }
 
 function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number | null {
@@ -237,13 +244,20 @@ export async function refreshQuotesForInvestments(
   for (const pos of argPositions) {
     if (pos.type === 'fci') continue;
     if (arg) {
-      const hit = lookupArgentineSymbol(arg, pos.type, pos.ticker, pos.currency);
-      if (hit) {
-        const adapted = adapt(hit, pos.currency);
+      const lookedUp = lookupArgentineSymbol(arg, pos.type, pos.ticker, pos.currency);
+      if (lookedUp.status === 'hit') {
+        const adapted = adapt(lookedUp.quote, pos.currency);
         if (adapted) {
           out.set(pos.cacheKey, adapted);
           continue;
         }
+      }
+      if (lookedUp.status === 'unconfirmed') {
+        console.warn('[quotes] skip unconfirmed D/C listing', {
+          ticker: pos.ticker,
+          currency: pos.currency,
+        });
+        continue;
       }
     }
     addYahoo(yahooSymbolFor(pos.type, pos.ticker), pos.cacheKey);

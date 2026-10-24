@@ -4,6 +4,7 @@ import {
   inferListedCurrency,
   isDollarBoardSymbol,
   listingCandidates,
+  resolveQuoteCurrency,
 } from '@/lib/market-data/quote-currency';
 import {
   comparableLiquidArsBlue,
@@ -51,20 +52,27 @@ describe('USD quote adaptation for D tickers', () => {
     expect(isDollarBoardSymbol('AL30D', new Set(['AL30D']))).toBe(true);
     expect(inferListedCurrency('AL30D', new Set(['AL30D']))).toBe('USD');
     expect(isDollarBoardSymbol('YPFD', new Set(['YPFD']))).toBe(false);
-    expect(isDollarBoardSymbol('IBMD', new Set(['IBMD']))).toBe(true);
-    expect(inferListedCurrency('IBMD', new Set(['IBMD']))).toBe('USD');
+    expect(isDollarBoardSymbol('IBMD', new Set(['IBMD']))).toBe(false);
+    expect(resolveQuoteCurrency({ matchedSymbol: 'IBMD', listed: new Set(['IBMD']) })).toBeNull();
+    for (const ticker of ['AMD', 'MCD', 'HD', 'C', 'BAC', 'CARC']) {
+      expect(isDollarBoardSymbol(ticker, new Set([ticker]))).toBe(false);
+      expect(inferListedCurrency(ticker, new Set([ticker]))).toBe('ARS');
+    }
   });
 
-  it('does not divide an isolated IBMD quote by MEP', () => {
-    const listed = new Set(['IBMD']);
-    expect(inferListedCurrency('IBMD', listed)).toBe('USD');
+  it('keeps an explicit USD IBMD quote and skips an unconfirmed ARS-tagged one', () => {
+    expect(resolveQuoteCurrency({
+      matchedSymbol: 'IBMD', listed: new Set(['IBMD']), sourceCurrency: 'USD',
+    })).toBe('USD');
+    expect(resolveQuoteCurrency({
+      matchedSymbol: 'IBMD', listed: new Set(['IBMD']), sourceCurrency: 'ARS',
+    })).toBeNull();
     const adapted = adaptQuoteToMarketCurrency(
-      { price: 92, changePct: 0, currency: inferListedCurrency('IBMD', listed), timestamp: null },
+      { price: 92, changePct: 0, currency: 'USD', timestamp: null },
       'USD',
       1300
     );
     expect(adapted).toEqual({ price: 92, changePct: 0, currency: 'USD', timestamp: null });
-    expect(adapted?.price).not.toBeCloseTo(92 / 1300, 8);
   });
 
   it('does not divide an already-USD AL30D quote by MEP when the peso board is missing', () => {
@@ -232,13 +240,16 @@ describe('IOL Mi Portafolio CSV', () => {
     });
   });
 
-  it('parses Argentine thousands dots without treating them as decimals', () => {
+  it('does not guess Argentine thousands when the file has no comma decimal', () => {
     const csv = [
       'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
       'GGAL,Grupo Galicia,1.000,90.000,91.000,ARS,Accion',
     ].join('\n');
     const parsed = parseIolPortfolioCsv(csv);
-    expect(parsed.holdings[0]).toMatchObject({
+    expect(parsed.needsNumberFormat).toBe(true);
+    expect(parsed.holdings).toHaveLength(0);
+    expect(parsed.ambiguousColumns?.length).toBeGreaterThan(0);
+    expect(parseIolPortfolioCsv(csv, { numberFormat: 'es-AR' }).holdings[0]).toMatchObject({
       ticker: 'GGAL', quantity: 1000, purchasePrice: 90000, lastPrice: 91000,
     });
   });
@@ -277,22 +288,24 @@ describe('IOL Mi Portafolio CSV', () => {
     expect(parsed.skipped.every((row) => /moneda/i.test(row.reason))).toBe(true);
   });
 
-  it('keeps plain CSV decimals and only treats dots as thousands when the file is es-AR', () => {
+  it('keeps plain CSV decimals and only auto-parses es-AR when a comma decimal is present', () => {
     const decimalCsv = [
       'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
       'AL30D,BONO AL30D,1000,92.345,0.125,USD,Bono',
     ].join('\n');
-    const decimal = parseIolPortfolioCsv(decimalCsv);
+    expect(parseIolPortfolioCsv(decimalCsv).needsNumberFormat).toBe(true);
+    const decimal = parseIolPortfolioCsv(decimalCsv, { numberFormat: 'decimal' });
     expect(decimal.holdings[0]).toMatchObject({
       ticker: 'AL30D', quantity: 1000, purchasePrice: 92.345, lastPrice: 0.125,
     });
 
     const esArCsv = [
       'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
-      'GGAL,Grupo Galicia,1.000,90.000,91.000,ARS,Accion',
+      'GGAL,Grupo Galicia,1.000,"90.000,00","91.000,00",ARS,Accion',
       'AAPLD,Apple,"1.234,50","1.200,00","1.250,25",ARS,CEDEAR',
     ].join('\n');
     const esAr = parseIolPortfolioCsv(esArCsv);
+    expect(esAr.needsNumberFormat).toBeFalsy();
     expect(esAr.holdings[0]).toMatchObject({
       ticker: 'GGAL', quantity: 1000, purchasePrice: 90000, lastPrice: 91000,
     });

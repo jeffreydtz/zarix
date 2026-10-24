@@ -22,15 +22,17 @@ export interface IolHoldingRow {
   law: string | null;
 }
 
+export type IolNumberFormat = 'es-AR' | 'decimal';
+
 export interface IolParseResult {
   holdings: IolHoldingRow[];
   skipped: Array<{ reason: string; raw: Record<string, string> }>;
+  needsNumberFormat?: boolean;
+  ambiguousColumns?: string[];
 }
 
 /** Excel numeric cells stay numbers so locale parsing cannot inflate them. */
 export type IolCell = string | number;
-
-type NumberLocale = 'es-AR' | 'decimal';
 
 function foldHeader(value: string): string {
   return value
@@ -68,52 +70,65 @@ function numericSample(raw: string): string | null {
   return cleaned || null;
 }
 
-function detectNumberLocale(rows: IolCell[][], map: Map<string, number>): NumberLocale {
-  const idxs = ['quantity', 'purchasePrice', 'lastPrice']
-    .map((key) => map.get(key))
-    .filter((idx): idx is number => idx != null);
+const NUMERIC_FIELDS = ['quantity', 'purchasePrice', 'lastPrice'] as const;
+const NUMERIC_FIELD_LABEL: Record<(typeof NUMERIC_FIELDS)[number], string> = {
+  quantity: 'Cantidad',
+  purchasePrice: 'PPC',
+  lastPrice: 'Último',
+};
+
+function detectNumberFormat(
+  headers: string[],
+  rows: IolCell[][],
+  map: Map<string, number>
+): { format: IolNumberFormat } | { ambiguous: true; columns: string[] } {
+  const idxs = NUMERIC_FIELDS
+    .map((key) => ({ key, idx: map.get(key) }))
+    .filter((entry): entry is { key: (typeof NUMERIC_FIELDS)[number]; idx: number } => entry.idx != null);
   let commaDecimal = false;
+  let commaThousandsDotDecimal = false;
   let multiDotGroups = false;
-  let integerThousands = 0;
-  let ambiguousThreeDigit = 0;
-  let trueDecimals = 0;
+  const ambiguousByField = new Set<string>();
   for (const row of rows) {
-    for (const idx of idxs) {
+    for (const { key, idx } of idxs) {
       const value = row[idx];
       if (typeof value !== 'string') continue;
       const cleaned = numericSample(value);
       if (!cleaned) continue;
       const hasComma = cleaned.includes(',');
       const hasDot = cleaned.includes('.');
-      if (hasComma) commaDecimal = true;
-      if (!hasDot || hasComma) continue;
+      if (hasComma && hasDot) {
+        const lastComma = cleaned.lastIndexOf(',');
+        const lastDot = cleaned.lastIndexOf('.');
+        if (lastComma > lastDot) commaDecimal = true;
+        else commaThousandsDotDecimal = true;
+        continue;
+      }
+      if (hasComma) {
+        commaDecimal = true;
+        continue;
+      }
+      if (!hasDot) continue;
       const parts = cleaned.split('.');
       if (parts.length > 2) {
         multiDotGroups = true;
         continue;
       }
       const fraction = parts[1] ?? '';
-      if (fraction.length === 1 || fraction.length === 2 || parts[0] === '0') {
-        trueDecimals += 1;
-      } else if (fraction.length === 3 && fraction === '000') {
-        integerThousands += 1;
-      } else if (fraction.length === 3) {
-        ambiguousThreeDigit += 1;
-      } else {
-        trueDecimals += 1;
+      if (fraction.length === 3) {
+        ambiguousByField.add(headers[idx] || NUMERIC_FIELD_LABEL[key]);
       }
     }
   }
-  if (commaDecimal || multiDotGroups) return 'es-AR';
-  // `1.000` / `90.000` look like es-AR thousands only when the file has no
-  // real decimals (`0.125`, `91.5`) and no 3-place prices (`92.345`).
-  if (integerThousands > 0 && trueDecimals === 0 && ambiguousThreeDigit === 0) {
-    return 'es-AR';
+  if (commaDecimal || multiDotGroups) return { format: 'es-AR' };
+  if (commaThousandsDotDecimal) return { format: 'decimal' };
+  if (ambiguousByField.size > 0) {
+    return { ambiguous: true, columns: [...ambiguousByField] };
   }
-  return 'decimal';
+  return { format: 'decimal' };
 }
 
-function parseNumber(raw: IolCell | undefined, locale: NumberLocale = 'decimal'): number | null {
+function parseNumber(raw: IolCell | undefined, locale: IolNumberFormat = 'decimal'): number | null {
   if (raw == null || raw === '') return null;
   if (typeof raw === 'number') return Number.isFinite(raw) ? raw : null;
   const trimmed = raw.trim();
@@ -261,7 +276,11 @@ export function excelWorksheetToIolTable(sheet: {
   };
 }
 
-export function parseIolPortfolioTable(headers: string[], rows: IolCell[][]): IolParseResult {
+export function parseIolPortfolioTable(
+  headers: string[],
+  rows: IolCell[][],
+  options?: { numberFormat?: IolNumberFormat }
+): IolParseResult {
   const map = mapHeaders(headers);
   const holdings: IolHoldingRow[] = [];
   const skipped: IolParseResult['skipped'] = [];
@@ -269,7 +288,16 @@ export function parseIolPortfolioTable(headers: string[], rows: IolCell[][]): Io
   if (tickerIdx == null) {
     return { holdings, skipped: [{ reason: 'No hay columna de símbolo/especie', raw: {} }] };
   }
-  const locale = detectNumberLocale(rows, map);
+  let locale: IolNumberFormat;
+  if (options?.numberFormat) {
+    locale = options.numberFormat;
+  } else {
+    const detected = detectNumberFormat(headers, rows, map);
+    if ('ambiguous' in detected) {
+      return { holdings: [], skipped: [], needsNumberFormat: true, ambiguousColumns: detected.columns };
+    }
+    locale = detected.format;
+  }
 
   for (const row of rows) {
     const raw: Record<string, string> = {};
@@ -315,9 +343,12 @@ export function parseIolPortfolioTable(headers: string[], rows: IolCell[][]): Io
   return { holdings, skipped };
 }
 
-export function parseIolPortfolioCsv(text: string): IolParseResult {
+export function parseIolPortfolioCsv(
+  text: string,
+  options?: { numberFormat?: IolNumberFormat }
+): IolParseResult {
   const parsed = parseCSVFile(text);
-  return parseIolPortfolioTable(parsed.headers, parsed.rows);
+  return parseIolPortfolioTable(parsed.headers, parsed.rows, options);
 }
 
 export function iolHoldingToCreateInput(row: IolHoldingRow, accountId: string) {

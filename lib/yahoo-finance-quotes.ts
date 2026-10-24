@@ -22,8 +22,33 @@ const QUOTE_OPTS = { fields: [...QUOTE_FIELDS] };
 
 const RETRY_MS = [0, 850, 2000] as const;
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve) => {
+    if (signal?.aborted) {
+      resolve();
+      return;
+    }
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timer);
+      resolve();
+    }, { once: true });
+  });
+}
+
+function deadlineController(deadlineAt?: number): { signal?: AbortSignal; cancel: () => void } {
+  if (deadlineAt == null) return { cancel() { /* no deadline */ } };
+  const ac = new AbortController();
+  const remaining = deadlineAt - Date.now();
+  if (remaining <= 0) {
+    ac.abort();
+    return { signal: ac.signal, cancel() { /* already aborted */ } };
+  }
+  const timer = setTimeout(() => ac.abort(), remaining);
+  return {
+    signal: ac.signal,
+    cancel() { clearTimeout(timer); },
+  };
 }
 
 function resolveCurrency(symbol: string, metaCurrency: string | undefined): string {
@@ -125,37 +150,45 @@ export async function fetchYahooStockQuotesMap(
 ): Promise<Map<string, StockQuote>> {
   const map = new Map<string, StockQuote>();
   if (tickers.length === 0) return map;
-  const withinBudget = () => options?.deadlineAt == null || Date.now() < options.deadlineAt;
+  const { signal, cancel } = deadlineController(options?.deadlineAt);
+  const withinBudget = () => !signal || !signal.aborted;
+  const quoteOpts = signal
+    ? { ...MODULE_OPTS, fetchOptions: { signal } }
+    : MODULE_OPTS;
 
-  for (let round = 0; round < RETRY_MS.length; round++) {
-    if (!withinBudget()) return map;
-    if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round]);
-    if (!withinBudget()) return map;
-    try {
-      const rows = await yahooFinance.quote(tickers, QUOTE_OPTS, MODULE_OPTS);
-      mergeQuoteBatchIntoMap(map, rows);
-      if (map.size > 0) break;
-    } catch {
-      /* siguiente ronda */
-    }
-  }
-
-  const missing = tickers.filter((t) => !mapHasTicker(map, t));
-  for (const t of missing) {
-    if (!withinBudget()) return map;
-    await sleep(150);
+  try {
     for (let round = 0; round < RETRY_MS.length; round++) {
       if (!withinBudget()) return map;
-      if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round]);
+      if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round], signal);
       if (!withinBudget()) return map;
       try {
-        const rows = await yahooFinance.quote(t, QUOTE_OPTS, MODULE_OPTS);
+        const rows = await yahooFinance.quote(tickers, QUOTE_OPTS, quoteOpts);
         mergeQuoteBatchIntoMap(map, rows);
-        break;
+        if (map.size > 0) break;
       } catch {
-        /* siguiente ronda */
+        if (!withinBudget()) return map;
       }
     }
+
+    const missing = tickers.filter((t) => !mapHasTicker(map, t));
+    for (const t of missing) {
+      if (!withinBudget()) return map;
+      await sleep(150, signal);
+      for (let round = 0; round < RETRY_MS.length; round++) {
+        if (!withinBudget()) return map;
+        if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round], signal);
+        if (!withinBudget()) return map;
+        try {
+          const rows = await yahooFinance.quote(t, QUOTE_OPTS, quoteOpts);
+          mergeQuoteBatchIntoMap(map, rows);
+          break;
+        } catch {
+          if (!withinBudget()) return map;
+        }
+      }
+    }
+  } finally {
+    cancel();
   }
 
   return map;

@@ -1,10 +1,12 @@
 /**
  * Moneda de cotización vs ticker D/C/O del mercado argentino.
  *
- * BYMA lista el mismo instrumento en pesos (sin sufijo, o `O` en ONs) y en
- * dólares (`D` MEP, `C` CCL). data912 hardcodea ARS en todos los endpoints:
- * la moneda real se infiere del símbolo matcheado, no del tag del proveedor.
+ * Conservative: never infer USD from a D/C suffix alone. AMD/MCD/HD/C/BAC/CARC
+ * are native listings. A D/C symbol is USD only when its ARS sibling exists in
+ * the live feed or catalog. If that cannot be confirmed, callers must skip.
  */
+
+import { catalogHasSymbol, isCatalogPesoListing } from '@/lib/market-data/argentine-catalog';
 
 export type QuoteCurrency = 'ARS' | 'USD';
 
@@ -19,44 +21,79 @@ function stripDollarBoard(symbol: string): string {
   return t;
 }
 
-/**
- * Tickers peso que terminan en D/C. `YPFD` es YPF en BYMA, no la rueda dólar de YPF.
- * Isolated D listings (AL30D, AAPLD, IBMD) are USD even without the peso counterpart.
- */
-const PESO_TICKERS_ENDING_IN_DC = new Set(['YPFD']);
+function listedHas(
+  listed: ReadonlySet<string> | Map<string, unknown>,
+  key: string
+): boolean {
+  return listed instanceof Map ? listed.has(key) : listed.has(key);
+}
+
+function looksLikeDollarSuffix(symbol: string): boolean {
+  const t = stripBymaSuffix(symbol);
+  if (t.endsWith('.D')) return t.length > 2;
+  return (t.endsWith('D') || t.endsWith('C')) && t.length > 1;
+}
+
+function dollarBoardRoot(symbol: string): string | null {
+  const t = stripBymaSuffix(symbol);
+  if (!looksLikeDollarSuffix(t)) return null;
+  if (t.endsWith('.D')) return t.slice(0, -2);
+  return t.slice(0, -1);
+}
+
+function hasPesoSibling(
+  root: string,
+  listed: ReadonlySet<string> | Map<string, unknown>
+): boolean {
+  return listedHas(listed, root)
+    || listedHas(listed, `${root}O`)
+    || catalogHasSymbol(root)
+    || catalogHasSymbol(`${root}O`);
+}
 
 /**
- * Un símbolo es la rueda D/C si el mismo índice tiene la rueda en pesos, o si
- * es un listing D/C aislado. Evita tratar `YPFD` (ticker peso de YPF) como USD.
+ * USD board only when the ARS sibling is known and this is not a native
+ * peso/CEDEAR ticker (YPFD, AMD, MCD, HD, C, BAC, CARC).
  */
 export function isDollarBoardSymbol(
   symbol: string,
   listed: ReadonlySet<string> | Map<string, unknown>
 ): boolean {
   const t = stripBymaSuffix(symbol);
-  const has = (key: string) =>
-    listed instanceof Map ? listed.has(key) : listed.has(key);
-  if (t.endsWith('.D')) {
-    const root = t.slice(0, -2);
-    return has(root) || has(`${root}O`) || isIsolatedDollarBoardSymbol(t);
-  }
-  if (t.endsWith('D') || t.endsWith('C')) {
-    const root = t.slice(0, -1);
-    if (has(root) || has(`${root}O`)) return true;
-    return isIsolatedDollarBoardSymbol(t);
-  }
-  return false;
+  if (isCatalogPesoListing(t)) return false;
+  const root = dollarBoardRoot(t);
+  if (!root) return false;
+  return hasPesoSibling(root, listed);
 }
 
-function isIsolatedDollarBoardSymbol(fullSymbol: string): boolean {
-  return !PESO_TICKERS_ENDING_IN_DC.has(fullSymbol);
+/**
+ * Resolve the currency of a matched quote. `null` means unconfirmed: skip the
+ * update instead of guessing from the ticker suffix.
+ *
+ * Explicit non-ARS source metadata wins. data912's dummy ARS tag is ignored
+ * when a sibling-confirmed D/C listing exists.
+ */
+export function resolveQuoteCurrency(opts: {
+  matchedSymbol: string;
+  listed: ReadonlySet<string> | Map<string, unknown>;
+  sourceCurrency?: string | null;
+}): QuoteCurrency | null {
+  const t = stripBymaSuffix(opts.matchedSymbol);
+  const tagged = (opts.sourceCurrency || '').trim().toUpperCase();
+  if (tagged && tagged !== 'ARS') {
+    return tagged === 'USD' ? 'USD' : null;
+  }
+  if (isCatalogPesoListing(t)) return 'ARS';
+  if (isDollarBoardSymbol(t, opts.listed)) return 'USD';
+  if (looksLikeDollarSuffix(t)) return null;
+  return 'ARS';
 }
 
 export function inferListedCurrency(
   matchedSymbol: string,
   listed: ReadonlySet<string> | Map<string, unknown>
 ): QuoteCurrency {
-  return isDollarBoardSymbol(matchedSymbol, listed) ? 'USD' : 'ARS';
+  return resolveQuoteCurrency({ matchedSymbol, listed }) ?? 'ARS';
 }
 
 export interface ListingCandidates {

@@ -8,6 +8,7 @@ import {
   iolImportRequestId,
   parseIolPortfolioTable,
   type IolCell,
+  type IolNumberFormat,
 } from '@/lib/broker-import/iol-portfolio';
 import { investmentsService } from '@/lib/services/investments';
 import { accountsService } from '@/lib/services/accounts';
@@ -59,7 +60,21 @@ export async function POST(req: NextRequest) {
     }
 
     const table = await tableFromUpload(file);
-    const parsed = parseIolPortfolioTable(table.headers, table.rows);
+    const numberFormatRaw = String(formData.get('numberFormat') || '').trim();
+    const numberFormat: IolNumberFormat | undefined =
+      numberFormatRaw === 'es-AR' || numberFormatRaw === 'decimal' ? numberFormatRaw : undefined;
+    const parsed = parseIolPortfolioTable(table.headers, table.rows, { numberFormat });
+    if (parsed.needsNumberFormat) {
+      return NextResponse.json({
+        status: 'needs-format-confirmation',
+        imported: 0,
+        skipped: 0,
+        updated: 0,
+        conflicts: 0,
+        failed: 0,
+        ambiguousColumns: parsed.ambiguousColumns ?? [],
+      });
+    }
     const created: Array<{ id: string; ticker: string }> = [];
     const failed: Array<{ ticker: string; reason: string }> = [];
     const conflicts: Array<{ ticker: string; reason: string }> = [];
