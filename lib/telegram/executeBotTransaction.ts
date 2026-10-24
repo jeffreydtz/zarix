@@ -17,6 +17,8 @@ export type BotTxPayload = {
   categoryId?: string | null;
   description?: string;
   destinationAccount?: string;
+  destinationAccountId?: string;
+  installments?: number;
   /** ISO o YYYY-MM-DD; el modelo también puede mandar `date` (alias). */
   transactionDate?: string;
   date?: string;
@@ -166,8 +168,8 @@ export async function executeBotTransaction(
     }
   }
 
-  let destinationAccountId: string | undefined;
-  if (txData.destinationAccount) {
+  let destinationAccountId: string | undefined = txData.destinationAccountId;
+  if (!destinationAccountId && txData.destinationAccount) {
     const destResult = await accountsService.findByNameFuzzy(userId, txData.destinationAccount);
     if (destResult.account) {
       destinationAccountId = destResult.account.id;
@@ -212,6 +214,7 @@ export async function executeBotTransaction(
       source,
       ...(requestId ? { requestId } : {}),
       ...(resolvedDate ? { transactionDate: resolvedDate } : {}),
+      ...(txData.installments && txData.installments > 1 ? { installments: txData.installments } : {}),
     });
 
     let responseWithAccount: string;

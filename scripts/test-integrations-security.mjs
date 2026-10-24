@@ -1,7 +1,9 @@
 // Isolated PGlite only. Synthetic fixture users, never a real account.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { asRole, bootDatabase, ids, seedDatabase } from './lib/test-isolated-database.mjs';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { asRole, bootDatabase, ids, root, seedDatabase } from './lib/test-isolated-database.mjs';
 const digest = (value) => createHash('sha256').update(String(value ?? '')).digest('hex');
 
 const results = [];
@@ -95,7 +97,19 @@ try {
     await rejects(() => owner(db, "SELECT zarix_vault.read_user_secret($1,'gemini_api_key')", [ids.a]));
   });
 
-  await test('authenticated cannot write secret columns', async () => {
+  await test('authenticated can still update plaintext secrets until the post-deploy revoke', async () => {
+    await owner(db, "UPDATE users SET gemini_api_key='window-ok' WHERE id=$1", [ids.a]);
+    const row = (await service(db, 'SELECT gemini_api_key FROM users WHERE id=$1', [ids.a])).rows[0];
+    assert.equal(row.gemini_api_key, 'window-ok');
+    await service(db, 'UPDATE users SET gemini_api_key=$2 WHERE id=$1', [ids.a, SYNTHETIC_GEMINI]);
+  });
+
+  await test('authenticated cannot write secret columns after the post-deploy revoke', async () => {
+    const sql = await fs.readFile(
+      path.join(root, 'supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql'),
+      'utf8'
+    );
+    await db.query(sql);
     await rejects(() => owner(db, "UPDATE users SET gemini_api_key='x' WHERE id=$1", [ids.a]));
     await rejects(() => owner(db, "UPDATE users SET telegram_bot_token='x' WHERE id=$1", [ids.a]));
     await rejects(() => owner(db, "UPDATE users SET gemini_api_key_enc='x' WHERE id=$1", [ids.a]));

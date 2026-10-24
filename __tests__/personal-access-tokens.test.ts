@@ -109,7 +109,8 @@ describe('personal access tokens', () => {
     const generated = generatePersonalAccessToken();
     mocks.from.mockImplementation(() => chain({ data: {
       id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-      hash_version: 1, revoked_at: '2026-01-01T00:00:00Z', last_used_at: null, expires_at: null,
+      hash_version: 1, revoked_at: '2026-01-01T00:00:00Z', last_used_at: null,
+      expires_at: '2099-01-01T00:00:00.000Z',
     }, error: null }));
     await expect(authenticatePersonalAccessToken(
       new NextRequest('http://localhost/api/v1', { headers: { authorization: `Bearer ${generated.token}` } }),
@@ -119,6 +120,15 @@ describe('personal access tokens', () => {
     mocks.from.mockImplementation(() => chain({ data: {
       id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
       hash_version: 1, revoked_at: null, last_used_at: null, expires_at: null,
+    }, error: null }));
+    await expect(authenticatePersonalAccessToken(
+      new NextRequest('http://localhost/api/v1', { headers: { authorization: `Bearer ${generated.token}` } }),
+      'read'
+    )).rejects.toMatchObject({ status: 401 });
+
+    mocks.from.mockImplementation(() => chain({ data: {
+      id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
+      hash_version: 1, revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
     }, error: null }));
     await expect(authenticatePersonalAccessToken(
       new NextRequest('http://localhost/api/v1', { headers: { authorization: `Bearer ${generated.token}` } }),
@@ -137,7 +147,7 @@ describe('wallet ingest auth surface', () => {
       if (table === 'personal_access_tokens') {
         return chain({ data: {
           id: 'pat-1', user_id: FIXTURE_USER, scopes: ['ingest'], token_hash: generated.hash,
-          hash_version: 1, revoked_at: null, last_used_at: null, expires_at: null,
+          hash_version: 1, revoked_at: null, last_used_at: null, expires_at: '2099-01-01T00:00:00.000Z',
         }, error: null });
       }
       return chain({ data: null, error: null });

@@ -34,6 +34,8 @@ export function auditUserAgent(req: Request): string | null {
   return raw.slice(0, UA_MAX);
 }
 
+export type AuditOutcome = 'ok' | 'error' | 'thrown' | 'denied';
+
 export async function recordIntegrationAudit(input: {
   userId: string;
   action: AuditAction;
@@ -41,9 +43,13 @@ export async function recordIntegrationAudit(input: {
   ipHash?: string | null;
   userAgent?: string | null;
   metadata?: Record<string, unknown>;
+  outcome?: AuditOutcome;
 }): Promise<void> {
   const supabase = createServiceClientSync();
   const metadata = input.metadata ? redactAuditMetadata(input.metadata) : {};
+  const outcome =
+    input.outcome ??
+    (typeof metadata.outcome === 'string' ? (metadata.outcome as AuditOutcome) : null);
   const { error } = await supabase.from('integration_audit_log').insert({
     user_id: input.userId,
     action: input.action,
@@ -51,6 +57,7 @@ export async function recordIntegrationAudit(input: {
     ip_hash: input.ipHash ?? null,
     user_agent: input.userAgent ?? null,
     metadata,
+    outcome,
   });
   if (error) {
     console.error('[audit] write failed');
@@ -58,7 +65,7 @@ export async function recordIntegrationAudit(input: {
 }
 
 const SECRET_KEYS = /token|secret|password|authorization|gemini|bot_token|api_key|cbu|cuit|pan|card_number/i;
-const AUDIT_KEY_ALLOWLIST = new Set(['tokenId', 'prefix', 'token_prefix', 'itemId', 'pendingId', 'scope']);
+const AUDIT_KEY_ALLOWLIST = new Set(['tokenId', 'prefix', 'token_prefix', 'itemId', 'pendingId', 'scope', 'tool', 'requestId', 'outcome']);
 
 export function redactAuditMetadata(value: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};

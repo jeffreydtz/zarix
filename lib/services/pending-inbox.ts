@@ -53,6 +53,8 @@ export type PendingInboxItem = {
   source: string;
   raw_text: string | null;
   tool_payload: ParkedToolPayload | null;
+  claim_id?: string | null;
+  fingerprint?: string | null;
   created_at: string;
   updated_at?: string;
 };
@@ -216,7 +218,12 @@ async function ingestWalletItemUnlocked(input: {
 
   if (clientKey) {
     const existing = await loadByIngestKey(input.userId, clientKey);
-    if (existing) return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
+    if (existing) {
+      if (existing.fingerprint && existing.fingerprint !== fp) {
+        throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
+      }
+      return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
+    }
   } else {
     const windowStart = new Date(Date.now() - 15 * 60_000).toISOString();
     const { data: dupes } = await supabase
@@ -262,9 +269,11 @@ async function ingestWalletItemUnlocked(input: {
 
   if (error) {
     if (isUniqueViolation(error)) {
-      const existing =
-        (await loadByIngestKey(input.userId, ingestKey)) ||
-        (await loadByFingerprint(input.userId, fp));
+      const byKey = clientKey ? await loadByIngestKey(input.userId, ingestKey) : null;
+      if (byKey?.fingerprint && byKey.fingerprint !== fp) {
+        throw new ApiError('Esa Idempotency-Key ya se usó con otro cuerpo.', 409);
+      }
+      const existing = byKey || (await loadByFingerprint(input.userId, fp));
       if (existing) return { item: existing, duplicate: true, autoConfirmed: existing.status === 'confirmed' };
     }
     throw error;
@@ -396,16 +405,16 @@ export async function listPendingItems(userId: string, status: 'pending' | 'all'
 
 async function loadFinancialContext(userId: string): Promise<FinancialContext> {
   const supabase = createServiceClientSync();
-  const [userProfile, accounts, userCategories, systemCategories] = await Promise.all([
+  const [userProfile, accounts, categories] = await Promise.all([
     supabase.from('users').select(USER_CLIENT_SAFE_COLUMNS).eq('id', userId).single(),
     accountsService.list(userId),
-    supabase.from('categories').select('*').eq('user_id', userId),
-    supabase.from('categories').select('*').eq('is_system', true),
+    // System catalog rows are user_id NULL. Owner-only .eq() would hide them.
+    supabase.from('categories').select('*').or(`user_id.eq.${userId},user_id.is.null`),
   ]);
   return {
     user: userProfile.data as unknown as User,
     accounts,
-    categories: [...(userCategories.data ?? []), ...(systemCategories.data ?? [])],
+    categories: (categories.data ?? []) as FinancialContext['categories'],
   };
 }
 
@@ -478,44 +487,53 @@ async function confirmPendingItemUnlocked(input: {
     if (existing.status === 'confirmed') return existing as PendingInboxItem;
     if (existing.status === 'discarded') throw new ApiError('Este pendiente ya fue descartado.');
     if (isStaleConfirming(existing as PendingInboxItem)) {
-      await supabase
+      const staleClaimId = (existing as PendingInboxItem).claim_id;
+      let release = supabase
         .from('pending_inbox_items')
-        .update({ status: 'pending' })
+        .update({ status: 'pending', claim_id: null })
         .eq('id', input.itemId)
         .eq('user_id', input.userId)
         .eq('status', 'confirming');
+      // Only the claim owner may release. A null claim_id matches only unfenced rows.
+      release = staleClaimId ? release.eq('claim_id', staleClaimId) : release.is('claim_id', null);
+      await release;
       const retried = await claim();
       if (retried.error) throw retried.error;
       claimed = retried.data;
       claimedRow = Array.isArray(claimed) ? claimed[0] : claimed;
     }
+    if (!claimedRow) {
+      throw new ApiError('Este pendiente se está confirmando.', 409);
+    }
   }
 
-  const row = (claimedRow || (
-    await supabase.from('pending_inbox_items').select('*').eq('id', input.itemId).eq('user_id', input.userId).single()
-  ).data) as PendingInboxItem | null;
+  const row = claimedRow as PendingInboxItem;
   if (!row) throw new ApiError('Pendiente no encontrado.', 404);
+  const myClaimId = row.claim_id ?? null;
 
   const revertClaim = async () => {
-    if (claimedRow) {
-      await supabase
-        .from('pending_inbox_items')
-        .update({ status: 'pending' })
-        .eq('id', input.itemId)
-        .eq('user_id', input.userId)
-        .eq('status', 'confirming');
-    }
+    if (!myClaimId) return;
+    await supabase
+      .from('pending_inbox_items')
+      .update({ status: 'pending', claim_id: null })
+      .eq('id', input.itemId)
+      .eq('user_id', input.userId)
+      .eq('status', 'confirming')
+      .eq('claim_id', myClaimId);
   };
 
   let committed = false;
   try {
     const parked = row.tool_payload;
-    const amount = input.amount ?? (typeof parked?.amount === 'number' ? parked.amount : Number(row.amount));
+    const amount =
+      input.amount ??
+      (typeof parked?.amount === 'number' ? parked.amount : null) ??
+      (typeof row.amount === 'number' ? row.amount : null);
     const accountId =
       input.accountId ??
       (typeof parked?.accountId === 'string' ? parked.accountId : null) ??
       row.account_id;
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (amount == null || !Number.isFinite(amount) || amount <= 0) {
       throw new ApiError('Falta el monto para confirmar.');
     }
     if (!accountId && parked?.type !== 'transfer' && !parked?.account) {

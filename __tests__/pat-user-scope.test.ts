@@ -102,4 +102,47 @@ describe('PAT user-scoped JWT', () => {
       if (previous !== undefined) process.env.SUPABASE_JWT_SECRET = previous;
     }
   });
+
+  it('SELECT on categories includes NULL-owner system rows; writes stay owner-only', async () => {
+    const ors: string[] = [];
+    const eqs: Array<[string, unknown]> = [];
+    const fake = {
+      select(..._args: unknown[]) {
+        return this;
+      },
+      or(filter: string) {
+        ors.push(filter);
+        return this;
+      },
+      eq(column: string, value: unknown) {
+        eqs.push([column, value]);
+        return this;
+      },
+      maybeSingle: async () => ({ data: null, error: null }),
+    };
+    await wrapWithUserIdFilter(fake, 'categories', FIXTURE_A).select('*').maybeSingle();
+    expect(ors).toEqual([`user_id.eq.${FIXTURE_A},user_id.is.null`]);
+    expect(eqs.some((pair) => pair[0] === 'user_id' && pair[1] === FIXTURE_A)).toBe(false);
+
+    const writeEqs: Array<[string, unknown]> = [];
+    const writeFake = {
+      update(value: unknown) {
+        return this;
+      },
+      delete() {
+        return this;
+      },
+      eq(column: string, value: unknown) {
+        writeEqs.push([column, value]);
+        return this;
+      },
+    };
+    wrapWithUserIdFilter(writeFake, 'categories', FIXTURE_A).update({ name: 'x' });
+    wrapWithUserIdFilter(writeFake, 'categories', FIXTURE_A).delete();
+    expect(writeEqs).toEqual([
+      ['user_id', FIXTURE_A],
+      ['user_id', FIXTURE_A],
+    ]);
+    expect(ors).toHaveLength(1);
+  });
 });

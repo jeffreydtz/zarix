@@ -25,7 +25,9 @@ BEGIN
   PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
   RETURN QUERY
   UPDATE public.pending_inbox_items
-     SET status = 'confirming', updated_at = now()
+     SET status = 'confirming',
+         claim_id = gen_random_uuid(),
+         updated_at = now()
    WHERE id = p_item_id
      AND user_id = p_user_id
      AND status = 'pending'

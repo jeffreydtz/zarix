@@ -8,6 +8,37 @@ export const dynamic = 'force-dynamic';
 
 const MAX_BYTES = 32 * 1024;
 
+async function readCappedText(req: Request, maxBytes: number): Promise<string> {
+  const declared = Number(req.headers.get('content-length') || 0);
+  if (Number.isFinite(declared) && declared > maxBytes) {
+    throw new ApiError('El cuerpo es demasiado grande.', 413);
+  }
+  const reader = req.body?.getReader();
+  if (!reader) {
+    const raw = await req.text();
+    if (Buffer.byteLength(raw, 'utf8') > maxBytes) throw new ApiError('El cuerpo es demasiado grande.', 413);
+    return raw;
+  }
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      try {
+        await reader.cancel();
+      } catch {
+        /* ignore */
+      }
+      throw new ApiError('El cuerpo es demasiado grande.', 413);
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks.map((c) => Buffer.from(c))).toString('utf8');
+}
+
 export async function POST(req: NextRequest) {
   try {
     const ip = clientIpFromRequest(req);
@@ -19,12 +50,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Demasiados envíos con este token.' }, { status: 429 });
     }
 
-    const len = Number(req.headers.get('content-length') || 0);
-    if (len > MAX_BYTES) throw new ApiError('El cuerpo es demasiado grande.', 413);
-
     const contentType = req.headers.get('content-type') || '';
-    const raw = await req.text();
-    if (Buffer.byteLength(raw, 'utf8') > MAX_BYTES) throw new ApiError('El cuerpo es demasiado grande.', 413);
+    const raw = await readCappedText(req, MAX_BYTES);
 
     let json: Record<string, unknown> | null = null;
     let text: string | null = null;

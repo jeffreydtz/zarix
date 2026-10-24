@@ -22,6 +22,14 @@ const SERVICE_TABLES = new Set([
 /** Global market data: no user_id column. Everything else in a PAT scope is tenant-filtered. */
 export const UNSCOPED_SERVICE_TABLES = new Set(['exchange_rates']);
 
+/**
+ * Shared catalog rows (user_id IS NULL). SELECT may see the caller's rows plus
+ * these; INSERT/UPDATE/DELETE stay owner-only. Prod system categories are
+ * NULL-owned (25 rows, is_system=true). No other table currently has NULL-owner
+ * system rows; add a name here only after checking the catalog.
+ */
+export const SHARED_NULL_OWNER_TABLES = new Set(['categories']);
+
 export function getPatRequestScope(): PatRequestScope | undefined {
   return store.getStore();
 }
@@ -55,9 +63,9 @@ function injectUserId(rows: unknown, column: 'user_id' | 'id', userId: string): 
 }
 
 /**
- * Forces every select/update/delete through `.eq(user_id|id, userId)` and
- * injects that column on insert/upsert. Used when the JWT secret is unset so
- * PAT work cannot run as an unscoped service role.
+ * Forces every select/update/delete through a tenant filter and injects that
+ * column on insert/upsert. SELECT on SHARED_NULL_OWNER_TABLES uses
+ * `(user_id = userId OR user_id IS NULL)`; writes stay owner-only.
  */
 export function wrapWithUserIdFilter<T extends object>(query: T, table: string, userId: string): T {
   const column = userScopeColumn(table);
@@ -73,7 +81,19 @@ export function wrapWithUserIdFilter<T extends object>(query: T, table: string, 
               options
             ));
         }
-        if (prop === 'select' || prop === 'update' || prop === 'delete') {
+        if (prop === 'select') {
+          return (...args: unknown[]) => {
+            const next = (target as Record<string, (...a: unknown[]) => {
+              eq?: (c: string, v: string) => object;
+              or?: (filter: string) => object;
+            }>)[prop](...args);
+            if (SHARED_NULL_OWNER_TABLES.has(table) && typeof next?.or === 'function') {
+              return wrap(next.or(`${column}.eq.${userId},${column}.is.null`));
+            }
+            return wrap(typeof next?.eq === 'function' ? next.eq(column, userId) : next);
+          };
+        }
+        if (prop === 'update' || prop === 'delete') {
           return (...args: unknown[]) => {
             const next = (target as Record<string, (...a: unknown[]) => { eq?: (c: string, v: string) => object }>)[prop](
               ...args

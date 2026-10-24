@@ -4785,16 +4785,30 @@ GRANT EXECUTE ON FUNCTION public.create_investment_once(UUID,TEXT,TEXT,JSONB) TO
 -- END supabase/migrations/20261024170100_investment_backlog.sql
 
 -- BEGIN supabase/migrations/20261024180000_ai_integrations_foundation.sql
--- SHA256 cf7afe942a743796af83cdf773d8248bb53d470a4f0d5e46928ef47851cf4a2e
+-- SHA256 180c1ad668dc9b09b8c07fb2860dc1e408b181587f27bfdc75a66283aca349db
 -- AI-first public integrations: write channel, PATs, encrypted secrets,
 -- pending inbox, card maps, audit log. Idempotent. Additive for secrets:
 -- plaintext columns are NOT copied or nulled here (staged rollout).
 --
--- Prod apply order (do not skip):
---   PITR → this file + 20261024190000 → deploy #16 code →
---   supabase/manual/backfill-user-secrets.sql →
---   20261025120000_revoke_plaintext_secret_updates.sql →
---   later follow-up: supabase/manual/null-plaintext-user-secrets.sql
+-- Prod apply order (do not skip). NEVER `supabase db push`.
+-- Prod migration history recorded #15 as 20261024182913 (investment_type_on)
+-- and 20261024182923 (investment_backlog), not the filenames 20261024170000 /
+-- 170100. `db push` would try to re-apply those files. Apply #16 one file at
+-- a time with `apply_migration` (version = the filename timestamp).
+--
+--   1. PITR marker
+--   2. apply_migration 20261024180000_ai_integrations_foundation.sql
+--   3. apply_migration 20261024190000_pat_rls_confirm_quotes.sql
+--   4. Deploy #16 code (encrypt-only writes; Vault-aware Telegram readers)
+--   5. Pause key edits, run supabase/manual/backfill-user-secrets.sql
+--   6. Run supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql
+--      (not a timestamped migration — db push cannot apply it early)
+--   7. Later follow-up: supabase/manual/null-plaintext-user-secrets.sql
+--
+-- Rollback to main (dpl_9Dq25… / 7651817): keys saved after step 4 have
+-- plaintext NULLed. Before rolling the app back, run
+-- supabase/manual/restore-plaintext-from-vault.sql so main can still read
+-- Gemini/Telegram secrets. Do not roll back until that restore verifies.
 -- PAT hashes are SHA-256 (hash_version=1). v2 is reserved and not enabled.
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -4885,7 +4899,7 @@ CREATE TABLE IF NOT EXISTS public.personal_access_tokens (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT personal_access_tokens_scopes_check CHECK (
-    scopes <@ ARRAY['read','write','ingest']::TEXT[]
+    scopes <@ ARRAY['read','write','ingest','write:confirm']::TEXT[]
     AND array_length(scopes, 1) >= 1
   )
 );
@@ -4900,6 +4914,17 @@ ALTER TABLE public.personal_access_tokens ALTER COLUMN hash_version SET NOT NULL
 ALTER TABLE public.personal_access_tokens DROP CONSTRAINT IF EXISTS personal_access_tokens_hash_version_check;
 ALTER TABLE public.personal_access_tokens ADD CONSTRAINT personal_access_tokens_hash_version_check
   CHECK (hash_version IN (1, 2));
+ALTER TABLE public.personal_access_tokens DROP CONSTRAINT IF EXISTS personal_access_tokens_scopes_check;
+ALTER TABLE public.personal_access_tokens ADD CONSTRAINT personal_access_tokens_scopes_check CHECK (
+  scopes <@ ARRAY['read','write','ingest','write:confirm']::TEXT[]
+  AND array_length(scopes, 1) >= 1
+);
+UPDATE public.personal_access_tokens
+  SET expires_at = created_at + interval '365 days'
+  WHERE expires_at IS NULL;
+ALTER TABLE public.personal_access_tokens
+  ALTER COLUMN expires_at SET DEFAULT (now() + interval '365 days');
+ALTER TABLE public.personal_access_tokens ALTER COLUMN expires_at SET NOT NULL;
 
 CREATE UNIQUE INDEX IF NOT EXISTS personal_access_tokens_hash_unique
   ON public.personal_access_tokens (token_hash);
@@ -4941,8 +4966,9 @@ GRANT SELECT (wallet_auto_confirm), UPDATE (wallet_auto_confirm)
   ON public.users TO authenticated;
 -- Do NOT REVOKE UPDATE on plaintext secret columns here. Old code (main)
 -- still writes gemini_api_key / telegram_bot_token as authenticated.
--- Apply supabase/migrations/20261025120000_revoke_plaintext_secret_updates.sql
--- AFTER the #16 code deploy. See that file for the order.
+-- Apply supabase/manual/20261025120000_revoke_plaintext_secret_updates.sql
+-- AFTER the #16 code deploy. It is not a timestamped migration so db push
+-- cannot apply it early. See that file for the numbered runbook.
 
 CREATE SCHEMA IF NOT EXISTS zarix_vault;
 REVOKE ALL ON SCHEMA zarix_vault FROM PUBLIC, anon, authenticated;
@@ -5153,6 +5179,7 @@ CREATE TABLE IF NOT EXISTS public.pending_inbox_items (
   fingerprint TEXT NOT NULL,
   confirmed_transaction_id UUID,
   discarded_at TIMESTAMPTZ,
+  claim_id UUID,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT pending_inbox_amount_nonneg CHECK (amount IS NULL OR amount > 0),
@@ -5163,6 +5190,7 @@ ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS ingest_key TEXT;
 ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS direction TEXT;
 ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS amount_ambiguous BOOLEAN;
 ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS tool_payload JSONB;
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS claim_id UUID;
 UPDATE public.pending_inbox_items
    SET ingest_key = COALESCE(NULLIF(ingest_key, ''), idempotency_key, id::text)
  WHERE ingest_key IS NULL OR ingest_key = '';
@@ -5239,7 +5267,16 @@ CREATE TABLE IF NOT EXISTS public.integration_audit_log (
   ip_hash TEXT,
   user_agent TEXT,
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  outcome TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT integration_audit_outcome_check CHECK (
+    outcome IS NULL OR outcome IN ('ok', 'error', 'thrown', 'denied')
+  )
+);
+ALTER TABLE public.integration_audit_log ADD COLUMN IF NOT EXISTS outcome TEXT;
+ALTER TABLE public.integration_audit_log DROP CONSTRAINT IF EXISTS integration_audit_outcome_check;
+ALTER TABLE public.integration_audit_log ADD CONSTRAINT integration_audit_outcome_check CHECK (
+  outcome IS NULL OR outcome IN ('ok', 'error', 'thrown', 'denied')
 );
 
 CREATE INDEX IF NOT EXISTS integration_audit_user_idx
@@ -5258,7 +5295,7 @@ GRANT SELECT, INSERT ON public.integration_audit_log TO service_role;
 -- END supabase/migrations/20261024180000_ai_integrations_foundation.sql
 
 -- BEGIN supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
--- SHA256 6e488902b96dc963f4846dda2008ca84104dc408314f7064a266eb58407df2ac
+-- SHA256 d367685854283a88869f24114382899a26bcff4ea2efd4336396b812546fcec8
 -- Atomic pending-inbox confirm + authenticated claim helper.
 -- Idempotent. Does not rewrite financial amounts.
 
@@ -5286,7 +5323,9 @@ BEGIN
   PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':inbox:' || p_item_id::text, 0));
   RETURN QUERY
   UPDATE public.pending_inbox_items
-     SET status = 'confirming', updated_at = now()
+     SET status = 'confirming',
+         claim_id = gen_random_uuid(),
+         updated_at = now()
    WHERE id = p_item_id
      AND user_id = p_user_id
      AND status = 'pending'
@@ -5297,24 +5336,3 @@ $$;
 REVOKE ALL ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
 -- END supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
-
--- BEGIN supabase/migrations/20261025120000_revoke_plaintext_secret_updates.sql
--- SHA256 6bdc3b0f5fd5e5c82215ae779466d18336268e282c07b12e5ce13d1a07af3b0b
--- POST-DEPLOY ONLY. Do not apply with 180000/190000 before the #16 code is live.
---
--- Order (prod):
---   1. PITR marker
---   2. 20261024180000_ai_integrations_foundation.sql (additive)
---   3. 20261024190000_pat_rls_confirm_quotes.sql (additive)
---   4. Deploy #16 code (encrypt-only writes; Vault-aware Telegram readers)
---   5. Pause key edits, run supabase/manual/backfill-user-secrets.sql
---      (copy + verify, never nulls)
---   6. THIS migration (revoke authenticated UPDATE on plaintext/enc secret columns)
---   7. Later follow-up: supabase/manual/null-plaintext-user-secrets.sql
---
--- Applying this before the code deploy breaks key saving in the current app,
--- which still UPDATEs users.gemini_api_key / telegram_bot_token as authenticated.
-
-REVOKE UPDATE (gemini_api_key, telegram_bot_token, gemini_api_key_enc, telegram_bot_token_enc)
-  ON public.users FROM PUBLIC, anon, authenticated;
--- END supabase/migrations/20261025120000_revoke_plaintext_secret_updates.sql

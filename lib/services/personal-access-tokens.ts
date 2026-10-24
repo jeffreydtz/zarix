@@ -197,7 +197,7 @@ export async function authenticatePersonalAccessToken(
   if (!row || row.revoked_at) {
     throw new ApiError('Unauthorized', 401);
   }
-  if (row.expires_at && Date.parse(row.expires_at) <= Date.now()) {
+  if (!row.expires_at || Date.parse(row.expires_at) <= Date.now()) {
     throw new ApiError('Unauthorized', 401);
   }
   if (!rateLimitAllow(`pat:${row.id}:${ipHash}`, 60, 60_000)) {
