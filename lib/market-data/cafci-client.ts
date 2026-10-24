@@ -138,7 +138,7 @@ async function fetchJson(url: string): Promise<unknown> {
   const res = await fetch(url, {
     headers: CAFCI_HEADERS,
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    next: { revalidate: 300 },
+    cache: 'no-store',
   });
   if (!res.ok) throw new CafciHttpError(res.status);
   return res.json();

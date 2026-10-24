@@ -36,9 +36,15 @@ describe('CAFCI client headers and 403', () => {
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchFciQuote('IOLDOLD')).rejects.toSatisfy((error: unknown) => isCafciForbidden(error));
     expect(fetchMock).toHaveBeenCalled();
-    const init = fetchMock.mock.calls[0][1] as { headers: Record<string, string> };
+    const init = fetchMock.mock.calls[0][1] as {
+      headers: Record<string, string>;
+      cache?: RequestCache;
+      next?: { revalidate?: number };
+    };
     expect(init.headers['User-Agent']).toBe(CAFCI_HEADERS['User-Agent']);
     expect(init.headers['Accept-Language']).toBe(CAFCI_HEADERS['Accept-Language']);
+    expect(init.cache).toBe('no-store');
+    expect(init.next?.revalidate).toBeUndefined();
     const err = await fetchFciQuote('IOLDOLD').catch((e: unknown) => e);
     expect(err).toBeInstanceOf(CafciHttpError);
     expect((err as CafciHttpError).status).toBe(403);

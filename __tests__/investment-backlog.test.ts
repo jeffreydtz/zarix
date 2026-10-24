@@ -65,6 +65,14 @@ describe('USD quote adaptation for D tickers', () => {
     })).toBeNull();
     expect(isDollarBoardSymbol('GLD', new Set(['GLD']))).toBe(false);
     expect(resolveQuoteCurrency({ matchedSymbol: 'GLD', listed: new Set(['GLD']) })).toBe('ARS');
+    expect(resolveQuoteCurrency({
+      matchedSymbol: 'YMCJO',
+      listed: new Set(['YMCJO', 'YMCJD']),
+      sourceCurrency: 'ARS',
+    })).toBe('ARS');
+    for (const ticker of ['TX26', 'DICP', 'S31O6', 'T15D6']) {
+      expect(resolveQuoteCurrency({ matchedSymbol: ticker, listed: new Set([ticker]) })).toBe('ARS');
+    }
     for (const ticker of ['AMD', 'MCD', 'HD', 'C', 'BAC', 'CARC']) {
       expect(isDollarBoardSymbol(ticker, new Set([ticker]))).toBe(false);
       expect(resolveQuoteCurrency({ matchedSymbol: ticker, listed: new Set([ticker]) })).toBe('ARS');

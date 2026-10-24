@@ -22,7 +22,7 @@ import { quoteCacheKey, refreshQuotesForInvestments } from '@/lib/market-data/qu
 
 const MEP = 1300;
 
-type Book = 'stock' | 'cedear' | 'bond';
+type Book = 'stock' | 'cedear' | 'bond' | 'on';
 type FeedRow = [symbol: string, price: number, currency: string];
 
 function index(book: Book, rows: FeedRow[]) {
@@ -35,7 +35,7 @@ function index(book: Book, rows: FeedRow[]) {
     byStock: book === 'stock' ? map : empty(),
     byCedear: book === 'cedear' ? map : empty(),
     byBond: book === 'bond' ? map : empty(),
-    byCorp: empty(),
+    byCorp: book === 'on' ? map : empty(),
   };
 }
 
@@ -73,11 +73,16 @@ describe('ticker × position currency × source currency', () => {
     { ticker: 'AL30', type: 'bond', position: 'ARS', book: 'bond', listed: [['AL30', 91000, 'ARS'], ['AL30D', 92, 'ARS']], expected: { price: 91000, currency: 'ARS' } },
     { ticker: 'AL30', type: 'bond', position: 'USD', book: 'bond', listed: [['AL30', 91000, 'ARS'], ['AL30D', 92, 'ARS']], expected: { price: 92, currency: 'USD' } },
     { ticker: 'AL30D', type: 'bond', position: 'USD', book: 'bond', listed: [['AL30D', 92, 'ARS']], expected: { price: 92, currency: 'USD' } },
-    { ticker: 'IBM', type: 'cedear', position: 'ARS', book: 'cedear', listed: [['IBM', 10000, 'ARS']], expected: null },
+    { ticker: 'IBM', type: 'cedear', position: 'ARS', book: 'cedear', listed: [['IBM', 10000, 'ARS']], expected: { price: 10000, currency: 'ARS' } },
     { ticker: 'IBM', type: 'cedear', position: 'USD', book: 'cedear', listed: [['IBM', 119600, 'ARS'], ['IBMD', 92, 'ARS']], expected: { price: 92, currency: 'USD' } },
     { ticker: 'IBM', type: 'cedear', position: 'USD', book: 'cedear', listed: [['IBMD', 92, 'ARS']], expected: null },
     { ticker: 'IBMD', type: 'cedear', position: 'USD', book: 'cedear', listed: [['IBMD', 92, 'ARS']], expected: null },
     { ticker: 'IBMD', type: 'cedear', position: 'USD', book: 'cedear', listed: [['IBMD', 92, 'USD']], expected: { price: 92, currency: 'USD' } },
+    { ticker: 'YMCJO', type: 'on', position: 'ARS', book: 'on', listed: [['YMCJO', 130000, 'ARS'], ['YMCJD', 92, 'ARS']], expected: { price: 130000, currency: 'ARS' } },
+    { ticker: 'TX26', type: 'bond', position: 'ARS', book: 'bond', listed: [['TX26', 10000, 'ARS']], expected: { price: 10000, currency: 'ARS' } },
+    { ticker: 'DICP', type: 'bond', position: 'ARS', book: 'bond', listed: [['DICP', 10000, 'ARS']], expected: { price: 10000, currency: 'ARS' } },
+    { ticker: 'S31O6', type: 'bond', position: 'ARS', book: 'bond', listed: [['S31O6', 10000, 'ARS']], expected: { price: 10000, currency: 'ARS' } },
+    { ticker: 'T15D6', type: 'bond', position: 'ARS', book: 'bond', listed: [['T15D6', 10000, 'ARS']], expected: { price: 10000, currency: 'ARS' } },
     { ticker: 'AAPL', type: 'cedear', position: 'ARS', book: 'cedear', listed: [['AAPL', 10000, 'ARS']], expected: { price: 10000, currency: 'ARS' } },
     { ticker: 'AAPL', type: 'cedear', position: 'USD', book: 'cedear', listed: [['AAPL', 119600, 'ARS'], ['AAPLD', 92, 'ARS']], expected: { price: 92, currency: 'USD' } },
     { ticker: 'BTC', type: 'crypto', position: 'USD', expected: { price: 100000, currency: 'USD' } },

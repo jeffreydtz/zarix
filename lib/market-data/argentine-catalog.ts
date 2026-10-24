@@ -81,7 +81,6 @@ export const CEDEAR_CATALOG: CatalogEntry[] = [
   { symbol: 'JNJ', name: 'Johnson & Johnson', type: 'cedear' },
   { symbol: 'PFE', name: 'Pfizer', type: 'cedear' },
   { symbol: 'V', name: 'Visa', type: 'cedear' },
-  { symbol: 'C', name: 'Citigroup', type: 'cedear' },
   { symbol: 'MA', name: 'Mastercard', type: 'cedear' },
   { symbol: 'JPM', name: 'JPMorgan Chase', type: 'cedear' },
   { symbol: 'BAC', name: 'Bank of America', type: 'cedear' },

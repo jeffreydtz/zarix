@@ -67,28 +67,13 @@ export function isDollarBoardSymbol(
 }
 
 /**
- * True when the feed or catalog lists a D/C board of this symbol, so the bare
- * ticker is the peso line. Trailing D on the ticker itself is not enough.
- */
-function hasDollarBoardSibling(
-  symbol: string,
-  listed: ReadonlySet<string> | Map<string, unknown>
-): boolean {
-  const t = stripBymaSuffix(symbol);
-  return listedHas(listed, `${t}D`)
-    || listedHas(listed, `${t}C`)
-    || listedHas(listed, `${t}.D`)
-    || catalogHasSymbol(`${t}D`)
-    || catalogHasSymbol(`${t}C`);
-}
-
-/**
- * Resolve the currency of a matched quote. `null` means unconfirmed: skip.
+ * Resolve the currency of a matched quote. `null` means unconfirmed: skip the
+ * update instead of guessing from the ticker suffix.
  *
- * ARS only with positive confirmation: curated peso/CEDEAR catalog, or a D/C
- * sibling in the feed/catalog proving this is the peso line. USD only from an
- * explicit non-ARS source tag or a sibling-confirmed D-class listing.
- * Never infer from ticker equality or a trailing D/C suffix.
+ * Explicit non-ARS source metadata wins. data912's dummy ARS tag is ignored
+ * when a sibling-confirmed D/C listing exists. A trailing D/C with no peso
+ * sibling (IBMD, GLD before the catalog entry) is skipped, not treated as ARS.
+ * Everything else — ONs, letras, peso-only bonds, non-catalog stocks — stays ARS.
  */
 export function resolveQuoteCurrency(opts: {
   matchedSymbol: string;
@@ -102,8 +87,8 @@ export function resolveQuoteCurrency(opts: {
   }
   if (isCatalogPesoListing(t)) return 'ARS';
   if (isDollarBoardSymbol(t, opts.listed)) return 'USD';
-  if (hasDollarBoardSibling(t, opts.listed)) return 'ARS';
-  return null;
+  if (looksLikeDollarSuffix(t)) return null;
+  return 'ARS';
 }
 
 export function inferListedCurrency(

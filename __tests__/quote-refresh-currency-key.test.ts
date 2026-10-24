@@ -90,6 +90,51 @@ describe('refreshQuotesForInvestments currency keys', () => {
     expect(warn).toHaveBeenCalled();
   });
 
+  it('prices YMCJO as 130000 ARS instead of YMCJD × MEP', async () => {
+    mocks.arg.mockResolvedValue({
+      byStock: new Map(),
+      byCedear: new Map(),
+      byBond: new Map(),
+      byCorp: new Map([
+        ['YMCJO', { symbol: 'YMCJO', price: 130000, changePct: 0, currency: 'ARS' }],
+        ['YMCJD', { symbol: 'YMCJD', price: 92, changePct: 0, currency: 'ARS' }],
+      ]),
+    });
+    const ars = await refreshQuotesForInvestments([
+      { type: 'on', ticker: 'YMCJO', market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    expect(ars.get(quoteCacheKey('on', 'YMCJO', 'ARS'))).toMatchObject({
+      price: 130000, currency: 'ARS',
+    });
+    expect(ars.get(quoteCacheKey('on', 'YMCJO', 'ARS'))?.price).not.toBe(92 * 1300);
+    const unset = await refreshQuotesForInvestments([
+      { type: 'on', ticker: 'YMCJO', market_currency: null, purchase_currency: 'ARS' },
+    ]);
+    expect(unset.get(quoteCacheKey('on', 'YMCJO', ''))).toMatchObject({
+      price: 130000, currency: 'ARS',
+    });
+  });
+
+  it.each([
+    ['TX26', 'bond'] as const,
+    ['DICP', 'bond'] as const,
+    ['S31O6', 'bond'] as const,
+    ['T15D6', 'bond'] as const,
+  ])('prices peso-only %s as ARS with no D/C sibling', async (ticker, type) => {
+    mocks.arg.mockResolvedValue({
+      byStock: new Map(),
+      byCedear: new Map(),
+      byBond: new Map([[ticker, { symbol: ticker, price: 10000, changePct: 0, currency: 'ARS' }]]),
+      byCorp: new Map(),
+    });
+    const map = await refreshQuotesForInvestments([
+      { type, ticker, market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    expect(map.get(quoteCacheKey(type, ticker, 'ARS'))).toMatchObject({
+      price: 10000, currency: 'ARS',
+    });
+  });
+
   it('keeps IBMD at 92 USD when the peso sibling is listed', async () => {
     mocks.arg.mockResolvedValue({
       byStock: new Map(),
