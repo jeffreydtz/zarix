@@ -32,25 +32,37 @@ export async function invokeRegistryForPat(input: {
   if (!tool.scopes.every((scope) => allowed.includes(scope))) {
     throw new ApiError('Este token no tiene el permiso necesario.', 403);
   }
+  const requestId =
+    input.requestId ||
+    (typeof input.args.requestId === 'string' ? input.args.requestId : undefined);
   return withPatUserScope(input.userId, async () => {
     const financialContext = await loadRegistryFinancialContext(input.userId);
-    const result = await executeRegistryTool(input.name, input.args, {
-      userId: input.userId,
-      financialContext,
-      source: input.source,
-      allowedScopes: allowed,
-      requestId: input.requestId || undefined,
-    });
-    if (!tool.readOnly) {
+    const auditWrite = async (outcome: 'ok' | 'error' | 'thrown') => {
+      if (tool.readOnly) return;
       await recordIntegrationAudit({
         userId: input.userId,
         action: input.source === 'mcp' ? 'mcp.write' : 'api.write',
         source: input.source,
         ipHash: input.req ? auditIpFromRequest(input.req) : null,
         userAgent: input.req ? auditUserAgent(input.req) : null,
-        metadata: { tool: input.name, requestId: input.requestId ?? null },
+        metadata: { tool: input.name, requestId: requestId ?? null, outcome },
       });
+    };
+    try {
+      const result = await executeRegistryTool(input.name, input.args, {
+        userId: input.userId,
+        financialContext,
+        source: input.source,
+        allowedScopes: allowed,
+        requestId,
+      });
+      await auditWrite(
+        result.response.needs_confirm ? 'ok' : result.response.success === false ? 'error' : 'ok'
+      );
+      return { response: result.response };
+    } catch (error) {
+      await auditWrite('thrown');
+      throw error;
     }
-    return { response: result.response };
   });
 }

@@ -23,6 +23,9 @@ export const transactionFieldsSchema = z.object({
   date: z.string().max(32).optional(),
   confirm: z.boolean().optional(),
   pendingId: z.string().uuid().optional(),
+  pendingIds: z.array(z.string().uuid()).max(MAX_BATCH).optional(),
+  requestId: z.string().min(8).max(200).optional(),
+  transactionId: z.string().uuid().optional(),
 });
 
 export const createTransactionSchema = transactionFieldsSchema.extend({
@@ -33,6 +36,9 @@ export const createTransactionSchema = transactionFieldsSchema.extend({
 export const createTransactionsSchema = z.object({
   transactions: z.array(createTransactionSchema).min(1).max(MAX_BATCH),
   confirm: z.boolean().optional(),
+  pendingId: z.string().uuid().optional(),
+  pendingIds: z.array(z.string().uuid()).max(MAX_BATCH).optional(),
+  requestId: z.string().min(8).max(200).optional(),
 });
 
 export const createAccountSchema = z.object({
@@ -41,10 +47,15 @@ export const createAccountSchema = z.object({
   type: z.string().max(32).optional(),
   currency: z.string().max(8).optional(),
   confirm: z.boolean().optional(),
+  pendingId: z.string().uuid().optional(),
+  requestId: z.string().min(8).max(200).optional(),
 });
 
 export const deleteLastTransactionSchema = z.object({
   confirm: z.boolean().optional(),
+  pendingId: z.string().uuid().optional(),
+  requestId: z.string().min(8).max(200).optional(),
+  transactionId: z.string().uuid().optional(),
 });
 
 export const editLastTransactionSchema = z.object({
@@ -54,6 +65,9 @@ export const editLastTransactionSchema = z.object({
   description: z.string().max(500).optional(),
   type: z.enum(['expense', 'income']).optional(),
   confirm: z.boolean().optional(),
+  pendingId: z.string().uuid().optional(),
+  requestId: z.string().min(8).max(200).optional(),
+  transactionId: z.string().uuid().optional(),
 });
 
 export const getSpendingSchema = z.object({
@@ -82,6 +96,8 @@ export const createRecurringSchema = z.object({
   account: z.string().max(120).optional(),
   startDate: z.string().max(32).optional(),
   confirm: z.boolean().optional(),
+  pendingId: z.string().uuid().optional(),
+  requestId: z.string().min(8).max(200).optional(),
 });
 
 export const TOOL_SCHEMAS = {

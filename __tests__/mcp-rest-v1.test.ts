@@ -145,18 +145,40 @@ describe('MCP /api/mcp', () => {
     expect(res.status).toBe(429);
   });
 
-  it('rejects malformed JSON and oversized MCP bodies before the handler', async () => {
+  it('authenticates first, then rejects malformed JSON and oversized MCP bodies', async () => {
     const { POST } = await import('@/app/api/mcp/route');
+    const unauthenticated = await POST(new NextRequest('http://localhost/api/mcp', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'content-length': String(80_000) },
+      body: '{}',
+    }));
+    expect(unauthenticated.status).toBe(401);
+
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
+        hash_version: 1, revoked_at: null, last_used_at: null, expires_at: null,
+      },
+      error: null,
+    }));
     const malformed = await POST(new NextRequest('http://localhost/api/mcp', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${generated.token}`,
+      },
       body: '{not-json',
     }));
     expect(malformed.status).toBe(400);
 
     const huge = await POST(new NextRequest('http://localhost/api/mcp', {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'content-length': String(80_000) },
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${generated.token}`,
+        'content-length': String(80_000),
+      },
       body: '{}',
     }));
     expect(huge.status).toBe(413);

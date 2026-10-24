@@ -10,7 +10,7 @@ import { mcpOAuthEnabled } from '@/lib/auth/mcp-oauth';
 import { ApiError } from '@/lib/api-handler';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 import { hashClientIp } from '@/lib/integrations/audit';
-import { MAX_INTEGRATION_BODY_BYTES, MAX_JSONRPC_BATCH, canonicalAppOrigin, rejectJsonRpcBatch } from '@/lib/http/body-limit';
+import { MAX_JSONRPC_BATCH, canonicalAppOrigin, readLimitedText, rejectJsonRpcBatch } from '@/lib/http/body-limit';
 
 const authStore = new AsyncLocalStorage<AuthInfo>();
 const requestStore = new AsyncLocalStorage<Request>();
@@ -64,12 +64,16 @@ const mcpInner = createMcpHandler(
               };
             }
             const req = originalRequest(ctx);
-            const idempotencyKey = req?.headers.get('idempotency-key') || undefined;
+            const toolArgs = (args && typeof args === 'object' ? args : {}) as Record<string, unknown>;
+            const idempotencyKey =
+              (typeof toolArgs.requestId === 'string' && toolArgs.requestId) ||
+              req?.headers.get('idempotency-key') ||
+              undefined;
             const result = await invokeRegistryForPat({
               userId,
               scopes: tokenScopes,
               name: tool.name,
-              args: (args && typeof args === 'object' ? args : {}) as Record<string, unknown>,
+              args: toolArgs,
               source: 'mcp',
               req,
               requestId: idempotencyKey,
@@ -157,30 +161,47 @@ export async function mcpHandler(req: Request): Promise<Response> {
   const limited = rateLimited(req);
   if (limited) return limited;
 
-  const declared = Number(req.headers.get('content-length') || 0);
-  if (declared > MAX_INTEGRATION_BODY_BYTES) {
-    return Response.json({ error: 'El cuerpo es demasiado grande.' }, { status: 413 });
-  }
-  if (req.method === 'POST') {
-    const raw = await req.clone().text();
-    if (Buffer.byteLength(raw, 'utf8') > MAX_INTEGRATION_BODY_BYTES) {
-      return Response.json({ error: 'El cuerpo es demasiado grande.' }, { status: 413 });
+  try {
+    const info = await verifyMcpToken(req);
+    if (!info) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    if (raw.trim()) {
-      try {
-        const parsed = JSON.parse(raw) as unknown;
-        rejectJsonRpcBatch(parsed, MAX_JSONRPC_BATCH);
-      } catch (error) {
-        if (error instanceof ApiError) {
-          return Response.json({ error: error.message }, { status: error.status });
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 429 || error.status === 401 || error.status === 403)) {
+      return Response.json({ error: error.message }, { status: error.status });
+    }
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  let forwarded = req;
+  if (req.method === 'POST') {
+    try {
+      const raw = await readLimitedText(req);
+      if (raw.trim()) {
+        try {
+          rejectJsonRpcBatch(JSON.parse(raw) as unknown, MAX_JSONRPC_BATCH);
+        } catch (error) {
+          if (error instanceof ApiError) {
+            return Response.json({ error: error.message }, { status: error.status });
+          }
+          return Response.json({ error: 'JSON inválido.' }, { status: 400 });
         }
-        return Response.json({ error: 'JSON inválido.' }, { status: 400 });
       }
+      forwarded = new Request(req.url, {
+        method: req.method,
+        headers: req.headers,
+        body: raw || undefined,
+      });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return Response.json({ error: error.message }, { status: error.status });
+      }
+      return Response.json({ error: 'JSON inválido.' }, { status: 400 });
     }
   }
 
   try {
-    return await authedMcp(req);
+    return await authedMcp(forwarded);
   } catch (error) {
     if (error instanceof ApiError && error.status === 429) {
       return Response.json({ error: error.message }, { status: 429 });

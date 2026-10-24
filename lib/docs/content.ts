@@ -135,8 +135,9 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'REST v1',
         body: [
-          'GET /api/v1/openapi.json describe las 14 herramientas. GET /api/v1/tools las lista según el token (un PAT de solo lectura no ve las de escritura). POST /api/v1/tools/{nombre} las ejecuta. Idempotency-Key opcional en los POST de escritura, mapeada al request id.',
-          'create_transaction(s) no escriben el libro al toque: quedan en pendientes salvo confirm=true (el cliente tiene que pedírselo al usuario).',
+          'GET /api/v1/openapi.json describe las 14 herramientas. GET /api/v1/tools las lista según el token (un PAT de solo lectura no ve las de escritura). POST /api/v1/tools/{nombre} las ejecuta.',
+          'Idempotency-Key es muy recomendable en TODOS los POST de escritura (create, edit, delete, cuentas, recurrentes). Si no podés mandar el header (MCP hospedado), pasá requestId en el cuerpo. Reusar la misma clave con otro cuerpo devuelve 409. Confirmá con pendingId(s); confirm=true solo no escribe el libro.',
+          'create_transaction(s) no escriben el libro al toque: quedan en pendientes salvo confirm=true con pendingId(s) (el cliente tiene que pedírselo al usuario).',
           'Ejemplo (dato de ejemplo): curl -X POST -H "Authorization: Bearer zrxp_…" -H "Content-Type: application/json" -H "Idempotency-Key: ejemplo-001" -d "{\\"type\\":\\"expense\\",\\"amount\\":10}" https://zarix-phi.vercel.app/api/v1/tools/create_transaction',
         ],
       },
@@ -150,7 +151,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'URL y token',
         body: [
-          'Servidor remoto: https://zarix-phi.vercel.app/api/mcp (Streamable HTTP). Authorization: Bearer zrxp_… con permiso read (y write si querés cargar movimientos). Idempotency-Key opcional en escrituras.',
+          'Servidor remoto: https://zarix-phi.vercel.app/api/mcp (Streamable HTTP). Authorization: Bearer zrxp_… con permiso read (y write si querés cargar movimientos). Idempotency-Key (o requestId en el cuerpo) es muy recomendable en escrituras.',
           'Hoy el camino soportado es un PAT. Los conectores alojados de Claude y ChatGPT necesitan OAuth; esa vía está detrás de ZARIX_MCP_OAUTH_ENABLED y todavía no está disponible.',
           'Las escrituras se auditan con source mcp. Sin confirm=true quedan en la bandeja. Gemini debe mostrar el preview y solo reintentar con confirm=true si el usuario acepta.',
         ],

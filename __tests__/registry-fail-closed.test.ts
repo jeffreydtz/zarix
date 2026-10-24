@@ -118,6 +118,19 @@ describe('registry validation fails closed', () => {
     expect(redacted.token).toBe('[redacted]');
   });
 
+  it('keeps write outcome in the audit log', () => {
+    const redacted = redactAuditMetadata({
+      tool: 'create_transaction',
+      requestId: 'idem-thrown-001',
+      outcome: 'thrown',
+      token: 'zrxp_secret',
+    });
+    expect(redacted.outcome).toBe('thrown');
+    expect(redacted.tool).toBe('create_transaction');
+    expect(redacted.requestId).toBe('idem-thrown-001');
+    expect(redacted.token).toBe('[redacted]');
+  });
+
   it('hides write tools from a read-scoped PAT', () => {
     const visible = toolsVisibleToScopes(['read']);
     expect(visible.some((t) => t.name === 'get_accounts')).toBe(true);

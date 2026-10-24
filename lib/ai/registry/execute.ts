@@ -1,3 +1,4 @@
+import { ApiError } from '@/lib/api-handler';
 import { AmbiguousFinancialMutationError } from '@/lib/financial-mutation-error';
 import { executeBotTransaction, type BotTxPayload } from '@/lib/telegram/executeBotTransaction';
 import { transactionsService } from '@/lib/services/transactions';
@@ -180,21 +181,58 @@ async function parkCreate(
   userId: string,
   args: ToolArgs,
   source: WriteChannel | undefined,
-  requestId?: string
+  requestId?: string,
+  toolName = 'create_transaction'
 ) {
   const { parkRegistryWrite } = await import('@/lib/services/pending-inbox');
   return parkRegistryWrite({
     userId,
-    amount: Number(args.amount),
+    amount: Number.isFinite(Number(args.amount)) ? Number(args.amount) : null,
     currency: String(args.currency || 'ARS'),
-    merchant: str(args.description) ?? null,
+    merchant: str(args.description) || str(args.name) || null,
     accountId: str(args.accountId) ?? null,
     categoryId: str(args.categoryId) ?? null,
     occurredAt: str(args.transactionDate) || str(args.date) || null,
     source: source === 'mcp' || source === 'api' ? source : 'api',
     ingestKey: requestId ?? null,
-    toolPayload: { ...args },
+    toolPayload: { ...args, _tool: toolName },
   });
+}
+
+function durableRequestId(args: ToolArgs, requestId?: string): string | undefined {
+  return str(args.requestId) || requestId;
+}
+
+async function confirmRemoteWrite(userId: string, args: ToolArgs, source: WriteChannel | undefined) {
+  const ids = pendingIdsFromArgs(args);
+  if (ids.length === 0) {
+    return {
+      response: {
+        success: false,
+        error: 'Falta pendingId. Confirmá el pendiente; no escribas el ledger directo.',
+      },
+    } satisfies RegistryToolResult;
+  }
+  const { confirmPendingItem } = await import('@/lib/services/pending-inbox');
+  const item = await confirmPendingItem({
+    userId,
+    itemId: ids[0],
+    amount: num(args.amount),
+    currency: str(args.currency),
+    merchant: str(args.description) || str(args.name),
+    accountId: str(args.accountId),
+    categoryId: str(args.categoryId),
+    source,
+  });
+  return {
+    response: {
+      success: true,
+      pendingId: item.id,
+      description: asUntrustedData(item.merchant),
+      untrusted: true,
+      untrusted_instruction: UNTRUSTED_INSTRUCTION,
+    },
+  } satisfies RegistryToolResult;
 }
 
 function pendingIdsFromArgs(args: ToolArgs): string[] {
@@ -233,7 +271,7 @@ async function executeRegistryToolImpl(
   switch (name) {
     case 'create_transaction': {
       if (remoteWrite && !isConfirmed(safeArgs)) {
-        const parked = await parkCreate(userId, safeArgs, source, requestId);
+        const parked = await parkCreate(userId, safeArgs, source, durableRequestId(safeArgs, requestId));
         return {
           response: {
             success: false,
@@ -252,37 +290,9 @@ async function executeRegistryToolImpl(
         };
       }
       if (remoteWrite && isConfirmed(safeArgs)) {
-        const ids = pendingIdsFromArgs(safeArgs);
-        if (ids.length === 0) {
-          return {
-            response: {
-              success: false,
-              error: 'Falta pendingId. Confirmá el pendiente; no escribas el ledger directo.',
-            },
-          };
-        }
-        const { confirmPendingItem } = await import('@/lib/services/pending-inbox');
-        const item = await confirmPendingItem({
-          userId,
-          itemId: ids[0],
-          amount: num(safeArgs.amount),
-          currency: str(safeArgs.currency),
-          merchant: str(safeArgs.description),
-          accountId: str(safeArgs.accountId),
-          categoryId: str(safeArgs.categoryId),
-          source,
-        });
-        return {
-          response: {
-            success: true,
-            pendingId: item.id,
-            description: asUntrustedData(item.merchant),
-            untrusted: true,
-            untrusted_instruction: UNTRUSTED_INSTRUCTION,
-          },
-        };
+        return confirmRemoteWrite(userId, safeArgs, source);
       }
-      const res = await executeBotTransaction(userId, financialContext, safeArgs as BotTxPayload, txOptions(source, requestId));
+      const res = await executeBotTransaction(userId, financialContext, safeArgs as BotTxPayload, txOptions(source, durableRequestId(safeArgs, requestId)));
       if (res.kind === 'abort') return { response: { success: false, error: res.reply } };
       return {
         response: {
@@ -306,7 +316,12 @@ async function executeRegistryToolImpl(
         const pendingIds: string[] = [];
         const preview: Array<{ amount: number; description: string | null }> = [];
         for (const [i, tx] of txs.entries()) {
-          const parked = await parkCreate(userId, tx as unknown as ToolArgs, source, requestIdAt(requestId, i));
+          const parked = await parkCreate(
+            userId,
+            tx as unknown as ToolArgs,
+            source,
+            requestIdAt(durableRequestId(safeArgs, requestId), i)
+          );
           pendingIds.push(parked.id);
           preview.push({ amount: Number(tx.amount), description: asUntrustedData(tx.description) });
         }
@@ -333,7 +348,7 @@ async function executeRegistryToolImpl(
           };
         }
         const { confirmPendingItems } = await import('@/lib/services/pending-inbox');
-        const confirmed = await confirmPendingItems({ userId, itemIds: ids });
+        const confirmed = await confirmPendingItems({ userId, itemIds: ids, source });
         return {
           response: {
             success: true,
@@ -371,6 +386,27 @@ async function executeRegistryToolImpl(
     case 'create_account': {
       const accountName = str(safeArgs.name) || str(safeArgs.account);
       if (!accountName) return { response: { success: false, error: 'Falta el nombre de la cuenta.' } };
+      if (remoteWrite && !isConfirmed(safeArgs)) {
+        const parked = await parkCreate(
+          userId,
+          { ...safeArgs, name: accountName },
+          source,
+          durableRequestId(safeArgs, requestId),
+          'create_account'
+        );
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            pendingId: parked.id,
+            preview: `Crear cuenta "${asUntrustedData(accountName)}"`,
+            error: 'Preguntá si confirma y volvé a llamar con confirm=true y pendingId.',
+          },
+        };
+      }
+      if (remoteWrite && isConfirmed(safeArgs)) {
+        return confirmRemoteWrite(userId, safeArgs, source);
+      }
       if (!isConfirmed(safeArgs)) {
         return {
           response: {
@@ -400,14 +436,60 @@ async function executeRegistryToolImpl(
     }
 
     case 'delete_last_transaction': {
-      const [last] = await transactionsService.list(userId, { limit: 1, orderByCreated: true });
+      const previewId = str(safeArgs.transactionId);
+      let last;
+      if (previewId) {
+        try {
+          last = await transactionsService.getById(previewId, userId);
+        } catch {
+          return { response: { success: false, error: 'Ese movimiento ya no está.' } };
+        }
+      } else {
+        [last] = await transactionsService.list(userId, { limit: 1, orderByCreated: true });
+      }
       if (!last) return { response: { success: false, error: 'No hay movimientos para borrar.' } };
+      if (remoteWrite && !isConfirmed(safeArgs)) {
+        const parked = await parkCreate(
+          userId,
+          {
+            ...safeArgs,
+            _tool: 'delete_last_transaction',
+            transactionId: last.id,
+            amount: last.amount,
+            currency: last.currency,
+            description: last.description,
+            type: last.type,
+          },
+          source,
+          durableRequestId(safeArgs, requestId),
+          'delete_last_transaction'
+        );
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            pendingId: parked.id,
+            preview: {
+              transactionId: last.id,
+              type: last.type,
+              amount: last.amount,
+              currency: last.currency,
+              description: asUntrustedData(last.description),
+            },
+            error: 'Mostrá el movimiento y, si el usuario confirma, llamá de nuevo con confirm=true y pendingId.',
+          },
+        };
+      }
+      if (remoteWrite && isConfirmed(safeArgs)) {
+        return confirmRemoteWrite(userId, safeArgs, source);
+      }
       if (!isConfirmed(safeArgs)) {
         return {
           response: {
             success: false,
             needs_confirm: true,
             preview: {
+              transactionId: last.id,
               type: last.type,
               amount: last.amount,
               currency: last.currency,
@@ -422,6 +504,7 @@ async function executeRegistryToolImpl(
         response: {
           success: true,
           deleted: {
+            transactionId: last.id,
             type: last.type,
             amount: last.amount,
             currency: last.currency,
@@ -433,10 +516,53 @@ async function executeRegistryToolImpl(
     }
 
     case 'edit_last_transaction': {
-      const [last] = await transactionsService.list(userId, { limit: 1, orderByCreated: true });
+      const previewId = str(safeArgs.transactionId);
+      let last;
+      if (previewId) {
+        try {
+          last = await transactionsService.getById(previewId, userId);
+        } catch {
+          return { response: { success: false, error: 'Ese movimiento ya no está.' } };
+        }
+      } else {
+        [last] = await transactionsService.list(userId, { limit: 1, orderByCreated: true });
+      }
       if (!last) return { response: { success: false, error: 'No encontré un movimiento reciente para editar.' } };
       if (last.type === 'transfer') {
         return { response: { success: false, error: 'No puedo editar transferencias desde acá. Borrala y recreala.' } };
+      }
+      if (remoteWrite && !isConfirmed(safeArgs)) {
+        const parked = await parkCreate(
+          userId,
+          {
+            ...safeArgs,
+            transactionId: last.id,
+            amount: num(safeArgs.amount) ?? last.amount,
+            currency: last.currency,
+            type: str(safeArgs.type) || last.type,
+            description: str(safeArgs.description) || last.description,
+          },
+          source,
+          durableRequestId(safeArgs, requestId),
+          'edit_last_transaction'
+        );
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            pendingId: parked.id,
+            preview: {
+              transactionId: last.id,
+              type: last.type,
+              amount: num(safeArgs.amount) ?? last.amount,
+              description: asUntrustedData(str(safeArgs.description) || last.description),
+            },
+            error: 'Mostrá la corrección y, si el usuario confirma, llamá de nuevo con confirm=true y pendingId.',
+          },
+        };
+      }
+      if (remoteWrite && isConfirmed(safeArgs)) {
+        return confirmRemoteWrite(userId, safeArgs, source);
       }
       if (!isConfirmed(safeArgs)) {
         return {
@@ -444,6 +570,7 @@ async function executeRegistryToolImpl(
             success: false,
             needs_confirm: true,
             preview: {
+              transactionId: last.id,
               type: last.type,
               amount: num(safeArgs.amount) ?? last.amount,
               description: asUntrustedData(str(safeArgs.description) || last.description),
@@ -461,7 +588,7 @@ async function executeRegistryToolImpl(
         description: str(safeArgs.description) || last.description || undefined,
         transactionDate: last.transaction_date,
       };
-      const res = await executeBotTransaction(userId, financialContext, merged, txOptions(source));
+      const res = await executeBotTransaction(userId, financialContext, merged, txOptions(source, durableRequestId(safeArgs, requestId)));
       if (res.kind === 'abort') return { response: { success: false, error: res.reply } };
       try {
         await transactionsService.delete(last.id, userId);
@@ -649,6 +776,27 @@ async function executeRegistryToolImpl(
     case 'create_recurring': {
       const description = str(safeArgs.description);
       if (!description) return { response: { success: false, error: 'Falta la descripción de la regla recurrente.' } };
+      if (remoteWrite && !isConfirmed(safeArgs)) {
+        const parked = await parkCreate(
+          userId,
+          { ...safeArgs, description },
+          source,
+          durableRequestId(safeArgs, requestId),
+          'create_recurring'
+        );
+        return {
+          response: {
+            success: false,
+            needs_confirm: true,
+            pendingId: parked.id,
+            preview: { description: asUntrustedData(description), amount: num(safeArgs.amount), frequency: str(safeArgs.frequency) },
+            error: 'Preguntá si confirma la regla y volvé a llamar con confirm=true y pendingId.',
+          },
+        };
+      }
+      if (remoteWrite && isConfirmed(safeArgs)) {
+        return confirmRemoteWrite(userId, safeArgs, source);
+      }
       if (!isConfirmed(safeArgs)) {
         return {
           response: {
@@ -681,12 +829,12 @@ async function executeRegistryToolImpl(
         } else {
           const accountsList = financialContext.accounts
             .slice(0, 5)
-            .map((a) => `• ${a.icon || '💳'} ${a.name}`)
+            .map((a) => `• ${a.icon || '💳'} ${asUntrustedData(a.name)}`)
             .join('\n');
           return {
             response: {
               success: false,
-              error: `No encontré la cuenta "${account}". Tus cuentas son:\n\n${accountsList}`,
+              error: `No encontré la cuenta "${asUntrustedData(account)}". Tus cuentas son:\n\n${accountsList}`,
             },
           };
         }
@@ -739,8 +887,8 @@ async function executeRegistryToolImpl(
               amount,
               currency,
               frequency,
-              account: accountName,
-              category: categoryName ?? null,
+              account: asUntrustedData(accountName),
+              category: categoryName ? asUntrustedData(categoryName) : null,
               nextDate: nextOccurrenceYMD(rule),
             },
           },
@@ -775,6 +923,7 @@ export async function executeRegistryTool(
     const response = attachUntrustedInstruction(maskSensitiveValue(result.response));
     return { ...result, response };
   } catch (error) {
+    if (error instanceof ApiError) throw error;
     if (WRITE_TOOL_NAMES.has(name)) {
       throw error instanceof AmbiguousFinancialMutationError ? error : new AmbiguousFinancialMutationError(error);
     }

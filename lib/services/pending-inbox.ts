@@ -100,22 +100,14 @@ function fingerprint(
   return createHash('sha256').update(material).digest('hex');
 }
 
+const VOLATILE_PARKED_KEYS = new Set(['pendingId', 'pendingIds', 'confirm', 'requestId']);
+
 function parkedBodyKey(payload: ParkedToolPayload | null | undefined): string {
   if (!payload) return '';
-  return JSON.stringify({
-    type: payload.type ?? null,
-    amount: payload.amount ?? null,
-    currency: payload.currency ?? null,
-    description: payload.description ?? null,
-    account: payload.account ?? null,
-    accountId: payload.accountId ?? null,
-    category: payload.category ?? null,
-    categoryId: payload.categoryId ?? null,
-    destinationAccount: payload.destinationAccount ?? null,
-    destinationAccountId: payload.destinationAccountId ?? null,
-    transactionDate: payload.transactionDate ?? payload.date ?? null,
-    installments: payload.installments ?? null,
-  });
+  const entries = Object.entries(payload)
+    .filter(([key, value]) => !VOLATILE_PARKED_KEYS.has(key) && value !== undefined)
+    .sort(([a], [b]) => a.localeCompare(b));
+  return JSON.stringify(entries);
 }
 
 export function isStaleConfirming(item: Pick<PendingInboxItem, 'status' | 'updated_at' | 'created_at'>): boolean {
@@ -320,7 +312,7 @@ async function ingestWalletItemUnlocked(input: {
 
 export async function parkRegistryWrite(input: {
   userId: string;
-  amount: number;
+  amount?: number | null;
   currency: string;
   merchant?: string | null;
   accountId?: string | null;
@@ -342,7 +334,7 @@ export async function parkRegistryWrite(input: {
     }
   }
   const payload = {
-    amount: input.amount,
+    amount: input.amount ?? null,
     currency: input.currency,
     merchant: input.merchant ?? null,
     cardName: null as string | null,
@@ -355,7 +347,7 @@ export async function parkRegistryWrite(input: {
     .from('pending_inbox_items')
     .insert({
       user_id: input.userId,
-      amount: input.amount,
+      amount: input.amount ?? null,
       currency: input.currency,
       merchant: input.merchant ?? null,
       account_id: input.accountId ?? (typeof toolPayload?.accountId === 'string' ? toolPayload.accountId : null),
@@ -515,52 +507,68 @@ async function confirmPendingItemUnlocked(input: {
 
   let committed = false;
   try {
-    const parked = row.tool_payload;
+    const parked = { ...(row.tool_payload || {}) };
+    const toolName = String(parked._tool || 'create_transaction');
+    delete parked._tool;
+    delete parked.pendingId;
+    delete parked.pendingIds;
+    delete parked.confirm;
     const amount =
       input.amount ??
-      (typeof parked?.amount === 'number' ? parked.amount : null) ??
+      (typeof parked.amount === 'number' ? parked.amount : null) ??
       (typeof row.amount === 'number' ? row.amount : null);
     const accountId =
       input.accountId ??
-      (typeof parked?.accountId === 'string' ? parked.accountId : null) ??
+      (typeof parked.accountId === 'string' ? parked.accountId : null) ??
       row.account_id;
-    if (amount == null || !Number.isFinite(amount) || amount <= 0) {
+    const needsLedgerAmount = toolName === 'create_transaction' || toolName === 'create_transactions';
+    if (needsLedgerAmount && (amount == null || !Number.isFinite(amount) || amount <= 0)) {
       throw new ApiError('Falta el monto para confirmar.');
     }
-    if (!accountId && parked?.type !== 'transfer' && !parked?.account) {
+    if (needsLedgerAmount && !accountId && parked.type !== 'transfer' && !parked.account) {
       throw new ApiError('Elegí la cuenta de Zarix para esta tarjeta.');
     }
 
     const accounts = await accountsService.list(input.userId);
     const account = accountId ? accounts.find((a) => a.id === accountId) : null;
-    if (accountId && !account) {
+    if (needsLedgerAmount && accountId && !account) {
       throw new ApiError('La cuenta no existe.');
     }
 
     const financialContext = await loadFinancialContext(input.userId);
     const requestId = pendingInboxRequestId(row.id);
     const occurred = occurredAtForStorage(input.occurredAt ?? row.occurred_at);
-    const txType = String(parked?.type || (row.direction === 'income' ? 'income' : 'expense'));
-    const args: ToolArgs = {
-      type: txType,
-      amount,
-      currency: input.currency || row.currency || account?.currency || parked?.currency || 'ARS',
-      account: parked?.account || account?.name,
-      accountId: accountId ?? undefined,
-      category: parked?.category,
-      categoryId: input.categoryId ?? row.category_id ?? (typeof parked?.categoryId === 'string' ? parked.categoryId : undefined),
-      destinationAccount: parked?.destinationAccount,
-      destinationAccountId: parked?.destinationAccountId,
-      description: input.merchant || row.merchant || (typeof parked?.description === 'string' ? parked.description : 'Wallet'),
-      transactionDate: walletCivilDate(parked?.transactionDate || parked?.date || occurred),
-      installments: parked?.installments,
-      confirm: true,
-    };
+    const txType = String(parked.type || (row.direction === 'income' ? 'income' : 'expense'));
+    const args: ToolArgs = { ...parked, confirm: true };
+    if (needsLedgerAmount) {
+      args.type = txType;
+      args.amount = Number.isFinite(amount) && amount > 0 ? amount : parked.amount;
+      args.currency =
+        input.currency ||
+        row.currency ||
+        account?.currency ||
+        (typeof parked.currency === 'string' ? parked.currency : 'ARS');
+      args.account = parked.account || account?.name;
+      args.accountId = accountId ?? parked.accountId;
+      args.category = parked.category;
+      args.categoryId = input.categoryId ?? row.category_id ?? parked.categoryId;
+      args.destinationAccount = parked.destinationAccount;
+      args.destinationAccountId = parked.destinationAccountId;
+      args.description =
+        input.merchant ||
+        row.merchant ||
+        (typeof parked.description === 'string' ? parked.description : 'Wallet');
+      args.transactionDate = walletCivilDate(
+        (typeof parked.transactionDate === 'string' ? parked.transactionDate : null) ||
+          (typeof parked.date === 'string' ? parked.date : null) ||
+          occurred
+      );
+    }
 
-    const result = await executeRegistryTool('create_transaction', args, {
+    const result = await executeRegistryTool(toolName, args, {
       userId: input.userId,
       financialContext,
-      source: input.source ?? 'wallet',
+      source: 'wallet',
       requestId,
     });
     if (result.response?.success !== true) {
