@@ -10,6 +10,7 @@ import { axisProps } from '@/lib/chart-theme';
 import { usePrivacy, PRIVACY_MASK } from '@/lib/hooks/use-privacy';
 import { deflatorToToday, type InflacionMes } from '@/lib/services/inflacion';
 import type { NetWorthNow, NetWorthPoint } from '@/lib/services/net-worth';
+import { comparableLiquidArsBlue, comparableLiquidUsd } from '@/lib/services/liquid-net-worth';
 import BlueFxReferenceDetails from '@/components/ui/BlueFxReferenceDetails';
 import type { PresentationCurrency } from '@/lib/presentation-preferences';
 
@@ -155,10 +156,12 @@ export default function NetWorthHero({ now, history, inflacion, baseCurrency = '
 
   // --- Delta vs snapshot anterior ---
   const pointViewValue = useCallback(
-    (p: NetWorthPoint, v: ViewMode): number => {
-      if (v === 'usd') return p.total_usd;
-      if (v === 'real') return p.total_ars_blue * deflatorToToday(inflacion, p.snapshot_date);
-      return p.total_ars_blue;
+    (p: NetWorthPoint, v: ViewMode): number | null => {
+      if (v === 'usd') return comparableLiquidUsd(p);
+      const ars = comparableLiquidArsBlue(p);
+      if (ars == null) return null;
+      if (v === 'real') return ars * deflatorToToday(inflacion, p.snapshot_date);
+      return ars;
     },
     [inflacion]
   );
@@ -179,20 +182,26 @@ export default function NetWorthHero({ now, history, inflacion, baseCurrency = '
   const delta = useMemo(() => {
     if (!priorPoint || partial) return null;
     const prev = pointViewValue(priorPoint, view);
+    if (prev == null) return null;
     const diff = heroValue - prev;
     const pct = prev !== 0 ? (diff / prev) * 100 : null;
     return { diff, pct };
   }, [priorPoint, view, heroValue, pointViewValue, partial]);
 
-  // --- Serie del gráfico ancla, re-expresada por vista ---
+  // --- Serie del gráfico ancla, re-expresada por vista (líquido comparable) ---
   const seriesByView = useMemo(
     () =>
-      history.map((p) => ({
-        date: p.snapshot_date,
-        ars: p.total_ars_blue,
-        usd: p.total_usd,
-        real: p.total_ars_blue * deflatorToToday(inflacion, p.snapshot_date),
-      })),
+      history.flatMap((p) => {
+        const usd = comparableLiquidUsd(p);
+        const ars = comparableLiquidArsBlue(p);
+        if (usd == null || ars == null) return [];
+        return [{
+          date: p.snapshot_date,
+          ars,
+          usd,
+          real: ars * deflatorToToday(inflacion, p.snapshot_date),
+        }];
+      }),
     [history, inflacion]
   );
 
@@ -277,6 +286,47 @@ export default function NetWorthHero({ now, history, inflacion, baseCurrency = '
           {view === 'usd' && <Amount value={now.totalARSBlue} currency="ARS" prefix="≈ " />}
           {view === 'real' && 'en pesos de hoy'}
         </p>
+
+        {(now.creditCards?.length ?? 0) > 0 && (
+          <div className="mt-3 rounded-control border border-border/70 bg-surface-soft/60 px-3 py-2 text-xs space-y-1.5">
+            <p className="font-medium text-foreground">Cómo se arma el líquido</p>
+            <div className="flex justify-between gap-3 tabular-nums">
+              <span className="text-muted-foreground">Disponible (efectivo, bancos, billeteras)</span>
+              <span>
+                {hidden ? PRIVACY_MASK : formatMoney(
+                  view === 'usd' ? (now.availableUSD ?? 0) : (now.availableARSBlue ?? 0),
+                  currency
+                )}
+              </span>
+            </div>
+            {(now.creditCards ?? []).map((card) => (
+              <div key={card.accountId} className="space-y-0.5">
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">
+                    {card.name}{card.last4 ? ` · ${card.last4}` : ''}
+                  </span>
+                  <span className="tabular-nums text-destructive">
+                    {hidden ? PRIVACY_MASK : formatMoney(
+                      view === 'usd' ? card.usd : card.arsBlue,
+                      currency
+                    )}
+                  </span>
+                </div>
+                {card.isMulticurrency && card.secondaryCurrency ? (
+                  <p className="text-[11px] text-muted-foreground pl-0">
+                    {card.primaryCurrency} {hidden ? PRIVACY_MASK : card.primaryBalance.toLocaleString('es-AR')}
+                    {' · '}
+                    {card.secondaryCurrency} {hidden ? PRIVACY_MASK : Number(card.secondaryBalance ?? 0).toLocaleString('es-AR')}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+            <div className="flex justify-between gap-3 pt-1 border-t border-border/60 font-medium tabular-nums">
+              <span>Patrimonio líquido</span>
+              <span>{hidden ? PRIVACY_MASK : formatMoney(heroValue, currency)}</span>
+            </div>
+          </div>
+        )}
 
         <div className="mt-2 space-y-1 text-xs text-muted-foreground">
           {now.blueReferences?.length ? now.blueReferences.map(({ component, reference }, index) => (

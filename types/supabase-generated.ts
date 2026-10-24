@@ -249,14 +249,14 @@ isOneToOne: false
                   ]
                 },"investments": {
                   Row: {
-                    "account_id": string,"created_at": string,"current_price": number | null,"current_price_change_pct": number | null,"current_price_updated_at": string | null,"id": string,"interest_rate": number | null,"is_active": boolean | null,"is_manual_price": boolean,"market_currency": string | null,"maturity_date": string | null,"name": string,"notes": string | null,"purchase_currency": string,"purchase_date": string,"purchase_price": number,"quantity": number,"ticker": string | null,"type": Database["public"]['Enums']["investment_type"],"updated_at": string,"user_id": string
+                    "account_id": string,"created_at": string,"current_price": number | null,"current_price_change_pct": number | null,"current_price_updated_at": string | null,"id": string,"interest_rate": number | null,"is_active": boolean | null,"is_manual_price": boolean,"law": string | null,"market_currency": string | null,"maturity_date": string | null,"name": string,"notes": string | null,"payment_currency": string | null,"purchase_currency": string,"purchase_date": string | null,"purchase_price": number,"quantity": number,"ticker": string | null,"type": Database["public"]['Enums']["investment_type"],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "account_id": string,"created_at"?: string,"current_price"?: number | null,"current_price_change_pct"?: number | null,"current_price_updated_at"?: string | null,"id"?: string,"interest_rate"?: number | null,"is_active"?: boolean | null,"is_manual_price"?: boolean,"market_currency"?: string | null,"maturity_date"?: string | null,"name": string,"notes"?: string | null,"purchase_currency": string,"purchase_date": string,"purchase_price": number,"quantity": number,"ticker"?: string | null,"type": Database["public"]['Enums']["investment_type"],"updated_at"?: string,"user_id": string
+                    "account_id": string,"created_at"?: string,"current_price"?: number | null,"current_price_change_pct"?: number | null,"current_price_updated_at"?: string | null,"id"?: string,"interest_rate"?: number | null,"is_active"?: boolean | null,"is_manual_price"?: boolean,"law"?: string | null,"market_currency"?: string | null,"maturity_date"?: string | null,"name": string,"notes"?: string | null,"payment_currency"?: string | null,"purchase_currency": string,"purchase_date"?: string | null,"purchase_price": number,"quantity": number,"ticker"?: string | null,"type": Database["public"]['Enums']["investment_type"],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "account_id"?: string,"created_at"?: string,"current_price"?: number | null,"current_price_change_pct"?: number | null,"current_price_updated_at"?: string | null,"id"?: string,"interest_rate"?: number | null,"is_active"?: boolean | null,"is_manual_price"?: boolean,"market_currency"?: string | null,"maturity_date"?: string | null,"name"?: string,"notes"?: string | null,"purchase_currency"?: string,"purchase_date"?: string,"purchase_price"?: number,"quantity"?: number,"ticker"?: string | null,"type"?: Database["public"]['Enums']["investment_type"],"updated_at"?: string,"user_id"?: string
+                    "account_id"?: string,"created_at"?: string,"current_price"?: number | null,"current_price_change_pct"?: number | null,"current_price_updated_at"?: string | null,"id"?: string,"interest_rate"?: number | null,"is_active"?: boolean | null,"is_manual_price"?: boolean,"law"?: string | null,"market_currency"?: string | null,"maturity_date"?: string | null,"name"?: string,"notes"?: string | null,"payment_currency"?: string | null,"purchase_currency"?: string,"purchase_date"?: string | null,"purchase_price"?: number,"quantity"?: number,"ticker"?: string | null,"type"?: Database["public"]['Enums']["investment_type"],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -836,7 +836,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "account_type": "cash"|"bank"|"credit_card"|"investment"|"crypto"|"digital_wallet"|"other","category_type": "expense"|"income","investment_type": "stock_arg"|"cedear"|"stock_us"|"etf"|"crypto"|"plazo_fijo"|"fci"|"bond"|"caucion"|"real_estate"|"other","recurrence_frequency": "daily"|"weekly"|"monthly"|"yearly","subscription_status": "ACTIVE"|"GRACE_PERIOD"|"PAST_DUE"|"CANCELED","transaction_type": "expense"|"income"|"transfer"|"adjustment"
+            "account_type": "cash"|"bank"|"credit_card"|"investment"|"crypto"|"digital_wallet"|"other","category_type": "expense"|"income","investment_type": "stock_arg"|"cedear"|"stock_us"|"etf"|"crypto"|"plazo_fijo"|"fci"|"bond"|"on"|"caucion"|"real_estate"|"other","recurrence_frequency": "daily"|"weekly"|"monthly"|"yearly","subscription_status": "ACTIVE"|"GRACE_PERIOD"|"PAST_DUE"|"CANCELED","transaction_type": "expense"|"income"|"transfer"|"adjustment"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -952,7 +952,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "account_type": ["cash", "bank", "credit_card", "investment", "crypto", "digital_wallet", "other"],"category_type": ["expense", "income"],"investment_type": ["stock_arg", "cedear", "stock_us", "etf", "crypto", "plazo_fijo", "fci", "bond", "caucion", "real_estate", "other"],"recurrence_frequency": ["daily", "weekly", "monthly", "yearly"],"subscription_status": ["ACTIVE", "GRACE_PERIOD", "PAST_DUE", "CANCELED"],"transaction_type": ["expense", "income", "transfer", "adjustment"]
+            "account_type": ["cash", "bank", "credit_card", "investment", "crypto", "digital_wallet", "other"],"category_type": ["expense", "income"],"investment_type": ["stock_arg", "cedear", "stock_us", "etf", "crypto", "plazo_fijo", "fci", "bond", "on", "caucion", "real_estate", "other"],"recurrence_frequency": ["daily", "weekly", "monthly", "yearly"],"subscription_status": ["ACTIVE", "GRACE_PERIOD", "PAST_DUE", "CANCELED"],"transaction_type": ["expense", "income", "transfer", "adjustment"]
           }
         }
 } as const

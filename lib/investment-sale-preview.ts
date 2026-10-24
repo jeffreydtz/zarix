@@ -1,3 +1,6 @@
+import { priceFactorForType } from '@/lib/investments/type-meta';
+import type { InvestmentType } from '@/types/database';
+
 /** A UI preview must not subtract nominal prices denominated in different currencies. */
 export function investmentSalePreview(input: {
   quantity: number; price: number; purchasePrice: number;
@@ -5,5 +8,6 @@ export function investmentSalePreview(input: {
 }): number | null {
   if (input.currency.toUpperCase() !== input.purchaseCurrency.toUpperCase()) return null;
   if (![input.quantity, input.price, input.purchasePrice].every(Number.isFinite) || input.quantity <= 0 || input.price <= 0) return null;
-  return ((input.price - input.purchasePrice) * input.quantity) / (input.type === 'bond' ? 100 : 1);
+  const factor = priceFactorForType(input.type as InvestmentType);
+  return ((input.price - input.purchasePrice) * input.quantity) / factor;
 }

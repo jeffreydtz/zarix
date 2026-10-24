@@ -1,8 +1,13 @@
 import { createServiceClientSync } from '@/lib/supabase/server';
-import { accountsService, type PartialAccountValuation } from '@/lib/services/accounts';
+import {
+  accountsService,
+  type CreditCardDebtSlice,
+  type PartialAccountValuation,
+} from '@/lib/services/accounts';
 import { investmentsService } from '@/lib/services/investments';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import type { BlueFxComponentReference } from '@/lib/blue-fx-reference';
+import { composeLiquidNetWorth } from '@/lib/services/liquid-net-worth';
 
 export interface NetWorthPoint {
   snapshot_date: string;
@@ -19,45 +24,73 @@ export interface NetWorthNow {
   totalUSD: number;
   totalARSBlue: number;
   blueRate: number;
+  availableUSD?: number;
+  availableARSBlue?: number;
+  creditCardDebtUSD?: number;
+  creditCardDebtARSBlue?: number;
+  creditCards?: CreditCardDebtSlice[];
+  brokerCashUSD?: number;
+  positionsUSD?: number;
+  positionsARSBlue?: number;
   /** Current components can have different quote samples; no universal source is inferred. */
   blueReferences?: BlueFxComponentReference[];
   valuation?: PartialAccountValuation;
 }
 
+const EMPTY_BALANCES = {
+  liquidUSD: 0,
+  liquidARSBlue: 0,
+  investmentsUSD: 0,
+  investmentsARSBlue: 0,
+  availableUSD: 0,
+  availableARSBlue: 0,
+  creditCardDebtUSD: 0,
+  creditCardDebtARSBlue: 0,
+  creditCards: [] as CreditCardDebtSlice[],
+  totalUSD: 0,
+  totalARSBlue: 0,
+  blueReferences: [] as NonNullable<ReturnType<typeof accountsService.aggregateAccountTotals>['blueReferences']>,
+  valuation: undefined as PartialAccountValuation | undefined,
+};
+
 /**
- * Patrimonio total del usuario HOY: cuentas (líquido + cash de cuentas de
- * inversión) + posiciones del portafolio. Misma composición que el dashboard
- * (sin doble conteo: las posiciones son filas aparte del cash del broker).
+ * Patrimonio total HOY = solo dinero líquido (efectivo/bancos/billeteras menos
+ * deuda de tarjetas). Las posiciones de `public.investments` y el cash de
+ * cuentas investment/crypto NO entran, aunque include_in_total sea true.
  */
+function blueRateFromConvertedAccounts(
+  balances: { blueReferences?: Array<{ rate: number }> },
+  accounts: Array<{ blueReference?: { rate: number } }>
+): number {
+  const fromTotals = balances.blueReferences?.find((reference) => reference.rate > 0)?.rate;
+  if (fromTotals && fromTotals > 0) return fromTotals;
+  const fromRow = accounts.find((account) => (account.blueReference?.rate ?? 0) > 0)?.blueReference?.rate;
+  return fromRow && fromRow > 0 ? fromRow : 0;
+}
+
 export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
-  const [accounts, portfolio, dolar] = await Promise.all([
+  const [accounts, portfolio] = await Promise.all([
     accountsService.list(userId, { allowPartialValuation: true }),
     investmentsService
       .getPortfolioSummary(userId, { skipQuoteRefresh: true, skipDailySnapshot: true }),
-    cotizacionesService.getDolarQuotes({ preferCache: true }).catch(() => null),
   ]);
 
   const balances =
     accounts.length > 0
       ? accountsService.aggregateAccountTotals(accounts)
-      : { liquidUSD: 0, investmentsUSD: 0, totalUSD: 0, totalARSBlue: 0, valuation: undefined };
+      : EMPTY_BALANCES;
 
-  const portfolioUSD = portfolio?.totalCurrentValue ?? 0;
-  const portfolioARSBlue = portfolio?.totalCurrentValueArsBlue ?? 0;
+  let blueRate = blueRateFromConvertedAccounts(balances, accounts);
+  if (!(blueRate > 0)) {
+    const dolar = await cotizacionesService.getDolarQuotes().catch(() => null);
+    blueRate = dolar?.blue?.sell ?? 0;
+  }
 
-  return {
-    ...(balances.valuation ? { valuation: balances.valuation } : {}),
-    liquidUSD: balances.liquidUSD,
-    investmentsUSD: balances.investmentsUSD + portfolioUSD,
-    totalUSD: balances.totalUSD + portfolioUSD,
-    totalARSBlue: balances.totalARSBlue + portfolioARSBlue,
-    blueRate: dolar?.blue?.sell ?? 0,
-    blueReferences: [
-      ...('blueReferences' in balances ? balances.blueReferences ?? [] : []).map(reference => ({ component: 'accounts' as const, reference })),
-      ...(portfolio?.blueReference && portfolio.investments.length > 0
-        ? [{ component: 'portfolio' as const, reference: portfolio.blueReference }] : []),
-    ],
-  };
+  return composeLiquidNetWorth({
+    balances,
+    portfolio,
+    blueRate,
+  });
 }
 
 /**

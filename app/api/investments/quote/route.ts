@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { cotizacionesService } from '@/lib/services/cotizaciones';
-import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
 import type { InvestmentType } from '@/types/database';
+import { quoteCacheKeyForPosition, refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
+import { investmentNeedsTicker } from '@/lib/investments/type-meta';
 
 export const dynamic = 'force-dynamic';
-
-const QUOTE_TYPES: InvestmentType[] = [
-  'stock_arg',
-  'cedear',
-  'stock_us',
-  'etf',
-  'crypto',
-  'bond',
-];
 
 export async function GET(req: NextRequest) {
   try {
@@ -28,67 +19,32 @@ export async function GET(req: NextRequest) {
 
     const symbol = req.nextUrl.searchParams.get('symbol')?.trim() || '';
     const type = req.nextUrl.searchParams.get('type') as InvestmentType | null;
+    const marketCurrency = req.nextUrl.searchParams.get('currency')?.trim().toUpperCase() || null;
 
-    if (!symbol || !type || !QUOTE_TYPES.includes(type)) {
+    if (!symbol || !type || !investmentNeedsTicker(type)) {
       return NextResponse.json({ error: 'Símbolo o tipo inválido' }, { status: 400 });
     }
 
-    if (type === 'crypto') {
-      const q = await cotizacionesService.getCryptoQuote(symbol);
-      return NextResponse.json({
-        ok: true,
-        symbol: q.symbol,
-        price: q.priceUSD,
-        currency: 'USD',
-        changePct: q.change24h,
-        source: 'coingecko',
-      });
+    const position = {
+      type,
+      ticker: symbol,
+      market_currency: marketCurrency,
+      purchase_currency: marketCurrency,
+    };
+    const quotes = await refreshQuotesForInvestments([position]);
+    const cacheKey = quoteCacheKeyForPosition(position);
+    const hit = cacheKey ? quotes.get(cacheKey) : undefined;
+    if (!hit || hit.price <= 0) {
+      return NextResponse.json({ ok: false, error: 'No se pudo obtener la cotización' }, { status: 200 });
     }
 
-    if (type === 'stock_arg' || type === 'cedear' || type === 'bond') {
-      try {
-        const arg = await loadArgentineQuotes();
-        const src =
-          type === 'stock_arg'
-            ? arg.byStock
-            : type === 'cedear'
-              ? arg.byCedear
-              : arg.byBond;
-        const hit = src.get(symbol.toUpperCase());
-        if (hit && hit.price > 0) {
-          return NextResponse.json({
-            ok: true,
-            symbol: hit.symbol,
-            price: hit.price,
-            currency: hit.currency,
-            changePct: hit.changePct,
-            source: 'data912',
-          });
-        }
-      } catch {
-        /* sigue a Yahoo */
-      }
-
-      const market: 'arg' | 'cedear' = type === 'stock_arg' ? 'arg' : 'cedear';
-      const q = await cotizacionesService.getStockQuote(symbol, market);
-      return NextResponse.json({
-        ok: true,
-        symbol: q.ticker,
-        price: q.price,
-        currency: q.currency,
-        changePct: q.change,
-        source: 'yahoo',
-      });
-    }
-
-    const q = await cotizacionesService.getStockQuote(symbol, 'us');
     return NextResponse.json({
       ok: true,
-      symbol: q.ticker,
-      price: q.price,
-      currency: q.currency,
-      changePct: q.change,
-      source: 'yahoo',
+      symbol: symbol.toUpperCase(),
+      price: hit.price,
+      currency: hit.currency,
+      changePct: hit.changePct,
+      source: 'refresh',
     });
   } catch (error: unknown) {
     console.error('investments quote error:', error);

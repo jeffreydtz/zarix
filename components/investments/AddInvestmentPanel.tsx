@@ -7,6 +7,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2, ChevronDown, Loader2, Plus, Search, TriangleAlert, X } from 'lucide-react';
 import type { Account } from '@/types/database';
 import type { InvestmentType } from '@/types/database';
+import {
+  INVESTMENT_TYPE_OPTIONS,
+  accountCanHoldPosition,
+  allowsBondFields,
+  allowsMarketCurrencyOverride,
+  investmentNeedsTicker,
+} from '@/lib/investments/type-meta';
 
 interface TickerHit {
   symbol: string;
@@ -14,21 +21,7 @@ interface TickerHit {
   exchange?: string;
 }
 
-const TYPE_OPTIONS: { value: InvestmentType; label: string }[] = [
-  { value: 'stock_us', label: 'Acción USA' },
-  { value: 'etf', label: 'ETF (USA)' },
-  { value: 'cedear', label: 'CEDEAR' },
-  { value: 'stock_arg', label: 'Acción Argentina (BYMA)' },
-  { value: 'crypto', label: 'Cripto' },
-  { value: 'plazo_fijo', label: 'Plazo fijo' },
-  { value: 'fci', label: 'FCI' },
-  { value: 'bond', label: 'Bono' },
-  { value: 'caucion', label: 'Caución' },
-  { value: 'real_estate', label: 'Inmueble' },
-  { value: 'other', label: 'Otro' },
-];
-
-const NEEDS_TICKER = new Set<InvestmentType>(['stock_arg', 'cedear', 'stock_us', 'etf', 'crypto', 'bond']);
+const TYPE_OPTIONS = INVESTMENT_TYPE_OPTIONS;
 
 interface QuoteState {
   status: 'idle' | 'loading' | 'ok' | 'warn' | 'error';
@@ -62,16 +55,22 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [quoteState, setQuoteState] = useState<QuoteState>({ status: 'idle', message: null });
+  const [paymentCurrency, setPaymentCurrency] = useState('');
+  const [law, setLaw] = useState('');
 
-  const needsTicker = NEEDS_TICKER.has(type);
-  const allowsCurrencyOverride = type === 'cedear' || type === 'stock_arg' || type === 'bond';
+  const needsTicker = investmentNeedsTicker(type);
+  const allowsCurrencyOverride = allowsMarketCurrencyOverride(type);
+  const accountChoices = useMemo(
+    () => investmentAccounts.filter((a) => accountCanHoldPosition(a.type, type)),
+    [investmentAccounts, type]
+  );
 
   useEffect(() => {
-    if (investmentAccounts.length === 0) return;
-    if (!accountId || !investmentAccounts.some((a) => a.id === accountId)) {
-      setAccountId(investmentAccounts[0].id);
+    if (accountChoices.length === 0) return;
+    if (!accountId || !accountChoices.some((a) => a.id === accountId)) {
+      setAccountId(accountChoices[0].id);
     }
-  }, [investmentAccounts, accountId]);
+  }, [accountChoices, accountId]);
 
   useEffect(() => {
     if (!needsTicker) {
@@ -113,7 +112,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
     setQuoteState({ status: 'loading', message: 'Consultando cotización…' });
     try {
       const r = await fetch(
-        `/api/investments/quote?symbol=${encodeURIComponent(ticker.trim())}&type=${encodeURIComponent(type)}`
+        `/api/investments/quote?symbol=${encodeURIComponent(ticker.trim())}&type=${encodeURIComponent(type)}${marketCurrency ? `&currency=${encodeURIComponent(marketCurrency)}` : ''}`
       );
       const data = await r.json();
       if (data.ok && typeof data.price === 'number') {
@@ -133,7 +132,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
     } catch {
       setQuoteState({ status: 'error', message: 'No se pudo verificar la cotización.' });
     }
-  }, [needsTicker, ticker, type]);
+  }, [needsTicker, ticker, type, marketCurrency]);
 
   const selectHit = (hit: TickerHit) => {
     setTicker(hit.symbol);
@@ -152,6 +151,8 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
     setMaturityDate('');
     setInterestRate('');
     setMarketCurrency('');
+    setPaymentCurrency('');
+    setLaw('');
     setManualPrice(false);
     setCurrentPrice('');
     setSearchQuery('');
@@ -204,7 +205,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
           quantity: qty,
           purchasePrice: price,
           purchaseCurrency,
-          purchaseDate,
+          purchaseDate: purchaseDate || null,
           maturityDate: maturityDate || undefined,
           interestRate: interestRate ? Number(interestRate) : undefined,
           isManualPrice: manualPrice,
@@ -212,6 +213,8 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
           marketCurrency: manualPrice
             ? marketCurrency || purchaseCurrency
             : marketCurrency || undefined,
+          paymentCurrency: paymentCurrency || undefined,
+          law: law || undefined,
       });
       if (!result) return;
       if (result.state === 'pending') {
@@ -239,6 +242,9 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
         crypto: 'Símbolo corto: BTC, ETH, USDT. CoinGecko resuelve los IDs comunes.',
         bond:
           'Bonos soberanos: AL30, GD30, AL35, AE38; CER: TX26, TX28. Variantes D=MEP, C=CCL (ej. AL30D). IMPORTANTE: cotizan por VN 100. Cargá Cantidad = VN total (ej. 1000) y Precio = precio cotizado (ej. 91980 ARS por VN 100). Vencimiento/TNA son opcionales.',
+        on:
+          'Obligaciones negociables (corporativas). Rueda pesos suele terminar en O (YCAMO); D = MEP. Cotizan por VN 100, igual que los soberanos.',
+        fci: 'Clase del fondo (símbolo CAFCI o ticker BYMA). Si CAFCI no responde se usa Yahoo .BA.',
       }) as Partial<Record<InvestmentType, string>>,
     []
   );
@@ -310,7 +316,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
                     onChange={(e) => setAccountId(e.target.value)}
                     required
                   >
-                    {investmentAccounts.map((a) => (
+                    {accountChoices.map((a) => (
                       <option key={a.id} value={a.id}>
                         {a.name} ({a.currency})
                       </option>
@@ -460,7 +466,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
             <div className="grid sm:grid-cols-3 gap-3">
               <label className="block text-sm">
                 <span className="text-muted-foreground font-medium">
-                  {type === 'bond' ? 'Cantidad (VN total)' : 'Cantidad'}
+                  {type === 'bond' || type === 'on' ? 'Cantidad (VN total)' : 'Cantidad'}
                 </span>
                 <input
                   type="text"
@@ -473,7 +479,7 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
               </label>
               <label className="block text-sm">
                 <span className="text-muted-foreground font-medium">
-                  {type === 'bond' ? 'Precio compra (por VN 100)' : 'Precio compra'}
+                  {type === 'bond' || type === 'on' ? 'Precio compra (por VN 100)' : 'Precio compra'}
                 </span>
                 <input
                   type="text"
@@ -579,17 +585,19 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
             </div>
 
             <label className="block text-sm">
-              <span className="text-muted-foreground font-medium">Fecha de compra</span>
+              <span className="text-muted-foreground font-medium">Fecha de compra (opcional)</span>
               <input
                 type="date"
                 className="input mt-1"
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
-                required
               />
+              <span className="mt-1 block text-xs text-muted-foreground">
+                Dejala vacía si importás tenencias sin lote conocido, para no distorsionar el rendimiento del período.
+              </span>
             </label>
 
-            {(type === 'plazo_fijo' || type === 'caucion' || type === 'bond') && (
+            {allowsBondFields(type) && (
               <div className="grid sm:grid-cols-2 gap-3">
                 <label className="block text-sm">
                   <span className="text-muted-foreground font-medium">Vencimiento (opcional)</span>
@@ -609,6 +617,33 @@ export default function AddInvestmentPanel({ investmentAccounts, onCreated }: Ad
                     value={interestRate}
                     onChange={(e) => setInterestRate(e.target.value)}
                     placeholder="Ej. 75"
+                  />
+                </label>
+              </div>
+            )}
+
+            {(type === 'bond' || type === 'on') && (
+              <div className="grid sm:grid-cols-2 gap-3">
+                <label className="block text-sm">
+                  <span className="text-muted-foreground font-medium">Moneda de pago (opcional)</span>
+                  <select
+                    className="input mt-1"
+                    value={paymentCurrency}
+                    onChange={(e) => setPaymentCurrency(e.target.value)}
+                  >
+                    <option value="">Igual que la cotización</option>
+                    <option value="USD">USD (hard dollar)</option>
+                    <option value="ARS">ARS</option>
+                  </select>
+                </label>
+                <label className="block text-sm">
+                  <span className="text-muted-foreground font-medium">Ley (opcional)</span>
+                  <input
+                    type="text"
+                    className="input mt-1"
+                    value={law}
+                    onChange={(e) => setLaw(e.target.value)}
+                    placeholder="NY / Argentina"
                   />
                 </label>
               </div>

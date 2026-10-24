@@ -77,7 +77,7 @@ export interface CreateAccountInput {
   color?: string;
   isDebt?: boolean;
   includeInTotal?: boolean;
-  /** Si false, no suma al patrimonio líquido (sí al total). Ignorado en agregados para type investment. */
+  /** Si false, no suma al patrimonio líquido. Ignorado en agregados para type investment/crypto. */
   includeInLiquid?: boolean;
   minBalance?: number;
   creditLimit?: number;
@@ -115,13 +115,35 @@ export interface PartialAccountValuation {
   }>;
 }
 
+export interface CreditCardDebtSlice {
+  accountId: string;
+  name: string;
+  last4: string | null;
+  isMulticurrency: boolean;
+  primaryCurrency: string;
+  primaryBalance: number;
+  secondaryCurrency: string | null;
+  secondaryBalance: number | null;
+  usd: number;
+  arsBlue: number;
+}
+
 /** Totales derivados de `list()` — misma cotización que cada fila. */
 export interface AccountAggregates {
-  /** Suma en USD equivalente (no inversión y con `include_in_liquid`). */
+  /** Efectivo + bancos + billeteras (y other con include_in_liquid), sin tarjetas ni broker. */
+  availableUSD: number;
+  availableARSBlue: number;
+  /** Deuda de tarjetas como magnitud positiva (ARS/USD ya convertidos a USD / ARS blue). */
+  creditCardDebtUSD: number;
+  creditCardDebtARSBlue: number;
+  creditCards: CreditCardDebtSlice[];
+  /** Disponible + saldos firmados de tarjetas (negativo si hay deuda). No incluye inversiones. */
   liquidUSD: number;
   liquidARSBlue: number;
+  /** Cash de cuentas investment/crypto (no posiciones). No entra al patrimonio líquido. */
   investmentsUSD: number;
   investmentsARSBlue: number;
+  /** Igual a liquidUSD: el dashboard nunca suma broker ni posiciones. */
   totalUSD: number;
   totalARSBlue: number;
   totalCreditUsed: number;
@@ -361,25 +383,25 @@ class AccountsService {
   }
 
   /**
-   * Patrimonio mostrado en el panel: solo cuentas con `include_in_total !== false`
-   * (alineado a la vista SQL y a “Incluir en totales” en la app). Esas cuentas siguen
-   * activas en la lista; no es lo mismo que archivar (`is_active`).
+   * Agregados para el dashboard. `include_in_total === false` excluye el SALDO de
+   * esa cuenta; las filas de `public.investments` nunca entran acá (van al
+   * dashboard de inversiones, sin mirar ese flag).
    *
-   * Dentro de ese conjunto:
-   * - Liquidez: no `investment` y `include_in_liquid !== false`.
-   * - No líquido: no inversión y sin liquidez; suma al total.
-   * - Inversiones: `type === 'investment'`.
+   * Patrimonio líquido = cash/bank/digital_wallet/other(líquido) + saldos
+   * firmados de tarjetas. Cuentas `investment` y `crypto` son cash de broker y
+   * no suman al total. Un total negativo se deja negativo.
    */
   aggregateAccountTotals(accounts: AccountWithBalance[]): AccountAggregates {
     const excludedAccounts: PartialAccountValuation['excludedAccounts'] = [];
+    let availableUSD = 0;
+    let availableARSBlue = 0;
     let liquidUSD = 0;
     let liquidARSBlue = 0;
-    let nonLiquidUSD = 0;
-    let nonLiquidARSBlue = 0;
     let investmentsUSD = 0;
     let investmentsARSBlue = 0;
     let totalCreditUsed = 0;
     let totalCreditLimit = 0;
+    const creditCards: CreditCardDebtSlice[] = [];
 
     for (const a of accounts) {
       if (a.include_in_total === false) continue;
@@ -397,6 +419,9 @@ class AccountsService {
         continue;
       }
 
+      const usd = a.balance_usd ?? 0;
+      const ars = a.balance_ars_blue ?? 0;
+
       if (a.type === 'credit_card') {
         const creditUsed = a.is_multicurrency
           ? Math.abs(
@@ -410,39 +435,61 @@ class AccountsService {
           : Math.abs(Number(a.balance));
         totalCreditUsed += creditUsed;
         totalCreditLimit += Number(a.credit_limit || 0);
+        creditCards.push({
+          accountId: a.id,
+          name: a.name,
+          last4: a.last_4_digits,
+          isMulticurrency: Boolean(a.is_multicurrency),
+          primaryCurrency: (a.currency || 'ARS').toUpperCase(),
+          primaryBalance: Number(
+            a.is_multicurrency ? a.multicurrency_balance_primary ?? a.balance : a.balance
+          ),
+          secondaryCurrency: a.is_multicurrency && a.secondary_currency
+            ? a.secondary_currency.toUpperCase()
+            : null,
+          secondaryBalance: a.is_multicurrency
+            ? Number(a.multicurrency_balance_secondary ?? 0)
+            : null,
+          usd,
+          arsBlue: ars,
+        });
+        liquidUSD += usd;
+        liquidARSBlue += ars;
+        continue;
       }
 
-      const usd = a.balance_usd ?? 0;
-      const ars = a.balance_ars_blue ?? 0;
-
-      if (a.type === 'investment') {
+      if (a.type === 'investment' || a.type === 'crypto') {
         investmentsUSD += usd;
         investmentsARSBlue += ars;
-      } else {
-        const inLiquid = a.include_in_liquid !== false;
-        if (inLiquid) {
-          liquidUSD += usd;
-          liquidARSBlue += ars;
-        } else {
-          nonLiquidUSD += usd;
-          nonLiquidARSBlue += ars;
-        }
+        continue;
+      }
+
+      if (a.include_in_liquid !== false) {
+        availableUSD += usd;
+        availableARSBlue += ars;
+        liquidUSD += usd;
+        liquidARSBlue += ars;
       }
     }
 
-    const totalUSD = liquidUSD + nonLiquidUSD + investmentsUSD;
-    const totalARSBlue = liquidARSBlue + nonLiquidARSBlue + investmentsARSBlue;
+    const creditCardDebtUSD = Math.max(0, -liquidUSD + availableUSD);
+    const creditCardDebtARSBlue = Math.max(0, -liquidARSBlue + availableARSBlue);
 
     return {
       ...(excludedAccounts.length ? { valuation: { status: 'partial' as const, excludedAccounts } } : {}),
       blueReferences: uniqueBlueFxReferences(accounts.filter(account => account.include_in_total !== false)
         .map(account => account.blueReference)),
+      availableUSD: roundMoney(availableUSD),
+      availableARSBlue: roundMoney(availableARSBlue),
+      creditCardDebtUSD: roundMoney(creditCardDebtUSD),
+      creditCardDebtARSBlue: roundMoney(creditCardDebtARSBlue),
+      creditCards,
       liquidUSD: roundMoney(liquidUSD),
       liquidARSBlue: roundMoney(liquidARSBlue),
       investmentsUSD: roundMoney(investmentsUSD),
       investmentsARSBlue: roundMoney(investmentsARSBlue),
-      totalUSD: roundMoney(totalUSD),
-      totalARSBlue: roundMoney(totalARSBlue),
+      totalUSD: roundMoney(liquidUSD),
+      totalARSBlue: roundMoney(liquidARSBlue),
       totalCreditUsed: roundMoney(totalCreditUsed),
       totalCreditLimit: roundMoney(totalCreditLimit),
       creditUtilization:
@@ -477,7 +524,7 @@ class AccountsService {
       .select('*')
       .eq('user_id', userId)
       .eq('is_active', true)
-      .eq('type', 'investment')
+      .in('type', ['investment', 'crypto'])
       .order('sort_order', { ascending: true });
 
     if (error) throw error;

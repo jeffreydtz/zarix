@@ -26,7 +26,10 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.accounts.mockResolvedValue([{ id: 'account-A' }]);
-  mocks.aggregateAccounts.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000 });
+  mocks.aggregateAccounts.mockReturnValue({
+    liquidUSD: 100, liquidARSBlue: 120000, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
+    availableUSD: 100, availableARSBlue: 120000, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0, creditCards: [],
+  });
   mocks.portfolio.mockResolvedValue({ totalCurrentValue: 50, totalCurrentValueArsBlue: 60000, investments: [] });
   mocks.quotes.mockResolvedValue({ blue: { buy: 1200, sell: 1200 } });
   mocks.upsert.mockResolvedValue({ error: null });
@@ -48,13 +51,30 @@ afterEach(() => vi.restoreAllMocks());
 describe('Financial read failures keep unavailable data distinct from zero', () => {
   it('does not overwrite a complete snapshot with an explicitly partial known subtotal', async () => {
     const valuation = { status: 'partial', excludedAccounts: [{ accountId: 'legacy', name: 'Legacy', currency: 'ZZZ', balance: 10, currencies: ['ZZZ'], reason: 'unsupported_currency' }] };
-    mocks.aggregateAccounts.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000, valuation });
-    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ totalARSBlue: 180000, valuation });
+    mocks.aggregateAccounts.mockReturnValue({
+      liquidUSD: 100, liquidARSBlue: 120000, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
+      availableUSD: 100, availableARSBlue: 120000, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0, creditCards: [],
+      valuation,
+    });
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ totalARSBlue: 120000, investmentsUSD: 50, valuation });
     await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
     expect(mocks.accounts).toHaveBeenCalledWith('user-A', { allowPartialValuation: true });
     expect(mocks.upsert).not.toHaveBeenCalled();
     expect(mocks.from).not.toHaveBeenCalledWith('net_worth_snapshots');
   });
+  it('still writes a zero snapshot when no accounts remain if blue is available', async () => {
+    mocks.accounts.mockResolvedValue([]);
+    mocks.quotes.mockResolvedValue({ blue: { buy: 1280, sell: 1300 } });
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({
+      totalUSD: 0, totalARSBlue: 0, liquidUSD: 0, blueRate: 1300, investmentsUSD: 50,
+    });
+    await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(true);
+    expect(mocks.quotes).toHaveBeenCalled();
+    expect(mocks.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      liquid_usd: 0, total_usd: 0, blue_ars_per_usd: 1300,
+    }), expect.anything());
+  });
+
   it.each(['accounts', 'portfolio'] as const)('does not overwrite a snapshot when %s fails despite a valid blue rate', async component => {
     const failure = new Error(`${component} unavailable`);
     mocks[component].mockRejectedValue(failure);

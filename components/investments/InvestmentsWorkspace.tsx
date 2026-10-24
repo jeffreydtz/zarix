@@ -10,6 +10,7 @@ import type { InvestmentWithPnL, PortfolioSummaryPayload } from '@/lib/services/
 import PortfolioSummary from '@/components/investments/PortfolioSummary';
 import InvestmentsList from '@/components/investments/InvestmentsList';
 import AddInvestmentPanel from '@/components/investments/AddInvestmentPanel';
+import BrokerImportPanel from '@/components/investments/BrokerImportPanel';
 import EditInvestmentDialog from '@/components/investments/EditInvestmentDialog';
 import SellPositionDialog from '@/components/investments/SellPositionDialog';
 import PrivacyToggle from '@/components/investments/PrivacyToggle';
@@ -107,8 +108,9 @@ export default function InvestmentsWorkspace({
         className="zx-panel p-4 md:p-5"
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 space-y-3">
             <AddInvestmentPanel investmentAccounts={investmentAccounts} onCreated={onPortfolioChanged} />
+            <BrokerImportPanel accounts={investmentAccounts} onImported={onPortfolioChanged} />
           </div>
           <div className="flex flex-col items-stretch sm:items-end gap-2 sm:text-right">
             <div className="flex items-center gap-2 justify-stretch sm:justify-end">
@@ -157,6 +159,11 @@ export default function InvestmentsWorkspace({
           totalRealizedPnLUsd={portfolio.totalRealizedPnLUsd}
           totalRealizedPnLArsBlue={portfolio.totalRealizedPnLArsBlue}
           byType={portfolio.byType}
+          byCurrency={portfolio.byCurrency}
+          weeklyChange={portfolio.weeklyChange}
+          monthlyChange={portfolio.monthlyChange}
+          topGainers={portfolio.topGainers}
+          topLosers={portfolio.topLosers}
         />
       </motion.div>
 

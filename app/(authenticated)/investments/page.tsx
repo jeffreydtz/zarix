@@ -16,6 +16,7 @@ const INVESTMENT_LABELS: Partial<Record<InvestmentType, string>> = {
   plazo_fijo: 'Plazo Fijo',
   caucion: 'Caución',
   bond: 'Bono',
+  on: 'ON',
 };
 
 const EMPTY_PORTFOLIO: PortfolioSummaryPayload = {
@@ -34,6 +35,11 @@ const EMPTY_PORTFOLIO: PortfolioSummaryPayload = {
   totalRealizedPnLUsd: 0,
   totalRealizedPnLArsBlue: 0,
   byType: [],
+  byCurrency: [],
+  weeklyChange: null,
+  monthlyChange: null,
+  topGainers: [],
+  topLosers: [],
 };
 
 export default async function InvestmentsPage() {
