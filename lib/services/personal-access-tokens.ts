@@ -157,6 +157,8 @@ export type AuthenticatedPat = {
   userId: string;
   tokenId: string;
   scopes: string[];
+  /** Unix seconds. Always set so MCP AuthInfo.expiresAt is populated. */
+  expiresAtUnix: number;
 };
 
 async function lookupPatByPresentedToken(token: string): Promise<PatRow | null> {
@@ -181,11 +183,11 @@ async function lookupPatByPresentedToken(token: string): Promise<PatRow | null> 
 export async function authenticatePersonalAccessToken(
   req: Request,
   needed?: PatScope,
-  options?: { source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp' }
+  options?: { source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp'; skipRateLimit?: boolean }
 ): Promise<AuthenticatedPat> {
   const ip = clientIpFromRequest(req);
   const ipHash = hashClientIp(ip);
-  if (!rateLimitAllow(`pat-preauth:${ipHash}`, 60, 60_000)) {
+  if (!options?.skipRateLimit && !rateLimitAllow(`pat-preauth:${ipHash}`, 60, 60_000)) {
     throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
   }
   const presented = parseBearerToken(req.headers.get('authorization'));
@@ -201,7 +203,7 @@ export async function authenticatePersonalAccessToken(
   if (!row.expires_at || Date.parse(row.expires_at) <= Date.now()) {
     throw new ApiError('Unauthorized', 401);
   }
-  if (!rateLimitAllow(`pat:${row.id}:${ipHash}`, 60, 60_000)) {
+  if (!options?.skipRateLimit && !rateLimitAllow(`pat:${row.id}:${ipHash}`, 60, 60_000)) {
     throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
   }
   if (needed && !scopesInclude(row.scopes, needed)) {
@@ -225,5 +227,9 @@ export async function authenticatePersonalAccessToken(
     userAgent: auditUserAgent(req),
     metadata: { tokenId: row.id, scope: needed ?? 'any' },
   });
-  return { userId: row.user_id, tokenId: row.id, scopes: row.scopes };
+  const parsedExpiry = row.expires_at ? Date.parse(row.expires_at) : NaN;
+  const expiresAtUnix = Number.isFinite(parsedExpiry)
+    ? Math.floor(parsedExpiry / 1000)
+    : Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60;
+  return { userId: row.user_id, tokenId: row.id, scopes: row.scopes, expiresAtUnix };
 }

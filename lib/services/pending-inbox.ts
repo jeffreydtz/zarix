@@ -423,6 +423,7 @@ export async function confirmPendingItem(input: {
   accountId?: string;
   categoryId?: string;
   occurredAt?: string;
+  source?: WriteChannel;
   req?: Request;
 }): Promise<PendingInboxItem> {
   return withPatUserScope(input.userId, () =>
@@ -433,11 +434,12 @@ export async function confirmPendingItem(input: {
 export async function confirmPendingItems(input: {
   userId: string;
   itemIds: string[];
+  source?: WriteChannel;
   req?: Request;
 }): Promise<PendingInboxItem[]> {
   const out: PendingInboxItem[] = [];
   for (const itemId of input.itemIds) {
-    out.push(await confirmPendingItem({ userId: input.userId, itemId, req: input.req }));
+    out.push(await confirmPendingItem({ userId: input.userId, itemId, source: input.source, req: input.req }));
   }
   return out;
 }
@@ -451,6 +453,7 @@ async function confirmPendingItemUnlocked(input: {
   accountId?: string;
   categoryId?: string;
   occurredAt?: string;
+  source?: WriteChannel;
   req?: Request;
 }): Promise<PendingInboxItem> {
   const supabase = createServiceClientSync();
@@ -557,7 +560,7 @@ async function confirmPendingItemUnlocked(input: {
     const result = await executeRegistryTool('create_transaction', args, {
       userId: input.userId,
       financialContext,
-      source: 'wallet',
+      source: input.source ?? 'wallet',
       requestId,
     });
     if (result.response?.success !== true) {
@@ -607,7 +610,7 @@ async function confirmPendingItemUnlocked(input: {
       await recordIntegrationAudit({
         userId: input.userId,
         action: 'inbox.confirm',
-        source: 'wallet',
+        source: input.source ?? 'wallet',
         ipHash: auditIpFromRequest(input.req),
         userAgent: auditUserAgent(input.req),
         metadata: { itemId: input.itemId },

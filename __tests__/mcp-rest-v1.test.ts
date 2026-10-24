@@ -23,9 +23,10 @@ import { generatePersonalAccessToken } from '@/lib/auth/personal-access-token';
 import { GET as openapi } from '@/app/api/v1/openapi.json/route';
 import { GET as listTools } from '@/app/api/v1/tools/route';
 import { POST as callTool } from '@/app/api/v1/tools/[name]/route';
-import { GET as oauthMeta } from '@/app/.well-known/oauth-protected-resource/route';
+import { GET as oauthMeta, OPTIONS as oauthOptions } from '@/app/.well-known/oauth-protected-resource/route';
 import { buildOpenApiDocument } from '@/lib/api/v1/openapi';
 import { TOOL_CATALOG } from '@/lib/ai/registry';
+import * as rateLimit from '@/lib/rate-limit';
 
 function chain(result: unknown) {
   const q: any = {};
@@ -63,7 +64,7 @@ describe('REST /api/v1', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null,
+        revoked_at: null, last_used_at: null, expires_at: null,
       },
       error: null,
     }));
@@ -81,7 +82,7 @@ describe('REST /api/v1', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null,
+        revoked_at: null, last_used_at: null, expires_at: null,
       },
       error: null,
     }));
@@ -95,10 +96,11 @@ describe('REST /api/v1', () => {
   });
 
   it('serves openapi.json without login', async () => {
-    const res = await openapi(new NextRequest('http://localhost/api/v1/openapi.json'));
+    const res = await openapi();
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.paths['/api/v1/tools/get_accounts']).toBeTruthy();
+    expect(body.servers[0].url).toBe('https://zarix-phi.vercel.app');
   });
 });
 
@@ -107,6 +109,9 @@ describe('MCP OAuth flag', () => {
     vi.stubEnv('ZARIX_MCP_OAUTH_ENABLED', '');
     const res = await oauthMeta(new NextRequest('http://localhost/.well-known/oauth-protected-resource'));
     expect(res.status).toBe(404);
+    const opt = oauthOptions();
+    expect(opt.status).toBe(404);
+    expect(opt.headers.get('access-control-allow-origin')).toBeNull();
     vi.unstubAllEnvs();
   });
 });
@@ -120,6 +125,41 @@ describe('MCP /api/mcp', () => {
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }),
     }));
     expect(res.status).toBe(401);
+    const body = await res.text();
+    expect(body.toLowerCase()).not.toContain('stack');
+    expect(body).not.toMatch(/mcp-handler|node_modules/);
+  });
+
+  it('returns 429 (not 401) when the MCP bucket is exhausted', async () => {
+    const { POST } = await import('@/app/api/mcp/route');
+    const spy = vi.spyOn(rateLimit, 'rateLimitAllow').mockReturnValue(false);
+    const res = await POST(new NextRequest('http://localhost/api/mcp', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer zrxp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }),
+    }));
+    spy.mockRestore();
+    expect(res.status).toBe(429);
+  });
+
+  it('rejects malformed JSON and oversized MCP bodies before the handler', async () => {
+    const { POST } = await import('@/app/api/mcp/route');
+    const malformed = await POST(new NextRequest('http://localhost/api/mcp', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{not-json',
+    }));
+    expect(malformed.status).toBe(400);
+
+    const huge = await POST(new NextRequest('http://localhost/api/mcp', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'content-length': String(80_000) },
+      body: '{}',
+    }));
+    expect(huge.status).toBe(413);
   });
 });
 
@@ -131,7 +171,7 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null,
+        revoked_at: null, last_used_at: null, expires_at: null,
       },
       error: null,
     }));
@@ -151,7 +191,7 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
     mocks.from.mockImplementation(() => chain({
       data: {
         id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
-        revoked_at: null, last_used_at: null,
+        revoked_at: null, last_used_at: null, expires_at: null,
       },
       error: null,
     }));
@@ -169,5 +209,76 @@ describe('every v1 tool stays on the PAT user and respects scopes', () => {
       expect(res.status, tool.name).toBe(200);
     }
     expect(mocks.invoke).toHaveBeenCalledTimes(TOOL_CATALOG.length);
+  });
+
+  it('rejects malformed JSON and oversized bodies, and honors Idempotency-Key on retry', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read', 'write'], token_hash: generated.hash,
+        revoked_at: null, last_used_at: null, expires_at: null,
+      },
+      error: null,
+    }));
+    const malformed = await callTool(new NextRequest('http://localhost/api/v1/tools/get_accounts', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${generated.token}`, 'content-type': 'application/json' },
+      body: '{not-json',
+    }), { params: Promise.resolve({ name: 'get_accounts' }) });
+    expect(malformed.status).toBe(400);
+
+    const huge = await callTool(new NextRequest('http://localhost/api/v1/tools/get_accounts', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${generated.token}`,
+        'content-type': 'application/json',
+        'content-length': String(80_000),
+      },
+      body: '{}',
+    }), { params: Promise.resolve({ name: 'get_accounts' }) });
+    expect(huge.status).toBe(413);
+
+    const key = 'idem-retry-fixture-001';
+    const first = await callTool(new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${generated.token}`,
+        'content-type': 'application/json',
+        'idempotency-key': key,
+      },
+      body: JSON.stringify({ type: 'expense', amount: 10, confirm: true }),
+    }), { params: Promise.resolve({ name: 'create_transaction' }) });
+    const retry = await callTool(new NextRequest('http://localhost/api/v1/tools/create_transaction', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${generated.token}`,
+        'content-type': 'application/json',
+        'idempotency-key': key,
+      },
+      body: JSON.stringify({ type: 'expense', amount: 10, confirm: true }),
+    }), { params: Promise.resolve({ name: 'create_transaction' }) });
+    expect(first.status).toBe(200);
+    expect(retry.status).toBe(200);
+    const ids = mocks.invoke.mock.calls.map((c: Array<{ requestId?: string }>) => c[0]?.requestId);
+    expect(ids.filter((id: string | undefined) => id === key)).toHaveLength(2);
+  });
+
+  it('returns 429 (not 401) when the v1 GET bucket is exhausted', async () => {
+    const generated = generatePersonalAccessToken();
+    mocks.from.mockImplementation(() => chain({
+      data: {
+        id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
+        revoked_at: null, last_used_at: null, expires_at: null,
+      },
+      error: null,
+    }));
+    const spy = vi.spyOn(rateLimit, 'rateLimitAllow').mockReturnValue(false);
+    const res = await listTools(new NextRequest('http://localhost/api/v1/tools', {
+      headers: { authorization: `Bearer ${generated.token}` },
+    }));
+    spy.mockRestore();
+    expect(res.status).toBe(429);
+    const body = await res.json();
+    expect(String(body.error || '')).not.toMatch(/unauthorized/i);
   });
 });

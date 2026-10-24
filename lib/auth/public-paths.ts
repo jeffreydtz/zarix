@@ -12,6 +12,8 @@ export function isPublicAppPath(pathname: string): boolean {
     pathname.startsWith('/register/') ||
     pathname === '/auth' ||
     pathname.startsWith('/auth/') ||
-    pathname.startsWith('/shared/')
+    pathname.startsWith('/shared/') ||
+    pathname === '/api/v1/openapi.json' ||
+    pathname === '/.well-known/oauth-protected-resource'
   );
 }

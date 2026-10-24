@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { buildOpenApiDocument } from '@/lib/api/v1/openapi';
+import { canonicalAppOrigin } from '@/lib/http/body-limit';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
-  const origin = req.nextUrl.origin || process.env.NEXT_PUBLIC_APP_URL || 'https://zarix-phi.vercel.app';
-  return NextResponse.json(buildOpenApiDocument(origin), {
-    headers: { 'cache-control': 'public, max-age=60' },
+export async function GET() {
+  return NextResponse.json(buildOpenApiDocument(canonicalAppOrigin()), {
+    headers: {
+      'cache-control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+    },
   });
 }

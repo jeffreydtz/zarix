@@ -12,6 +12,9 @@ describe('public docs', () => {
     expect(blob).toMatch(/ejemplo/i);
     expect(blob).toMatch(/\/api\/mcp/);
     expect(blob).toMatch(/\/api\/v1/);
+    expect(blob).toMatch(/Idempotency-Key/);
+    expect(blob).toMatch(/confirm=true/);
+    expect(blob).not.toMatch(/segunda etapa/);
     expect(blob.toLowerCase()).not.toContain('@hotmail.com');
     expect(docsNav().every((n) => n.href.startsWith('/docs'))).toBe(true);
     expect(findDocsPage('nope')).toBeUndefined();
@@ -25,5 +28,6 @@ describe('public docs', () => {
     expect(isPublicAppPath('/settings')).toBe(false);
     expect(isPublicAppPath('/settings/integraciones')).toBe(false);
     expect(isPublicAppPath('/pendientes')).toBe(false);
+    expect(isPublicAppPath('/api/v1/openapi.json')).toBe(true);
   });
 });

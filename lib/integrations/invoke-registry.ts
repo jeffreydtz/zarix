@@ -1,5 +1,5 @@
 import { ApiError } from '@/lib/api-handler';
-import { executeRegistryTool, getRegistryTool, TOOL_CATALOG } from '@/lib/ai/registry';
+import { executeRegistryTool, getRegistryTool, toolsVisibleToScopes as registryVisible } from '@/lib/ai/registry';
 import { loadRegistryFinancialContext } from '@/lib/ai/registry/context';
 import type { ToolScope, WriteChannel } from '@/lib/ai/registry/types';
 import { recordIntegrationAudit, auditIpFromRequest, auditUserAgent } from '@/lib/integrations/audit';
@@ -14,8 +14,7 @@ export function scopesForPat(scopes: string[]): ToolScope[] {
 }
 
 export function toolsVisibleToScopes(scopes: string[]) {
-  const allowed = new Set(scopesForPat(scopes));
-  return TOOL_CATALOG.filter((tool) => tool.scopes.every((scope) => allowed.has(scope)));
+  return registryVisible(scopesForPat(scopes));
 }
 
 export async function invokeRegistryForPat(input: {
@@ -25,6 +24,7 @@ export async function invokeRegistryForPat(input: {
   args: Record<string, unknown>;
   source: WriteChannel;
   req?: Request;
+  requestId?: string | null;
 }): Promise<{ response: Record<string, unknown> }> {
   const tool = getRegistryTool(input.name);
   if (!tool) throw new ApiError('Herramienta desconocida.', 404);
@@ -39,15 +39,16 @@ export async function invokeRegistryForPat(input: {
       financialContext,
       source: input.source,
       allowedScopes: allowed,
+      requestId: input.requestId || undefined,
     });
-    if (!tool.readOnly && input.req) {
+    if (!tool.readOnly) {
       await recordIntegrationAudit({
         userId: input.userId,
         action: input.source === 'mcp' ? 'mcp.write' : 'api.write',
         source: input.source,
-        ipHash: auditIpFromRequest(input.req),
-        userAgent: auditUserAgent(input.req),
-        metadata: { tool: input.name },
+        ipHash: input.req ? auditIpFromRequest(input.req) : null,
+        userAgent: input.req ? auditUserAgent(input.req) : null,
+        metadata: { tool: input.name, requestId: input.requestId ?? null },
       });
     }
     return { response: result.response };
