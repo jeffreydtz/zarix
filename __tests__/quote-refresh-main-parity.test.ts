@@ -51,6 +51,28 @@ function pos(
 }
 
 describe('main Yahoo/data912 parity (AAPL, SPY, YPFD, IBM, AL30, YMCJO)', () => {
+  it('AAPL with a whitespace-only Yahoo currency goes to Stooq at 131 like main', async () => {
+    mocks.yahoo.mockResolvedValue(new Map([
+      ['AAPL', { ticker: 'AAPL', name: 'Apple', price: 190, changePct: 1, currency: '   ' }],
+    ]));
+    mocks.stooq.mockResolvedValue({
+      ticker: 'AAPL', name: 'Apple', price: 131, change: 0, changePct: 0, currency: 'USD',
+    });
+    const map = await refreshQuotesForInvestments([pos('stock_us', 'AAPL', 'USD')]);
+    expect(map.get(quoteCacheKey('stock_us', 'AAPL', 'USD'))).toMatchObject({
+      price: 131, currency: 'USD',
+    });
+  });
+
+  it('YPFD.BA with a whitespace-only Yahoo currency is not applied, like main', async () => {
+    mocks.yahoo.mockResolvedValue(new Map([
+      ['YPFD.BA', { ticker: 'YPFD.BA', name: 'YPF', price: 42000, changePct: 0, currency: '   ' }],
+    ]));
+    const map = await refreshQuotesForInvestments([pos('stock_arg', 'YPFD', 'ARS')]);
+    expect(map.get(quoteCacheKey('stock_arg', 'YPFD', 'ARS'))).toBeUndefined();
+    expect(mocks.stooq).not.toHaveBeenCalled();
+  });
+
   it('AAPL uses a Yahoo quote with a missing currency as USD, not the Stooq price', async () => {
     mocks.yahoo.mockResolvedValue(new Map([
       ['AAPL', { ticker: 'AAPL', name: 'Apple', price: 190, changePct: 1, currency: '' }],

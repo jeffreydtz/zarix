@@ -165,6 +165,32 @@ describe('refreshQuotesForInvestments currency keys', () => {
     expect(mocks.fci).toHaveBeenCalledTimes(1);
   });
 
+  it('skips IOLDOLD when CAFCI names EUR instead of falling back to the stored USD book', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, currencySkip: 'unsupported',
+      changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+    expect(warn.mock.calls.some((call) => String(call[0]).includes('skip FCI currency'))).toBe(true);
+  });
+
+  it('does not save IOLDOLD as ARS when catalog fund Pesos conflicts with ficha USD', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: null, currencySkip: 'conflict',
+      changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: null, purchase_currency: null },
+    ]);
+    const hit = map.get(quoteCacheKey('fci', 'IOLDOLD', ''));
+    expect(hit).toBeUndefined();
+    expect(hit?.currency).not.toBe('ARS');
+  });
+
   it('saves IOLDOLD 1.098 USD when class currency is USD and market currency is unset', async () => {
     mocks.fci.mockResolvedValue({
       ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
@@ -319,16 +345,16 @@ describe('refreshQuotesForInvestments currency keys', () => {
     });
   });
 
-  it('skips GLD when Yahoo omits the quote currency instead of inferring from the ticker', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it('treats a missing Yahoo GLD currency as USD like main, not as a D-class ticker', async () => {
     mocks.yahoo.mockResolvedValue(new Map([
       ['GLD', { ticker: 'GLD', name: 'SPDR Gold', price: 380.12, changePct: 0.4, currency: '' }],
     ]));
     const map = await refreshQuotesForInvestments([
       { type: 'etf', ticker: 'GLD', market_currency: 'USD', purchase_currency: 'USD' },
     ]);
-    expect(map.get(quoteCacheKey('etf', 'GLD', 'USD'))).toBeUndefined();
-    expect(warn).toHaveBeenCalled();
+    expect(map.get(quoteCacheKey('etf', 'GLD', 'USD'))).toMatchObject({
+      price: 380.12, currency: 'USD',
+    });
   });
 
   it('keeps the live data912 timestamp when a later fetch is a 503 stale-cache hit', async () => {

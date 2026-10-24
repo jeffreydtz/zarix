@@ -4,7 +4,9 @@ import {
   CafciHttpError,
   fetchFciQuote,
   isCafciForbidden,
+  parseCafciCurrencyLabel,
   resetCafciCatalogCacheForTest,
+  resolveCafciCurrencySources,
 } from '@/lib/market-data/cafci-client';
 
 describe('CAFCI client headers and 403', () => {
@@ -156,6 +158,58 @@ describe('CAFCI client headers and 403', () => {
       ticker: 'IOLDOLD',
       price: 1.098,
       currency: 'USD',
+    });
+  });
+
+  it('does not let catalog fund Pesos beat a ficha data-level USD cuotaparte', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            moneda: 'Pesos',
+            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: 1.098, moneda: 'USD' } }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    const quote = await fetchFciQuote('IOLDOLD');
+    expect(quote?.price).toBe(1.098);
+    expect(quote?.currency).not.toBe('ARS');
+    expect(quote?.currency === 'USD' || quote?.currencySkip === 'conflict').toBe(true);
+  });
+
+  it('skips an explicit EUR CAFCI currency instead of treating it as unknown', async () => {
+    expect(parseCafciCurrencyLabel('EUR')).toBe('unsupported');
+    expect(resolveCafciCurrencySources({
+      catalogClass: null, fichaClass: null, fichaData: 'unsupported', catalogFund: null,
+    })).toEqual({ currency: null, reason: 'unsupported' });
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Euro',
+            clases: [{ id: 2, simbolo: 'IOLDOLD' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: 1.098, moneda: 'EUR' } }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      price: 1.098,
+      currency: null,
+      currencySkip: 'unsupported',
     });
   });
 });

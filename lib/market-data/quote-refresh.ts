@@ -171,21 +171,13 @@ function lookupArgentineSymbol(
 }
 
 /**
- * GLD as type `etf` still requires an explicit Yahoo currency so a trailing D
- * is not treated as USD. Every other instrument matches main: missing field is
- * inferred, and explicit values including EUR are kept.
+ * Main Yahoo currency at the refresh layer: a present field — including
+ * whitespace-only — is used as-is. Only a missing/empty field is inferred
+ * (`.BA` → ARS, else USD). Whitespace then fails adapt() like main, so AAPL
+ * falls through to Stooq.
  */
-function yahooCurrencyForCacheKey(
-  symbol: string,
-  raw: string | undefined,
-  cacheKey: string
-): string | null {
-  const tagged = (raw || '').trim();
-  if (cacheKey.startsWith('etf:GLD:')) {
-    const up = tagged.toUpperCase();
-    return up === 'USD' || up === 'ARS' ? up : null;
-  }
-  if (tagged) return tagged;
+function yahooCurrencyForCacheKey(symbol: string, raw: string | undefined): string {
+  if (raw && raw.length > 0) return raw;
   if (symbol === '^MERV') return 'PTS';
   if (symbol.endsWith('.BA')) return 'ARS';
   return 'USD';
@@ -328,6 +320,15 @@ export async function refreshQuotesForInvestments(
       console.warn('[quotes] skip CAFCI failure', { ticker: fci.ticker });
       continue;
     }
+    if (q.currencySkip) {
+      console.warn('[quotes] skip FCI currency', {
+        ticker: fci.ticker,
+        reason: q.currencySkip,
+        cafci: q.currency,
+        stored: fci.currency,
+      });
+      continue;
+    }
     const resolved = resolveFciQuoteCurrency({
       sourceCurrency: q.currency,
       storedCurrency: fci.currency,
@@ -378,14 +379,7 @@ export async function refreshQuotesForInvestments(
       if (q && q.price > 0) {
         for (const cacheKey of cacheKeys) {
           if (out.has(cacheKey)) continue;
-          const source = yahooCurrencyForCacheKey(ySym, q.currency, cacheKey);
-          if (!source) {
-            console.warn('[quotes] skip Yahoo unconfirmed currency', {
-              symbol: ySym,
-              currency: q.currency,
-            });
-            continue;
-          }
+          const source = yahooCurrencyForCacheKey(ySym, q.currency);
           const desired = cacheKeyCurrency.get(cacheKey) || source;
           const adapted = adapt({
             price: q.price,

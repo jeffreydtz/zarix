@@ -38,15 +38,24 @@ export interface FciQuote {
   ticker: string;
   price: number;
   currency: 'ARS' | 'USD' | null;
+  /** Present when CAFCI named a currency we must not apply (conflict or EUR). */
+  currencySkip?: 'conflict' | 'unsupported';
   changePct: number | null;
   timestamp: string | null;
   source: 'cafci' | 'yahoo';
 }
 
+/** ARS/USD, an explicit other label (EUR), or missing. */
+export type CafciCurrencyLabel = 'ARS' | 'USD' | 'unsupported' | null;
+
 interface CafciClass {
   fondoId: string;
   claseId: string;
   keys: string[];
+  /** Class-row moneda only; never inherited from the fund. */
+  classCurrency?: CafciCurrencyLabel;
+  fundCurrency?: CafciCurrencyLabel;
+  /** Class ARS/USD for existing tests; unsupported/missing is null. */
   currency: 'ARS' | 'USD' | null;
 }
 
@@ -103,35 +112,77 @@ function classKeys(fondo: Record<string, unknown>, clase: Record<string, unknown
   return [...new Set(names.map(fold).filter(Boolean))];
 }
 
-/** Never defaults to ARS. Unknown labels stay unknown. */
-export function parseCafciCurrency(...candidates: unknown[]): 'ARS' | 'USD' | null {
+/** First explicit label: ARS/USD, unsupported (EUR, …), or missing. */
+export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
+  if (value == null || typeof value === 'object') return null;
+  const folded = fold(String(value));
+  if (!folded) return null;
+  if (
+    folded.includes('USD')
+    || folded.includes('DOLAR')
+    || folded.includes('DOLLAR')
+    || folded === 'US'
+    || folded === 'USS'
+  ) {
+    return 'USD';
+  }
+  if (folded.includes('ARS') || folded.includes('PESO')) return 'ARS';
+  return 'unsupported';
+}
+
+function firstCurrencyLabel(...candidates: unknown[]): CafciCurrencyLabel {
   for (const c of candidates) {
-    if (c == null || typeof c === 'object') continue;
-    const folded = fold(String(c));
-    if (!folded) continue;
-    if (
-      folded.includes('USD')
-      || folded.includes('DOLAR')
-      || folded.includes('DOLLAR')
-      || folded === 'US'
-      || folded === 'USS'
-    ) {
-      return 'USD';
-    }
-    if (folded.includes('ARS') || folded.includes('PESO')) return 'ARS';
+    const parsed = parseCafciCurrencyLabel(c);
+    if (parsed != null) return parsed;
   }
   return null;
 }
 
-function rowCurrency(row: Record<string, unknown> | null): 'ARS' | 'USD' | null {
+function asArsUsd(label: CafciCurrencyLabel): 'ARS' | 'USD' | null {
+  return label === 'ARS' || label === 'USD' ? label : null;
+}
+
+/** Never defaults to ARS. Unknown and unsupported labels stay unknown here. */
+export function parseCafciCurrency(...candidates: unknown[]): 'ARS' | 'USD' | null {
+  return asArsUsd(firstCurrencyLabel(...candidates));
+}
+
+function rowCurrencyLabel(row: Record<string, unknown> | null): CafciCurrencyLabel {
   if (!row) return null;
-  return parseCafciCurrency(
+  return firstCurrencyLabel(
     row.moneda,
     row.currency,
     row.monedaClase,
     row.tipoMoneda,
     row.monedaFondo,
   );
+}
+
+/**
+ * catalog CLASS → ficha CLASS → ficha data-level → catalog FUND.
+ * Any unsupported label (EUR) or two disagreeing ARS/USD sources → skip.
+ */
+export function resolveCafciCurrencySources(opts: {
+  catalogClass: CafciCurrencyLabel;
+  fichaClass: CafciCurrencyLabel;
+  fichaData: CafciCurrencyLabel;
+  catalogFund: CafciCurrencyLabel;
+}): { currency: 'ARS' | 'USD' } | { currency: null; reason: 'conflict' | 'unsupported' | 'unknown' } {
+  const ordered: CafciCurrencyLabel[] = [
+    opts.catalogClass,
+    opts.fichaClass,
+    opts.fichaData,
+    opts.catalogFund,
+  ];
+  let seen: 'ARS' | 'USD' | null = null;
+  for (const label of ordered) {
+    if (label == null) continue;
+    if (label === 'unsupported') return { currency: null, reason: 'unsupported' };
+    if (seen && seen !== label) return { currency: null, reason: 'conflict' };
+    seen = label;
+  }
+  if (!seen) return { currency: null, reason: 'unknown' };
+  return { currency: seen };
 }
 
 async function fetchJson(url: string): Promise<unknown> {
@@ -151,15 +202,18 @@ function classesFromCatalogPayload(json: unknown): CafciClass[] {
     const fondoId = pickId(fondo, 'id', 'fondoId', 'idFondo');
     const nested = asRows(fondo.clases ?? fondo.classes ?? fondo.clase);
     const rows = nested.length > 0 ? nested : [fondo];
-    const fondoCurrency = rowCurrency(fondo);
+    const fundCurrency = rowCurrencyLabel(fondo);
     for (const clase of rows) {
       const claseId = pickId(clase, 'id', 'claseId', 'idClase') || fondoId;
       if (!fondoId || !claseId) continue;
+      const classCurrency = rowCurrencyLabel(clase);
       classes.push({
         fondoId,
         claseId,
         keys: classKeys(fondo, clase),
-        currency: rowCurrency(clase) ?? fondoCurrency,
+        classCurrency,
+        fundCurrency,
+        currency: asArsUsd(classCurrency),
       });
     }
   }
@@ -192,7 +246,8 @@ function matchClass(classes: CafciClass[], ticker: string): CafciClass | null {
 function parseFicha(json: unknown): {
   price: number;
   currency: 'ARS' | 'USD' | null;
-  classCurrency: 'ARS' | 'USD' | null;
+  fichaClass: CafciCurrencyLabel;
+  fichaData: CafciCurrencyLabel;
   timestamp: string | null;
 } | null {
   const rows = asRows(json);
@@ -204,22 +259,25 @@ function parseFicha(json: unknown): {
   );
   if (!Number.isFinite(price) || price <= 0) return null;
   const clase = asRecord(data.clase);
-  const fondo = asRecord(data.fondo);
-  const classCurrency = parseCafciCurrency(
+  const fichaClass = firstCurrencyLabel(
     clase?.moneda,
     clase?.currency,
     data.monedaClase,
   );
-  const otherCurrency = parseCafciCurrency(
+  const fichaData = firstCurrencyLabel(
     data.tipoMoneda,
     data.moneda,
     data.currency,
-    fondo?.moneda,
-    fondo?.currency,
   );
   const fecha = pickText(data.fecha, data.date, data.fechaValor, data.timestamp);
   const timestamp = fecha && Number.isFinite(Date.parse(fecha)) ? new Date(fecha).toISOString() : null;
-  return { price, currency: classCurrency ?? otherCurrency, classCurrency, timestamp };
+  return {
+    price,
+    currency: asArsUsd(fichaClass) ?? asArsUsd(fichaData),
+    fichaClass,
+    fichaData,
+    timestamp,
+  };
 }
 
 export async function fetchFciQuote(ticker: string): Promise<FciQuote | null> {
@@ -231,10 +289,37 @@ export async function fetchFciQuote(ticker: string): Promise<FciQuote | null> {
   const json = await fetchJson(`${CAFCI_BASE}/fondo/${match.fondoId}/clase/${match.claseId}/ficha`);
   const parsed = parseFicha(json);
   if (!parsed) return null;
+  const resolved = resolveCafciCurrencySources({
+    catalogClass: match.classCurrency !== undefined ? match.classCurrency : match.currency,
+    fichaClass: parsed.fichaClass,
+    fichaData: parsed.fichaData,
+    catalogFund: match.fundCurrency ?? null,
+  });
+  if (resolved.currency) {
+    return {
+      ticker: symbol,
+      price: parsed.price,
+      currency: resolved.currency,
+      changePct: null,
+      timestamp: parsed.timestamp,
+      source: 'cafci',
+    };
+  }
+  if (resolved.reason === 'unknown') {
+    return {
+      ticker: symbol,
+      price: parsed.price,
+      currency: null,
+      changePct: null,
+      timestamp: parsed.timestamp,
+      source: 'cafci',
+    };
+  }
   return {
     ticker: symbol,
     price: parsed.price,
-    currency: parsed.classCurrency ?? match.currency ?? parsed.currency,
+    currency: null,
+    currencySkip: resolved.reason,
     changePct: null,
     timestamp: parsed.timestamp,
     source: 'cafci',
