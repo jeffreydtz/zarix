@@ -71,7 +71,9 @@ export function isDollarBoardSymbol(
  * update instead of guessing from the ticker suffix.
  *
  * Explicit non-ARS source metadata wins. data912's dummy ARS tag is ignored
- * when a sibling-confirmed D/C listing exists.
+ * when a sibling-confirmed D/C listing exists. A trailing D/C with no peso
+ * sibling (IBMD, GLD before the catalog entry) is skipped, not treated as ARS.
+ * Everything else — ONs, letras, peso-only bonds, non-catalog stocks — stays ARS.
  */
 export function resolveQuoteCurrency(opts: {
   matchedSymbol: string;
@@ -94,6 +96,37 @@ export function inferListedCurrency(
   listed: ReadonlySet<string> | Map<string, unknown>
 ): QuoteCurrency {
   return resolveQuoteCurrency({ matchedSymbol, listed }) ?? 'ARS';
+}
+
+function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | null {
+  const tagged = (value || '').trim().toUpperCase();
+  if (tagged === 'USD' || tagged === 'ARS') return tagged;
+  return null;
+}
+
+/**
+ * FCI cuotaparte currency: never assume ARS. Prefer the CAFCI class/ficha
+ * moneda; fall back to the position's stored currency. Disagree or unknown → skip.
+ */
+export function resolveFciQuoteCurrency(opts: {
+  sourceCurrency: string | null | undefined;
+  storedCurrency: string | null | undefined;
+}): { currency: QuoteCurrency } | { currency: null; reason: 'disagree' | 'unknown' } {
+  const source = knownQuoteCurrency(opts.sourceCurrency);
+  const stored = knownQuoteCurrency(opts.storedCurrency);
+  if (source && stored && source !== stored) {
+    return { currency: null, reason: 'disagree' };
+  }
+  const currency = source ?? stored;
+  if (!currency) return { currency: null, reason: 'unknown' };
+  return { currency };
+}
+
+/** Yahoo/Stooq metadata is confirmation. A blank field is not inferred from the ticker. */
+export function confirmedSourceCurrency(
+  sourceCurrency: string | null | undefined
+): QuoteCurrency | null {
+  return knownQuoteCurrency(sourceCurrency);
 }
 
 export interface ListingCandidates {
@@ -138,6 +171,8 @@ export interface ConvertibleQuote {
   changePct: number | null;
   currency: string;
   timestamp: string | null;
+  /** data912 served this row from a failed-fetch fallback, not a live GET. */
+  stale?: boolean;
 }
 
 /**

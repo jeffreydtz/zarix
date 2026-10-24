@@ -2,12 +2,12 @@ import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
   listingCandidates,
+  resolveFciQuoteCurrency,
   resolveQuoteCurrency,
   type ConvertibleQuote,
 } from '@/lib/market-data/quote-currency';
 import { loadArgentineQuotes, type ArgentineQuoteIndex, type Data912Quote } from '@/lib/market-data/data912-client';
 import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
-import type { StockQuote } from '@/lib/market-data-types';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { fetchFciQuote } from '@/lib/market-data/cafci-client';
@@ -36,6 +36,11 @@ function quoteSourceTimestamp(quote: unknown): string | null {
   const time = timestamp instanceof Date ? timestamp.getTime()
     : typeof timestamp === 'string' && timestamp ? Date.parse(timestamp) : Number.NaN;
   return Number.isFinite(time) ? new Date(time).toISOString() : null;
+}
+
+/** Prefer the source observation; if the feed omitted it, store the fetch time (UTC). */
+export function quoteTimestampOrFetchedAt(quote: unknown, fetchedAtIso: string): string {
+  return quoteSourceTimestamp(quote) ?? fetchedAtIso;
 }
 
 export function desiredQuoteCurrency(inv: QuoteRefreshPosition): string {
@@ -132,6 +137,7 @@ function quoteFromMap(
     changePct: hit.changePct,
     currency,
     timestamp: quoteSourceTimestamp(hit),
+    stale: Boolean(hit.stale),
   };
 }
 
@@ -164,6 +170,19 @@ function lookupArgentineSymbol(
   return { status: 'miss' };
 }
 
+/**
+ * Main Yahoo currency at the refresh layer: a present field — including
+ * whitespace-only — is used as-is. Only a missing/empty field is inferred
+ * (`.BA` → ARS, else USD). Whitespace then fails adapt() like main, so AAPL
+ * falls through to Stooq.
+ */
+function yahooCurrencyForCacheKey(symbol: string, raw: string | undefined): string {
+  if (raw && raw.length > 0) return raw;
+  if (symbol === '^MERV') return 'PTS';
+  if (symbol.endsWith('.BA')) return 'ARS';
+  return 'USD';
+}
+
 function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number | null {
   const sell = quotes?.mep?.sell;
   const buy = quotes?.mep?.buy;
@@ -174,12 +193,31 @@ function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number
 
 /**
  * Precio de mercado en la moneda de cotización de cada posición.
- * data912 (ARG/CEDEAR/bono/ON) → Yahoo `.BA` / US → Stooq → CAFCI (FCI) → CoinGecko.
+ * data912 (ARG/CEDEAR/bono/ON) → Yahoo `.BA` / US → Stooq; FCI is CAFCI only; crypto via CoinGecko.
  */
 export async function refreshQuotesForInvestments(
   investments: QuoteRefreshPosition[],
   options?: { mepArsPerUsd?: number | null; fciBudgetMs?: number }
 ): Promise<Map<string, QuoteResult>> {
+  const fetchedAt = new Date().toISOString();
+  const stamp = (quote: ConvertibleQuote): QuoteResult | null => {
+    if (quote.stale) {
+      const original = quoteSourceTimestamp(quote);
+      if (!original) return null;
+      return {
+        price: quote.price,
+        changePct: quote.changePct,
+        currency: quote.currency,
+        timestamp: original,
+      };
+    }
+    return {
+      price: quote.price,
+      changePct: quote.changePct,
+      currency: quote.currency,
+      timestamp: quoteTimestampOrFetchedAt(quote, fetchedAt),
+    };
+  };
   const out = new Map<string, QuoteResult>();
   const yahooSymbolToCacheKeys = new Map<string, Set<string>>();
   const addYahoo = (symbol: string, cacheKey: string) => {
@@ -210,7 +248,6 @@ export async function refreshQuotesForInvestments(
     }
     if (inv.type === 'fci') {
       fciTickers.push({ ticker, cacheKey, currency });
-      argPositions.push({ type: inv.type, ticker, cacheKey, currency });
       continue;
     }
     if (isArgentineListedType(inv.type)) {
@@ -223,7 +260,7 @@ export async function refreshQuotesForInvestments(
   }
 
   let arg: ArgentineQuoteIndex | null = null;
-  if (argPositions.some((p) => p.type !== 'fci')) {
+  if (argPositions.length > 0) {
     try {
       arg = await loadArgentineQuotes();
     } catch {
@@ -242,13 +279,13 @@ export async function refreshQuotesForInvestments(
   };
 
   for (const pos of argPositions) {
-    if (pos.type === 'fci') continue;
     if (arg) {
       const lookedUp = lookupArgentineSymbol(arg, pos.type, pos.ticker, pos.currency);
       if (lookedUp.status === 'hit') {
         const adapted = adapt(lookedUp.quote, pos.currency);
-        if (adapted) {
-          out.set(pos.cacheKey, adapted);
+        const stamped = adapted ? stamp(adapted) : null;
+        if (stamped) {
+          out.set(pos.cacheKey, stamped);
           continue;
         }
       }
@@ -265,9 +302,6 @@ export async function refreshQuotesForInvestments(
 
   const uniqueFci = dedupeByCacheKey(fciTickers);
   const fciBudgetMs = options?.fciBudgetMs ?? FCI_REFRESH_BUDGET_MS;
-  const fciStarted = Date.now();
-  const fciDeadline = fciStarted + fciBudgetMs;
-  const fciYahooSymbols = new Set<string>();
   const fciQuotes = await mapWithLimit(
     uniqueFci,
     FCI_REFRESH_CONCURRENCY,
@@ -276,44 +310,57 @@ export async function refreshQuotesForInvestments(
       try {
         return await fetchFciQuote(fci.ticker);
       } catch {
-        return null;
+        return 'error' as const;
       }
     }
   );
   for (const [i, fci] of uniqueFci.entries()) {
     const q = fciQuotes[i];
-    if (q && q.price > 0) {
-      const adapted = adapt(
-        { price: q.price, changePct: q.changePct, currency: q.currency, timestamp: q.timestamp },
-        fci.currency
-      );
-      if (adapted) {
-        out.set(fci.cacheKey, adapted);
-        continue;
-      }
+    if (q === 'error' || !q || !(q.price > 0)) {
+      console.warn('[quotes] skip CAFCI failure', { ticker: fci.ticker });
+      continue;
     }
-    if (Date.now() >= fciDeadline) continue;
-    const yahooSymbol = yahooSymbolFor('fci', fci.ticker);
-    fciYahooSymbols.add(yahooSymbol);
-    addYahoo(yahooSymbol, fci.cacheKey);
+    if (q.currencySkip) {
+      console.warn('[quotes] skip FCI currency', {
+        ticker: fci.ticker,
+        reason: q.currencySkip,
+        cafci: q.currency,
+        stored: fci.currency,
+      });
+      continue;
+    }
+    const resolved = resolveFciQuoteCurrency({
+      sourceCurrency: q.currency,
+      storedCurrency: fci.currency,
+    });
+    if (!resolved.currency) {
+      console.warn('[quotes] skip FCI currency', {
+        ticker: fci.ticker,
+        reason: resolved.reason,
+        cafci: q.currency,
+        stored: fci.currency,
+      });
+      continue;
+    }
+    const adapted = adapt(
+      {
+        price: q.price,
+        changePct: q.changePct,
+        currency: resolved.currency,
+        timestamp: q.timestamp,
+      },
+      fci.currency || resolved.currency,
+    );
+    const stamped = adapted ? stamp(adapted) : null;
+    if (stamped) out.set(fci.cacheKey, stamped);
   }
 
   const yahooSymbols = Array.from(yahooSymbolToCacheKeys.keys());
   if (yahooSymbols.length > 0) {
-    const otherYahoo = yahooSymbols.filter((symbol) => !fciYahooSymbols.has(symbol));
-    const fciYahoo = yahooSymbols.filter((symbol) => fciYahooSymbols.has(symbol));
-    const yMap = new Map<string, StockQuote>();
-    if (otherYahoo.length > 0) {
-      const otherMap = await fetchYahooStockQuotesMap(otherYahoo);
-      for (const [symbol, quote] of otherMap) yMap.set(symbol, quote);
-    }
-    if (fciYahoo.length > 0 && Date.now() < fciDeadline) {
-      const fciMap = await fetchYahooStockQuotesMap(fciYahoo, { deadlineAt: fciDeadline });
-      for (const [symbol, quote] of fciMap) yMap.set(symbol, quote);
-    }
+    const yMap = await fetchYahooStockQuotesMap(yahooSymbols);
     const missingForStooq: string[] = [];
     const cacheKeyCurrency = new Map<string, string>();
-    for (const pos of [...argPositions, ...fciTickers]) {
+    for (const pos of argPositions) {
       cacheKeyCurrency.set(pos.cacheKey, pos.currency);
     }
     for (const inv of investments) {
@@ -332,15 +379,17 @@ export async function refreshQuotesForInvestments(
       if (q && q.price > 0) {
         for (const cacheKey of cacheKeys) {
           if (out.has(cacheKey)) continue;
-          const desired = cacheKeyCurrency.get(cacheKey) || q.currency;
+          const source = yahooCurrencyForCacheKey(ySym, q.currency);
+          const desired = cacheKeyCurrency.get(cacheKey) || source;
           const adapted = adapt({
             price: q.price,
             changePct: Number.isFinite(q.changePct) ? q.changePct : null,
-            currency: q.currency,
+            currency: source,
             timestamp: quoteSourceTimestamp(q),
           }, desired);
-          if (adapted) {
-            out.set(cacheKey, adapted);
+          const stamped = adapted ? stamp(adapted) : null;
+          if (stamped) {
+            out.set(cacheKey, stamped);
             anyApplied = true;
           }
         }
@@ -363,7 +412,8 @@ export async function refreshQuotesForInvestments(
               currency: stooq.currency,
               timestamp: quoteSourceTimestamp(stooq),
             }, desired);
-            if (adapted) out.set(cacheKey, adapted);
+            const stamped = adapted ? stamp(adapted) : null;
+            if (stamped) out.set(cacheKey, stamped);
           }
         }
       } catch {
@@ -376,12 +426,13 @@ export async function refreshQuotesForInvestments(
     try {
       const q = await cotizacionesService.getCryptoQuote(sym);
       if (Number.isFinite(q.priceUSD) && q.priceUSD > 0) {
-        out.set(quoteCacheKey('crypto', sym, 'USD'), {
+        const stamped = stamp({
           price: q.priceUSD,
           changePct: Number.isFinite(q.change24h) ? q.change24h : null,
           currency: 'USD',
           timestamp: quoteSourceTimestamp(q),
         });
+        if (stamped) out.set(quoteCacheKey('crypto', sym, 'USD'), stamped);
       }
     } catch {
       /* último precio guardado */

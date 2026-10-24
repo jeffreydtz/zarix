@@ -25,6 +25,7 @@ import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import AssetLogo from '@/components/investments/AssetLogo';
 import { priceFactorForType } from '@/lib/investments/type-meta';
+import { formatQuoteUpdatedAtLabel } from '@/lib/investments/quote-updated-at';
 
 interface InvestmentsListProps {
   investments: InvestmentWithPnL[];
@@ -47,22 +48,6 @@ const TYPE_ICON: Record<InvestmentType, typeof CandlestickChart> = {
   real_estate: Building2,
   other: Wallet,
 };
-
-function relativeFromNow(iso: string | null | undefined): string | null {
-  if (!iso) return null;
-  const ts = new Date(iso).getTime();
-  if (!Number.isFinite(ts)) return null;
-  const diffMs = Date.now() - ts;
-  if (diffMs < 0) return 'recién';
-  const min = Math.floor(diffMs / 60000);
-  if (min < 1) return 'recién';
-  if (min < 60) return `hace ${min} min`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `hace ${hr} h`;
-  const day = Math.floor(hr / 24);
-  if (day < 7) return `hace ${day} d`;
-  return new Date(iso).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
-}
 
 function formatPrice(value: number, currency: string): string {
   if (currency === 'ARS') {
@@ -199,11 +184,9 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                               <span className="opacity-75">variación N/D</span>
                             )}
                           </span>
-                          {inv.current_price_updated_at ? (
-                            <span className="text-muted-foreground/80">
-                              · {relativeFromNow(inv.current_price_updated_at)}
-                            </span>
-                          ) : null}
+                          <span className="text-muted-foreground/80">
+                            · {formatQuoteUpdatedAtLabel(inv.current_price_updated_at)}
+                          </span>
                         </>
                       )}
                     </div>
