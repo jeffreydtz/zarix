@@ -101,7 +101,8 @@ describe('personal access tokens', () => {
   it('compares hashes in constant time', () => {
     const { token, hash } = generatePersonalAccessToken();
     expect(hashesMatch(hashPersonalAccessToken(token), hash)).toBe(true);
-    expect(hashesMatch(hashPersonalAccessToken(token), hash.replace(/a/g, 'b'))).toBe(false);
+    const flipped = `${hash.slice(0, -1)}${hash.endsWith('0') ? '1' : '0'}`;
+    expect(hashesMatch(hashPersonalAccessToken(token), flipped)).toBe(false);
     expect(hashesMatch(hash, null)).toBe(false);
   });
 
