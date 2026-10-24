@@ -93,8 +93,10 @@ describe('liquid net worth excludes positions and broker cash', () => {
 
   it('include_in_total=false drops that account BALANCE only; positions still stay out of total', () => {
     const hiddenBank = { ...bank('hidden', 90), include_in_total: false };
-    const hiddenBroker = { ...bank('broker-hidden', 200), type: 'investment', include_in_total: false };
-    const visibleBroker = { ...bank('broker', 40), type: 'investment' };
+    const hiddenBroker: AccountWithBalance = {
+      ...bank('broker-hidden', 200), type: 'investment', include_in_total: false,
+    };
+    const visibleBroker: AccountWithBalance = { ...bank('broker', 40), type: 'investment' };
     const totals = accountsService.aggregateAccountTotals([
       bank('cash', 10), hiddenBank, hiddenBroker, visibleBroker,
     ]);

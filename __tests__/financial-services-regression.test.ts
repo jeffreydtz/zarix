@@ -135,7 +135,7 @@ describe('CU-004 financial regressions', () => {
     expect(position.profit_loss_usd).toBe(0);
   });
   it('uses and persists the provider currency for a bond quoted in ARS and purchased in USD', async () => {
-    replies = [{ data:[{ ...inv, type:'bond', ticker:'AL30', quantity:1000,
+    replies = [{ data:[{ ...inv, type:'bond', ticker:'AL30', quantity:1000, market_currency:null,
       current_price:null, current_price_updated_at:null, is_manual_price:false }] }, { data:[] }, { data:null }];
     mocks.arg.mockResolvedValue({ byStock:new Map(),byCedear:new Map(),
       byBond:new Map([['AL30',{ price:60000,changePct:2,currency:'ARS' }]]) });
@@ -145,6 +145,16 @@ describe('CU-004 financial regressions', () => {
     expect(position.market_value_usd).toBe(500);
     expect(position.profit_loss_usd).toBe(-500);
     expect(writes[0].value).toMatchObject({ current_price:60000,market_currency:'ARS' });
+  });
+  it('converts an ARS data912 quote to USD when the position is booked in USD', async () => {
+    replies = [{ data:[{ ...inv, type:'bond', ticker:'AL30', quantity:1000, market_currency:'USD',
+      current_price:null, current_price_updated_at:null, is_manual_price:false }] }, { data:[] }, { data:null }];
+    mocks.dolar.mockResolvedValue({ blue:{ sell:1200, buy:1150 }, mep:{ sell:1200, buy:1150 } });
+    mocks.arg.mockResolvedValue({ byStock:new Map(),byCedear:new Map(),
+      byBond:new Map([['AL30',{ price:60000,changePct:2,currency:'ARS' }]]) });
+    const [position] = await investmentsService.list('U1');
+    expect(position.market_price_currency).toBe('USD');
+    expect(writes[0].value).toMatchObject({ current_price:50, market_currency:'USD' });
   });
   it('does not value ARS holdings with a fake rate of 1', async () => {
     mocks.dolar.mockResolvedValue({ blue:{ sell:0,buy:0 } });

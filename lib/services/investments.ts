@@ -5,7 +5,7 @@ import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import { blueFxReference, type BlueFxReference } from '@/lib/blue-fx-reference';
-import type { Investment, InvestmentSale, InvestmentType } from '@/types/database';
+import type { Account, Investment, InvestmentSale, InvestmentType } from '@/types/database';
 import {
   accountCanHoldPosition,
   marketCurrencyForInvestment,
@@ -185,12 +185,11 @@ function usdToArsBlue(usd: number, arsPerUsd: number): number {
   return usd * arsPerUsd;
 }
 
-async function assertOwnedPositionAccount(
+async function loadOwnedActiveAccount(
   supabase: ReturnType<typeof createServiceClientSync>,
   accountId: string,
-  userId: string,
-  positionType: InvestmentType
-): Promise<void> {
+  userId: string
+): Promise<{ id: string; type: Account['type']; is_active: boolean | null }> {
   const { data, error } = await supabase
     .from('accounts')
     .select('id, type, is_active')
@@ -201,8 +200,18 @@ async function assertOwnedPositionAccount(
   if (!data || !data.is_active) {
     throw new ApiError('Cuenta no encontrada', 404);
   }
+  return data;
+}
+
+async function assertOwnedPositionAccount(
+  supabase: ReturnType<typeof createServiceClientSync>,
+  accountId: string,
+  userId: string,
+  positionType: InvestmentType
+): Promise<void> {
+  const data = await loadOwnedActiveAccount(supabase, accountId, userId);
   if (accountCanHoldPosition(data.type, positionType)) return;
-  throw new ApiError('La cuenta tiene que ser de tipo inversión (o cripto para posiciones cripto)');
+  throw new ApiError('La cuenta tiene que ser de tipo inversión (o cripto para posiciones cripto)', 400);
 }
 
 function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
@@ -500,9 +509,24 @@ class InvestmentsService {
       throw new Error('No hay campos para actualizar');
     }
     if (typeof row.account_id === 'string') {
-      const positionType = (row.type as InvestmentType | undefined)
-        ?? (await this.getById(id, userId)).type;
-      await assertOwnedPositionAccount(supabase, row.account_id, userId, positionType);
+      const account = await loadOwnedActiveAccount(supabase, row.account_id, userId);
+      if (account.type === 'investment') {
+        // Any instrument may live on an investment account.
+      } else if (account.type === 'crypto') {
+        const positionType = (row.type as InvestmentType | undefined)
+          ?? (await this.getById(id, userId)).type;
+        if (positionType !== 'crypto') {
+          throw new ApiError(
+            'La cuenta tiene que ser de tipo inversión (o cripto para posiciones cripto)',
+            400
+          );
+        }
+      } else {
+        throw new ApiError(
+          'La cuenta tiene que ser de tipo inversión (o cripto para posiciones cripto)',
+          400
+        );
+      }
     }
 
     const { data, error } = await supabase

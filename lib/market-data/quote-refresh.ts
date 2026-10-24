@@ -63,12 +63,16 @@ function quoteFromMap(
   if (!map) return null;
   const hit = map.get(symbol.toUpperCase());
   if (!hit || hit.price <= 0) return null;
-  const timestamp = (hit as { timestamp?: unknown }).timestamp;
+  const tagged = typeof hit.currency === 'string' ? hit.currency.trim().toUpperCase() : '';
+  // data912 tags every row ARS; an explicit non-ARS tag (tests / other feeds) wins.
+  const currency = tagged && tagged !== 'ARS'
+    ? tagged
+    : inferListedCurrency(hit.symbol || symbol, map);
   return {
     price: hit.price,
     changePct: hit.changePct,
-    currency: inferListedCurrency(hit.symbol || symbol, map),
-    timestamp: typeof timestamp === 'string' ? timestamp : null,
+    currency,
+    timestamp: quoteSourceTimestamp(hit),
   };
 }
 
