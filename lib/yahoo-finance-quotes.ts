@@ -119,12 +119,18 @@ const MODULE_OPTS = { validateResult: false as const };
  * Cotizaciones Yahoo vía [yahoo-finance2](https://www.npmjs.com/package/yahoo-finance2) (solo servidor).
  * Lote + reintentos; símbolos faltantes se consultan uno a uno.
  */
-export async function fetchYahooStockQuotesMap(tickers: string[]): Promise<Map<string, StockQuote>> {
+export async function fetchYahooStockQuotesMap(
+  tickers: string[],
+  options?: { deadlineAt?: number }
+): Promise<Map<string, StockQuote>> {
   const map = new Map<string, StockQuote>();
   if (tickers.length === 0) return map;
+  const withinBudget = () => options?.deadlineAt == null || Date.now() < options.deadlineAt;
 
   for (let round = 0; round < RETRY_MS.length; round++) {
+    if (!withinBudget()) return map;
     if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round]);
+    if (!withinBudget()) return map;
     try {
       const rows = await yahooFinance.quote(tickers, QUOTE_OPTS, MODULE_OPTS);
       mergeQuoteBatchIntoMap(map, rows);
@@ -136,9 +142,12 @@ export async function fetchYahooStockQuotesMap(tickers: string[]): Promise<Map<s
 
   const missing = tickers.filter((t) => !mapHasTicker(map, t));
   for (const t of missing) {
+    if (!withinBudget()) return map;
     await sleep(150);
     for (let round = 0; round < RETRY_MS.length; round++) {
+      if (!withinBudget()) return map;
       if (RETRY_MS[round] > 0) await sleep(RETRY_MS[round]);
+      if (!withinBudget()) return map;
       try {
         const rows = await yahooFinance.quote(t, QUOTE_OPTS, MODULE_OPTS);
         mergeQuoteBatchIntoMap(map, rows);

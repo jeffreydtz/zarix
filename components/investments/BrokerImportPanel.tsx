@@ -27,9 +27,11 @@ export default function BrokerImportPanel({ accounts, onImported }: BrokerImport
       const r = await fetch('/api/import/investments', { method: 'POST', body });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.error || 'No se pudo importar');
+      const conflicts = data.conflicts ?? data.updated ?? 0;
       setMessage(
         `Importadas ${data.imported ?? 0} posiciones` +
           (data.skipped ? ` · ${data.skipped} filas omitidas` : '') +
+          (conflicts ? ` · ${conflicts} conflicto (sin sobrescribir)` : '') +
           (data.failed ? ` · ${data.failed} con error` : '')
       );
       onImported();

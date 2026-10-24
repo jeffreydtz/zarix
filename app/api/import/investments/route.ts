@@ -3,9 +3,11 @@ import ExcelJS from 'exceljs';
 import { createClient } from '@/lib/supabase/server';
 import { parseCSVFile } from '@/lib/import/csv';
 import {
+  excelWorksheetToIolTable,
   iolHoldingToCreateInput,
   iolImportRequestId,
   parseIolPortfolioTable,
+  type IolCell,
 } from '@/lib/broker-import/iol-portfolio';
 import { investmentsService } from '@/lib/services/investments';
 import { accountsService } from '@/lib/services/accounts';
@@ -15,7 +17,7 @@ export const dynamic = 'force-dynamic';
 
 const MAX_IMPORT_FILE_BYTES = 4 * 1024 * 1024;
 
-async function tableFromUpload(file: File): Promise<{ headers: string[]; rows: string[][] }> {
+async function tableFromUpload(file: File): Promise<{ headers: string[]; rows: IolCell[][] }> {
   const name = (file.name || '').toLowerCase();
   const buf = Buffer.from(await file.arrayBuffer());
   if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
@@ -23,13 +25,7 @@ async function tableFromUpload(file: File): Promise<{ headers: string[]; rows: s
     await wb.xlsx.load(buf as unknown as ArrayBuffer);
     const sheet = wb.worksheets[0];
     if (!sheet) return { headers: [], rows: [] };
-    const matrix: string[][] = [];
-    sheet.eachRow((row) => {
-      const values = Array.isArray(row.values) ? row.values.slice(1) : [];
-      matrix.push(values.map((v) => (v == null ? '' : String(v))));
-    });
-    if (matrix.length === 0) return { headers: [], rows: [] };
-    return { headers: matrix[0], rows: matrix.slice(1) };
+    return excelWorksheetToIolTable(sheet);
   }
   return parseCSVFile(buf.toString('utf8'));
 }
@@ -66,7 +62,7 @@ export async function POST(req: NextRequest) {
     const parsed = parseIolPortfolioTable(table.headers, table.rows);
     const created: Array<{ id: string; ticker: string }> = [];
     const failed: Array<{ ticker: string; reason: string }> = [];
-    const alreadyImported: Array<{ ticker: string }> = [];
+    const conflicts: Array<{ ticker: string; reason: string }> = [];
 
     for (const [index, holding] of parsed.holdings.entries()) {
       try {
@@ -78,7 +74,10 @@ export async function POST(req: NextRequest) {
         created.push({ id: row.id, ticker: holding.ticker });
       } catch (err) {
         if (err instanceof ApiError && err.status === 409) {
-          alreadyImported.push({ ticker: holding.ticker });
+          conflicts.push({
+            ticker: holding.ticker,
+            reason: 'updated/conflict: la posición ya existe con otro precio o cantidad',
+          });
           continue;
         }
         failed.push({
@@ -90,10 +89,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       imported: created.length,
-      skipped: parsed.skipped.length + alreadyImported.length,
+      skipped: parsed.skipped.length,
+      updated: conflicts.length,
+      conflicts: conflicts.length,
       failed: failed.length,
       created,
       skippedRows: parsed.skipped.slice(0, 50),
+      conflictRows: conflicts.slice(0, 50),
       failedRows: failed.slice(0, 50),
     });
   } catch (error: unknown) {

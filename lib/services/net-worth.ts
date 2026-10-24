@@ -5,7 +5,6 @@ import {
   type PartialAccountValuation,
 } from '@/lib/services/accounts';
 import { investmentsService } from '@/lib/services/investments';
-import { cotizacionesService } from '@/lib/services/cotizaciones';
 import type { BlueFxComponentReference } from '@/lib/blue-fx-reference';
 import { composeLiquidNetWorth } from '@/lib/services/liquid-net-worth';
 
@@ -58,12 +57,21 @@ const EMPTY_BALANCES = {
  * deuda de tarjetas). Las posiciones de `public.investments` y el cash de
  * cuentas investment/crypto NO entran, aunque include_in_total sea true.
  */
+function blueRateFromConvertedAccounts(
+  balances: { blueReferences?: Array<{ rate: number }> },
+  accounts: Array<{ blueReference?: { rate: number } }>
+): number {
+  const fromTotals = balances.blueReferences?.find((reference) => reference.rate > 0)?.rate;
+  if (fromTotals && fromTotals > 0) return fromTotals;
+  const fromRow = accounts.find((account) => (account.blueReference?.rate ?? 0) > 0)?.blueReference?.rate;
+  return fromRow && fromRow > 0 ? fromRow : 0;
+}
+
 export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
-  const [accounts, portfolio, dolar] = await Promise.all([
+  const [accounts, portfolio] = await Promise.all([
     accountsService.list(userId, { allowPartialValuation: true }),
     investmentsService
       .getPortfolioSummary(userId, { skipQuoteRefresh: true, skipDailySnapshot: true }),
-    cotizacionesService.getDolarQuotes({ preferCache: true }).catch(() => null),
   ]);
 
   const balances =
@@ -74,7 +82,7 @@ export async function computeNetWorth(userId: string): Promise<NetWorthNow> {
   return composeLiquidNetWorth({
     balances,
     portfolio,
-    blueRate: dolar?.blue?.sell ?? 0,
+    blueRate: blueRateFromConvertedAccounts(balances, accounts),
   });
 }
 

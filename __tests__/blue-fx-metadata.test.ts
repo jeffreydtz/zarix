@@ -314,6 +314,8 @@ describe('derived RN08 blue FX metadata propagation', () => {
     expect(now.totalARSBlue).toBe(130000);
     expect(now.investmentsUSD).toBe(100);
     expect(now.positionsUSD).toBe(100);
+    expect(now.blueRate).toBe(accountReference.rate);
+    expect(now.blueRate).not.toBe(1500);
     expect(now.blueReferences).toEqual([
       { component: 'accounts', reference: accountReference },
       { component: 'portfolio', reference: portfolioReference },

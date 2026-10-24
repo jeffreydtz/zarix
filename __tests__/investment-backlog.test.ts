@@ -11,10 +11,13 @@ import {
   composeLiquidNetWorth,
 } from '@/lib/services/liquid-net-worth';
 import { accountsService, type AccountWithBalance } from '@/lib/services/accounts';
+import ExcelJS from 'exceljs';
 import {
+  excelWorksheetToIolTable,
   iolHoldingToCreateInput,
   iolImportRequestId,
   parseIolPortfolioCsv,
+  parseIolPortfolioTable,
 } from '@/lib/broker-import/iol-portfolio';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import {
@@ -48,6 +51,20 @@ describe('USD quote adaptation for D tickers', () => {
     expect(isDollarBoardSymbol('AL30D', new Set(['AL30D']))).toBe(true);
     expect(inferListedCurrency('AL30D', new Set(['AL30D']))).toBe('USD');
     expect(isDollarBoardSymbol('YPFD', new Set(['YPFD']))).toBe(false);
+    expect(isDollarBoardSymbol('IBMD', new Set(['IBMD']))).toBe(true);
+    expect(inferListedCurrency('IBMD', new Set(['IBMD']))).toBe('USD');
+  });
+
+  it('does not divide an isolated IBMD quote by MEP', () => {
+    const listed = new Set(['IBMD']);
+    expect(inferListedCurrency('IBMD', listed)).toBe('USD');
+    const adapted = adaptQuoteToMarketCurrency(
+      { price: 92, changePct: 0, currency: inferListedCurrency('IBMD', listed), timestamp: null },
+      'USD',
+      1300
+    );
+    expect(adapted).toEqual({ price: 92, changePct: 0, currency: 'USD', timestamp: null });
+    expect(adapted?.price).not.toBeCloseTo(92 / 1300, 8);
   });
 
   it('does not divide an already-USD AL30D quote by MEP when the peso board is missing', () => {
@@ -238,6 +255,78 @@ describe('IOL Mi Portafolio CSV', () => {
     expect(parsed.skipped[0]?.reason).toMatch(/moneda/i);
   });
 
+  it('maps exact USD/ARS labels and skips other currencies', () => {
+    const csv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'AL30D,BONO,100,91.5,92,U$S,Bono',
+      'AAPLD,Apple D,10,100,101,DOLAR MEP,CEDEAR',
+      'GGAL,Galicia,1,90,91,PESOS,Accion',
+      'CASH,Cash,1,1,1,$,Accion',
+      'SHOP,Shopify,1,10,11,Dólares canadienses,CEDEAR',
+      'AMX,America Movil,1,10,11,Pesos mexicanos,CEDEAR',
+      'UNK,Unknown,1,10,11,???,Accion',
+    ].join('\n');
+    const parsed = parseIolPortfolioCsv(csv);
+    expect(parsed.holdings.map((row) => [row.ticker, row.marketCurrency])).toEqual([
+      ['AL30D', 'USD'],
+      ['AAPLD', 'USD'],
+      ['GGAL', 'ARS'],
+      ['CASH', 'ARS'],
+    ]);
+    expect(parsed.skipped).toHaveLength(3);
+    expect(parsed.skipped.every((row) => /moneda/i.test(row.reason))).toBe(true);
+  });
+
+  it('keeps plain CSV decimals and only treats dots as thousands when the file is es-AR', () => {
+    const decimalCsv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'AL30D,BONO AL30D,1000,92.345,0.125,USD,Bono',
+    ].join('\n');
+    const decimal = parseIolPortfolioCsv(decimalCsv);
+    expect(decimal.holdings[0]).toMatchObject({
+      ticker: 'AL30D', quantity: 1000, purchasePrice: 92.345, lastPrice: 0.125,
+    });
+
+    const esArCsv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'GGAL,Grupo Galicia,1.000,90.000,91.000,ARS,Accion',
+      'AAPLD,Apple,"1.234,50","1.200,00","1.250,25",ARS,CEDEAR',
+    ].join('\n');
+    const esAr = parseIolPortfolioCsv(esArCsv);
+    expect(esAr.holdings[0]).toMatchObject({
+      ticker: 'GGAL', quantity: 1000, purchasePrice: 90000, lastPrice: 91000,
+    });
+    expect(esAr.holdings[1]).toMatchObject({
+      ticker: 'AAPLD', quantity: 1234.5, purchasePrice: 1200, lastPrice: 1250.25,
+    });
+  });
+
+  it('keeps numeric Excel cells instead of inflating 92.345×1000', async () => {
+    const wb = new ExcelJS.Workbook();
+    const sheet = wb.addWorksheet('Mi Portafolio');
+    sheet.addRow(['Simbolo', 'Descripcion', 'Cantidad', 'PPC', 'Ultimo', 'Moneda', 'Tipo']);
+    const data = sheet.addRow(['AL30D', 'BONO AL30D', 1000, 92.345, 0.125, 'USD', 'Bono']);
+    data.getCell(5).value = { formula: '1/8', result: 0.125 };
+
+    const buf = await wb.xlsx.writeBuffer();
+    const loaded = new ExcelJS.Workbook();
+    await loaded.xlsx.load(buf as unknown as ArrayBuffer);
+    const table = excelWorksheetToIolTable(loaded.worksheets[0]);
+    expect(table.rows[0][2]).toBe(1000);
+    expect(table.rows[0][3]).toBe(92.345);
+    expect(typeof table.rows[0][4]).toBe('number');
+    expect(table.rows[0][4]).toBeCloseTo(0.125, 10);
+
+    const parsed = parseIolPortfolioTable(table.headers, table.rows);
+    expect(parsed.holdings).toHaveLength(1);
+    expect(parsed.holdings[0]).toMatchObject({
+      ticker: 'AL30D', quantity: 1000, purchasePrice: 92.345,
+    });
+    expect(parsed.holdings[0].lastPrice).toBeCloseTo(0.125, 10);
+    expect(parsed.holdings[0].purchasePrice).not.toBe(92345);
+    expect(parsed.holdings[0].lastPrice).not.toBe(125);
+  });
+
   it('imports as auto-priced and reuses a deterministic request id', () => {
     const csv = [
       'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
@@ -247,12 +336,14 @@ describe('IOL Mi Portafolio CSV', () => {
     const input = iolHoldingToCreateInput(holding, 'acct-1');
     expect(input.isManualPrice).toBe(false);
     expect(input.currentPrice).toBe(92);
-    const a = iolImportRequestId('user-1', 'acct-1', holding, 0);
-    const b = iolImportRequestId('user-1', 'acct-1', holding, 0);
-    const other = iolImportRequestId('user-1', 'acct-1', holding, 1);
+    const a = iolImportRequestId('fixture-user', 'acct-1', holding, 0);
+    const b = iolImportRequestId('fixture-user', 'acct-1', holding, 0);
+    const other = iolImportRequestId('fixture-user', 'acct-1', holding, 1);
     expect(a).toBe(b);
     expect(a).not.toBe(other);
     expect(validTransactionRequestId(a)).toBe(true);
+    const changed = { ...holding, quantity: 50, purchasePrice: 80, lastPrice: 93 };
+    expect(iolImportRequestId('fixture-user', 'acct-1', changed, 0)).toBe(a);
   });
 
   it('maps ON without treating "Bono" as an obligación negociable', () => {

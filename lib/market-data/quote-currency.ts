@@ -20,8 +20,14 @@ function stripDollarBoard(symbol: string): string {
 }
 
 /**
- * Un símbolo es la rueda D/C sólo si el mismo índice tiene la rueda en pesos.
- * Evita tratar `YPFD` (ticker peso de YPF) como cotización dólar.
+ * Tickers peso que terminan en D/C. `YPFD` es YPF en BYMA, no la rueda dólar de YPF.
+ * Isolated D listings (AL30D, AAPLD, IBMD) are USD even without the peso counterpart.
+ */
+const PESO_TICKERS_ENDING_IN_DC = new Set(['YPFD']);
+
+/**
+ * Un símbolo es la rueda D/C si el mismo índice tiene la rueda en pesos, o si
+ * es un listing D/C aislado. Evita tratar `YPFD` (ticker peso de YPF) como USD.
  */
 export function isDollarBoardSymbol(
   symbol: string,
@@ -32,19 +38,18 @@ export function isDollarBoardSymbol(
     listed instanceof Map ? listed.has(key) : listed.has(key);
   if (t.endsWith('.D')) {
     const root = t.slice(0, -2);
-    return has(root) || has(`${root}O`) || isIsolatedDollarBoardRoot(root);
+    return has(root) || has(`${root}O`) || isIsolatedDollarBoardSymbol(t);
   }
   if (t.endsWith('D') || t.endsWith('C')) {
     const root = t.slice(0, -1);
     if (has(root) || has(`${root}O`)) return true;
-    // Isolated D/C listing (AL30D, AAPLD) is still USD. YPFD (root YPF) is the peso ticker.
-    return isIsolatedDollarBoardRoot(root);
+    return isIsolatedDollarBoardSymbol(t);
   }
   return false;
 }
 
-function isIsolatedDollarBoardRoot(root: string): boolean {
-  return root.length >= 4 || /\d/.test(root);
+function isIsolatedDollarBoardSymbol(fullSymbol: string): boolean {
+  return !PESO_TICKERS_ENDING_IN_DC.has(fullSymbol);
 }
 
 export function inferListedCurrency(

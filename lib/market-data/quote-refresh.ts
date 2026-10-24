@@ -7,6 +7,7 @@ import {
 } from '@/lib/market-data/quote-currency';
 import { loadArgentineQuotes, type ArgentineQuoteIndex, type Data912Quote } from '@/lib/market-data/data912-client';
 import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
+import type { StockQuote } from '@/lib/market-data-types';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { fetchFciQuote } from '@/lib/market-data/cafci-client';
@@ -90,7 +91,7 @@ export async function mapWithLimit<T, R>(
     while (true) {
       const i = next++;
       if (i >= items.length) return;
-      if (Date.now() - start > budgetMs) {
+      if (Date.now() - start >= budgetMs) {
         results[i] = undefined;
         continue;
       }
@@ -109,16 +110,19 @@ function argKind(type: InvestmentType): 'stock_arg' | 'cedear' | 'bond' | 'on' |
 
 function quoteFromMap(
   map: Map<string, Data912Quote> | undefined,
-  symbol: string
+  symbol: string,
+  assumedCurrency?: ConvertibleQuote['currency']
 ): ConvertibleQuote | null {
   if (!map) return null;
   const hit = map.get(symbol.toUpperCase());
   if (!hit || hit.price <= 0) return null;
   const tagged = typeof hit.currency === 'string' ? hit.currency.trim().toUpperCase() : '';
   // data912 tags every row ARS; an explicit non-ARS tag (tests / other feeds) wins.
+  // A D/C listing we asked for (IBM USD → IBMD) is already USD — do not reconvert.
   const currency = tagged && tagged !== 'ARS'
     ? tagged
-    : inferListedCurrency(hit.symbol || symbol, map);
+    : assumedCurrency
+      ?? inferListedCurrency(hit.symbol || symbol, map);
   return {
     price: hit.price,
     changePct: hit.changePct,
@@ -140,10 +144,13 @@ function lookupArgentineSymbol(
           : type === 'on' ? [arg.byCorp, arg.byBond]
             : [];
   const preferred = marketCurrency || 'ARS';
-  const { symbols } = listingCandidates(ticker, preferred, argKind(type));
+  const { symbols, root } = listingCandidates(ticker, preferred, argKind(type));
   for (const map of maps) {
     for (const symbol of symbols) {
-      const hit = quoteFromMap(map, symbol);
+      const dollarListing =
+        symbol === `${root}D` || symbol === `${root}C` || symbol.endsWith('.D');
+      const assumed = preferred === 'USD' && dollarListing ? 'USD' : undefined;
+      const hit = quoteFromMap(map, symbol, assumed);
       if (hit) return hit;
     }
   }
@@ -164,7 +171,7 @@ function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number
  */
 export async function refreshQuotesForInvestments(
   investments: QuoteRefreshPosition[],
-  options?: { mepArsPerUsd?: number | null }
+  options?: { mepArsPerUsd?: number | null; fciBudgetMs?: number }
 ): Promise<Map<string, QuoteResult>> {
   const out = new Map<string, QuoteResult>();
   const yahooSymbolToCacheKeys = new Map<string, Set<string>>();
@@ -243,10 +250,14 @@ export async function refreshQuotesForInvestments(
   }
 
   const uniqueFci = dedupeByCacheKey(fciTickers);
+  const fciBudgetMs = options?.fciBudgetMs ?? FCI_REFRESH_BUDGET_MS;
+  const fciStarted = Date.now();
+  const fciDeadline = fciStarted + fciBudgetMs;
+  const fciYahooSymbols = new Set<string>();
   const fciQuotes = await mapWithLimit(
     uniqueFci,
     FCI_REFRESH_CONCURRENCY,
-    FCI_REFRESH_BUDGET_MS,
+    fciBudgetMs,
     async (fci) => {
       try {
         return await fetchFciQuote(fci.ticker);
@@ -267,12 +278,25 @@ export async function refreshQuotesForInvestments(
         continue;
       }
     }
-    addYahoo(yahooSymbolFor('fci', fci.ticker), fci.cacheKey);
+    if (Date.now() >= fciDeadline) continue;
+    const yahooSymbol = yahooSymbolFor('fci', fci.ticker);
+    fciYahooSymbols.add(yahooSymbol);
+    addYahoo(yahooSymbol, fci.cacheKey);
   }
 
   const yahooSymbols = Array.from(yahooSymbolToCacheKeys.keys());
   if (yahooSymbols.length > 0) {
-    const yMap = await fetchYahooStockQuotesMap(yahooSymbols);
+    const otherYahoo = yahooSymbols.filter((symbol) => !fciYahooSymbols.has(symbol));
+    const fciYahoo = yahooSymbols.filter((symbol) => fciYahooSymbols.has(symbol));
+    const yMap = new Map<string, StockQuote>();
+    if (otherYahoo.length > 0) {
+      const otherMap = await fetchYahooStockQuotesMap(otherYahoo);
+      for (const [symbol, quote] of otherMap) yMap.set(symbol, quote);
+    }
+    if (fciYahoo.length > 0 && Date.now() < fciDeadline) {
+      const fciMap = await fetchYahooStockQuotesMap(fciYahoo, { deadlineAt: fciDeadline });
+      for (const [symbol, quote] of fciMap) yMap.set(symbol, quote);
+    }
     const missingForStooq: string[] = [];
     const cacheKeyCurrency = new Map<string, string>();
     for (const pos of [...argPositions, ...fciTickers]) {

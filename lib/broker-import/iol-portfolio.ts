@@ -27,6 +27,11 @@ export interface IolParseResult {
   skipped: Array<{ reason: string; raw: Record<string, string> }>;
 }
 
+/** Excel numeric cells stay numbers so locale parsing cannot inflate them. */
+export type IolCell = string | number;
+
+type NumberLocale = 'es-AR' | 'decimal';
+
 function foldHeader(value: string): string {
   return value
     .normalize('NFD')
@@ -56,12 +61,65 @@ function mapHeaders(headers: string[]): Map<string, number> {
   return out;
 }
 
-function parseNumber(raw: string | undefined): number | null {
-  if (raw == null) return null;
+function numericSample(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === '-' || trimmed === '—') return null;
+  const cleaned = trimmed.replace(/\s/g, '').replace(/[^\d,.]/g, '');
+  return cleaned || null;
+}
+
+function detectNumberLocale(rows: IolCell[][], map: Map<string, number>): NumberLocale {
+  const idxs = ['quantity', 'purchasePrice', 'lastPrice']
+    .map((key) => map.get(key))
+    .filter((idx): idx is number => idx != null);
+  let commaDecimal = false;
+  let multiDotGroups = false;
+  let integerThousands = 0;
+  let ambiguousThreeDigit = 0;
+  let trueDecimals = 0;
+  for (const row of rows) {
+    for (const idx of idxs) {
+      const value = row[idx];
+      if (typeof value !== 'string') continue;
+      const cleaned = numericSample(value);
+      if (!cleaned) continue;
+      const hasComma = cleaned.includes(',');
+      const hasDot = cleaned.includes('.');
+      if (hasComma) commaDecimal = true;
+      if (!hasDot || hasComma) continue;
+      const parts = cleaned.split('.');
+      if (parts.length > 2) {
+        multiDotGroups = true;
+        continue;
+      }
+      const fraction = parts[1] ?? '';
+      if (fraction.length === 1 || fraction.length === 2 || parts[0] === '0') {
+        trueDecimals += 1;
+      } else if (fraction.length === 3 && fraction === '000') {
+        integerThousands += 1;
+      } else if (fraction.length === 3) {
+        ambiguousThreeDigit += 1;
+      } else {
+        trueDecimals += 1;
+      }
+    }
+  }
+  if (commaDecimal || multiDotGroups) return 'es-AR';
+  // `1.000` / `90.000` look like es-AR thousands only when the file has no
+  // real decimals (`0.125`, `91.5`) and no 3-place prices (`92.345`).
+  if (integerThousands > 0 && trueDecimals === 0 && ambiguousThreeDigit === 0) {
+    return 'es-AR';
+  }
+  return 'decimal';
+}
+
+function parseNumber(raw: IolCell | undefined, locale: NumberLocale = 'decimal'): number | null {
+  if (raw == null || raw === '') return null;
+  if (typeof raw === 'number') return Number.isFinite(raw) ? raw : null;
   const trimmed = raw.trim();
   if (!trimmed || trimmed === '-' || trimmed === '—') return null;
   const sign = trimmed.startsWith('-') ? -1 : 1;
-  const cleaned = trimmed.replace(/\s/g, '').replace(/[^\d,.]/g, '');
+  const cleaned = numericSample(trimmed);
   if (!cleaned) return null;
   const hasComma = cleaned.includes(',');
   const hasDot = cleaned.includes('.');
@@ -86,8 +144,7 @@ function parseNumber(raw: string | undefined): number | null {
       } else {
         normalized = `${parts.slice(0, -1).join('')}.${decimals}`;
       }
-    } else if (parts[1].length === 3) {
-      // es-AR integer thousands: "1.000", "90.000". Plain decimals use 1–2 places.
+    } else if (locale === 'es-AR' && parts[1].length === 3) {
       normalized = `${parts[0]}${parts[1]}`;
     }
   }
@@ -95,23 +152,43 @@ function parseNumber(raw: string | undefined): number | null {
   return Number.isFinite(n) ? n * sign : null;
 }
 
-const KNOWN_CURRENCIES = new Set(['USD', 'ARS', 'EUR']);
+/** Keep `$` so `US$` / `U$S` / `$` stay distinct after folding. */
+function foldCurrencyLabel(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function compactCurrency(folded: string): string {
+  return folded.replace(/[^A-Z0-9$]/g, '');
+}
+
+const USD_LABELS = new Set([
+  'USD',
+  'US$',
+  'U$S',
+  'USS',
+  'DOLAR',
+  'DOLARES',
+  'DOLARMEP',
+  'DOLARESMEP',
+  'DOLARCABLE',
+  'DOLARESCABLE',
+  'DOLARCCL',
+  'DOLARESCCL',
+]);
+
+const ARS_LABELS = new Set(['ARS', 'PESO', 'PESOS', '$']);
 
 function parseCurrency(raw: string | undefined): string | null {
-  const folded = foldHeader(raw || '');
-  if (!folded) return 'ARS';
-  if (
-    folded.includes('usd') ||
-    folded.includes('dolar') ||
-    folded === 'us' ||
-    folded === 'uss'
-  ) {
-    return 'USD';
-  }
-  if (folded.includes('ars') || folded.includes('peso')) return 'ARS';
-  if (folded.includes('eur') || folded.includes('euro')) return 'EUR';
-  const upper = folded.toUpperCase();
-  if (KNOWN_CURRENCIES.has(upper)) return upper;
+  const original = (raw || '').trim();
+  if (!original) return 'ARS';
+  const compact = compactCurrency(foldCurrencyLabel(original));
+  if (USD_LABELS.has(compact)) return 'USD';
+  if (ARS_LABELS.has(compact)) return 'ARS';
   return null;
 }
 
@@ -135,12 +212,56 @@ function mapType(raw: string | undefined, ticker: string): InvestmentType {
   return 'other';
 }
 
-function cell(row: string[], index: number | undefined): string {
+function cell(row: IolCell[], index: number | undefined): IolCell {
   if (index == null || index < 0 || index >= row.length) return '';
   return row[index] ?? '';
 }
 
-export function parseIolPortfolioTable(headers: string[], rows: string[][]): IolParseResult {
+function cellText(row: IolCell[], index: number | undefined): string {
+  const value = cell(row, index);
+  return typeof value === 'string' ? value : String(value);
+}
+
+/**
+ * Preserve ExcelJS numbers (including formula results). Stringifying a numeric
+ * 92.345 would later be read as es-AR thousands (92345).
+ */
+export function iolCellFromExcel(value: unknown): IolCell {
+  if (value == null) return '';
+  if (typeof value === 'number') return Number.isFinite(value) ? value : '';
+  if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return '';
+    return value.toISOString();
+  }
+  if (typeof value === 'object') {
+    const obj = value as { result?: unknown; richText?: Array<{ text?: string }>; text?: unknown };
+    if ('result' in obj) return iolCellFromExcel(obj.result);
+    if (Array.isArray(obj.richText)) {
+      return obj.richText.map((part) => part?.text ?? '').join('');
+    }
+    if (obj.text != null) return iolCellFromExcel(obj.text);
+  }
+  return String(value);
+}
+
+export function excelWorksheetToIolTable(sheet: {
+  eachRow: (cb: (row: { values: unknown }) => void) => void;
+}): { headers: string[]; rows: IolCell[][] } {
+  const matrix: IolCell[][] = [];
+  sheet.eachRow((row) => {
+    const values = Array.isArray(row.values) ? row.values.slice(1) : [];
+    matrix.push(values.map((value) => iolCellFromExcel(value)));
+  });
+  if (matrix.length === 0) return { headers: [], rows: [] };
+  return {
+    headers: matrix[0].map((header) => (typeof header === 'string' ? header : String(header))),
+    rows: matrix.slice(1),
+  };
+}
+
+export function parseIolPortfolioTable(headers: string[], rows: IolCell[][]): IolParseResult {
   const map = mapHeaders(headers);
   const holdings: IolHoldingRow[] = [];
   const skipped: IolParseResult['skipped'] = [];
@@ -148,34 +269,35 @@ export function parseIolPortfolioTable(headers: string[], rows: string[][]): Iol
   if (tickerIdx == null) {
     return { holdings, skipped: [{ reason: 'No hay columna de símbolo/especie', raw: {} }] };
   }
+  const locale = detectNumberLocale(rows, map);
 
   for (const row of rows) {
     const raw: Record<string, string> = {};
-    headers.forEach((h, i) => { raw[h] = row[i] ?? ''; });
-    const ticker = cell(row, tickerIdx).trim().toUpperCase().replace(/\.BA$/i, '');
+    headers.forEach((h, i) => { raw[h] = row[i] == null ? '' : String(row[i]); });
+    const ticker = cellText(row, tickerIdx).trim().toUpperCase().replace(/\.BA$/i, '');
     if (!ticker || ticker === 'TOTAL' || ticker === 'ESPECIE') {
       skipped.push({ reason: 'Fila sin ticker', raw });
       continue;
     }
-    const quantity = parseNumber(cell(row, map.get('quantity')));
+    const quantity = parseNumber(cell(row, map.get('quantity')), locale);
     if (quantity == null || quantity <= 0) {
       skipped.push({ reason: 'Cantidad inválida', raw });
       continue;
     }
-    const purchase = parseNumber(cell(row, map.get('purchasePrice')))
-      ?? parseNumber(cell(row, map.get('lastPrice')));
+    const purchase = parseNumber(cell(row, map.get('purchasePrice')), locale)
+      ?? parseNumber(cell(row, map.get('lastPrice')), locale);
     if (purchase == null || purchase <= 0) {
       skipped.push({ reason: 'Precio inválido', raw });
       continue;
     }
-    const lastPrice = parseNumber(cell(row, map.get('lastPrice')));
-    const currency = parseCurrency(cell(row, map.get('currency')));
+    const lastPrice = parseNumber(cell(row, map.get('lastPrice')), locale);
+    const currency = parseCurrency(cellText(row, map.get('currency')));
     if (!currency) {
       skipped.push({ reason: 'Moneda no reconocida', raw });
       continue;
     }
-    const type = mapType(cell(row, map.get('type')), ticker);
-    const name = cell(row, map.get('name')).trim() || ticker;
+    const type = mapType(cellText(row, map.get('type')), ticker);
+    const name = cellText(row, map.get('name')).trim() || ticker;
     holdings.push({
       ticker,
       name,
@@ -215,14 +337,15 @@ export function iolHoldingToCreateInput(row: IolHoldingRow, accountId: string) {
   };
 }
 
-/** Stable create_investment_once key for a parsed IOL row. Same file → same id. */
+/**
+ * Stable create_investment_once key for a parsed IOL row.
+ * Identity is ticker/account/row — not quantity or price — so a later file
+ * with a different PPC still collides instead of inserting a duplicate.
+ */
 export function iolImportRequestId(
   userId: string,
   accountId: string,
-  holding: Pick<
-    IolHoldingRow,
-    'ticker' | 'type' | 'quantity' | 'purchasePrice' | 'purchaseCurrency' | 'marketCurrency'
-  >,
+  holding: Pick<IolHoldingRow, 'ticker' | 'type' | 'purchaseCurrency' | 'marketCurrency'>,
   rowIndex: number
 ): string {
   const digest = createHash('sha256')
@@ -232,8 +355,6 @@ export function iolImportRequestId(
         accountId,
         holding.ticker,
         holding.type,
-        String(holding.quantity),
-        String(holding.purchasePrice),
         holding.purchaseCurrency,
         holding.marketCurrency,
         String(rowIndex),
