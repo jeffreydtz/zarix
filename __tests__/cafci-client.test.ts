@@ -132,4 +132,30 @@ describe('CAFCI client headers and 403', () => {
       source: 'cafci',
     });
   });
+
+  it('keeps catalog class USD when the ficha only has fondo.moneda Pesos', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: { valorCuotaparte: 1.098, fondo: { moneda: 'Pesos' } },
+        }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toMatchObject({
+      ticker: 'IOLDOLD',
+      price: 1.098,
+      currency: 'USD',
+    });
+  });
 });

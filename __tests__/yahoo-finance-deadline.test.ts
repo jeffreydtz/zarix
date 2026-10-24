@@ -62,8 +62,10 @@ describe('Yahoo quote deadline abort', () => {
     const map = await fetchYahooStockQuotesMap(['GLD']);
     expect(map.get('GLD')?.currency).toBe('USD');
     expect(resolveYahooQuoteCurrency('GLD', 'USD')).toBe('USD');
-    expect(resolveYahooQuoteCurrency('GLD', undefined)).toBe('');
-    expect(resolveYahooQuoteCurrency('GGAL.BA', undefined)).toBe('');
+    expect(resolveYahooQuoteCurrency('GLD', undefined)).toBe('USD');
+    expect(resolveYahooQuoteCurrency('AAPL', undefined)).toBe('USD');
+    expect(resolveYahooQuoteCurrency('GGAL.BA', undefined)).toBe('ARS');
+    expect(resolveYahooQuoteCurrency('YPFD.BA', '')).toBe('ARS');
     expect(inferYahooDisplayCurrency('AAPL')).toBe('USD');
     expect(inferYahooDisplayCurrency('GGAL.BA')).toBe('ARS');
     expect(withYahooDisplayCurrency({

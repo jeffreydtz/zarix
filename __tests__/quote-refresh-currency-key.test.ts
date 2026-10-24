@@ -165,6 +165,18 @@ describe('refreshQuotesForInvestments currency keys', () => {
     expect(mocks.fci).toHaveBeenCalledTimes(1);
   });
 
+  it('saves IOLDOLD 1.098 USD when class currency is USD and market currency is unset', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: null, purchase_currency: null },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', ''))).toMatchObject({
+      price: 1.098, currency: 'USD',
+    });
+  });
+
   it('keeps a USD FCI cuotaparte when CAFCI omits moneda instead of dividing by MEP', async () => {
     mocks.fci.mockResolvedValue({
       ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',

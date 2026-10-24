@@ -1,7 +1,6 @@
 import type { InvestmentType } from '@/types/database';
 import {
   adaptQuoteToMarketCurrency,
-  confirmedSourceCurrency,
   listingCandidates,
   resolveFciQuoteCurrency,
   resolveQuoteCurrency,
@@ -169,6 +168,27 @@ function lookupArgentineSymbol(
   }
   if (unconfirmed) return { status: 'unconfirmed' };
   return { status: 'miss' };
+}
+
+/**
+ * GLD as type `etf` still requires an explicit Yahoo currency so a trailing D
+ * is not treated as USD. Every other instrument matches main: missing field is
+ * inferred, and explicit values including EUR are kept.
+ */
+function yahooCurrencyForCacheKey(
+  symbol: string,
+  raw: string | undefined,
+  cacheKey: string
+): string | null {
+  const tagged = (raw || '').trim();
+  if (cacheKey.startsWith('etf:GLD:')) {
+    const up = tagged.toUpperCase();
+    return up === 'USD' || up === 'ARS' ? up : null;
+  }
+  if (tagged) return tagged;
+  if (symbol === '^MERV') return 'PTS';
+  if (symbol.endsWith('.BA')) return 'ARS';
+  return 'USD';
 }
 
 function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number | null {
@@ -356,27 +376,27 @@ export async function refreshQuotesForInvestments(
       const q = yMap.get(ySym) ?? [...yMap.entries()].find(([k]) => k.toUpperCase() === ySym.toUpperCase())?.[1];
       let anyApplied = false;
       if (q && q.price > 0) {
-        const confirmed = confirmedSourceCurrency(q.currency);
-        if (!confirmed) {
-          console.warn('[quotes] skip Yahoo unconfirmed currency', {
-            symbol: ySym,
-            currency: q.currency,
-          });
-        } else {
-          for (const cacheKey of cacheKeys) {
-            if (out.has(cacheKey)) continue;
-            const desired = cacheKeyCurrency.get(cacheKey) || confirmed;
-            const adapted = adapt({
-              price: q.price,
-              changePct: Number.isFinite(q.changePct) ? q.changePct : null,
-              currency: confirmed,
-              timestamp: quoteSourceTimestamp(q),
-            }, desired);
-            const stamped = adapted ? stamp(adapted) : null;
-            if (stamped) {
-              out.set(cacheKey, stamped);
-              anyApplied = true;
-            }
+        for (const cacheKey of cacheKeys) {
+          if (out.has(cacheKey)) continue;
+          const source = yahooCurrencyForCacheKey(ySym, q.currency, cacheKey);
+          if (!source) {
+            console.warn('[quotes] skip Yahoo unconfirmed currency', {
+              symbol: ySym,
+              currency: q.currency,
+            });
+            continue;
+          }
+          const desired = cacheKeyCurrency.get(cacheKey) || source;
+          const adapted = adapt({
+            price: q.price,
+            changePct: Number.isFinite(q.changePct) ? q.changePct : null,
+            currency: source,
+            timestamp: quoteSourceTimestamp(q),
+          }, desired);
+          const stamped = adapted ? stamp(adapted) : null;
+          if (stamped) {
+            out.set(cacheKey, stamped);
+            anyApplied = true;
           }
         }
       }
@@ -391,13 +411,11 @@ export async function refreshQuotesForInvestments(
         if (stooq && stooq.price > 0) {
           for (const cacheKey of cacheKeys) {
             if (out.has(cacheKey)) continue;
-            const confirmed = confirmedSourceCurrency(stooq.currency);
-            if (!confirmed) continue;
-            const desired = cacheKeyCurrency.get(cacheKey) || confirmed;
+            const desired = cacheKeyCurrency.get(cacheKey) || stooq.currency;
             const adapted = adapt({
               price: stooq.price,
               changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
-              currency: confirmed,
+              currency: stooq.currency,
               timestamp: quoteSourceTimestamp(stooq),
             }, desired);
             const stamped = adapted ? stamp(adapted) : null;

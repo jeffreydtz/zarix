@@ -189,7 +189,12 @@ function matchClass(classes: CafciClass[], ticker: string): CafciClass | null {
   return null;
 }
 
-function parseFicha(json: unknown): { price: number; currency: 'ARS' | 'USD' | null; timestamp: string | null } | null {
+function parseFicha(json: unknown): {
+  price: number;
+  currency: 'ARS' | 'USD' | null;
+  classCurrency: 'ARS' | 'USD' | null;
+  timestamp: string | null;
+} | null {
   const rows = asRows(json);
   const obj = (rows[0] || (json && typeof json === 'object' ? json : null)) as Record<string, unknown> | null;
   if (!obj) return null;
@@ -200,10 +205,12 @@ function parseFicha(json: unknown): { price: number; currency: 'ARS' | 'USD' | n
   if (!Number.isFinite(price) || price <= 0) return null;
   const clase = asRecord(data.clase);
   const fondo = asRecord(data.fondo);
-  const currency = parseCafciCurrency(
+  const classCurrency = parseCafciCurrency(
     clase?.moneda,
     clase?.currency,
     data.monedaClase,
+  );
+  const otherCurrency = parseCafciCurrency(
     data.tipoMoneda,
     data.moneda,
     data.currency,
@@ -212,7 +219,7 @@ function parseFicha(json: unknown): { price: number; currency: 'ARS' | 'USD' | n
   );
   const fecha = pickText(data.fecha, data.date, data.fechaValor, data.timestamp);
   const timestamp = fecha && Number.isFinite(Date.parse(fecha)) ? new Date(fecha).toISOString() : null;
-  return { price, currency, timestamp };
+  return { price, currency: classCurrency ?? otherCurrency, classCurrency, timestamp };
 }
 
 export async function fetchFciQuote(ticker: string): Promise<FciQuote | null> {
@@ -227,7 +234,7 @@ export async function fetchFciQuote(ticker: string): Promise<FciQuote | null> {
   return {
     ticker: symbol,
     price: parsed.price,
-    currency: parsed.currency ?? match.currency,
+    currency: parsed.classCurrency ?? match.currency ?? parsed.currency,
     changePct: null,
     timestamp: parsed.timestamp,
     source: 'cafci',

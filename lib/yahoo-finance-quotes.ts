@@ -52,14 +52,14 @@ function deadlineController(deadlineAt?: number): { signal?: AbortSignal; cancel
 }
 
 /**
- * Yahoo's `currency` field is confirmation. Never infer ARS/USD from a ticker
- * suffix (`.BA`, trailing D/C). A missing field stays blank so quote-refresh skips.
+ * Main Yahoo currency: explicit field wins; otherwise `.BA` → ARS, else USD.
+ * Quote-refresh still requires an explicit field on the GLD/ETF path.
  */
 export function resolveYahooQuoteCurrency(symbol: string, metaCurrency: string | undefined): string {
-  const tagged = (metaCurrency || '').trim().toUpperCase();
-  if (tagged) return tagged;
+  if (metaCurrency && metaCurrency.length > 0) return metaCurrency;
   if (symbol === '^MERV') return 'PTS';
-  return '';
+  if (symbol.endsWith('.BA')) return 'ARS';
+  return 'USD';
 }
 
 /** Display fallback for the home market widget. Does not feed quote-refresh. */

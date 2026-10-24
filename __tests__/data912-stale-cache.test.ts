@@ -74,14 +74,18 @@ describe('data912 stale-cache timestamps', () => {
 
     vi.setSystemTime(new Date('2026-10-24T12:06:00.000Z'));
     fetchMock.mockImplementation(async () => fail(503));
+    const fetchesAfterLive = fetchMock.mock.calls.length;
 
     const staleIndex = await loadArgentineQuotes();
     expect(staleIndex.byStock.get('YPFD')?.stale).toBe(true);
     expect(staleIndex.byStock.get('YPFD')?.timestamp).toBe('2026-10-24T12:00:00.000Z');
+    const fetchesAfterFirst503 = fetchMock.mock.calls.length;
+    expect(fetchesAfterFirst503).toBeGreaterThan(fetchesAfterLive);
 
     const stale = await refreshQuotesForInvestments([
       { type: 'stock_arg', ticker: 'YPFD', market_currency: 'ARS', purchase_currency: 'ARS' },
     ]);
+    expect(fetchMock.mock.calls.length).toBe(fetchesAfterFirst503);
     expect(stale.get(quoteCacheKey('stock_arg', 'YPFD', 'ARS'))).toMatchObject({
       price: 42000,
       currency: 'ARS',

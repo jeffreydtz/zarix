@@ -114,7 +114,13 @@ async function fetchEndpoint(
       cache: 'no-store',
     });
     if (!res.ok) {
-      return cached ? asStale(cached.data, cached.fetchedAt) : [];
+      if (cached) {
+        const stale = asStale(cached.data, cached.fetchedAt);
+        memCache.set(path, { ts: Date.now(), fetchedAt: cached.fetchedAt, data: stale });
+        return stale;
+      }
+      memCache.set(path, { ts: Date.now(), fetchedAt: new Date().toISOString(), data: [] });
+      return [];
     }
     const json = await res.json();
     const rows = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
