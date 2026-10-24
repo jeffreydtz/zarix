@@ -94,6 +94,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
   const [quickCreate, setQuickCreate] = useState<'account' | 'category' | null>(null);
   const [description, setDescription] = useState('');
   const [transactionDateYmd, setTransactionDateYmd] = useState(() => todayLocalYmd());
+  const [installments, setInstallments] = useState('1');
 
   const { isOnline, pendingCount, pendingItems, discard, retry, syncing, syncError, needsReview, sync } = useOfflineQueue();
   const { submit } = useFinancialOperation('manual-transaction');
@@ -110,6 +111,7 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
     setQuickCreate(null);
     setDescription('');
     setTransactionDateYmd(todayLocalYmd());
+    setInstallments('1');
     setCategoryMenuOpen(false);
     setMode('quick');
     setError('');
@@ -249,6 +251,9 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
       categoryId: type === 'transfer' ? null : categoryId || null,
       description,
       transactionDate: calendarDateToUtcNoonIso(transactionDateYmd),
+      ...(type === 'expense' && Number(installments) > 1
+        ? { installments: Math.trunc(Number(installments)) }
+        : {}),
     };
     try {
       const result = await submit('/api/transactions', payload);
@@ -613,6 +618,21 @@ export function AddTransactionProvider({ children }: { children: ReactNode }) {
                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground"
                   />
                 </div>
+                {type === 'expense' && (
+                  <div>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+                      Cuotas
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={36}
+                      value={installments}
+                      onChange={(e) => setInstallments(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground"
+                    />
+                  </div>
+                )}
 
                 <button
                   type="button"

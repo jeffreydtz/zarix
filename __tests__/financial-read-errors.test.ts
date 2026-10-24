@@ -26,7 +26,10 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mocks.accounts.mockResolvedValue([{ id: 'account-A' }]);
-  mocks.aggregateAccounts.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000 });
+  mocks.aggregateAccounts.mockReturnValue({
+    liquidUSD: 100, liquidARSBlue: 120000, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
+    availableUSD: 100, availableARSBlue: 120000, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0, creditCards: [],
+  });
   mocks.portfolio.mockResolvedValue({ totalCurrentValue: 50, totalCurrentValueArsBlue: 60000, investments: [] });
   mocks.quotes.mockResolvedValue({ blue: { buy: 1200, sell: 1200 } });
   mocks.upsert.mockResolvedValue({ error: null });
@@ -48,8 +51,12 @@ afterEach(() => vi.restoreAllMocks());
 describe('Financial read failures keep unavailable data distinct from zero', () => {
   it('does not overwrite a complete snapshot with an explicitly partial known subtotal', async () => {
     const valuation = { status: 'partial', excludedAccounts: [{ accountId: 'legacy', name: 'Legacy', currency: 'ZZZ', balance: 10, currencies: ['ZZZ'], reason: 'unsupported_currency' }] };
-    mocks.aggregateAccounts.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000, valuation });
-    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ totalARSBlue: 180000, valuation });
+    mocks.aggregateAccounts.mockReturnValue({
+      liquidUSD: 100, liquidARSBlue: 120000, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
+      availableUSD: 100, availableARSBlue: 120000, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0, creditCards: [],
+      valuation,
+    });
+    await expect(computeNetWorth('user-A')).resolves.toMatchObject({ totalARSBlue: 120000, investmentsUSD: 50, valuation });
     await expect(recordNetWorthSnapshot('user-A')).resolves.toBe(false);
     expect(mocks.accounts).toHaveBeenCalledWith('user-A', { allowPartialValuation: true });
     expect(mocks.upsert).not.toHaveBeenCalled();

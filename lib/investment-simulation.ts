@@ -1,4 +1,5 @@
 import type { InvestmentType } from '@/types/database';
+import { priceFactorForType } from '@/lib/investments/type-meta';
 
 export interface InvestmentSimulationReference {
   quantity: number;
@@ -29,7 +30,7 @@ export function simulateInvestment(
     throw new Error('Esta posición no tiene una cantidad y un precio de referencia válidos para simular.');
   }
 
-  const factor = reference.type === 'bond' ? 100 : 1;
+  const factor = priceFactorForType(reference.type);
   const currentValue = reference.quantity * reference.price / factor;
   const hypotheticalPrice = reference.price * (1 + variationPercent / 100);
   const hypotheticalValue = reference.quantity * hypotheticalPrice / factor;

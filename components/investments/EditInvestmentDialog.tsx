@@ -6,22 +6,15 @@ import { useBodyScrollLock } from '@/lib/hooks/useBodyScrollLock';
 import { ChevronDown, TriangleAlert, X } from 'lucide-react';
 import type { Account, InvestmentType } from '@/types/database';
 import type { InvestmentWithPnL } from '@/lib/services/investments';
+import {
+  INVESTMENT_TYPE_OPTIONS,
+  accountCanHoldPosition,
+  allowsBondFields,
+  allowsMarketCurrencyOverride,
+  investmentNeedsTicker,
+} from '@/lib/investments/type-meta';
 
-const TYPE_OPTIONS: { value: InvestmentType; label: string }[] = [
-  { value: 'stock_us', label: 'Acción USA' },
-  { value: 'etf', label: 'ETF (USA)' },
-  { value: 'cedear', label: 'CEDEAR' },
-  { value: 'stock_arg', label: 'Acción Argentina (BYMA)' },
-  { value: 'crypto', label: 'Cripto' },
-  { value: 'plazo_fijo', label: 'Plazo fijo' },
-  { value: 'fci', label: 'FCI' },
-  { value: 'bond', label: 'Bono' },
-  { value: 'caucion', label: 'Caución' },
-  { value: 'real_estate', label: 'Inmueble' },
-  { value: 'other', label: 'Otro' },
-];
-
-const NEEDS_TICKER = new Set<InvestmentType>(['stock_arg', 'cedear', 'stock_us', 'etf', 'crypto', 'bond']);
+const TYPE_OPTIONS = INVESTMENT_TYPE_OPTIONS;
 
 interface EditInvestmentDialogProps {
   investment: InvestmentWithPnL | null;
@@ -52,9 +45,11 @@ export default function EditInvestmentDialog({
   const [currentPrice, setCurrentPrice] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentCurrency, setPaymentCurrency] = useState('');
+  const [law, setLaw] = useState('');
 
-  const needsTicker = NEEDS_TICKER.has(type);
-  const allowsCurrencyOverride = type === 'cedear' || type === 'stock_arg' || type === 'bond';
+  const needsTicker = investmentNeedsTicker(type);
+  const allowsCurrencyOverride = allowsMarketCurrencyOverride(type);
 
   useEffect(() => {
     if (!investment) return;
@@ -65,16 +60,21 @@ export default function EditInvestmentDialog({
     setQuantity(String(investment.quantity));
     setPurchasePrice(String(investment.purchase_price));
     setPurchaseCurrency(investment.purchase_currency || 'USD');
-    setPurchaseDate(investment.purchase_date?.split('T')[0] || investment.purchase_date);
+    setPurchaseDate(investment.purchase_date ? investment.purchase_date.split('T')[0] : '');
     setMaturityDate(investment.maturity_date ? investment.maturity_date.split('T')[0] : '');
     setInterestRate(investment.interest_rate != null ? String(investment.interest_rate) : '');
     setMarketCurrency(investment.market_currency || '');
+    setPaymentCurrency(investment.payment_currency || '');
+    setLaw(investment.law || '');
     setManualPrice(investment.is_manual_price === true);
     setCurrentPrice(investment.current_price != null ? String(investment.current_price) : '');
     setError(null);
   }, [investment]);
 
-  const accountChoices = useMemo(() => accounts.filter((a) => a.type === 'investment'), [accounts]);
+  const accountChoices = useMemo(
+    () => accounts.filter((a) => accountCanHoldPosition(a.type, type)),
+    [accounts, type]
+  );
 
   if (!investment) return null;
 
@@ -119,9 +119,11 @@ export default function EditInvestmentDialog({
         quantity: qty,
         purchasePrice: price,
         purchaseCurrency,
-        purchaseDate,
+        purchaseDate: purchaseDate || null,
+        paymentCurrency: paymentCurrency || null,
+        law: law || null,
       };
-      if (type === 'plazo_fijo' || type === 'caucion' || type === 'bond') {
+      if (allowsBondFields(type)) {
         body.maturityDate = maturityDate || null;
         body.interestRate = interestPatch;
       }
@@ -368,17 +370,42 @@ export default function EditInvestmentDialog({
             </div>
 
             <label className="block text-sm">
-              <span className="text-muted-foreground font-medium">Fecha compra</span>
+              <span className="text-muted-foreground font-medium">Fecha compra (opcional)</span>
               <input
                 type="date"
                 className="input mt-1"
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
-                required
               />
             </label>
 
-            {(type === 'plazo_fijo' || type === 'caucion' || type === 'bond') && (
+            {(type === 'bond' || type === 'on') && (
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block text-sm">
+                  <span className="text-muted-foreground font-medium">Moneda de pago</span>
+                  <select
+                    className="input mt-1"
+                    value={paymentCurrency}
+                    onChange={(e) => setPaymentCurrency(e.target.value)}
+                  >
+                    <option value="">Igual que la cotización</option>
+                    <option value="USD">USD</option>
+                    <option value="ARS">ARS</option>
+                  </select>
+                </label>
+                <label className="block text-sm">
+                  <span className="text-muted-foreground font-medium">Ley</span>
+                  <input
+                    className="input mt-1"
+                    value={law}
+                    onChange={(e) => setLaw(e.target.value)}
+                    placeholder="NY / Argentina"
+                  />
+                </label>
+              </div>
+            )}
+
+            {allowsBondFields(type) && (
               <div className="grid grid-cols-2 gap-3">
                 <label className="block text-sm">
                   <span className="text-muted-foreground font-medium">Vencimiento</span>

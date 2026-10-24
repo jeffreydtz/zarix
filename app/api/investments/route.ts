@@ -4,20 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { investmentsService } from '@/lib/services/investments';
 import { errorResponse } from '@/lib/api-handler';
 import type { InvestmentType } from '@/types/database';
-
-const INVESTMENT_TYPES: ReadonlySet<InvestmentType> = new Set<InvestmentType>([
-  'stock_arg',
-  'cedear',
-  'stock_us',
-  'etf',
-  'crypto',
-  'plazo_fijo',
-  'fci',
-  'bond',
-  'caucion',
-  'real_estate',
-  'other',
-]);
+import { INVESTMENT_TYPES } from '@/lib/investments/type-meta';
 
 export async function GET() {
   try {
@@ -59,7 +46,7 @@ export async function POST(req: NextRequest) {
     }
     const body = (await req.json()) as Record<string, unknown>;
     const type = body.type as InvestmentType;
-    if (!INVESTMENT_TYPES.has(type)) {
+    if (!INVESTMENT_TYPES.includes(type)) {
       return NextResponse.json({ error: 'Tipo de inversión inválido' }, { status: 400 });
     }
 
@@ -75,8 +62,9 @@ export async function POST(req: NextRequest) {
     const accountId = String(body.accountId || '');
     const name = String(body.name || '').trim();
     const purchaseCurrency = String(body.purchaseCurrency || 'USD');
-    const purchaseDate = String(body.purchaseDate || '');
-    if (!accountId || !name || !purchaseDate) {
+    const purchaseDateRaw = typeof body.purchaseDate === 'string' ? body.purchaseDate.trim() : '';
+    const purchaseDate = purchaseDateRaw || null;
+    if (!accountId || !name) {
       return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
     }
 
@@ -110,6 +98,12 @@ export async function POST(req: NextRequest) {
         : isManualPrice
           ? purchaseCurrency.toUpperCase()
           : undefined;
+    const paymentCurrency =
+      typeof body.paymentCurrency === 'string' && body.paymentCurrency.trim()
+        ? body.paymentCurrency.trim().toUpperCase()
+        : undefined;
+    const law =
+      typeof body.law === 'string' && body.law.trim() ? body.law.trim() : undefined;
 
     const investment = await investmentsService.create({
       requestId,
@@ -126,6 +120,8 @@ export async function POST(req: NextRequest) {
       interestRate: Number.isFinite(interestRate) ? interestRate : undefined,
       notes,
       marketCurrency,
+      paymentCurrency,
+      law,
       isManualPrice,
       currentPrice,
     });

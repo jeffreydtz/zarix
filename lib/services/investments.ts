@@ -5,10 +5,19 @@ import { nextFinancialRequestId } from '@/lib/financial-request-context';
 import { createServiceClientSync } from '@/lib/supabase/server';
 import { cotizacionesService } from './cotizaciones';
 import { blueFxReference, type BlueFxReference } from '@/lib/blue-fx-reference';
-import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
-import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
-import { loadArgentineQuotes } from '@/lib/market-data/data912-client';
 import type { Investment, InvestmentSale, InvestmentType } from '@/types/database';
+import {
+  accountCanHoldPosition,
+  marketCurrencyForInvestment,
+  priceFactorForType,
+} from '@/lib/investments/type-meta';
+import { refreshQuotesForInvestments, type QuoteResult } from '@/lib/market-data/quote-refresh';
+import {
+  composeComposition,
+  periodChangeFromSnapshots,
+  rankGainersLosers,
+  type PeriodChange,
+} from '@/lib/investments/portfolio-analytics';
 
 export interface CreateInvestmentInput {
   requestId?: string;
@@ -20,12 +29,14 @@ export interface CreateInvestmentInput {
   quantity: number;
   purchasePrice: number;
   purchaseCurrency: string;
-  purchaseDate: string;
+  purchaseDate?: string | null;
   maturityDate?: string;
   interestRate?: number;
   notes?: string;
   /** Override de moneda de cotización (USD/ARS). */
   marketCurrency?: string;
+  paymentCurrency?: string | null;
+  law?: string | null;
   /** Si true, el precio actual se carga a mano y no se refresca de la API. */
   isManualPrice?: boolean;
   /** Precio actual cargado a mano (requerido si isManualPrice). */
@@ -40,11 +51,13 @@ export type PatchInvestmentInput = {
   quantity?: number;
   purchasePrice?: number;
   purchaseCurrency?: string;
-  purchaseDate?: string;
+  purchaseDate?: string | null;
   maturityDate?: string | null;
   interestRate?: number | null;
   notes?: string;
   marketCurrency?: string | null;
+  paymentCurrency?: string | null;
+  law?: string | null;
   isManualPrice?: boolean;
   currentPrice?: number | null;
 };
@@ -116,18 +129,31 @@ export interface PortfolioSummaryPayload {
   /** Ganancia realizada total en ARS equivalente (blue). */
   totalRealizedPnLArsBlue: number;
   byType: Array<{ type: string; count: number; value: number; pnl: number }>;
+  byCurrency: Array<{ type: string; count: number; value: number; pnl: number }>;
+  weeklyChange: PeriodChange | null;
+  monthlyChange: PeriodChange | null;
+  topGainers: Array<{
+    id: string;
+    name: string;
+    ticker: string | null;
+    type: InvestmentType;
+    profit_loss_usd: number;
+    profit_loss_percent_usd: number;
+    market_value_usd: number;
+  }>;
+  topLosers: Array<{
+    id: string;
+    name: string;
+    ticker: string | null;
+    type: InvestmentType;
+    profit_loss_usd: number;
+    profit_loss_percent_usd: number;
+    market_value_usd: number;
+  }>;
 }
 
 const STABLE_AS_USD = new Set(['USD', 'USDT', 'USDC', 'DAI', 'BUSD']);
 const QUOTE_REFRESH_MS = 15 * 60 * 1000;
-
-/**
- * Bonos argentinos cotizan POR VN 100 (lámina nominal de 100). El valor de tenencia es
- * `qty_VN × precio / 100`. Para acciones / CEDEARs / crypto el factor es 1 (precio por unidad).
- */
-function priceFactorForType(type: InvestmentType): number {
-  return type === 'bond' ? 100 : 1;
-}
 
 function arsPerUsdFromDolar(blue: { sell: number; buy: number }): number {
   if (Number.isFinite(blue.sell) && blue.sell > 0) return blue.sell;
@@ -159,52 +185,11 @@ function usdToArsBlue(usd: number, arsPerUsd: number): number {
   return usd * arsPerUsd;
 }
 
-function marketCurrencyForInvestment(type: InvestmentType, purchaseCurrency: string | null): string {
-  switch (type) {
-    case 'stock_arg':
-    case 'cedear':
-      return 'ARS';
-    case 'bond':
-      // Bonos: precio de mercado en ARS salvo que el usuario haya comprado en USD (D/C).
-      return (purchaseCurrency || 'ARS').toUpperCase();
-    case 'stock_us':
-    case 'etf':
-    case 'crypto':
-      return 'USD';
-    default:
-      return (purchaseCurrency || 'USD').toUpperCase();
-  }
-}
-
-/** Yahoo symbol convention: stock_arg/cedear use `.BA`; resto va sin sufijo. */
-function yahooSymbolFor(type: InvestmentType, ticker: string): string {
-  const t = ticker.trim().toUpperCase();
-  if (type === 'stock_arg' || type === 'cedear') {
-    return t.endsWith('.BA') ? t : `${t}.BA`;
-  }
-  return t;
-}
-
-interface QuoteResult {
-  price: number;
-  changePct: number | null;
-  currency: string;
-  /** Provider observation time, never the portfolio fetch/cache-write time. */
-  timestamp: string | null;
-}
-
-function quoteSourceTimestamp(quote: unknown): string | null {
-  if (!quote || typeof quote !== 'object' || !('timestamp' in quote)) return null;
-  const timestamp = quote.timestamp;
-  const time = timestamp instanceof Date ? timestamp.getTime()
-    : typeof timestamp === 'string' && timestamp ? Date.parse(timestamp) : Number.NaN;
-  return Number.isFinite(time) ? new Date(time).toISOString() : null;
-}
-
-async function assertOwnedInvestmentAccount(
+async function assertOwnedPositionAccount(
   supabase: ReturnType<typeof createServiceClientSync>,
   accountId: string,
-  userId: string
+  userId: string,
+  positionType: InvestmentType
 ): Promise<void> {
   const { data, error } = await supabase
     .from('accounts')
@@ -216,9 +201,8 @@ async function assertOwnedInvestmentAccount(
   if (!data || !data.is_active) {
     throw new ApiError('Cuenta no encontrada', 404);
   }
-  if (data.type !== 'investment') {
-    throw new ApiError('La cuenta tiene que ser de tipo inversión');
-  }
+  if (accountCanHoldPosition(data.type, positionType)) return;
+  throw new ApiError('La cuenta tiene que ser de tipo inversión (o cripto para posiciones cripto)');
 }
 
 function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
@@ -237,6 +221,8 @@ function mapPatchToRow(updates: PatchInvestmentInput): Record<string, unknown> {
   }
   if (updates.notes !== undefined) row.notes = updates.notes ?? null;
   if (updates.marketCurrency !== undefined) row.market_currency = updates.marketCurrency;
+  if (updates.paymentCurrency !== undefined) row.payment_currency = updates.paymentCurrency;
+  if (updates.law !== undefined) row.law = updates.law;
   if (updates.isManualPrice !== undefined) row.is_manual_price = updates.isManualPrice;
   if (updates.currentPrice !== undefined) {
     row.current_price = updates.currentPrice;
@@ -271,7 +257,7 @@ class InvestmentsService {
         return prior.response as Investment;
       }
     }
-    await assertOwnedInvestmentAccount(supabase, input.accountId, input.userId);
+    await assertOwnedPositionAccount(supabase, input.accountId, input.userId, input.type);
 
     const { data, error } = await supabase.rpc('create_investment_once', {
       p_user_id: input.userId, p_request_id: requestId, p_request_hash: requestHash,
@@ -284,11 +270,13 @@ class InvestmentsService {
         quantity: input.quantity,
         purchase_price: input.purchasePrice,
         purchase_currency: input.purchaseCurrency,
-        purchase_date: input.purchaseDate,
+        purchase_date: input.purchaseDate || null,
         maturity_date: input.maturityDate || null,
         interest_rate: input.interestRate ?? null,
         notes: input.notes || null,
         market_currency: input.marketCurrency || null,
+        payment_currency: input.paymentCurrency || null,
+        law: input.law || null,
         is_manual_price: input.isManualPrice ?? false,
         current_price: input.currentPrice ?? null,
         current_price_updated_at: input.currentPrice != null ? new Date().toISOString() : null,
@@ -301,122 +289,13 @@ class InvestmentsService {
   }
 
   /**
-   * Pide precios para todos los tickers en una sola tanda por proveedor (batch real).
-   * Estrategia: data912 (ARG/CEDEAR/bond) → Yahoo (US/ETF + fallback ARG) → Stooq (fallback US) → CoinGecko (crypto).
-   * Devuelve un mapa `cacheKey -> QuoteResult` que se consume por posición.
+   * Pide precios respetando market_currency (rueda D o conversión MEP).
+   * data912 (ARG/CEDEAR/bono/ON) → CAFCI (FCI) → Yahoo `.BA` → Stooq → CoinGecko.
    */
   private async refreshQuotesForInvestments(
     investments: Investment[]
   ): Promise<Map<string, QuoteResult>> {
-    const out = new Map<string, QuoteResult>();
-
-    const argSymbols: Array<{ type: 'stock_arg' | 'cedear' | 'bond'; ticker: string; cacheKey: string }> = [];
-    const yahooSymbolToCacheKey = new Map<string, string>();
-    const cryptoSymbols = new Set<string>();
-
-    for (const inv of investments) {
-      if (!inv.ticker) continue;
-      const ticker = inv.ticker.trim().toUpperCase();
-      if (inv.type === 'crypto') {
-        cryptoSymbols.add(ticker);
-        continue;
-      }
-      if (inv.type === 'stock_arg' || inv.type === 'cedear' || inv.type === 'bond') {
-        argSymbols.push({ type: inv.type, ticker, cacheKey: `${inv.type}:${ticker}` });
-        continue;
-      }
-      if (inv.type === 'stock_us' || inv.type === 'etf') {
-        const ySym = yahooSymbolFor(inv.type, ticker);
-        const key = `${inv.type}:${ticker}`;
-        yahooSymbolToCacheKey.set(ySym, key);
-      }
-    }
-
-    if (argSymbols.length > 0) {
-      try {
-        const arg = await loadArgentineQuotes();
-        for (const { type, ticker, cacheKey } of argSymbols) {
-          const src =
-            type === 'stock_arg'
-              ? arg.byStock
-              : type === 'cedear'
-                ? arg.byCedear
-                : arg.byBond;
-          const hit = src.get(ticker);
-          if (hit && hit.price > 0) {
-            out.set(cacheKey, {
-              price: hit.price,
-              changePct: hit.changePct,
-              currency: hit.currency,
-              timestamp: quoteSourceTimestamp(hit),
-            });
-          } else {
-            // No matcheó data912: derivar a Yahoo .BA como fallback.
-            yahooSymbolToCacheKey.set(yahooSymbolFor(type, ticker), cacheKey);
-          }
-        }
-      } catch {
-        // data912 abajo: todo a Yahoo fallback.
-        for (const { type, ticker, cacheKey } of argSymbols) {
-          yahooSymbolToCacheKey.set(yahooSymbolFor(type, ticker), cacheKey);
-        }
-      }
-    }
-
-    const yahooSymbols = Array.from(yahooSymbolToCacheKey.keys());
-    if (yahooSymbols.length > 0) {
-      const yMap = await fetchYahooStockQuotesMap(yahooSymbols);
-      const missingForStooq: string[] = [];
-
-      for (const [ySym, cacheKey] of yahooSymbolToCacheKey.entries()) {
-        const q = yMap.get(ySym);
-        if (q && q.price > 0) {
-          out.set(cacheKey, {
-            price: q.price,
-            changePct: Number.isFinite(q.changePct) ? q.changePct : null,
-            currency: q.currency,
-            timestamp: quoteSourceTimestamp(q),
-          });
-        } else {
-          missingForStooq.push(ySym);
-        }
-      }
-
-      for (const ySym of missingForStooq) {
-        const cacheKey = yahooSymbolToCacheKey.get(ySym);
-        if (!cacheKey) continue;
-        if (ySym.endsWith('.BA')) continue;
-        try {
-          const stooq = await fetchStooqUsQuote(ySym);
-          if (stooq && stooq.price > 0) {
-            out.set(cacheKey, {
-              price: stooq.price,
-              changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
-              currency: stooq.currency,
-              timestamp: quoteSourceTimestamp(stooq),
-            });
-          }
-        } catch {
-          /* sin Stooq: nos quedamos con el último precio guardado */
-        }
-      }
-    }
-
-    for (const sym of cryptoSymbols) {
-      try {
-        const q = await cotizacionesService.getCryptoQuote(sym);
-        out.set(`crypto:${sym}`, {
-          price: q.priceUSD,
-          changePct: Number.isFinite(q.change24h) ? q.change24h : null,
-          currency: 'USD',
-          timestamp: quoteSourceTimestamp(q),
-        });
-      } catch {
-        /* sin crypto: nos quedamos con el último guardado */
-      }
-    }
-
-    return out;
+    return refreshQuotesForInvestments(investments);
   }
 
   private async loadInvestmentsNormalized(
@@ -621,7 +500,9 @@ class InvestmentsService {
       throw new Error('No hay campos para actualizar');
     }
     if (typeof row.account_id === 'string') {
-      await assertOwnedInvestmentAccount(supabase, row.account_id, userId);
+      const positionType = (row.type as InvestmentType | undefined)
+        ?? (await this.getById(id, userId)).type;
+      await assertOwnedPositionAccount(supabase, row.account_id, userId, positionType);
     }
 
     const { data, error } = await supabase
@@ -855,22 +736,12 @@ class InvestmentsService {
     );
     const totalRealizedPnLArsBlue = usdToArsBlue(totalRealizedPnLUsd, blueArsPerUsd);
 
-    const byType = investments.reduce((acc, inv) => {
-      if (!acc[inv.type]) {
-        acc[inv.type] = {
-          type: inv.type,
-          count: 0,
-          value: 0,
-          pnl: 0,
-        };
-      }
-
-      acc[inv.type].count += 1;
-      acc[inv.type].value += inv.market_value_usd;
-      acc[inv.type].pnl += inv.profit_loss_usd;
-
-      return acc;
-    }, {} as Record<string, { type: string; count: number; value: number; pnl: number }>);
+    const byTypeSlices = composeComposition(investments, 'type');
+    const byCurrencySlices = composeComposition(investments, 'currency');
+    const ranked = rankGainersLosers(investments, 3);
+    const snapshots = await this.listPerformanceSnapshots(userId, 40).catch(() => []);
+    const weeklyChange = periodChangeFromSnapshots(snapshots, totalCurrentValue, 7);
+    const monthlyChange = periodChangeFromSnapshots(snapshots, totalCurrentValue, 30);
 
     const payload: PortfolioSummaryPayload = {
       totalCurrentValue,
@@ -887,7 +758,12 @@ class InvestmentsService {
       totalDailyPnLArsBlue,
       totalRealizedPnLUsd,
       totalRealizedPnLArsBlue,
-      byType: Object.values(byType),
+      byType: byTypeSlices.map((s) => ({ type: s.key, count: s.count, value: s.value, pnl: s.pnl })),
+      byCurrency: byCurrencySlices.map((s) => ({ type: s.key, count: s.count, value: s.value, pnl: s.pnl })),
+      weeklyChange,
+      monthlyChange,
+      topGainers: ranked.gainers,
+      topLosers: ranked.losers,
       investments,
     };
 

@@ -291,9 +291,10 @@ describe('derived RN08 blue FX metadata propagation', () => {
     const accountReference = reference();
     const portfolioReference = { ...reference(1400, null, 'persisted'), observedAt: '2026-10-13T11:58:00.000Z' };
     vi.spyOn(accountsService, 'aggregateAccountTotals').mockReturnValue({
-      liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 130000,
+      liquidUSD: 100, liquidARSBlue: 130000, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 130000,
+      availableUSD: 100, availableARSBlue: 130000, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0, creditCards: [],
       blueReferences: [accountReference],
-    } as ReturnType<typeof accountsService.aggregateAccountTotals>);
+    } as unknown as ReturnType<typeof accountsService.aggregateAccountTotals>);
     // Ensure the actual composition uses the returned reference, rather than
     // assigning its independent quote lookup to all already-converted values.
     vi.spyOn(accountsService, 'list').mockResolvedValue([
@@ -309,8 +310,10 @@ describe('derived RN08 blue FX metadata propagation', () => {
     });
     const { computeNetWorth } = await import('@/lib/services/net-worth');
     const now = await computeNetWorth('U1');
-    expect(now.totalUSD).toBe(200);
-    expect(now.totalARSBlue).toBe(270000);
+    expect(now.totalUSD).toBe(100);
+    expect(now.totalARSBlue).toBe(130000);
+    expect(now.investmentsUSD).toBe(100);
+    expect(now.positionsUSD).toBe(100);
     expect(now.blueReferences).toEqual([
       { component: 'accounts', reference: accountReference },
       { component: 'portfolio', reference: portfolioReference },

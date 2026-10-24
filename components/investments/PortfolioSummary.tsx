@@ -23,6 +23,23 @@ interface PortfolioSummaryProps {
     value: number;
     pnl: number;
   }>;
+  byCurrency?: Array<{ type: string; count: number; value: number; pnl: number }>;
+  weeklyChange?: { abs: number; pct: number } | null;
+  monthlyChange?: { abs: number; pct: number } | null;
+  topGainers?: Array<{
+    id: string;
+    name: string;
+    ticker: string | null;
+    profit_loss_usd: number;
+    profit_loss_percent_usd: number;
+  }>;
+  topLosers?: Array<{
+    id: string;
+    name: string;
+    ticker: string | null;
+    profit_loss_usd: number;
+    profit_loss_percent_usd: number;
+  }>;
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -33,7 +50,8 @@ const TYPE_LABELS: Record<string, string> = {
   crypto: 'Crypto',
   plazo_fijo: 'Plazo Fijo',
   fci: 'FCI',
-  bond: 'Bonos',
+  bond: 'Bonos soberanos',
+  on: 'ONs',
   caucion: 'Cauciones',
   real_estate: 'Inmuebles',
   other: 'Otros',
@@ -74,6 +92,11 @@ export default function PortfolioSummary({
   totalRealizedPnLUsd,
   totalRealizedPnLArsBlue,
   byType,
+  byCurrency = [],
+  weeklyChange = null,
+  monthlyChange = null,
+  topGainers = [],
+  topLosers = [],
 }: PortfolioSummaryProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const { hidden } = useInvestmentsPrivacy();
@@ -134,6 +157,20 @@ export default function PortfolioSummary({
             <div className="text-[11px] text-muted-foreground tabular-nums">
               ARS {dayPositive ? '+' : ''}
               {formatArs(totalDailyPnLArsBlue)}
+            </div>
+            <div className="mt-2 flex flex-col gap-0.5 text-[11px] tabular-nums text-muted-foreground">
+              <span>
+                Semana:{' '}
+                {weeklyChange
+                  ? `${weeklyChange.abs >= 0 ? '+' : ''}USD ${formatUsd(weeklyChange.abs)} (${formatPct(weeklyChange.pct)})`
+                  : '—'}
+              </span>
+              <span>
+                Mes:{' '}
+                {monthlyChange
+                  ? `${monthlyChange.abs >= 0 ? '+' : ''}USD ${formatUsd(monthlyChange.abs)} (${formatPct(monthlyChange.pct)})`
+                  : '—'}
+              </span>
             </div>
           </div>
         </div>
@@ -225,6 +262,53 @@ export default function PortfolioSummary({
             })}
           </div>
         </motion.div>
+      )}
+
+      {byCurrency.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card"
+        >
+          <h3 className="text-base font-semibold text-foreground mb-4">Distribución por moneda de cotización</h3>
+          <div className="space-y-3">
+            {byCurrency.map((item) => {
+              const percent = totalValue > 0 ? (item.value / totalValue) * 100 : 0;
+              return (
+                <div key={item.type} className="flex items-center justify-between gap-3 text-sm">
+                  <span className="font-medium">{item.type}</span>
+                  <span className="text-muted-foreground tabular-nums">
+                    {percent.toFixed(1)}% · USD {item.value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {(topGainers.length > 0 || topLosers.length > 0) && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[{ title: 'Mayores subas', rows: topGainers }, { title: 'Mayores bajas', rows: topLosers }].map((col) => (
+            <div key={col.title} className="card">
+              <h3 className="text-sm font-semibold text-foreground mb-3">{col.title}</h3>
+              <ul className="space-y-2">
+                {col.rows.length === 0 ? (
+                  <li className="text-xs text-muted-foreground">Sin datos</li>
+                ) : (
+                  col.rows.map((row) => (
+                    <li key={row.id} className="flex items-center justify-between gap-2 text-sm">
+                      <span className="font-mono truncate">{row.ticker || row.name}</span>
+                      <span className={`tabular-nums ${pnlClass(row.profit_loss_percent_usd)}`}>
+                        {formatPct(row.profit_loss_percent_usd)}
+                      </span>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

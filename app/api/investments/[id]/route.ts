@@ -62,7 +62,24 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
       patch.purchasePrice = p;
     }
     if (body.purchaseCurrency !== undefined) patch.purchaseCurrency = String(body.purchaseCurrency);
-    if (body.purchaseDate !== undefined) patch.purchaseDate = String(body.purchaseDate);
+    if (body.purchaseDate !== undefined) {
+      patch.purchaseDate =
+        body.purchaseDate == null || String(body.purchaseDate).trim() === ''
+          ? null
+          : String(body.purchaseDate);
+    }
+    if ('paymentCurrency' in body) {
+      patch.paymentCurrency =
+        body.paymentCurrency == null || String(body.paymentCurrency).trim() === ''
+          ? null
+          : String(body.paymentCurrency).trim().toUpperCase();
+    }
+    if ('law' in body) {
+      patch.law =
+        body.law == null || String(body.law).trim() === ''
+          ? null
+          : String(body.law).trim();
+    }
     if ('maturityDate' in body) {
       patch.maturityDate =
         body.maturityDate === null || body.maturityDate === ''

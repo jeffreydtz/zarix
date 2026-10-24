@@ -278,6 +278,47 @@ export default function NetWorthHero({ now, history, inflacion, baseCurrency = '
           {view === 'real' && 'en pesos de hoy'}
         </p>
 
+        {(now.creditCards?.length ?? 0) > 0 && (
+          <div className="mt-3 rounded-control border border-border/70 bg-surface-soft/60 px-3 py-2 text-xs space-y-1.5">
+            <p className="font-medium text-foreground">Cómo se arma el líquido</p>
+            <div className="flex justify-between gap-3 tabular-nums">
+              <span className="text-muted-foreground">Disponible (efectivo, bancos, billeteras)</span>
+              <span>
+                {hidden ? PRIVACY_MASK : formatMoney(
+                  view === 'usd' ? (now.availableUSD ?? 0) : (now.availableARSBlue ?? 0),
+                  currency
+                )}
+              </span>
+            </div>
+            {(now.creditCards ?? []).map((card) => (
+              <div key={card.accountId} className="space-y-0.5">
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">
+                    {card.name}{card.last4 ? ` · ${card.last4}` : ''}
+                  </span>
+                  <span className="tabular-nums text-destructive">
+                    {hidden ? PRIVACY_MASK : formatMoney(
+                      view === 'usd' ? card.usd : card.arsBlue,
+                      currency
+                    )}
+                  </span>
+                </div>
+                {card.isMulticurrency && card.secondaryCurrency ? (
+                  <p className="text-[11px] text-muted-foreground pl-0">
+                    {card.primaryCurrency} {hidden ? PRIVACY_MASK : card.primaryBalance.toLocaleString('es-AR')}
+                    {' · '}
+                    {card.secondaryCurrency} {hidden ? PRIVACY_MASK : Number(card.secondaryBalance ?? 0).toLocaleString('es-AR')}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+            <div className="flex justify-between gap-3 pt-1 border-t border-border/60 font-medium tabular-nums">
+              <span>Patrimonio líquido</span>
+              <span>{hidden ? PRIVACY_MASK : formatMoney(heroValue, currency)}</span>
+            </div>
+          </div>
+        )}
+
         <div className="mt-2 space-y-1 text-xs text-muted-foreground">
           {now.blueReferences?.length ? now.blueReferences.map(({ component, reference }, index) => (
             <BlueFxReferenceDetails key={`${component}-${index}`} reference={reference}

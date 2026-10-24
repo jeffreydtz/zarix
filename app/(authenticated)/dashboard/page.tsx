@@ -7,6 +7,7 @@ import { transactionsService } from '@/lib/services/transactions';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { investmentsService } from '@/lib/services/investments';
 import { getNetWorthHistory } from '@/lib/services/net-worth';
+import { composeLiquidNetWorth } from '@/lib/services/liquid-net-worth';
 import { getPresentationPreferences } from '@/lib/services/presentation-preferences';
 import { getInflacionSeries } from '@/lib/services/inflacion';
 import { getMarketSparklines } from '@/lib/services/market-history';
@@ -92,6 +93,11 @@ export default async function DashboardPage() {
             liquidARSBlue: 0,
             investmentsUSD: 0,
             investmentsARSBlue: 0,
+            availableUSD: 0,
+            availableARSBlue: 0,
+            creditCardDebtUSD: 0,
+            creditCardDebtARSBlue: 0,
+            creditCards: [],
             totalUSD: 0,
             totalARSBlue: 0,
             totalCreditUsed: 0,
@@ -100,19 +106,11 @@ export default async function DashboardPage() {
             blueReferences: [],
             valuation: undefined,
           };
-    const netWorthNow = {
-      ...(balances.valuation ? { valuation: balances.valuation } : {}),
-      liquidUSD: balances.liquidUSD,
-      investmentsUSD: balances.investmentsUSD + (portfolio?.totalCurrentValue ?? 0),
-      totalUSD: balances.totalUSD + (portfolio?.totalCurrentValue ?? 0),
-      totalARSBlue: balances.totalARSBlue + (portfolio?.totalCurrentValueArsBlue ?? 0),
+    const netWorthNow = composeLiquidNetWorth({
+      balances,
+      portfolio,
       blueRate: portfolio?.blueArsPerUsd ?? quotes?.dolar?.blue?.sell ?? 0,
-      blueReferences: [
-        ...(balances.blueReferences ?? []).map(reference => ({ component: 'accounts' as const, reference })),
-        ...(portfolio?.blueReference && portfolio.investments.length > 0
-          ? [{ component: 'portfolio' as const, reference: portfolio.blueReference }] : []),
-      ],
-    };
+    });
 
     // Reading or changing presentation preferences never rewrites history.
     // The existing scheduled snapshot writer owns the persisted daily series.

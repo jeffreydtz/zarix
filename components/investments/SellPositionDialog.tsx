@@ -141,7 +141,7 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
             <label className="block text-sm">
               <div className="flex items-center justify-between gap-2 mb-1">
                 <span className="text-muted-foreground font-medium">
-                  {investment.type === 'bond' ? 'Cantidad a vender (VN)' : 'Cantidad a vender'}
+                  {investment.type === 'bond' || investment.type === 'on' ? 'Cantidad a vender (VN)' : 'Cantidad a vender'}
                 </span>
                 <div className="flex gap-1">
                   <button
@@ -174,7 +174,7 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
             <div className="grid grid-cols-2 gap-3">
               <label className="block text-sm">
                 <span className="text-muted-foreground font-medium">
-                  {investment.type === 'bond' ? 'Precio venta (por VN 100)' : 'Precio por unidad'}
+                  {investment.type === 'bond' || investment.type === 'on' ? 'Precio venta (por VN 100)' : 'Precio por unidad'}
                 </span>
                 <input
                   type="text"
@@ -186,7 +186,7 @@ export default function SellPositionDialog({ investment, onClose, onSold }: Sell
                 />
                 <span className="block text-[11px] text-muted-foreground mt-1">
                   Precio promedio: {Number(investment.purchase_price).toLocaleString('en-US', { maximumFractionDigits: 4 })}
-                  {investment.type === 'bond' ? ' / VN 100' : ''}
+                  {investment.type === 'bond' || investment.type === 'on' ? ' / VN 100' : ''}
                 </span>
               </label>
 

@@ -24,6 +24,7 @@ export type InvestmentType =
   | 'plazo_fijo'
   | 'fci'
   | 'bond'
+  | 'on'
   | 'caucion'
   | 'real_estate'
   | 'other';
@@ -151,11 +152,16 @@ export interface Investment {
   quantity: number;
   purchase_price: number;
   purchase_currency: string;
-  purchase_date: string;
+  /** Null when the holding was imported without a known lot date. */
+  purchase_date: string | null;
   current_price: number | null;
   current_price_updated_at: string | null;
   current_price_change_pct: number | null;
   market_currency: string | null;
+  /** Settlement currency; hard-dollar bonds/ONs may quote in ARS and pay in USD. */
+  payment_currency: string | null;
+  /** Governing law for ON / sovereign bonds. */
+  law: string | null;
   is_manual_price: boolean;
   maturity_date: string | null;
   interest_rate: number | null;

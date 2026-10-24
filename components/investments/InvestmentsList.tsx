@@ -23,6 +23,8 @@ import type { InvestmentWithPnL } from '@/lib/services/investments';
 import { maybeReduceTransition, motionTransition } from '@/lib/motion';
 import { PRIVACY_MASK, useInvestmentsPrivacy } from '@/lib/hooks/use-investments-privacy';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
+import AssetLogo from '@/components/investments/AssetLogo';
+import { priceFactorForType } from '@/lib/investments/type-meta';
 
 interface InvestmentsListProps {
   investments: InvestmentWithPnL[];
@@ -40,6 +42,7 @@ const TYPE_ICON: Record<InvestmentType, typeof CandlestickChart> = {
   plazo_fijo: PiggyBank,
   fci: Wallet,
   bond: Receipt,
+  on: Building2,
   caucion: Coins,
   real_estate: Building2,
   other: Wallet,
@@ -140,9 +143,13 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-3 min-w-0 flex-1">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
-                  <Icon size={20} aria-hidden />
-                </div>
+                {inv.ticker ? (
+                  <AssetLogo type={inv.type} ticker={inv.ticker} name={inv.name} size={44} />
+                ) : (
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control bg-primary/10 text-primary">
+                    <Icon size={20} aria-hidden />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                     {inv.ticker ? (
@@ -151,21 +158,21 @@ export default function InvestmentsList({ investments, onArchived, onEdit, onSel
                     <span className="text-sm text-muted-foreground truncate">{inv.name}</span>
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground tabular-nums">
-                    {inv.type === 'bond' ? 'VN ' : ''}
+                    {priceFactorForType(inv.type) === 100 ? 'VN ' : ''}
                     {inv.quantity.toLocaleString('es-AR', { maximumFractionDigits: 8 })}
-                    {inv.type !== 'bond' ? ' unidades' : ''}
+                    {priceFactorForType(inv.type) !== 100 ? ' unidades' : ''}
                     {' · '}
                     Compra: {inv.purchase_currency}{' '}
                     {hidden
                       ? PRIVACY_MASK
                       : inv.purchase_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    {inv.type === 'bond' ? ' / VN 100' : ''}
+                    {priceFactorForType(inv.type) === 100 ? ' / VN 100' : ''}
                   </div>
                   {inv.current_price ? (
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
                       <span className="text-muted-foreground tabular-nums">
                         Precio: {formatPrice(Number(inv.current_price), inv.market_price_currency)}
-                        {inv.type === 'bond' ? <span className="opacity-70"> / VN 100</span> : null}
+                        {priceFactorForType(inv.type) === 100 ? <span className="opacity-70"> / VN 100</span> : null}
                       </span>
                       <span className="text-muted-foreground">
                         {inv.valuation_price_source === 'purchase_reference' ? 'Referencia de compra · sin cotización' :

@@ -52,7 +52,11 @@ beforeEach(() => {
   mocks.monthFlow.mockResolvedValue({ incomeARS: 100, spentARS: 20 });
   mocks.upcoming.mockResolvedValue([]);
   mocks.budgets.mockResolvedValue([]);
-  mocks.totals.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000, blueReferences: [] });
+  mocks.totals.mockReturnValue({
+    liquidUSD: 100, liquidARSBlue: 120000, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
+    availableUSD: 100, availableARSBlue: 120000, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0, creditCards: [],
+    blueReferences: [],
+  });
 });
 afterEach(() => vi.restoreAllMocks());
 
@@ -74,7 +78,8 @@ describe('dashboard read failures preserve financial truth', () => {
   });
   it('propagates explicit known-subtotal exclusions and never records a partial current point', async () => {
     mocks.portfolio.mockResolvedValue({ totalCurrentValue: 0, totalCurrentValueArsBlue: 0, investments: [] });
-    mocks.totals.mockReturnValue({ liquidUSD: 100, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
+    mocks.totals.mockReturnValue({ liquidUSD: 100, liquidARSBlue: 120000, investmentsUSD: 0, totalUSD: 100, totalARSBlue: 120000,
+      availableUSD: 100, availableARSBlue: 120000, creditCardDebtUSD: 0, creditCardDebtARSBlue: 0, creditCards: [],
       valuation: { status: 'partial', excludedAccounts: [{ accountId: 'legacy', name: 'Legacy', currency: 'ZZZ', balance: 10, currencies: ['ZZZ'], reason: 'unsupported_currency' }] } });
     const html = renderToStaticMarkup(await DashboardPage());
     expect(html).toContain('&quot;totalARSBlue&quot;:120000');
@@ -98,15 +103,16 @@ describe('dashboard read failures preserve financial truth', () => {
 
   it('adds complete account and portfolio values when every financial read succeeds', async () => {
     const html = renderToStaticMarkup(await DashboardPage());
-    expect(html).toContain('&quot;totalUSD&quot;:120');
-    expect(html).toContain('&quot;totalARSBlue&quot;:144000');
+    expect(html).toContain('&quot;totalUSD&quot;:100');
+    expect(html).toContain('&quot;totalARSBlue&quot;:120000');
+    expect(html).toContain('&quot;positionsUSD&quot;:20');
     expect(mocks.snapshot).not.toHaveBeenCalled();
   });
 
   it('labels unavailable market quotes without fabricating current zero rates', async () => {
     mocks.quotes.mockRejectedValueOnce(new Error('synthetic provider outage'));
     const html = renderToStaticMarkup(await DashboardPage());
-    expect(html).toContain('&quot;totalUSD&quot;:120');
+    expect(html).toContain('&quot;totalUSD&quot;:100');
     expect(html).toContain('Cotizaciones no disponibles');
     expect(html).not.toContain('data-testid="quotes"');
   });

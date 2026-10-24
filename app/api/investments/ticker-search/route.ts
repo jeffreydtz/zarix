@@ -17,6 +17,8 @@ const TICKER_TYPES: InvestmentType[] = [
   'etf',
   'crypto',
   'bond',
+  'on',
+  'fci',
 ];
 
 interface SearchHit {
@@ -63,8 +65,14 @@ function mapQuotesForType(quotes: unknown[], investmentType: InvestmentType): Se
       continue;
     }
 
-    if (investmentType === 'stock_arg' || investmentType === 'cedear' || investmentType === 'bond') {
-      if (symbol.toUpperCase().endsWith('.BA') && (qt === 'EQUITY' || qt === 'ETF')) {
+    if (
+      investmentType === 'stock_arg' ||
+      investmentType === 'cedear' ||
+      investmentType === 'bond' ||
+      investmentType === 'on' ||
+      investmentType === 'fci'
+    ) {
+      if (symbol.toUpperCase().endsWith('.BA') && (qt === 'EQUITY' || qt === 'ETF' || qt === 'MUTUALFUND')) {
         const base = symbol.replace(/\.BA$/i, '').toUpperCase();
         out.push({ symbol: base, name: String(name), exchange });
       }
@@ -94,30 +102,35 @@ function catalogTypeFor(t: InvestmentType): CatalogEntry['type'] | null {
 }
 
 async function searchArgentineUniverse(
-  type: 'stock_arg' | 'cedear' | 'bond',
+  type: 'stock_arg' | 'cedear' | 'bond' | 'on' | 'fci',
   query: string
 ): Promise<SearchHit[]> {
   const upper = query.trim().toUpperCase();
   const hits: SearchHit[] = [];
 
-  // 1) Catálogo curado (instantáneo, sin red).
-  for (const entry of searchCatalog(type, upper, 20)) {
-    hits.push({ symbol: entry.symbol, name: entry.name });
+  const catType = catalogTypeFor(type);
+  if (catType) {
+    for (const entry of searchCatalog(catType, upper, 20)) {
+      hits.push({ symbol: entry.symbol, name: entry.name });
+    }
   }
 
-  // 2) data912: si está cargado, agrega símbolos que matchean prefix aunque no estén en catálogo.
   try {
     const universe = await loadArgentineQuotes();
     const source =
-      type === 'stock_arg'
+      (type === 'stock_arg'
         ? universe.byStock
         : type === 'cedear'
           ? universe.byCedear
-          : universe.byBond;
+          : type === 'on'
+            ? universe.byCorp
+            : type === 'fci'
+              ? new Map()
+              : universe.byBond) ?? new Map();
 
     for (const [symbol] of source) {
       if (!upper || symbol.startsWith(upper) || symbol.includes(upper)) {
-        const fromCatalog = catalogLookup(type, symbol);
+        const fromCatalog = catType ? catalogLookup(catType, symbol) : null;
         hits.push({
           symbol,
           name: fromCatalog?.name || symbol,
@@ -156,12 +169,15 @@ export async function GET(req: NextRequest) {
         const seeded = searchCatalog(type, '', 12).map((e) => ({ symbol: e.symbol, name: e.name }));
         return NextResponse.json({ results: seeded });
       }
+      if (type === 'on') {
+        const seeded = await searchArgentineUniverse('on', '');
+        return NextResponse.json({ results: seeded.slice(0, 12) });
+      }
       return NextResponse.json({ results: [] as SearchHit[] });
     }
 
-    const catType = catalogTypeFor(type);
-    if (catType) {
-      const argHits = await searchArgentineUniverse(catType, q);
+    if (type === 'stock_arg' || type === 'cedear' || type === 'bond' || type === 'on' || type === 'fci') {
+      const argHits = await searchArgentineUniverse(type, q);
 
       // Yahoo backup en paralelo para no perder coverage.
       let yahooHits: SearchHit[] = [];
