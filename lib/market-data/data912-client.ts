@@ -111,7 +111,7 @@ async function fetchEndpoint(
     const res = await fetch(`${DATA912_BASE}${path}`, {
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      next: { revalidate: 300 },
+      cache: 'no-store',
     });
     if (!res.ok) {
       return cached ? asStale(cached.data, cached.fetchedAt) : [];

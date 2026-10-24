@@ -54,6 +54,54 @@ describe('CAFCI client headers and 403', () => {
     await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ status: 500, name: 'CafciHttpError' });
   });
 
+  it('returns null when the catalog 200 is an error payload', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ error: 'denied' }),
+    }));
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
+  });
+
+  it('returns null when valorCuotaparte is missing', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { valorCuotaparte: null, fecha: '2026-10-23' } }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
+  });
+
+  it('returns null when the ficha 200 cannot be parsed', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{
+            id: 1,
+            nombre: 'IOL Dolar',
+            clases: [{ id: 2, simbolo: 'IOLDOLD', moneda: 'Dolares' }],
+          }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ foo: 1 }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).resolves.toBeNull();
+  });
+
   it('uses the class moneda when the ficha payload has no currency', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({

@@ -60,15 +60,14 @@ describe('USD quote adaptation for D tickers', () => {
     expect(isDollarBoardSymbol('YPFD', new Set(['YPFD']))).toBe(false);
     expect(isDollarBoardSymbol('IBMD', new Set(['IBMD']))).toBe(false);
     expect(resolveQuoteCurrency({ matchedSymbol: 'IBMD', listed: new Set(['IBMD']) })).toBeNull();
-    expect(isDollarBoardSymbol('GLD', new Set(['GLD']))).toBe(false);
     expect(resolveQuoteCurrency({
-      matchedSymbol: 'GLD', listed: new Set(['GLD']), positionTicker: 'GLD',
-    })).toBe('ARS');
-    expect(resolveQuoteCurrency({
-      matchedSymbol: 'GLD', listed: new Set(['GLD']),
+      matchedSymbol: 'IBMD', listed: new Set(['IBMD']), sourceCurrency: 'ARS',
     })).toBeNull();
+    expect(isDollarBoardSymbol('GLD', new Set(['GLD']))).toBe(false);
+    expect(resolveQuoteCurrency({ matchedSymbol: 'GLD', listed: new Set(['GLD']) })).toBe('ARS');
     for (const ticker of ['AMD', 'MCD', 'HD', 'C', 'BAC', 'CARC']) {
       expect(isDollarBoardSymbol(ticker, new Set([ticker]))).toBe(false);
+      expect(resolveQuoteCurrency({ matchedSymbol: ticker, listed: new Set([ticker]) })).toBe('ARS');
       expect(inferListedCurrency(ticker, new Set([ticker]))).toBe('ARS');
     }
   });

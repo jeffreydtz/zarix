@@ -67,19 +67,33 @@ export function isDollarBoardSymbol(
 }
 
 /**
- * Resolve the currency of a matched quote. `null` means unconfirmed: skip the
- * update instead of guessing from the ticker suffix.
+ * True when the feed or catalog lists a D/C board of this symbol, so the bare
+ * ticker is the peso line. Trailing D on the ticker itself is not enough.
+ */
+function hasDollarBoardSibling(
+  symbol: string,
+  listed: ReadonlySet<string> | Map<string, unknown>
+): boolean {
+  const t = stripBymaSuffix(symbol);
+  return listedHas(listed, `${t}D`)
+    || listedHas(listed, `${t}C`)
+    || listedHas(listed, `${t}.D`)
+    || catalogHasSymbol(`${t}D`)
+    || catalogHasSymbol(`${t}C`);
+}
+
+/**
+ * Resolve the currency of a matched quote. `null` means unconfirmed: skip.
  *
- * Explicit non-ARS source metadata wins. data912's dummy ARS tag is ignored
- * when a sibling-confirmed D/C listing exists. A ticker that merely ends in D
- * (GLD) is not a D-class symbol: only catalog/feed D-class listings count.
- * An exact match on the position ticker is that listing, not a derived board.
+ * ARS only with positive confirmation: curated peso/CEDEAR catalog, or a D/C
+ * sibling in the feed/catalog proving this is the peso line. USD only from an
+ * explicit non-ARS source tag or a sibling-confirmed D-class listing.
+ * Never infer from ticker equality or a trailing D/C suffix.
  */
 export function resolveQuoteCurrency(opts: {
   matchedSymbol: string;
   listed: ReadonlySet<string> | Map<string, unknown>;
   sourceCurrency?: string | null;
-  positionTicker?: string | null;
 }): QuoteCurrency | null {
   const t = stripBymaSuffix(opts.matchedSymbol);
   const tagged = (opts.sourceCurrency || '').trim().toUpperCase();
@@ -88,10 +102,8 @@ export function resolveQuoteCurrency(opts: {
   }
   if (isCatalogPesoListing(t)) return 'ARS';
   if (isDollarBoardSymbol(t, opts.listed)) return 'USD';
-  const position = stripBymaSuffix(opts.positionTicker || '');
-  if (position && t === position) return 'ARS';
-  if (looksLikeDollarSuffix(t)) return null;
-  return 'ARS';
+  if (hasDollarBoardSibling(t, opts.listed)) return 'ARS';
+  return null;
 }
 
 export function inferListedCurrency(

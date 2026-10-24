@@ -79,10 +79,14 @@ describe('refreshQuotesForInvestments currency keys', () => {
       byCorp: new Map(),
     });
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const map = await refreshQuotesForInvestments([
+    const asIbm = await refreshQuotesForInvestments([
       { type: 'cedear', ticker: 'IBM', market_currency: 'USD', purchase_currency: 'USD' },
     ]);
-    expect(map.get(quoteCacheKey('cedear', 'IBM', 'USD'))).toBeUndefined();
+    expect(asIbm.get(quoteCacheKey('cedear', 'IBM', 'USD'))).toBeUndefined();
+    const asIbmd = await refreshQuotesForInvestments([
+      { type: 'cedear', ticker: 'IBMD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(asIbmd.get(quoteCacheKey('cedear', 'IBMD', 'USD'))).toBeUndefined();
     expect(warn).toHaveBeenCalled();
   });
 
@@ -178,6 +182,26 @@ describe('refreshQuotesForInvestments currency keys', () => {
     expect(warn.mock.calls.some((call) => String(call[0]).includes('CAFCI failure'))).toBe(true);
   });
 
+  it.each([
+    ['null cuotaparte', null],
+    ['error catalog', null],
+    ['parse failure', null],
+  ])('skips IOLDOLD USD when CAFCI 200 is unusable (%s) instead of Yahoo/MEP', async (_label, quote) => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockResolvedValue(quote);
+    mocks.yahoo.mockResolvedValue(new Map([
+      ['IOLDOLD.BA', {
+        ticker: 'IOLDOLD.BA', name: 'IOL Dolar', price: 1.098, changePct: 0, currency: 'ARS',
+      }],
+    ]));
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+    expect(mocks.yahoo).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalled();
+  });
+
   it('skips CAFCI 500 for a USD FCI and does not apply a Yahoo ARS quote via MEP', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     mocks.fci.mockRejectedValue(Object.assign(new Error('CAFCI 500'), { name: 'CafciHttpError', status: 500 }));
@@ -212,6 +236,18 @@ describe('refreshQuotesForInvestments currency keys', () => {
     ]);
     expect(usd.get(quoteCacheKey('cedear', 'GLD', 'USD'))?.currency).toBe('USD');
     expect(usd.get(quoteCacheKey('cedear', 'GLD', 'USD'))?.price).toBeCloseTo(52000 / 1300, 8);
+  });
+
+  it('prices a GLD etf booked in ARS from a confirmed Yahoo USD quote', async () => {
+    mocks.yahoo.mockResolvedValue(new Map([
+      ['GLD', { ticker: 'GLD', name: 'SPDR Gold', price: 380, changePct: 0.4, currency: 'USD' }],
+    ]));
+    const map = await refreshQuotesForInvestments([
+      { type: 'etf', ticker: 'GLD', market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    const hit = map.get(quoteCacheKey('etf', 'GLD', 'ARS'));
+    expect(hit?.currency).toBe('ARS');
+    expect(hit?.price).toBeCloseTo(380 * 1300, 8);
   });
 
   it('updates GLD from Yahoo currency=USD without inferring USD from the D suffix', async () => {
@@ -312,23 +348,12 @@ describe('mapWithLimit budget', () => {
   });
 });
 
-describe('FCI Yahoo fallback stays inside the FCI budget', () => {
-  it('does not send failed FCIs to Yahoo after the FCI budget elapses', async () => {
+describe('FCI never falls back to Yahoo', () => {
+  it('does not send FCIs to Yahoo even while the FCI budget remains', async () => {
     mocks.fci.mockResolvedValue(null);
-    await refreshQuotesForInvestments(
-      [
-        { type: 'fci', ticker: 'COME', market_currency: 'ARS', purchase_currency: 'ARS' },
-        { type: 'stock_us', ticker: 'AAPL', market_currency: 'USD', purchase_currency: 'USD' },
-      ],
-      { fciBudgetMs: 0 }
-    );
-    const yahooSymbols = mocks.yahoo.mock.calls.flatMap((call) => call[0] as string[]);
-    expect(yahooSymbols).toContain('AAPL');
-    expect(yahooSymbols).not.toContain('COME.BA');
-  });
-
-  it('uses Yahoo for failed FCIs only while the shared FCI budget remains', async () => {
-    mocks.fci.mockResolvedValue(null);
+    mocks.yahoo.mockResolvedValue(new Map([
+      ['COME.BA', { ticker: 'COME.BA', name: 'COME', price: 12.5, changePct: 0, currency: 'ARS' }],
+    ]));
     await refreshQuotesForInvestments(
       [
         { type: 'fci', ticker: 'COME', market_currency: 'ARS', purchase_currency: 'ARS' },
@@ -336,12 +361,8 @@ describe('FCI Yahoo fallback stays inside the FCI budget', () => {
       ],
       { fciBudgetMs: 20_000 }
     );
-    expect(mocks.yahoo).toHaveBeenCalled();
-    const fciCall = mocks.yahoo.mock.calls.find((call) => call[0].includes('COME.BA'));
-    expect(fciCall?.[0]).toEqual(['COME.BA']);
-    expect(fciCall?.[1]).toMatchObject({ deadlineAt: expect.any(Number) });
-    const stockCall = mocks.yahoo.mock.calls.find((call) => call[0].includes('AAPL'));
-    expect(stockCall?.[0]).toEqual(['AAPL']);
-    expect(stockCall?.[1]).toBeUndefined();
+    const yahooSymbols = mocks.yahoo.mock.calls.flatMap((call) => call[0] as string[]);
+    expect(yahooSymbols).toContain('AAPL');
+    expect(yahooSymbols).not.toContain('COME.BA');
   });
 });

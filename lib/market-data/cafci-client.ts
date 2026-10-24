@@ -1,8 +1,9 @@
 /**
  * Valor cuotaparte de FCI.
  *
- * Fuente primaria: API pública de CAFCI (sin credenciales). Si CAFCI no
- * responde (WAF/401), Yahoo `.BA` cubre fondos listados en BYMA.
+ * CAFCI is the only source. An HTTP error, an unusable 200 (empty/{error}
+ * catalog, missing valorCuotaparte, parse failure) or a currency mismatch
+ * means skip and keep the last stored price — never Yahoo.
  */
 
 const CAFCI_BASE = 'https://api.cafci.org.ar';

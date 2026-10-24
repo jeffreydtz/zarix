@@ -47,17 +47,25 @@ describe('data912 stale-cache timestamps', () => {
   it('keeps the 12:00 live timestamp after a 12:06 503 stale-cache hit', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-10-24T12:00:00.000Z'));
-    const fetchMock = vi.fn(async (url: string): Promise<{ ok: boolean; status?: number; json: () => Promise<unknown> }> => {
-      if (String(url).includes('/live/arg_stocks')) {
-        return ok([{ symbol: 'YPFD', c: 42000, pct: 1 }]);
+    const fetchMock = vi.fn(
+      async (
+        _url: string,
+        _init?: { cache?: RequestCache; next?: { revalidate?: number } }
+      ): Promise<{ ok: boolean; status?: number; json: () => Promise<unknown> }> => {
+        if (String(_url).includes('/live/arg_stocks')) {
+          return ok([{ symbol: 'YPFD', c: 42000, pct: 1 }]);
+        }
+        return ok([]);
       }
-      return ok([]);
-    });
+    );
     vi.stubGlobal('fetch', fetchMock);
 
     const live = await refreshQuotesForInvestments([
       { type: 'stock_arg', ticker: 'YPFD', market_currency: 'ARS', purchase_currency: 'ARS' },
     ]);
+    const liveInit = fetchMock.mock.calls[0][1];
+    expect(liveInit).toEqual(expect.objectContaining({ cache: 'no-store' }));
+    expect(liveInit?.next?.revalidate).toBeUndefined();
     expect(live.get(quoteCacheKey('stock_arg', 'YPFD', 'ARS'))).toMatchObject({
       price: 42000,
       currency: 'ARS',

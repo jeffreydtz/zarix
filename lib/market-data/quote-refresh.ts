@@ -9,7 +9,6 @@ import {
 } from '@/lib/market-data/quote-currency';
 import { loadArgentineQuotes, type ArgentineQuoteIndex, type Data912Quote } from '@/lib/market-data/data912-client';
 import { fetchYahooStockQuotesMap } from '@/lib/yahoo-finance-quotes';
-import type { StockQuote } from '@/lib/market-data-types';
 import { fetchStooqUsQuote } from '@/lib/stooq-us-quote';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
 import { fetchFciQuote } from '@/lib/market-data/cafci-client';
@@ -122,8 +121,7 @@ type ArgentineLookup =
 
 function quoteFromMap(
   map: Map<string, Data912Quote> | undefined,
-  symbol: string,
-  positionTicker: string
+  symbol: string
 ): ConvertibleQuote | null | 'unconfirmed' {
   if (!map) return null;
   const hit = map.get(symbol.toUpperCase());
@@ -133,7 +131,6 @@ function quoteFromMap(
     matchedSymbol: hit.symbol || symbol,
     listed: map,
     sourceCurrency: tagged,
-    positionTicker,
   });
   if (currency == null) return 'unconfirmed';
   return {
@@ -162,7 +159,7 @@ function lookupArgentineSymbol(
   let unconfirmed = false;
   for (const map of maps) {
     for (const symbol of symbols) {
-      const hit = quoteFromMap(map, symbol, ticker);
+      const hit = quoteFromMap(map, symbol);
       if (hit === 'unconfirmed') {
         unconfirmed = true;
         continue;
@@ -184,7 +181,7 @@ function mepRate(quotes: { mep?: { sell: number; buy: number } } | null): number
 
 /**
  * Precio de mercado en la moneda de cotización de cada posición.
- * data912 (ARG/CEDEAR/bono/ON) → Yahoo `.BA` / US → Stooq → CAFCI (FCI) → CoinGecko.
+ * data912 (ARG/CEDEAR/bono/ON) → Yahoo `.BA` / US → Stooq; FCI is CAFCI only; crypto via CoinGecko.
  */
 export async function refreshQuotesForInvestments(
   investments: QuoteRefreshPosition[],
@@ -239,7 +236,6 @@ export async function refreshQuotesForInvestments(
     }
     if (inv.type === 'fci') {
       fciTickers.push({ ticker, cacheKey, currency });
-      argPositions.push({ type: inv.type, ticker, cacheKey, currency });
       continue;
     }
     if (isArgentineListedType(inv.type)) {
@@ -252,7 +248,7 @@ export async function refreshQuotesForInvestments(
   }
 
   let arg: ArgentineQuoteIndex | null = null;
-  if (argPositions.some((p) => p.type !== 'fci')) {
+  if (argPositions.length > 0) {
     try {
       arg = await loadArgentineQuotes();
     } catch {
@@ -271,7 +267,6 @@ export async function refreshQuotesForInvestments(
   };
 
   for (const pos of argPositions) {
-    if (pos.type === 'fci') continue;
     if (arg) {
       const lookedUp = lookupArgentineSymbol(arg, pos.type, pos.ticker, pos.currency);
       if (lookedUp.status === 'hit') {
@@ -295,9 +290,6 @@ export async function refreshQuotesForInvestments(
 
   const uniqueFci = dedupeByCacheKey(fciTickers);
   const fciBudgetMs = options?.fciBudgetMs ?? FCI_REFRESH_BUDGET_MS;
-  const fciStarted = Date.now();
-  const fciDeadline = fciStarted + fciBudgetMs;
-  const fciYahooSymbols = new Set<string>();
   const fciQuotes = await mapWithLimit(
     uniqueFci,
     FCI_REFRESH_CONCURRENCY,
@@ -312,61 +304,42 @@ export async function refreshQuotesForInvestments(
   );
   for (const [i, fci] of uniqueFci.entries()) {
     const q = fciQuotes[i];
-    if (q === 'error') {
+    if (q === 'error' || !q || !(q.price > 0)) {
       console.warn('[quotes] skip CAFCI failure', { ticker: fci.ticker });
       continue;
     }
-    if (q && q.price > 0) {
-      const resolved = resolveFciQuoteCurrency({
-        sourceCurrency: q.currency,
-        storedCurrency: fci.currency,
+    const resolved = resolveFciQuoteCurrency({
+      sourceCurrency: q.currency,
+      storedCurrency: fci.currency,
+    });
+    if (!resolved.currency) {
+      console.warn('[quotes] skip FCI currency', {
+        ticker: fci.ticker,
+        reason: resolved.reason,
+        cafci: q.currency,
+        stored: fci.currency,
       });
-      if (!resolved.currency) {
-        console.warn('[quotes] skip FCI currency', {
-          ticker: fci.ticker,
-          reason: resolved.reason,
-          cafci: q.currency,
-          stored: fci.currency,
-        });
-        continue;
-      }
-      const adapted = adapt(
-        {
-          price: q.price,
-          changePct: q.changePct,
-          currency: resolved.currency,
-          timestamp: q.timestamp,
-        },
-        fci.currency || resolved.currency,
-      );
-      const stamped = adapted ? stamp(adapted) : null;
-      if (stamped) {
-        out.set(fci.cacheKey, stamped);
-        continue;
-      }
+      continue;
     }
-    if (Date.now() >= fciDeadline) continue;
-    const yahooSymbol = yahooSymbolFor('fci', fci.ticker);
-    fciYahooSymbols.add(yahooSymbol);
-    addYahoo(yahooSymbol, fci.cacheKey);
+    const adapted = adapt(
+      {
+        price: q.price,
+        changePct: q.changePct,
+        currency: resolved.currency,
+        timestamp: q.timestamp,
+      },
+      fci.currency || resolved.currency,
+    );
+    const stamped = adapted ? stamp(adapted) : null;
+    if (stamped) out.set(fci.cacheKey, stamped);
   }
 
   const yahooSymbols = Array.from(yahooSymbolToCacheKeys.keys());
   if (yahooSymbols.length > 0) {
-    const otherYahoo = yahooSymbols.filter((symbol) => !fciYahooSymbols.has(symbol));
-    const fciYahoo = yahooSymbols.filter((symbol) => fciYahooSymbols.has(symbol));
-    const yMap = new Map<string, StockQuote>();
-    if (otherYahoo.length > 0) {
-      const otherMap = await fetchYahooStockQuotesMap(otherYahoo);
-      for (const [symbol, quote] of otherMap) yMap.set(symbol, quote);
-    }
-    if (fciYahoo.length > 0 && Date.now() < fciDeadline) {
-      const fciMap = await fetchYahooStockQuotesMap(fciYahoo, { deadlineAt: fciDeadline });
-      for (const [symbol, quote] of fciMap) yMap.set(symbol, quote);
-    }
+    const yMap = await fetchYahooStockQuotesMap(yahooSymbols);
     const missingForStooq: string[] = [];
     const cacheKeyCurrency = new Map<string, string>();
-    for (const pos of [...argPositions, ...fciTickers]) {
+    for (const pos of argPositions) {
       cacheKeyCurrency.set(pos.cacheKey, pos.currency);
     }
     for (const inv of investments) {
