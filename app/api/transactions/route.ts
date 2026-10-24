@@ -117,6 +117,7 @@ export async function POST(req: NextRequest) {
       tags: body.tags,
       transactionDate: body.transactionDate,
       installments: body.installments,
+      source: 'web',
       exchangeRateOverride: (() => {
         const raw = body.exchangeRateOverride;
         if (raw == null || raw === '') return undefined;

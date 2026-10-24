@@ -1,14 +1,12 @@
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
--- SEED DATA PARA TESTING
--- Ejecutar DESPUÉS de crear un usuario via magic link
--- Reemplazar 'USER_ID_AQUI' con tu user ID real de Supabase Auth
+-- SEED DATA PARA TESTING LOCAL
+-- Dedicated fixture user only. Never the owner's production account,
+-- user id or email. Matches scripts/lib/test-isolated-database.mjs.
+-- Fixture A: 11111111-1111-4111-8111-111111111111 / test-a@zarix.invalid
+-- Create that auth user on local Supabase / test:db first.
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
--- PASO 1: Obtener tu user ID
--- Dashboard → Authentication → Users → copiar ID del usuario
-
--- PASO 2: Reemplazar en las queries de abajo
-\set user_id 'USER_ID_AQUI'
+\set user_id '11111111-1111-4111-8111-111111111111'
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- CREAR CUENTAS DE EJEMPLO

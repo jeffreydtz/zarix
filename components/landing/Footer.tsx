@@ -1,6 +1,7 @@
 'use client';
 
 import { Globe, Linkedin, Mail, X } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function Footer() {
@@ -16,6 +17,9 @@ export default function Footer() {
               <p className="mt-1">© 2026 Zarix · Hecho en Argentina 🇦🇷</p>
             </div>
             <div className="flex items-center gap-5">
+              <Link href="/docs" className="transition hover:text-foreground">
+                Docs
+              </Link>
               <button
                 type="button"
                 onClick={() => setOpen(true)}

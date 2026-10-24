@@ -27,12 +27,16 @@ export async function POST(req: NextRequest, props: { params: Promise<{ secret: 
   const supabase = createServiceClientSync();
   const { data: row } = await supabase
     .from('users')
-    .select('id, telegram_chat_id, telegram_bot_token, telegram_webhook_secret')
+    .select('id, telegram_chat_id, telegram_bot_token, telegram_bot_token_enc, telegram_webhook_secret')
     .eq('telegram_webhook_secret', secret)
     .maybeSingle();
 
+  const { decryptStoredSecret } = await import('@/lib/secrets/user-secrets');
+  const botToken = (await decryptStoredSecret(row?.telegram_bot_token_enc)) || row?.telegram_bot_token || '';
+
   if (
-    !row?.telegram_bot_token ||
+    !row ||
+    !botToken ||
     !verifyConfiguredSecret(secret, row.telegram_webhook_secret)
   ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -44,7 +48,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ secret: 
     const update = await req.json();
     // SEGURIDAD (fix cross-tenant): el bot propio actúa SIEMPRE como su dueño
     // (resuelto por el secret), nunca por el chat.id del payload.
-    await handleCustomTelegramUpdate(update, row.telegram_bot_token, {
+    await handleCustomTelegramUpdate(update, botToken, {
       userId: row.id,
       chatId: row.telegram_chat_id ?? null,
     });

@@ -13,6 +13,7 @@ export const baselineCommit = 'ed894431968775dba1d9ba01df99d9a442407865';
 // This reconstructed prehistory supplies core objects absent from migration
 // history. Every historical and new migration then executes unchanged in order.
 export const baselineSource = 'supabase/baselines/pre_20260401_fresh_install.sql';
+// Dedicated synthetic fixtures (test-a@zarix.invalid / test-b@zarix.invalid). Never a real account.
 export const ids = {
   a: '11111111-1111-4111-8111-111111111111', b: '22222222-2222-4222-8222-222222222222',
   accountA: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1', accountB: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1',

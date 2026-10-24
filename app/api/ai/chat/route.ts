@@ -118,6 +118,7 @@ export async function POST(req: NextRequest) {
       message: message.trim(),
       history: safeHistory,
       financialContext,
+      source: 'web',
     });
     return NextResponse.json(response, { headers: { 'Idempotency-Key': requestKey } });
   } catch (error) {

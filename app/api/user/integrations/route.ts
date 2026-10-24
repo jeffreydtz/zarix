@@ -3,11 +3,15 @@ import { randomBytes } from 'crypto';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { deriveCustomWebhookHeaderSecret } from '@/lib/telegram/webhook-auth';
 import { errorResponse } from '@/lib/api-handler';
+import { assertSameOrigin } from '@/lib/auth/origin';
+import { getUserTelegramBotToken, setUserSecret } from '@/lib/secrets/user-secrets';
+import { recordIntegrationAudit, auditIpFromRequest, auditUserAgent } from '@/lib/integrations/audit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
+    assertSameOrigin(req);
     const supabase = await createClient();
     const {
       data: { user },
@@ -25,31 +29,32 @@ export async function POST(req: NextRequest) {
     };
 
     const updates: Record<string, unknown> = {};
+    let secretsTouched = false;
 
     if (gemini_api_key !== undefined) {
       const v =
         gemini_api_key === null || gemini_api_key === ''
           ? null
           : String(gemini_api_key).trim();
-      updates.gemini_api_key = v;
+      await setUserSecret(user.id, 'gemini_api_key', v);
+      secretsTouched = true;
     }
 
     if (telegram_mode === 'shared') {
-      updates.telegram_bot_token = null;
+      await setUserSecret(user.id, 'telegram_bot_token', null);
       updates.telegram_webhook_secret = null;
+      secretsTouched = true;
     } else if (telegram_mode === 'custom') {
-      // telegram_bot_token está revocado para el rol authenticated (no vuelve
-      // al cliente). Lo leemos con el service client, server-side, solo para
-      // preservar el token existente si el usuario guarda sin reingresarlo.
+      const existingToken = await getUserTelegramBotToken(user.id);
       const serviceClient = await createServiceClient();
       const { data: existing } = await serviceClient
         .from('users')
-        .select('telegram_bot_token, telegram_webhook_secret')
+        .select('telegram_webhook_secret')
         .eq('id', user.id)
         .single();
       const token =
         (telegram_bot_token && String(telegram_bot_token).trim()) ||
-        existing?.telegram_bot_token?.trim() ||
+        existingToken ||
         '';
       if (!token) {
         return NextResponse.json(
@@ -57,20 +62,32 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-      updates.telegram_bot_token = token;
+      await setUserSecret(user.id, 'telegram_bot_token', token);
+      secretsTouched = true;
       if (!existing?.telegram_webhook_secret) {
         updates.telegram_webhook_secret = randomBytes(24).toString('hex');
       }
     }
 
-    if (Object.keys(updates).length === 0) {
+    if (Object.keys(updates).length > 0) {
+      const { error } = await supabase.from('users').update(updates).eq('id', user.id);
+      if (error) return errorResponse(error);
+    } else if (!secretsTouched) {
       return NextResponse.json({ message: 'Sin cambios' });
     }
 
-    const { error } = await supabase.from('users').update(updates).eq('id', user.id);
-
-    if (error) {
-      return errorResponse(error);
+    if (secretsTouched) {
+      await recordIntegrationAudit({
+        userId: user.id,
+        action: 'secrets.update',
+        source: 'web',
+        ipHash: auditIpFromRequest(req),
+        userAgent: auditUserAgent(req),
+        metadata: {
+          gemini: gemini_api_key !== undefined,
+          telegram: telegram_mode ?? null,
+        },
+      });
     }
 
     const { data: fresh } = await supabase
@@ -90,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, webhookUrl, webhookSecretToken });
   } catch (e) {
-    console.error('integrations POST:', e);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    console.error('integrations POST');
+    return errorResponse(e);
   }
 }

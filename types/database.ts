@@ -53,6 +53,7 @@ export interface User {
   weekly_summary_enabled: boolean;
   monthly_summary_enabled: boolean;
   onboarding_done: boolean;
+  wallet_auto_confirm?: boolean;
   telegram_link_code: string | null;
   telegram_link_code_expires_at: string | null;
   created_at: string;
@@ -114,6 +115,7 @@ export interface Transaction {
   installment_number: number | null;
   installment_total: number | null;
   installment_group_id: string | null;
+  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
   created_at: string;
   updated_at: string;
 }

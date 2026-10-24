@@ -589,14 +589,14 @@ isOneToOne: false
                   ]
                 },"transactions": {
                   Row: {
-                    "account_id": string | null,"amount": number,"amount_in_account_currency": number,"category_id": string | null,"created_at": string,"currency": string,"description": string | null,"destination_account_id": string | null,"destination_amount_in_account_currency": number | null,"exchange_rate": number | null,"id": string,"installment_group_id": string | null,"installment_number": number | null,"installment_total": number | null,"is_recurring": boolean | null,"location": Json | null,"notes": string | null,"receipt_url": string | null,"recurring_rule_id": string | null,"tags": (string)[] | null,"transaction_date": string,"type": Database["public"]['Enums']["transaction_type"],"updated_at": string,"user_id": string
+                    "account_id": string | null,"amount": number,"amount_in_account_currency": number,"category_id": string | null,"created_at": string,"currency": string,"description": string | null,"destination_account_id": string | null,"destination_amount_in_account_currency": number | null,"exchange_rate": number | null,"id": string,"installment_group_id": string | null,"installment_number": number | null,"installment_total": number | null,"is_recurring": boolean | null,"location": Json | null,"notes": string | null,"receipt_url": string | null,"recurring_rule_id": string | null,"source": string,"tags": (string)[] | null,"transaction_date": string,"type": Database["public"]['Enums']["transaction_type"],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "account_id"?: string | null,"amount": number,"amount_in_account_currency": number,"category_id"?: string | null,"created_at"?: string,"currency": string,"description"?: string | null,"destination_account_id"?: string | null,"destination_amount_in_account_currency"?: number | null,"exchange_rate"?: number | null,"id"?: string,"installment_group_id"?: string | null,"installment_number"?: number | null,"installment_total"?: number | null,"is_recurring"?: boolean | null,"location"?: Json | null,"notes"?: string | null,"receipt_url"?: string | null,"recurring_rule_id"?: string | null,"tags"?: (string)[] | null,"transaction_date"?: string,"type": Database["public"]['Enums']["transaction_type"],"updated_at"?: string,"user_id": string
+                    "account_id"?: string | null,"amount": number,"amount_in_account_currency": number,"category_id"?: string | null,"created_at"?: string,"currency": string,"description"?: string | null,"destination_account_id"?: string | null,"destination_amount_in_account_currency"?: number | null,"exchange_rate"?: number | null,"id"?: string,"installment_group_id"?: string | null,"installment_number"?: number | null,"installment_total"?: number | null,"is_recurring"?: boolean | null,"location"?: Json | null,"notes"?: string | null,"receipt_url"?: string | null,"recurring_rule_id"?: string | null,"source"?: string,"tags"?: (string)[] | null,"transaction_date"?: string,"type": Database["public"]['Enums']["transaction_type"],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "account_id"?: string | null,"amount"?: number,"amount_in_account_currency"?: number,"category_id"?: string | null,"created_at"?: string,"currency"?: string,"description"?: string | null,"destination_account_id"?: string | null,"destination_amount_in_account_currency"?: number | null,"exchange_rate"?: number | null,"id"?: string,"installment_group_id"?: string | null,"installment_number"?: number | null,"installment_total"?: number | null,"is_recurring"?: boolean | null,"location"?: Json | null,"notes"?: string | null,"receipt_url"?: string | null,"recurring_rule_id"?: string | null,"tags"?: (string)[] | null,"transaction_date"?: string,"type"?: Database["public"]['Enums']["transaction_type"],"updated_at"?: string,"user_id"?: string
+                    "account_id"?: string | null,"amount"?: number,"amount_in_account_currency"?: number,"category_id"?: string | null,"created_at"?: string,"currency"?: string,"description"?: string | null,"destination_account_id"?: string | null,"destination_amount_in_account_currency"?: number | null,"exchange_rate"?: number | null,"id"?: string,"installment_group_id"?: string | null,"installment_number"?: number | null,"installment_total"?: number | null,"is_recurring"?: boolean | null,"location"?: Json | null,"notes"?: string | null,"receipt_url"?: string | null,"recurring_rule_id"?: string | null,"source"?: string,"tags"?: (string)[] | null,"transaction_date"?: string,"type"?: Database["public"]['Enums']["transaction_type"],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -639,18 +639,66 @@ isOneToOne: false
                   ]
                 },"users": {
                   Row: {
-                    "created_at": string,"current_period_end": string | null,"daily_summary_enabled": boolean | null,"default_currency": string,"net_worth_widget_visible": boolean,"gemini_api_key": string | null,"grace_period_end": string | null,"id": string,"monthly_summary_enabled": boolean | null,"mp_preapproval_id": string | null,"notification_time": string | null,"onboarding_done": boolean,"status": Database["public"]['Enums']["subscription_status"],"telegram_bot_token": string | null,"telegram_chat_id": number | null,"telegram_link_code": string | null,"telegram_link_code_expires_at": string | null,"telegram_username": string | null,"telegram_webhook_secret": string | null,"timezone": string,"updated_at": string,"weekly_summary_enabled": boolean | null
+                    "created_at": string,"current_period_end": string | null,"daily_summary_enabled": boolean | null,"default_currency": string,"net_worth_widget_visible": boolean,"gemini_api_key": string | null,"gemini_api_key_enc": string | null,"grace_period_end": string | null,"id": string,"monthly_summary_enabled": boolean | null,"mp_preapproval_id": string | null,"notification_time": string | null,"onboarding_done": boolean,"status": Database["public"]['Enums']["subscription_status"],"telegram_bot_token": string | null,"telegram_bot_token_enc": string | null,"telegram_chat_id": number | null,"telegram_link_code": string | null,"telegram_link_code_expires_at": string | null,"telegram_username": string | null,"telegram_webhook_secret": string | null,"timezone": string,"updated_at": string,"wallet_auto_confirm": boolean,"weekly_summary_enabled": boolean | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"current_period_end"?: string | null,"daily_summary_enabled"?: boolean | null,"default_currency"?: string,"net_worth_widget_visible"?: boolean,"gemini_api_key"?: string | null,"grace_period_end"?: string | null,"id": string,"monthly_summary_enabled"?: boolean | null,"mp_preapproval_id"?: string | null,"notification_time"?: string | null,"onboarding_done"?: boolean,"status"?: Database["public"]['Enums']["subscription_status"],"telegram_bot_token"?: string | null,"telegram_chat_id"?: number | null,"telegram_link_code"?: string | null,"telegram_link_code_expires_at"?: string | null,"telegram_username"?: string | null,"telegram_webhook_secret"?: string | null,"timezone"?: string,"updated_at"?: string,"weekly_summary_enabled"?: boolean | null
+                    "created_at"?: string,"current_period_end"?: string | null,"daily_summary_enabled"?: boolean | null,"default_currency"?: string,"net_worth_widget_visible"?: boolean,"gemini_api_key"?: string | null,"gemini_api_key_enc"?: string | null,"grace_period_end"?: string | null,"id": string,"monthly_summary_enabled"?: boolean | null,"mp_preapproval_id"?: string | null,"notification_time"?: string | null,"onboarding_done"?: boolean,"status"?: Database["public"]['Enums']["subscription_status"],"telegram_bot_token"?: string | null,"telegram_bot_token_enc"?: string | null,"telegram_chat_id"?: number | null,"telegram_link_code"?: string | null,"telegram_link_code_expires_at"?: string | null,"telegram_username"?: string | null,"telegram_webhook_secret"?: string | null,"timezone"?: string,"updated_at"?: string,"wallet_auto_confirm"?: boolean,"weekly_summary_enabled"?: boolean | null
                   }
                   Update: {
-                    "created_at"?: string,"current_period_end"?: string | null,"daily_summary_enabled"?: boolean | null,"default_currency"?: string,"net_worth_widget_visible"?: boolean,"gemini_api_key"?: string | null,"grace_period_end"?: string | null,"id"?: string,"monthly_summary_enabled"?: boolean | null,"mp_preapproval_id"?: string | null,"notification_time"?: string | null,"onboarding_done"?: boolean,"status"?: Database["public"]['Enums']["subscription_status"],"telegram_bot_token"?: string | null,"telegram_chat_id"?: number | null,"telegram_link_code"?: string | null,"telegram_link_code_expires_at"?: string | null,"telegram_username"?: string | null,"telegram_webhook_secret"?: string | null,"timezone"?: string,"updated_at"?: string,"weekly_summary_enabled"?: boolean | null
+                    "created_at"?: string,"current_period_end"?: string | null,"daily_summary_enabled"?: boolean | null,"default_currency"?: string,"net_worth_widget_visible"?: boolean,"gemini_api_key"?: string | null,"gemini_api_key_enc"?: string | null,"grace_period_end"?: string | null,"id"?: string,"monthly_summary_enabled"?: boolean | null,"mp_preapproval_id"?: string | null,"notification_time"?: string | null,"onboarding_done"?: boolean,"status"?: Database["public"]['Enums']["subscription_status"],"telegram_bot_token"?: string | null,"telegram_bot_token_enc"?: string | null,"telegram_chat_id"?: number | null,"telegram_link_code"?: string | null,"telegram_link_code_expires_at"?: string | null,"telegram_username"?: string | null,"telegram_webhook_secret"?: string | null,"timezone"?: string,"updated_at"?: string,"wallet_auto_confirm"?: boolean,"weekly_summary_enabled"?: boolean | null
                   }
                   Relationships: [
                     
                   ]
+                },"integration_audit_log": {
+                  Row: {
+                    "action": string,"created_at": string,"id": string,"ip_hash": string | null,"metadata": NonNullable<Json>,"source": string,"user_agent": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "action": string,"created_at"?: string,"id"?: string,"ip_hash"?: string | null,"metadata"?: NonNullable<Json>,"source": string,"user_agent"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "action"?: string,"created_at"?: string,"id"?: string,"ip_hash"?: string | null,"metadata"?: NonNullable<Json>,"source"?: string,"user_agent"?: string | null,"user_id"?: string
+                  }
+                  Relationships: []
+                },"pending_inbox_items": {
+                  Row: {
+                    "account_id": string | null,"amount": number | null,"card_name": string | null,"category_id": string | null,"confirmed_transaction_id": string | null,"created_at": string,"currency": string,"discarded_at": string | null,"fingerprint": string,"id": string,"idempotency_key": string | null,"merchant": string | null,"occurred_at": string | null,"raw_payload": Json | null,"raw_text": string | null,"source": string,"status": string,"suggestion_source": string | null,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "account_id"?: string | null,"amount"?: number | null,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"discarded_at"?: string | null,"fingerprint": string,"id"?: string,"idempotency_key"?: string | null,"merchant"?: string | null,"occurred_at"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "account_id"?: string | null,"amount"?: number | null,"card_name"?: string | null,"category_id"?: string | null,"confirmed_transaction_id"?: string | null,"created_at"?: string,"currency"?: string,"discarded_at"?: string | null,"fingerprint"?: string,"id"?: string,"idempotency_key"?: string | null,"merchant"?: string | null,"occurred_at"?: string | null,"raw_payload"?: Json | null,"raw_text"?: string | null,"source"?: string,"status"?: string,"suggestion_source"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: []
+                },"personal_access_tokens": {
+                  Row: {
+                    "created_at": string,"id": string,"last_used_at": string | null,"name": string,"revoked_at": string | null,"scopes": string[],"token_hash": string,"token_prefix": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"last_used_at"?: string | null,"name": string,"revoked_at"?: string | null,"scopes"?: string[],"token_hash": string,"token_prefix": string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"last_used_at"?: string | null,"name"?: string,"revoked_at"?: string | null,"scopes"?: string[],"token_hash"?: string,"token_prefix"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: []
+                },"wallet_card_account_maps": {
+                  Row: {
+                    "account_id": string,"card_name_normalized": string,"created_at": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "account_id": string,"card_name_normalized": string,"created_at"?: string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "account_id"?: string,"card_name_normalized"?: string,"created_at"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: []
                 }
           }
           Views: {

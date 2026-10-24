@@ -38,9 +38,10 @@ export async function executeBotTransaction(
   userId: string,
   financialContext: FinancialContext,
   txData: BotTxPayload,
-  options?: { summaryResponse?: string }
+  options?: { summaryResponse?: string; source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp' }
 ): Promise<ExecuteBotTxResult> {
   const summaryResponse = options?.summaryResponse ?? '';
+  const source = options?.source ?? 'telegram';
 
   if (!txData.amount || txData.amount <= 0) {
     return {
@@ -187,6 +188,7 @@ export async function executeBotTransaction(
       currency: finalCurrency,
       categoryId,
       description: txData.description,
+      source,
       ...(resolvedDate ? { transactionDate: resolvedDate } : {}),
     });
 

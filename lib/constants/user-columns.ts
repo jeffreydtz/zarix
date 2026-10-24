@@ -19,6 +19,7 @@ export const USER_CLIENT_SAFE_COLUMNS = [
   'weekly_summary_enabled',
   'monthly_summary_enabled',
   'onboarding_done',
+  'wallet_auto_confirm',
   'created_at',
   'updated_at',
 ].join(', ');

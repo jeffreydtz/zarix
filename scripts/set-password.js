@@ -67,7 +67,21 @@ const password = process.argv[3];
 
 if (!email || !password) {
   console.log('❌ Uso: node scripts/set-password.js EMAIL PASSWORD');
-  console.log('📝 Ejemplo: node scripts/set-password.js jeff@example.com mipassword123');
+  console.log('📝 Ejemplo: node scripts/set-password.js test-a@zarix.invalid mipassword123');
+  process.exit(1);
+}
+
+const normalizedEmail = String(email).trim().toLowerCase();
+const [localPart, domain] = normalizedEmail.split('@');
+if (localPart === 'jef_dietz' || domain === 'hotmail.com') {
+  console.error('❌ Refusing the owner/support mailbox. Use a dedicated fixture such as test-a@zarix.invalid');
+  process.exit(1);
+}
+const supabaseHost = String(supabaseUrl || '');
+const isLoopback = /localhost|127\.0\.0\.1|\[::1\]/i.test(supabaseHost);
+const isFixtureMailbox = /@(zarix|example)\.invalid$|@example\.com$/i.test(normalizedEmail);
+if (!isLoopback && !isFixtureMailbox) {
+  console.error('❌ Non-local targets require a dedicated test mailbox (@zarix.invalid / @example.invalid). Never the owner account.');
   process.exit(1);
 }
 

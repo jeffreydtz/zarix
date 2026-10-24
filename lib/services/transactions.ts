@@ -182,6 +182,8 @@ export interface CreateTransactionInput {
   exchangeRateOverride?: number | null;
   isRecurring?: boolean;
   recurringRuleId?: string | null;
+  /** Channel that created the row: web, telegram, wallet, api, mcp. */
+  source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp';
 }
 
 export interface TransactionWithCategory extends Transaction {
@@ -207,6 +209,7 @@ class TransactionsService {
     // `currency = upper(currency)` (migración data_integrity) lo exige, y evita
     // los mismatches por comparación de strings aguas abajo.
     input = { ...input, requestId: input.requestId ?? nextFinancialRequestId(), currency: (input.currency || 'ARS').trim().toUpperCase() };
+    const channel = input.source ?? 'web';
     if (!['expense', 'income', 'transfer', 'adjustment'].includes(input.type)) {
       throw new Error('Tipo de movimiento inválido.');
     }
@@ -319,6 +322,7 @@ class TransactionsService {
           amount: input.amount, currency: input.currency, category_id: input.categoryId || null,
           description: input.description || 'Compra en cuotas',
           transaction_date: input.transactionDate || new Date().toISOString(),
+          source: channel,
         }, input.installments);
       }
       const { data, error } = await supabase.rpc('create_installment_transactions', {
@@ -378,6 +382,7 @@ class TransactionsService {
           exchange_rate: transfer.exchangeRate !== 1 ? transfer.exchangeRate : null,
           description: input.description || 'Transferencia entre cuentas',
           transaction_date: input.transactionDate || new Date().toISOString(),
+          source: channel,
         });
     }
 
@@ -402,6 +407,7 @@ class TransactionsService {
         transaction_date: input.transactionDate || new Date().toISOString(),
         is_recurring: input.isRecurring === true,
         recurring_rule_id: input.recurringRuleId || null,
+        source: channel,
       });
     }, result => result.id);
   }
