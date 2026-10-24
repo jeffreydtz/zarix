@@ -7,8 +7,6 @@ import { accountsService } from '@/lib/services/accounts';
 import { parseWalletPayload, type WalletIngestPayload } from '@/lib/integrations/wallet-parse';
 import { suggestCategoryFromMerchant } from '@/lib/integrations/merchant-category';
 import { auditIpFromRequest, auditUserAgent, recordIntegrationAudit } from '@/lib/integrations/audit';
-import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
-import type { User } from '@/types/database';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 import { withPatUserScope } from '@/lib/supabase/request-scope';
 import { withFinancialRequestContext } from '@/lib/financial-request-context';
@@ -404,18 +402,8 @@ export async function listPendingItems(userId: string, status: 'pending' | 'all'
 }
 
 async function loadFinancialContext(userId: string): Promise<FinancialContext> {
-  const supabase = createServiceClientSync();
-  const [userProfile, accounts, categories] = await Promise.all([
-    supabase.from('users').select(USER_CLIENT_SAFE_COLUMNS).eq('id', userId).single(),
-    accountsService.list(userId),
-    // System catalog rows are user_id NULL. Owner-only .eq() would hide them.
-    supabase.from('categories').select('*').or(`user_id.eq.${userId},user_id.is.null`),
-  ]);
-  return {
-    user: userProfile.data as unknown as User,
-    accounts,
-    categories: (categories.data ?? []) as FinancialContext['categories'],
-  };
+  const { loadRegistryFinancialContext } = await import('@/lib/ai/registry/context');
+  return loadRegistryFinancialContext(userId);
 }
 
 export function pendingInboxRequestId(itemId: string): string {

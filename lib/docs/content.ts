@@ -133,9 +133,10 @@ export const DOCS_PAGES: DocsPage[] = [
         ],
       },
       {
-        heading: 'REST y MCP',
+        heading: 'REST v1',
         body: [
-          'La API REST /api/v1 y el servidor MCP remoto se documentan cuando se activen. Mientras tanto, el chat de la app y Telegram ya usan el mismo registro de herramientas.',
+          'GET /api/v1/openapi.json describe las 14 herramientas. GET /api/v1/tools las lista según el token. POST /api/v1/tools/{nombre} las ejecuta.',
+          'Ejemplo (dato de ejemplo): curl -H "Authorization: Bearer zrxp_…" https://zarix-phi.vercel.app/api/v1/tools/get_accounts',
         ],
       },
     ],
@@ -146,11 +147,23 @@ export const DOCS_PAGES: DocsPage[] = [
     description: 'Claude, Grok, ChatGPT y Cursor usarán el mismo registro de herramientas.',
     sections: [
       {
-        heading: 'En preparación',
+        heading: 'URL y token',
         body: [
-          'Zarix va a exponer un servidor MCP remoto en /api/mcp autenticado con el mismo token personal.',
-          'Las herramientas de lectura llevan la anotación readOnlyHint. Las de escritura piden el permiso write.',
-          'Esta página se completa con snippets de Claude, Grok, ChatGPT y Cursor cuando esa pieza esté publicada.',
+          'Servidor remoto: https://zarix-phi.vercel.app/api/mcp (Streamable HTTP). Authorization: Bearer zrxp_… con permiso read (y write si querés cargar movimientos).',
+          'Las tools de lectura llevan readOnlyHint. Las de escritura piden el scope write. OAuth 2.1 queda detrás de ZARIX_MCP_OAUTH_ENABLED; por defecto se usa el PAT.',
+        ],
+      },
+      {
+        heading: 'Claude / ChatGPT',
+        body: [
+          'En el conector MCP remoto pegá https://zarix-phi.vercel.app/api/mcp y el token personal. Ejemplo de prueba (dato de ejemplo): get_accounts.',
+        ],
+      },
+      {
+        heading: 'Grok / Cursor',
+        body: [
+          'Cursor: mcp.json con { "zarix": { "url": "https://zarix-phi.vercel.app/api/mcp", "headers": { "Authorization": "Bearer zrxp_…" } } }.',
+          'Grok: mismo URL Streamable HTTP y el header Authorization. No uses la cuenta real del dueño de Zarix: creá un token de prueba.',
         ],
       },
     ],

@@ -10,6 +10,8 @@ describe('public docs', () => {
     ]));
     const blob = JSON.stringify(DOCS_PAGES);
     expect(blob).toMatch(/ejemplo/i);
+    expect(blob).toMatch(/\/api\/mcp/);
+    expect(blob).toMatch(/\/api\/v1/);
     expect(blob.toLowerCase()).not.toContain('@hotmail.com');
     expect(docsNav().every((n) => n.href.startsWith('/docs'))).toBe(true);
     expect(findDocsPage('nope')).toBeUndefined();

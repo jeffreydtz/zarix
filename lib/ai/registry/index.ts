@@ -5,3 +5,5 @@ export { executeRegistryTool } from './execute';
 export { geminiFunctionDeclarations, registryToolToGemini } from './gemini';
 export { maskSensitiveText, maskSensitiveValue, asUntrustedData, UNTRUSTED_INSTRUCTION } from './mask';
 export { TOOL_SCHEMAS } from './schemas';
+export { loadRegistryFinancialContext } from './context';
+export { zodToJsonSchema } from './json-schema';

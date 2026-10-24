@@ -180,7 +180,8 @@ async function lookupPatByPresentedToken(token: string): Promise<PatRow | null> 
 
 export async function authenticatePersonalAccessToken(
   req: Request,
-  needed: PatScope
+  needed?: PatScope,
+  options?: { source?: 'web' | 'telegram' | 'wallet' | 'api' | 'mcp' }
 ): Promise<AuthenticatedPat> {
   const ip = clientIpFromRequest(req);
   const ipHash = hashClientIp(ip);
@@ -203,7 +204,7 @@ export async function authenticatePersonalAccessToken(
   if (!rateLimitAllow(`pat:${row.id}:${ipHash}`, 60, 60_000)) {
     throw new ApiError('Demasiados intentos. Esperá un minuto.', 429);
   }
-  if (!scopesInclude(row.scopes, needed)) {
+  if (needed && !scopesInclude(row.scopes, needed)) {
     throw new ApiError('Este token no tiene el permiso necesario.', 403);
   }
   const last = row.last_used_at ? Date.parse(row.last_used_at) : 0;
@@ -215,13 +216,14 @@ export async function authenticatePersonalAccessToken(
       .eq('user_id', row.user_id);
     if (usedErr) console.error('[pat] last_used_at update failed');
   }
+  const source = options?.source ?? (needed === 'ingest' ? 'wallet' : 'api');
   await recordIntegrationAudit({
     userId: row.user_id,
     action: 'token.use',
-    source: needed === 'ingest' ? 'wallet' : 'api',
+    source,
     ipHash: auditIpFromRequest(req),
     userAgent: auditUserAgent(req),
-    metadata: { tokenId: row.id, scope: needed },
+    metadata: { tokenId: row.id, scope: needed ?? 'any' },
   });
   return { userId: row.user_id, tokenId: row.id, scopes: row.scopes };
 }
