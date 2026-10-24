@@ -139,6 +139,7 @@ export default function PendientesPage() {
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {draft.currency} · {new Date(item.created_at).toLocaleString('es-AR')}
+                  {item.status === 'confirming' ? ' · reintento (quedó a medias)' : ''}
                 </p>
                 <div className="flex gap-2">
                   <button type="button" className="btn-primary" onClick={() => confirm(item)}>

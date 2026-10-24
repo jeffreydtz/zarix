@@ -188,7 +188,16 @@ async function parkCreate(
     occurredAt: str(args.transactionDate) || str(args.date) || null,
     source: source === 'mcp' || source === 'api' ? source : 'api',
     ingestKey: requestId ?? null,
+    toolPayload: { ...args },
   });
+}
+
+function pendingIdsFromArgs(args: ToolArgs): string[] {
+  if (typeof args.pendingId === 'string' && args.pendingId) return [args.pendingId];
+  if (Array.isArray(args.pendingIds)) {
+    return args.pendingIds.filter((id): id is string => typeof id === 'string' && id.length > 0);
+  }
+  return [];
 }
 
 async function executeRegistryToolImpl(
@@ -237,11 +246,20 @@ async function executeRegistryToolImpl(
           },
         };
       }
-      if (remoteWrite && isConfirmed(safeArgs) && typeof safeArgs.pendingId === 'string') {
+      if (remoteWrite && isConfirmed(safeArgs)) {
+        const ids = pendingIdsFromArgs(safeArgs);
+        if (ids.length === 0) {
+          return {
+            response: {
+              success: false,
+              error: 'Falta pendingId. Confirmá el pendiente; no escribas el ledger directo.',
+            },
+          };
+        }
         const { confirmPendingItem } = await import('@/lib/services/pending-inbox');
         const item = await confirmPendingItem({
           userId,
-          itemId: String(safeArgs.pendingId),
+          itemId: ids[0],
           amount: num(safeArgs.amount),
           currency: str(safeArgs.currency),
           merchant: str(safeArgs.description),
@@ -263,7 +281,7 @@ async function executeRegistryToolImpl(
       return {
         response: {
           success: true,
-          summary: res.reply,
+          summary: asUntrustedData(res.reply),
           description: asUntrustedData(str(safeArgs.description)),
           untrusted: true,
           untrusted_instruction: UNTRUSTED_INSTRUCTION,
@@ -280,8 +298,9 @@ async function executeRegistryToolImpl(
       if (txs.length === 0) return { response: { success: false, error: 'No encontré montos válidos.' } };
       if (remoteWrite && !isConfirmed(safeArgs)) {
         const pendingIds: string[] = [];
-        for (const tx of txs) {
-          const parked = await parkCreate(userId, tx as unknown as ToolArgs, source, requestId);
+        for (const [index, tx] of txs.entries()) {
+          const itemKey = requestId ? `${requestId}:${index}` : undefined;
+          const parked = await parkCreate(userId, tx as unknown as ToolArgs, source, itemKey);
           pendingIds.push(parked.id);
         }
         return {
@@ -291,7 +310,30 @@ async function executeRegistryToolImpl(
             pendingIds,
             untrusted: true,
             untrusted_instruction: UNTRUSTED_INSTRUCTION,
-            error: 'Mostrá el preview. Si el usuario confirma, llamá con confirm=true.',
+            error: 'Mostrá el preview. Si el usuario confirma, llamá con confirm=true y pendingIds.',
+          },
+        };
+      }
+      if (remoteWrite && isConfirmed(safeArgs)) {
+        const ids = pendingIdsFromArgs(safeArgs);
+        if (ids.length === 0) {
+          return {
+            response: {
+              success: false,
+              error: 'Faltan pendingIds. Confirmá los pendientes; no escribas el ledger directo.',
+            },
+          };
+        }
+        const { confirmPendingItems } = await import('@/lib/services/pending-inbox');
+        const confirmed = await confirmPendingItems({ userId, itemIds: ids });
+        return {
+          response: {
+            success: true,
+            executedCount: confirmed.length,
+            total: ids.length,
+            pendingIds: confirmed.map((item) => item.id),
+            untrusted: true,
+            untrusted_instruction: UNTRUSTED_INSTRUCTION,
           },
         };
       }
@@ -321,7 +363,7 @@ async function executeRegistryToolImpl(
           response: {
             success: false,
             needs_confirm: true,
-            preview: `Crear cuenta "${accountName}"`,
+            preview: `Crear cuenta "${asUntrustedData(accountName)}"`,
             error: 'Preguntá si confirma y volvé a llamar con confirm=true.',
           },
         };
@@ -337,7 +379,7 @@ async function executeRegistryToolImpl(
           initialBalance: 0,
           icon: type === 'bank' ? '🏦' : '💵',
         });
-        return { response: { success: true, name: accountName } };
+        return { response: { success: true, name: asUntrustedData(accountName) } };
       } catch (error) {
         console.error('[registry] create_account failed');
         throw new AmbiguousFinancialMutationError(error);
@@ -371,7 +413,7 @@ async function executeRegistryToolImpl(
             amount: last.amount,
             currency: last.currency,
             description: asUntrustedData(last.description),
-            account: (last.account as { name?: string } | null)?.name ?? null,
+            account: asUntrustedData((last.account as { name?: string } | null)?.name ?? null),
           },
         },
       };
@@ -414,7 +456,7 @@ async function executeRegistryToolImpl(
         throw new AmbiguousFinancialMutationError(e);
       }
       return {
-        response: { success: true, summary: res.reply },
+        response: { success: true, summary: asUntrustedData(res.reply) },
         executed: res.executed ? [res.executed] : undefined,
       };
     }
@@ -481,8 +523,8 @@ async function executeRegistryToolImpl(
             type: t.type,
             amount: t.amount,
             currency: t.currency,
-            category: (t.category as { name?: string } | null)?.name ?? null,
-            account: (t.account as { name?: string } | null)?.name ?? null,
+            category: asUntrustedData((t.category as { name?: string } | null)?.name ?? null),
+            account: asUntrustedData((t.account as { name?: string } | null)?.name ?? null),
             description: asUntrustedData(t.description),
           })),
         },
@@ -495,7 +537,7 @@ async function executeRegistryToolImpl(
       return {
         response: {
           budgets: rows.map((b) => ({
-            category: b.category_name,
+            category: asUntrustedData(b.category_name),
             budget: round(b.budget_amount),
             spent: round(b.spent_amount),
             remaining: round(b.remaining_amount),
@@ -539,7 +581,7 @@ async function executeRegistryToolImpl(
       return {
         response: {
           accounts: accs.map((a) => ({
-            name: a.name,
+            name: asUntrustedData(a.name),
             currency: a.currency,
             balance: round(a.balance, 2),
             isDebt: a.is_debt,
@@ -583,8 +625,8 @@ async function executeRegistryToolImpl(
             amount: round(r.amount, 2),
             currency: r.currency,
             frequency: r.frequency,
-            account: r.account?.name ?? null,
-            category: r.category?.name ?? null,
+            account: asUntrustedData(r.account?.name ?? null),
+            category: asUntrustedData(r.category?.name ?? null),
             nextDate: nextOccurrenceYMD(r),
           })),
         },

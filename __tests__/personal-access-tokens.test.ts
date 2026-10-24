@@ -23,9 +23,13 @@ vi.mock('@/lib/supabase/server', () => ({
 import {
   generatePersonalAccessToken,
   hashPersonalAccessToken,
+  hashPersonalAccessTokenForVersion,
   hashesMatch,
   looksLikePersonalAccessToken,
   parseBearerToken,
+  parsePatExpiry,
+  PAT_HASH_VERSION_HMAC,
+  PAT_HASH_VERSION_SHA256,
 } from '@/lib/auth/personal-access-token';
 import { authenticatePersonalAccessToken } from '@/lib/services/personal-access-tokens';
 import { POST as ingest } from '@/app/api/ingest/wallet/route';
@@ -60,12 +64,38 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); });
 
 describe('personal access tokens', () => {
-  it('hashes with sha256 and never stores the raw token in the hash helper', () => {
+  it('hashes with sha256 in test without pepper and never stores the raw token', () => {
     const generated = generatePersonalAccessToken();
     expect(looksLikePersonalAccessToken(generated.token)).toBe(true);
+    expect(generated.version).toBe(PAT_HASH_VERSION_SHA256);
     expect(generated.hash).toBe(hashPersonalAccessToken(generated.token));
     expect(generated.hash).not.toBe(generated.token);
     expect(generated.hash).toHaveLength(64);
+  });
+
+  it('issues SHA-256 v1 in production without SUPABASE_JWT_SECRET and leaves v2 disabled', () => {
+    const prevPepper = process.env.SUPABASE_JWT_SECRET;
+    delete process.env.SUPABASE_JWT_SECRET;
+    try {
+      const generated = generatePersonalAccessToken();
+      expect(generated.version).toBe(PAT_HASH_VERSION_SHA256);
+      expect(generated.hash).toBe(hashPersonalAccessToken(generated.token));
+      expect(() => hashPersonalAccessTokenForVersion(generated.token, PAT_HASH_VERSION_HMAC)).toThrow(
+        /not enabled/
+      );
+    } finally {
+      if (prevPepper === undefined) delete process.env.SUPABASE_JWT_SECRET;
+      else process.env.SUPABASE_JWT_SECRET = prevPepper;
+    }
+  });
+
+  it('clamps null or overlong PAT expiry to one year, never immortal', () => {
+    const fromNull = parsePatExpiry(null);
+    expect(fromNull).toBeTruthy();
+    const horizon = Date.now() + 366 * 24 * 60 * 60 * 1000;
+    expect(Date.parse(fromNull)).toBeLessThan(horizon);
+    const far = new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000).toISOString();
+    expect(Date.parse(parsePatExpiry(far))).toBeLessThan(horizon);
   });
 
   it('compares hashes in constant time', () => {
@@ -79,7 +109,7 @@ describe('personal access tokens', () => {
     const generated = generatePersonalAccessToken();
     mocks.from.mockImplementation(() => chain({ data: {
       id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-      revoked_at: '2026-01-01T00:00:00Z', last_used_at: null, expires_at: null,
+      hash_version: 1, revoked_at: '2026-01-01T00:00:00Z', last_used_at: null, expires_at: null,
     }, error: null }));
     await expect(authenticatePersonalAccessToken(
       new NextRequest('http://localhost/api/v1', { headers: { authorization: `Bearer ${generated.token}` } }),
@@ -88,7 +118,7 @@ describe('personal access tokens', () => {
 
     mocks.from.mockImplementation(() => chain({ data: {
       id: 'pat-1', user_id: FIXTURE_USER, scopes: ['read'], token_hash: generated.hash,
-      revoked_at: null, last_used_at: null, expires_at: null,
+      hash_version: 1, revoked_at: null, last_used_at: null, expires_at: null,
     }, error: null }));
     await expect(authenticatePersonalAccessToken(
       new NextRequest('http://localhost/api/v1', { headers: { authorization: `Bearer ${generated.token}` } }),
@@ -107,7 +137,7 @@ describe('wallet ingest auth surface', () => {
       if (table === 'personal_access_tokens') {
         return chain({ data: {
           id: 'pat-1', user_id: FIXTURE_USER, scopes: ['ingest'], token_hash: generated.hash,
-          revoked_at: null, last_used_at: null, expires_at: null,
+          hash_version: 1, revoked_at: null, last_used_at: null, expires_at: null,
         }, error: null });
       }
       return chain({ data: null, error: null });

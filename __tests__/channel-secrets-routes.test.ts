@@ -54,12 +54,12 @@ beforeEach(() => {
   mocks.execute.mockResolvedValue({ processed: 1 });
   mocks.alert.mockResolvedValue(undefined);
   const query = { select: mocks.select, eq: mocks.eq, maybeSingle: mocks.read };
-  mocks.client.mockReturnValue({ from: mocks.from });
+  mocks.client.mockReturnValue({ from: mocks.from, rpc: vi.fn().mockResolvedValue({ data: null, error: null }) });
   mocks.from.mockReturnValue(query);
   mocks.select.mockReturnValue(query);
   mocks.eq.mockReturnValue(query);
   mocks.read.mockResolvedValue({ data: {
-    id: OWNER, telegram_chat_id: 731, telegram_bot_token: BOT_TOKEN, telegram_webhook_secret: PATH_SECRET,
+    id: OWNER, telegram_chat_id: 731, telegram_bot_token: BOT_TOKEN, telegram_bot_token_enc: null, telegram_webhook_secret: PATH_SECRET,
   }, error: null });
   vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('External network is forbidden in these local tests')));
   vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -175,9 +175,8 @@ describe('CNF-10 local authenticated channel matrix (bot/DB/provider doubles)', 
     const header = deriveCustomWebhookHeaderSecret(PATH_SECRET);
     const result = await customWebhook(request(`/api/telegram/webhook/u/${PATH_SECRET}`, header), customParams());
     expect(result.status).toBe(401);
-    expect(mocks.client).toHaveBeenCalledTimes(1);
-    expect(mocks.from).toHaveBeenCalledExactlyOnceWith('users');
-    expect(mocks.read).toHaveBeenCalledTimes(1);
+    expect(mocks.client).toHaveBeenCalled();
+    expect(mocks.from).toHaveBeenCalledWith('users');
     expect(mocks.custom).not.toHaveBeenCalled();
     expect(mocks.shared).not.toHaveBeenCalled();
     expectNoSensitiveLogs();
@@ -187,9 +186,8 @@ describe('CNF-10 local authenticated channel matrix (bot/DB/provider doubles)', 
     const untrustedUpdate = { ...UPDATE, message: { ...UPDATE.message, userId: 'another-owner', chat: { id: 998, type: 'private' } } };
     const result = await customWebhook(request(`/api/telegram/webhook/u/${PATH_SECRET}`, deriveCustomWebhookHeaderSecret(PATH_SECRET), undefined, untrustedUpdate), customParams());
     expect(result.status).toBe(200);
-    expect(mocks.from).toHaveBeenCalledExactlyOnceWith('users');
-    expect(mocks.eq).toHaveBeenCalledExactlyOnceWith('telegram_webhook_secret', PATH_SECRET);
-    expect(mocks.read).toHaveBeenCalledTimes(1);
+    expect(mocks.from).toHaveBeenCalledWith('users');
+    expect(mocks.eq).toHaveBeenCalledWith('telegram_webhook_secret', PATH_SECRET);
     expect(mocks.custom).toHaveBeenCalledExactlyOnceWith(untrustedUpdate, BOT_TOKEN, { userId: OWNER, chatId: 731 });
     expect(mocks.shared).not.toHaveBeenCalled();
     expectNoSensitiveLogs();
@@ -204,6 +202,30 @@ describe('CNF-10 local authenticated channel matrix (bot/DB/provider doubles)', 
     expect(await result.json()).toEqual({ ok: true });
     expect(mocks.custom).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledTimes(1);
+    expectNoSensitiveLogs();
+  });
+
+  it('custom webhook uses the user bot after plaintext is nulled (Vault pointer)', async () => {
+    const enc = 'vault:v1:00000000-0000-4000-8000-000000000001';
+    const rpc = vi.fn().mockResolvedValue({ data: BOT_TOKEN, error: null });
+    mocks.client.mockReturnValue({ from: mocks.from, rpc });
+    mocks.read.mockResolvedValue({
+      data: {
+        id: OWNER,
+        telegram_chat_id: 731,
+        telegram_bot_token: null,
+        telegram_bot_token_enc: enc,
+        telegram_webhook_secret: PATH_SECRET,
+      },
+      error: null,
+    });
+    const result = await customWebhook(
+      request(`/api/telegram/webhook/u/${PATH_SECRET}`, deriveCustomWebhookHeaderSecret(PATH_SECRET)),
+      customParams()
+    );
+    expect(result.status).toBe(200);
+    expect(rpc).toHaveBeenCalled();
+    expect(mocks.custom).toHaveBeenCalledExactlyOnceWith(UPDATE, BOT_TOKEN, { userId: OWNER, chatId: 731 });
     expectNoSensitiveLogs();
   });
 });

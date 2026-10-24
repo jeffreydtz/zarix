@@ -29,8 +29,7 @@ try {
 
   await test('vault helpers fail closed without vault and never keep a plaintext backup table', async () => {
     await db.query('UPDATE users SET gemini_api_key=$2, telegram_bot_token=$3 WHERE id=$1', [ids.a, SYNTHETIC_GEMINI, SYNTHETIC_BOT]);
-    const available = (await db.query('SELECT zarix_vault.vault_available() AS v')).rows[0].v;
-    assert.equal(available, false);
+    await assert.rejects(() => db.query('SELECT zarix_vault.vault_available() AS v'));
     await assert.rejects(() => db.query('SELECT zarix_vault.store_user_secret($1,$2,$3)', [ids.a, 'gemini_api_key', SYNTHETIC_GEMINI]));
     const backup = await db.query("SELECT 1 FROM information_schema.tables WHERE table_schema='zarix_vault' AND table_name='user_secret_backup'");
     assert.equal(backup.rows.length, 0);

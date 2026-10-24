@@ -27,12 +27,12 @@ export async function POST(req: NextRequest, props: { params: Promise<{ secret: 
   const supabase = createServiceClientSync();
   const { data: row } = await supabase
     .from('users')
-    .select('id, telegram_chat_id, telegram_bot_token, telegram_bot_token_enc, telegram_webhook_secret')
+    .select('id, telegram_chat_id, telegram_webhook_secret')
     .eq('telegram_webhook_secret', secret)
     .maybeSingle();
 
-  const { decryptStoredSecret } = await import('@/lib/secrets/user-secrets');
-  const botToken = (await decryptStoredSecret(row?.telegram_bot_token_enc)) || row?.telegram_bot_token || '';
+  const { getUserTelegramBotToken } = await import('@/lib/secrets/user-secrets');
+  const botToken = row?.id ? (await getUserTelegramBotToken(row.id)) || '' : '';
 
   if (
     !row ||

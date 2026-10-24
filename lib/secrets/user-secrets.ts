@@ -125,7 +125,7 @@ export async function setUserSecret(userId: string, column: SecretColumn, value:
     .from('users')
     .update({
       [`${column}_enc`]: enc,
-      [column]: trimmed,
+      [column]: null,
     })
     .eq('id', userId);
   if (error) throw error;

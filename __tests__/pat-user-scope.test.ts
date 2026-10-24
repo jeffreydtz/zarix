@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { decodeJwtPayload, mintUserAccessToken } from '@/lib/auth/user-jwt';
-import { isServiceScopedTable } from '@/lib/supabase/request-scope';
+import {
+  getPatRequestScope,
+  isServiceScopedTable,
+  userScopeColumn,
+  withPatUserScope,
+  wrapWithUserIdFilter,
+} from '@/lib/supabase/request-scope';
 
 const FIXTURE_A = '11111111-1111-4111-8111-111111111111';
 const FIXTURE_B = '22222222-2222-4222-8222-222222222222';
@@ -35,5 +41,65 @@ describe('PAT user-scoped JWT', () => {
     expect(isServiceScopedTable('transactions')).toBe(false);
     expect(isServiceScopedTable('accounts')).toBe(false);
     expect(isServiceScopedTable('pending_inbox_items')).toBe(false);
+  });
+
+  it('scopes PAT queries by user_id (users.id) even without a JWT secret', async () => {
+    const previous = process.env.SUPABASE_JWT_SECRET;
+    delete process.env.SUPABASE_JWT_SECRET;
+    try {
+      expect(userScopeColumn('transactions')).toBe('user_id');
+      expect(userScopeColumn('users')).toBe('id');
+      expect(userScopeColumn('exchange_rates')).toBeNull();
+
+      const eqs: Array<[string, unknown]> = [];
+      const fake = {
+        select(..._args: unknown[]) {
+          return this;
+        },
+        eq(column: string, value: unknown) {
+          eqs.push([column, value]);
+          return this;
+        },
+        maybeSingle: async (..._args: unknown[]) => ({ data: null, error: null }),
+      };
+      const scoped = wrapWithUserIdFilter(fake, 'transactions', FIXTURE_A);
+      await scoped.select('*').maybeSingle();
+      expect(eqs).toContainEqual(['user_id', FIXTURE_A]);
+      expect(eqs.some((pair) => pair[1] === FIXTURE_B)).toBe(false);
+
+      const userEqs: Array<[string, unknown]> = [];
+      const usersFake = {
+        select(..._args: unknown[]) {
+          return this;
+        },
+        eq(column: string, value: unknown) {
+          userEqs.push([column, value]);
+          return this;
+        },
+        maybeSingle: async (..._args: unknown[]) => ({ data: null, error: null }),
+      };
+      await wrapWithUserIdFilter(usersFake, 'users', FIXTURE_A).select('id').maybeSingle();
+      expect(userEqs).toContainEqual(['id', FIXTURE_A]);
+
+      await withPatUserScope(FIXTURE_A, async () => {
+        const scope = getPatRequestScope();
+        expect(scope?.userId).toBe(FIXTURE_A);
+        expect(scope?.jwt).toBe(false);
+      });
+
+      expect(() =>
+        wrapWithUserIdFilter(
+          {
+            insert(row: Record<string, unknown>) {
+              return row;
+            },
+          },
+          'transactions',
+          FIXTURE_A
+        ).insert({ user_id: FIXTURE_B, amount: 1 })
+      ).toThrow(/No autorizado/);
+    } finally {
+      if (previous !== undefined) process.env.SUPABASE_JWT_SECRET = previous;
+    }
   });
 });

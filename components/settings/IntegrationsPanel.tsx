@@ -23,6 +23,12 @@ type AuditEvent = {
   created_at: string;
 };
 
+function defaultOneYearExpiry(): string {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + 1);
+  return `${d.toISOString().slice(0, 10)}T23:59:59.000Z`;
+}
+
 const EXAMPLE_BODY = `{
   "amount": 1250.50,
   "currency": "ARS",
@@ -74,7 +80,7 @@ export default function IntegrationsPanel({
       const res = await fetch('/api/user/tokens', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, scopes, expiresAt: expiresAt ? `${expiresAt}T23:59:59.000Z` : undefined }),
+        body: JSON.stringify({ name, scopes, expiresAt: `${(expiresAt || defaultOneYearExpiry().slice(0, 10))}T23:59:59.000Z` }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'No se pudo crear');
@@ -94,7 +100,7 @@ export default function IntegrationsPanel({
       const res = await fetch(`/api/user/tokens/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ expiresAt: value ? `${value}T23:59:59.000Z` : null }),
+        body: JSON.stringify({ expiresAt: value ? `${value}T23:59:59.000Z` : defaultOneYearExpiry() }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));

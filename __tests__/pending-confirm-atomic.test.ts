@@ -1,5 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { pendingInboxRequestId, walletCivilDate } from '@/lib/services/pending-inbox';
+import {
+  confirmPendingItem,
+  isStaleConfirming,
+  listPendingItems,
+  occurredAtForStorage,
+  parkRegistryWrite,
+  pendingInboxRequestId,
+  walletCivilDate,
+  type PendingInboxItem,
+} from '@/lib/services/pending-inbox';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
 
 const FIXTURE_ITEM = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9';
@@ -31,9 +40,13 @@ vi.mock('@/lib/services/accounts', () => ({
   accountsService: { list: (...args: unknown[]) => mocks.listAccounts(...args) },
 }));
 
-import { confirmPendingItem } from '@/lib/services/pending-inbox';
+vi.mock('@/lib/integrations/merchant-category', () => ({
+  suggestCategoryFromMerchant: async () => ({ categoryId: null, categoryName: null, source: 'none' }),
+}));
 
-function itemRow(status: string) {
+const updates: Array<{ table: string; value: Record<string, unknown> }> = [];
+
+function itemRow(status: PendingInboxItem['status']) {
   return {
     id: FIXTURE_ITEM,
     user_id: FIXTURE_USER,
@@ -44,6 +57,8 @@ function itemRow(status: string) {
     account_id: ACCOUNT_ID,
     category_id: CATEGORY_ID,
     occurred_at: '2026-10-24T23:30:00.000Z',
+    tool_payload: null,
+    updated_at: '2026-10-24T20:00:00.000Z',
     status,
     direction: 'expense',
     amount_ambiguous: false,
@@ -58,6 +73,7 @@ function itemRow(status: string) {
 describe('pending inbox confirm idempotency', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    updates.length = 0;
     mocks.listAccounts.mockResolvedValue([{ id: ACCOUNT_ID, name: 'Visa Ejemplo', currency: 'ARS' }]);
     mocks.execute.mockResolvedValue({
       response: { success: true },
@@ -79,7 +95,7 @@ describe('pending inbox confirm idempotency', () => {
   });
 
   it('two parallel confirms plus a retry create a single ledger write', async () => {
-    let status = 'pending';
+    let status: PendingInboxItem['status'] = 'pending';
     let createCalls = 0;
     mocks.rpc.mockImplementation(async (fn: string) => {
       if (fn !== 'claim_pending_inbox_item') return { data: null, error: null };
@@ -95,7 +111,10 @@ describe('pending inbox confirm idempotency', () => {
       q.select = () => self;
       q.eq = () => self;
       q.in = () => self;
-      q.update = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
       q.maybeSingle = async () => ({
         data: table === 'pending_inbox_items' ? itemRow(status === 'confirming' ? 'confirmed' : status) : null,
         error: null,
@@ -128,5 +147,184 @@ describe('pending inbox confirm idempotency', () => {
       categoryId: CATEGORY_ID,
       confirm: true,
     });
+  });
+
+  it('reverts confirming if the ledger write throws', async () => {
+    mocks.rpc.mockResolvedValue({ data: [itemRow('confirming')], error: null });
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table, value });
+        return self;
+      };
+      q.maybeSingle = async () => ({ data: itemRow('confirming'), error: null });
+      q.single = async () => ({ data: itemRow('confirming'), error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    mocks.execute.mockRejectedValue(new Error('ledger exploded'));
+
+    await expect(confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM })).rejects.toThrow('ledger exploded');
+    expect(updates.some((u) => u.table === 'pending_inbox_items' && u.value.status === 'pending')).toBe(true);
+  });
+
+  it('lists stale confirming items as retryable', async () => {
+    const stale = {
+      ...itemRow('confirming'),
+      updated_at: new Date(Date.now() - 10 * 60_000).toISOString(),
+    };
+    const fresh = {
+      ...itemRow('confirming'),
+      id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb9',
+      updated_at: new Date().toISOString(),
+    };
+    const pending = itemRow('pending');
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.order = () => self;
+      q.limit = () => self;
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [stale, fresh, pending], error: null });
+      return q;
+    });
+    const listed = await listPendingItems(FIXTURE_USER, 'pending');
+    expect(listed.map((i) => i.id)).toEqual([stale.id, pending.id]);
+    expect(isStaleConfirming(stale)).toBe(true);
+    expect(isStaleConfirming(fresh)).toBe(false);
+  });
+
+  it('fingerprint unique conflict returns the existing pending item', async () => {
+    const existing = itemRow('pending');
+    let insertCalls = 0;
+    mocks.from.mockImplementation((table: string) => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.in = () => self;
+      q.gte = () => self;
+      q.limit = () => self;
+      q.order = () => self;
+      q.insert = () => {
+        insertCalls += 1;
+        return self;
+      };
+      q.maybeSingle = async () => ({
+        data: table === 'pending_inbox_items' ? existing : null,
+        error: null,
+      });
+      q.single = async () => ({
+        data: null,
+        error: { code: '23505', message: 'duplicate key value violates unique constraint' },
+      });
+      q.then = (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    const { ingestWalletItem } = await import('@/lib/services/pending-inbox');
+    const result = await ingestWalletItem({
+      userId: FIXTURE_USER,
+      json: { amount: 1250, currency: 'ARS', merchant: 'Ejemplo Café' },
+    });
+    expect(result.duplicate).toBe(true);
+    expect(result.item.id).toBe(FIXTURE_ITEM);
+    expect(insertCalls).toBeGreaterThan(0);
+  });
+
+  it('parks the full payload for income, transfer and expense and stores Cordoba noon for date-only', async () => {
+    const inserted: Record<string, unknown>[] = [];
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.insert = (row: Record<string, unknown>) => {
+        inserted.push(row);
+        return self;
+      };
+      q.maybeSingle = async () => ({ data: null, error: null });
+      q.single = async () => ({
+        data: { ...inserted[inserted.length - 1], id: `park-${inserted.length}`, status: 'pending' },
+        error: null,
+      });
+      return q;
+    });
+
+    await parkRegistryWrite({
+      userId: FIXTURE_USER,
+      amount: 1000,
+      currency: 'ARS',
+      merchant: 'Sueldo',
+      source: 'api',
+      occurredAt: '2026-10-24',
+      toolPayload: { type: 'income', amount: 1000, account: 'Banco', accountId: ACCOUNT_ID, description: 'Sueldo' },
+    });
+    await parkRegistryWrite({
+      userId: FIXTURE_USER,
+      amount: 500,
+      currency: 'ARS',
+      source: 'mcp',
+      toolPayload: {
+        type: 'transfer',
+        amount: 500,
+        account: 'Banco',
+        destinationAccount: 'Efectivo',
+        accountId: ACCOUNT_ID,
+      },
+    });
+    await parkRegistryWrite({
+      userId: FIXTURE_USER,
+      amount: 250,
+      currency: 'ARS',
+      source: 'api',
+      toolPayload: { type: 'expense', amount: 250, category: 'Comida', accountId: ACCOUNT_ID },
+    });
+
+    expect(inserted[0].direction).toBe('income');
+    expect(inserted[0].occurred_at).toBe('2026-10-24T12:00:00-03:00');
+    expect((inserted[0].tool_payload as { type: string }).type).toBe('income');
+    expect((inserted[1].tool_payload as { destinationAccount: string }).destinationAccount).toBe('Efectivo');
+    expect((inserted[1].tool_payload as { type: string }).type).toBe('transfer');
+    expect((inserted[2].tool_payload as { type: string }).type).toBe('expense');
+    expect(occurredAtForStorage('2026-10-24')).toBe('2026-10-24T12:00:00-03:00');
+    expect(walletCivilDate(occurredAtForStorage('2026-10-24'))).toBe('2026-10-24');
+  });
+
+  it('confirm uses the parked type, not a hardcoded expense', async () => {
+    const parked = {
+      ...itemRow('confirming'),
+      direction: 'expense',
+      tool_payload: {
+        type: 'income',
+        amount: 1000,
+        accountId: ACCOUNT_ID,
+        account: 'Visa Ejemplo',
+        description: 'Sueldo',
+      },
+    };
+    mocks.rpc.mockResolvedValue({ data: [parked], error: null });
+    mocks.from.mockImplementation(() => {
+      const q: Record<string, unknown> = {};
+      const self = q;
+      q.select = () => self;
+      q.eq = () => self;
+      q.update = (value: Record<string, unknown>) => {
+        updates.push({ table: 'pending_inbox_items', value });
+        return self;
+      };
+      q.maybeSingle = async () => ({ data: { ...parked, status: 'confirmed' }, error: null });
+      q.single = async () => ({ data: parked, error: null });
+      q.upsert = async () => ({ data: null, error: null });
+      return q;
+    });
+    await confirmPendingItem({ userId: FIXTURE_USER, itemId: FIXTURE_ITEM });
+    expect(mocks.execute.mock.calls[0][1]).toMatchObject({ type: 'income', confirm: true });
   });
 });

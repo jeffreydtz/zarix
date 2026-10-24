@@ -122,7 +122,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'Tokens personales',
         body: [
-          'Creás, listás y revocás tokens en Configuración → Integraciones. Zarix guarda un hash SHA-256, nunca el valor.',
+          'Creás, listás y revocás tokens en Configuración → Integraciones. Caducan en 1 año (no se puede dejar sin vencimiento). Zarix guarda SHA-256 del token de 256 bits (hash_version=1). hash_version=2 queda reservado para un pepper dedicado; no está habilitado y no usa SUPABASE_JWT_SECRET. Nunca se guarda el valor.',
           'Permisos: read, write, ingest. Podés revocar en cualquier momento. Cada uso queda en el registro de auditoría (IP hasheada).',
         ],
       },
@@ -184,7 +184,7 @@ export const DOCS_PAGES: DocsPage[] = [
       {
         heading: 'Cifrado y revocación',
         body: [
-          'gemini_api_key y telegram_bot_token se guardan en Supabase Vault (service_role). El cliente autenticado no puede leerlos. Hasta el backfill posterior, la columna en claro se dual-escribe y no se anula en esta migración.',
+          'gemini_api_key y telegram_bot_token se guardan cifrados (Vault, o AES-GCM local). Al guardar, la columna en claro queda null. La lectura usa primero el cifrado y, si aún no corriste el script manual de NULL, puede leer un valor viejo en claro como fallback.',
           'Revocá un token en Integraciones y deja de funcionar. El registro de auditoría muestra altas, bajas y usos, con IP hasheada.',
         ],
       },

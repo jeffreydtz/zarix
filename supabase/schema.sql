@@ -4785,10 +4785,17 @@ GRANT EXECUTE ON FUNCTION public.create_investment_once(UUID,TEXT,TEXT,JSONB) TO
 -- END supabase/migrations/20261024170100_investment_backlog.sql
 
 -- BEGIN supabase/migrations/20261024180000_ai_integrations_foundation.sql
--- SHA256 c0ad41fd298cb6577e263ad8f5e398ed1965eea98fc79619e36d22cf6ffce2f4
+-- SHA256 cf7afe942a743796af83cdf773d8248bb53d470a4f0d5e46928ef47851cf4a2e
 -- AI-first public integrations: write channel, PATs, encrypted secrets,
 -- pending inbox, card maps, audit log. Idempotent. Additive for secrets:
 -- plaintext columns are NOT copied or nulled here (staged rollout).
+--
+-- Prod apply order (do not skip):
+--   PITR → this file + 20261024190000 → deploy #16 code →
+--   supabase/manual/backfill-user-secrets.sql →
+--   20261025120000_revoke_plaintext_secret_updates.sql →
+--   later follow-up: supabase/manual/null-plaintext-user-secrets.sql
+-- PAT hashes are SHA-256 (hash_version=1). v2 is reserved and not enabled.
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- 1. Write channel on transactions
@@ -4870,6 +4877,7 @@ CREATE TABLE IF NOT EXISTS public.personal_access_tokens (
   name TEXT NOT NULL CHECK (char_length(name) BETWEEN 2 AND 60),
   token_prefix TEXT NOT NULL CHECK (char_length(token_prefix) BETWEEN 8 AND 16),
   token_hash TEXT NOT NULL CHECK (token_hash ~ '^[0-9a-f]{64}$'),
+  hash_version SMALLINT NOT NULL DEFAULT 1 CHECK (hash_version IN (1, 2)),
   scopes TEXT[] NOT NULL DEFAULT ARRAY['read']::TEXT[],
   expires_at TIMESTAMPTZ,
   last_used_at TIMESTAMPTZ,
@@ -4884,6 +4892,14 @@ CREATE TABLE IF NOT EXISTS public.personal_access_tokens (
 
 ALTER TABLE public.personal_access_tokens
   ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ;
+ALTER TABLE public.personal_access_tokens
+  ADD COLUMN IF NOT EXISTS hash_version SMALLINT;
+UPDATE public.personal_access_tokens SET hash_version = 1 WHERE hash_version IS NULL;
+ALTER TABLE public.personal_access_tokens ALTER COLUMN hash_version SET DEFAULT 1;
+ALTER TABLE public.personal_access_tokens ALTER COLUMN hash_version SET NOT NULL;
+ALTER TABLE public.personal_access_tokens DROP CONSTRAINT IF EXISTS personal_access_tokens_hash_version_check;
+ALTER TABLE public.personal_access_tokens ADD CONSTRAINT personal_access_tokens_hash_version_check
+  CHECK (hash_version IN (1, 2));
 
 CREATE UNIQUE INDEX IF NOT EXISTS personal_access_tokens_hash_unique
   ON public.personal_access_tokens (token_hash);
@@ -4910,7 +4926,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.personal_access_tokens TO service
 -- Additive only. Plaintext columns stay until later manual migrations:
 --   supabase/manual/backfill-user-secrets.sql  (copy+verify, never nulls)
 --   supabase/manual/null-plaintext-user-secrets.sql (null only after verify)
--- Those must run AFTER the dual-write code is live. They are not applied here.
+-- Those must run AFTER encrypted writes are live. They are not applied here.
+-- Recovery if a preview DB applied old commit 925b46c (user_secret_backup +
+-- public.decrypt_user_secret / envelope:v0): this migration DROPs that backup
+-- table and the public decrypt function. Prod never ran 925b46c. Do not copy
+-- leftover envelope ciphertext forward; re-save secrets so _enc is vault/AES.
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ALTER TABLE public.users
   ADD COLUMN IF NOT EXISTS gemini_api_key_enc TEXT,
@@ -4919,8 +4939,10 @@ ALTER TABLE public.users
 
 GRANT SELECT (wallet_auto_confirm), UPDATE (wallet_auto_confirm)
   ON public.users TO authenticated;
-REVOKE UPDATE (gemini_api_key, telegram_bot_token, gemini_api_key_enc, telegram_bot_token_enc)
-  ON public.users FROM PUBLIC, anon, authenticated;
+-- Do NOT REVOKE UPDATE on plaintext secret columns here. Old code (main)
+-- still writes gemini_api_key / telegram_bot_token as authenticated.
+-- Apply supabase/migrations/20261025120000_revoke_plaintext_secret_updates.sql
+-- AFTER the #16 code deploy. See that file for the order.
 
 CREATE SCHEMA IF NOT EXISTS zarix_vault;
 REVOKE ALL ON SCHEMA zarix_vault FROM PUBLIC, anon, authenticated;
@@ -4965,7 +4987,11 @@ SECURITY DEFINER
 SET search_path = pg_catalog, pg_temp
 AS $$
 BEGIN
-  RETURN EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = 'vault');
+  IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = 'vault') THEN
+    RAISE EXCEPTION 'zarix_vault_unavailable'
+      USING HINT = 'Supabase Vault (schema vault) is required. pgcrypto/envelope is not a fallback.';
+  END IF;
+  RETURN TRUE;
 END;
 $$;
 
@@ -5042,9 +5068,7 @@ DECLARE
   secret_id UUID;
 BEGIN
   IF p_user_id IS NULL THEN RAISE EXCEPTION 'zarix_vault_invalid_user'; END IF;
-  IF NOT zarix_vault.vault_available() THEN
-    RETURN NULL;
-  END IF;
+  PERFORM zarix_vault.vault_available();
   secret_name := zarix_vault.secret_name(p_user_id, p_kind);
   BEGIN
     EXECUTE 'SELECT id FROM vault.secrets WHERE name = $1' INTO secret_id USING secret_name;
@@ -5052,7 +5076,7 @@ BEGIN
       EXECUTE 'DELETE FROM vault.secrets WHERE id = $1' USING secret_id;
     END IF;
   EXCEPTION WHEN undefined_table OR invalid_schema_name THEN
-    NULL;
+    RAISE EXCEPTION 'zarix_vault_unavailable';
   END;
   RETURN NULL;
 END;
@@ -5117,6 +5141,7 @@ CREATE TABLE IF NOT EXISTS public.pending_inbox_items (
   category_id UUID,
   occurred_at TIMESTAMPTZ,
   raw_payload JSONB,
+  tool_payload JSONB,
   raw_text TEXT,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'discarded')),
   suggestion_source TEXT CHECK (suggestion_source IS NULL OR suggestion_source IN ('history', 'heuristic', 'none', 'gemini')),
@@ -5137,6 +5162,7 @@ CREATE TABLE IF NOT EXISTS public.pending_inbox_items (
 ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS ingest_key TEXT;
 ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS direction TEXT;
 ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS amount_ambiguous BOOLEAN;
+ALTER TABLE public.pending_inbox_items ADD COLUMN IF NOT EXISTS tool_payload JSONB;
 UPDATE public.pending_inbox_items
    SET ingest_key = COALESCE(NULLIF(ingest_key, ''), idempotency_key, id::text)
  WHERE ingest_key IS NULL OR ingest_key = '';
@@ -5271,3 +5297,24 @@ $$;
 REVOKE ALL ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.claim_pending_inbox_item(UUID, UUID) TO authenticated, service_role;
 -- END supabase/migrations/20261024190000_pat_rls_confirm_quotes.sql
+
+-- BEGIN supabase/migrations/20261025120000_revoke_plaintext_secret_updates.sql
+-- SHA256 6bdc3b0f5fd5e5c82215ae779466d18336268e282c07b12e5ce13d1a07af3b0b
+-- POST-DEPLOY ONLY. Do not apply with 180000/190000 before the #16 code is live.
+--
+-- Order (prod):
+--   1. PITR marker
+--   2. 20261024180000_ai_integrations_foundation.sql (additive)
+--   3. 20261024190000_pat_rls_confirm_quotes.sql (additive)
+--   4. Deploy #16 code (encrypt-only writes; Vault-aware Telegram readers)
+--   5. Pause key edits, run supabase/manual/backfill-user-secrets.sql
+--      (copy + verify, never nulls)
+--   6. THIS migration (revoke authenticated UPDATE on plaintext/enc secret columns)
+--   7. Later follow-up: supabase/manual/null-plaintext-user-secrets.sql
+--
+-- Applying this before the code deploy breaks key saving in the current app,
+-- which still UPDATEs users.gemini_api_key / telegram_bot_token as authenticated.
+
+REVOKE UPDATE (gemini_api_key, telegram_bot_token, gemini_api_key_enc, telegram_bot_token_enc)
+  ON public.users FROM PUBLIC, anon, authenticated;
+-- END supabase/migrations/20261025120000_revoke_plaintext_secret_updates.sql

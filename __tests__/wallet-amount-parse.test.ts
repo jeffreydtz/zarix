@@ -50,4 +50,18 @@ describe('wallet amount parser (table)', () => {
     expect(parsed.amountAmbiguous).toBe(false);
     expect(parsed.currency).toBe('USD');
   });
+
+  it('invalid JSON amount falls back to text and is ambiguous (no auto-confirm)', () => {
+    const foo = parseWalletPayload({
+      json: { amount: 'foo', rawText: 'USD 1.234' },
+    });
+    expect(foo.amount).not.toBeNull();
+    expect(foo.amountAmbiguous).toBe(true);
+
+    const zero = parseWalletPayload({
+      json: { amount: 0, rawText: '1.250' },
+    });
+    expect(zero.amount).toBe(1250);
+    expect(zero.amountAmbiguous).toBe(true);
+  });
 });

@@ -10,7 +10,10 @@ import {
   parseBearerToken,
   parsePatExpiry,
   scopesInclude,
+  type PatHashVersion,
   type PatScope,
+  PAT_HASH_VERSION_HMAC,
+  PAT_HASH_VERSION_SHA256,
 } from '@/lib/auth/personal-access-token';
 import { clientIpFromRequest, rateLimitAllow } from '@/lib/rate-limit';
 import { auditIpFromRequest, auditUserAgent, hashClientIp, recordIntegrationAudit } from '@/lib/integrations/audit';
@@ -24,6 +27,7 @@ export type PatRow = {
   name: string;
   token_prefix: string;
   token_hash: string;
+  hash_version: PatHashVersion;
   scopes: string[];
   expires_at: string | null;
   last_used_at: string | null;
@@ -31,7 +35,7 @@ export type PatRow = {
   created_at: string;
 };
 
-export type PublicPat = Omit<PatRow, 'token_hash'>;
+export type PublicPat = Omit<PatRow, 'token_hash' | 'hash_version'>;
 
 export async function listPersonalAccessTokens(userId: string): Promise<PublicPat[]> {
   const supabase = createBareServiceClient();
@@ -71,6 +75,7 @@ export async function createPersonalAccessToken(input: {
       name,
       token_prefix: generated.prefix,
       token_hash: generated.hash,
+      hash_version: generated.version,
       scopes,
       expires_at: expiresAt,
     })
@@ -154,6 +159,25 @@ export type AuthenticatedPat = {
   scopes: string[];
 };
 
+async function lookupPatByPresentedToken(token: string): Promise<PatRow | null> {
+  const presentedHash = hashPersonalAccessToken(token);
+  const supabase = createBareServiceClient();
+  const { data, error } = await supabase
+    .from('personal_access_tokens')
+    .select('id, user_id, scopes, token_hash, hash_version, revoked_at, last_used_at, expires_at')
+    .eq('token_hash', presentedHash)
+    .maybeSingle();
+  if (error) throw error;
+  const row = data as PatRow | null;
+  if (!row) return null;
+  const storedVersion = (row.hash_version ?? PAT_HASH_VERSION_SHA256) as PatHashVersion;
+  if (storedVersion === PAT_HASH_VERSION_HMAC) {
+    return null;
+  }
+  if (!hashesMatch(presentedHash, row.token_hash)) return null;
+  return row;
+}
+
 export async function authenticatePersonalAccessToken(
   req: Request,
   needed: PatScope
@@ -168,16 +192,9 @@ export async function authenticatePersonalAccessToken(
     hashPersonalAccessToken('zrxp_invalid_placeholder_000000000000000000000000000000000000000000000000');
     throw new ApiError('Unauthorized', 401);
   }
-  const presentedHash = hashPersonalAccessToken(presented);
   const supabase = createBareServiceClient();
-  const { data, error } = await supabase
-    .from('personal_access_tokens')
-    .select('id, user_id, scopes, token_hash, revoked_at, last_used_at, expires_at')
-    .eq('token_hash', presentedHash)
-    .maybeSingle();
-  if (error) throw error;
-  const row = data as PatRow | null;
-  if (!row || !hashesMatch(presentedHash, row.token_hash) || row.revoked_at) {
+  const row = await lookupPatByPresentedToken(presented);
+  if (!row || row.revoked_at) {
     throw new ApiError('Unauthorized', 401);
   }
   if (row.expires_at && Date.parse(row.expires_at) <= Date.now()) {

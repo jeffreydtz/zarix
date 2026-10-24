@@ -1,7 +1,11 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { CookieOptions } from '@supabase/ssr';
-import { getPatRequestScope, isServiceScopedTable } from '@/lib/supabase/request-scope';
+import {
+  getPatRequestScope,
+  isServiceScopedTable,
+  wrapWithUserIdFilter,
+} from '@/lib/supabase/request-scope';
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -63,12 +67,20 @@ function withPatRowLevelSecurity<T extends ReturnType<typeof buildServiceRoleCli
   return new Proxy(service, {
     get(target, prop, receiver) {
       if (prop === 'from') {
-        return (table: string) =>
-          isServiceScopedTable(table) ? target.from(table) : scope.userClient.from(table);
+        return (table: string) => {
+          const useJwt =
+            scope.jwt && Boolean(scope.userClient) && !isServiceScopedTable(table);
+          const raw = useJwt ? scope.userClient!.from(table) : target.from(table);
+          return wrapWithUserIdFilter(raw, table, scope.userId);
+        };
       }
       if (prop === 'rpc') {
         return (fn: string, args?: Record<string, unknown>, options?: never) => {
-          if (args && typeof args.p_user_id === 'string' && args.p_user_id !== scope.userId) {
+          const claimed =
+            args && typeof args === 'object'
+              ? (typeof args.p_user_id === 'string' ? args.p_user_id : typeof args.user_id === 'string' ? args.user_id : null)
+              : null;
+          if (claimed && claimed !== scope.userId) {
             const err = new Error('No autorizado') as Error & { status: number };
             err.status = 403;
             throw err;

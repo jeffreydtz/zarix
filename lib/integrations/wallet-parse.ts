@@ -189,9 +189,18 @@ export function parseWalletPayload(input: {
   const jsonHasCurrency = json != null && (json.currency != null || json.moneda != null);
   const jsonAmountRaw = json ? json.amount ?? json.importe ?? json.value : undefined;
   const jsonAmount = jsonAmountRaw != null ? parseAmountValue(jsonAmountRaw) : null;
+  const jsonAmountUsable = jsonAmount != null && jsonAmount.amount != null;
+  // If a JSON amount was present but unusable we fell back to rawText — recompute
+  // ambiguity from that text and treat the fallback as ambiguous so auto-confirm
+  // cannot fire on a guessed number.
+  const amountAmbiguous = jsonAmountUsable && jsonAmount
+    ? jsonAmount.ambiguous
+    : jsonAmountRaw != null
+      ? true
+      : fromText.amountAmbiguous;
 
   return {
-    amount: jsonAmount?.amount ?? fromText.amount,
+    amount: jsonAmountUsable && jsonAmount ? jsonAmount.amount : fromText.amount,
     currency: jsonHasCurrency
       ? coerceTransactionCurrency(String(json?.currency ?? json?.moneda ?? 'ARS'))
       : fromText.currency,
@@ -199,8 +208,8 @@ export function parseWalletPayload(input: {
     cardName: (json ? str(json.cardName ?? json.card ?? json.tarjeta ?? json.account) : null) ?? fromText.cardName,
     occurredAt: (json ? parseTimestamp(json.timestamp ?? json.occurredAt ?? json.date ?? json.fecha) : null) ?? fromText.occurredAt,
     rawText: text,
-    amountAmbiguous: jsonAmount ? jsonAmount.ambiguous : fromText.amountAmbiguous,
-    direction: jsonAmount?.amount != null ? jsonAmount.direction : fromText.direction,
+    amountAmbiguous,
+    direction: jsonAmountUsable && jsonAmount ? jsonAmount.direction : fromText.direction,
   };
 }
 
