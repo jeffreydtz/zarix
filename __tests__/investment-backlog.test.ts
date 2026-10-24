@@ -258,11 +258,13 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     expect(classes).toEqual([
       expect.objectContaining({ fondoId: '10', claseId: '20', currency: 'USD' }),
     ]);
-    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'USD' })).toEqual({ currency: 'USD' });
-    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
-    expect(resolveFciQuoteCurrency({ sourceCurrency: 'USD', storedCurrency: 'ARS' })).toEqual({
-      currency: null, reason: 'disagree',
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'USD' })).toEqual({
+      currency: null, reason: 'unknown',
     });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'ARS', storedCurrency: 'USD' })).toEqual({ currency: 'ARS' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: 'USD', storedCurrency: 'ARS' })).toEqual({ currency: 'USD' });
+    expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: 'ARS' })).toEqual({ currency: 'ARS' });
     expect(resolveFciQuoteCurrency({ sourceCurrency: null, storedCurrency: null })).toEqual({
       currency: null, reason: 'unknown',
     });

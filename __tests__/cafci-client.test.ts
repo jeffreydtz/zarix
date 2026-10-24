@@ -185,6 +185,41 @@ describe('CAFCI client headers and 403', () => {
     expect(quote?.currency === 'USD' || quote?.currencySkip === 'conflict').toBe(true);
   });
 
+  it.each([
+    ['Pesos', 'ARS'],
+    ['Peso', 'ARS'],
+    ['Peso Argentina', 'ARS'],
+    ['Pesos Argentina', 'ARS'],
+    ['Peso Argentino', 'ARS'],
+    ['Pesos Argentinos', 'ARS'],
+    ['ARS', 'ARS'],
+    ['Dólar', 'USD'],
+    ['Dólares', 'USD'],
+    ['Dolar', 'USD'],
+    ['Dolares', 'USD'],
+    ['Dólar Estadounidense', 'USD'],
+    ['Dólares Estadounidenses', 'USD'],
+    ['Dollar', 'USD'],
+    ['Dollars', 'USD'],
+    ['USD', 'USD'],
+    ['US', 'USD'],
+    ['USS', 'USD'],
+  ] as const)('maps CAFCI label %s to %s', (label, expected) => {
+    expect(parseCafciCurrencyLabel(label)).toBe(expected);
+  });
+
+  it.each([
+    'Dólares canadienses',
+    'Pesos mexicanos',
+    'EUR',
+    'Euro',
+    'CAD',
+    'MXN',
+    'Dólar MEP',
+  ])('treats %s as unsupported instead of ARS/USD', (label) => {
+    expect(parseCafciCurrencyLabel(label)).toBe('unsupported');
+  });
+
   it('skips an explicit EUR CAFCI currency instead of treating it as unknown', async () => {
     expect(parseCafciCurrencyLabel('EUR')).toBe('unsupported');
     expect(resolveCafciCurrencySources({

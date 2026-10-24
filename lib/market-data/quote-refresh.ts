@@ -351,7 +351,16 @@ export async function refreshQuotesForInvestments(
       },
       fci.currency || resolved.currency,
     );
-    const stamped = adapted ? stamp(adapted) : null;
+    if (!adapted) {
+      console.warn('[quotes] skip FCI currency', {
+        ticker: fci.ticker,
+        reason: 'mep',
+        cafci: q.currency,
+        stored: fci.currency,
+      });
+      continue;
+    }
+    const stamped = stamp(adapted);
     if (stamped) out.set(fci.cacheKey, stamped);
   }
 

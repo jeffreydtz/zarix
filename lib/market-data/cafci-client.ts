@@ -112,21 +112,39 @@ function classKeys(fondo: Record<string, unknown>, clase: Record<string, unknown
   return [...new Set(names.map(fold).filter(Boolean))];
 }
 
-/** First explicit label: ARS/USD, unsupported (EUR, …), or missing. */
+/** Folded CAFCI labels that mean Argentine pesos. Anything else with "peso" is unknown. */
+const CAFCI_ARS_LABELS = new Set([
+  'ARS',
+  'PESO',
+  'PESOS',
+  'PESOARGENTINA',
+  'PESOSARGENTINA',
+  'PESOARGENTINO',
+  'PESOSARGENTINOS',
+]);
+
+/** Folded CAFCI labels that mean US dollars. Canadian/other dollars are unknown. */
+const CAFCI_USD_LABELS = new Set([
+  'USD',
+  'US',
+  'USS',
+  'DOLAR',
+  'DOLARES',
+  'DOLLAR',
+  'DOLLARS',
+  'DOLARESTADOUNIDENSE',
+  'DOLARESESTADOUNIDENSES',
+  'DOLLARESTADOUNIDENSE',
+  'DOLLARSESTADOUNIDENSES',
+]);
+
+/** First explicit label: ARS/USD, unsupported (EUR, CAD, MXN, …), or missing. */
 export function parseCafciCurrencyLabel(value: unknown): CafciCurrencyLabel {
   if (value == null || typeof value === 'object') return null;
   const folded = fold(String(value));
   if (!folded) return null;
-  if (
-    folded.includes('USD')
-    || folded.includes('DOLAR')
-    || folded.includes('DOLLAR')
-    || folded === 'US'
-    || folded === 'USS'
-  ) {
-    return 'USD';
-  }
-  if (folded.includes('ARS') || folded.includes('PESO')) return 'ARS';
+  if (CAFCI_USD_LABELS.has(folded)) return 'USD';
+  if (CAFCI_ARS_LABELS.has(folded)) return 'ARS';
   return 'unsupported';
 }
 

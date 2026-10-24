@@ -1,0 +1,172 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextRequest } from 'next/server';
+
+/**
+ * Cron (`app/api/cron/update-prices`) and interactive (`app/api/investments/quote`)
+ * both call `refreshQuotesForInvestments` with no extra MEP option — they share
+ * `cotizacionesService.getDolarQuotes()` / `adaptQuoteToMarketCurrency`.
+ */
+
+const mocks = vi.hoisted(() => ({
+  arg: vi.fn(),
+  dolar: vi.fn(),
+  yahoo: vi.fn(),
+  stooq: vi.fn(),
+  fci: vi.fn(),
+  crypto: vi.fn(),
+  getUser: vi.fn(),
+  from: vi.fn(),
+  update: vi.fn(),
+  alert: vi.fn(),
+  investments: [] as Array<Record<string, unknown>>,
+  updates: [] as Array<Record<string, unknown>>,
+}));
+
+vi.mock('@/lib/market-data/data912-client', () => ({ loadArgentineQuotes: mocks.arg }));
+vi.mock('@/lib/services/cotizaciones', () => ({
+  cotizacionesService: { getDolarQuotes: mocks.dolar, getCryptoQuote: mocks.crypto },
+}));
+vi.mock('@/lib/yahoo-finance-quotes', () => ({ fetchYahooStockQuotesMap: mocks.yahoo }));
+vi.mock('@/lib/stooq-us-quote', () => ({ fetchStooqUsQuote: mocks.stooq }));
+vi.mock('@/lib/market-data/cafci-client', () => ({ fetchFciQuote: mocks.fci }));
+vi.mock('@/lib/observability/alert', () => ({ alertAdmin: mocks.alert }));
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: async () => ({ auth: { getUser: mocks.getUser } }),
+  createServiceClientSync: () => ({ from: mocks.from }),
+}));
+
+import { GET as quoteGet } from '@/app/api/investments/quote/route';
+import { GET as cronGet } from '@/app/api/cron/update-prices/route';
+
+const MEP = 1300;
+const CONIOLA_ARS = 179.598;
+
+const cronRequest = () => new NextRequest('http://localhost/api/cron/update-prices', {
+  headers: { authorization: 'Bearer synthetic-cron-secret' },
+});
+
+const quoteRequest = (symbol: string, currency: string) =>
+  new NextRequest(`http://localhost/api/investments/quote?symbol=${symbol}&type=fci&currency=${currency}`);
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.updates = [];
+  vi.stubEnv('CRON_SECRET', 'synthetic-cron-secret');
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  mocks.getUser.mockResolvedValue({ data: { user: { id: 'fixture-user' } } });
+  mocks.dolar.mockResolvedValue({ blue: { sell: MEP, buy: MEP }, mep: { sell: MEP, buy: MEP } });
+  mocks.yahoo.mockResolvedValue(new Map());
+  mocks.stooq.mockResolvedValue(null);
+  mocks.fci.mockResolvedValue(null);
+  mocks.crypto.mockResolvedValue({ priceUSD: 0 });
+  mocks.alert.mockResolvedValue(undefined);
+  mocks.arg.mockResolvedValue({
+    byStock: new Map(), byCedear: new Map(), byBond: new Map(), byCorp: new Map(),
+  });
+  mocks.investments = [{
+    id: 'fixture-fci-coniola',
+    type: 'fci',
+    ticker: 'CONIOLA',
+    market_currency: 'USD',
+    purchase_currency: 'USD',
+    is_manual_price: false,
+  }];
+  mocks.update.mockImplementation((payload: Record<string, unknown>) => {
+    mocks.updates.push(payload);
+    return { eq: vi.fn().mockResolvedValue({ error: null }) };
+  });
+  mocks.from.mockImplementation((table: string) => {
+    if (table === 'exchange_rates') {
+      return { upsert: vi.fn().mockResolvedValue({ error: null }) };
+    }
+    const query = {
+      select: () => query,
+      eq: () => query,
+      in: async () => ({ data: mocks.investments, error: null }),
+      update: mocks.update,
+    };
+    return query;
+  });
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
+
+describe('interactive quote refresh (GET /api/investments/quote)', () => {
+  it('returns CONIOLA as USD via MEP instead of writing the peso cuotaparte', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA',
+      price: CONIOLA_ARS,
+      currency: 'ARS',
+      changePct: null,
+      timestamp: '2026-10-23T00:00:00.000Z',
+      source: 'cafci',
+    });
+    const response = await quoteGet(quoteRequest('CONIOLA', 'USD'));
+    const body = await response.json();
+    expect(body).toMatchObject({ ok: true, symbol: 'CONIOLA', currency: 'USD' });
+    expect(body.price).toBeCloseTo(CONIOLA_ARS / MEP, 8);
+    expect(body.price).not.toBeCloseTo(CONIOLA_ARS, 5);
+  });
+
+  it('keeps the stored quote when CAFCI omits moneda on a USD book', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await quoteGet(quoteRequest('CONIOLA', 'USD'));
+    expect(await response.json()).toMatchObject({ ok: false });
+  });
+
+  it('keeps the stored quote when MEP is unavailable for an ARS FCI booked in USD', async () => {
+    mocks.dolar.mockResolvedValue({ blue: { sell: MEP, buy: MEP } });
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await quoteGet(quoteRequest('CONIOLA', 'USD'));
+    expect(await response.json()).toMatchObject({ ok: false });
+  });
+});
+
+describe('cron quote refresh (GET /api/cron/update-prices)', () => {
+  it('writes CONIOLA USD via MEP instead of the peso cuotaparte', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA',
+      price: CONIOLA_ARS,
+      currency: 'ARS',
+      changePct: null,
+      timestamp: '2026-10-23T00:00:00.000Z',
+      source: 'cafci',
+    });
+    const response = await cronGet(cronRequest());
+    expect(await response.json()).toMatchObject({ success: true, processed: 1, errors: 0 });
+    expect(mocks.updates).toHaveLength(1);
+    expect(mocks.updates[0].market_currency).toBe('USD');
+    expect(mocks.updates[0].current_price).toBeCloseTo(CONIOLA_ARS / MEP, 8);
+    expect(mocks.updates[0].current_price).not.toBeCloseTo(CONIOLA_ARS, 5);
+    expect(mocks.updates[0].current_price_updated_at).toBe('2026-10-23T00:00:00.000Z');
+  });
+
+  it('does not overwrite CONIOLA when CAFCI omits moneda on a USD book', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await cronGet(cronRequest());
+    const body = await response.json();
+    expect(body.processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+  });
+
+  it('does not overwrite CONIOLA when MEP is unavailable', async () => {
+    mocks.dolar.mockResolvedValue({ blue: { sell: MEP, buy: MEP } });
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: CONIOLA_ARS, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const response = await cronGet(cronRequest());
+    const body = await response.json();
+    expect(body.processed).toBe(0);
+    expect(mocks.updates).toHaveLength(0);
+  });
+});

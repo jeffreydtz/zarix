@@ -203,17 +203,16 @@ describe('refreshQuotesForInvestments currency keys', () => {
     });
   });
 
-  it('keeps a USD FCI cuotaparte when CAFCI omits moneda instead of dividing by MEP', async () => {
+  it('skips a USD-booked FCI when CAFCI omits moneda instead of writing the cuotaparte as USD', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     mocks.fci.mockResolvedValue({
       ticker: 'IOLDOLD', price: 1.098, currency: null, changePct: null, timestamp: null, source: 'cafci',
     });
     const map = await refreshQuotesForInvestments([
       { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD' },
     ]);
-    const hit = map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'));
-    expect(hit?.currency).toBe('USD');
-    expect(hit?.price).toBeCloseTo(1.098, 8);
-    expect(hit?.price).not.toBeCloseTo(1.098 / 1300, 8);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+    expect(warn.mock.calls.some((call) => String(call[0]).includes('skip FCI currency'))).toBe(true);
   });
 
   it('stores an ARS FCI cuotaparte in pesos', async () => {
@@ -228,16 +227,81 @@ describe('refreshQuotesForInvestments currency keys', () => {
     });
   });
 
-  it('skips an FCI update when CAFCI and the position disagree on currency', async () => {
+  it('converts CONIOLA CAFCI ARS ~179.598 to USD with the same MEP stocks use', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA',
+      price: 179.598,
+      currency: 'ARS',
+      changePct: null,
+      timestamp: '2026-10-23T00:00:00.000Z',
+      source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    const hit = map.get(quoteCacheKey('fci', 'CONIOLA', 'USD'));
+    expect(hit?.currency).toBe('USD');
+    expect(hit?.price).toBeCloseTo(179.598 / 1300, 8);
+    expect(hit?.price).not.toBeCloseTo(179.598, 5);
+    expect(hit?.timestamp).toBe('2026-10-23T00:00:00.000Z');
+    expect(mocks.yahoo).not.toHaveBeenCalled();
+  });
+
+  it('converts PRTAVAB CAFCI ARS ~1241.954 to USD with fixture MEP 1300', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'PRTAVAB',
+      price: 1241.954,
+      currency: 'ARS',
+      changePct: null,
+      timestamp: '2026-10-23T00:00:00.000Z',
+      source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'PRTAVAB', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    const hit = map.get(quoteCacheKey('fci', 'PRTAVAB', 'USD'));
+    expect(hit?.currency).toBe('USD');
+    expect(hit?.price).toBeCloseTo(1241.954 / 1300, 8);
+    expect(hit?.timestamp).toBe('2026-10-23T00:00:00.000Z');
+  });
+
+  it('skips CONIOLA when CAFCI is ARS, the book is USD, and MEP is unavailable', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.dolar.mockResolvedValue({ blue: { sell: 1300, buy: 1280 } });
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: 'ARS', changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'CONIOLA', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'CONIOLA', 'USD'))).toBeUndefined();
+    expect(warn.mock.calls.some((call) =>
+      String(call[0]).includes('skip FCI currency') && call[1]?.reason === 'mep'
+    )).toBe(true);
+  });
+
+  it('keeps main: unknown CAFCI + stored ARS still writes the peso cuotaparte as ARS', async () => {
+    mocks.fci.mockResolvedValue({
+      ticker: 'CONIOLA', price: 179.598, currency: null, changePct: null, timestamp: null, source: 'cafci',
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'CONIOLA', market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'CONIOLA', 'ARS'))).toMatchObject({
+      price: 179.598, currency: 'ARS',
+    });
+  });
+
+  it('converts a CAFCI USD FCI to ARS with MEP when the position is stored in ARS', async () => {
     mocks.fci.mockResolvedValue({
       ticker: 'IOLDOLD', price: 1.098, currency: 'USD', changePct: null, timestamp: null, source: 'cafci',
     });
     const map = await refreshQuotesForInvestments([
       { type: 'fci', ticker: 'IOLDOLD', market_currency: 'ARS', purchase_currency: 'ARS' },
     ]);
-    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'ARS'))).toBeUndefined();
-    expect(warn).toHaveBeenCalled();
+    const hit = map.get(quoteCacheKey('fci', 'IOLDOLD', 'ARS'));
+    expect(hit?.currency).toBe('ARS');
+    expect(hit?.price).toBeCloseTo(1.098 * 1300, 8);
     expect(mocks.yahoo).not.toHaveBeenCalled();
   });
 

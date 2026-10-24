@@ -105,8 +105,17 @@ function knownQuoteCurrency(value: string | null | undefined): QuoteCurrency | n
 }
 
 /**
- * FCI cuotaparte currency: never assume ARS. Prefer the CAFCI class/ficha
- * moneda; fall back to the position's stored currency. Disagree or unknown → skip.
+ * FCI cuotaparte currency: never assume ARS from the ticker.
+ *
+ * Known CAFCI ARS/USD is the source currency of the cuotaparte. Callers convert
+ * ARS↔USD with the same MEP helper stocks/CEDEARs use (`adaptQuoteToMarketCurrency`).
+ * A CAFCI/stored mismatch is not a skip at this layer.
+ *
+ * Unknown CAFCI + stored USD: skip. Falling back to the book would write a peso
+ * cuotaparte as dollars (CONIOLA ~180 instead of ~0.14).
+ *
+ * Unknown CAFCI + stored ARS: keep main — accept stored ARS. A peso fund whose
+ * ficha omitted moneda is still a peso cuotaparte; writing ARS as ARS is safe.
  */
 export function resolveFciQuoteCurrency(opts: {
   sourceCurrency: string | null | undefined;
@@ -114,12 +123,9 @@ export function resolveFciQuoteCurrency(opts: {
 }): { currency: QuoteCurrency } | { currency: null; reason: 'disagree' | 'unknown' } {
   const source = knownQuoteCurrency(opts.sourceCurrency);
   const stored = knownQuoteCurrency(opts.storedCurrency);
-  if (source && stored && source !== stored) {
-    return { currency: null, reason: 'disagree' };
-  }
-  const currency = source ?? stored;
-  if (!currency) return { currency: null, reason: 'unknown' };
-  return { currency };
+  if (source) return { currency: source };
+  if (stored === 'ARS') return { currency: 'ARS' };
+  return { currency: null, reason: 'unknown' };
 }
 
 /** Yahoo/Stooq metadata is confirmation. A blank field is not inferred from the ticker. */
