@@ -16,29 +16,45 @@ vi.mock('@/lib/observability/alert', () => ({ alertAdmin: mocks.alert }));
 vi.mock('@/lib/services/cotizaciones', () => ({ cotizacionesService: {
   getCryptoQuote: mocks.crypto, getStockQuote: mocks.stock, getDolarQuotes: mocks.dolar,
 } }));
-vi.mock('@/lib/market-data/quote-refresh', () => ({
-  refreshQuotesForInvestments: async (investments: Array<{ type: string; ticker: string | null }>) => {
-    const map = new Map<string, { price: number; changePct: number | null; currency: string; timestamp: string | null }>();
-    for (const inv of investments) {
-      if (!inv.ticker) continue;
-      const ticker = inv.ticker.toUpperCase();
-      if (inv.type === 'crypto') {
-        const quote = await mocks.crypto(ticker);
-        const price = Number(quote?.priceUSD);
-        if (Number.isFinite(price) && price > 0) {
-          map.set(`crypto:${ticker}`, { price, changePct: null, currency: 'USD', timestamp: null });
-        }
-      } else {
-        const quote = await mocks.stock(ticker);
-        const price = Number(quote?.price);
-        if (Number.isFinite(price) && price > 0) {
-          map.set(`${inv.type}:${ticker}`, { price, changePct: null, currency: 'USD', timestamp: null });
+vi.mock('@/lib/market-data/quote-refresh', () => {
+  const quoteCacheKeyForPosition = (inv: {
+    type: string; ticker: string | null; market_currency?: string | null;
+  }) => {
+    if (!inv.ticker) return null;
+    const ticker = inv.ticker.trim().toUpperCase();
+    const ccy = inv.type === 'crypto'
+      ? 'USD'
+      : (inv.market_currency || '').trim().toUpperCase() || 'NATIVE';
+    return `${inv.type}:${ticker}:${ccy}`;
+  };
+  return {
+    quoteCacheKeyForPosition,
+    refreshQuotesForInvestments: async (investments: Array<{
+      type: string; ticker: string | null; market_currency?: string | null;
+    }>) => {
+      const map = new Map<string, { price: number; changePct: number | null; currency: string; timestamp: string | null }>();
+      for (const inv of investments) {
+        const key = quoteCacheKeyForPosition(inv);
+        if (!key) continue;
+        const ticker = inv.ticker!.toUpperCase();
+        if (inv.type === 'crypto') {
+          const quote = await mocks.crypto(ticker);
+          const price = Number(quote?.priceUSD);
+          if (Number.isFinite(price) && price > 0) {
+            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null });
+          }
+        } else {
+          const quote = await mocks.stock(ticker);
+          const price = Number(quote?.price);
+          if (Number.isFinite(price) && price > 0) {
+            map.set(key, { price, changePct: null, currency: 'USD', timestamp: null });
+          }
         }
       }
-    }
-    return map;
-  },
-}));
+      return map;
+    },
+  };
+});
 import { GET } from '@/app/api/cron/update-prices/route';
 
 const request = () => new NextRequest('http://localhost/api/cron/update-prices', {

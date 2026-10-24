@@ -37,16 +37,67 @@ function quoteSourceTimestamp(quote: unknown): string | null {
   return Number.isFinite(time) ? new Date(time).toISOString() : null;
 }
 
-function cacheKeyFor(type: InvestmentType, ticker: string): string {
-  return `${type}:${ticker.trim().toUpperCase()}`;
-}
-
-function desiredCurrency(inv: QuoteRefreshPosition): string {
+export function desiredQuoteCurrency(inv: QuoteRefreshPosition): string {
   const stored = (inv.market_currency || '').trim().toUpperCase();
   if (stored) return stored;
   // Sin override: la rueda del ticker manda. Un bono hard-dollar cotizado en
   // ARS no se reconvierte a USD solo porque la compra fue en dólares.
   return '';
+}
+
+/** type:TICKER:CURRENCY so ARS/USD books of the same ticker do not overwrite. */
+export function quoteCacheKey(
+  type: InvestmentType,
+  ticker: string,
+  currency: string
+): string {
+  const t = ticker.trim().toUpperCase();
+  const ccy = (currency || '').trim().toUpperCase() || 'NATIVE';
+  return `${type}:${t}:${ccy}`;
+}
+
+export function quoteCacheKeyForPosition(inv: QuoteRefreshPosition): string | null {
+  if (!inv.ticker) return null;
+  const currency = inv.type === 'crypto' ? 'USD' : desiredQuoteCurrency(inv);
+  return quoteCacheKey(inv.type, inv.ticker, currency);
+}
+
+export const FCI_REFRESH_CONCURRENCY = 3;
+export const FCI_REFRESH_BUDGET_MS = 20_000;
+
+export function dedupeByCacheKey<T extends { cacheKey: string }>(jobs: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const job of jobs) {
+    if (seen.has(job.cacheKey)) continue;
+    seen.add(job.cacheKey);
+    out.push(job);
+  }
+  return out;
+}
+
+export async function mapWithLimit<T, R>(
+  items: readonly T[],
+  limit: number,
+  budgetMs: number,
+  fn: (item: T) => Promise<R>
+): Promise<Array<R | undefined>> {
+  const start = Date.now();
+  const results: Array<R | undefined> = new Array(items.length);
+  let next = 0;
+  const workers = Math.max(1, Math.min(limit, items.length));
+  await Promise.all(Array.from({ length: workers }, async () => {
+    while (true) {
+      const i = next++;
+      if (i >= items.length) return;
+      if (Date.now() - start > budgetMs) {
+        results[i] = undefined;
+        continue;
+      }
+      results[i] = await fn(items[i]);
+    }
+  }));
+  return results;
 }
 
 function argKind(type: InvestmentType): 'stock_arg' | 'cedear' | 'bond' | 'on' | 'fci' | 'other' {
@@ -116,7 +167,15 @@ export async function refreshQuotesForInvestments(
   options?: { mepArsPerUsd?: number | null }
 ): Promise<Map<string, QuoteResult>> {
   const out = new Map<string, QuoteResult>();
-  const yahooSymbolToCacheKey = new Map<string, string>();
+  const yahooSymbolToCacheKeys = new Map<string, Set<string>>();
+  const addYahoo = (symbol: string, cacheKey: string) => {
+    let set = yahooSymbolToCacheKeys.get(symbol);
+    if (!set) {
+      set = new Set();
+      yahooSymbolToCacheKeys.set(symbol, set);
+    }
+    set.add(cacheKey);
+  };
   const cryptoSymbols = new Set<string>();
   const fciTickers: Array<{ ticker: string; cacheKey: string; currency: string }> = [];
   const argPositions: Array<{
@@ -129,8 +188,8 @@ export async function refreshQuotesForInvestments(
   for (const inv of investments) {
     if (!inv.ticker) continue;
     const ticker = inv.ticker.trim().toUpperCase();
-    const cacheKey = cacheKeyFor(inv.type, ticker);
-    const currency = desiredCurrency(inv);
+    const currency = desiredQuoteCurrency(inv);
+    const cacheKey = quoteCacheKey(inv.type, ticker, currency);
     if (inv.type === 'crypto') {
       cryptoSymbols.add(ticker);
       continue;
@@ -145,7 +204,7 @@ export async function refreshQuotesForInvestments(
       continue;
     }
     if (inv.type === 'stock_us' || inv.type === 'etf') {
-      yahooSymbolToCacheKey.set(yahooSymbolFor(inv.type, ticker), cacheKey);
+      addYahoo(yahooSymbolFor(inv.type, ticker), cacheKey);
     }
   }
 
@@ -180,82 +239,94 @@ export async function refreshQuotesForInvestments(
         }
       }
     }
-    yahooSymbolToCacheKey.set(yahooSymbolFor(pos.type, pos.ticker), pos.cacheKey);
+    addYahoo(yahooSymbolFor(pos.type, pos.ticker), pos.cacheKey);
   }
 
-  for (const fci of fciTickers) {
-    try {
-      const q = await fetchFciQuote(fci.ticker);
-      if (q && q.price > 0) {
-        const adapted = adapt(
-          { price: q.price, changePct: q.changePct, currency: q.currency, timestamp: q.timestamp },
-          fci.currency
-        );
-        if (adapted) {
-          out.set(fci.cacheKey, adapted);
-          continue;
-        }
+  const uniqueFci = dedupeByCacheKey(fciTickers);
+  const fciQuotes = await mapWithLimit(
+    uniqueFci,
+    FCI_REFRESH_CONCURRENCY,
+    FCI_REFRESH_BUDGET_MS,
+    async (fci) => {
+      try {
+        return await fetchFciQuote(fci.ticker);
+      } catch {
+        return null;
       }
-    } catch {
-      /* Yahoo .BA */
     }
-    yahooSymbolToCacheKey.set(yahooSymbolFor('fci', fci.ticker), fci.cacheKey);
+  );
+  for (const [i, fci] of uniqueFci.entries()) {
+    const q = fciQuotes[i];
+    if (q && q.price > 0) {
+      const adapted = adapt(
+        { price: q.price, changePct: q.changePct, currency: q.currency, timestamp: q.timestamp },
+        fci.currency
+      );
+      if (adapted) {
+        out.set(fci.cacheKey, adapted);
+        continue;
+      }
+    }
+    addYahoo(yahooSymbolFor('fci', fci.ticker), fci.cacheKey);
   }
 
-  const yahooSymbols = Array.from(yahooSymbolToCacheKey.keys());
+  const yahooSymbols = Array.from(yahooSymbolToCacheKeys.keys());
   if (yahooSymbols.length > 0) {
     const yMap = await fetchYahooStockQuotesMap(yahooSymbols);
     const missingForStooq: string[] = [];
     const cacheKeyCurrency = new Map<string, string>();
-    for (const pos of [...argPositions, ...fciTickers.map((f) => ({
-      type: 'fci' as InvestmentType,
-      ticker: f.ticker,
-      cacheKey: f.cacheKey,
-      currency: f.currency,
-    }))]) {
+    for (const pos of [...argPositions, ...fciTickers]) {
       cacheKeyCurrency.set(pos.cacheKey, pos.currency);
     }
     for (const inv of investments) {
       if (!inv.ticker) continue;
       if (inv.type === 'stock_us' || inv.type === 'etf') {
-        cacheKeyCurrency.set(cacheKeyFor(inv.type, inv.ticker), desiredCurrency(inv));
+        cacheKeyCurrency.set(
+          quoteCacheKey(inv.type, inv.ticker, desiredQuoteCurrency(inv)),
+          desiredQuoteCurrency(inv)
+        );
       }
     }
 
-    for (const [ySym, cacheKey] of yahooSymbolToCacheKey.entries()) {
-      if (out.has(cacheKey)) continue;
+    for (const [ySym, cacheKeys] of yahooSymbolToCacheKeys.entries()) {
       const q = yMap.get(ySym) ?? [...yMap.entries()].find(([k]) => k.toUpperCase() === ySym.toUpperCase())?.[1];
+      let anyApplied = false;
       if (q && q.price > 0) {
-        const desired = cacheKeyCurrency.get(cacheKey) || q.currency;
-        const adapted = adapt({
-          price: q.price,
-          changePct: Number.isFinite(q.changePct) ? q.changePct : null,
-          currency: q.currency,
-          timestamp: quoteSourceTimestamp(q),
-        }, desired);
-        if (adapted) {
-          out.set(cacheKey, adapted);
-          continue;
+        for (const cacheKey of cacheKeys) {
+          if (out.has(cacheKey)) continue;
+          const desired = cacheKeyCurrency.get(cacheKey) || q.currency;
+          const adapted = adapt({
+            price: q.price,
+            changePct: Number.isFinite(q.changePct) ? q.changePct : null,
+            currency: q.currency,
+            timestamp: quoteSourceTimestamp(q),
+          }, desired);
+          if (adapted) {
+            out.set(cacheKey, adapted);
+            anyApplied = true;
+          }
         }
       }
-      missingForStooq.push(ySym);
+      if (!anyApplied) missingForStooq.push(ySym);
     }
 
     for (const ySym of missingForStooq) {
-      const cacheKey = yahooSymbolToCacheKey.get(ySym);
-      if (!cacheKey || out.has(cacheKey)) continue;
-      if (ySym.endsWith('.BA')) continue;
+      const cacheKeys = yahooSymbolToCacheKeys.get(ySym);
+      if (!cacheKeys || ySym.endsWith('.BA')) continue;
       try {
         const stooq = await fetchStooqUsQuote(ySym);
         if (stooq && stooq.price > 0) {
-          const desired = cacheKeyCurrency.get(cacheKey) || stooq.currency;
-          const adapted = adapt({
-            price: stooq.price,
-            changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
-            currency: stooq.currency,
-            timestamp: quoteSourceTimestamp(stooq),
-          }, desired);
-          if (adapted) out.set(cacheKey, adapted);
+          for (const cacheKey of cacheKeys) {
+            if (out.has(cacheKey)) continue;
+            const desired = cacheKeyCurrency.get(cacheKey) || stooq.currency;
+            const adapted = adapt({
+              price: stooq.price,
+              changePct: Number.isFinite(stooq.changePct) ? stooq.changePct : null,
+              currency: stooq.currency,
+              timestamp: quoteSourceTimestamp(stooq),
+            }, desired);
+            if (adapted) out.set(cacheKey, adapted);
+          }
         }
       } catch {
         /* último precio guardado */
@@ -267,7 +338,7 @@ export async function refreshQuotesForInvestments(
     try {
       const q = await cotizacionesService.getCryptoQuote(sym);
       if (Number.isFinite(q.priceUSD) && q.priceUSD > 0) {
-        out.set(`crypto:${sym}`, {
+        out.set(quoteCacheKey('crypto', sym, 'USD'), {
           price: q.priceUSD,
           changePct: Number.isFinite(q.change24h) ? q.change24h : null,
           currency: 'USD',

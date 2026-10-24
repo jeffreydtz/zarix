@@ -3,6 +3,7 @@
  * Sin credenciales ni llamadas a la API de IOL.
  */
 
+import { createHash } from 'node:crypto';
 import type { InvestmentType } from '@/types/database';
 import { parseCSVFile } from '@/lib/import/csv';
 
@@ -59,26 +60,59 @@ function parseNumber(raw: string | undefined): number | null {
   if (raw == null) return null;
   const trimmed = raw.trim();
   if (!trimmed || trimmed === '-' || trimmed === '—') return null;
-  const cleaned = trimmed.replace(/\s/g, '').replace(/[^\d,.\-+]/g, '');
+  const sign = trimmed.startsWith('-') ? -1 : 1;
+  const cleaned = trimmed.replace(/\s/g, '').replace(/[^\d,.]/g, '');
   if (!cleaned) return null;
   const hasComma = cleaned.includes(',');
   const hasDot = cleaned.includes('.');
   let normalized = cleaned;
   if (hasComma && hasDot) {
-    normalized = cleaned.replace(/\./g, '').replace(',', '.');
+    const lastComma = cleaned.lastIndexOf(',');
+    const lastDot = cleaned.lastIndexOf('.');
+    if (lastComma > lastDot) {
+      normalized = cleaned.replace(/\./g, '').replace(',', '.');
+    } else {
+      normalized = cleaned.replace(/,/g, '');
+    }
   } else if (hasComma) {
     normalized = cleaned.replace(',', '.');
+  } else if (hasDot) {
+    const parts = cleaned.split('.');
+    if (parts.length > 2) {
+      const decimals = parts[parts.length - 1];
+      const groups = parts.slice(1, -1);
+      if (decimals.length === 3 && groups.every((g) => g.length === 3)) {
+        normalized = parts.join('');
+      } else {
+        normalized = `${parts.slice(0, -1).join('')}.${decimals}`;
+      }
+    } else if (parts[1].length === 3) {
+      // es-AR integer thousands: "1.000", "90.000". Plain decimals use 1–2 places.
+      normalized = `${parts[0]}${parts[1]}`;
+    }
   }
   const n = Number(normalized);
-  return Number.isFinite(n) ? n : null;
+  return Number.isFinite(n) ? n * sign : null;
 }
 
-function parseCurrency(raw: string | undefined): string {
-  const v = (raw || '').trim().toUpperCase();
-  if (v.includes('USD') || v.includes('DOLAR') || v.includes('U$S') || v === 'U$S' || v === 'US$') return 'USD';
-  if (v.includes('ARS') || v.includes('PESO') || v === '$') return 'ARS';
-  if (v === 'USD' || v === 'ARS') return v;
-  return v || 'ARS';
+const KNOWN_CURRENCIES = new Set(['USD', 'ARS', 'EUR']);
+
+function parseCurrency(raw: string | undefined): string | null {
+  const folded = foldHeader(raw || '');
+  if (!folded) return 'ARS';
+  if (
+    folded.includes('usd') ||
+    folded.includes('dolar') ||
+    folded === 'us' ||
+    folded === 'uss'
+  ) {
+    return 'USD';
+  }
+  if (folded.includes('ars') || folded.includes('peso')) return 'ARS';
+  if (folded.includes('eur') || folded.includes('euro')) return 'EUR';
+  const upper = folded.toUpperCase();
+  if (KNOWN_CURRENCIES.has(upper)) return upper;
+  return null;
 }
 
 function mapType(raw: string | undefined, ticker: string): InvestmentType {
@@ -136,10 +170,12 @@ export function parseIolPortfolioTable(headers: string[], rows: string[][]): Iol
     }
     const lastPrice = parseNumber(cell(row, map.get('lastPrice')));
     const currency = parseCurrency(cell(row, map.get('currency')));
+    if (!currency) {
+      skipped.push({ reason: 'Moneda no reconocida', raw });
+      continue;
+    }
     const type = mapType(cell(row, map.get('type')), ticker);
     const name = cell(row, map.get('name')).trim() || ticker;
-    const dollarBoard = /[DC]$/.test(ticker) && ticker.length > 3;
-    const marketCurrency = dollarBoard ? 'USD' : currency;
     holdings.push({
       ticker,
       name,
@@ -148,8 +184,8 @@ export function parseIolPortfolioTable(headers: string[], rows: string[][]): Iol
       purchasePrice: purchase,
       lastPrice: lastPrice != null && lastPrice > 0 ? lastPrice : null,
       purchaseCurrency: currency,
-      marketCurrency,
-      paymentCurrency: type === 'bond' || type === 'on' ? (dollarBoard ? 'USD' : currency) : null,
+      marketCurrency: currency,
+      paymentCurrency: type === 'bond' || type === 'on' ? currency : null,
       purchaseDate: null,
       law: type === 'on' || type === 'bond' ? null : null,
     });
@@ -174,7 +210,37 @@ export function iolHoldingToCreateInput(row: IolHoldingRow, accountId: string) {
     purchaseDate: row.purchaseDate,
     marketCurrency: row.marketCurrency,
     paymentCurrency: row.paymentCurrency,
-    isManualPrice: row.lastPrice != null,
+    isManualPrice: false,
     currentPrice: row.lastPrice ?? undefined,
   };
+}
+
+/** Stable create_investment_once key for a parsed IOL row. Same file → same id. */
+export function iolImportRequestId(
+  userId: string,
+  accountId: string,
+  holding: Pick<
+    IolHoldingRow,
+    'ticker' | 'type' | 'quantity' | 'purchasePrice' | 'purchaseCurrency' | 'marketCurrency'
+  >,
+  rowIndex: number
+): string {
+  const digest = createHash('sha256')
+    .update(
+      [
+        userId,
+        accountId,
+        holding.ticker,
+        holding.type,
+        String(holding.quantity),
+        String(holding.purchasePrice),
+        holding.purchaseCurrency,
+        holding.marketCurrency,
+        String(rowIndex),
+      ].join('|')
+    )
+    .digest('hex')
+    .slice(0, 24);
+  const ticker = holding.ticker.replace(/[^A-Za-z0-9._-]/g, '').slice(0, 24) || 'row';
+  return `iol.${ticker}.${rowIndex}.${digest}`;
 }

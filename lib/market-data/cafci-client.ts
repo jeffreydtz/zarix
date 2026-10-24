@@ -110,8 +110,14 @@ async function loadCatalog(): Promise<CafciClass[]> {
 function matchClass(classes: CafciClass[], ticker: string): CafciClass | null {
   const key = fold(ticker);
   if (!key) return null;
-  return classes.find((c) => c.keys.includes(key) || c.keys.some((k) => k.startsWith(key) || key.startsWith(k)))
-    ?? null;
+  const exact = classes.filter((c) => c.keys.includes(key));
+  if (exact.length === 1) return exact[0];
+  if (exact.length > 1) return null;
+  const partial = classes.filter((c) =>
+    c.keys.some((k) => k !== key && (k.startsWith(key) || key.startsWith(k)))
+  );
+  if (partial.length === 1) return partial[0];
+  return null;
 }
 
 function parseFicha(json: unknown): { price: number; currency: 'ARS' | 'USD'; timestamp: string | null } | null {

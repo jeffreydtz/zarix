@@ -1,7 +1,10 @@
 import { NextRequest } from 'next/server';
 import { IterativeCronJob, ServiceClient } from '@/lib/cron/cron-job';
 import { cotizacionesService } from '@/lib/services/cotizaciones';
-import { refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
+import {
+  quoteCacheKeyForPosition,
+  refreshQuotesForInvestments,
+} from '@/lib/market-data/quote-refresh';
 import type { InvestmentType } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
@@ -66,8 +69,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
   }
 
   private cacheKey(inv: PriceRow): string | null {
-    if (!inv.ticker) return null;
-    return `${inv.type}:${inv.ticker.trim().toUpperCase()}`;
+    return quoteCacheKeyForPosition(inv);
   }
 
   protected shouldProcess(inv: PriceRow): boolean {
@@ -100,7 +102,8 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
       for (const [key, quote] of this.quotes.entries()) {
         if (!key.startsWith('crypto:')) continue;
         if (!(quote.price > 0)) continue;
-        const ticker = key.slice('crypto:'.length);
+        const ticker = key.split(':')[1];
+        if (!ticker) continue;
         const { error } = await supabase.from('exchange_rates').upsert({
           source: 'coingecko',
           from_currency: ticker,

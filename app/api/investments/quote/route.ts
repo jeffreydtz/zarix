@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { InvestmentType } from '@/types/database';
-import { refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
+import { quoteCacheKeyForPosition, refreshQuotesForInvestments } from '@/lib/market-data/quote-refresh';
 import { investmentNeedsTicker } from '@/lib/investments/type-meta';
 
 export const dynamic = 'force-dynamic';
@@ -25,15 +25,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Símbolo o tipo inválido' }, { status: 400 });
     }
 
-    const quotes = await refreshQuotesForInvestments([
-      {
-        type,
-        ticker: symbol,
-        market_currency: marketCurrency,
-        purchase_currency: marketCurrency,
-      },
-    ]);
-    const hit = quotes.get(`${type}:${symbol.trim().toUpperCase()}`);
+    const position = {
+      type,
+      ticker: symbol,
+      market_currency: marketCurrency,
+      purchase_currency: marketCurrency,
+    };
+    const quotes = await refreshQuotesForInvestments([position]);
+    const cacheKey = quoteCacheKeyForPosition(position);
+    const hit = cacheKey ? quotes.get(cacheKey) : undefined;
     if (!hit || hit.price <= 0) {
       return NextResponse.json({ ok: false, error: 'No se pudo obtener la cotización' }, { status: 200 });
     }

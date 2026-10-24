@@ -122,4 +122,31 @@ describe('CP3-18 partial net worth, actual SSR', () => {
     expect(text).not.toContain('Total parcial');
     expect(text).not.toContain('ZZZ');
   });
+
+  it('does not show a fake 90% drop against old totals that included investments', () => {
+    const html = renderToStaticMarkup(createElement(NetWorthHero, {
+      now: {
+        liquidUSD: 1000, investmentsUSD: 9000, totalUSD: 1000,
+        totalARSBlue: 1_000_000, blueRate: 1000, blueReferences: [],
+      },
+      history: [
+        {
+          snapshot_date: '2026-10-13', liquid_usd: 1000, investments_usd: 9000,
+          total_usd: 10000, total_ars_blue: 10_000_000, blue_ars_per_usd: 1000,
+        },
+        {
+          snapshot_date: '2026-10-14', liquid_usd: 1000, investments_usd: 9000,
+          total_usd: 10000, total_ars_blue: 10_000_000, blue_ars_per_usd: 1000,
+        },
+      ],
+      inflacion: [],
+    }));
+    const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    expect(text).not.toContain('-90');
+    expect(text).not.toContain('▼');
+    expect(chartProbe.series).toEqual([
+      { date: '2026-10-13', value: 1_000_000 },
+      { date: '2026-10-14', value: 1_000_000 },
+    ]);
+  });
 });

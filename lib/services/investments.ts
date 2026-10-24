@@ -11,7 +11,11 @@ import {
   marketCurrencyForInvestment,
   priceFactorForType,
 } from '@/lib/investments/type-meta';
-import { refreshQuotesForInvestments, type QuoteResult } from '@/lib/market-data/quote-refresh';
+import {
+  quoteCacheKeyForPosition,
+  refreshQuotesForInvestments,
+  type QuoteResult,
+} from '@/lib/market-data/quote-refresh';
 import {
   composeComposition,
   periodChangeFromSnapshots,
@@ -391,8 +395,8 @@ class InvestmentsService {
       let liveCurrency: string | null = null;
 
       if (inv.ticker && !inv.is_manual_price) {
-        const cacheKey = `${inv.type}:${inv.ticker.trim().toUpperCase()}`;
-        const fresh = quoteMap.get(cacheKey);
+        const cacheKey = quoteCacheKeyForPosition(inv);
+        const fresh = cacheKey ? quoteMap.get(cacheKey) : undefined;
         if (fresh && fresh.price > 0) {
           currentPrice = fresh.price;
           dailyChangePct = fresh.changePct;

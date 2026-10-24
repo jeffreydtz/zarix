@@ -32,13 +32,19 @@ export function isDollarBoardSymbol(
     listed instanceof Map ? listed.has(key) : listed.has(key);
   if (t.endsWith('.D')) {
     const root = t.slice(0, -2);
-    return has(root) || has(`${root}O`);
+    return has(root) || has(`${root}O`) || isIsolatedDollarBoardRoot(root);
   }
   if (t.endsWith('D') || t.endsWith('C')) {
     const root = t.slice(0, -1);
-    return has(root) || has(`${root}O`);
+    if (has(root) || has(`${root}O`)) return true;
+    // Isolated D/C listing (AL30D, AAPLD) is still USD. YPFD (root YPF) is the peso ticker.
+    return isIsolatedDollarBoardRoot(root);
   }
   return false;
+}
+
+function isIsolatedDollarBoardRoot(root: string): boolean {
+  return root.length >= 4 || /\d/.test(root);
 }
 
 export function inferListedCurrency(

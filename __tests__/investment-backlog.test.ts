@@ -5,9 +5,23 @@ import {
   isDollarBoardSymbol,
   listingCandidates,
 } from '@/lib/market-data/quote-currency';
-import { composeLiquidNetWorth } from '@/lib/services/liquid-net-worth';
+import {
+  comparableLiquidArsBlue,
+  comparableLiquidUsd,
+  composeLiquidNetWorth,
+} from '@/lib/services/liquid-net-worth';
 import { accountsService, type AccountWithBalance } from '@/lib/services/accounts';
-import { parseIolPortfolioCsv } from '@/lib/broker-import/iol-portfolio';
+import {
+  iolHoldingToCreateInput,
+  iolImportRequestId,
+  parseIolPortfolioCsv,
+} from '@/lib/broker-import/iol-portfolio';
+import { validTransactionRequestId } from '@/lib/transaction-idempotency';
+import {
+  dedupeByCacheKey,
+  quoteCacheKey,
+  quoteCacheKeyForPosition,
+} from '@/lib/market-data/quote-refresh';
 import { findDuplicateCategory } from '@/lib/categories/synonyms';
 import { accountCanHoldPosition, priceFactorForType, yahooSymbolFor } from '@/lib/investments/type-meta';
 import {
@@ -31,6 +45,20 @@ describe('USD quote adaptation for D tickers', () => {
     expect(isDollarBoardSymbol('AAPLD', new Set(['AAPL', 'AAPLD']))).toBe(true);
     expect(inferListedCurrency('AL30D', new Set(['AL30', 'AL30D']))).toBe('USD');
     expect(inferListedCurrency('AL30', new Set(['AL30', 'AL30D']))).toBe('ARS');
+    expect(isDollarBoardSymbol('AL30D', new Set(['AL30D']))).toBe(true);
+    expect(inferListedCurrency('AL30D', new Set(['AL30D']))).toBe('USD');
+    expect(isDollarBoardSymbol('YPFD', new Set(['YPFD']))).toBe(false);
+  });
+
+  it('does not divide an already-USD AL30D quote by MEP when the peso board is missing', () => {
+    const listed = new Set(['AL30D']);
+    expect(inferListedCurrency('AL30D', listed)).toBe('USD');
+    const adapted = adaptQuoteToMarketCurrency(
+      { price: 92, changePct: 0, currency: inferListedCurrency('AL30D', listed), timestamp: null },
+      'USD',
+      1300
+    );
+    expect(adapted).toEqual({ price: 92, changePct: 0, currency: 'USD', timestamp: null });
   });
 
   it('converts an ARS quote to USD with MEP and never stamps ARS onto a USD book', () => {
@@ -150,6 +178,12 @@ describe('ON / Yahoo / CAFCI helpers', () => {
     expect(matchCafciClassForTest('ALPHA', [{ fondoId: '1', claseId: '2', keys: ['ALPHA'] }])).toEqual({
       fondoId: '1', claseId: '2', keys: ['ALPHA'],
     });
+    const classes = [
+      { fondoId: '1', claseId: 'A', keys: ['ALPHA', 'ALPHAA'] },
+      { fondoId: '1', claseId: 'B', keys: ['ALPHA', 'ALPHAB'] },
+    ];
+    expect(matchCafciClassForTest('ALPHAB', classes)).toEqual(classes[1]);
+    expect(matchCafciClassForTest('ALPHA', classes)).toBeNull();
   });
 });
 
@@ -165,7 +199,60 @@ describe('IOL Mi Portafolio CSV', () => {
     expect(parsed.holdings[0]).toMatchObject({
       ticker: 'AL30D', type: 'bond', marketCurrency: 'USD', purchaseDate: null, quantity: 1000,
     });
-    expect(parsed.holdings[1]).toMatchObject({ ticker: 'AAPLD', type: 'cedear', quantity: 10, purchasePrice: 1234.5 });
+    expect(parsed.holdings[1]).toMatchObject({
+      ticker: 'AAPLD', type: 'cedear', quantity: 10, purchasePrice: 1234.5, marketCurrency: 'ARS',
+    });
+  });
+
+  it('keeps YPFD as ARS from the currency column instead of the D suffix', () => {
+    const csv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'YPFD,YPF,10,42000,42000,ARS,Accion',
+    ].join('\n');
+    const parsed = parseIolPortfolioCsv(csv);
+    expect(parsed.holdings[0]).toMatchObject({
+      ticker: 'YPFD', marketCurrency: 'ARS', purchaseCurrency: 'ARS', quantity: 10, purchasePrice: 42000,
+    });
+  });
+
+  it('parses Argentine thousands dots without treating them as decimals', () => {
+    const csv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'GGAL,Grupo Galicia,1.000,90.000,91.000,ARS,Accion',
+    ].join('\n');
+    const parsed = parseIolPortfolioCsv(csv);
+    expect(parsed.holdings[0]).toMatchObject({
+      ticker: 'GGAL', quantity: 1000, purchasePrice: 90000, lastPrice: 91000,
+    });
+  });
+
+  it('maps accented DÓLARES to USD and skips unknown currencies', () => {
+    const csv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'AL30D,BONO AL30D,100,91.5,92,DÓLARES,Bono',
+      'AAPL,Apple,1,100,101,BTC,CEDEAR',
+    ].join('\n');
+    const parsed = parseIolPortfolioCsv(csv);
+    expect(parsed.holdings).toHaveLength(1);
+    expect(parsed.holdings[0]).toMatchObject({ ticker: 'AL30D', marketCurrency: 'USD', purchaseCurrency: 'USD' });
+    expect(parsed.skipped[0]?.reason).toMatch(/moneda/i);
+  });
+
+  it('imports as auto-priced and reuses a deterministic request id', () => {
+    const csv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'AL30D,BONO AL30D,100,91.5,92,USD,Bono',
+    ].join('\n');
+    const [holding] = parseIolPortfolioCsv(csv).holdings;
+    const input = iolHoldingToCreateInput(holding, 'acct-1');
+    expect(input.isManualPrice).toBe(false);
+    expect(input.currentPrice).toBe(92);
+    const a = iolImportRequestId('user-1', 'acct-1', holding, 0);
+    const b = iolImportRequestId('user-1', 'acct-1', holding, 0);
+    const other = iolImportRequestId('user-1', 'acct-1', holding, 1);
+    expect(a).toBe(b);
+    expect(a).not.toBe(other);
+    expect(validTransactionRequestId(a)).toBe(true);
   });
 
   it('maps ON without treating "Bono" as an obligación negociable', () => {
@@ -223,5 +310,45 @@ describe('investments dashboard analytics', () => {
     expect(logoCandidateUrls('crypto', 'BTC')[0]).toContain('cryptocurrency-icons');
     expect(logoCandidateUrls('cedear', 'AAPLD')[0]).toContain('AAPL');
     expect(initialsForAsset('Apple Inc', 'AAPL')).toBe('AA');
+  });
+});
+
+describe('quote cache keys include currency', () => {
+  it('keeps ARS and USD books of the same ticker on separate keys', () => {
+    expect(quoteCacheKey('bond', 'AL30', 'ARS')).toBe('bond:AL30:ARS');
+    expect(quoteCacheKey('bond', 'AL30', 'USD')).toBe('bond:AL30:USD');
+    expect(quoteCacheKeyForPosition({
+      type: 'bond', ticker: 'AL30', market_currency: 'USD', purchase_currency: 'USD',
+    })).toBe('bond:AL30:USD');
+    expect(quoteCacheKeyForPosition({
+      type: 'bond', ticker: 'AL30', market_currency: null, purchase_currency: 'USD',
+    })).toBe('bond:AL30:NATIVE');
+  });
+
+  it('dedupes FCI jobs by cache key before fetching', () => {
+    const jobs = [
+      { ticker: 'COME', cacheKey: 'fci:COME:ARS', currency: 'ARS' },
+      { ticker: 'COME', cacheKey: 'fci:COME:ARS', currency: 'ARS' },
+      { ticker: 'COME', cacheKey: 'fci:COME:USD', currency: 'USD' },
+    ];
+    const unique = dedupeByCacheKey(jobs);
+    expect(unique).toHaveLength(2);
+    expect(unique.map((j) => j.cacheKey)).toEqual(['fci:COME:ARS', 'fci:COME:USD']);
+  });
+});
+
+describe('liquid hero compares against liquid snapshot history', () => {
+  it('does not treat pre-change totals that included investments as a 90% drop', () => {
+    const prior = {
+      snapshot_date: '2026-10-23',
+      liquid_usd: 1000,
+      investments_usd: 9000,
+      total_usd: 10000,
+      total_ars_blue: 10_000_000,
+      blue_ars_per_usd: 1000,
+    };
+    expect(comparableLiquidUsd(prior)).toBe(1000);
+    expect(comparableLiquidArsBlue(prior)).toBe(1_000_000);
+    expect(comparableLiquidUsd(prior)).not.toBe(prior.total_usd);
   });
 });

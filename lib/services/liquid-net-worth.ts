@@ -70,3 +70,23 @@ export function composeLiquidNetWorth(input: LiquidNetWorthInput): NetWorthNow {
     ],
   };
 }
+
+/**
+ * Historical `total_usd` / `total_ars_blue` included investments. The live
+ * hero is liquid-only, so charts and deltas must use `liquid_usd` (and that
+ * day's blue rate) instead of rewriting stored snapshot rows.
+ */
+export function comparableLiquidUsd(point: { liquid_usd?: number | null }): number | null {
+  const usd = Number(point.liquid_usd);
+  return Number.isFinite(usd) ? usd : null;
+}
+
+export function comparableLiquidArsBlue(point: {
+  liquid_usd?: number | null;
+  blue_ars_per_usd?: number | null;
+}): number | null {
+  const usd = comparableLiquidUsd(point);
+  const rate = Number(point.blue_ars_per_usd);
+  if (usd == null || !Number.isFinite(rate) || rate <= 0) return null;
+  return usd * rate;
+}

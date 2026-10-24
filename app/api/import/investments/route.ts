@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import ExcelJS from 'exceljs';
 import { createClient } from '@/lib/supabase/server';
 import { parseCSVFile } from '@/lib/import/csv';
-import { parseIolPortfolioTable } from '@/lib/broker-import/iol-portfolio';
+import {
+  iolHoldingToCreateInput,
+  iolImportRequestId,
+  parseIolPortfolioTable,
+} from '@/lib/broker-import/iol-portfolio';
 import { investmentsService } from '@/lib/services/investments';
 import { accountsService } from '@/lib/services/accounts';
-import { errorResponse } from '@/lib/api-handler';
-import { randomUUID } from 'node:crypto';
+import { ApiError, errorResponse } from '@/lib/api-handler';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,27 +66,21 @@ export async function POST(req: NextRequest) {
     const parsed = parseIolPortfolioTable(table.headers, table.rows);
     const created: Array<{ id: string; ticker: string }> = [];
     const failed: Array<{ ticker: string; reason: string }> = [];
+    const alreadyImported: Array<{ ticker: string }> = [];
 
-    for (const holding of parsed.holdings) {
+    for (const [index, holding] of parsed.holdings.entries()) {
       try {
         const row = await investmentsService.create({
-          requestId: randomUUID(),
+          requestId: iolImportRequestId(user.id, accountId, holding, index),
           userId: user.id,
-          accountId,
-          type: holding.type,
-          ticker: holding.ticker,
-          name: holding.name,
-          quantity: holding.quantity,
-          purchasePrice: holding.purchasePrice,
-          purchaseCurrency: holding.purchaseCurrency,
-          purchaseDate: holding.purchaseDate,
-          marketCurrency: holding.marketCurrency,
-          paymentCurrency: holding.paymentCurrency,
-          isManualPrice: holding.lastPrice != null,
-          currentPrice: holding.lastPrice ?? undefined,
+          ...iolHoldingToCreateInput(holding, accountId),
         });
         created.push({ id: row.id, ticker: holding.ticker });
       } catch (err) {
+        if (err instanceof ApiError && err.status === 409) {
+          alreadyImported.push({ ticker: holding.ticker });
+          continue;
+        }
         failed.push({
           ticker: holding.ticker,
           reason: err instanceof Error ? err.message : 'No se pudo crear',
@@ -93,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       imported: created.length,
-      skipped: parsed.skipped.length,
+      skipped: parsed.skipped.length + alreadyImported.length,
       failed: failed.length,
       created,
       skippedRows: parsed.skipped.slice(0, 50),
