@@ -62,11 +62,22 @@ async function decryptStored(stored: string | null): Promise<string | null> {
 type SecretColumn = 'gemini_api_key' | 'telegram_bot_token';
 
 async function readPair(userId: string, column: SecretColumn): Promise<{ enc: string | null; plain: string | null }> {
-  const supabase = createServiceClientSync();
-  const encCol = `${column}_enc`;
-  const { data } = await supabase.from('users').select(`${column}, ${encCol}`).eq('id', userId).maybeSingle();
-  const row = (data ?? {}) as Record<string, string | null>;
-  return { enc: row[encCol] ?? null, plain: row[column] ?? null };
+  try {
+    const supabase = createServiceClientSync();
+    const encCol = `${column}_enc`;
+    const query: {
+      maybeSingle?: () => Promise<{ data: Record<string, string | null> | null }>;
+      single: () => Promise<{ data: Record<string, string | null> | null }>;
+    } = supabase.from('users').select(`${column}, ${encCol}`).eq('id', userId) as unknown as {
+      maybeSingle?: () => Promise<{ data: Record<string, string | null> | null }>;
+      single: () => Promise<{ data: Record<string, string | null> | null }>;
+    };
+    const { data } = await (query.maybeSingle ? query.maybeSingle() : query.single());
+    const row = (data ?? {}) as Record<string, string | null>;
+    return { enc: row[encCol] ?? null, plain: row[column] ?? null };
+  } catch {
+    return { enc: null, plain: null };
+  }
 }
 
 export async function getUserSecret(userId: string, column: SecretColumn): Promise<string | null> {

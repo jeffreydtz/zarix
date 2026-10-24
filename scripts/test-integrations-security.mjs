@@ -56,8 +56,8 @@ try {
     assert.ok(n >= 0);
   });
 
-  await service(db, "INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,scopes) VALUES($1,'A','zrxp_aaaaaa','bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',ARRAY['read','ingest'])", [ids.a]);
-  await service(db, "INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,scopes) VALUES($1,'B','zrxp_bbbbbb','cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',ARRAY['read'])", [ids.b]);
+  await service(db, "INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,scopes) VALUES($1,'Token A','zrxp_aaaaaa','bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',ARRAY['read','ingest'])", [ids.a]);
+  await service(db, "INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,scopes) VALUES($1,'Token B','zrxp_bbbbbb','cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',ARRAY['read'])", [ids.b]);
   await service(db, "INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source) VALUES($1,10,'ARS','Sintético A','pending','fp-a','wallet')", [ids.a]);
   await service(db, "INSERT INTO pending_inbox_items(user_id,amount,currency,merchant,status,fingerprint,source) VALUES($1,11,'ARS','Sintético B','pending','fp-b','wallet')", [ids.b]);
   await service(db, "INSERT INTO wallet_card_account_maps(user_id,card_name_normalized,account_id) VALUES($1,'visa a',$2)", [ids.a, ids.accountA]);
@@ -65,17 +65,17 @@ try {
 
   await test('owner lists only own tokens without hash column', async () => {
     const rows = (await owner(db, 'SELECT id, name, token_prefix FROM personal_access_tokens ORDER BY name')).rows;
-    assert.deepEqual(rows.map(r => r.name), ['A']);
+    assert.deepEqual(rows.map(r => r.name), ['Token A']);
     await rejects(() => owner(db, 'SELECT token_hash FROM personal_access_tokens'));
   });
 
   await test('other tenant cannot read or revoke A tokens', async () => {
     assert.equal((await other(db, 'SELECT id FROM personal_access_tokens')).rows.length, 1);
-    assert.equal((await other(db, "UPDATE personal_access_tokens SET revoked_at=now() WHERE user_id=$1 RETURNING id", [ids.a])).rows.length, 0);
+    await rejects(() => other(db, "UPDATE personal_access_tokens SET revoked_at=now() WHERE user_id=$1 RETURNING id", [ids.a]));
   });
 
   await test('authenticated cannot insert tokens or audit rows', async () => {
-    await rejects(() => owner(db, "INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,scopes) VALUES($1,'x','zrxp_xxxxxx','dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',ARRAY['read'])", [ids.a]));
+    await rejects(() => owner(db, "INSERT INTO personal_access_tokens(user_id,name,token_prefix,token_hash,scopes) VALUES($1,'Token X','zrxp_xxxxxx','dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',ARRAY['read'])", [ids.a]));
     await rejects(() => owner(db, "INSERT INTO integration_audit_log(user_id,action,source) VALUES($1,'token.create','web')", [ids.a]));
   });
 
