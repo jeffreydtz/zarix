@@ -44,6 +44,16 @@ describe('CAFCI client headers and 403', () => {
     expect((err as CafciHttpError).status).toBe(403);
   });
 
+  it('propagates CAFCI 500 so the refresh can skip without a Yahoo fallback', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: async () => ({}),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchFciQuote('IOLDOLD')).rejects.toMatchObject({ status: 500, name: 'CafciHttpError' });
+  });
+
   it('uses the class moneda when the ficha payload has no currency', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({

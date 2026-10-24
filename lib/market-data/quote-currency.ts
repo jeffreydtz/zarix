@@ -71,12 +71,15 @@ export function isDollarBoardSymbol(
  * update instead of guessing from the ticker suffix.
  *
  * Explicit non-ARS source metadata wins. data912's dummy ARS tag is ignored
- * when a sibling-confirmed D/C listing exists.
+ * when a sibling-confirmed D/C listing exists. A ticker that merely ends in D
+ * (GLD) is not a D-class symbol: only catalog/feed D-class listings count.
+ * An exact match on the position ticker is that listing, not a derived board.
  */
 export function resolveQuoteCurrency(opts: {
   matchedSymbol: string;
   listed: ReadonlySet<string> | Map<string, unknown>;
   sourceCurrency?: string | null;
+  positionTicker?: string | null;
 }): QuoteCurrency | null {
   const t = stripBymaSuffix(opts.matchedSymbol);
   const tagged = (opts.sourceCurrency || '').trim().toUpperCase();
@@ -85,6 +88,8 @@ export function resolveQuoteCurrency(opts: {
   }
   if (isCatalogPesoListing(t)) return 'ARS';
   if (isDollarBoardSymbol(t, opts.listed)) return 'USD';
+  const position = stripBymaSuffix(opts.positionTicker || '');
+  if (position && t === position) return 'ARS';
   if (looksLikeDollarSuffix(t)) return null;
   return 'ARS';
 }
@@ -169,6 +174,8 @@ export interface ConvertibleQuote {
   changePct: number | null;
   currency: string;
   timestamp: string | null;
+  /** data912 served this row from a failed-fetch fallback, not a live GET. */
+  stale?: boolean;
 }
 
 /**

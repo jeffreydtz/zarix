@@ -60,6 +60,13 @@ describe('USD quote adaptation for D tickers', () => {
     expect(isDollarBoardSymbol('YPFD', new Set(['YPFD']))).toBe(false);
     expect(isDollarBoardSymbol('IBMD', new Set(['IBMD']))).toBe(false);
     expect(resolveQuoteCurrency({ matchedSymbol: 'IBMD', listed: new Set(['IBMD']) })).toBeNull();
+    expect(isDollarBoardSymbol('GLD', new Set(['GLD']))).toBe(false);
+    expect(resolveQuoteCurrency({
+      matchedSymbol: 'GLD', listed: new Set(['GLD']), positionTicker: 'GLD',
+    })).toBe('ARS');
+    expect(resolveQuoteCurrency({
+      matchedSymbol: 'GLD', listed: new Set(['GLD']),
+    })).toBeNull();
     for (const ticker of ['AMD', 'MCD', 'HD', 'C', 'BAC', 'CARC']) {
       expect(isDollarBoardSymbol(ticker, new Set([ticker]))).toBe(false);
       expect(inferListedCurrency(ticker, new Set([ticker]))).toBe('ARS');
@@ -226,6 +233,11 @@ describe('ON / Yahoo / CAFCI helpers', () => {
       clase: { moneda: 'Dolares' },
       fecha: '2026-10-23',
     })).toMatchObject({ price: 1.098, currency: 'USD' });
+    expect(parseCafciFichaForTest({
+      valorCuotaparte: 1.098,
+      moneda: 'Pesos',
+      clase: { moneda: 'Dolares' },
+    })).toMatchObject({ price: 1.098, currency: 'USD' });
     expect(parseCafciFichaForTest({ valorCuotaparte: 12.5 })).toMatchObject({
       price: 12.5, currency: null,
     });
@@ -275,6 +287,17 @@ describe('IOL Mi Portafolio CSV', () => {
     const parsed = parseIolPortfolioCsv(csv);
     expect(parsed.holdings[0]).toMatchObject({
       ticker: 'YPFD', marketCurrency: 'ARS', purchaseCurrency: 'ARS', quantity: 10, purchasePrice: 42000,
+    });
+  });
+
+  it('imports IOL CEDEAR ETF rows as cedear, not US ETF', () => {
+    const csv = [
+      'Simbolo,Descripcion,Cantidad,PPC,Ultimo,Moneda,Tipo',
+      'GLD,SPDR GOLD SHARES,2,380,390,USD,CEDEAR ETF',
+    ].join('\n');
+    const parsed = parseIolPortfolioCsv(csv);
+    expect(parsed.holdings[0]).toMatchObject({
+      ticker: 'GLD', type: 'cedear', marketCurrency: 'USD',
     });
   });
 

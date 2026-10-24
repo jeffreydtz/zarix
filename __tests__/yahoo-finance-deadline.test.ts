@@ -9,7 +9,12 @@ vi.mock('yahoo-finance2', () => ({
   },
 }));
 
-import { fetchYahooStockQuotesMap, resolveYahooQuoteCurrency } from '@/lib/yahoo-finance-quotes';
+import {
+  fetchYahooStockQuotesMap,
+  inferYahooDisplayCurrency,
+  resolveYahooQuoteCurrency,
+  withYahooDisplayCurrency,
+} from '@/lib/yahoo-finance-quotes';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -59,5 +64,10 @@ describe('Yahoo quote deadline abort', () => {
     expect(resolveYahooQuoteCurrency('GLD', 'USD')).toBe('USD');
     expect(resolveYahooQuoteCurrency('GLD', undefined)).toBe('');
     expect(resolveYahooQuoteCurrency('GGAL.BA', undefined)).toBe('');
+    expect(inferYahooDisplayCurrency('AAPL')).toBe('USD');
+    expect(inferYahooDisplayCurrency('GGAL.BA')).toBe('ARS');
+    expect(withYahooDisplayCurrency({
+      ticker: 'AAPL', name: 'Apple', price: 190, change: 1, changePct: 0.5, currency: '',
+    }).currency).toBe('USD');
   });
 });

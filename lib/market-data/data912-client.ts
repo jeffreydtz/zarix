@@ -17,14 +17,23 @@ export interface Data912Quote {
   /** Tag del proveedor; no confiable. Usar inferListedCurrency al resolver. */
   currency: 'ARS' | 'USD';
   source: 'arg_stocks' | 'arg_cedears' | 'arg_bonds' | 'arg_corp';
+  /** UTC time of the last live successful fetch that produced this row. */
+  timestamp?: string | null;
+  /** True when this row was served from cache after a failed live GET. */
+  stale?: boolean;
 }
 
 interface MemCacheEntry<T> {
   ts: number;
+  fetchedAt: string;
   data: T;
 }
 
 const memCache = new Map<string, MemCacheEntry<Data912Quote[]>>();
+
+export function resetData912CacheForTest(): void {
+  memCache.clear();
+}
 
 interface Data912Row {
   symbol?: unknown;
@@ -81,6 +90,14 @@ function normalizeRow(
   };
 }
 
+function asStale(quotes: Data912Quote[], fetchedAt: string): Data912Quote[] {
+  return quotes.map((q) => ({
+    ...q,
+    stale: true,
+    timestamp: q.timestamp ?? fetchedAt,
+  }));
+}
+
 async function fetchEndpoint(
   path: string,
   source: Data912Quote['source']
@@ -97,20 +114,20 @@ async function fetchEndpoint(
       next: { revalidate: 300 },
     });
     if (!res.ok) {
-      memCache.set(path, { ts: Date.now(), data: cached?.data ?? [] });
-      return cached?.data ?? [];
+      return cached ? asStale(cached.data, cached.fetchedAt) : [];
     }
     const json = await res.json();
     const rows = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
+    const fetchedAt = new Date().toISOString();
     const quotes: Data912Quote[] = [];
     for (const raw of rows) {
       const q = normalizeRow(raw, source);
-      if (q) quotes.push(q);
+      if (q) quotes.push({ ...q, timestamp: fetchedAt, stale: false });
     }
-    memCache.set(path, { ts: Date.now(), data: quotes });
+    memCache.set(path, { ts: Date.now(), fetchedAt, data: quotes });
     return quotes;
   } catch {
-    return cached?.data ?? [];
+    return cached ? asStale(cached.data, cached.fetchedAt) : [];
   }
 }
 
@@ -163,12 +180,20 @@ export async function loadArgentineQuotes(): Promise<ArgentineQuoteIndex> {
 export function quoteFromIndex(
   index: Map<string, Data912Quote>,
   symbol: string
-): { price: number; changePct: number | null; currency: 'ARS' | 'USD' } | null {
+): {
+  price: number;
+  changePct: number | null;
+  currency: 'ARS' | 'USD';
+  timestamp: string | null;
+  stale?: boolean;
+} | null {
   const hit = index.get(symbol.toUpperCase());
   if (!hit || hit.price <= 0) return null;
   return {
     price: hit.price,
     changePct: hit.changePct,
     currency: inferListedCurrency(hit.symbol, index),
+    timestamp: hit.timestamp ?? null,
+    stale: hit.stale,
   };
 }

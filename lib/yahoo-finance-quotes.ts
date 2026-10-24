@@ -53,13 +53,27 @@ function deadlineController(deadlineAt?: number): { signal?: AbortSignal; cancel
 
 /**
  * Yahoo's `currency` field is confirmation. Never infer ARS/USD from a ticker
- * suffix (`.BA`, trailing D/C). A missing field stays blank so callers skip.
+ * suffix (`.BA`, trailing D/C). A missing field stays blank so quote-refresh skips.
  */
 export function resolveYahooQuoteCurrency(symbol: string, metaCurrency: string | undefined): string {
   const tagged = (metaCurrency || '').trim().toUpperCase();
   if (tagged) return tagged;
   if (symbol === '^MERV') return 'PTS';
   return '';
+}
+
+/** Display fallback for the home market widget. Does not feed quote-refresh. */
+export function inferYahooDisplayCurrency(symbol: string, metaCurrency?: string): string {
+  const tagged = (metaCurrency || '').trim().toUpperCase();
+  if (tagged) return tagged;
+  if (symbol === '^MERV') return 'PTS';
+  if (symbol.endsWith('.BA')) return 'ARS';
+  return 'USD';
+}
+
+export function withYahooDisplayCurrency(quote: StockQuote): StockQuote {
+  if ((quote.currency || '').trim()) return quote;
+  return { ...quote, currency: inferYahooDisplayCurrency(quote.ticker) };
 }
 
 function mapYahooQuoteRow(symbol: string, q: Record<string, unknown>): StockQuote | null {

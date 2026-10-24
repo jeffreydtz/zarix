@@ -175,7 +175,43 @@ describe('refreshQuotesForInvestments currency keys', () => {
     ]);
     expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
     expect(mocks.yahoo).not.toHaveBeenCalled();
-    expect(warn.mock.calls.some((call) => String(call[0]).includes('403'))).toBe(true);
+    expect(warn.mock.calls.some((call) => String(call[0]).includes('CAFCI failure'))).toBe(true);
+  });
+
+  it('skips CAFCI 500 for a USD FCI and does not apply a Yahoo ARS quote via MEP', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.fci.mockRejectedValue(Object.assign(new Error('CAFCI 500'), { name: 'CafciHttpError', status: 500 }));
+    mocks.yahoo.mockResolvedValue(new Map([
+      ['IOLDOLD.BA', {
+        ticker: 'IOLDOLD.BA', name: 'IOL Dolar', price: 1.098, changePct: 0, currency: 'ARS',
+      }],
+    ]));
+    const map = await refreshQuotesForInvestments([
+      { type: 'fci', ticker: 'IOLDOLD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(map.get(quoteCacheKey('fci', 'IOLDOLD', 'USD'))).toBeUndefined();
+    expect(mocks.yahoo).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalled();
+  });
+
+  it('prices a GLD cedear from the exact data912 ARS listing, including a USD book via MEP', async () => {
+    mocks.arg.mockResolvedValue({
+      byStock: new Map(),
+      byCedear: new Map([['GLD', { symbol: 'GLD', price: 52000, changePct: 0.5, currency: 'ARS' }]]),
+      byBond: new Map(),
+      byCorp: new Map(),
+    });
+    const ars = await refreshQuotesForInvestments([
+      { type: 'cedear', ticker: 'GLD', market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    expect(ars.get(quoteCacheKey('cedear', 'GLD', 'ARS'))).toMatchObject({
+      price: 52000, currency: 'ARS',
+    });
+    const usd = await refreshQuotesForInvestments([
+      { type: 'cedear', ticker: 'GLD', market_currency: 'USD', purchase_currency: 'USD' },
+    ]);
+    expect(usd.get(quoteCacheKey('cedear', 'GLD', 'USD'))?.currency).toBe('USD');
+    expect(usd.get(quoteCacheKey('cedear', 'GLD', 'USD'))?.price).toBeCloseTo(52000 / 1300, 8);
   });
 
   it('updates GLD from Yahoo currency=USD without inferring USD from the D suffix', async () => {
@@ -200,6 +236,51 @@ describe('refreshQuotesForInvestments currency keys', () => {
     ]);
     expect(map.get(quoteCacheKey('etf', 'GLD', 'USD'))).toBeUndefined();
     expect(warn).toHaveBeenCalled();
+  });
+
+  it('keeps the live data912 timestamp when a later fetch is a 503 stale-cache hit', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-24T12:06:00.000Z'));
+    mocks.arg.mockResolvedValue({
+      byStock: new Map([['YPFD', {
+        symbol: 'YPFD',
+        price: 42000,
+        changePct: 0,
+        currency: 'ARS',
+        timestamp: '2026-10-24T12:00:00.000Z',
+        stale: true,
+      }]]),
+      byCedear: new Map(),
+      byBond: new Map(),
+      byCorp: new Map(),
+    });
+    try {
+      const map = await refreshQuotesForInvestments([
+        { type: 'stock_arg', ticker: 'YPFD', market_currency: 'ARS', purchase_currency: 'ARS' },
+      ]);
+      expect(map.get(quoteCacheKey('stock_arg', 'YPFD', 'ARS'))).toMatchObject({
+        price: 42000,
+        currency: 'ARS',
+        timestamp: '2026-10-24T12:00:00.000Z',
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not write a stale data912 quote that has no original timestamp', async () => {
+    mocks.arg.mockResolvedValue({
+      byStock: new Map([['YPFD', {
+        symbol: 'YPFD', price: 42000, changePct: 0, currency: 'ARS', stale: true,
+      }]]),
+      byCedear: new Map(),
+      byBond: new Map(),
+      byCorp: new Map(),
+    });
+    const map = await refreshQuotesForInvestments([
+      { type: 'stock_arg', ticker: 'YPFD', market_currency: 'ARS', purchase_currency: 'ARS' },
+    ]);
+    expect(map.get(quoteCacheKey('stock_arg', 'YPFD', 'ARS'))).toBeUndefined();
   });
 
   it('stores fetch time in UTC when the source omits a timestamp', async () => {

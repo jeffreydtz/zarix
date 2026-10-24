@@ -200,12 +200,12 @@ function parseFicha(json: unknown): { price: number; currency: 'ARS' | 'USD' | n
   const clase = asRecord(data.clase);
   const fondo = asRecord(data.fondo);
   const currency = parseCafciCurrency(
-    data.moneda,
-    data.currency,
-    data.monedaClase,
-    data.tipoMoneda,
     clase?.moneda,
     clase?.currency,
+    data.monedaClase,
+    data.tipoMoneda,
+    data.moneda,
+    data.currency,
     fondo?.moneda,
     fondo?.currency,
   );
@@ -217,25 +217,20 @@ function parseFicha(json: unknown): { price: number; currency: 'ARS' | 'USD' | n
 export async function fetchFciQuote(ticker: string): Promise<FciQuote | null> {
   const symbol = ticker.trim().toUpperCase();
   if (!symbol) return null;
-  try {
-    const classes = await loadCatalog();
-    const match = matchClass(classes, symbol);
-    if (!match) return null;
-    const json = await fetchJson(`${CAFCI_BASE}/fondo/${match.fondoId}/clase/${match.claseId}/ficha`);
-    const parsed = parseFicha(json);
-    if (!parsed) return null;
-    return {
-      ticker: symbol,
-      price: parsed.price,
-      currency: parsed.currency ?? match.currency,
-      changePct: null,
-      timestamp: parsed.timestamp,
-      source: 'cafci',
-    };
-  } catch (error) {
-    if (isCafciForbidden(error)) throw error;
-    return null;
-  }
+  const classes = await loadCatalog();
+  const match = matchClass(classes, symbol);
+  if (!match) return null;
+  const json = await fetchJson(`${CAFCI_BASE}/fondo/${match.fondoId}/clase/${match.claseId}/ficha`);
+  const parsed = parseFicha(json);
+  if (!parsed) return null;
+  return {
+    ticker: symbol,
+    price: parsed.price,
+    currency: parsed.currency ?? match.currency,
+    changePct: null,
+    timestamp: parsed.timestamp,
+    source: 'cafci',
+  };
 }
 
 /** Exposed for tests: match a ticker against a synthetic CAFCI catalog. */

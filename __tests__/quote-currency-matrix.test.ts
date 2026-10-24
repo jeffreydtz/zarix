@@ -80,6 +80,8 @@ describe('ticker × position currency × source currency', () => {
     { ticker: 'AAPL', type: 'cedear', position: 'ARS', book: 'cedear', listed: [['AAPL', 10000, 'ARS']], expected: { price: 10000, currency: 'ARS' } },
     { ticker: 'AAPL', type: 'cedear', position: 'USD', book: 'cedear', listed: [['AAPL', 119600, 'ARS'], ['AAPLD', 92, 'ARS']], expected: { price: 92, currency: 'USD' } },
     { ticker: 'BTC', type: 'crypto', position: 'USD', expected: { price: 100000, currency: 'USD' } },
+    { ticker: 'GLD', type: 'cedear', position: 'ARS', book: 'cedear', listed: [['GLD', 52000, 'ARS']], expected: { price: 52000, currency: 'ARS' } },
+    { ticker: 'GLD', type: 'cedear', position: 'USD', book: 'cedear', listed: [['GLD', 52000, 'ARS']], expected: { price: 52000 / MEP, currency: 'USD' } },
   ];
 
   it.each(cases)('$ticker $position from $listed', async (entry) => {
