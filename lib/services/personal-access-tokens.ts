@@ -1,5 +1,5 @@
 import { ApiError } from '@/lib/api-handler';
-import { createServiceClientSync } from '@/lib/supabase/server';
+import { createBareServiceClient } from '@/lib/supabase/server';
 import {
   generatePersonalAccessToken,
   hashPersonalAccessToken,
@@ -33,7 +33,7 @@ function toPublic(row: PatRow): PublicPat {
 }
 
 export async function listPersonalAccessTokens(userId: string): Promise<PublicPat[]> {
-  const supabase = createServiceClientSync();
+  const supabase = createBareServiceClient();
   const { data, error } = await supabase
     .from('personal_access_tokens')
     .select('id, user_id, name, token_prefix, scopes, last_used_at, revoked_at, created_at')
@@ -53,7 +53,7 @@ export async function createPersonalAccessToken(input: {
   if (name.length < 2) throw new ApiError('Elegí un nombre de al menos 2 caracteres.');
   const scopes = normalizeScopes(input.scopes);
   const generated = generatePersonalAccessToken();
-  const supabase = createServiceClientSync();
+  const supabase = createBareServiceClient();
   const { count } = await supabase
     .from('personal_access_tokens')
     .select('id', { count: 'exact', head: true })
@@ -91,7 +91,7 @@ export async function revokePersonalAccessToken(input: {
   tokenId: string;
   req?: Request;
 }): Promise<void> {
-  const supabase = createServiceClientSync();
+  const supabase = createBareServiceClient();
   const { data, error } = await supabase
     .from('personal_access_tokens')
     .update({ revoked_at: new Date().toISOString() })
@@ -134,7 +134,7 @@ export async function authenticatePersonalAccessToken(
     throw new ApiError('Unauthorized', 401);
   }
   const presentedHash = hashPersonalAccessToken(presented);
-  const supabase = createServiceClientSync();
+  const supabase = createBareServiceClient();
   const { data, error } = await supabase
     .from('personal_access_tokens')
     .select('id, user_id, scopes, token_hash, revoked_at, last_used_at')

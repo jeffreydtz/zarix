@@ -156,7 +156,7 @@ describe('truthful persisted bid/ask fallback', () => {
   });
   it('stores both sides together with the same source timestamp', async () => {
     const { cotizacionesService } = await import('@/lib/services/cotizaciones');
-    await cotizacionesService.getDolarQuotes();
+    await cotizacionesService.getDolarQuotes({ persist: true });
     const rows = mocks.insert.mock.calls[0][0];
     expect(rows).toHaveLength(8);
     expect(rows).toContainEqual(expect.objectContaining({ source: 'blue', rate: 1500 }));

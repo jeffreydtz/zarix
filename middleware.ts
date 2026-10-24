@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { CookieOptions } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
 import { isRejectedSessionError } from '@/lib/auth/session-error';
+import { isPublicAppPath } from '@/lib/auth/public-paths';
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
@@ -57,21 +58,7 @@ export async function middleware(req: NextRequest) {
     authError = error;
   }
 
-  const isPublicPath =
-    pathname === '/' ||
-    pathname === '/docs' ||
-    pathname.startsWith('/docs/') ||
-    pathname === '/demo' ||
-    pathname.startsWith('/demo/') ||
-    pathname === '/login' ||
-    pathname.startsWith('/login/') ||
-    pathname === '/register' ||
-    pathname.startsWith('/register/') ||
-    pathname === '/auth' ||
-    pathname.startsWith('/auth/') ||
-    // Gastos compartidos: /shared/[token] es público (invitados sin cuenta);
-    // /shared (exacto, listado del dueño) sigue requiriendo sesión.
-    pathname.startsWith('/shared/');
+  const isPublicPath = isPublicAppPath(pathname);
 
   if (!isPublicPath && authError && !isRejectedSessionError(authError)) {
     const unavailable = new NextResponse('No pudimos verificar tu sesión. Volvé a intentar en unos minutos.', {

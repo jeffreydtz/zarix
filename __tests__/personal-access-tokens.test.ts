@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/supabase/server', () => ({
   createServiceClientSync: () => ({ from: mocks.from }),
+  createBareServiceClient: () => ({ from: mocks.from }),
   createClient: async () => ({ auth: { getUser: async () => ({ data: { user: { id: '11111111-1111-4111-8111-111111111111' } } }) } }),
 }));
 

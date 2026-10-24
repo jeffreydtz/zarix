@@ -13,6 +13,7 @@ import type { ExecutedTransactionSummary } from '@/types/internal-ai-chat';
 import { asUntrustedData, maskSensitiveValue } from './mask';
 import { getRegistryTool, WRITE_TOOL_NAMES } from './catalog';
 import { MAX_TOOL_BATCH, TOOL_SCHEMAS } from './schemas';
+import { rateLimitAllow } from '@/lib/rate-limit';
 import type { RegistryToolContext, RegistryToolResult, ToolArgs, WriteChannel } from './types';
 
 export type { RegistryToolContext as BotToolContext, RegistryToolResult as BotToolResult };
@@ -166,8 +167,8 @@ const ACCOUNT_TYPES = new Set([
   'other',
 ]);
 
-function txOptions(source: WriteChannel | undefined) {
-  return { source: source ?? 'web' };
+function txOptions(source: WriteChannel | undefined, requestId?: string) {
+  return { source: source ?? 'web', requestId };
 }
 
 async function executeRegistryToolImpl(
@@ -175,7 +176,7 @@ async function executeRegistryToolImpl(
   args: ToolArgs,
   ctx: RegistryToolContext
 ): Promise<RegistryToolResult> {
-  const { userId, financialContext, source } = ctx;
+  const { userId, financialContext, source, requestId } = ctx;
   const tool = getRegistryTool(name);
   if (!tool) return { response: { error: `Herramienta desconocida: ${name}` } };
 
@@ -193,7 +194,7 @@ async function executeRegistryToolImpl(
 
   switch (name) {
     case 'create_transaction': {
-      const res = await executeBotTransaction(userId, financialContext, safeArgs as BotTxPayload, txOptions(source));
+      const res = await executeBotTransaction(userId, financialContext, safeArgs as BotTxPayload, txOptions(source, requestId));
       if (res.kind === 'abort') return { response: { success: false, error: res.reply } };
       return {
         response: { success: true, summary: res.reply },
@@ -461,7 +462,10 @@ async function executeRegistryToolImpl(
     }
 
     case 'get_quotes': {
-      const q = await cotizacionesService.getAllQuotes();
+      if (!rateLimitAllow(`quotes:${userId}`, 20, 60_000)) {
+        return { response: { success: false, error: 'Demasiadas cotizaciones. Esperá un minuto.' } };
+      }
+      const q = await cotizacionesService.getAllQuotes({ persist: false });
       return {
         response: {
           dolar: {

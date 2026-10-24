@@ -27,7 +27,7 @@ class UpdatePricesJob extends IterativeCronJob<PriceRow> {
 
   protected async execute(supabase: ServiceClient): Promise<Record<string, unknown>> {
     try {
-      const dolar = await cotizacionesService.getDolarQuotes();
+      const dolar = await cotizacionesService.getDolarQuotes({ persist: true });
       const sell = Number(dolar?.blue?.sell);
       if (!(Number.isFinite(sell) && sell > 0)) {
         throw new Error('Cotización FX inválida');

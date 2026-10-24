@@ -19,6 +19,8 @@ export type RegistryToolContext = {
   source?: WriteChannel;
   /** If set, the executor rejects tools whose scopes are not a subset. */
   allowedScopes?: readonly ToolScope[];
+  /** Durable request id, e.g. wallet:{pendingItemId}. Never taken from tool args. */
+  requestId?: string;
 };
 
 export type RegistryTool = {

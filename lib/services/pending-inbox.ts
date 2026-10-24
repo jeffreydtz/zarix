@@ -10,6 +10,7 @@ import { auditIpFromRequest, auditUserAgent, recordIntegrationAudit } from '@/li
 import { USER_CLIENT_SAFE_COLUMNS } from '@/lib/constants/user-columns';
 import type { User } from '@/types/database';
 import { validTransactionRequestId } from '@/lib/transaction-idempotency';
+import { withPatUserScope } from '@/lib/supabase/request-scope';
 
 export type PendingInboxItem = {
   id: string;
@@ -21,7 +22,7 @@ export type PendingInboxItem = {
   account_id: string | null;
   category_id: string | null;
   occurred_at: string | null;
-  status: 'pending' | 'confirmed' | 'discarded';
+  status: 'pending' | 'confirming' | 'confirmed' | 'discarded';
   suggestion_source: string | null;
   idempotency_key: string | null;
   source: string;
@@ -74,6 +75,16 @@ export async function rememberCardAccount(userId: string, cardName: string | nul
 }
 
 export async function ingestWalletItem(input: {
+  userId: string;
+  json?: Record<string, unknown> | null;
+  text?: string | null;
+  idempotencyKey?: string | null;
+  req?: Request;
+}): Promise<{ item: PendingInboxItem; duplicate: boolean; autoConfirmed: boolean }> {
+  return withPatUserScope(input.userId, () => ingestWalletItemUnlocked(input));
+}
+
+async function ingestWalletItemUnlocked(input: {
   userId: string;
   json?: Record<string, unknown> | null;
   text?: string | null;
@@ -159,7 +170,7 @@ export async function ingestWalletItem(input: {
     try {
       const confirmed = await confirmPendingItem({
         userId: input.userId,
-        itemId: data.id,
+        itemId: data.id as string,
         req: input.req,
       });
       return { item: confirmed, duplicate: false, autoConfirmed: true };
@@ -195,6 +206,10 @@ async function loadFinancialContext(userId: string): Promise<FinancialContext> {
   };
 }
 
+export function pendingInboxRequestId(itemId: string): string {
+  return `wallet:${itemId}`;
+}
+
 export async function confirmPendingItem(input: {
   userId: string;
   itemId: string;
@@ -206,28 +221,71 @@ export async function confirmPendingItem(input: {
   occurredAt?: string;
   req?: Request;
 }): Promise<PendingInboxItem> {
+  return withPatUserScope(input.userId, () => confirmPendingItemUnlocked(input));
+}
+
+async function confirmPendingItemUnlocked(input: {
+  userId: string;
+  itemId: string;
+  amount?: number;
+  currency?: string;
+  merchant?: string;
+  accountId?: string;
+  categoryId?: string;
+  occurredAt?: string;
+  req?: Request;
+}): Promise<PendingInboxItem> {
   const supabase = createServiceClientSync();
-  const { data: row, error } = await supabase
-    .from('pending_inbox_items')
-    .select('*')
-    .eq('id', input.itemId)
-    .eq('user_id', input.userId)
-    .maybeSingle();
-  if (error) throw error;
+  const { data: claimed, error: claimErr } = await supabase.rpc('claim_pending_inbox_item', {
+    p_user_id: input.userId,
+    p_item_id: input.itemId,
+  });
+  if (claimErr) throw claimErr;
+  const claimedRow = Array.isArray(claimed) ? claimed[0] : claimed;
+
+  if (!claimedRow) {
+    const { data: existing } = await supabase
+      .from('pending_inbox_items')
+      .select('*')
+      .eq('id', input.itemId)
+      .eq('user_id', input.userId)
+      .maybeSingle();
+    if (!existing) throw new ApiError('Pendiente no encontrado.', 404);
+    if (existing.status === 'confirmed') return existing as PendingInboxItem;
+    if (existing.status === 'discarded') throw new ApiError('Este pendiente ya fue descartado.');
+    // Another worker holds confirming: reuse the deterministic request id.
+  }
+
+  const row = (claimedRow || (
+    await supabase.from('pending_inbox_items').select('*').eq('id', input.itemId).eq('user_id', input.userId).single()
+  ).data) as PendingInboxItem | null;
   if (!row) throw new ApiError('Pendiente no encontrado.', 404);
-  if (row.status === 'confirmed') return row as PendingInboxItem;
-  if (row.status === 'discarded') throw new ApiError('Este pendiente ya fue descartado.');
 
   const amount = input.amount ?? Number(row.amount);
   const accountId = input.accountId ?? row.account_id;
-  if (!Number.isFinite(amount) || amount <= 0) throw new ApiError('Falta el monto para confirmar.');
-  if (!accountId) throw new ApiError('Elegí la cuenta de Zarix para esta tarjeta.');
+  if (!Number.isFinite(amount) || amount <= 0) {
+    if (claimedRow) {
+      await supabase.from('pending_inbox_items').update({ status: 'pending' }).eq('id', input.itemId).eq('user_id', input.userId).eq('status', 'confirming');
+    }
+    throw new ApiError('Falta el monto para confirmar.');
+  }
+  if (!accountId) {
+    if (claimedRow) {
+      await supabase.from('pending_inbox_items').update({ status: 'pending' }).eq('id', input.itemId).eq('user_id', input.userId).eq('status', 'confirming');
+    }
+    throw new ApiError('Elegí la cuenta de Zarix para esta tarjeta.');
+  }
 
   const account = (await accountsService.list(input.userId)).find((a) => a.id === accountId);
-  if (!account) throw new ApiError('La cuenta no existe.');
+  if (!account) {
+    if (claimedRow) {
+      await supabase.from('pending_inbox_items').update({ status: 'pending' }).eq('id', input.itemId).eq('user_id', input.userId).eq('status', 'confirming');
+    }
+    throw new ApiError('La cuenta no existe.');
+  }
 
   const financialContext = await loadFinancialContext(input.userId);
-  const requestId = `wallet:${row.id}`;
+  const requestId = pendingInboxRequestId(row.id);
   const result = await executeRegistryTool(
     'create_transaction',
     {
@@ -239,9 +297,12 @@ export async function confirmPendingItem(input: {
       description: input.merchant || row.merchant || 'Wallet',
       transactionDate: (input.occurredAt || row.occurred_at || undefined)?.slice(0, 10),
     },
-    { userId: input.userId, financialContext, source: 'wallet' }
+    { userId: input.userId, financialContext, source: 'wallet', requestId }
   );
   if (result.response?.success !== true) {
+    if (claimedRow) {
+      await supabase.from('pending_inbox_items').update({ status: 'pending' }).eq('id', input.itemId).eq('user_id', input.userId).eq('status', 'confirming');
+    }
     throw new ApiError(String(result.response?.error || 'No se pudo confirmar el movimiento.'));
   }
 
@@ -262,9 +323,11 @@ export async function confirmPendingItem(input: {
     })
     .eq('id', input.itemId)
     .eq('user_id', input.userId)
+    .in('status', ['confirming', 'pending', 'confirmed'])
     .select('*')
-    .single();
-  if (updErr || !updated) throw updErr || new ApiError('No se pudo actualizar el pendiente.');
+    .maybeSingle();
+  if (updErr) throw updErr;
+  if (!updated) throw new ApiError('No se pudo actualizar el pendiente.');
 
   if (input.req) {
     await recordIntegrationAudit({

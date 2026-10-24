@@ -108,6 +108,19 @@ try {
     await rejects(() => owner(db, "UPDATE users SET telegram_bot_token='x' WHERE id=$1", [ids.a]));
     await rejects(() => owner(db, "UPDATE users SET gemini_api_key_enc='x' WHERE id=$1", [ids.a]));
   });
+
+  await test('concurrent pending confirm claims exactly once', async () => {
+    const item = (await service(db, "SELECT id FROM pending_inbox_items WHERE user_id=$1 AND merchant='Sintético A'", [ids.a])).rows[0];
+    const [a, b] = await Promise.all([
+      service(db, 'SELECT id FROM claim_pending_inbox_item($1,$2)', [ids.a, item.id]),
+      service(db, 'SELECT id FROM claim_pending_inbox_item($1,$2)', [ids.a, item.id]),
+    ]);
+    assert.equal(a.rows.length + b.rows.length, 1);
+    const status = (await service(db, 'SELECT status FROM pending_inbox_items WHERE id=$1', [item.id])).rows[0].status;
+    assert.equal(status, 'confirming');
+    const second = (await service(db, 'SELECT id FROM claim_pending_inbox_item($1,$2)', [ids.a, item.id])).rows;
+    assert.equal(second.length, 0);
+  });
 } finally {
   await db.close();
 }

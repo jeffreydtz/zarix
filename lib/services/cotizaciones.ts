@@ -320,7 +320,7 @@ class CotizacionesService {
   }
 
   async getDolarQuotes(
-    opts?: { preferCache?: boolean }
+    opts?: { preferCache?: boolean; persist?: boolean }
   ): Promise<Record<string, DolarQuote>> {
     const cacheKey = this.getCacheKey('criptoya', 'dolar', 'all');
     const dbCacheKey = this.getCacheKey('db', 'dolar', 'all');
@@ -370,7 +370,7 @@ class CotizacionesService {
         const quotes = this.withProviderMetadata(await provider.fetch(), provider.name);
         validateDolarQuotes(quotes);
         this.setCache(provider.name === 'db' ? dbCacheKey : cacheKey, quotes);
-        if (provider.name !== 'db') {
+        if (opts?.persist && provider.name !== 'db') {
           await this.saveLatestDolarQuotes(quotes);
         }
         return quotes;
@@ -615,9 +615,9 @@ class CotizacionesService {
     throw new Error(`Exchange rate ${from}→${to} not supported`);
   }
 
-  async getAllQuotes() {
+  async getAllQuotes(opts?: { persist?: boolean }) {
     const [dolar, btc, eth, usdt] = await Promise.all([
-      this.getDolarQuotes(),
+      this.getDolarQuotes({ persist: opts?.persist === true }),
       this.getCryptoQuote('BTC'),
       this.getCryptoQuote('ETH'),
       this.getCryptoQuote('USDT'),
